@@ -1,0 +1,9 @@
+.inline-flex {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap);
+}
+
+.fill-width {
+    width: 100%;
+}

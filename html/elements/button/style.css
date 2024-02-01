@@ -1,0 +1,102 @@
+/* Standard */
+.button {
+    color: var(--color-alt);
+    background-color: var(--primary-color);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--button-border-radius);
+    padding: var(--padding-less) var(--padding);
+    font-size: var(--font-size);
+    transition: background-color var(--animation-speed) var(--animation-style),
+                color var(--animation-speed) var(--animation-style),
+                border-color var(--animation-speed) var(--animation-style);
+}
+.button:hover {
+    cursor: pointer;
+    background-color: var(--primary-color-alt);
+}
+
+/* Secondary */
+.button.secondary {
+    background-color: var(--secondary-color);
+    color: var(--color);
+}
+.button.secondary:hover {
+    background-color: var(--secondary-color-alt);
+}
+
+/* Success */
+.button.success {
+    background-color: var(--success-color);
+}
+.button.success:hover {
+    background-color: var(--success-color-alt);
+}
+
+/* Info */
+.button.info {
+    background-color: var(--info-color);
+}
+.button.info:hover {
+    background-color: var(--info-color-alt);
+}
+
+/* Danger */
+.button.danger {
+    background-color: var(--danger-color);
+}
+.button.danger:hover {
+    background-color: var(--danger-color-alt);
+}
+
+/* Outlined */
+.button.outlined {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+.button.outlined:hover {
+    background-color: var(--primary-color-alt);
+    color: var(--color-alt);
+}
+
+/* Secondary Outlined */
+.button.secondary.outlined {
+    border-color: var(--border-color);
+    color: var(--color);
+}
+.button.secondary.outlined:hover {
+    background-color: var(--secondary-color-alt);
+}
+
+/* Success Outlined */
+.button.outlined.success {
+    background-color: transparent;
+    border-color: var(--success-color);
+    color: var(--success-color);
+}
+.button.outlined.success:hover {
+    background-color: var(--success-color-alt);
+    color: var(--color-alt);
+}
+
+/* Info Outlined */
+.button.outlined.info {
+    background-color: transparent;
+    border-color: var(--info-color);
+    color: var(--info-color);
+}
+.button.outlined.info:hover {
+    background-color: var(--info-color-alt);
+    color: var(--color-alt);
+}
+
+/* Danger Outlined */
+.button.outlined.danger {
+    background-color: transparent;
+    border-color: var(--danger-color);
+    color: var(--danger-color);
+}
+.button.outlined.danger:hover {
+    background-color: var(--danger-color-alt);
+    color: var(--color-alt);
+}
