@@ -9,6 +9,12 @@ input[type="checkbox"] {
     place-content: center;
 }
 
+input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
+    border-color: var(--info-color);
+    outline: none;
+}
+
 input[type="checkbox"]:hover {
     cursor: pointer;
 }

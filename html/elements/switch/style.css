@@ -21,7 +21,7 @@
     transform: translateX(var(--switch-size));
 }
 .switch input:focus + .slider { /* Accessability support */
-    box-shadow: 0 0 0 var(--shadow-depth) var(--info-color);
+    box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
 }
 .switch .slider {
     user-select: none;

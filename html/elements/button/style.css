@@ -14,6 +14,10 @@
     cursor: pointer;
     background-color: var(--primary-color-alt);
 }
+.button:focus, .button:active { /* Accessability support */
+    box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
+    outline: none;
+}
 
 /* Secondary */
 .button.secondary {
