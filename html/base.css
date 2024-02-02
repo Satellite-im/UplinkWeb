@@ -116,6 +116,7 @@ body {
     --primary-color-alt: #e5eff9;
     
     --border-color: #111820;
+    --container-radius: 0.5rem;
     --border-width: 1px;
     --button-border-radius: 1.2rem;
     --small-border-radius: 0.25rem;

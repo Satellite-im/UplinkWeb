@@ -9,14 +9,13 @@
     transition: background-color var(--animation-speed) var(--animation-style),
                 color var(--animation-speed) var(--animation-style),
                 border-color var(--animation-speed) var(--animation-style);
+    display: inline-flex;
+    gap: var(--gap);
+    justify-content: center;
 }
 .button:hover {
     cursor: pointer;
     background-color: var(--primary-color-alt);
-}
-.button:focus, .button:active { /* Accessability support */
-    box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
-    outline: none;
 }
 
 /* Secondary */
@@ -103,4 +102,10 @@
 .button.outlined.danger:hover {
     background-color: var(--danger-color-alt);
     color: var(--color-alt);
+}
+
+.button:focus, .button:active { /* Accessability support */
+    box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
+    outline: none;
+    border: var(--border-width) solid var(--focus-color);
 }

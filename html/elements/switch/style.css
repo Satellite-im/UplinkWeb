@@ -35,7 +35,6 @@
     transition: var(--animation-speed);
     border-radius: var(--switch-size);
 }
-
 .switch .slider:before {
     position: absolute;
     content: "";
