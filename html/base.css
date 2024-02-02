@@ -117,6 +117,8 @@ body {
     
     --border-color: #111820;
     --container-radius: 0.5rem;
+    --input-radius: 0.25rem;
+
     --border-width: 1px;
     --button-border-radius: 1.2rem;
     --small-border-radius: 0.25rem;
@@ -124,6 +126,7 @@ body {
     --margin: 2rem;
     --padding: 1rem;
     --padding-less: 0.4rem;
+    --padding-minimal: 0.25rem;
     --gap: 0.5rem;
     
     --font-size: 1rem;

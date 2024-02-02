@@ -1,0 +1,36 @@
+.input-group {
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--input-radius);
+    background-color: var(--color);
+    display: inline-flex;
+    gap: var(--gap);
+    padding: var(--padding-minimal) var(--gap);
+    align-items: center;
+}
+.input-group .input {
+    background-color: transparent;
+    border: none;
+    flex: 1;
+}
+.input-group.secondary {
+    background-color: var(--secondary-color);
+}
+.input-group.secondary .input {
+    color: var(--color);
+}
+.input-group .input:focus {
+    outline: none;
+    border: none;
+}
+.input::placeholder {
+    color: var(--color-alt);
+    opacity: 0.75;
+    font-size: var(--label-size);
+}
+.input-group.secondary .input::placeholder {
+    color: var(--color);
+}
+
+.input-group:focus-within {
+    box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
+}
