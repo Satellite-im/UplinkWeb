@@ -4,18 +4,63 @@
     <title>Input</title>
     <link rel="stylesheet" href="/html/base.css" />
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="../label/style.css" />
 </head>
 <body>
     <div class="input-group">
-        <input class="input" type="text" placeholder="Type Something...">
+        <div class="input-container">
+            <input 
+                class="input"
+                type="text"
+                placeholder="Type Something..." />
+        </div>
     </div>
 
     <div class="input-group">
-        🥵 <input class="input" type="text"  placeholder="Type Something...">
+        <div class="input-container">
+            🥵 <input 
+                class="input"
+                type="text"
+                placeholder="Type Something..." />
+        </div>
+    </div>
+
+    <div class="input-group highlight secondary">
+        <div class="input-container">
+            ✅ <input 
+                class="input" 
+                type="text"  
+                placeholder="Type Something..." />
+        </div>
+    </div>
+
+    <div class="input-group highlight-warning secondary">
+        <label for="sample-input-3" class="label">This is a label:</label>
+        <div class="input-container">
+            ⚠️ <input 
+                id="sample-input-3"ß
+                class="input"
+                type="text"
+                placeholder="Type Something..." />
+        </div>
+    </div>
+
+    <div class="input-group highlight-info secondary">
+        <div class="input-container">
+            🌎 <input 
+                class="input"
+                type="text"
+                placeholder="Type Something..." />
+        </div>
     </div>
 
     <div class="input-group secondary">
-        <input class="input" type="text" placeholder="Type Something...">
+        <div class="input-container">
+            <input 
+                class="input"
+                type="text"
+                placeholder="Type Something..." />
+        </div>
     </div>
 </body>
 </html>

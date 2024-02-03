@@ -111,6 +111,9 @@ body {
 
     --danger-color: #f53b57;
     --danger-color-alt: #ef5777;
+    
+    --warning-color: #fff200;
+    --warning-color-alt: #fcf228;
 
     --primary-color: #c8d6e5;
     --primary-color-alt: #e5eff9;
@@ -135,11 +138,4 @@ body {
     --switch-size: 1.5rem;
 
     --shadow-depth: 1px;
-}
-
-/* Static Elements */
-
-.label {
-    font-size: var(--label-size);
-    user-select: none;
 }

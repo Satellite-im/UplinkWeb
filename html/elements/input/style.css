@@ -1,4 +1,8 @@
 .input-group {
+    display: inline-flex;
+    flex-direction: column;
+}
+.input-group .input-container {
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--input-radius);
     background-color: var(--color);
@@ -12,7 +16,7 @@
     border: none;
     flex: 1;
 }
-.input-group.secondary {
+.input-group.secondary .input-container {
     background-color: var(--secondary-color);
 }
 .input-group.secondary .input {
@@ -30,7 +34,15 @@
 .input-group.secondary .input::placeholder {
     color: var(--color);
 }
-
-.input-group:focus-within {
+.input-group .input-container:focus-within {
     box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
+}
+.input-group.highlight {
+    border-color: var(--success-color);
+}
+.input-group.highlight-warning {
+    border-color: var(--warning-color);
+}
+.input-group.highlight-info {
+    border-color: var(--info-color);
 }
