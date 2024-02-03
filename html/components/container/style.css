@@ -1,0 +1,27 @@
+.container {
+    display: inline-flex;
+    gap: var(--gap);
+    position: relative;
+    border-radius: var(--standard-radius);
+    flex: 0 1;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+.container.bordered {
+    border: var(--border-width) solid var(--color);
+    padding: var(--padding);
+    margin-top: calc(var(--label-size) / 2);
+}
+
+.container .title {
+    position: absolute;
+    /* The following two lines are intended to counteract the border and padding inside the container to neatly align things.
+    ** I suspect there is some more relating to line heights but for now this looks good enough.
+    */
+    top: calc((var(--padding-less) + (var(--label-size) / 2)) * -1);
+    left: calc(var(--padding) / 2);
+    background: var(--background);
+    font-size: var(--label-size);
+    font-weight: normal;
+    padding: 0 6px;
+}

@@ -4,19 +4,37 @@
     <title>Checkbox</title>
     <link rel="stylesheet" href="/html/base.css" />
     <link rel="stylesheet" href="/html/layout.css" />
-    <link rel="stylesheet" href="./style.css" />
-    <link rel="stylesheet" href="../label/style.css" />
+    <style type="text/css">
+        body {
+            padding: var(--padding);
+            display: inline-flex;
+            flex-direction: column;
+            gap: calc(var(--gap) * 4);
+        }
+    </style>
 </head>
 <body>
-    <!-- Unchecked Checkbox -->
-    <div class="inline-flex fill-width">
-        <input type="checkbox" id="unchecked-checkbox" />
-        <label class="label" for="unchecked-checkbox">Unchecked</label>
+    <div class="container">
+        <h1>Checkboxes</h1>
+        <p>
+            Checkboxes are a simple boolean selector. It can be useful to have many of these in a list for settings / permissions and other boolean controls. It's also worth looking at the <a class="link" href="/html/elements/switch/switch.html">Switch Element</a> which functions the same but is displayed differently.
+        </p>
+        <p>
+            Checkboxes should support tab indexing and highlighting for accessability.
+        </p>
     </div>
-    <!-- Checked Checkbox -->
-    <div class="inline-flex fill-width">
-        <input type="checkbox" id="checked-checkbox" checked />
-        <label class="label" for="checked-checkbox">Checked</label>
+    <div class="container bordered">
+        <h2 class="title">Standard Checkboxes</h2>
+        <!-- Unchecked Checkbox -->
+        <div class="inline-flex fill-width">
+            <input type="checkbox" id="unchecked-checkbox" />
+            <label class="label" for="unchecked-checkbox">Unchecked</label>
+        </div>
+        <!-- Checked Checkbox -->
+        <div class="inline-flex fill-width">
+            <input type="checkbox" id="checked-checkbox" checked />
+            <label class="label" for="checked-checkbox">Checked</label>
+        </div>
     </div>
 </body>
 </html>

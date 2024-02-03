@@ -1,5 +1,6 @@
 /* Standard */
 .button {
+    height: fit-content;
     color: var(--color-alt);
     background-color: var(--primary-color);
     border: var(--border-width) solid var(--border-color);
@@ -18,13 +19,13 @@
     background-color: var(--primary-color-alt);
 }
 
-/* Secondary */
-.button.secondary {
-    background-color: var(--secondary-color);
+/* Alt */
+.button.alt {
+    background-color: var(--alt-color);
     color: var(--color);
 }
-.button.secondary:hover {
-    background-color: var(--secondary-color-alt);
+.button.alt:hover {
+    background-color: var(--alt-color-alt);
 }
 
 /* Success */
@@ -62,13 +63,13 @@
     color: var(--color-alt);
 }
 
-/* Secondary Outlined */
-.button.secondary.outlined {
+/* Alt Outlined */
+.button.alt.outlined {
     border-color: var(--border-color);
     color: var(--color);
 }
-.button.secondary.outlined:hover {
-    background-color: var(--secondary-color-alt);
+.button.alt.outlined:hover {
+    background-color: var(--alt-color-alt);
 }
 
 /* Success Outlined */
