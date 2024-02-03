@@ -4,12 +4,32 @@
     <title>Switch</title>
     <link rel="stylesheet" href="/html/base.css" />
     <link rel="stylesheet" href="/html/layout.css" />
+    <style type="text/css">
+        body {
+            padding: var(--padding);
+            display: inline-flex;
+            flex-direction: column;
+            gap: calc(var(--gap) * 4);
+        }
+    </style>
 </head>
 <body>
-    <!-- Switch -->
-    <label class="switch" alt="switch">
-        <input type="checkbox" checked />
-        <span class="slider"></span>
-    </label>
+    <div class="container">
+        <h1>Switch</h1>
+        <p>
+            Switches are a simple boolean selector. It can be useful to have many of these in a list for settings / permissions and other boolean controls. It's also worth looking at the <a class="link" href="/html/elements/checkbox/checkbox.html">Checkbox Element</a> which functions the same but is displayed differently.
+        </p>
+        <p>
+            Switches should support tab indexing and highlighting for accessability.
+        </p>
+    </div>
+    <div class="container bordered">
+        <h2 class="title">Standard Switch</h2>
+        <!-- Switch -->
+        <label class="switch" alt="switch">
+            <input type="checkbox" checked />
+            <span class="slider"></span>
+        </label>
+    </div>
 </body>
 </html>

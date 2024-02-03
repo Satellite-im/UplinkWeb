@@ -4,11 +4,22 @@
     <title>Label</title>
     <link rel="stylesheet" href="/html/base.css" />
     <link rel="stylesheet" href="/html/layout.css" />
+    <style type="text/css">
+        body {
+            padding: var(--padding);
+            display: inline-flex;
+            flex-direction: column;
+            gap: calc(var(--gap) * 4);
+        }
+    </style>
 </head>
 <body>
-    <!-- Label -->
-    <label class="label">
-        Label Text
-    </label>
+    <div class="container bordered">
+        <h2 class="title">Standard Label</h2>
+        <!-- Label -->
+        <label class="label">
+            Label Text
+        </label>
+    </div>
 </body>
 </html>
