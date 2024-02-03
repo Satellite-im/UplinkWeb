@@ -1,4 +1,5 @@
 .input-group {
+    height: var(--input-height);
     display: inline-flex;
     flex-direction: column;
 }

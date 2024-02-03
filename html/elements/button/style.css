@@ -1,6 +1,6 @@
 /* Standard */
 .button {
-    height: fit-content;
+    height: var(--input-height);
     color: var(--color-alt);
     background-color: var(--primary-color);
     border: var(--border-width) solid var(--border-color);
@@ -12,20 +12,25 @@
                 border-color var(--animation-speed) var(--animation-style);
     display: inline-flex;
     gap: var(--gap);
+    align-items: center;
     justify-content: center;
+}
+.button.round {
+    width: var(--input-height);
+    height: var(--input-height);
 }
 .button:hover {
     cursor: pointer;
     background-color: var(--primary-color-alt);
 }
 
-/* Alt */
-.button.alt {
-    background-color: var(--alt-color);
+/* Secondary */
+.button.secondary {
+    background-color: var(--secondary-color);
     color: var(--color);
 }
-.button.alt:hover {
-    background-color: var(--alt-color-alt);
+.button.secondary:hover {
+    background-color: var(--secondary-color-alt);
 }
 
 /* Success */
@@ -63,13 +68,13 @@
     color: var(--color-alt);
 }
 
-/* Alt Outlined */
-.button.alt.outlined {
+/* Secondary Outlined */
+.button.secondary.outlined {
     border-color: var(--border-color);
     color: var(--color);
 }
-.button.alt.outlined:hover {
-    background-color: var(--alt-color-alt);
+.button.secondary.outlined:hover {
+    background-color: var(--secondary-color-alt);
 }
 
 /* Success Outlined */

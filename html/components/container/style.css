@@ -7,6 +7,9 @@
     flex-wrap: wrap;
     align-content: flex-start;
 }
+.container.column {
+    flex-direction: column;
+}
 .container.bordered {
     border: var(--border-width) solid var(--color);
     padding: var(--padding);
