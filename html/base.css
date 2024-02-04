@@ -154,3 +154,7 @@ body {
 .link {
     color: var(--info-color);
 }
+
+.flex-one {
+    flex: 1;
+}

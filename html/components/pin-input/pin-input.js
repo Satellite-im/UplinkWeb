@@ -1,97 +1,78 @@
 document.addEventListener('DOMContentLoaded', () => {
-    (() => {
-        // Function to create a dot element, filled or empty based on argument
-        const buildDot = filled => {
-            const dot = document.createElement("span");
-            dot.className = filled ? "dot filled" : "dot"; // Set class based on filled status
-            return dot;
-        };
+    // Function to create a dot element, filled or empty based on argument
+    const buildDot = filled => `<span class="${filled ? 'dot filled' : 'dot'}"></span>`;
 
-        // Function to shuffle elements in an array
-        const shuffleArray = (array) => {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]]; // ES6 destructuring assignment for swapping
-            }
-            return array;
-        };
-
-        // Function to scramble elements within a container
-        const scramblePin = (container) => {
-            if (!container) {
-                console.error('Container not found');
-                return;
-            }
-
-            // Collect child elements into an array
-            const elements = Array.from(container.children);
-
-            // Shuffle the array of elements
-            const shuffledElements = shuffleArray(elements);
-
-            // Clear the container
-            container.innerHTML = '';
-
-            // Append the shuffled elements back to the container
-            shuffledElements.forEach(element => {
-                container.appendChild(element);
-            });
-        };
-
-        // Convert collection of .pin-input-group elements to an array
-        const pinInputs = [...document.getElementsByClassName("pin-input-group")];
-
-        // Iterate over each pin input group element
-        pinInputs.forEach(el => {
-            const pinKeypad = el.querySelector(".pin-keypad");
-            const pinDisplay = el.querySelector(".pin-display");
-            const maxPinLength = el.dataset.pinLength;
-            const shadowInput = el.querySelector(".shadow-input input");
-            const pinKeys = el.querySelectorAll(".pin-key");
-
-            // Only scramble pin keypad if it has the data-shuffle attribute
-            if (pinKeypad && pinKeypad.getAttribute("data-shuffle") == "true") {
-                scramblePin(pinKeypad); // Pass the specific pinKeypad element
-            }
-
-            shadowInput.maxLength = maxPinLength;
-            pinDisplay.innerHTML = '';
-
-            // Function to update the pin display based on the shadow input's value
-            const updatePinDisplay = () => {
-                const pinLength = shadowInput.value.length;
-                const emptyDots = maxPinLength - pinLength;
-                pinDisplay.innerHTML = '';
-
-                // Create and append filled dots based on pinLength
-                Array.from({length: pinLength}, () => buildDot(true)).forEach(dot => pinDisplay.appendChild(dot));
-                // Create and append empty dots based on remaining dots left
-                Array.from({length: emptyDots}, () => buildDot(false)).forEach(dot => pinDisplay.appendChild(dot));
-            };
-
-            // Add event listener for each pin key button
-            pinKeys.forEach(key => {
-                key.addEventListener('click', () => {
-                    const digit = key.dataset.digit; // Get digit from data attribute
-
-                    // Only add digit if we haven't reached the maximum length
-                    if (shadowInput.value.length < maxPinLength) {
-                        shadowInput.value += digit; // Append digit to shadowInput value
-                        updatePinDisplay(); // Update visual pin display
-                    }
-                });
-            });
-
-            // Add input event listener to the shadow input
-            shadowInput.addEventListener("input", () => {
-                // Prevent overflow of the input's value
-                if (shadowInput.value.length > maxPinLength) {
-                    shadowInput.value = shadowInput.value.slice(0, maxPinLength);
-                }
-                updatePinDisplay(); // Update visual pin display based on input
-            });
-
-            updatePinDisplay(); // Initial call to set the pin display on page load
+    // Function to shuffle elements in an array using Fisher-Yates algorithm
+    const shuffleArray = array => {
+        array.forEach((_, i, arr) => {
+            let j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         });
-    })();
+        return array;
+    };
+
+    // Modified scramblePin function
+    const scramblePin = container => {
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+        
+        // Extract control buttons and digit buttons
+        const pinControls = Array.from(container.querySelectorAll('.pin-control'));
+        const digitButtons = Array.from(container.querySelectorAll('.pin-key')).filter(btn => !btn.classList.contains('pin-control'));
+        
+        // Shuffle only digit buttons
+        const shuffledDigits = shuffleArray(digitButtons);
+        
+        // Clear the container by removing all children
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+        
+        // Re-add the buttons: shuffled digits, clear button, submit button
+        shuffledDigits.forEach(btn => container.appendChild(btn));
+
+        // Re-append control buttons at their specific positions
+        if (pinControls.length > 0) {
+            const submitButton = pinControls.find(btn => btn.dataset.control === "submit");
+            container.insertBefore(pinControls.find(btn => btn.dataset.control === "clear"), container.lastChild); // Insert before the last digit
+            container.appendChild(submitButton); // Append submit button at the end
+        }
+    };
+
+    // Convert collection of .pin-input-group elements to an array and iterate over each pin input group element
+    [...document.getElementsByClassName("pin-input-group")].forEach(el => {
+        const [pinKeypad, pinDisplay, shadowInput] = 
+            ['.pin-keypad', '.pin-display', '.shadow-input input'].map(selector => el.querySelector(selector));
+        const [maxPinLength, minPinLength] = ['maxPinLength', 'minPinLength'].map(attr => el.dataset[attr]);
+        const pinKeys = el.querySelectorAll(".pin-key");
+
+        if (pinKeypad?.getAttribute("data-shuffle") === "true") scramblePin(pinKeypad);
+
+        shadowInput.maxLength = maxPinLength;
+        const updatePinDisplay = () => {
+            const pinLength = shadowInput.value.length;
+            const totalDots = Math.max(pinLength, minPinLength);
+            pinDisplay.innerHTML = Array.from({length: totalDots}, (_, i) => buildDot(i < pinLength)).join('');
+        };
+
+        pinKeys.forEach(key => key.addEventListener('click', () => {
+            if (shadowInput.value.length < maxPinLength) {
+                shadowInput.value += key.dataset.digit;
+                if (pinKeypad?.getAttribute("data-shuffle") === "true") scramblePin(pinKeypad);
+                updatePinDisplay();
+            }
+        }));
+
+        shadowInput.addEventListener("input", () => {
+            shadowInput.value = shadowInput.value.slice(0, maxPinLength);
+            if (pinKeypad?.getAttribute("data-shuffle") === "true") scramblePin(pinKeypad);
+            updatePinDisplay();
+        });
+
+
+
+        updatePinDisplay();
+    });
 });

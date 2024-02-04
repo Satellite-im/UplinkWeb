@@ -4,6 +4,8 @@
     height: fit-content;
     display: inline-flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: var(--gap);
 }
 .pin-input-group .pin-display {
@@ -11,6 +13,10 @@
     gap: var(--gap);
     justify-content: center;
     padding: var(--padding) 0;
+}
+/* Accessability */
+.pin-input-group:focus-within .dot {
+    box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
 }
 /* Dots */
 .pin-input-group .pin-display .dot {
@@ -39,6 +45,17 @@
     border: none;
     outline: none;
 }
+/* Chrome, Safari, Edge, Opera */
+.pin-input-group .shadow-input input::-webkit-outer-spin-button,
+.pin-input-group .shadow-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.pin-input-group .shadow-input input[type=number] {
+  -moz-appearance: textfield;
+}
 /* TODO: Highlight pins when shadow_input is focused */
 
 .pin-input-group .shadow-input input::selection {
@@ -56,4 +73,10 @@
 .pin-input-group .pin-keypad .pin-key {
     height: var(--input-height);
     width: var(--input-height);
+}
+
+.pin-input-group .pin-keypad-controls {
+    display: inline-flex;
+    flex: 1;
+    gap: var(--gap);
 }

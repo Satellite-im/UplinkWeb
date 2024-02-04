@@ -15,6 +15,9 @@
     align-items: center;
     justify-content: center;
 }
+.button.icon {
+    max-width: var(--input-height);
+}
 .button.round {
     width: var(--input-height);
     height: var(--input-height);
