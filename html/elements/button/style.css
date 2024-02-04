@@ -25,12 +25,12 @@
 }
 
 /* Secondary */
-.button.secondary {
-    background-color: var(--secondary-color);
+.button.alt {
+    background-color: var(--alt-color);
     color: var(--color);
 }
-.button.secondary:hover {
-    background-color: var(--secondary-color-alt);
+.button.alt:hover {
+    background-color: var(--alt-color-alt);
 }
 
 /* Success */
