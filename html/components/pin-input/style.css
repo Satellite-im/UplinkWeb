@@ -15,7 +15,7 @@
     padding: var(--padding) 0;
 }
 /* Accessability */
-.pin-input-group:focus-within .dot {
+.pin-group:focus-within .dot {
     box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
 }
 /* Dots */
