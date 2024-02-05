@@ -6,6 +6,7 @@
     flex: 0 1;
     flex-wrap: wrap;
     align-content: flex-start;
+    width: 100%;
 }
 .container.column {
     flex-direction: column;

@@ -4,6 +4,10 @@
     gap: var(--gap);
 }
 
+.column-flex {
+    flex-direction: column;
+}
+
 .full-width {
     width: 100%;
 }

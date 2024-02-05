@@ -24,7 +24,16 @@
     z-index: 3;
     box-shadow: 0 0 0 var(--border-width-more) var(--background);
 }
-
+.profile-picture .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: var(--color-bright);
+    background-color: var(--danger-color);
+    padding: 0 var(--padding-minimal);
+    font-size: var(--label-size);
+    border-radius: var(--border-radius-minimal);
+}
 .profile-picture.highlight-success {
     border: var(--border-width-more) solid var(--success-color);
 }

@@ -14,10 +14,11 @@
 @import url(/html/components/pin-input/style.css);
 @import url(/html/components/key/style.css);
 @import url(/html/components/profile-picture/style.css);
+@import url(/html/components/message-bubble/style.css);
 
 @font-face {
     font-family: "SpaceMono";
-    src: url(/html/font/SpaceMono-Regular.ttf);
+    src: url(/assets/font/SpaceMono-Regular.ttf);
 }
 
 body {
@@ -33,7 +34,8 @@ body {
     --animation-speed: 0.2s;
     --animation-style: ease;
     
-    --color: #bbc3eb;
+    --color: #d5dcff;
+    --color-bright: #fff;
     --color-muted: #52567b;
     --color-alt: #000;
     
@@ -61,11 +63,16 @@ body {
 
     --input-height: 2.5rem;
 
+    /* Border Radius / Corners */
     --border-width: 1px;
     --border-width-more: 4px;
     --border-radius: 0.5rem;
-    --button-border-radius: 1.2rem;
+    --border-radius-more: 1.5rem;
     --border-radius-minimal: 0.25rem;
+
+    /* Elements */
+    --button-border-radius: 1.2rem;
+
 
     --margin: 2rem;
     --padding: 1rem;
