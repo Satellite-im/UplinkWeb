@@ -55,23 +55,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const pinLength = shadowInput.value.length;
             const totalDots = Math.max(pinLength, minPinLength);
             pinDisplay.innerHTML = Array.from({length: totalDots}, (_, i) => buildDot(i < pinLength)).join('');
+            if (pinKeypad?.getAttribute("data-shuffle") === "true") scramblePin(pinKeypad);
         };
 
         pinKeys.forEach(key => key.addEventListener('click', () => {
             if (shadowInput.value.length < maxPinLength) {
                 shadowInput.value += key.dataset.digit;
-                if (pinKeypad?.getAttribute("data-shuffle") === "true") scramblePin(pinKeypad);
                 updatePinDisplay();
             }
         }));
 
         shadowInput.addEventListener("input", () => {
             shadowInput.value = shadowInput.value.slice(0, maxPinLength);
-            if (pinKeypad?.getAttribute("data-shuffle") === "true") scramblePin(pinKeypad);
             updatePinDisplay();
         });
-
-
 
         updatePinDisplay();
     });
