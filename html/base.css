@@ -129,13 +129,13 @@ body {
     --primary-color-alt: #e5eff9;
     
     --border-color: #111820;
-    --standard-radius: 0.5rem;
     --input-radius: 0.25rem;
     --input-height: 2.5rem;
 
     --border-width: 1px;
+    --border-radius: 0.5rem;
     --button-border-radius: 1.2rem;
-    --small-border-radius: 0.25rem;
+    --border-radius-minimal: 0.25rem;
 
     --margin: 2rem;
     --padding: 1rem;
@@ -145,6 +145,8 @@ body {
     
     --font-size: 1rem;
     --label-size: 0.9rem;
+    --code-size: 0.9rem;
+
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
 
@@ -157,4 +159,11 @@ body {
 
 .flex-one {
     flex: 1;
+}
+
+code {
+    background-color: var(--alt-color);
+    padding: var(--padding-minimal);
+    border-radius: var(--border-radius-minimal);
+    font-size: var(--code-size);
 }

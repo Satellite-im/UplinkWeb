@@ -4,7 +4,7 @@ input[type="checkbox"] {
     width: var(--checkbox-size);
     height: var(--checkbox-size);
     border: calc(var(--border-width) * 2) solid var(--color);
-    border-radius: var(--small-border-radius);
+    border-radius: var(--border-radius-minimal);
     display: grid;
     place-content: center;
 }

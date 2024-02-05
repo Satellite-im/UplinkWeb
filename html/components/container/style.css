@@ -2,7 +2,7 @@
     display: inline-flex;
     gap: var(--gap);
     position: relative;
-    border-radius: var(--standard-radius);
+    border-radius: var(--border-radius);
     flex: 0 1;
     flex-wrap: wrap;
     align-content: flex-start;
