@@ -1,27 +1,28 @@
 /* Layouts & Globals */
-@import url("/html/layout.css");
-@import url("/html/clear.css");
+@import url(/html/layout.css);
+@import url(/html/clear.css);
 
 /* Element Imports */
-@import url('/html/elements/button/style.css');
-@import url("/html/elements/checkbox/style.css");
-@import url("/html/elements/input/style.css");
-@import url("/html/elements/label/style.css");
-@import url("/html/elements/switch/style.css");
+@import url(/html/elements/button/style.css);
+@import url(/html/elements/checkbox/style.css);
+@import url(/html/elements/input/style.css);
+@import url(/html/elements/label/style.css);
+@import url(/html/elements/switch/style.css);
 
 /* Component Imports */
-@import url("/html/components/container/style.css");
-@import url("/html/components/pin-input/style.css");
-@import url("/html/components/key/style.css");
+@import url(/html/components/container/style.css);
+@import url(/html/components/pin-input/style.css);
+@import url(/html/components/key/style.css);
+@import url(/html/components/profile-picture/style.css);
 
 @font-face {
-    font-family: 'SpaceMono';
-    src: url('/html/font/SpaceMono-Regular.ttf');
+    font-family: "SpaceMono";
+    src: url(/html/font/SpaceMono-Regular.ttf);
 }
 
 body {
     background-color: var(--background);
-    font-family: 'SpaceMono';
+    font-family: "SpaceMono";
     font-size: var(--font-size);
     color: var(--color);
 }
@@ -61,6 +62,7 @@ body {
     --input-height: 2.5rem;
 
     --border-width: 1px;
+    --border-width-more: 4px;
     --border-radius: 0.5rem;
     --button-border-radius: 1.2rem;
     --border-radius-minimal: 0.25rem;
@@ -75,6 +77,7 @@ body {
     --font-size-smaller: 0.85rem;
     --label-size: 0.9rem;
     --code-size: 0.9rem;
+    --profile-picture-size: 4rem;
 
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
