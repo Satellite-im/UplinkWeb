@@ -100,18 +100,19 @@ body {
 }
 
 :root {
-    --background: #222f3e;
+    --background: #222431;
 
     --animation-speed: 0.2s;
     --animation-style: ease;
     
-    --color: #c8d6e5;
-    --color-alt: #111820;
+    --color: #bbc3eb;
+    --color-muted: #52567b;
+    --color-alt: #000;
     
     --focus-color: var(--info-color);
 
-    --alt-color: #12181c;
-    --alt-color-alt: #0b0f11;
+    --alt-color: #353853;
+    --alt-color-alt: #2d2f47;
 
     --success-color: #2ed573;
     --success-color-alt: #33ed80;
@@ -128,8 +129,8 @@ body {
     --primary-color: #c8d6e5;
     --primary-color-alt: #e5eff9;
     
-    --border-color: #111820;
-    --input-radius: 0.25rem;
+    --border-color: #2d2f47;
+
     --input-height: 2.5rem;
 
     --border-width: 1px;

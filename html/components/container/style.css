@@ -11,12 +11,13 @@
     flex-direction: column;
 }
 .container.bordered {
-    border: var(--border-width) solid var(--color);
+    border: var(--border-width) solid var(--border-color);
     padding: var(--padding);
     margin-top: calc(var(--label-size) / 2);
 }
 
 .container .title {
+    color: var(--color-muted);
     position: absolute;
     /* The following two lines are intended to counteract the border and padding inside the container to neatly align things.
     ** I suspect there is some more relating to line heights but for now this looks good enough.
