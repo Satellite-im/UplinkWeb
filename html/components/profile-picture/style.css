@@ -16,7 +16,7 @@
 .profile-picture .status-indicator {
     height: var(--font-size);
     width: var(--font-size);
-    background-color: var(--success-color);
+    background-color: var(--alt-color);
     border-radius: calc(var(--font-size) / 2);
     position: absolute;
     bottom: 0;
@@ -24,6 +24,20 @@
     z-index: 3;
     box-shadow: 0 0 0 var(--border-width-more) var(--background);
 }
+.profile-picture .status-indicator.online {
+    background-color: var(--success-color);
+}
+.profile-picture .status-indicator.idle {
+    background-color: var(--warning-color);
+}
+.profile-picture .status-indicator.offline {
+    background-color: var(--alt-color);
+}
+.profile-picture .status-indicator.do-not-disturb {
+    background-color: var(--danger-color);
+}
+
+
 .profile-picture .badge {
     position: absolute;
     top: 0;
@@ -31,13 +45,12 @@
     color: var(--color-bright);
     background-color: var(--danger-color);
     padding: 0 var(--padding-minimal);
-    font-size: var(--label-size);
+    font-size: var(--font-size-smaller);
     border-radius: var(--border-radius-minimal);
 }
 .profile-picture.highlight-success {
     border: var(--border-width-more) solid var(--success-color);
 }
-
 
 .profile-picture.highlight-info {
     border: var(--border-width-more) solid var(--info-color);
