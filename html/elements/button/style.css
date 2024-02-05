@@ -6,7 +6,7 @@
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--button-border-radius);
     padding: var(--padding-less) var(--padding);
-    font-size: var(--font-size);
+    font-size: var(--font-size-smaller);
     transition: background-color var(--animation-speed) var(--animation-style),
                 color var(--animation-speed) var(--animation-style),
                 border-color var(--animation-speed) var(--animation-style);
