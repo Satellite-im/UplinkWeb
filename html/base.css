@@ -8,6 +8,7 @@
 /* Component Imports */
 @import url("/html/components/container/style.css");
 @import url("/html/components/pin-input/style.css");
+@import url("/html/components/key/style.css");
 
 /* Begin CSS Clear */
 
@@ -156,10 +157,6 @@ body {
 
 .link {
     color: var(--info-color);
-}
-
-.flex-one {
-    flex: 1;
 }
 
 code {
