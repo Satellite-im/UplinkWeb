@@ -63,12 +63,12 @@
 
 @keyframes circle-loader-spin {
     0% {
-        transform: rotate(-90deg);
+        transform: rotate(-70deg);
     }
     50% {
         transform: rotate(170deg);
     }
     100% {
-        transform: rotate(-90deg);
+        transform: rotate(-70deg);
     }
 }
