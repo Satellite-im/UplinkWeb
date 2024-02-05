@@ -45,6 +45,8 @@
 .typing-indicator {
     position: absolute;
     z-index: 2;
+    top: calc(var(--border-width-more) * -1);
+    left: calc(var(--border-width-more) * -1);
     width: var(--profile-picture-size);
     min-width: var(--profile-picture-size);
     height: var(--profile-picture-size);
