@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elements</title>
+    <link rel="stylesheet" type="text/css" href="/html/base.css" />
+    <style type="text/css">
+        body {
+            padding: var(--padding);
+            display: inline-flex;
+            flex-direction: column;
+            gap: calc(var(--gap) * 4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Buttons -->
+    <div class="container bordered">
+        <h2 class="title">Standard Buttons</h2>
+        <!-- Button -->
+        <button class="button" alt="standard-button">
+            Standard Button
+        </button>
+
+        <!-- Alt Button -->
+        <button class="button alt" alt="alt-button">
+            Alt Button
+        </button>
+
+        <!-- Button Success -->
+        <button class="button success" alt="success-button">
+            Success Button
+        </button>
+
+        <!-- Button Info -->
+        <button class="button info" alt="info-button">
+            Info Button
+        </button>
+
+        <!-- Button Danger -->
+        <button class="button danger" alt="danger-button">
+            Danger Button
+        </button>
+    </div>
+    <div class="container bordered">
+        <h2 class="title">Icon / Emoji / Whatever extra content</h2>
+
+        <button class="button" alt="standard-button">
+            🤩 <span>Standard Button</span>
+        </button>
+
+        <button class="button info round" alt="standard-button">
+            🌎
+        </button>
+    </div>
+    
+    <div class="container bordered">
+        <h2 class="title">Outlined Buttons</h2>
+        <!-- Alt Button -->
+        <button class="button alt" alt="alt-button">
+            Alt Button
+        </button>
+
+        <!-- Button Outlined -->
+        <button class="button outlined" alt="outlined-button">
+            Outlined Button
+        </button>
+
+        <!-- Alt Button Outlined -->
+        <button class="button outlined alt" alt="outlined-alt-button">
+            Alt Outlined
+        </button>
+
+        <!-- Success Outlined -->
+        <button class="button outlined success" alt="success-outlined-button">
+            Success Outlined
+        </button>
+
+        <!-- Info Outlined -->
+        <button class="button outlined info" alt="info-outlined-button">
+            Info Outlined
+        </button>
+
+        <!-- Button Danger Outlined -->
+        <button class="button outlined danger" alt="outlined-danger-button">
+            Danger Button
+        </button>
+    </div>
+
+    <!-- Checkbox -->
+    <div class="container bordered">
+        <h2 class="title">Standard Checkboxes</h2>
+        <!-- Unchecked Checkbox -->
+        <div class="inline-flex full-width">
+            <input type="checkbox" id="unchecked-checkbox" />
+            <label class="label" for="unchecked-checkbox">Unchecked</label>
+        </div>
+        <!-- Checked Checkbox -->
+        <div class="inline-flex full-width">
+            <input type="checkbox" id="checked-checkbox" checked />
+            <label class="label" for="checked-checkbox">Checked</label>
+        </div>
+    </div>
+
+    <!-- Switch -->
+    <div class="container bordered">
+        <h2 class="title">Standard Switch</h2>
+        <!-- Switch -->
+        <label class="switch" alt="switch">
+            <input type="checkbox" checked />
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- Inputs -->
+    <div class="container bordered">
+        <h2 class="title">Standard Inputs</h2>
+        <!-- Standard Input -->
+        <div class="input-group">
+            <div class="input-container">
+                <input 
+                    class="input"
+                    type="text"
+                    placeholder="Standard Input..." />
+            </div>
+        </div>
+        <!-- Alt Input -->
+        <div class="input-group alt">
+            <div class="input-container">
+                <input 
+                    class="input"
+                    type="text"
+                    placeholder="Alt Input..." />
+            </div>
+        </div>
+    </div>
+
+    <div class="container bordered">
+        <h2 class="title">Inputs - Highlighting / CTA</h2>
+        <!-- Highlight Info -->
+        <div class="input-group highlight-info alt">
+            <div class="input-container">
+                ℹ <input
+                    class="input"
+                    type="text"
+                    placeholder="Hightlight Info..." />
+            </div>
+        </div>
+        <!-- Highlight Error -->
+        <div class="input-group highlight-error alt">
+            <div class="input-container">
+                ❌ <input 
+                    class="input"
+                    type="text"
+                    placeholder="Hightlight Error..." />
+            </div>
+        </div>
+        <!-- Highlight Warning -->
+        <div class="input-group highlight-warning alt">
+            <div class="input-container">
+                ⚠️ <input 
+                    class="input"
+                    type="text"
+                    placeholder="Hightlight Warning..." />
+            </div>
+        </div>
+        <!-- Highlight Success -->
+        <div class="input-group highlight-success alt">
+            <div class="input-container">
+                ✅ <input 
+                    class="input"
+                    type="text"
+                    placeholder="Hightlight Success..." />
+            </div>
+        </div>
+    </div>
+
+    <div class="container bordered">
+        <h2 class="title">Inputs - Icons & Controls</h2>
+        <!--With Icon -->
+        <div class="input-group">
+            <div class="input-container">
+                🥵 <input 
+                    class="input"
+                    type="text"
+                    placeholder="Standard Input..." />
+            </div>
+        </div>
+
+        <!-- Alt w/ Icon -->
+        <div class="input-group alt">
+            <div class="input-container">
+                ✅ <input 
+                    class="input" 
+                    type="text"  
+                    placeholder="Alt Input..." />
+            </div>
+        </div>
+        <!-- Alt w/ Error & 2 Icons / Controls -->
+        <div class="input-group highlight-error alt">
+            <div class="input-container">
+                ❌ <input 
+                    class="input" 
+                    type="text"  
+                    placeholder="Alt Input..." />
+                ✖️
+            </div>
+        </div>
+    </div>
+</body>
+</html>

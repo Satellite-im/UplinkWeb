@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Components</title>
+    <link rel="stylesheet" type="text/css" href="/html/base.css" />
+    <style type="text/css">
+        body {
+            padding: var(--padding);
+            display: inline-flex;
+            flex-direction: column;
+            gap: calc(var(--gap) * 4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Basic Container -->
+    <div class="container bordered">
+        <h2 class="title">Container Title</h2>
+        <p>This is text inside a container.</p>
+    </div>
+
+    <!-- Keyboard Keys -->
+    <div class="container bordered">
+        <h2 class="title">Keyboard Keys</h2>
+        <div class="key">
+            <span>
+                W
+            </span>
+        </div>
+        <div class="key">
+            <span>
+                A
+            </span>
+        </div>
+        <div class="key">
+            <span>
+                S
+            </span>
+        </div>
+        <div class="key">
+            <span>
+                D
+            </span>
+        </div>
+    </div>
+
+    <!-- Pin Input -->
+    <div class="container bordered">
+        <h2 class="title">Pin Input w/ Scrambled Keypad</h2>
+        <!-- TODO: Allow for setting a min & max pin length. Dynamically grow dots based on this. -->
+        <div 
+            class="pin-input-group"
+            data-min-pin-length="4"
+            data-max-pin-length="6">
+            <div class="pin-group">
+                <div class="pin-display">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <div class="shadow-input">
+                    <input type="number" pattern="[0-9]*" />
+                </div>
+            </div>
+            <div class="pin-keypad" data-shuffle="true">
+                <button class="button alt pin-key" data-digit="1">1</button>
+                <button class="button alt pin-key" data-digit="2">2</button>
+                <button class="button alt pin-key" data-digit="3">3</button>
+                <button class="button alt pin-key" data-digit="4">4</button>
+                <button class="button alt pin-key" data-digit="5">5</button>
+                <button class="button alt pin-key" data-digit="6">6</button>
+                <button class="button alt pin-key" data-digit="7">7</button>
+                <button class="button alt pin-key" data-digit="8">8</button>
+                <button class="button alt pin-key" data-digit="9">9</button>
+                <button class="button alt pin-key" data-digit="0">0</button>
+
+                <button class="button icon danger pin-control" data-control="clear">✖</button>
+                <button class="button icon success pin-control" data-control="submit">➜</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./pin-input/pin-input.js"></script>
+</body>
+</html>
