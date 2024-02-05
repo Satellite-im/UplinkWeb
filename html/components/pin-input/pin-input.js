@@ -30,14 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
             container.removeChild(container.firstChild);
         }
         
-        // Re-add the buttons: shuffled digits, clear button, submit button
+        // Re-add the buttons: shuffled digits
         shuffledDigits.forEach(btn => container.appendChild(btn));
 
         // Re-append control buttons at their specific positions
         if (pinControls.length > 0) {
-            const submitButton = pinControls.find(btn => btn.dataset.control === "submit");
             container.insertBefore(pinControls.find(btn => btn.dataset.control === "clear"), container.lastChild); // Insert before the last digit
-            container.appendChild(submitButton); // Append submit button at the end
+            container.appendChild(pinControls.find(btn => btn.dataset.control === "submit")); // Append submit button at the end
         }
     };
 
