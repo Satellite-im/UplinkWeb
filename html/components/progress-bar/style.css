@@ -7,6 +7,7 @@
     color: var(--color-muted);
 }
 .progress-bar .progress-label {
+    font-family: "Secondary";
     font-size: var(--label-size);
 }
 
@@ -14,7 +15,7 @@
     height: var(--progress-bar-height);
     width: 100%;
     border: var(--border-width) solid var(--border-color);
-    background-color: var(--alt-color);
+    background-color: var(--alt-color-alt);
     border-radius: calc(var(--progress-bar-height) / 2);
 }
 

@@ -1,6 +1,7 @@
 div.key {
 	width: var(--input-height);
 	height: var(--input-height);
+	font-family: "Secondary";
 }
 
 div.key > span {

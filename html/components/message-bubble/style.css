@@ -88,6 +88,7 @@
     justify-content: flex-start;
 }
 .message-container .reaction {
+    font-family: "Secondary";
     border: var(--border-width) solid var(--border-color);
     background-color: var(--alt-color-alt);
     width: fit-content;

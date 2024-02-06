@@ -1,5 +1,6 @@
 
 .progress-button {
+    font-family: "Secondary";
     position: relative;
     margin: var(--border-width-more);
     max-width: var(--input-height);

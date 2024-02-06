@@ -18,16 +18,31 @@
 @import url(/html/components/progress-button/style.css);
 @import url(/html/components/progress-bar/style.css);
 
+/* Layouts */
+@import url(/html/layouts/download-queue/style.css);
+
+
 @font-face {
-    font-family: "SpaceMono";
+    font-family: "Primary";
+    src: url(/assets/font/Poppins-Regular.ttf);
+}
+
+@font-face {
+    font-family: "Secondary";
     src: url(/assets/font/SpaceMono-Regular.ttf);
 }
 
 body {
     background-color: var(--background);
-    font-family: "SpaceMono";
+    font-family: "Primary";
     font-size: var(--font-size);
     color: var(--color);
+}
+
+::selection {
+    color: var(--color-bright);
+    background: var(--highlight-color);
+    border-radius: var(--border-radius);
 }
 
 :root {
@@ -38,16 +53,17 @@ body {
     
     --color: #c8d3f5;
     --color-bright: #fff;
-    --color-muted: #52567b;
+    --color-muted: #7f86c2;
     --color-alt: #000;
     
     --focus-color: var(--info-color);
+    --highlight-color: #4D4DFF;
 
     --primary-color: #4D4DFF;
     --primary-color-alt: #5c5cf8;
 
-    --alt-color: #353853;
-    --alt-color-alt: #2d2f47;
+    --alt-color: #363851;
+    --alt-color-alt: #262739;
 
     --success-color: #2ed573;
     --success-color-alt: #33ed80;
@@ -61,7 +77,8 @@ body {
     --warning-color: #fff200;
     --warning-color-alt: #fcf228;
     
-    --border-color: #0a0a20;
+    --border-color: #111130;
+    --border-color-alt: #1c1c26;
 
     --input-height: 2.5rem;
 

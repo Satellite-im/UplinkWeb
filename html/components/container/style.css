@@ -12,12 +12,13 @@
     flex-direction: column;
 }
 .container.bordered {
-    border: var(--border-width) solid var(--color-muted);
+    border: var(--border-width) solid var(--border-color);
     padding: var(--padding);
     margin-top: calc(var(--label-size) / 2);
 }
 
 .container .title {
+    font-family: "Secondary";
     color: var(--color-muted);
     position: absolute;
     /* The following two lines are intended to counteract the border and padding inside the container to neatly align things.
