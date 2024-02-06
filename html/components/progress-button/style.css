@@ -9,8 +9,8 @@
 .svg {
     pointer-events: none;
     position: absolute;
-    left: calc((var(--border-width-more) * -1) - var(--border-width));
-    top: calc((var(--border-width-more) * -1) - var(--border-width));
+    left: calc((var(--border-width-more) * -1));
+    top: calc((var(--border-width-more) * -1));
 }
 .svg circle {
     stroke-dashoffset: 0;
@@ -25,4 +25,16 @@
 
 .svg.info .bar {
     stroke: var(--info-color);
+}
+.svg.primary .bar {
+    stroke: var(--primary-color);
+}
+.svg.alt .bar {
+    stroke: var(--alt-color);
+}
+.svg.warning .bar {
+    stroke: var(--warning-color);
+}
+.svg.error .bar {
+    stroke: var(--error-color);
 }
