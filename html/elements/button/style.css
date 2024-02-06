@@ -1,7 +1,7 @@
 /* Standard */
 .button {
     height: var(--input-height);
-    color: var(--color-alt);
+    color: var(--color);
     background-color: var(--primary-color);
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--button-border-radius);
@@ -39,6 +39,7 @@
 /* Success */
 .button.success {
     background-color: var(--success-color);
+    color: var(--color-alt);
 }
 .button.success:hover {
     background-color: var(--success-color-alt);
@@ -54,6 +55,7 @@
 
 /* Danger */
 .button.danger {
+    color: var(--color-alt);
     background-color: var(--danger-color);
 }
 .button.danger:hover {

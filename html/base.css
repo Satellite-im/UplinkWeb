@@ -16,6 +16,7 @@
 @import url(/html/components/profile-picture/style.css);
 @import url(/html/components/message-bubble/style.css);
 @import url(/html/components/progress-button/style.css);
+@import url(/html/components/progress-bar/style.css);
 
 @font-face {
     font-family: "SpaceMono";
@@ -35,12 +36,15 @@ body {
     --animation-speed: 0.2s;
     --animation-style: ease;
     
-    --color: #d5dcff;
+    --color: #c8d3f5;
     --color-bright: #fff;
     --color-muted: #52567b;
     --color-alt: #000;
     
     --focus-color: var(--info-color);
+
+    --primary-color: #4D4DFF;
+    --primary-color-alt: #5c5cf8;
 
     --alt-color: #353853;
     --alt-color-alt: #2d2f47;
@@ -56,11 +60,8 @@ body {
     
     --warning-color: #fff200;
     --warning-color-alt: #fcf228;
-
-    --primary-color: #c8d6e5;
-    --primary-color-alt: #e5eff9;
     
-    --border-color: #2d2f47;
+    --border-color: #0a0a20;
 
     --input-height: 2.5rem;
 
@@ -73,7 +74,7 @@ body {
 
     /* Elements */
     --button-border-radius: 1.2rem;
-
+    --progress-bar-height: 0.75rem;
 
     --margin: 2rem;
     --padding: 1rem;

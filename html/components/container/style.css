@@ -12,7 +12,7 @@
     flex-direction: column;
 }
 .container.bordered {
-    border: var(--border-width) solid var(--border-color);
+    border: var(--border-width) solid var(--color-muted);
     padding: var(--padding);
     margin-top: calc(var(--label-size) / 2);
 }

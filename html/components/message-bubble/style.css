@@ -1,5 +1,5 @@
 .message-bubble {
-    background-color: var(--info-color);
+    background-color: var(--primary-color);
     padding: var(--padding-less) var(--padding);
     border-radius: var(--border-radius-more);
     border-bottom-right-radius: var(--border-radius-minimal);
@@ -16,6 +16,7 @@
     border-radius: var(--border-radius-more);
     border-bottom-left-radius: var(--border-radius-minimal);
     align-self: flex-start;
+    color: var(--color);
 }
 
 .message-bubble.reply {
@@ -103,6 +104,12 @@
 }
 
 
+.message-container .message-reactions .reaction.highlight-primary {
+    background-color: var(--primary-color);
+}
+.message-container .message-reactions .reaction.highlight-primary:hover {
+    background-color: var(--primary-color-alt);
+}
 .message-container .message-reactions .reaction.highlight-info {
     background-color: var(--info-color);
 }
