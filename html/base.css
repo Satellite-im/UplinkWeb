@@ -9,6 +9,7 @@
 @import url(/html/elements/label/style.css);
 @import url(/html/elements/switch/style.css);
 @import url(/html/elements/icon/icon.css);
+@import url(/html/elements/select/styles.css);
 
 /* Component Imports */
 @import url(/html/components/container/style.css);
@@ -72,8 +73,8 @@ body {
     --info-color: #1e90ff;
     --info-color-alt: #46a1fd;
 
-    --danger-color: #f53b57;
-    --danger-color-alt: #ef5777;
+    --error-color: #f53b57;
+    --error-color-alt: #ef5777;
     
     --warning-color: #fff200;
     --warning-color-alt: #fcf228;

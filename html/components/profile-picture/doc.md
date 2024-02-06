@@ -12,7 +12,7 @@ It is useful to highlight the profile picture to signify different useful call t
 
 **Warning:** `profile-picture highlight-warning`
 
-**Danger:** `profile-picture highlight-warning`
+**Error:** `profile-picture highlight-warning`
 
 
 ## Activity Indication

@@ -57,13 +57,13 @@
     background-color: var(--info-color-alt);
 }
 
-/* Danger */
-.button.danger {
+/* error */
+.button.error {
     color: var(--color-alt);
-    background-color: var(--danger-color);
+    background-color: var(--error-color);
 }
-.button.danger:hover {
-    background-color: var(--danger-color-alt);
+.button.error:hover {
+    background-color: var(--error-color-alt);
 }
 
 /* Outlined */
@@ -108,14 +108,14 @@
     color: var(--color-alt);
 }
 
-/* Danger Outlined */
-.button.outlined.danger {
+/* error Outlined */
+.button.outlined.error {
     background-color: transparent;
-    border-color: var(--danger-color);
-    color: var(--danger-color);
+    border-color: var(--error-color);
+    color: var(--error-color);
 }
-.button.outlined.danger:hover {
-    background-color: var(--danger-color-alt);
+.button.outlined.error:hover {
+    background-color: var(--error-color-alt);
     color: var(--color-alt);
 }
 

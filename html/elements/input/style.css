@@ -42,7 +42,7 @@
     border-color: var(--info-color);
 }
 .input-group.highlight-error .input-container {
-    border-color: var(--danger-color);
+    border-color: var(--error-color);
 }
 .input-group.highlight-warning .input-container {
     border-color: var(--warning-color);
@@ -61,7 +61,7 @@
     stroke: var(--info-color);
 }
 .input-group.highlight-error .svg-icon path {
-    stroke: var(--danger-color);
+    stroke: var(--error-color);
 }
 .input-group.highlight-warning .svg-icon path {
     stroke: var(--warning-color);

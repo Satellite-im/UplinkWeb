@@ -34,7 +34,7 @@
     background-color: var(--alt-color);
 }
 .profile-picture .status-indicator.do-not-disturb {
-    background-color: var(--danger-color);
+    background-color: var(--error-color);
 }
 
 
@@ -44,7 +44,7 @@
     top: 0;
     right: 0;
     color: var(--color-bright);
-    background-color: var(--danger-color);
+    background-color: var(--error-color);
     padding: 0 var(--padding-minimal);
     font-size: var(--font-size-smaller);
     border-radius: var(--border-radius-minimal);
@@ -61,8 +61,8 @@
     border: var(--border-width-more) solid var(--warning-color);
 }
 
-.profile-picture.highlight-danger {
-    border: var(--border-width-more) solid var(--danger-color);
+.profile-picture.highlight-error {
+    border: var(--border-width-more) solid var(--error-color);
 }
 
 .typing-indicator {
