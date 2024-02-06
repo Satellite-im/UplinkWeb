@@ -77,13 +77,13 @@
     color: var(--color-alt);
 }
 
-/* Secondary Outlined */
-.button.secondary.outlined {
+/* Alt Outlined */
+.button.alt.outlined {
     border-color: var(--border-color);
     color: var(--color);
 }
-.button.secondary.outlined:hover {
-    background-color: var(--secondary-color-alt);
+.button.alt.outlined:hover {
+    background-color: var(--alt-color);
 }
 
 /* Success Outlined */
