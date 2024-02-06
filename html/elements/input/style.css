@@ -39,7 +39,7 @@
     box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
 }
 .input-group.highlight .input-container {
-    border-color: var(--success-color);
+    border-color: var(--info-color);
 }
 .input-group.highlight-error .input-container {
     border-color: var(--danger-color);
@@ -53,3 +53,17 @@
 .input-group.highlight-success .input-container {
     border-color: var(--success-color);
 }
+
+.input-group.highlight-success .svg-icon path {
+    stroke: var(--success-color);
+}
+.input-group.highlight-info .svg-icon path {
+    stroke: var(--info-color);
+}
+.input-group.highlight-error .svg-icon path {
+    stroke: var(--danger-color);
+}
+.input-group.highlight-warning .svg-icon path {
+    stroke: var(--warning-color);
+}
+

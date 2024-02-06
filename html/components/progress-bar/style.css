@@ -15,7 +15,7 @@
     height: var(--progress-bar-height);
     width: 100%;
     border: var(--border-width) solid var(--border-color);
-    background-color: var(--alt-color-alt);
+    background-color: var(--alt-color);
     border-radius: calc(var(--progress-bar-height) / 2);
 }
 

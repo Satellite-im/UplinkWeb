@@ -10,13 +10,17 @@
     transition: background-color var(--animation-speed) var(--animation-style),
                 color var(--animation-speed) var(--animation-style),
                 border-color var(--animation-speed) var(--animation-style);
-    display: inline-flex;
     gap: var(--gap);
-    align-items: center;
+    display: inline-flex;
     justify-content: center;
+    align-items: center;
 }
 .button.icon {
+    padding: unset;
+    min-width: var(--input-height);
+    min-height: var(--input-height);
     max-width: var(--input-height);
+    max-height: var(--input-height);
 }
 .button.round {
     width: var(--input-height);

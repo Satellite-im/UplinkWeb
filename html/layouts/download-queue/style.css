@@ -12,9 +12,8 @@
     color: var(--color);
 }
 .download-queue .file {
-    background-color: var(--alt-color);
     border-radius: var(--border-radius);
-    border: var(--border-width) solid var(--border-color);
+    border: var(--border-width) solid transparent;
     padding: var(--padding-less);
     cursor: pointer;
 }

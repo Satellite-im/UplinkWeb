@@ -8,6 +8,7 @@
 @import url(/html/elements/input/style.css);
 @import url(/html/elements/label/style.css);
 @import url(/html/elements/switch/style.css);
+@import url(/html/elements/icon/icon.css);
 
 /* Component Imports */
 @import url(/html/components/container/style.css);
@@ -53,9 +54,9 @@ body {
     
     --color: #c8d3f5;
     --color-bright: #fff;
-    --color-muted: #7f86c2;
+    --color-muted: #7278ae;
     --color-alt: #000;
-    
+
     --focus-color: var(--info-color);
     --highlight-color: #4D4DFF;
 
@@ -63,7 +64,7 @@ body {
     --primary-color-alt: #5c5cf8;
 
     --alt-color: #363851;
-    --alt-color-alt: #262739;
+    --alt-color-alt: #3f415f;
 
     --success-color: #2ed573;
     --success-color-alt: #33ed80;
@@ -101,6 +102,7 @@ body {
     
     --font-size: 1rem;
     --font-size-smaller: 0.85rem;
+    --icon-size: 1rem;
     --label-size: 0.9rem;
     --code-size: 0.9rem;
     --profile-picture-size: 4rem;
@@ -114,7 +116,6 @@ body {
 .link {
     color: var(--info-color);
 }
-
 code {
     background-color: var(--alt-color);
     padding: var(--padding-minimal);

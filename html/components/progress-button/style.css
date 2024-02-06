@@ -1,16 +1,16 @@
-
 .progress-button {
     font-family: "Secondary";
     position: relative;
     margin: var(--border-width-more);
-    max-width: var(--input-height);
-    max-height: var(--input-height);
+    width: var(--input-height);
+    height: var(--input-height);
+    padding: unset;
 }
 .svg {
     pointer-events: none;
     position: absolute;
-    left: calc(var(--border-width-more) * -1);
-    top: calc(var(--border-width-more) * -1);
+    left: calc((var(--border-width-more) * -1) - var(--border-width));
+    top: calc((var(--border-width-more) * -1) - var(--border-width));
 }
 .svg circle {
     stroke-dashoffset: 0;
@@ -18,7 +18,6 @@
     stroke: var(--alt-color-alt);
     stroke-width: var(--border-width-more);
 }
-
 .svg .bar {
     stroke: var(--color);
     stroke-dashoffset: 70%;
