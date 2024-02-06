@@ -5,6 +5,8 @@
     border-bottom-right-radius: var(--border-radius-minimal);
     width: fit-content;
     align-self: flex-end;
+    align-items: center;
+    justify-content: center;
     display: inline-flex;
     gap: var(--gap);
 }
@@ -18,6 +20,10 @@
 
 .message-bubble.reply {
     font-size: var(--font-size-smaller);
+}
+
+.message-bubble.reply .reply-arrow {
+    opacity: 0.5;
 }
 
 .message-container {

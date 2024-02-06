@@ -1,39 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Progress Button</title>
-    <link rel="stylesheet" type="text/css" href="/html/base.css" />
-    <style type="text/css">
-        body {
-            padding: var(--padding);
-            display: inline-flex;
-            flex-direction: column;
-            gap: calc(var(--gap) * 4);
-        }
-    </style>
-</head>
-<body>
-    <div class="container column">
-        <h1>Progress Button</h1>
-        <p>
-           todo
-        </p>
+<div class="container bordered">
+    <h2 class="title">Progress Button</h2>
+    <div class="progress-button">
+        <button class="button icon">↓</button>
+        <svg class="svg" width="48" height="48" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <circle r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="0"></circle>
+            <circle class="bar" r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="12"></circle>
+        </svg>
     </div>
-    <div class="container bordered">
-        <h2 class="title">Progress Button</h2>
-        <div class="progress-button">
-            <button class="button icon">↓</button>
-            <svg class="svg" width="48" height="48" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                <circle r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="0"></circle>
-                <circle class="bar" r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="12"></circle>
-            </svg>
-        </div>
-        <div class="progress-button">
-            <button class="button alt icon">↓</button>
-            <svg class="svg" width="48" height="48" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                <circle r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="0"></circle>
-                <circle class="bar" r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="12"></circle>
-            </svg>
-        </div>
+    <div class="progress-button">
+        <button class="button alt icon">↓</button>
+        <svg class="svg" width="48" height="48" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <circle r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="0"></circle>
+            <circle class="bar" r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="12"></circle>
+        </svg>
     </div>
-</body>
+</div>

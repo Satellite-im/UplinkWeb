@@ -1,40 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Checkbox</title>
-    <link rel="stylesheet" href="/html/base.css" />
-    <link rel="stylesheet" href="/html/layout.css" />
-    <style type="text/css">
-        body {
-            padding: var(--padding);
-            display: inline-flex;
-            flex-direction: column;
-            gap: calc(var(--gap) * 4);
-        }
-    </style>
-</head>
-<body>
-    <div class="container column">
-        <h1>Checkboxes</h1>
-        <p>
-            Checkboxes are a simple boolean selector. It can be useful to have many of these in a list for settings / permissions and other boolean controls. It's also worth looking at the <a class="link" href="/html/elements/switch/switch.html">Switch Element</a> which functions the same but is displayed differently.
-        </p>
-        <p>
-            Checkboxes should support tab indexing and highlighting for accessability.
-        </p>
+<div class="container bordered">
+    <h2 class="title">Standard Checkboxes</h2>
+    <!-- Unchecked Checkbox -->
+    <div class="inline-flex full-width fit-content">
+        <input type="checkbox" id="unchecked-checkbox" />
+        <label class="label" for="unchecked-checkbox">Unchecked</label>
     </div>
-    <div class="container bordered">
-        <h2 class="title">Standard Checkboxes</h2>
-        <!-- Unchecked Checkbox -->
-        <div class="inline-flex full-width fit-content">
-            <input type="checkbox" id="unchecked-checkbox" />
-            <label class="label" for="unchecked-checkbox">Unchecked</label>
-        </div>
-        <!-- Checked Checkbox -->
-        <div class="inline-flex full-width">
-            <input type="checkbox" id="checked-checkbox" checked />
-            <label class="label" for="checked-checkbox">Checked</label>
-        </div>
+    <!-- Checked Checkbox -->
+    <div class="inline-flex full-width">
+        <input type="checkbox" id="checked-checkbox" checked />
+        <label class="label" for="checked-checkbox">Checked</label>
     </div>
-</body>
-</html>
+</div>

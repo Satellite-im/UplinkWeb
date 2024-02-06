@@ -1,80 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Profile Picture</title>
-    <link rel="stylesheet" type="text/css" href="/html/base.css" />
-    <style type="text/css">
-        body {
-            padding: var(--padding);
-            display: inline-flex;
-            flex-direction: column;
-            gap: calc(var(--gap) * 4);
-        }
-    </style>
-</head>
-<body>
-    <div class="container column">
-        <h1>Profile Picture</h1>
-        <p>
-           Generic profile picture container with options for typing indication, status and highlighting which is useful for indicating voice activity or other CTAs.
-        </p>
+<div class="container bordered">
+    <h2 class="title">Profile Picture Highlight</h2>
+    <div class="profile-picture highlight-info">
+        <img class="profile-image" src="/assets/blue_marble.png" alt="">
+        <div class="status-indicator online"></div>
     </div>
-    <div class="container bordered">
-        <h2 class="title">Profile Picture Highlight</h2>
-        <div class="profile-picture highlight-info">
-            <img class="profile-image" src="/assets/blue_marble.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture highlight-success">
-            <img class="profile-image" src="/assets/jupiter.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture highlight-warning">
-            <img class="profile-image" src="/assets/mars.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture highlight-danger">
-            <img class="profile-image" src="/assets/moon.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
+    <div class="profile-picture highlight-success">
+        <img class="profile-image" src="/assets/jupiter.png" alt="">
+        <div class="status-indicator online"></div>
     </div>
+    <div class="profile-picture highlight-warning">
+        <img class="profile-image" src="/assets/mars.png" alt="">
+        <div class="status-indicator online"></div>
+    </div>
+    <div class="profile-picture highlight-danger">
+        <img class="profile-image" src="/assets/moon.png" alt="">
+        <div class="status-indicator online"></div>
+    </div>
+</div>
 
-    <div class="container bordered">
-        <h2 class="title">Profile Picture Status</h2>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/blue_marble.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/jupiter.png" alt="">
-            <div class="status-indicator offline"></div>
-        </div>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/mars.png" alt="">
-            <div class="status-indicator idle"></div>
-        </div>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/moon.png" alt="">
-            <div class="status-indicator do-not-disturb"></div>
-        </div>
+<div class="container bordered">
+    <h2 class="title">Profile Picture Status</h2>
+    <div class="profile-picture">
+        <img class="profile-image" src="/assets/blue_marble.png" alt="">
+        <div class="status-indicator online"></div>
     </div>
+    <div class="profile-picture">
+        <img class="profile-image" src="/assets/jupiter.png" alt="">
+        <div class="status-indicator offline"></div>
+    </div>
+    <div class="profile-picture">
+        <img class="profile-image" src="/assets/mars.png" alt="">
+        <div class="status-indicator idle"></div>
+    </div>
+    <div class="profile-picture">
+        <img class="profile-image" src="/assets/moon.png" alt="">
+        <div class="status-indicator do-not-disturb"></div>
+    </div>
+</div>
 
-    <div class="container bordered">
-        <h2 class="title">Profile Picture Active</h2>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/pluto.png" alt="">
-            <div class="typing-indicator"></div>
-            <div class="status-indicator online"></div>
-        </div>
+<div class="container bordered">
+    <h2 class="title">Profile Picture Active</h2>
+    <div class="profile-picture">
+        <img class="profile-image" src="/assets/pluto.png" alt="">
+        <div class="typing-indicator"></div>
+        <div class="status-indicator online"></div>
     </div>
+</div>
 
-    <div class="container bordered">
-        <h2 class="title">Profile Picture w/ Badge</h2>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/neptune.png" alt="">
-            <div class="status-indicator online"></div>
-            <label class="badge">3</label>
-        </div>
+<div class="container bordered">
+    <h2 class="title">Profile Picture w/ Badge</h2>
+    <div class="profile-picture">
+        <img class="profile-image" src="/assets/neptune.png" alt="">
+        <div class="status-indicator online"></div>
+        <label class="badge">3</label>
     </div>
-</body>
-</html>
+</div>

@@ -5,6 +5,8 @@
 }
 
 .column-flex {
+    gap: var(--gap);
+    display: inline-flex;
     flex-direction: column;
 }
 

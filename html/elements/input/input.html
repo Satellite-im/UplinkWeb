@@ -1,120 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Input</title>
-    <link rel="stylesheet" href="/html/base.css" />
-    <style type="text/css">
-        body {
-            padding: var(--padding);
-            display: inline-flex;
-            flex-direction: column;
-            gap: calc(var(--gap) * 4);
-        }
-    </style>
-</head>
-<body>
-    <div class="container column">
-        <h1>Inputs</h1>
-        <p>
-            Inputs are wrapped within a special parent which neatly aligns the input inside it, as well as additional content you may choose to place around it such as emoji's, icons or controls (e.g. clear button or view / hide input controls).
-        </p>
-        <p>
-            Inputs should support tab indexing and highlighting for accessability.
-        </p>
-    </div>
-    <div class="container bordered">
-        <h2 class="title">Standard Inputs</h2>
-        <!-- Standard Input -->
-        <div class="input-group">
-            <div class="input-container">
-                <input 
-                    class="input"
-                    type="text"
-                    placeholder="Standard Input..." />
-            </div>
+
+<div class="container bordered">
+    <h2 class="title">Standard Inputs</h2>
+    <!-- Standard Input -->
+    <div class="input-group">
+        <div class="input-container">
+            <input 
+                class="input"
+                type="text"
+                placeholder="Standard Input..." />
         </div>
-        <!-- Alt Input -->
-        <div class="input-group alt">
-            <div class="input-container">
-                <input 
-                    class="input"
-                    type="text"
-                    placeholder="Alt Input..." />
-            </div>
+    </div>
+    <!-- Alt Input -->
+    <div class="input-group alt">
+        <div class="input-container">
+            <input 
+                class="input"
+                type="text"
+                placeholder="Alt Input..." />
+        </div>
+    </div>
+</div>
+
+<div class="container bordered">
+    <h2 class="title">Inputs - Highlighting / CTA</h2>
+    <!-- Highlight Info -->
+    <div class="input-group highlight-info alt">
+        <div class="input-container">
+            ℹ <input
+                class="input"
+                type="text"
+                placeholder="Hightlight Info..." />
+        </div>
+    </div>
+    <!-- Highlight Error -->
+    <div class="input-group highlight-error alt">
+        <div class="input-container">
+            ❌ <input 
+                class="input"
+                type="text"
+                placeholder="Hightlight Error..." />
+        </div>
+    </div>
+    <!-- Highlight Warning -->
+    <div class="input-group highlight-warning alt">
+        <div class="input-container">
+            ⚠️ <input 
+                class="input"
+                type="text"
+                placeholder="Hightlight Warning..." />
+        </div>
+    </div>
+    <!-- Highlight Success -->
+    <div class="input-group highlight-success alt">
+        <div class="input-container">
+            ✅ <input 
+                class="input"
+                type="text"
+                placeholder="Hightlight Success..." />
+        </div>
+    </div>
+</div>
+
+<div class="container bordered">
+    <h2 class="title">Inputs - Icons & Controls</h2>
+    <!--With Icon -->
+    <div class="input-group">
+        <div class="input-container">
+            🥵 <input 
+                class="input"
+                type="text"
+                placeholder="Standard Input..." />
         </div>
     </div>
 
-    <div class="container bordered">
-        <h2 class="title">Inputs - Highlighting / CTA</h2>
-        <!-- Highlight Info -->
-        <div class="input-group highlight-info alt">
-            <div class="input-container">
-                ℹ <input
-                    class="input"
-                    type="text"
-                    placeholder="Hightlight Info..." />
-            </div>
-        </div>
-        <!-- Highlight Error -->
-        <div class="input-group highlight-error alt">
-            <div class="input-container">
-                ❌ <input 
-                    class="input"
-                    type="text"
-                    placeholder="Hightlight Error..." />
-            </div>
-        </div>
-        <!-- Highlight Warning -->
-        <div class="input-group highlight-warning alt">
-            <div class="input-container">
-                ⚠️ <input 
-                    class="input"
-                    type="text"
-                    placeholder="Hightlight Warning..." />
-            </div>
-        </div>
-        <!-- Highlight Success -->
-        <div class="input-group highlight-success alt">
-            <div class="input-container">
-                ✅ <input 
-                    class="input"
-                    type="text"
-                    placeholder="Hightlight Success..." />
-            </div>
+    <!-- Alt w/ Icon -->
+    <div class="input-group alt">
+        <div class="input-container">
+            ✅ <input 
+                class="input" 
+                type="text"  
+                placeholder="Alt Input..." />
         </div>
     </div>
-
-    <div class="container bordered">
-        <h2 class="title">Inputs - Icons & Controls</h2>
-        <!--With Icon -->
-        <div class="input-group">
-            <div class="input-container">
-                🥵 <input 
-                    class="input"
-                    type="text"
-                    placeholder="Standard Input..." />
-            </div>
-        </div>
-
-        <!-- Alt w/ Icon -->
-        <div class="input-group alt">
-            <div class="input-container">
-                ✅ <input 
-                    class="input" 
-                    type="text"  
-                    placeholder="Alt Input..." />
-            </div>
-        </div>
-        <!-- Alt w/ Error & 2 Icons / Controls -->
-        <div class="input-group highlight-error alt">
-            <div class="input-container">
-                ❌ <input 
-                    class="input" 
-                    type="text"  
-                    placeholder="Alt Input..." />
-                ✖️
-            </div>
+    <!-- Alt w/ Error & 2 Icons / Controls -->
+    <div class="input-group highlight-error alt">
+        <div class="input-container">
+            ❌ <input 
+                class="input" 
+                type="text"  
+                placeholder="Alt Input..." />
+            ✖️
         </div>
     </div>
-</body>
-</html>
+</div>

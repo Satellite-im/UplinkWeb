@@ -13,282 +13,51 @@
             gap: calc(var(--gap) * 4);
         }
     </style>
+    <script>
+        function includeHTML() {
+          var z, i, elmnt, file, xhttp;
+          /*loop through a collection of all HTML elements:*/
+          z = document.getElementsByTagName("*");
+          for (i = 0; i < z.length; i++) {
+            elmnt = z[i];
+            /*search for elements with a certain attribute:*/
+            file = elmnt.getAttribute("include-html");
+            if (file) {
+              /*make an HTTP request using the attribute value as the file name:*/
+              xhttp = new XMLHttpRequest();
+              xhttp.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                  if (this.status == 200) {elmnt.innerHTML = this.responseText;}
+                  if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
+                  /*remove the attribute, and call this function once more:*/
+                  elmnt.removeAttribute("include-html");
+                  includeHTML();
+                }
+              }
+              xhttp.open("GET", file, true);
+              xhttp.send();
+              /*exit the function:*/
+              return;
+            }
+          }
+        };
+    </script>
 </head>
 <body>
-    <!-- Basic Container -->
-    <div class="container bordered">
-        <h2 class="title">Container Title</h2>
-        <p>This is text inside a container.</p>
+    <div class="column-flex">
+        <!-- Container -->
+        <div class="column-flex" include-html="/html/components/container/container.html"></div> 
+        <!-- Key -->
+        <div class="column-flex" include-html="/html/components/key/key.html"></div> 
+        <!-- Message Bubble -->
+        <div class="column-flex" include-html="/html/components/message-bubble/message-bubble.html"></div> 
+        <!-- Profile Picture -->
+        <div class="column-flex" include-html="/html/components/profile-picture/profile-picture.html"></div> 
+        <!-- Progress Button -->
+        <div class="column-flex" include-html="/html/components/progress-button/progress-button.html"></div> 
     </div>
-
-    <!-- Keyboard Keys -->
-    <div class="container bordered">
-        <h2 class="title">Keyboard Keys</h2>
-        <div class="key">
-            <span>
-                W
-            </span>
-        </div>
-        <div class="key">
-            <span>
-                A
-            </span>
-        </div>
-        <div class="key">
-            <span>
-                S
-            </span>
-        </div>
-        <div class="key">
-            <span>
-                D
-            </span>
-        </div>
-    </div>
-
-    <!-- Pin Input -->
-    <div class="container bordered">
-        <h2 class="title">Pin Input w/ Scrambled Keypad</h2>
-        <!-- TODO: Allow for setting a min & max pin length. Dynamically grow dots based on this. -->
-        <div 
-            class="pin-input-group"
-            data-min-pin-length="4"
-            data-max-pin-length="6">
-            <div class="pin-group">
-                <div class="pin-display">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-                <div class="shadow-input">
-                    <input type="number" autofocus pattern="[0-9]*" />
-                </div>
-            </div>
-            <div class="pin-keypad" data-shuffle="true">
-                <button class="button alt pin-key" data-digit="1">1</button>
-                <button class="button alt pin-key" data-digit="2">2</button>
-                <button class="button alt pin-key" data-digit="3">3</button>
-                <button class="button alt pin-key" data-digit="4">4</button>
-                <button class="button alt pin-key" data-digit="5">5</button>
-                <button class="button alt pin-key" data-digit="6">6</button>
-                <button class="button alt pin-key" data-digit="7">7</button>
-                <button class="button alt pin-key" data-digit="8">8</button>
-                <button class="button alt pin-key" data-digit="9">9</button>
-                <button class="button alt pin-key" data-digit="0">0</button>
-
-                <button class="button icon danger pin-control" data-control="clear">✖</button>
-                <button class="button icon success pin-control" data-control="submit">➜</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profile Pictures -->
-    <div class="container bordered">
-        <h2 class="title">Profile Picture Status</h2>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/blue_marble.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/jupiter.png" alt="">
-            <div class="status-indicator offline"></div>
-        </div>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/mars.png" alt="">
-            <div class="status-indicator idle"></div>
-        </div>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/moon.png" alt="">
-            <div class="status-indicator do-not-disturb"></div>
-        </div>
-    </div>
-    
-    <div class="container bordered">
-        <h2 class="title">Profile Picture Highlight</h2>
-        <div class="profile-picture highlight-info">
-            <img class="profile-image" src="/assets/blue_marble.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture highlight-success">
-            <img class="profile-image" src="/assets/jupiter.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture highlight-warning">
-            <img class="profile-image" src="/assets/mars.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-        <div class="profile-picture highlight-danger">
-            <img class="profile-image" src="/assets/moon.png" alt="">
-            <div class="status-indicator online"></div>
-        </div>
-    </div>
-
-    <div class="container bordered">
-        <h2 class="title">Profile Picture Active</h2>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/pluto.png" alt="">
-            <div class="typing-indicator"></div>
-            <div class="status-indicator online"></div>
-        </div>
-    </div>
-
-    <div class="container bordered">
-        <h2 class="title">Profile Picture w/ Badge</h2>
-        <div class="profile-picture">
-            <img class="profile-image" src="/assets/neptune.png" alt="">
-            <div class="status-indicator online"></div>
-            <label class="badge">3</label>
-        </div>
-    </div>
-
-    <!-- Messages -->
-    <div class="container bordered column">
-        <h2 class="title">Single Message Bubble</h2>
-        <div class="message-container">
-            <div class="message-bubble">
-                <p>This is text inside a message.</p>
-            </div>
-        </div>
-        <div class="message-container">
-            <div class="message-bubble remote">
-                <p>This is text inside remote a message.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="container bordered column">
-        <h2 class="title">Single Message Reply Bubble</h2>
-        <div class="message-container">
-            <div class="message-bubble reply">
-                <span class="reply-arrow">↪</span>
-                <p>This is a reply to another message.</p>
-            </div>
-        </div>
-        <div class="message-container">
-            <div class="message-bubble reply remote">
-                <p>This is a reply to another message.</p>
-                <span class="reply-arrow">↩</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="container bordered column">
-        <h2 class="title">Single Message Highlights</h2>
-        <div class="message-bubble remote highlight-info">
-            <p>This is text inside a message.</p>
-        </div>
-        <div class="message-bubble remote highlight-success">
-            <p>This is text inside a message.</p>
-        </div>
-        <div class="message-bubble remote highlight-warning">
-            <p>This is text inside a message.</p>
-        </div>
-        <div class="message-bubble remote highlight-danger">
-            <p>This is text inside a message.</p>
-        </div>
-    </div>
-
-    <div class="container bordered column">
-        <h2 class="title">Single Message Bubble w/ Reactions</h2>
-        
-        <div class="message-container">
-            <div class="message-bubble">
-                <p>This is text inside a message.</p>
-            </div>
-            <div class="message-reactions">
-                <div class="reaction">
-                    <span class="emoji">👍</span>
-                    <span class="count">3</span>
-                </div>
-                <div class="reaction highlight-info">
-                    <span class="emoji">🔥</span>
-                    <span class="count">1</span>
-                </div>
-            </div>
-        </div>
-        <div class="message-container">
-            <div class="message-bubble remote">
-                <p>This is text inside remote a message.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="container bordered column">
-        <h2 class="title">Grouped Message Bubble</h2>
-        <div class="message-group">
-            <div class="message-container">
-                <div class="message-bubble">
-                    <p>Silent lake at night</p>
-                </div>
-            </div>
-            <div class="message-container">
-                <div class="message-bubble">
-                    <p>Reflecting stars in its depths</p>
-                </div>
-                <div class="message-reactions">
-                    <div class="reaction">
-                        <span class="emoji">🌎</span>
-                        <span class="count">1</span>
-                    </div>
-                    <div class="reaction">
-                        <span class="emoji">🌕</span>
-                        <span class="count">2</span>
-                    </div>
-                </div>
-            </div>
-            <div class="message-container">
-                <div class="message-bubble">
-                    <p>Space meets earth below.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="message-group remote">
-            <div class="message-container">
-                <div class="message-bubble remote">
-                    <p>Silent space above</p>
-                </div>
-            </div>
-            <div class="message-container">
-                <div class="message-bubble remote">
-                    <p>Stars twinkle in the darkness</p>
-                </div>
-                <div class="message-reactions remote">
-                    <div class="reaction">
-                        <span class="emoji">🪐</span>
-                        <span class="count">5</span>
-                    </div>
-                </div>
-            </div>
-            <div class="message-container">
-                <div class="message-bubble remote">
-                    <p>Endless universe.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Progress Button -->
-    <div class="container bordered">
-        <h2 class="title">Progress Button</h2>
-        <div class="progress-button">
-            <button class="button icon">↓</button>
-            <svg class="svg" width="48" height="48" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                <circle r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="0"></circle>
-                <circle class="bar" r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="12"></circle>
-            </svg>
-        </div>
-        <div class="progress-button">
-            <button class="button alt icon">↓</button>
-            <svg class="svg" width="48" height="48" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                <circle r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="0"></circle>
-                <circle class="bar" r="21.6" cx="24" cy="24" fill="transparent" stroke-dasharray="135.72" stroke-dashoffset="12"></circle>
-            </svg>
-        </div>
-    </div>
-
-    <script src="./pin-input/pin-input.js"></script>
+    <script>
+        includeHTML();
+    </script>
 </body>
 </html>
