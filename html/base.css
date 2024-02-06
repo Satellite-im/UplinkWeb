@@ -15,6 +15,7 @@
 @import url(/html/components/key/style.css);
 @import url(/html/components/profile-picture/style.css);
 @import url(/html/components/message-bubble/style.css);
+@import url(/html/components/progress-button/style.css);
 
 @font-face {
     font-family: "SpaceMono";

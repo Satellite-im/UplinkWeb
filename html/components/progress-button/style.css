@@ -1,0 +1,28 @@
+
+.progress-button {
+    position: relative;
+    margin: var(--border-width-more);
+    max-width: var(--input-height);
+    max-height: var(--input-height);
+}
+.svg {
+    pointer-events: none;
+    position: absolute;
+    left: calc(var(--border-width-more) * -1);
+    top: calc(var(--border-width-more) * -1);
+}
+.svg circle {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--animation-speed) linear;
+    stroke: var(--alt-color-alt);
+    stroke-width: var(--border-width-more);
+}
+
+.svg .bar {
+    stroke: var(--color);
+    stroke-dashoffset: 70%;
+}
+
+.svg.info .bar {
+    stroke: var(--info-color);
+}

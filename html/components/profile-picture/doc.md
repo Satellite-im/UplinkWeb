@@ -30,3 +30,7 @@ You can indicate the status of a user by including the `<div class="status-indic
 **Idle:** `status-indicator idle`
 
 **Do Not Disturb:** `status-indicator do-not-disturb`
+
+## Notification Badge
+
+A notification badge which also includes a number to represent the count of notifications can be applied by adding the `<label class="badge">3</label>` component.
