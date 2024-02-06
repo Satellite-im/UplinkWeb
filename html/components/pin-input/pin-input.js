@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+const pin_input_script = () => {
     // Function to create a dot element, filled or empty based on argument
     const buildDot = filled => `<span class="${filled ? 'dot filled' : 'dot'}"></span>`;
 
@@ -71,4 +71,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updatePinDisplay();
     });
-});
+};

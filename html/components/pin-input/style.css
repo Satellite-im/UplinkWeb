@@ -22,7 +22,7 @@
 .pin-input-group .pin-display .dot {
     width: var(--font-size);
     height: var(--font-size);
-    background-color: var(--primary-color);
+    background-color: var(--color);
     border-radius: 50%;
     border: var(--border-width) solid var(--border-color);
     display: inline-block;

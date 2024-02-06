@@ -40,8 +40,10 @@
               return;
             }
           }
+          pin_input_script();
         };
     </script>
+    <script src="/html/components/pin-input/pin-input.js"></script>
 </head>
 <body>
     <div class="column-flex">
@@ -53,6 +55,8 @@
         <div class="column-flex" include-html="/html/components/message-bubble/message-bubble.html"></div>
         <!-- Key -->
         <div class="column-flex" include-html="/html/components/key/key.html"></div>
+        <!-- Pin Input -->
+        <div class="column-flex" include-html="/html/components/pin-input/pin-input.html"></div>
         <!-- Progress Bar --> 
         <div class="column-flex" include-html="/html/components/progress-bar/progress-bar.html"></div>  
         <!-- Profile Picture -->

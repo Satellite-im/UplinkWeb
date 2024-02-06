@@ -1,35 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Pin Input</title>
-    <link rel="stylesheet" type="text/css" href="/html/base.css" />
-    <style type="text/css">
-        body {
-            padding: var(--padding);
-            display: inline-flex;
-            flex-direction: column;
-            gap: calc(var(--gap) * 4);
-        }
-    </style>
-</head>
-<body>
-    <div class="container column">
-        <h1>Pin Entry</h1>
-        <p>
-            The Pin Entry component is inteded to be used for login or security input purposes.
-            It includes options to display a pin pad for entering digits into the pin input. 
-            Additionally applying the <code>data-shuffle="true"</code> attribute will change the position of the digits on each digit entered to prevent recording a video of someone entering their pin and estimating their pin by tracking their thumb positions on the screen of their device.
-        </p>
-        <p>This component also supports tab indexing and highlighting for accessability.</p>
-        <p>Lastly, the component is designed in a way that password managers can still be used to autofill this input method.</p>
+
+<div class="container bordered">
+    <h2 class="title">Pin Input</h2>
+    <!-- TODO: Allow for setting a min & max pin length. Dynamically grow dots based on this. -->
+    <div 
+        class="pin-input-group"
+        data-min-pin-length="4"
+        data-max-pin-length="8">
+        <div class="pin-display">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+        <div class="shadow-input">
+            <input type="password" autofocus />
+        </div>
     </div>
-    <div class="container bordered">
-        <h2 class="title">Pin Input</h2>
-        <!-- TODO: Allow for setting a min & max pin length. Dynamically grow dots based on this. -->
-        <div 
-            class="pin-input-group"
-            data-min-pin-length="4"
-            data-max-pin-length="8">
+</div>
+
+<div class="container bordered">
+    <h2 class="title">Pin Input w/ Scrambled Keypad</h2>
+    <!-- TODO: Allow for setting a min & max pin length. Dynamically grow dots based on this. -->
+    <div 
+        class="pin-input-group"
+        data-min-pin-length="4"
+        data-max-pin-length="6">
+        <div class="pin-group">
             <div class="pin-display">
                 <span class="dot"></span>
                 <span class="dot"></span>
@@ -38,48 +35,23 @@
                 <span class="dot"></span>
             </div>
             <div class="shadow-input">
-                <input type="password" autofocus />
+                <input type="number" pattern="[0-9]*" />
             </div>
         </div>
-    </div>
+        <div class="pin-keypad" data-shuffle="true">
+            <button class="button alt pin-key" data-digit="1">1</button>
+            <button class="button alt pin-key" data-digit="2">2</button>
+            <button class="button alt pin-key" data-digit="3">3</button>
+            <button class="button alt pin-key" data-digit="4">4</button>
+            <button class="button alt pin-key" data-digit="5">5</button>
+            <button class="button alt pin-key" data-digit="6">6</button>
+            <button class="button alt pin-key" data-digit="7">7</button>
+            <button class="button alt pin-key" data-digit="8">8</button>
+            <button class="button alt pin-key" data-digit="9">9</button>
+            <button class="button alt pin-key" data-digit="0">0</button>
 
-    <div class="container bordered">
-        <h2 class="title">Pin Input w/ Scrambled Keypad</h2>
-        <!-- TODO: Allow for setting a min & max pin length. Dynamically grow dots based on this. -->
-        <div 
-            class="pin-input-group"
-            data-min-pin-length="4"
-            data-max-pin-length="6">
-            <div class="pin-group">
-                <div class="pin-display">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-                <div class="shadow-input">
-                    <input type="number" pattern="[0-9]*" />
-                </div>
-            </div>
-            <div class="pin-keypad" data-shuffle="true">
-                <button class="button alt pin-key" data-digit="1">1</button>
-                <button class="button alt pin-key" data-digit="2">2</button>
-                <button class="button alt pin-key" data-digit="3">3</button>
-                <button class="button alt pin-key" data-digit="4">4</button>
-                <button class="button alt pin-key" data-digit="5">5</button>
-                <button class="button alt pin-key" data-digit="6">6</button>
-                <button class="button alt pin-key" data-digit="7">7</button>
-                <button class="button alt pin-key" data-digit="8">8</button>
-                <button class="button alt pin-key" data-digit="9">9</button>
-                <button class="button alt pin-key" data-digit="0">0</button>
-
-                <button class="button icon danger pin-control" data-control="clear">✖</button>
-                <button class="button icon success pin-control" data-control="submit">➜</button>
-            </div>
+            <button class="button icon danger pin-control" data-control="clear">✖</button>
+            <button class="button icon success pin-control" data-control="submit">➜</button>
         </div>
     </div>
-
-    <script src="./pin-input.js"></script>
-</body>
-</html>
+</div>
