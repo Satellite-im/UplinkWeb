@@ -9,7 +9,7 @@
 @import url(/html/elements/label/style.css);
 @import url(/html/elements/switch/style.css);
 @import url(/html/elements/icon/icon.css);
-@import url(/html/elements/select/styles.css);
+@import url(/html/elements/select/style.css);
 
 /* Component Imports */
 @import url(/html/components/container/style.css);
@@ -19,6 +19,8 @@
 @import url(/html/components/message-bubble/style.css);
 @import url(/html/components/progress-button/style.css);
 @import url(/html/components/progress-bar/style.css);
+@import url(/html/components/meter/style.css);
+@import url(/html/components/coin-balance/style.css);
 
 /* Layouts */
 @import url(/html/layouts/download-queue/style.css);
@@ -94,6 +96,7 @@ body {
     /* Elements */
     --button-border-radius: 1.2rem;
     --progress-bar-height: 0.75rem;
+    --meter-bar-height: 0.5rem;
 
     --margin: 2rem;
     --padding: 1rem;

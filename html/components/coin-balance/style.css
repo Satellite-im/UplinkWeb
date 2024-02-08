@@ -1,0 +1,35 @@
+.coin-balance {
+    display: inline-flex;
+    flex-direction: row;
+    gap: var(--gap);
+    align-items: center;
+    padding: var(--padding-less) var(--padding);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--alt-color);
+}
+.coin-balance .balance {
+    color: var(--color)
+}
+.coin-balance .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--warning-color);
+}
+.coin-balance .icon path {
+    stroke: var(--warning-color);
+}
+
+.coin-balance.highlight-success {
+    border-color: var(--success-color);
+}
+.coin-balance.highlight-info {
+    border-color: var(--info-color);
+}
+.coin-balance.highlight-warning {
+    border-color: var(--warning-color);
+}
+.coin-balance.highlight-error {
+    border-color: var(--error-color);
+}

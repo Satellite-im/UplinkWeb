@@ -2,7 +2,7 @@
     display: inline-flex;
     flex-direction: column;
     gap: var(--gap);
-    background: var(--alt-color-alt);
+    background: var(--alt-color);
     border: var(--border-width) solid var(--border-color);
     padding: var(--padding);
     border-radius: var(--border-radius);
@@ -15,7 +15,7 @@
     border-radius: var(--border-radius);
     border: var(--border-width) solid transparent;
     padding: var(--padding-less);
-    cursor: pointer;
+    background-color: var(--alt-color-alt);
 }
 .download-queue .file:hover {
     border: var(--border-width) solid var(--info-color);
