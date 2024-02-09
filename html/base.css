@@ -10,6 +10,7 @@
 @import url(/html/elements/switch/style.css);
 @import url(/html/elements/icon/icon.css);
 @import url(/html/elements/select/style.css);
+@import url(/html/elements/range-selector/style.css);
 
 /* Component Imports */
 @import url(/html/components/container/style.css);
@@ -97,6 +98,7 @@ body {
     --button-border-radius: 1.2rem;
     --progress-bar-height: 0.75rem;
     --meter-bar-height: 0.5rem;
+    --slider-height: 0.75rem;
 
     --margin: 2rem;
     --padding: 1rem;
@@ -120,6 +122,7 @@ body {
 .link {
     color: var(--info-color);
 }
+
 code {
     background-color: var(--alt-color);
     padding: var(--padding-minimal);

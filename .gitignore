@@ -1,1 +1,6 @@
+# Mac Stuff
 .DS_Store
+
+# Yew
+yew/dist
+yew/target

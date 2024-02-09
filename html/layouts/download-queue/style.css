@@ -7,16 +7,26 @@
     padding: var(--padding);
     border-radius: var(--border-radius);
 }
-.download-queue .title {
+.download-queue .queue-title {
     font-size: var(--label-size);
     color: var(--color);
 }
 .download-queue .file {
     border-radius: var(--border-radius);
     border: var(--border-width) solid transparent;
-    padding: var(--padding-less);
+    padding: var(--padding-less) var(--padding);
     background-color: var(--alt-color-alt);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap);
+}
+.download-queue .file .progress {
+    flex: 1;
 }
 .download-queue .file:hover {
     border: var(--border-width) solid var(--info-color);
+}
+
+.download-queue .file .controls {
+    padding-left: var(--gap);
 }
