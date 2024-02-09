@@ -6,7 +6,7 @@ use crate::enums::Appearance;
 pub struct Props {
     pub text: String,
     pub appearance: Appearance,
-    pub on_press: Callback<Event>,
+    pub on_press: Callback<MouseEvent>,
 }
 
 #[function_component(Button)]
@@ -14,7 +14,7 @@ pub fn butotn(props: &Props) -> Html {
     let Props { text, on_press , appearance} = props.clone();
 
     html! {
-        <button class={format!("button {}", appearance.to_string())} onclick={move |e: Event|  on_press.emit(e)}>
+        <button class={format!("button {}", appearance.to_string())} onclick={move |e: MouseEvent|  on_press.emit(e)}>
             {text}
         </button>
     }
