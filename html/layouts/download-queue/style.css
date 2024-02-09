@@ -13,7 +13,7 @@
 }
 .download-queue .file {
     border-radius: var(--border-radius);
-    border: var(--border-width) solid transparent;
+    border: var(--border-width) solid var(--border-color);
     padding: var(--padding-less) var(--padding);
     background-color: var(--alt-color-alt);
     display: inline-flex;
@@ -26,7 +26,6 @@
 .download-queue .file:hover {
     border: var(--border-width) solid var(--info-color);
 }
-
 .download-queue .file .controls {
     padding-left: var(--gap);
 }
