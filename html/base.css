@@ -25,7 +25,7 @@
 
 /* Layouts */
 @import url(/html/layouts/download-queue/style.css);
-
+@import url(/html/layouts/navigation/style.css);
 
 @font-face {
     font-family: "Primary";

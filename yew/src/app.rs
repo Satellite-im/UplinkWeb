@@ -1,6 +1,5 @@
 use yew::prelude::*;
 
-use crate::{elements::button::Button, enums::Appearance};
 
 #[function_component(App)]
 pub fn app() -> Html {
