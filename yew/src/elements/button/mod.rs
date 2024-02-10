@@ -14,7 +14,7 @@ pub fn button(props: &Props) -> Html {
     let Props { text, on_press , appearance} = props.clone();
 
     html! {
-        <link data-trunk rel="sass" href="style.scss" />
+        <link data-trunk rel="sass" href="index.scss" />
         <button
             class={format!("button {}", appearance.to_string())}
             onclick={move |e: MouseEvent|  on_press.emit(e)}

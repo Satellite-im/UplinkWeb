@@ -36,13 +36,10 @@
     position: relative;
 }
 .button.tooltip:before {
-    content: attr(data-tooltip); /* here's the magic */
+    content: attr(data-tooltip);
     position: absolute;
-    /* vertically center */
-    /* move to right */
     bottom: calc(100% + var(--gap));
     white-space: nowrap;
-    /* basic styles */
     width: fit-content;
     padding: var(--padding-less);
     border-radius: var(--border-radius-minimal);
@@ -51,9 +48,16 @@
     color: var(--color);
     font-size: var(--font-size-smaller);
     text-align: center;
-    display: none; /* hide by default */
+    display: none;
     height: fit-content;
     z-index: 3;
+}
+.button.tooltip-right:before {
+    bottom: unset;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 100%;
+    margin-left: var(--gap);
 }
 .button.tooltip:hover:before {
   display:block;

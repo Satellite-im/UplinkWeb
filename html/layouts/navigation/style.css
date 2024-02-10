@@ -5,6 +5,10 @@
     width: 100%;
 }
 
+.navigation.navigation-vertical {
+    flex-direction: column;
+}
+
 .navigation .navigation-control {
     display: inline-flex;
     flex-direction: column;
