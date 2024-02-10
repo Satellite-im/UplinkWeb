@@ -85,6 +85,8 @@ body {
     --border-color: #111130;
     --border-color-alt: #1c1c26;
 
+    --tooltip-color: #1d1d29;
+
     --input-height: 2.5rem;
 
     /* Border Radius / Corners */

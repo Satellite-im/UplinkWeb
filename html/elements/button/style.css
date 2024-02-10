@@ -31,6 +31,34 @@
     background-color: var(--primary-color-alt);
 }
 
+/* Tooltips */
+.button.tooltip {
+    position: relative;
+}
+.button.tooltip:before {
+    content: attr(data-tooltip); /* here's the magic */
+    position: absolute;
+    /* vertically center */
+    /* move to right */
+    bottom: calc(100% + var(--gap));
+    white-space: nowrap;
+    /* basic styles */
+    width: fit-content;
+    padding: var(--padding-less);
+    border-radius: var(--border-radius-minimal);
+    border: var(--border-width) solid var(--border-color);
+    background:var(--tooltip-color);
+    color: var(--color);
+    font-size: var(--font-size-smaller);
+    text-align: center;
+    display: none; /* hide by default */
+    height: fit-content;
+    z-index: 3;
+}
+.button.tooltip:hover:before {
+  display:block;
+}
+
 /* Secondary */
 .button.alt {
     background-color: var(--alt-color);

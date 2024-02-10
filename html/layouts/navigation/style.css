@@ -1,0 +1,16 @@
+.navigation {
+    display: inline-flex;
+    gap: var(--gap);
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.navigation .navigation-control {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.navigation .navigation-control .label {
+    font-family: "Secondary";
+}
