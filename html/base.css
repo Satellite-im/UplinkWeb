@@ -133,3 +133,34 @@ code {
     border-radius: var(--border-radius-minimal);
     font-size: var(--code-size);
 }
+
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: var(--border-radius);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--alt-color);
+    border-radius: var(--border-radius);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Disable the corner of scrollbars */
+::-webkit-scrollbar-corner {
+background-color: transparent;
+}
+  

@@ -1,5 +1,6 @@
 .range-selector .range {
     -webkit-appearance: none;
+    appearance: none;
     background-color: var(--alt-color);
     height: var(--slider-height);
     overflow: hidden;
