@@ -11,11 +11,13 @@
     gap: var(--gap);
     padding: var(--padding-minimal) var(--gap);
     align-items: center;
+    width: 100%;
 }
 .input-group .input {
     background-color: transparent;
     border: none;
     flex: 1;
+    width: 100%;
 }
 .input-group.alt .input-container {
     background-color: var(--alt-color);

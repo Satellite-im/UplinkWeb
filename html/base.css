@@ -26,6 +26,7 @@
 /* Layouts */
 @import url(/html/layouts/download-queue/style.css);
 @import url(/html/layouts/navigation/style.css);
+@import url(/html/layouts/sidebar/style.css);
 
 @font-face {
     font-family: "Primary";
@@ -117,6 +118,7 @@ body {
 
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
+    --sidebar-width: 230px;
 
     --shadow-depth: 1px;
 }

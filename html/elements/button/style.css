@@ -59,6 +59,16 @@
     left: 100%;
     margin-left: var(--gap);
 }
+.button.tooltip-left:before {
+    bottom: unset;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 100%;
+    margin-right: var(--gap);
+}
+.button.tooltip-bottom:before {
+    top: calc(100% + var(--gap));
+}
 .button.tooltip:hover:before {
   display:block;
 }
