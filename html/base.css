@@ -134,6 +134,7 @@ code {
     font-size: var(--code-size);
 }
 
+/* Scrollbar */
 
 /* width */
 ::-webkit-scrollbar {
