@@ -24,15 +24,15 @@
 - [ ] Profile Popup
 - [x] Progress Bar
 - [x] Progress Button
-- [ ] 
+- [ ] Chat Preview
+- [ ] Color Swatch
 
 ## Layouts
 
 - [x] Navigation
 - [x] Download Queue
 - [x] Sidebar
-- [ ] Sidebar Collapsable
+  - [ ] Sidebar Toggle Functionality
 - [ ] Slimbar
-- [ ] Sidebar Chat
 - [ ] Message Group
 - [ ] Context Menu

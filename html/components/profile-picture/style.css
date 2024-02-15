@@ -6,6 +6,10 @@
     border-radius: calc(var(--profile-picture-size) / 2);
     position: relative;
 }
+.profile-picture.small {
+    height: var(--input-height);
+    width: var(--input-height);
+}
 .profile-picture .profile-image {
     position: absolute;
     border-radius: 50%;
@@ -23,6 +27,10 @@
     right: 0;
     z-index: 3;
     box-shadow: 0 0 0 var(--border-width-more) var(--background);
+}
+.profile-picture.small .status-indicator {
+    height: var(--font-size-smaller);
+    width: var(--font-size-smaller);
 }
 .profile-picture .status-indicator.online {
     background-color: var(--success-color);

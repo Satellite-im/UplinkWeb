@@ -9,6 +9,7 @@
     justify-content: center;
     display: inline-flex;
     gap: var(--gap);
+    color: var(--color-alt);
 }
 
 .message-bubble.remote {

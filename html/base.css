@@ -22,11 +22,13 @@
 @import url(/html/components/progress-bar/style.css);
 @import url(/html/components/meter/style.css);
 @import url(/html/components/coin-balance/style.css);
+@import url(/html/components/color-swatch/style.css);
 
 /* Layouts */
 @import url(/html/layouts/download-queue/style.css);
 @import url(/html/layouts/navigation/style.css);
 @import url(/html/layouts/sidebar/style.css);
+@import url(/html/layouts/toolbar/style.css);
 
 @font-face {
     font-family: "Primary";
@@ -63,7 +65,7 @@ body {
     --color-alt: #000;
 
     --focus-color: var(--info-color);
-    --highlight-color: #f4d1a7;
+    --highlight-color: #1e90ff;
 
     --primary-color: #18dcff;
     --primary-color-alt: #50e1fb;
@@ -88,7 +90,8 @@ body {
 
     --tooltip-color: #1b1b1b;
 
-    --input-height: 2.3rem;
+    --input-height: 2.5rem;
+    --swatch-size: var(--input-height);
 
     /* Border Radius / Corners */
     --border-width: 1px;
