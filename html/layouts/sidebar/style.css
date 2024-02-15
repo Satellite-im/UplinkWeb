@@ -13,10 +13,11 @@
 .sidebar .sidebar-pre {
     width: 100%;
     padding-bottom: var(--padding);
-
+    display: inline-flex;
+    gap: var(--gap);
+    align-items: center;
 }
 .sidebar .navigation {
     justify-content: space-between;
     padding-top: var(--padding);
-    border-top: var(--border-width) solid var(--border-color);
 }

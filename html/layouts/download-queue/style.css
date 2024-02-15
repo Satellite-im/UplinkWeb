@@ -24,7 +24,7 @@
     flex: 1;
 }
 .download-queue .file:hover {
-    border: var(--border-width) solid var(--info-color);
+    border: var(--border-width) solid var(--primary-color);
 }
 .download-queue .file .controls {
     padding-left: var(--gap);

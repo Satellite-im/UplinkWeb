@@ -9,9 +9,10 @@
     background-color: var(--color);
     display: inline-flex;
     gap: var(--gap);
-    padding: var(--padding-minimal) var(--gap);
+    padding: var(--gap);
     align-items: center;
     width: 100%;
+    height: var(--input-height);
 }
 .input-group .input {
     background-color: transparent;

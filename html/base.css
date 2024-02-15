@@ -52,24 +52,24 @@ body {
 }
 
 :root {
-    --background: #222431;
+    --background: #000;
 
     --animation-speed: 0.2s;
     --animation-style: ease;
     
-    --color: #c8d3f5;
+    --color: #d6def4;
     --color-bright: #fff;
-    --color-muted: #7278ae;
+    --color-muted: #b6b5b6;
     --color-alt: #000;
 
     --focus-color: var(--info-color);
-    --highlight-color: #4D4DFF;
+    --highlight-color: #f4d1a7;
 
-    --primary-color: #4D4DFF;
-    --primary-color-alt: #5c5cf8;
+    --primary-color: #18dcff;
+    --primary-color-alt: #50e1fb;
 
-    --alt-color: #363851;
-    --alt-color-alt: #3f415f;
+    --alt-color: #282828;
+    --alt-color-alt: #3e3e3e;
 
     --success-color: #2ed573;
     --success-color-alt: #33ed80;
@@ -83,12 +83,12 @@ body {
     --warning-color: #fff200;
     --warning-color-alt: #fcf228;
     
-    --border-color: #111130;
-    --border-color-alt: #1c1c26;
+    --border-color: #282828;
+    --border-color-alt: #4c4b4b;
 
-    --tooltip-color: #1d1d29;
+    --tooltip-color: #1b1b1b;
 
-    --input-height: 2.5rem;
+    --input-height: 2.3rem;
 
     /* Border Radius / Corners */
     --border-width: 1px;
@@ -118,7 +118,7 @@ body {
 
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
-    --sidebar-width: 230px;
+    --sidebar-width: 260px;
 
     --shadow-depth: 1px;
 }

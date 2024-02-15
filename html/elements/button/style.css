@@ -1,7 +1,7 @@
 /* Standard */
 .button {
     height: var(--input-height);
-    color: var(--color);
+    color: var(--color-alt);
     background-color: var(--primary-color);
     border: var(--border-width) solid var(--border-color);
     border-radius: var(--button-border-radius);
@@ -15,6 +15,10 @@
     justify-content: center;
     align-items: center;
 }
+.button .svg-icon path {
+    stroke: var(--color-alt);
+}
+
 .button.icon {
     padding: unset;
     min-width: var(--input-height);
@@ -77,6 +81,9 @@
 .button.alt {
     background-color: var(--alt-color);
     color: var(--color);
+}
+.button.alt .svg-icon path {
+    stroke: var(--color);
 }
 .button.alt:hover {
     background-color: var(--alt-color-alt);
