@@ -14,6 +14,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    transition: all var(--animation-speed);
 }
 .button .svg-icon path {
     stroke: var(--color-alt);
@@ -52,9 +53,11 @@
     color: var(--color);
     font-size: var(--font-size-smaller);
     text-align: center;
-    display: none;
+    opacity: 0;
+    pointer-events: none;
     height: fit-content;
     z-index: 3;
+    transition: all var(--animation-speed);
 }
 .button.tooltip-right:before {
     bottom: unset;
@@ -74,7 +77,7 @@
     top: calc(100% + var(--gap));
 }
 .button.tooltip:hover:before {
-  display:block;
+    opacity: 1;
 }
 
 /* Secondary */
@@ -126,6 +129,22 @@
     color: var(--color-alt);
 }
 
+/* Transparent */
+.button.transparent {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--color);
+}
+
+.button.button.transparent .svg-icon path {
+    stroke: var(--color);
+}
+
+.button.transparent:hover {
+    background-color: var(--alt-color-alt);
+    border-color: var(--border-color);
+}
+
 /* Alt Outlined */
 .button.alt.outlined {
     border-color: var(--border-color);
@@ -134,6 +153,7 @@
 .button.alt.outlined:hover {
     background-color: var(--alt-color);
 }
+
 
 /* Success Outlined */
 .button.outlined.success {

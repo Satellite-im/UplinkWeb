@@ -23,6 +23,8 @@
 @import url(/html/components/meter/style.css);
 @import url(/html/components/coin-balance/style.css);
 @import url(/html/components/color-swatch/style.css);
+@import url(/html/components/chat-preview/style.css);
+@import url(/html/components/payment/style.css);
 
 /* Layouts */
 @import url(/html/layouts/download-queue/style.css);
@@ -67,23 +69,23 @@ body {
     --focus-color: var(--info-color);
     --highlight-color: #1e90ff;
 
-    --primary-color: #18dcff;
-    --primary-color-alt: #50e1fb;
+    --primary-color: #ffaf5f;
+    --primary-color-alt: #fcb56d;
 
-    --alt-color: #282828;
-    --alt-color-alt: #3e3e3e;
+    --alt-color: #262833;
+    --alt-color-alt: #292b37;
 
-    --success-color: #2ed573;
-    --success-color-alt: #33ed80;
+    --success-color: #4acfab;
+    --success-color-alt: #4edeb8;
 
-    --info-color: #1e90ff;
-    --info-color-alt: #46a1fd;
+    --info-color: #37c7d0;
+    --info-color-alt: #39ccd7;
 
-    --error-color: #f53b57;
-    --error-color-alt: #ef5777;
+    --error-color: #ff6961;
+    --error-color-alt: #fa7069;
     
-    --warning-color: #fff200;
-    --warning-color-alt: #fcf228;
+    --warning-color: #FFFAA0;
+    --warning-color-alt: #fcf8ad;
     
     --border-color: #282828;
     --border-color-alt: #4c4b4b;
@@ -110,26 +112,79 @@ body {
     --padding: 1rem;
     --padding-less: 0.4rem;
     --padding-minimal: 0.25rem;
-    --gap: 0.5rem;
+    --gap: 0.75rem;
+    --gap-more: 1rem;
+    --gap-less: 0.25rem;
     
+    --font-size-max: 3rem;
     --font-size: 1rem;
     --font-size-smaller: 0.85rem;
+    --font-size-smallest: 0.75rem;
     --icon-size: 1rem;
     --label-size: 0.9rem;
     --code-size: 0.9rem;
-    --profile-picture-size: 4rem;
+    --profile-picture-size: 3.5rem;
 
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
-    --sidebar-width: 260px;
+    --sidebar-width: 300px;
 
     --shadow-depth: 1px;
+    --min-scrollable-height: 200px;
+}
+
+.text-muted {
+    color: var(--color-muted);
 }
 
 .link {
     color: var(--info-color);
 }
 
+.username,
+.subtext {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+            line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: var(--font-size-smaller);
+}
+
+.username {
+    font-size: var(--font-size);
+}
+
+.subtext {
+    font-size: var(--font-size-smaller);
+}
+
+
+.hover-text {
+    cursor: default;
+}
+.hover-text:before {
+    content: attr(data-hover-text);
+    position: absolute;
+    width: fit-content;
+    max-width: var(--sidebar-width);
+    padding: var(--padding-less);
+    border-radius: var(--border-radius-minimal);
+    border: var(--border-width) solid var(--border-color);
+    background: var(--tooltip-color);
+    color: var(--color);
+    font-size: var(--font-size-smaller);
+    text-align: start;
+    display: none;
+    height: fit-content;
+    z-index: 100;
+    transform: translateY(var(--font-size));
+    pointer-events: none;
+    transition: all var(--animation-speed);
+}
+.hover-text:hover:before {
+    display:block;
+}
 code {
     background-color: var(--alt-color);
     padding: var(--padding-minimal);
@@ -165,6 +220,6 @@ code {
 
 /* Disable the corner of scrollbars */
 ::-webkit-scrollbar-corner {
-background-color: transparent;
+    background-color: transparent;
 }
   

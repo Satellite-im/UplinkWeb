@@ -24,3 +24,23 @@
     background-color: var(--primary-color);
     border-radius: calc(var(--progress-bar-height) / 2);
 }
+
+.progress-bar.alt .track .bar {
+    background-color: var(--alt-color);
+}
+
+.progress-bar.info .track .bar {
+    background-color: var(--info-color);
+}
+
+.progress-bar.warning .track .bar {
+    background-color: var(--warning-color);
+}
+
+.progress-bar.error .track .bar {
+    background-color: var(--error-color);
+}
+
+.progress-bar.success .track .bar {
+    background-color: var(--success-color);
+}

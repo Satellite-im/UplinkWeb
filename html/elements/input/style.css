@@ -2,6 +2,7 @@
     height: var(--input-height);
     display: inline-flex;
     flex-direction: column;
+    transition: all var(--animation-speed);
 }
 .input-group .input-container {
     border: var(--border-width) solid var(--border-color);
@@ -13,6 +14,8 @@
     align-items: center;
     width: 100%;
     height: var(--input-height);
+    transition: all var(--animation-speed);
+
 }
 .input-group .input {
     background-color: transparent;

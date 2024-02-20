@@ -1,0 +1,16 @@
+.toolbar {
+    display: inline-flex;
+    flex: 1;
+    gap: var(--gap);
+    padding: var(--padding-less);
+    border-bottom: var(--border-width) solid var(--border-color);
+    cursor: default;
+    user-select: none;
+}
+.toolbar .content {
+    flex: 1;
+}
+.toolbar .controls {
+    display: inline-flex;
+    gap: var(--gap);
+}

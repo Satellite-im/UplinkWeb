@@ -24,8 +24,15 @@
 - [ ] Profile Popup
 - [x] Progress Bar
 - [x] Progress Button
-- [ ] Chat Preview
-- [ ] Color Swatch
+- [x] Chat Preview
+- [x] Color Swatch
+- [ ] Verification Code
+- [ ] Volume Slider (Horizontal & Vertical)
+- [ ] Wallet
+- [ ] Payment
+- [ ] Payment Reciept
+- [ ] Payment Recipient
+- [ ] Local Share Drop - A space to click and drag files to share them with local devices running uplink.
 
 ## Layouts
 

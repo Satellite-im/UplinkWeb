@@ -10,6 +10,12 @@
     height: var(--input-height);
     width: var(--input-height);
 }
+.profile-picture.smallest {
+    height: calc(var(--font-size) * 2);
+    min-height: calc(var(--font-size) * 2);
+    width: calc(var(--font-size) * 2);
+    min-width: calc(var(--font-size) * 2);
+}
 .profile-picture .profile-image {
     position: absolute;
     border-radius: 50%;

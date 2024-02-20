@@ -5,7 +5,7 @@
     width: 100%;
 }
 
-.navigation.navigation-vertical {
+.navigation.vertical {
     flex-direction: column;
 }
 
@@ -13,6 +13,15 @@
     display: inline-flex;
     flex-direction: column;
     align-items: center;
+}
+
+.navigation.vertical .navigation-control .button {
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.navigation.vertical.icons .navigation-control .button {
+    justify-content: center;
 }
 
 .navigation .navigation-control .label {

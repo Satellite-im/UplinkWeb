@@ -19,6 +19,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--gap);
+    transition: all var(--animation-speed);
 }
 .download-queue .file .progress {
     flex: 1;

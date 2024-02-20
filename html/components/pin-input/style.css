@@ -13,9 +13,11 @@
     gap: var(--gap);
     justify-content: center;
     padding: var(--padding) 0;
+    
 }
 /* Accessability */
 .pin-group:focus-within .dot {
+    transition: all var(--animation-speed);
     box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
 }
 /* Dots */
@@ -23,6 +25,7 @@
     width: var(--font-size);
     height: var(--font-size);
     background-color: var(--color);
+    transition: all ease var(--animation-speed);
     border-radius: 50%;
     border: var(--border-width) solid var(--border-color);
     display: inline-block;
@@ -71,6 +74,7 @@
     gap: var(--gap);
 }
 .pin-input-group .pin-keypad .pin-key {
+    transition: all ease var(--animation-speed);
     height: var(--input-height);
     width: var(--input-height);
 }

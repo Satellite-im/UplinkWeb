@@ -108,6 +108,7 @@
 
 .message-container .message-reactions .reaction.highlight-primary {
     background-color: var(--primary-color);
+    color: var(--color-alt);
 }
 .message-container .message-reactions .reaction.highlight-primary:hover {
     background-color: var(--primary-color-alt);

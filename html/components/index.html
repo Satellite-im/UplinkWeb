@@ -41,14 +41,20 @@
             }
           }
           pin_input_script();
+          payment_script();
         };
     </script>
     <script src="/html/components/pin-input/pin-input.js"></script>
+    <script src="/html/components/payment/payment.js"></script>
 </head>
 <body>
     <div class="column-flex">
+        <!-- Payment -->
+        <div class="column-flex" include-html="/html/components/payment/payment.html"></div> 
         <!-- Container -->
         <div class="column-flex" include-html="/html/components/container/container.html"></div> 
+        <!-- Chat Preview -->
+        <div class="column-flex" include-html="/html/components/chat-preview/chat-preview.html"></div>
         <!-- Color Swatch -->
         <div class="column-flex" include-html="/html/components/color-swatch/color-swatch.html"></div>
         <!-- Coin Balance -->
