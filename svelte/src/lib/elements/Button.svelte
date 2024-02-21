@@ -3,11 +3,13 @@
 
     export let tooltip: String = "";
     export let text: String = "";
+    export let outline: Boolean = false;
+    export let icon: Boolean = false;
     export let appearance: Appearance = Appearance.Default;
 </script>
 
 <button 
-    class="button {appearance} {tooltip.length > 0 ? tooltip : null}"
+    class="button {appearance} {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip.length > 0 ? "tooltip" : ""}"
     data-tooltip={tooltip}>
         <slot></slot>
         {#if text.length > 0}
@@ -142,8 +144,8 @@
                     color: var(--color-alt);
                 }
 
-                &.success, &.info, &.error {
-                    @each $type in success, info, error {
+                &.alt, &.success, &.info, &.error {
+                    @each $type in alt, success, info, error {
                         &.#{$type} {
                             border-color: var(--#{$type}-color);
                             color: var(--#{$type}-color);
@@ -154,6 +156,11 @@
                             }
                         }
                     }
+                }
+
+
+                &.alt {
+                    color: var(--color) !important;
                 }
             }
 

@@ -21,6 +21,14 @@ body {
     border-radius: var(--border-radius);
 }
 
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-column {
+    flex-direction: column;
+}
 .text-muted {
     color: var(--color-muted);
 }
@@ -109,15 +117,4 @@ code {
 /* Disable the corner of scrollbars */
 ::-webkit-scrollbar-corner {
     background-color: transparent;
-}
-  
-
-.svg-icon {
-    width: var(--icon-size);
-    height: var(--icon-size);
-    min-width: var(--icon-size);
-    min-height: var(--icon-size);
-}
-.svg-icon path {
-    stroke: var(--color);
 }

@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
     export let title = "";
+    export let row: Boolean = false;
 </script>
 
-<div class="container bordered">
+<div class="container bordered {row ? "flex-column" : ""}">
     {#if title.length > 0}
         <h2 class="title">{title}</h2>
     {/if}
