@@ -1,0 +1,123 @@
+@font-face {
+    font-family: "Primary";
+    src: url(../assets/font/Poppins-Regular.ttf);
+}
+
+@font-face {
+    font-family: "Secondary";
+    src: url(../assets/font/SpaceMono-Regular.ttf);
+}
+
+body {
+    background-color: var(--background);
+    font-family: "Primary";
+    font-size: var(--font-size);
+    color: var(--color);
+}
+
+::selection {
+    color: var(--color-bright);
+    background: var(--highlight-color);
+    border-radius: var(--border-radius);
+}
+
+.text-muted {
+    color: var(--color-muted);
+}
+
+.link {
+    color: var(--info-color);
+}
+
+.username,
+.subtext {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+            line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: var(--font-size-smaller);
+}
+
+.username {
+    font-size: var(--font-size);
+}
+
+.subtext {
+    font-size: var(--font-size-smaller);
+}
+
+
+.hover-text {
+    cursor: default;
+}
+.hover-text:before {
+    content: attr(data-hover-text);
+    position: absolute;
+    width: fit-content;
+    max-width: var(--sidebar-width);
+    padding: var(--padding-less);
+    border-radius: var(--border-radius-minimal);
+    border: var(--border-width) solid var(--border-color);
+    background: var(--tooltip-color);
+    color: var(--color);
+    font-size: var(--font-size-smaller);
+    text-align: start;
+    display: none;
+    height: fit-content;
+    z-index: 100;
+    transform: translateY(var(--font-size));
+    pointer-events: none;
+    transition: all var(--animation-speed);
+}
+.hover-text:hover:before {
+    display:block;
+}
+code {
+    background-color: var(--alt-color);
+    padding: var(--padding-minimal);
+    border-radius: var(--border-radius-minimal);
+    font-size: var(--code-size);
+}
+
+/* Scrollbar */
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: var(--border-radius);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--alt-color);
+    border-radius: var(--border-radius);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Disable the corner of scrollbars */
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+  
+
+.svg-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    min-width: var(--icon-size);
+    min-height: var(--icon-size);
+}
+.svg-icon path {
+    stroke: var(--color);
+}

@@ -1,0 +1,1 @@
+<script>import '/src/lib/style/global.scss';</script><slot></slot>
