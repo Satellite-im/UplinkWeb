@@ -5,8 +5,8 @@
     export let alt: Boolean = false;
 </script>
 
-<svg class="svg-icon {alt ? "alt" : ""}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <svelte:element this={icon} />
+<svg class="svg-icon {alt ? "alt" : ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <svelte:element stroke="currentColor" this={icon} class="path"></svelte:element>
 </svg>
 
 <style lang="scss">
@@ -26,6 +26,5 @@
             }
         }
     }
-
 </style>
   

@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Appearance } from "../enums/index";
 
-    export let tooltip: String = "";
-    export let text: String = "";
-    export let outline: Boolean = false;
-    export let icon: Boolean = false;
+    export let tooltip: string = "";
+    export let text: string = "";
+    export let outline: boolean = false;
+    export let icon: boolean = false;
     export let appearance: Appearance = Appearance.Default;
 </script>
 

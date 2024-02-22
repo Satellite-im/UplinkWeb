@@ -17,7 +17,6 @@
         position: relative;
         padding: var(--padding);
         border-radius: var(--border-radius);
-        flex: 0 1;
         flex-wrap: wrap;
         align-content: flex-start;
         width: 100%;
