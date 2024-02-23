@@ -1,6 +1,7 @@
 <script lang="ts">
-    import Icon from "$lib/components/Icon.svelte";
-    import { Shape, type SelectOption, Appearance } from "$lib/enums";
+    import Icon from "$lib/elements/Icon.svelte";
+    import { Shape, Appearance } from "$lib/enums";
+    import type { SelectOption } from "$lib/types";
 
     export let options: Array<SelectOption> = [];
     export let highlight: Appearance = Appearance.Default;

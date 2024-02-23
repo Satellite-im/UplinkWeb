@@ -158,7 +158,6 @@
                     }
                 }
 
-
                 &.alt {
                     color: var(--color) !important;
                 }

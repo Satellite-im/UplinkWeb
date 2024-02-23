@@ -1,175 +1,281 @@
 <script lang="ts">
-    import Icon from "$lib/components/Icon.svelte";
+    import { Appearance, MessagePosition, Shape } from "$lib/enums";
+
+    import Icon from "$lib/elements/Icon.svelte";
     import Input from "$lib/elements/Input.svelte";
     import Switch from "$lib/elements/Switch.svelte";
     import Select from "$lib/elements/Select.svelte";
-    import { Appearance, Shape } from "$lib/enums";
     import Container from "../lib/components/Container.svelte"
     import Button from '../lib/elements/Button.svelte';
+    import Checkbox from "$lib/elements/Checkbox.svelte";
+    import RangeSelector from "$lib/elements/RangeSelector.svelte";
+    import Key from "$lib/components/Key.svelte";
+
+    import Message from "$lib/components/Message.svelte";
+    import MessageGroup from "$lib/components/MessageGroup.svelte";
+    import MessageContainer from "$lib/components/MessageContainer.svelte";
+    import MessageReactions from "$lib/components/MessageReactions.svelte";
 </script>
 
-<!-- Buttons -->
-<Container title="Buttons" row>
-    <Container title="Standard Buttons">
-        <Button
-            text="A Button!"
-            appearance="{Appearance.Default}" /> 
-        <Button 
-            text="An Alt Button!"
-            appearance="{Appearance.Alt}" /> 
-        <Button
-            text="An Info Button!"
-            appearance="{Appearance.Info}" /> 
-        <Button
-            text="An Success Button!"
-            appearance="{Appearance.Success}" /> 
-        <Button
-            text="An Warning Button!"
-            appearance="{Appearance.Warning}" /> 
-        <Button
-            text="An Error Button!"
-            appearance="{Appearance.Error}" /> 
+<Container title="Elements" row>
+    <!-- Buttons -->
+    <Container title="Buttons" row>
+        <Container title="Standard Buttons">
+            <Button
+                text="A Button!"
+                appearance="{Appearance.Default}" /> 
+            <Button 
+                text="An Alt Button!"
+                appearance="{Appearance.Alt}" /> 
+            <Button
+                text="An Info Button!"
+                appearance="{Appearance.Info}" /> 
+            <Button
+                text="An Success Button!"
+                appearance="{Appearance.Success}" /> 
+            <Button
+                text="An Warning Button!"
+                appearance="{Appearance.Warning}" /> 
+            <Button
+                text="An Error Button!"
+                appearance="{Appearance.Error}" /> 
+        </Container>
+
+        <Container title="Outlined Buttons">
+            <Button
+                text="A Button!"
+                outline
+                appearance="{Appearance.Default}" /> 
+            <Button 
+                text="An Alt Button!"
+                outline
+                appearance="{Appearance.Alt}" /> 
+            <Button
+                text="An Info Button!"
+                outline
+                appearance="{Appearance.Info}" /> 
+            <Button
+                text="An Success Button!"
+                outline
+                appearance="{Appearance.Success}" /> 
+            <Button
+                text="An Warning Button!"
+                outline
+                appearance="{Appearance.Warning}" /> 
+            <Button
+                text="An Error Button!"
+                outline
+                appearance="{Appearance.Error}" /> 
+        </Container>
+
+        <Container title="Emoji & Icon Buttons">
+            <Button
+                text="A Button!"
+                outline
+                appearance="{Appearance.Default}">
+                🪐
+            </Button>
+
+            <Button icon>
+                <Icon alt icon={Shape.XMark} />
+            </Button>
+        </Container>
+
+        <Container title="Button with Tooltip">
+            <Button
+                text="Hover Me"
+                tooltip="Hey, you!"
+                outline
+                appearance="{Appearance.Default}">
+            </Button>
+        </Container>
     </Container>
 
-    <Container title="Outlined Buttons">
-        <Button
-            text="A Button!"
-            outline
-            appearance="{Appearance.Default}" /> 
-        <Button 
-            text="An Alt Button!"
-            outline
-            appearance="{Appearance.Alt}" /> 
-        <Button
-            text="An Info Button!"
-            outline
-            appearance="{Appearance.Info}" /> 
-        <Button
-            text="An Success Button!"
-            outline
-            appearance="{Appearance.Success}" /> 
-        <Button
-            text="An Warning Button!"
-            outline
-            appearance="{Appearance.Warning}" /> 
-        <Button
-            text="An Error Button!"
-            outline
-            appearance="{Appearance.Error}" /> 
+
+    <!-- Inputs -->
+    <Container title="Inputs" row>
+        <Container title="Standard Input">
+            <Input
+                placeholder="Type something . . ." />
+            <Input 
+                alt
+                placeholder="Type something . . ." />
+        </Container>
+
+        <Container title="Highlight Input">
+            <Input
+                alt
+                highlight={Appearance.Success}
+                placeholder="Highlight Success . . ." />
+            <Input
+                alt
+                highlight={Appearance.Info}
+                placeholder="Highlight Info . . ." />
+            <Input
+                alt
+                highlight={Appearance.Warning}
+                placeholder="Highlight Warning . . ." />
+            <Input
+                alt
+                highlight={Appearance.Error}
+                placeholder="Highlight Error . . ." />
+        </Container>
+
+        <Container title="Add Icons">
+            <Input
+                alt
+                placeholder="Icon . . .">
+                <Icon icon={Shape.Beaker} />
+            </Input>
+            <Input
+                alt
+                highlight={Appearance.Info}
+                placeholder="Icon . . .">
+                <Icon icon={Shape.Beaker} />
+            </Input>
+        </Container>
     </Container>
 
-    <Container title="Emoji & Icon Buttons">
-        <Button
-            text="A Button!"
-            outline
-            appearance="{Appearance.Default}">
-            🪐
-        </Button>
-
-        <Button icon>
-            <Icon alt icon={Shape.XMark} />
-        </Button>
+    <!-- Switch -->
+    <Container title="Switch" row>
+        <Container title="Standard">
+            <Switch on /> <!-- TODO: This isn't working for some reason -->
+            <Switch />
+        </Container>
     </Container>
 
-    <Container title="Button with Tooltip">
-        <Button
-            text="Hover Me"
-            tooltip="Hey, you!"
-            outline
-            appearance="{Appearance.Default}">
-        </Button>
+    <!-- Select -->
+    <Container title="Select" row>
+        <Container title="Standard">
+            <Select alt options={[
+                { value: "default", text: "Default" },
+                { value: "night", text: "Night-time" },
+                { value: "light", text: "Day-time" },
+                { value: "sunset", text: "Sunset" },
+            ]}/>
+            <Select options={[
+                    { value: "default", text: "Default" },
+                    { value: "night", text: "Night-time" },
+                    { value: "light", text: "Day-time" },
+                    { value: "sunset", text: "Sunset" },
+                ]}/>
+        </Container>
+        <Container title="Highlight">
+            <Select 
+                highlight={Appearance.Info}
+                alt
+                options={[
+                    { value: "default", text: "Default" },
+                    { value: "night", text: "Night-time" },
+                    { value: "light", text: "Day-time" },
+                    { value: "sunset", text: "Sunset" },
+                ]}/>
+
+            <Select 
+                highlight={Appearance.Success}
+                alt
+                options={[
+                    { value: "default", text: "Default" },
+                    { value: "night", text: "Night-time" },
+                    { value: "light", text: "Day-time" },
+                    { value: "sunset", text: "Sunset" },
+                ]}/>
+
+            <Select 
+                highlight={Appearance.Warning}
+                alt
+                options={[
+                    { value: "default", text: "Default" },
+                    { value: "night", text: "Night-time" },
+                    { value: "light", text: "Day-time" },
+                    { value: "sunset", text: "Sunset" },
+                ]}/>
+
+            <Select
+                highlight={Appearance.Error}
+                alt
+                options={[
+                    { value: "default", text: "Default" },
+                    { value: "night", text: "Night-time" },
+                    { value: "light", text: "Day-time" },
+                    { value: "sunset", text: "Sunset" },
+                ]}/>
+        </Container>
+    </Container>
+
+    <!-- Checkbox -->
+    <Container title="Checkbox" row>
+        <Container title="Standard">
+            <Checkbox checked />
+            <Checkbox />
+        </Container>
+    </Container>
+
+    <!-- Range Selector -->
+    <Container title="Range Selection" row>
+        <Container title="Standard">
+            <RangeSelector
+                min={1}
+                max={100} 
+                value={50} />
+        </Container>
     </Container>
 </Container>
 
-
-<!-- Inputs -->
-<Container title="Inputs" row>
-    <Container title="Standard Input">
-        <Input placeholder="Type something . . ." />
-        
-        <Input alt placeholder="Type something . . ." />
+<Container title="Components" row>
+    <Container title="Keyboard Keys">
+        <Key character="W" />
+        <Key character="A" />
+        <Key character="S" />
+        <Key character="D" />
     </Container>
+    <Container title="Messages">
+        <MessageGroup>
+            <MessageContainer>
+                <Message position={MessagePosition.First}>Hello, world!</Message>
+                <MessageReactions reactions={[
+                    {
+                        emoji: "🔥",
+                        highlight: Appearance.Primary,
+                        count: 3,
+                    },
+                    {
+                        emoji: "🌎",
+                        highlight: Appearance.Default,
+                        count: 2,
+                    }
+                ]}/>
+            </MessageContainer>
+            <MessageContainer>
+                <Message>This is another message.</Message>
+            </MessageContainer>
+            <MessageContainer>
+                <Message position={MessagePosition.Last}>And one last message!</Message>
+            </MessageContainer>
+        </MessageGroup>
 
-    <Container title="Highlight Input">
-        <Input alt highlight={Appearance.Success} placeholder="Highlight Success . . ." />
-        <Input alt highlight={Appearance.Info} placeholder="Highlight Info . . ." />
-        <Input alt highlight={Appearance.Warning} placeholder="Highlight Warning . . ." />
-        <Input alt highlight={Appearance.Error} placeholder="Highlight Error . . ." />
-    </Container>
-
-    <Container title="Add Icons">
-        <Input alt placeholder="Icon . . .">
-            <Icon icon={Shape.Beaker} />
-        </Input>
-        <Input alt highlight={Appearance.Info} placeholder="Icon . . .">
-            <Icon icon={Shape.Beaker} />
-        </Input>
-    </Container>
-</Container>
-
-<!-- Switch -->
-<Container title="Switch" row>
-    <Container title="Standard">
-        <Switch on /> <!-- TODO: This isn't working for some reason -->
-        <Switch />
-    </Container>
-</Container>
-
-<!-- Select -->
-<Container title="Select" row>
-    <Container title="Standard">
-        <Select alt options={[
-            { value: "default", text: "Default" },
-            { value: "night", text: "Night-time" },
-            { value: "light", text: "Day-time" },
-            { value: "sunset", text: "Sunset" },
-        ]}/>
-        <Select options={[
-                { value: "default", text: "Default" },
-                { value: "night", text: "Night-time" },
-                { value: "light", text: "Day-time" },
-                { value: "sunset", text: "Sunset" },
-            ]}/>
-    </Container>
-    <Container title="Highlight">
-        <Select 
-            highlight={Appearance.Info}
-            alt
-            options={[
-                { value: "default", text: "Default" },
-                { value: "night", text: "Night-time" },
-                { value: "light", text: "Day-time" },
-                { value: "sunset", text: "Sunset" },
-            ]}/>
-
-        <Select 
-            highlight={Appearance.Success}
-            alt
-            options={[
-                { value: "default", text: "Default" },
-                { value: "night", text: "Night-time" },
-                { value: "light", text: "Day-time" },
-                { value: "sunset", text: "Sunset" },
-            ]}/>
-
-        <Select 
-            highlight={Appearance.Warning}
-            alt
-            options={[
-                { value: "default", text: "Default" },
-                { value: "night", text: "Night-time" },
-                { value: "light", text: "Day-time" },
-                { value: "sunset", text: "Sunset" },
-            ]}/>
-
-        <Select
-            highlight={Appearance.Error}
-            alt
-            options={[
-                { value: "default", text: "Default" },
-                { value: "night", text: "Night-time" },
-                { value: "light", text: "Day-time" },
-                { value: "sunset", text: "Sunset" },
-            ]}/>
+        <MessageGroup remote>
+            <MessageContainer>
+                <Message remote position={MessagePosition.First}>Hello humans.</Message>
+                <MessageReactions remote reactions={[
+                    {
+                        emoji: "👽",
+                        highlight: Appearance.Default,
+                        count: 2,
+                    },
+                    {
+                        emoji: "👀",
+                        highlight: Appearance.Default,
+                        count: 1,
+                    }
+                ]}/>
+            </MessageContainer>
+            <MessageContainer>
+                <Message remote>I am not an alien.</Message>
+            </MessageContainer>
+            <MessageContainer>
+                <Message remote position={MessagePosition.Last}>Unless I am, oOoo who knows!?</Message>
+            </MessageContainer>
+        </MessageGroup>
     </Container>
 </Container>

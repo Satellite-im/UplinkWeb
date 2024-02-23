@@ -4,7 +4,8 @@ export const enum Appearance {
     Success     = "success",
     Info        = "info",
     Warning     = "warning",
-    Error       = "error"
+    Error       = "error",
+    Primary     = "Primary"
 }
 
 export const enum Shape {
@@ -13,7 +14,8 @@ export const enum Shape {
     ChevronDown = '<path d="M19.5 8.25L12 15.75L4.5 8.25" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
 }
 
-export type SelectOption = {
-    value: string,
-    text: string
+export const enum MessagePosition {
+    First    = "first",
+    Middle   = "middle",
+    Last     = "last"
 }

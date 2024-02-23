@@ -1,0 +1,91 @@
+<script lang="ts">
+    import { MessagePosition } from "$lib/enums";
+
+    export let remote: boolean = false;
+    export let position: MessagePosition = MessagePosition.Middle;
+</script>
+
+<div class="message-bubble {remote ? "remote" : "local"} {position}">
+    <slot></slot>
+</div>
+
+<style lang="scss">
+    .message-bubble {
+        background-color: var(--primary-color);
+        padding: var(--padding-less) var(--padding);
+        border-radius: var(--border-radius-more);
+        border-bottom-right-radius: var(--border-radius-minimal);
+        width: fit-content;
+        align-self: flex-end;
+        align-items: center;
+        justify-content: center;
+        display: inline-flex;
+        gap: var(--gap);
+        color: var(--color-alt);
+
+        &.remote {
+            background-color: var(--alt-color);
+            border-radius: var(--border-radius-more);
+            border-bottom-left-radius: var(--border-radius-minimal);
+            align-self: flex-start;
+            color: var(--color);
+        }
+
+        &.reply {
+            font-size: var(--font-size-smaller);
+
+            .reply-arrow {
+                opacity: 0.5;
+            }
+        }
+
+        &.highlight-success {
+            border: var(--border-width) solid var(--success-color);
+        }
+
+        &.highlight-info {
+            border: var(--border-width) solid var(--info-color);
+        }
+
+        &.highlight-warning {
+            border: var(--border-width) solid var(--warning-color);
+        }
+
+        &.highlight-error {
+            border: var(--border-width) solid var(--error-color);
+        }
+
+        &.first {
+            border-radius: var(--border-radius-more);
+            border-bottom-right-radius: var(--border-radius-minimal);
+        }
+
+        &.middle {
+            border-radius: var(--border-radius-more);
+            border-top-right-radius: var(--border-radius-minimal);
+            border-bottom-right-radius: var(--border-radius-minimal);
+        }
+
+        &.last {
+            border-radius: var(--border-radius-more);
+            border-top-right-radius: var(--border-radius-minimal);
+        }
+
+        &.first.remote,
+        &.middle.remote,
+        &.last.remote {
+            border-radius: var(--border-radius-more);
+            border-bottom-left-radius: var(--border-radius-minimal);
+        }
+
+
+        &.middle.remote {
+            border-top-left-radius: var(--border-radius-minimal);
+        }
+
+        &.last.remote {
+            border-top-left-radius: var(--border-radius-minimal);
+            border-bottom-left-radius: var(--border-radius-more);
+        }
+    }
+</style>
