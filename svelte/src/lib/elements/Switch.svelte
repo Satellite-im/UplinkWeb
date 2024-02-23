@@ -1,9 +1,9 @@
 <script lang="ts">
-    export let checked: boolean = false;
+    export let on: boolean = false;
 </script>
 
 <label class="switch">
-    <input type="checkbox" checked={checked} />
+    <input type="checkbox" bind:checked={on} />
     <span class="slider"></span>
 </label>
 

@@ -1,12 +1,16 @@
 <script lang="ts">
     import Icon from "$lib/components/Icon.svelte";
-    import { Shape, type SelectOption } from "$lib/enums";
+    import { Shape, type SelectOption, Appearance } from "$lib/enums";
 
     export let options: Array<SelectOption> = [];
+    export let highlight: Appearance = Appearance.Default;
+    export let alt: boolean = false;
+
+    let selected: string;
 </script>
 
-<div class="select-group">
-    <select name="generic-select" class="select">
+<div class="select-group {highlight !== null ? `highlight-${highlight}` : ""} {alt ? "alt" : ""}">
+    <select name="generic-select" class="select" bind:value={selected}>
         {#each options as option}
             <option value={option.value}>{option.text}</option>
         {/each}
@@ -17,8 +21,8 @@
 <style lang="scss">
     .select-group {
         height: var(--input-height);
-        color: var(--color);
-        background-color: var(--alt-color);
+        color: var(--color-alt);
+        background-color: var(--color);
         border: var(--border-width) solid var(--border-color);
         border-radius: var(--button-border-radius);
         padding: 0 var(--padding);
@@ -34,7 +38,7 @@
             pointer-events: all;
             appearance: none;
             height: var(--input-height);
-            color: var(--color);
+            color: var(--color-alt);
             background-color: transparent;
             margin-right: calc((var(--icon-size) + var(--gap)) * -1);
             border: none;
@@ -46,13 +50,14 @@
             outline: none;
             cursor: pointer;
             margin-left: calc(var(--padding) * -1);
+        }
 
-            &::after {
-                content: "";
-                width: 0.8em;
-                height: 0.5em;
-                background-color: var(--color);
-                clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+        &.alt {
+            color: var(--color);
+            background-color: var(--alt-color);
+
+            .select {
+                color: var(--color);
             }
         }
 

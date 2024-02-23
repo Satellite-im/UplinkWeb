@@ -15,6 +15,7 @@ body {
     color: var(--color);
     display: inline-flex;
     flex-direction: column;
+    gap: var(--gap);
 }
 
 ::selection {

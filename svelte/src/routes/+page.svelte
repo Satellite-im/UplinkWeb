@@ -110,14 +110,62 @@
 <!-- Switch -->
 <Container title="Switch" row>
     <Container title="Standard">
-        <Switch checked={true} />
+        <Switch on /> <!-- TODO: This isn't working for some reason -->
+        <Switch />
     </Container>
 </Container>
 
 <!-- Select -->
 <Container title="Select" row>
     <Container title="Standard">
+        <Select alt options={[
+            { value: "default", text: "Default" },
+            { value: "night", text: "Night-time" },
+            { value: "light", text: "Day-time" },
+            { value: "sunset", text: "Sunset" },
+        ]}/>
         <Select options={[
+                { value: "default", text: "Default" },
+                { value: "night", text: "Night-time" },
+                { value: "light", text: "Day-time" },
+                { value: "sunset", text: "Sunset" },
+            ]}/>
+    </Container>
+    <Container title="Highlight">
+        <Select 
+            highlight={Appearance.Info}
+            alt
+            options={[
+                { value: "default", text: "Default" },
+                { value: "night", text: "Night-time" },
+                { value: "light", text: "Day-time" },
+                { value: "sunset", text: "Sunset" },
+            ]}/>
+
+        <Select 
+            highlight={Appearance.Success}
+            alt
+            options={[
+                { value: "default", text: "Default" },
+                { value: "night", text: "Night-time" },
+                { value: "light", text: "Day-time" },
+                { value: "sunset", text: "Sunset" },
+            ]}/>
+
+        <Select 
+            highlight={Appearance.Warning}
+            alt
+            options={[
+                { value: "default", text: "Default" },
+                { value: "night", text: "Night-time" },
+                { value: "light", text: "Day-time" },
+                { value: "sunset", text: "Sunset" },
+            ]}/>
+
+        <Select
+            highlight={Appearance.Error}
+            alt
+            options={[
                 { value: "default", text: "Default" },
                 { value: "night", text: "Night-time" },
                 { value: "light", text: "Day-time" },
