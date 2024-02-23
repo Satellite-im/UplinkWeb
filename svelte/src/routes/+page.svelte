@@ -1,6 +1,8 @@
 <script lang="ts">
     import Icon from "$lib/components/Icon.svelte";
     import Input from "$lib/elements/Input.svelte";
+    import Switch from "$lib/elements/Switch.svelte";
+    import Select from "$lib/elements/Select.svelte";
     import { Appearance, Shape } from "$lib/enums";
     import Container from "../lib/components/Container.svelte"
     import Button from '../lib/elements/Button.svelte';
@@ -102,5 +104,24 @@
         <Input alt highlight={Appearance.Info} placeholder="Icon . . .">
             <Icon icon={Shape.Beaker} />
         </Input>
+    </Container>
+</Container>
+
+<!-- Switch -->
+<Container title="Switch" row>
+    <Container title="Standard">
+        <Switch checked={true} />
+    </Container>
+</Container>
+
+<!-- Select -->
+<Container title="Select" row>
+    <Container title="Standard">
+        <Select options={[
+                { value: "default", text: "Default" },
+                { value: "night", text: "Night-time" },
+                { value: "light", text: "Day-time" },
+                { value: "sunset", text: "Sunset" },
+            ]}/>
     </Container>
 </Container>

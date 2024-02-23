@@ -19,7 +19,6 @@
         border-radius: var(--border-radius);
         flex-wrap: wrap;
         align-content: flex-start;
-        width: 100%;
 
         &.column {
             flex-direction: column;

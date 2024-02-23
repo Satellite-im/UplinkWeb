@@ -13,6 +13,8 @@ body {
     font-family: "Primary";
     font-size: var(--font-size);
     color: var(--color);
+    display: inline-flex;
+    flex-direction: column;
 }
 
 ::selection {
