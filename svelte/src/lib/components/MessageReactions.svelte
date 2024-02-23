@@ -8,6 +8,9 @@
 <div class="message-reactions {remote ? "remote" : "local"}">
     {#each reactions as reaction}
         <div class="reaction highlight-{reaction.highlight.toLowerCase()}">
+            <div class="reaction-hover">
+                {reaction.emoji} <span class="description">{reaction.description}</span>
+            </div>
             <span class="emoji">{reaction.emoji}</span>
             <span class="count">{reaction.count}</span>
         </div>
@@ -25,6 +28,7 @@
         }
 
         .reaction {
+            position: relative;
             font-family: "Secondary";
             border: var(--border-width) solid var(--border-color);
             background-color: var(--alt-color-alt);
@@ -38,8 +42,35 @@
             align-items: center;
             user-select: none;
 
+            .reaction-hover {
+                position: absolute;
+                z-index: 2;
+                font-size: var(--font-size-large);
+                font-family: "Secondary";
+                bottom: calc(100% + var(--gap-less));
+                left: 50%;
+                transform: translate(-50%, 0);
+                padding: 0 var(--padding-less);
+                background-color: var(--alt-color);
+                border-radius: var(--border-radius);
+                display: none;
+                flex-direction: row;
+                white-space: nowrap;
+                align-items: center;
+                color: var(--color);
+                gap: var(--gap);
+
+                .description {
+                    font-size: var(--label-size);
+                }
+            }
+
             &:hover {
                 background-color: var(--alt-color);
+
+                .reaction-hover {
+                    display: inline-flex;
+                }
             }
 
             @each $type in primary, success, info, error {

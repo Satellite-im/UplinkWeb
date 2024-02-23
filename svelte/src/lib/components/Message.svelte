@@ -2,11 +2,19 @@
     import { MessagePosition } from "$lib/enums";
 
     export let remote: boolean = false;
+    export let reply: boolean = false;
+    export let localSide: boolean = false;
     export let position: MessagePosition = MessagePosition.Middle;
 </script>
 
-<div class="message-bubble {remote ? "remote" : "local"} {position}">
+<div class="message-bubble {remote ? "remote" : "local"} {position} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
+    {#if reply && remote}
+        <span class="reply-arrow">↪</span>
+    {/if}
     <slot></slot>
+    {#if reply && !remote}
+        <span class="reply-arrow">↩</span>
+    {/if}
 </div>
 
 <style lang="scss">
@@ -33,6 +41,10 @@
 
         &.reply {
             font-size: var(--font-size-smaller);
+
+            &.position-local {
+                align-self: flex-end;
+            }
 
             .reply-arrow {
                 opacity: 0.5;

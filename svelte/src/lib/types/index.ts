@@ -9,4 +9,5 @@ export type Reaction = {
     count: number,
     emoji: string,
     highlight: Appearance
+    description: string,
 }

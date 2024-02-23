@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, MessagePosition, Shape } from "$lib/enums";
+    import { Appearance, MessagePosition, Shape, Status } from "$lib/enums";
 
     import Icon from "$lib/elements/Icon.svelte";
     import Input from "$lib/elements/Input.svelte";
@@ -15,6 +15,7 @@
     import MessageGroup from "$lib/components/MessageGroup.svelte";
     import MessageContainer from "$lib/components/MessageContainer.svelte";
     import MessageReactions from "$lib/components/MessageReactions.svelte";
+    import ProfilePicture from "$lib/components/ProfilePicture.svelte";
 </script>
 
 <Container title="Elements" row>
@@ -24,7 +25,7 @@
             <Button
                 text="A Button!"
                 appearance="{Appearance.Default}" /> 
-            <Button 
+            <Button
                 text="An Alt Button!"
                 appearance="{Appearance.Alt}" /> 
             <Button
@@ -222,6 +223,48 @@
     </Container>
 </Container>
 
+<!-- Profile Picture -->
+<Container title="Profile Picture" row>
+    <Container title="Standard">
+        <ProfilePicture 
+            notifications={3}
+            image="/src/lib/assets/pluto.png"
+            status={Status.Online}/>
+        <ProfilePicture 
+            image="/src/lib/assets/blue_marble.png"
+            status={Status.Idle}/>
+        <ProfilePicture 
+            image="/src/lib/assets/moon.png"
+            status={Status.DoNotDisturb}/>
+    </Container>
+    <Container title="Highlight">
+        <ProfilePicture 
+            image="/src/lib/assets/pluto.png"
+            highlight={Appearance.Success}
+            status={Status.Online}/>
+        <ProfilePicture 
+            image="/src/lib/assets/blue_marble.png"
+            highlight={Appearance.Info}
+            status={Status.Idle}/>
+        <ProfilePicture 
+            image="/src/lib/assets/moon.png"
+            highlight={Appearance.Warning}
+            status={Status.Offline}/>
+        <ProfilePicture 
+            image="/src/lib/assets/mars.png"
+            notifications={3}
+            highlight={Appearance.Error}
+            status={Status.DoNotDisturb}/>
+    </Container>
+    <Container title="Typing">
+        <ProfilePicture 
+            image="/src/lib/assets/moon.png"
+            typing
+            status={Status.Online}/>
+    </Container>
+</Container>
+
+<!-- Messages -->
 <Container title="Components" row>
     <Container title="Keyboard Keys">
         <Key character="W" />
@@ -238,11 +281,13 @@
                         emoji: "🔥",
                         highlight: Appearance.Primary,
                         count: 3,
+                        description: ":fire: you and 2 users reacted.",
                     },
                     {
                         emoji: "🌎",
                         highlight: Appearance.Default,
                         count: 2,
+                        description: ":earth: 2 users reacted.",
                     }
                 ]}/>
             </MessageContainer>
@@ -262,11 +307,13 @@
                         emoji: "👽",
                         highlight: Appearance.Default,
                         count: 2,
+                        description: ":alien: 2 users reacted."
                     },
                     {
                         emoji: "👀",
                         highlight: Appearance.Default,
                         count: 1,
+                        description: ":eyes: 1 user reacted."
                     }
                 ]}/>
             </MessageContainer>
@@ -275,6 +322,13 @@
             </MessageContainer>
             <MessageContainer>
                 <Message remote position={MessagePosition.Last}>Unless I am, oOoo who knows!?</Message>
+            </MessageContainer>
+        </MessageGroup>
+
+        <MessageGroup>
+            <MessageContainer>
+                <Message reply remote localSide position={MessagePosition.First}>I am not an alien.</Message>
+                <Message position={MessagePosition.Last}>Hmm, okay!</Message>
             </MessageContainer>
         </MessageGroup>
     </Container>

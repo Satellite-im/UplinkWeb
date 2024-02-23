@@ -19,3 +19,11 @@ export const enum MessagePosition {
     Middle   = "middle",
     Last     = "last"
 }
+
+export const enum Status {
+    Online          = "online",
+    Offline         = "offline",
+    Idle            = "idle",
+    DoNotDisturb    = "do-not-disturb",
+
+}

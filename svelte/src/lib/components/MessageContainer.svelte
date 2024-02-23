@@ -8,6 +8,6 @@
         display: inline-flex;
         flex-direction: column;
         justify-content: flex-end;
-        gap: var(--gap);
+        gap: var(--gap-less);
     }
 </style>
