@@ -8,11 +8,11 @@
 </script>
 
 <div class="message-bubble {remote ? "remote" : "local"} {position} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
-    {#if reply && remote}
+    {#if reply && !remote}
         <span class="reply-arrow">↪</span>
     {/if}
     <slot></slot>
-    {#if reply && !remote}
+    {#if reply && remote}
         <span class="reply-arrow">↩</span>
     {/if}
 </div>

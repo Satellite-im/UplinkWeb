@@ -13,7 +13,9 @@
 
     import Message from "$lib/components/Message.svelte";
     import MessageGroup from "$lib/components/MessageGroup.svelte";
+    import Conversation from "$lib/components/Conversation.svelte";
     import MessageContainer from "$lib/components/MessageContainer.svelte";
+    import MessageReplyContainer from "$lib/components/MessageReplyContainer.svelte";
     import MessageReactions from "$lib/components/MessageReactions.svelte";
     import ProfilePicture from "$lib/components/ProfilePicture.svelte";
 </script>
@@ -272,64 +274,88 @@
         <Key character="S" />
         <Key character="D" />
     </Container>
-    <Container title="Messages">
-        <MessageGroup>
-            <MessageContainer>
-                <Message position={MessagePosition.First}>Hello, world!</Message>
-                <MessageReactions reactions={[
-                    {
-                        emoji: "🔥",
-                        highlight: Appearance.Primary,
-                        count: 3,
-                        description: ":fire: you and 2 users reacted.",
-                    },
-                    {
-                        emoji: "🌎",
-                        highlight: Appearance.Default,
-                        count: 2,
-                        description: ":earth: 2 users reacted.",
-                    }
-                ]}/>
-            </MessageContainer>
-            <MessageContainer>
-                <Message>This is another message.</Message>
-            </MessageContainer>
-            <MessageContainer>
-                <Message position={MessagePosition.Last}>And one last message!</Message>
-            </MessageContainer>
-        </MessageGroup>
+    <Container title="Messages" row>
+        <Conversation>
+            <MessageGroup profilePictureRequirements={{
+                notifications: 0,
+                image: "/src/lib/assets/moon.png",
+                status: Status.Online,
+                highlight: Appearance.Default
+            }}
+            subtext="Sent 3 minutes ago.">
+                <MessageContainer>
+                    <Message position={MessagePosition.First}>Hello, world!</Message>
+                    <MessageReactions reactions={[
+                        {
+                            emoji: "🔥",
+                            highlight: Appearance.Primary,
+                            count: 3,
+                            description: ":fire: you and 2 users reacted.",
+                        },
+                        {
+                            emoji: "🌎",
+                            highlight: Appearance.Default,
+                            count: 2,
+                            description: ":earth: 2 users reacted.",
+                        }
+                    ]}/>
+                </MessageContainer>
+                <MessageContainer>
+                    <Message>This is another message.</Message>
+                </MessageContainer>
+                <MessageContainer>
+                    <Message position={MessagePosition.Last}>And one last message!</Message>
+                </MessageContainer>
+            </MessageGroup>
 
-        <MessageGroup remote>
-            <MessageContainer>
-                <Message remote position={MessagePosition.First}>Hello humans.</Message>
-                <MessageReactions remote reactions={[
-                    {
-                        emoji: "👽",
-                        highlight: Appearance.Default,
-                        count: 2,
-                        description: ":alien: 2 users reacted."
-                    },
-                    {
-                        emoji: "👀",
-                        highlight: Appearance.Default,
-                        count: 1,
-                        description: ":eyes: 1 user reacted."
-                    }
-                ]}/>
-            </MessageContainer>
-            <MessageContainer>
-                <Message remote>I am not an alien.</Message>
-            </MessageContainer>
-            <MessageContainer>
-                <Message remote position={MessagePosition.Last}>Unless I am, oOoo who knows!?</Message>
-            </MessageContainer>
-        </MessageGroup>
+            <MessageGroup remote profilePictureRequirements={{
+                notifications: 0,
+                image: "/src/lib/assets/mars.png",
+                status: Status.DoNotDisturb,
+                highlight: Appearance.Default
+            }}
+            subtext="Sent 2 minutes ago.">
+                <MessageContainer>
+                    <Message remote position={MessagePosition.First}>Hello humans.</Message>
+                    <MessageReactions remote reactions={[
+                        {
+                            emoji: "👽",
+                            highlight: Appearance.Default,
+                            count: 2,
+                            description: ":alien: 2 users reacted."
+                        },
+                        {
+                            emoji: "👀",
+                            highlight: Appearance.Default,
+                            count: 1,
+                            description: ":eyes: 1 user reacted."
+                        }
+                    ]}/>
+                </MessageContainer>
+                <MessageContainer>
+                    <Message remote>I am not an alien.</Message>
+                </MessageContainer>
+                <MessageContainer>
+                    <Message remote position={MessagePosition.Last}>Unless I am, oOoo who knows!?</Message>
+                </MessageContainer>
+            </MessageGroup>
 
-        <MessageGroup>
-            <MessageContainer>
-                <Message reply remote localSide position={MessagePosition.First}>I am not an alien.</Message>
-                <Message position={MessagePosition.Last}>Hmm, okay!</Message>
-            </MessageContainer>
-        </MessageGroup>
+            <MessageGroup profilePictureRequirements={{
+                notifications: 0,
+                image: "/src/lib/assets/moon.png",
+                status: Status.Online,
+                highlight: Appearance.Default
+            }}
+            subtext="Sent 1 minutes ago.">
+                <MessageContainer>
+                    <MessageReplyContainer
+                        remote
+                        image="/src/lib/assets/mars.png">
+                        <Message reply remote localSide position={MessagePosition.First}>I am not an alien.</Message>
+                    </MessageReplyContainer>
+                    <Message position={MessagePosition.Last}>Hmm, okay!</Message>
+                </MessageContainer>
+            </MessageGroup>
+        </Conversation>
     </Container>
 </Container>

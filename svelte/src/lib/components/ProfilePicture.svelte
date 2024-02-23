@@ -3,12 +3,14 @@
 
     export let image: string = "";
     export let notifications: number = 0;
+    export let small: boolean = false;
+    export let smallest: boolean = false;
     export let highlight: Appearance = Appearance.Default;
     export let typing: boolean = false;
     export let status: Status = Status.Offline;
 </script>
 
-<div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""}">
+<div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {small ? "small" : ""} {smallest ? "smallest" : ""}">
     <img class="profile-image" src={image} alt="">
     {#if typing}
         <div class="typing-indicator"></div>
@@ -38,6 +40,10 @@
         min-height: calc(var(--font-size) * 2);
         width: calc(var(--font-size) * 2);
         min-width: calc(var(--font-size) * 2);
+
+        .status-indicator, .notifications {
+            display: none;
+        }
     }
 
     .profile-image {

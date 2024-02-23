@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Appearance } from "../enums/index";
 
-    export let tooltip: string = "";
+    export let tooltip: string | null = "";
     export let text: string = "";
     export let outline: boolean = false;
     export let icon: boolean = false;
@@ -9,7 +9,7 @@
 </script>
 
 <button 
-    class="button {appearance} {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip.length > 0 ? "tooltip" : ""}"
+    class="button {appearance} {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""}"
     data-tooltip={tooltip}>
         <slot></slot>
         {#if text.length > 0}
