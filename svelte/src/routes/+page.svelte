@@ -18,6 +18,9 @@
     import MessageReplyContainer from "$lib/components/MessageReplyContainer.svelte";
     import MessageReactions from "$lib/components/MessageReactions.svelte";
     import ProfilePicture from "$lib/components/ProfilePicture.svelte";
+    import ColorSwatch from "$lib/components/ColorSwatch.svelte";
+    import CoinBalance from "$lib/components/CoinBalance.svelte";
+    import Meter from "$lib/components/Meter.svelte";
 </script>
 
 <Container title="Elements" row>
@@ -358,4 +361,38 @@
             </MessageGroup>
         </Conversation>
     </Container>
+</Container>
+
+<!-- Color Swatch -->
+<Container title="Color Swatches">
+    <ColorSwatch name="Creamy Peach" color="#f3a683" />
+    <ColorSwatch name="Rosy Highlight" color="#f7d794" />
+    <ColorSwatch name="Soft Blue" color="#778beb" />
+    <ColorSwatch name="Brewed Mustard" color="#e77f67" />
+    <ColorSwatch name="Old Geranium" color="#cf6a87" />
+    <ColorSwatch name="Purple Mountain Majesty" color="#786fa6" />
+    <ColorSwatch name="Rogue Pink" color="#f8a5c2" />
+    <ColorSwatch name="Squeaky" color="#63cdda" />
+    <ColorSwatch name="Apple Valley" color="#ea8685" />
+    <ColorSwatch name="Pencil Lead" color="#596275" />
+</Container>
+
+<!-- Coin Balance -->
+<Container title="Coin Balance" row>
+    <Container title="Standard">
+        <CoinBalance balance={30000} />
+    </Container>
+    <Container title="Highlight">
+        <CoinBalance balance={100} highlight={Appearance.Success} />
+        <CoinBalance balance={24} highlight={Appearance.Info} />
+        <CoinBalance balance={3} highlight={Appearance.Warning} />
+        <CoinBalance balance={0} highlight={Appearance.Error} />
+    </Container>
+</Container>
+
+<!-- Meter -->
+<Container title="Meter">
+    <Meter percent={50} />
+    <Meter percent={85} />
+    <Meter percent={100} />
 </Container>

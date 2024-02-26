@@ -16,6 +16,7 @@ body {
     display: inline-flex;
     flex-direction: column;
     gap: var(--gap);
+    width: calc(100% - 28px); // TODO: Remove this later
 }
 
 ::selection {

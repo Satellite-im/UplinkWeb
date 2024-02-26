@@ -19,6 +19,9 @@
         border-radius: var(--border-radius);
         flex-wrap: wrap;
         align-content: flex-start;
+        flex: 1;
+        width: auto;
+        width: -moz-available;
 
         &.column {
             flex-direction: column;
