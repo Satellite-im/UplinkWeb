@@ -21,6 +21,8 @@
     import ColorSwatch from "$lib/components/ColorSwatch.svelte";
     import CoinBalance from "$lib/components/CoinBalance.svelte";
     import Meter from "$lib/components/Meter.svelte";
+    import ProgressButton from "$lib/components/ProgressButton.svelte";
+    import ChatPreview from "$lib/components/ChatPreview.svelte";
 </script>
 
 <Container title="Elements" row>
@@ -395,4 +397,26 @@
     <Meter percent={50} />
     <Meter percent={85} />
     <Meter percent={100} />
+</Container>
+
+<!-- Progress Button -->
+<Container title="Progress Button">
+    <ProgressButton percent={75} />
+    <ProgressButton percent={15} appearance={Appearance.Alt} />
+    <ProgressButton percent={64} appearance={Appearance.Success} />
+    <ProgressButton percent={25} appearance={Appearance.Info} />
+    <ProgressButton percent={15} appearance={Appearance.Warning} />
+    <ProgressButton percent={50} appearance={Appearance.Error} />
+</Container>
+
+<!-- Chat Preview -->
+<Container title="Chat Preview">
+    <div style="width: 350px;">
+        <ChatPreview
+            unreads={3}
+            username="Moon Man"
+            photo="/src/lib/assets/moon.png"
+            status={Status.Online}
+            message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur." />
+    </div>
 </Container>
