@@ -8,6 +8,7 @@
     export let photo: string = "";
     export let status: Status = Status.Offline;
     export let unreads: number = 0;
+    export let simpleUnreads: boolean = false;
     export let timestamp: Date = new Date();
     export let username: string = "";
     export let message: string = "";
@@ -22,9 +23,12 @@
         <div class="heading">
             <h3 class="chat-user">{username}</h3>
             <p class="timestamp">{timeAgo.format(timestamp)}</p>
-            {#if unreads > 0}
+            {#if unreads > 0 && !simpleUnreads}
                 <!-- svelte-ignore a11y-label-has-associated-control -->
                 <label class="unreads">3</label>
+            {:else if unreads > 0 && simpleUnreads}
+              <!-- svelte-ignore a11y-label-has-associated-control -->
+              <label class="unreads simple"></label>
             {/if}
         </div>
         <p class="last-message">{message}</p>
@@ -80,6 +84,7 @@
                         width: var(--label-size);
                         border-radius: calc(var(--label-size) / 2);
                         background-color: var(--primary-color);
+                        padding: 0;
                     }
                 }
             }

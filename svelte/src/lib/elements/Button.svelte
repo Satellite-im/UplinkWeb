@@ -6,10 +6,12 @@
     export let outline: boolean = false;
     export let icon: boolean = false;
     export let appearance: Appearance = Appearance.Default;
+    let clazz = "";
+	export { clazz as class };
 </script>
 
 <button 
-    class="button {appearance} {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""}"
+    class="button {appearance} {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {clazz || ''}"
     data-tooltip={tooltip}>
         <slot></slot>
         {#if text.length > 0}

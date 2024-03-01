@@ -14,7 +14,23 @@ export type Reaction = {
 
 export type ProfilePictureRequirements = {
     image: string,
-    status: Status,
+    status: Status, // TODO: Remove this
     notifications: number,
     highlight: Appearance,
+}
+
+export type ProfilePicture = {
+    image: string,
+}
+
+export type ProfileData = {
+    photo: ProfilePicture,
+    status: Status,
+    status_message: string
+}
+
+export type User = {
+    key: string,
+    name: string,
+    profile: ProfileData,
 }

@@ -23,7 +23,17 @@
     import Meter from "$lib/components/Meter.svelte";
     import ProgressButton from "$lib/components/ProgressButton.svelte";
     import ChatPreview from "$lib/components/ChatPreview.svelte";
+    import NewPayment from "$lib/components/NewPayment.svelte";
+    import { mock_users } from "$lib/mock/users";
 </script>
+
+
+<!-- Payments -->
+<Container title="Payment">
+    <div style="width: 550px;">
+        <NewPayment recipients={mock_users} />
+    </div>
+</Container>
 
 <Container title="Elements" row>
     <!-- Buttons -->
@@ -417,6 +427,7 @@
             username="Moon Man"
             photo="/src/lib/assets/moon.png"
             status={Status.Online}
+            simpleUnreads
             message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur." />
     </div>
 </Container>

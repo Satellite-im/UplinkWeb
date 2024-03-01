@@ -3,9 +3,11 @@
 
     export let icon: Shape = Shape.Beaker;
     export let alt: Boolean = false;
+    let clazz = "";
+	export { clazz as class };
 </script>
 
-<svg class="svg-icon {alt ? "alt" : ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+<svg class="svg-icon {alt ? "alt" : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
     <svelte:element stroke="currentColor" this={icon} class="path"></svelte:element>
 </svg>
 

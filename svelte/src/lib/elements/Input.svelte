@@ -4,10 +4,12 @@
     export let placeholder: string = "";
     export let alt: boolean = false;
     export let highlight: Appearance = Appearance.Default;
+    let clazz = "";
+	export { clazz as class };
 </script>
 
-<div class="input-group  {alt ? "alt" : ""} {highlight !== null ? `highlight-${highlight}` : ""}">
-    <div class="input-container">
+<div class="input-group  {alt ? "alt" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ''}">
+    <div class="input-container {clazz || ''}">
         <slot></slot>
         <input
             class="input"
@@ -20,7 +22,7 @@
     .input-group {
         height: var(--input-height);
         display: inline-flex;
-        flex-direction: column;
+        flex-direction: row;
         transition: all var(--animation-speed);
         width: fit-content;
 

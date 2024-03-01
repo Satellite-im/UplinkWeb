@@ -1,3 +1,85 @@
+
+/* Begin CSS Clear */
+
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margin */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+    margin: 0;
+    margin-block-end: 0;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role='list'],
+ol[role='list'] {
+    list-style: none;
+}
+
+/* Set core root defaults */
+html:focus-within {
+    scroll-behavior: smooth;
+}
+
+/* Set core body defaults */
+body {
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+    line-height: 1.5;
+    width: 100%;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+    text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+    max-width: 100%;
+    display: block;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
+/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* End CSS Clear */
+
 @font-face {
     font-family: "Primary";
     src: url(../assets/font/Poppins-Regular.ttf);
@@ -25,6 +107,10 @@ body {
     border-radius: var(--border-radius);
 }
 
+
+.flex {
+    flex: 1;
+}
 
 .flex-row {
     flex-direction: row;
@@ -59,6 +145,11 @@ body {
     font-size: var(--font-size-smaller);
 }
 
+.control {
+    &:hover {
+        cursor: pointer;
+    }
+}
 
 .hover-text {
     cursor: default;
@@ -67,7 +158,6 @@ body {
     content: attr(data-hover-text);
     position: absolute;
     width: fit-content;
-    max-width: var(--sidebar-width);
     padding: var(--padding-less);
     border-radius: var(--border-radius-minimal);
     border: var(--border-width) solid var(--border-color);
@@ -77,7 +167,7 @@ body {
     text-align: start;
     display: none;
     height: fit-content;
-    z-index: 100;
+    z-index: 1000;
     transform: translateY(var(--font-size));
     pointer-events: none;
     transition: all var(--animation-speed);

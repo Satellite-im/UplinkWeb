@@ -15,7 +15,9 @@
     {#if typing}
         <div class="typing-indicator"></div>
     {/if}
-    <div class="status-indicator {status}"></div>
+    {#if !small && !smallest}
+        <div class="status-indicator {status}"></div>
+    {/if}
     {#if notifications > 0}
         <!-- svelte-ignore a11y-label-has-associated-control -->
         <label class="badge">{notifications}</label>
