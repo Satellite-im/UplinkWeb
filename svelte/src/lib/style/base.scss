@@ -97,6 +97,7 @@ body {
     color: var(--color);
     display: inline-flex;
     flex-direction: column;
+    padding: calc(var(--padding) * 2);
     gap: var(--gap);
     width: calc(100% - 28px); // TODO: Remove this later
 }

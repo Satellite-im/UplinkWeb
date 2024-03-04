@@ -30,7 +30,7 @@
 
 <!-- Payments -->
 <Container title="Payment">
-    <div style="width: 550px;">
+    <div style="width: 450px;">
         <NewPayment recipients={mock_users} />
     </div>
 </Container>

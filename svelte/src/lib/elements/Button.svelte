@@ -37,11 +37,6 @@
                     border-color var(--animation-speed) var(--animation-style),
                     all var(--animation-speed);
 
-        // Nested svg-icon path
-        .svg-icon path {
-            stroke: var(--color-alt);
-        }
-
         // Modifier classes for icon and round buttons
         &.icon, &.round {
             padding: unset;
@@ -116,10 +111,6 @@
                 background-color: var(--alt-color);
                 color: var(--color);
 
-                .svg-icon path {
-                    stroke: var(--color);
-                }
-
                 &:hover {
                     background-color: var(--alt-color-alt);
                 }
@@ -169,10 +160,6 @@
                 background-color: transparent;
                 border-color: transparent;
                 color: var(--color);
-
-                .svg-icon path {
-                    stroke: var(--color);
-                }
 
                 &:hover {
                     background-color: var(--alt-color-alt);

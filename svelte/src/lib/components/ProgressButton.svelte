@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from "$lib/elements/Button.svelte";
-import Icon from "$lib/elements/Icon.svelte";
+    import Icon from "$lib/elements/Icon.svelte";
     import { Appearance, Shape } from "$lib/enums";
 
     export let icon: Shape = Shape.Beaker;

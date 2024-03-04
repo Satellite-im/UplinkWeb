@@ -23,10 +23,6 @@
         width: auto;
         width: -moz-available;
 
-        &.column {
-            flex-direction: column;
-        }
-
         &.bordered {
             border: var(--border-width) solid var(--border-color);
             padding: var(--padding);

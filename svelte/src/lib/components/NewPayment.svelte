@@ -10,12 +10,26 @@
     import ProfilePicture from "./ProfilePicture.svelte";
     import ProgressBar from "./ProgressBar.svelte";
 
-
     export let recipients: Array<User> = [];
-    
-    let selected_recipients: Array<User> = [];
-</script>
 
+    let selected_recipients: Array<User> = [];
+
+    let update_recipients = function(recipient: User) {
+        let new_recipient_list = selected_recipients;
+
+        if (selected_recipients.includes(recipient)) {
+            new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1);
+        } else {
+            new_recipient_list.push(recipient);
+        }
+
+        selected_recipients = new_recipient_list;
+    };
+
+    let is_selected = function(recipient: User): boolean {
+        return selected_recipients.includes(recipient);
+    }
+</script>
 
 <div class="payment" id="payment">
     <div class="payment-amount">
@@ -38,7 +52,9 @@
         <Label text="Select recipient(s)" />
         <div class="recipient-selection-list">
             {#each recipients as recipient}
-                <div class="recipient">
+                <button 
+                    class="recipient" 
+                    on:click={() => update_recipients(recipient)}>
                     <ProfilePicture image={recipient.profile.photo.image} status={recipient.profile.status} />
                     <div class="info">
                         <p class="username">{recipient.name}</p>
@@ -46,8 +62,8 @@
                             {recipient.key}
                         </p>
                     </div>
-                    <Checkbox />
-                </div>
+                    <Checkbox checked={is_selected(recipient)}/>
+                </button>
             {/each}
         </div>
     </div>
@@ -187,6 +203,9 @@
                 background-color: var(--alt-color);
                 user-select: none;
                 position: relative;
+                color: var(--color);
+                text-align: left;
+                cursor: pointer;
 
                 input[type=checkbox]:checked::after {
                     content: "";
@@ -210,6 +229,8 @@
                     flex: 1;
                     justify-content: center;
                     overflow: hidden;
+                    pointer-events: none;
+                    user-select: none;
                 }
             }
         }
