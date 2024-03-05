@@ -52,7 +52,7 @@
         <Label text="Select recipient(s)" />
         <div class="recipient-selection-list">
             {#each recipients as recipient}
-                <button 
+                <button
                     class="recipient" 
                     on:click={() => update_recipients(recipient)}>
                     <ProfilePicture image={recipient.profile.photo.image} status={recipient.profile.status} />

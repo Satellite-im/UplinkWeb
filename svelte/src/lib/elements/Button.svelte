@@ -1,18 +1,34 @@
 <script lang="ts">
+    import { createEventDispatcher } from 'svelte';
     import { Appearance } from "../enums/index";
 
     export let tooltip: string | null = "";
+    export let disabled: boolean = false;
+    export let rotateOnHover: boolean = false;
     export let text: string = "";
     export let outline: boolean = false;
     export let icon: boolean = false;
     export let appearance: Appearance = Appearance.Default;
+    export let loading: boolean = false;
+
+    // Allow parent to override / add classes
     let clazz = "";
 	export { clazz as class };
+
+    // Create an event dispatcher
+    const dispatch = createEventDispatcher();
+
+    // Function to dispatch a 'click' event
+    function onClick(event: MouseEvent) {
+        dispatch('click', event);
+    }
 </script>
 
 <button 
-    class="button {appearance} {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {clazz || ''}"
-    data-tooltip={tooltip}>
+    class="button {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {clazz || ''}"
+    data-tooltip={tooltip}
+    disabled={disabled}
+    on:click={onClick}>
         <slot></slot>
         {#if text.length > 0}
             {text}
@@ -36,6 +52,15 @@
                     color var(--animation-speed) var(--animation-style),
                     border-color var(--animation-speed) var(--animation-style),
                     all var(--animation-speed);
+
+        &.icon.rotate_on_hover:hover {
+            transform: rotate(90deg);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            pointer-events: none; 
+        }
 
         // Modifier classes for icon and round buttons
         &.icon, &.round {

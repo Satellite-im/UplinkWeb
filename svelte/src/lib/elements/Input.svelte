@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Appearance } from "../enums/index";
 
+    export let loading: boolean = false;
     export let placeholder: string = "";
     export let alt: boolean = false;
     export let highlight: Appearance = Appearance.Default;

@@ -3,6 +3,7 @@
 
     export let icon: Shape = Shape.Beaker;
     export let alt: Boolean = false;
+
     let clazz = "";
 	export { clazz as class };
 </script>
@@ -12,20 +13,14 @@
 </svg>
 
 <style lang="scss">
-    .svg-icon {
+    :global(.svg-icon) {
         width: var(--icon-size);
         height: var(--icon-size);
         min-width: var(--icon-size);
         min-height: var(--icon-size);
-        
-        path {
-            stroke: var(--color);
-        }
 
         &.alt {
-            path {
-                stroke: var(--color-alt);
-            }
+            color: var(--color);
         }
     }
 </style>

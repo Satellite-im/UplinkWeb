@@ -23,6 +23,7 @@
   },
   "type": "module",
   "dependencies": {
-    "javascript-time-ago": "^2.5.9"
+    "javascript-time-ago": "^2.5.9",
+    "svelte-i18n": "^4.0.0"
   }
 }
