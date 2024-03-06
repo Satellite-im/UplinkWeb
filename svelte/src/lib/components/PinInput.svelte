@@ -3,9 +3,16 @@
     import Button from "$lib/elements/Button.svelte";
     import { Appearance, Shape } from "$lib/enums";
     import Icon from '$lib/elements/Icon.svelte';
+    import Spacer from '$lib/elements/Spacer.svelte';
+    import Loader from '$lib/elements/Loader.svelte';
+    import Switch from '$lib/elements/Switch.svelte';
+    import Label from '$lib/elements/Label.svelte';
+    import { _ } from 'svelte-i18n';
 
     export let error: boolean = false;
     export let loading: boolean = false;
+    export let scramble: boolean = false;
+    export let show_settings: boolean = false;
 
     export let min: number = 4;
     export let max: number = 6;
@@ -14,14 +21,16 @@
     let displayDots: Array<boolean> = []; // This holds the state for each dot (filled or not)
 
     // Initialize or shuffle digits for the keypad
-    let pinDigits: string[] = shuffleArray(["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]);
+    const pinDigitsOriginal: string[] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+    let pinDigits: string[] = [...pinDigitsOriginal];
 
     // Shuffle array using Fisher-Yates algorithm
     function shuffleArray<T>(array: T[]): T[] {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
+        if (scramble)
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         return array;
     }
 
@@ -39,7 +48,7 @@
         displayDots = (pinValue.length < min) ? 
             Array.from({ length: min }, (_, i) => i < pinValue.length) :
             Array.from({ length: pinValue.length }, () => true);
-        pinDigits = shuffleArray(pinDigits);
+        pinDigits = (scramble) ? shuffleArray(pinDigits) : [...pinDigitsOriginal];
     };
 
     // Clear the pin value and update display dots
@@ -57,40 +66,92 @@
     onMount(() => {
         updateDisplayDots();
     });
+
+    function handleToggleScramble(value: any) {
+        scramble = value.detail;
+        pinDigits = (scramble) ? shuffleArray(pinDigits) : [...pinDigitsOriginal];
+    }
+
+    function handleInput(event: any) {
+        const input = event.target.value;
+        if(input.length <= max) {
+            pinValue = input;
+            updateDisplayDots();
+        }
+    }
+
+    $: pinValue, updateDisplayDots();
 </script>
 
-<div class="pin-input-group">
+<div class="pin-input-group {loading ? "loading" : ""}">
     <div class="pin-group">
-        <div class="pin-display">
+        <div class="pin-display {error ? 'error' : ''}">
             {#each displayDots as dot}
                 <span class="dot {dot ? 'filled' : ''}"></span>
             {/each}
         </div>
         <div class="shadow-input">
-            <input type="number" bind:value={pinValue} pattern="[0-9]*" />
+            <input type="number" on:input="{handleInput}" pattern="[0-9]*" />
         </div>
     </div>
-    <div class="pin-keypad" data-shuffle="true">
-        {#each pinDigits.slice(0, -1) as digit}
-            <Button 
-                class="pin-key"
-                icon
-                on:click={() => updatePinValue(digit)}
-                appearance={Appearance.Alt}>
-                {digit}
+    <Spacer less />
+    {#key pinDigits.join() }
+        <div class="pin-keypad" data-keyorder={pinDigits.join()} data-shuffle="true">
+            {#each pinDigits.slice(0, -1) as digit}
+                <Button 
+                    class="pin-key"
+                    icon
+                    disabled={error || loading}
+                    on:click={() => updatePinValue(digit)}
+                    appearance={Appearance.Alt}>
+                    {#if loading}
+                        <Loader />
+                    {:else}
+                        {digit}
+                    {/if}
+                </Button>
+            {/each}
+            <Button class="pin-key" disabled={loading} icon rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
+                {#if loading}
+                    <Loader alt />
+                {:else}
+                    <Icon icon={Shape.Refresh} />
+                {/if}
             </Button>
-        {/each}
-        <Button class="pin-key" icon rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
-            <Icon icon={Shape.Refresh} />
+            <Button class="pin-key" disabled={error || loading} icon on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>
+                {#if loading}
+                    <Loader />
+                {:else}
+                    {pinDigits.slice(-1)}
+                {/if}
+            </Button>
+            <Button class="pin-key" icon on:click={submitPinValue} appearance={(pinValue.length < min && !loading) ? Appearance.Alt : Appearance.Success} disabled={(pinValue.length < min || error || loading)}>
+                {#if loading}
+                    <Loader alt />
+                {:else}
+                    <Icon icon={Shape.CheckMark} alt={(pinValue.length < min)} />            
+                {/if}
+            </Button>
+        </div>
+    {/key}
+    <Spacer less />
+    <div class="flex-column">
+        <Button outline appearance={Appearance.Alt} on:click={(_) => {
+            show_settings = !show_settings;
+        }}>
+            <Icon icon={Shape.ChevronDown} /> Settings
         </Button>
-        <Button class="pin-key" icon on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>{pinDigits.slice(-1)}</Button>
-        <Button class="pin-key" icon on:click={submitPinValue} appearance={(pinValue.length < min) ? Appearance.Alt : Appearance.Success} disabled={(pinValue.length < min)}>
-            <Icon icon={Shape.CheckMark} alt={(pinValue.length < min)} />
-        </Button>
+        <div class="pin-settings flex-column {show_settings ? "hidden" : "visibile"}">
+            <div class="flex-row centered">
+                <Switch small on={scramble} on:toggle={handleToggleScramble} /> <Label text={$_('pages.auth.unlock.scramble_pin')} />
+            </div>
+            <div class="flex-row centered">
+                <Switch small /> <Label text="Stay unlocked?" />
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- The style remains unchanged -->
 <style lang="scss">
     /* Base */
     .pin-input-group {
@@ -102,11 +163,20 @@
         align-items: center;
         gap: var(--gap);
 
+        &.loading {
+            cursor: wait;
+
+            input {
+                pointer-events: none;
+            }
+        }
+
         .pin-display {
             display: inline-flex;
             gap: var(--gap);
             justify-content: center;
             padding: var(--padding) 0;
+            cursor: text;
 
             .dot {
                 width: var(--font-size);
@@ -119,6 +189,16 @@
 
                 &.filled {
                     background-color: var(--info-color);
+                }
+            }
+
+            &.error {
+                .dot {
+                    border: var(--error-color) solid var(--border-width);
+                    background-color: var(--color-alt);
+                    &.filled {
+                        background-color: var(--error-color);
+                    }
                 }
             }
         }

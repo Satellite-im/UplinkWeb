@@ -25,6 +25,7 @@
     import ChatPreview from "$lib/components/ChatPreview.svelte";
     import NewPayment from "$lib/components/NewPayment.svelte";
     import { mock_users } from "$lib/mock/users";
+    import Loader from "$lib/elements/Loader.svelte";
 </script>
 
 
@@ -95,7 +96,11 @@
             </Button>
 
             <Button icon>
-                <Icon alt icon={Shape.XMark} />
+                <Icon icon={Shape.XMark} />
+            </Button>
+
+            <Button>
+                <Loader alt /> Loading . . .
             </Button>
         </Container>
 
@@ -108,7 +113,6 @@
             </Button>
         </Container>
     </Container>
-
 
     <!-- Inputs -->
     <Container title="Inputs" row>

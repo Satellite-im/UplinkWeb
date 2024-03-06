@@ -1,9 +1,20 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
+
     export let on: boolean = false;
+    export let small: boolean = false;
+
+    // Create an event dispatcher
+    const dispatch = createEventDispatcher();
+
+    // Function to dispatch a 'click' event
+    function onToggle(_: Event) {
+        dispatch('toggle', on);
+    }
 </script>
 
-<label class="switch">
-    <input type="checkbox" bind:checked={on} />
+<label class="switch {small ? "small" : ""}">
+    <input type="checkbox" bind:checked={on} on:change={onToggle} />
     <span class="slider"></span>
 </label>
 
@@ -59,6 +70,27 @@
                 background-color: var(--color);
                 transition: var(--animation-speed);
                 box-shadow: 0 0 0 var(--shadow-depth) var(--border-color);
+            }
+        }
+
+        &.small {
+            width: calc((var(--switch-size) * 2) / 1.25);
+            height: calc(var(--switch-size) / 1.25);
+            
+            .slider {
+                &:before {
+                    top: calc(var(--border-width) * -1);
+                    height: calc(var(--switch-size) / 1.25);
+                    width: calc(var(--switch-size) / 1.25);
+                }
+            }
+
+            input {
+                &:checked + .slider {
+                    &:before {
+                        transform: translateX(calc(var(--switch-size) / 1.25));
+                    }
+                }
             }
         }
     }

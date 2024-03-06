@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-    import { Appearance } from "../enums/index";
+    import { Appearance, Shape } from "../enums/index";
+    import Icon from './Icon.svelte';
 
     export let tooltip: string | null = "";
     export let disabled: boolean = false;
@@ -29,6 +30,9 @@
     data-tooltip={tooltip}
     disabled={disabled}
     on:click={onClick}>
+        {#if loading}
+            <Icon icon={Shape.Refresh} spin />
+        {/if}
         <slot></slot>
         {#if text.length > 0}
             {text}
@@ -58,7 +62,7 @@
         }
 
         &:disabled {
-            opacity: 0.5;
+            opacity: var(--disabled-opacity);
             pointer-events: none; 
         }
 

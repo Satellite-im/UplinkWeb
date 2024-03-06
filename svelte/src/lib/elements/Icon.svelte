@@ -2,13 +2,14 @@
     import { Shape } from "$lib/enums";
 
     export let icon: Shape = Shape.Beaker;
-    export let alt: Boolean = false;
+    export let alt: boolean = false;
+    export let spin: boolean = false;
 
     let clazz = "";
 	export { clazz as class };
 </script>
 
-<svg class="svg-icon {alt ? "alt" : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
+<svg class="svg-icon {spin ? "spin" : ""} {alt ? "alt" : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
     { @html icon }
 </svg>
 
@@ -21,6 +22,22 @@
 
         &.alt {
             color: var(--color);
+        }
+
+        &.spin {
+            animation-name: spin;
+            animation-duration: var(--animation-speed-slow);
+            animation-iteration-count: infinite;
+            animation-timing-function: linear; 
+        }
+
+        @keyframes spin {
+            from {
+                transform:rotate(0deg);
+            }
+            to {
+                transform:rotate(360deg);
+            }
         }
     }
 </style>

@@ -2,7 +2,7 @@
     export let checked: boolean = false;
 </script>
 
-<input type="checkbox" bind:checked={checked} />
+<input type="checkbox" checked={checked} />
 
 <style lang="scss">
     input[type="checkbox"] {

@@ -4,11 +4,15 @@ import { dictionary, locale } from 'svelte-i18n';
 export function initLocale() {
     dictionary.set({
         en: {
+            generic: {
+                loading: "Loading",
+            },
             pages: {
                 auth: {
                     unlock: {
-                        enter_pin: "Enter pin to unlock Uplink.",
-                        choose_pin: "Choose a pin to protect your account."
+                        enter_pin: "Enter your pin to unlock.",
+                        choose_pin: "Choose a new pin.",
+                        scramble_pin: "Scramble keypad?"
                     }
                 }
             },

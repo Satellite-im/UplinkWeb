@@ -4,7 +4,7 @@
     import Icon from "$lib/elements/Icon.svelte";
     import Input from "$lib/elements/Input.svelte";
     import Label from "$lib/elements/Label.svelte";
-    import { Appearance, Shape, Status } from "$lib/enums";
+    import { Appearance, Shape } from "$lib/enums";
     import type { User } from "$lib/types";
     import PaymentSuccessSplash from "./PaymentSuccessSplash.svelte";
     import ProfilePicture from "./ProfilePicture.svelte";
@@ -26,8 +26,8 @@
         selected_recipients = new_recipient_list;
     };
 
-    let is_selected = function(recipient: User): boolean {
-        return selected_recipients.includes(recipient);
+    function contains_recipient(list: User[], recipient: User): boolean {
+        return list.includes(recipient);
     }
 </script>
 
@@ -43,9 +43,17 @@
         <div class="recipient-list">
             {#each selected_recipients as recipient}
                 <div class="mini-recipient">
-                    <ProfilePicture smallest image={recipient.profile.photo.image} />
-                    <p class="username hover-text" data-hover-text={recipient.name}>{recipient.name}</p>
-                    <Icon icon={Shape.XMark} class="control" />
+                    <ProfilePicture 
+                        smallest
+                        image={recipient.profile.photo.image} />
+                    <p 
+                        class="username hover-text"
+                        data-hover-text={recipient.name}>
+                        {recipient.name}
+                    </p>
+                    <Icon 
+                        icon={Shape.XMark}
+                        class="control" />
                 </div>
             {/each}
         </div>
@@ -55,14 +63,18 @@
                 <button
                     class="recipient" 
                     on:click={() => update_recipients(recipient)}>
-                    <ProfilePicture image={recipient.profile.photo.image} status={recipient.profile.status} />
+                    <ProfilePicture 
+                        image={recipient.profile.photo.image}
+                        status={recipient.profile.status} />
                     <div class="info">
-                        <p class="username">{recipient.name}</p>
+                        <p class="username">
+                            {recipient.name}
+                        </p>
                         <p class="subtext text-muted hover-text" data-hover-text={recipient.key}>
                             {recipient.key}
                         </p>
                     </div>
-                    <Checkbox checked={is_selected(recipient)}/>
+                    <Checkbox checked={contains_recipient(selected_recipients, recipient)} />
                 </button>
             {/each}
         </div>
@@ -71,8 +83,14 @@
         <ProgressBar label={`Hold for ${3} seconds...`} />
         
         <div class="buttons">
-            <Button appearance={Appearance.Success} text="Confirm" class="flex" />
-            <Button appearance={Appearance.Alt} text="Cancel" class="flex" />
+            <Button 
+                appearance={Appearance.Success}
+                text="Confirm"
+                class="flex" />
+            <Button
+                appearance={Appearance.Alt}
+                text="Cancel"
+                class="flex" />
         </div>
     </div>
     <!--
@@ -168,16 +186,6 @@
                         padding: 0;
                         font-size: var(--font-size-smaller);
                     }
-
-                    .svg-icon {
-                        cursor: pointer;
-                        width: var(--font-size);
-                        height: var(--font-size);
-
-                        path {
-                            stroke: var(--color-alt);
-                        }
-                    }
                 }
             }
 
@@ -207,7 +215,7 @@
                 text-align: left;
                 cursor: pointer;
 
-                input[type=checkbox]:checked::after {
+                :global(input[type=checkbox]:checked::after) {
                     content: "";
                     width: 100%;
                     height: 100%;
@@ -242,17 +250,6 @@
 
             .buttons {
                 display: inline-flex;
-                gap: var(--gap);
-
-                .button {
-                    flex: 1;
-                }
-            }
-
-            .progress-bar {
-                .bar {
-                    transition: all linear 1s;
-                }
             }
         }
     }

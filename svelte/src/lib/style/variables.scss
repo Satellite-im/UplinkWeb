@@ -3,6 +3,7 @@
     --background: #000;
 
     --animation-speed: 0.2s;
+    --animation-speed-slow: 2s;
     --animation-style: ease;
     
     --color: #d6def4;
@@ -37,7 +38,10 @@
     --tooltip-color: #1b1b1b;
 
     --input-height: 2.5rem;
+    --spacer-size: 2rem;
     --swatch-size: var(--input-height);
+
+    --disabled-opacity: 0.75;
 
     /* Border Radius / Corners */
     --border-width: 1px;

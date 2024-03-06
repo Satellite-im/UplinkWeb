@@ -114,11 +114,20 @@ body {
 }
 
 .flex-row {
+    display: inline-flex;
     flex-direction: row;
+    gap: var(--gap);
+}
+
+.centered {
+    justify-content: center;
+    align-items: center;
 }
 
 .flex-column {
+    display: inline-flex;
     flex-direction: column;
+    gap: var(--gap);
 }
 .text-muted {
     color: var(--color-muted);
