@@ -4,7 +4,7 @@
     import Icon from "$lib/elements/Icon.svelte";
     import Input from "$lib/elements/Input.svelte";
     import Label from "$lib/elements/Label.svelte";
-    import { Appearance, Shape } from "$lib/enums";
+    import { Appearance, Shape, Size } from "$lib/enums";
     import type { User } from "$lib/types";
     import PaymentSuccessSplash from "./PaymentSuccessSplash.svelte";
     import ProfilePicture from "./ProfilePicture.svelte";
@@ -44,7 +44,7 @@
             {#each selected_recipients as recipient}
                 <div class="mini-recipient">
                     <ProfilePicture 
-                        smallest
+                        size={Size.Smallest}
                         image={recipient.profile.photo.image} />
                     <p 
                         class="username hover-text"

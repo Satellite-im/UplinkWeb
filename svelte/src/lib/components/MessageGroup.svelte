@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Size } from "$lib/enums";
     import type { ProfilePictureRequirements } from "$lib/types";
     import ProfilePicture from "./ProfilePicture.svelte";
 
@@ -11,7 +12,7 @@
     {#if profilePictureRequirements && remote}
         <div class="aside">
             <ProfilePicture
-                small
+                size={Size.Small}
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
                 highlight={profilePictureRequirements.highlight}
@@ -24,7 +25,7 @@
     {#if profilePictureRequirements && !remote}
         <div class="aside">
             <ProfilePicture
-                small
+                size={Size.Small}
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
                 highlight={profilePictureRequirements.highlight}

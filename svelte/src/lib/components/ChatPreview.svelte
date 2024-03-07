@@ -2,7 +2,7 @@
     import TimeAgo from 'javascript-time-ago'
     import en from 'javascript-time-ago/locale/en'
 
-    import { Status } from "$lib/enums";
+    import { Size, Status } from "$lib/enums";
     import ProfilePicture from './ProfilePicture.svelte';
 
     export let photo: string = "";
@@ -18,7 +18,7 @@
 </script>
 
 <div class="chat-preview">
-    <ProfilePicture image={photo} status={status} small />
+    <ProfilePicture image={photo} status={status} size={Size.Small} />
     <div class="content">
         <div class="heading">
             <h3 class="chat-user">{username}</h3>

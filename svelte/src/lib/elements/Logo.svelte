@@ -13,13 +13,5 @@
         width: 150px;
         stroke: none;
         fill: var(--alt-color-alt);
-
-        .smallest {
-            width: calc(var(--icon-size) / 2);
-        }
-
-        .small {
-            width: var(--icon-size);
-        }
     }
 </style>

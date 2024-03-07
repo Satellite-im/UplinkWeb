@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Size } from "$lib/enums";
     import ProfilePicture from "./ProfilePicture.svelte";
 
     export let remote: boolean = false;
@@ -7,11 +8,11 @@
 
 <div class="message-reply-container {remote ? "remote" : ""}">
     {#if remote}
-        <ProfilePicture smallest image={image} />
+        <ProfilePicture size={Size.Smallest} image={image} />
     {/if}
     <slot></slot>
     {#if !remote}
-        <ProfilePicture smallest image={image} />
+        <ProfilePicture size={Size.Smallest} image={image} />
     {/if}
 </div>
 
