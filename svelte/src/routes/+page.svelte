@@ -26,8 +26,15 @@
     import NewPayment from "$lib/components/NewPayment.svelte";
     import { mock_users } from "$lib/mock/users";
     import Loader from "$lib/elements/Loader.svelte";
+    import Navigation from "$lib/layouts/Navigation.svelte";
+    import { routes } from "$lib/mock/routes";
 </script>
 
+
+<!-- Nav -->
+<Container title="Navigation">
+    <Navigation routes={routes} />
+</Container>
 
 <!-- Payments -->
 <Container title="Payment">

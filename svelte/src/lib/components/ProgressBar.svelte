@@ -25,11 +25,6 @@
         border-radius: calc(var(--progress-bar-height) / 2);
         color: var(--color-muted);
 
-        .progress-label {
-            font-family: "Secondary";
-            font-size: var(--label-size);
-        }
-
         .track {
             height: var(--progress-bar-height);
             width: 100%;

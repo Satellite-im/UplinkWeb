@@ -47,10 +47,6 @@
         position: relative;
         margin-bottom: calc(var(--padding) * 2);
 
-        &.remote {
-            align-items: flex-start;
-        }
-
         .flex {
             flex: 1;
             gap: var(--gap-less);

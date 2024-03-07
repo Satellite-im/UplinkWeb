@@ -254,14 +254,4 @@
         }
     }
 
-    .payment-note {
-        display: inline-flex;
-        flex-direction: row;
-        flex: 1;
-
-        .input-group {
-            flex: 1;
-        }
-    }
-
 </style>

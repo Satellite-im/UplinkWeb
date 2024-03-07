@@ -4,7 +4,7 @@
     import { Appearance, Shape } from "$lib/enums";
 
     export let icon: Shape = Shape.Beaker;
-    export let percent: number = 0;
+    // export let percent: number = 0;
     export let appearance: Appearance = Appearance.Default;
 </script>
 
@@ -44,26 +44,6 @@
             .bar {
                 stroke: var(--color);
                 stroke-dashoffset: 70%;
-
-                &.info {
-                    stroke: var(--info-color);
-                }
-
-                &.primary {
-                    stroke: var(--primary-color);
-                }
-
-                &.alt {
-                    stroke: var(--alt-color);
-                }
-
-                &.warning {
-                    stroke: var(--warning-color);
-                }
-
-                &.error {
-                    stroke: var(--error-color);
-                }
             }
         }
     }

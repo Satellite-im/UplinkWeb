@@ -29,17 +29,6 @@
             color: var(--color);
         }
 
-        .icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--warning-color);
-
-            path {
-                stroke: var(--warning-color);
-            }
-        }
-
         &.highlight-success {
             border-color: var(--success-color);
         }
