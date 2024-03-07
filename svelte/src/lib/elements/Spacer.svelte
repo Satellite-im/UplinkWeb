@@ -7,8 +7,9 @@
 <style lang="scss">
     .spacer {
         height: var(--spacer-size);
-        width: var(--spacer-size);
+        break-after: always;
         pointer-events: none;
+        width: 100%;
 
         &.less {
             height: 1rem;

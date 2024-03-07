@@ -1,6 +1,11 @@
 <script lang="ts">
     import OrderedPhrase from "$lib/components/OrderedPhrase.svelte";
+    import Button from "$lib/elements/Button.svelte";
+    import Icon from "$lib/elements/Icon.svelte";
     import Label from "$lib/elements/Label.svelte";
+    import Spacer from "$lib/elements/Spacer.svelte";
+    import Title from "$lib/elements/Title.svelte";
+    import { Appearance, Shape } from "$lib/enums";
     import { initLocale } from "$lib/lang";
     import { onMount } from "svelte";
     import { _ } from 'svelte-i18n';
@@ -21,36 +26,51 @@
 </script>
 
 <div id="auth-recover">
-    <div class="phrase-container">
-        <div class="header">
-            <Label text={$_('pages.auth.recovery.save_warning')} />
-        </div>
-        {#each samplePhrase as word, i}
-            <OrderedPhrase number={i + 1} word={word} loading={loading} />
-        {/each}
+    <div class="header">
+        <Title>Backup your seed!</Title>
+        <Label text={$_('pages.auth.recovery.save_warning')} />
+    </div>
+    <Spacer />
+    {#each samplePhrase as word, i}
+        <OrderedPhrase number={i + 1} word={word} loading={loading} />
+    {/each}
+    <Spacer />
+    <div class="controls">
+        <Button text="Download Backup" appearance={Appearance.Alt} loading={loading} >
+            <Icon icon={Shape.Download} />            
+        </Button>
+        <Button text="Saved it, Next Step" loading={loading} >
+            <Icon icon={Shape.ArrowRight} />            
+        </Button>
     </div>
 </div>
 
 <style lang="scss">
     #auth-recover {
+        align-self: center;
+        align-content: center;
         display: inline-flex;
-        flex-direction: column;
+        flex-direction: row;
+        gap: var(--gap);
+        padding: var(--padding);
+        max-width: var(--max-component-width);
+        flex-wrap: wrap;
         flex: 1;
-        align-items: center;
-        justify-content: center;
 
-        .phrase-container {
+        .header {
+            width: 100%;
+            text-align: center;
             display: inline-flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: var(--gap);
-            padding: var(--padding);
-            max-width: var(--max-component-width);
-            flex-wrap: wrap;
-
-            .header {
-                width: 100%;
-                text-align: center;
-            }
+        }
+        
+        .controls {
+            gap: var(--gap);
+            display: inline-flex;
+            justify-content: space-between;
+            align-items: center;
+            flex: 100%;
         }
     }
 </style>

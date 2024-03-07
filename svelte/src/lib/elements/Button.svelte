@@ -28,12 +28,13 @@
 <button 
     class="button {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {clazz || ''}"
     data-tooltip={tooltip}
-    disabled={disabled}
+    disabled={disabled || loading}
     on:click={onClick}>
         {#if loading}
             <Icon icon={Shape.Refresh} spin />
+        {:else}
+            <slot></slot>
         {/if}
-        <slot></slot>
         {#if text.length > 0}
             {text}
         {/if}
