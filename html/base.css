@@ -25,6 +25,7 @@
 @import url(/html/components/color-swatch/style.css);
 @import url(/html/components/chat-preview/style.css);
 @import url(/html/components/payment/style.css);
+@import url(/html/components/ordered-phrase/style.css);
 
 /* Layouts */
 @import url(/html/layouts/download-queue/style.css);

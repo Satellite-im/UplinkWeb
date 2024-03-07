@@ -3,6 +3,7 @@
     --background: #000;
 
     --animation-speed: 0.2s;
+    --animation-speed-mid: 0.5s;
     --animation-speed-slow: 2s;
     --animation-style: ease;
     
@@ -80,4 +81,5 @@
 
     --shadow-depth: 1px;
     --min-scrollable-height: 200px;
+    --max-component-width: 600px;
 }

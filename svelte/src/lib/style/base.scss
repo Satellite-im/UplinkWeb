@@ -133,6 +133,12 @@ body {
     color: var(--color-muted);
 }
 
+.divider {
+    width: 100%;
+    border: none;
+    border-top: var(--border-width) solid var(--border-color-alt);
+}
+
 .link {
     color: var(--info-color);
 }

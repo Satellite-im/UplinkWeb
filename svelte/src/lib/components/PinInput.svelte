@@ -12,7 +12,7 @@
     export let error: boolean = false;
     export let loading: boolean = false;
     export let scramble: boolean = false;
-    export let show_settings: boolean = false;
+    export let showSettings: boolean = false;
 
     export let min: number = 4;
     export let max: number = 6;
@@ -136,16 +136,17 @@
     {/key}
     <Spacer less />
     <div class="flex-column">
-        <Button outline appearance={Appearance.Alt} on:click={(_) => {
-            show_settings = !show_settings;
+        <Button outline={!showSettings} appearance={Appearance.Alt} on:click={(_) => {
+            showSettings = !showSettings;
         }}>
-            <Icon icon={Shape.ChevronDown} /> Settings
+            <Icon icon={(showSettings) ? Shape.ChevronDown : Shape.ChevronRight} /> Settings
         </Button>
-        <div class="pin-settings flex-column {show_settings ? "hidden" : "visibile"}">
-            <div class="flex-row centered">
+        <div class="pin-settings flex-column {showSettings ? "visible" : "hidden"}">
+            <div class="flex-row setting">
                 <Switch small on={scramble} on:toggle={handleToggleScramble} /> <Label text={$_('pages.auth.unlock.scramble_pin')} />
             </div>
-            <div class="flex-row centered">
+            <hr class="divider" />
+            <div class="flex-row setting">
                 <Switch small /> <Label text="Stay unlocked?" />
             </div>
         </div>
@@ -162,6 +163,33 @@
         justify-content: center;
         align-items: center;
         gap: var(--gap);
+
+        .pin-settings {
+            max-height: fit-content;
+            overflow: hidden;
+            transition: all var(--animation-speed) ease;
+            background-color: var(--background-color);
+            padding: var(--padding);
+            border-radius: var(--border-radius);
+            border: var(--border-width) solid var(--border-color);
+            display: inline-flex;
+            gap: var(--gap-less);
+
+            &.hidden {
+                border: none;
+                padding: 0;
+                max-height: 0;
+            }
+
+            &.visible {
+                max-height: 400px;
+            }
+
+            .settings {
+                display: inline-flex;
+                justify-content: space-between;
+            }
+        }
 
         &.loading {
             cursor: wait;

@@ -27,7 +27,7 @@
         <Label text={(create) ? $_('pages.auth.unlock.choose_pin') : $_('pages.auth.unlock.enter_pin')} />
     {/if}
     <Spacer />
-    <PinInput min={4} max={8} loading={loading} scramble={scramble} />
+    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} />
     <Spacer />
 </div>
 
