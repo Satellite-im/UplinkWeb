@@ -4,7 +4,7 @@
 </script>
 
 {#if text}
-    <div class="loading-text"></div>
+    <div class="loading-text {alt ? "alt" : ""}"></div>
 {:else}
     <div class="pulse-loader {alt ? "alt" : ""}">
         <div></div>
@@ -23,6 +23,10 @@
         opacity: 0.25;
         margin: var(--padding-minimal) 0;
         animation: flash var(--animation-speed-mid) cubic-bezier(0, 0.2, 0.8, 1) infinite;
+
+        &.alt {
+            background-color: var(--color-alt);
+        }
     }
 
     .pulse-loader {
@@ -30,8 +34,8 @@
         justify-content: center;
         align-items: center;
         position: relative;
-        width: calc(var(--icon-size) * 2);
-        height: calc(var(--icon-size) * 2);
+        width: var(--icon-size);
+        height: var(--icon-size);
         
         div {
             position: absolute;

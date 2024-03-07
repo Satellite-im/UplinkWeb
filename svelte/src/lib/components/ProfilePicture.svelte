@@ -1,21 +1,20 @@
 <script lang="ts">
-    import { Appearance, Status } from "$lib/enums";
+    import { Appearance, Size, Status } from "$lib/enums";
 
     export let image: string = "";
     export let notifications: number = 0;
-    export let small: boolean = false;
-    export let smallest: boolean = false;
+    export let size: Size = Size.Medium;
     export let highlight: Appearance = Appearance.Default;
     export let typing: boolean = false;
     export let status: Status = Status.Offline;
 </script>
 
-<div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {small ? "small" : ""} {smallest ? "smallest" : ""}">
+<div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}">
     <img class="profile-image" src={image} alt="">
     {#if typing}
         <div class="typing-indicator"></div>
     {/if}
-    {#if !small && !smallest}
+    {#if size === Size.Medium}
         <div class="status-indicator {status}"></div>
     {/if}
     {#if notifications > 0}
@@ -31,6 +30,11 @@
     background-color: var(--alt-color-alt);
     border-radius: 50%;
     position: relative;
+
+    &.large {
+        height: calc(var(--profile-picture-size) * 2);
+        width:calc(var(--profile-picture-size) * 2);
+    }
 
     &.small {
         height: var(--input-height);

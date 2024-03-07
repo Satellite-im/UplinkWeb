@@ -1,0 +1,33 @@
+.ordered-phrase {
+    display: inline-flex;
+    flex: 1;
+    background-color: var(--alt-color);
+    border-radius: var(--border-radius-minimal);
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding-left: 1.5rem;
+    border: var(--border-width) solid var(--primary-color);
+}
+
+.ordered-phrase .number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: var(--color-alt);
+    font-size: var(--font-size-smaller);
+    padding: 0 var(--padding-less);
+    width: 1.5rem;
+    height: 100%;
+    align-self: flex-start;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.ordered-phrase .word {
+    padding: var(--padding-minimal) var(--padding);
+}

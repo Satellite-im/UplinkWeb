@@ -2,6 +2,7 @@
     import { createEventDispatcher } from 'svelte';
     import { Appearance, Shape } from "../enums/index";
     import Icon from './Icon.svelte';
+    import Loader from './Loader.svelte';
 
     export let tooltip: string | null = "";
     export let disabled: boolean = false;
@@ -31,7 +32,7 @@
     disabled={disabled || loading}
     on:click={onClick}>
         {#if loading}
-            <Icon icon={Shape.Refresh} spin />
+            <Loader />
         {:else}
             <slot></slot>
         {/if}
@@ -43,7 +44,7 @@
 <style lang="scss">
     .button {
         height: var(--input-height);
-        color: var(--color-alt);
+        color: var(--color);
         background-color: var(--primary-color);
         border: var(--border-width) solid var(--border-color);
         border-radius: var(--button-border-radius);
@@ -53,6 +54,7 @@
         display: inline-flex;
         justify-content: center;
         align-items: center;
+        min-width: var(--min-component-width);
         transition: background-color var(--animation-speed) var(--animation-style),
                     color var(--animation-speed) var(--animation-style),
                     border-color var(--animation-speed) var(--animation-style),
@@ -69,6 +71,7 @@
 
         // Modifier classes for icon and round buttons
         &.icon, &.round {
+            min-width: unset;
             padding: unset;
             min-width: var(--input-height);
             min-height: var(--input-height);

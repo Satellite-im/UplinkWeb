@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fade } from 'svelte/transition'; 
     import Loader from "$lib/elements/Loader.svelte";
 
     export let number: number = 0;
@@ -9,16 +10,18 @@
 <div class="ordered-phrase">
     <span class="number">
         {#if loading}
-            <Loader alt />
+            <Loader />
         {:else}
             {number}
         {/if}
     </span>
     <span class="word">
         {#if loading}
-            <Loader text alt />
+            <Loader text />
         {:else}
-            {word}
+            <div in:fade={{ duration: 100 }}>
+                {word}
+            </div>
         {/if}
     </span>
 </div>
@@ -33,18 +36,20 @@
         align-items: center;
         justify-content: center;
         position: relative;
+        height: var(--input-height);
         padding-left: 1.5rem;
         border: var(--border-width) solid var(--primary-color);
+        font-family: 'Secondary';
 
         .number {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             background-color: var(--primary-color);
-            color: var(--color-alt);
+            color: var(--color);
             font-size: var(--font-size-smaller);
             padding: 0 var(--padding-less);
-            width: 1.5rem;
+            width: 1.75rem;
             height: 100%;
             align-self: flex-start;
             position: absolute;

@@ -66,6 +66,7 @@
                 height: var(--switch-size);
                 width: var(--switch-size);
                 left: 0;
+                top: calc(var(--border-width) * -1);
                 border-radius: var(--switch-size);
                 background-color: var(--color);
                 transition: var(--animation-speed);

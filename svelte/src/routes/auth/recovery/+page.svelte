@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import OrderedPhrase from "$lib/components/OrderedPhrase.svelte";
     import Button from "$lib/elements/Button.svelte";
     import Icon from "$lib/elements/Icon.svelte";
@@ -27,7 +28,7 @@
 
 <div id="auth-recover">
     <div class="header">
-        <Title>Backup your seed!</Title>
+        <Title>{$_('pages.auth.recovery.title')}</Title>
         <Label text={$_('pages.auth.recovery.save_warning')} />
     </div>
     <Spacer />
@@ -36,10 +37,18 @@
     {/each}
     <Spacer />
     <div class="controls">
-        <Button text="Download Backup" appearance={Appearance.Alt} loading={loading} >
+        <Button 
+            class="full-width" 
+            text={$_('pages.auth.recovery.download')} 
+            appearance={Appearance.Alt} 
+            loading={loading} >
             <Icon icon={Shape.Download} />            
         </Button>
-        <Button text="Saved it, Next Step" loading={loading} >
+        <Button 
+            class="full-width"
+            text={$_('pages.auth.recovery.next_step')} 
+            loading={loading}
+            on:click={() => goto('/auth/new_account')} >
             <Icon icon={Shape.ArrowRight} />            
         </Button>
     </div>
@@ -71,6 +80,7 @@
             justify-content: space-between;
             align-items: center;
             flex: 100%;
+            flex-wrap: wrap;
         }
     }
 </style>

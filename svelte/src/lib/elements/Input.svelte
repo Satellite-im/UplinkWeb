@@ -25,7 +25,7 @@
         display: inline-flex;
         flex-direction: row;
         transition: all var(--animation-speed);
-        width: fit-content;
+        width: 100%;
 
         .input-container {
             border: var(--border-width) solid var(--border-color);
@@ -38,6 +38,7 @@
             height: var(--input-height);
             transition: all var(--animation-speed);
             padding: 0 var(--padding);
+            flex: 1;
         }
 
         .input {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import Button from "$lib/elements/Button.svelte";
     import { Appearance, Shape } from "$lib/enums";
     import Icon from '$lib/elements/Icon.svelte';
@@ -57,9 +57,16 @@
         updateDisplayDots();
     };
 
+    // Create an event dispatcher
+    const dispatch = createEventDispatcher();
+
+    // Function to dispatch a 'click' event
+    function onSubmit(pin: string) {
+        dispatch('submit', pin);
+    }
     // Placeholder for submit action
     const submitPinValue = () => {
-        console.log("Submitting pin:", pinValue);
+        onSubmit(pinValue);
         clearPinValue();
     };
 
@@ -143,11 +150,11 @@
         </Button>
         <div class="pin-settings flex-column {showSettings ? "visible" : "hidden"}">
             <div class="flex-row setting">
-                <Switch small on={scramble} on:toggle={handleToggleScramble} /> <Label text={$_('pages.auth.unlock.scramble_pin')} />
+                <Switch on={scramble} on:toggle={handleToggleScramble} /> <Label text={$_('pages.auth.unlock.scramble_pin')} />
             </div>
             <hr class="divider" />
             <div class="flex-row setting">
-                <Switch small /> <Label text="Stay unlocked?" />
+                <Switch /> <Label text="Stay unlocked?" />
             </div>
         </div>
     </div>
@@ -174,18 +181,17 @@
             border: var(--border-width) solid var(--border-color);
             display: inline-flex;
             gap: var(--gap-less);
+            justify-content: space-between;
 
             &.hidden {
-                border: none;
-                padding: 0;
-                max-height: 0;
+                opacity: 0;
             }
 
             &.visible {
-                max-height: 400px;
+                opacity: 1;
             }
 
-            .settings {
+            .setting {
                 display: inline-flex;
                 justify-content: space-between;
             }

@@ -2,10 +2,11 @@
     import PinInput from "$lib/components/PinInput.svelte";
     import Label from "$lib/elements/Label.svelte";
     import Spacer from "$lib/elements/Spacer.svelte";
-    import Switch from "$lib/elements/Switch.svelte";
+    import { goto } from '$app/navigation';
     import { initLocale } from "$lib/lang";
     import { onMount } from "svelte";
     import { _ } from 'svelte-i18n';
+    import Logo from "$lib/elements/Logo.svelte";
 
     initLocale();
 
@@ -21,13 +22,17 @@
 </script>
 
 <div id="auth-unlock">
+    <Logo />
+    <Spacer less />
     {#if loading}
         <Label text={$_('generic.loading')} />
     {:else}
         <Label text={(create) ? $_('pages.auth.unlock.choose_pin') : $_('pages.auth.unlock.enter_pin')} />
     {/if}
     <Spacer />
-    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} />
+    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={() => {
+        goto("/auth/recovery");
+    }}/>
     <Spacer />
 </div>
 

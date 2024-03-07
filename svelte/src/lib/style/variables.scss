@@ -1,9 +1,9 @@
 
 :root {
-    --background: #000;
+    --background: #0d0e16;
 
     --animation-speed: 0.2s;
-    --animation-speed-mid: 0.5s;
+    --animation-speed-mid: 1s;
     --animation-speed-slow: 2s;
     --animation-style: ease;
     
@@ -12,20 +12,20 @@
     --color-muted: #b6b5b6;
     --color-alt: #000;
 
-    --focus-color: var(--info-color);
-    --highlight-color: #1e90ff;
+    --focus-color: var(--primary-color);
+    --highlight-color: #4d4dff;
 
-    --primary-color: #ffaf5f;
-    --primary-color-alt: #fcb56d;
+    --primary-color: #4d4dff;
+    --primary-color-alt: #5454fd;
 
-    --alt-color: #262833;
-    --alt-color-alt: #292b37;
+    --alt-color: #1a1e2e;
+    --alt-color-alt: #23293e;
 
     --success-color: #4acfab;
     --success-color-alt: #4edeb8;
 
-    --info-color: #37c7d0;
-    --info-color-alt: #39ccd7;
+    --info-color: #0984e3;
+    --info-color-alt: #1b99fa;
 
     --error-color: #ff6961;
     --error-color-alt: #fa7069;
@@ -33,12 +33,12 @@
     --warning-color: #FFFAA0;
     --warning-color-alt: #fcf8ad;
     
-    --border-color: #282828;
+    --border-color: #1c1d2b;
     --border-color-alt: #4c4b4b;
 
     --tooltip-color: #1b1b1b;
 
-    --input-height: 2.5rem;
+    --input-height: 2.75rem;
     --spacer-size: 2rem;
     --swatch-size: var(--input-height);
 
@@ -52,7 +52,7 @@
     --border-radius-minimal: 0.25rem;
 
     /* Elements */
-    --button-border-radius: 1.2rem;
+    --button-border-radius: 2rem;
     --progress-bar-height: 0.75rem;
     --meter-bar-height: 0.5rem;
     --slider-height: 0.75rem;
@@ -66,7 +66,7 @@
     --gap-less: 0.25rem;
     
     --font-size-max: 3rem;
-    --font-size-large: 2rem;
+    --font-size-large: 1.5rem;
     --font-size: 1rem;
     --font-size-smaller: 0.85rem;
     --font-size-smallest: 0.75rem;
@@ -82,4 +82,7 @@
     --shadow-depth: 1px;
     --min-scrollable-height: 200px;
     --max-component-width: 600px;
+    --min-component-width: 250px;
+
+    --context-width: 300px;
 }
