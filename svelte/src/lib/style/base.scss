@@ -95,12 +95,8 @@ body {
     font-family: "Primary";
     font-size: var(--font-size);
     color: var(--color);
-    display: inline-flex;
-    flex-direction: column;
-    padding: var(--padding);
-    gap: var(--gap);
-    height: 100vh;
     width: 100vw;
+    height: 100vh;
 }
 
 ::selection {
@@ -108,6 +104,7 @@ body {
     background: var(--highlight-color);
     border-radius: var(--border-radius);
 }
+
 
 
 .flex {
@@ -221,13 +218,13 @@ code {
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: var(--background);
+    background: var(--alt-color);
     border-radius: var(--border-radius);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: var(--alt-color);
+    background: var(--alt-color-alt);
     border-radius: var(--border-radius);
 }
 

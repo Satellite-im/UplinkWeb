@@ -12,6 +12,7 @@
     export let icon: boolean = false;
     export let appearance: Appearance = Appearance.Default;
     export let loading: boolean = false;
+    export let small: boolean = false;
 
     // Allow parent to override / add classes
     let clazz = "";
@@ -27,7 +28,7 @@
 </script>
 
 <button 
-    class="button {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {clazz || ''}"
+    class="button {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {small ? "small" : ""} {clazz || ''}"
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click={onClick}>
@@ -43,7 +44,7 @@
 
 <style lang="scss">
     .button {
-        height: var(--input-height);
+        min-height: var(--input-height);
         color: var(--color);
         background-color: var(--primary-color);
         border: var(--border-width) solid var(--border-color);
@@ -139,7 +140,7 @@
         }
 
         // Style variations for button states and themes
-        &.alt, &.success, &.info, &.error, &.outlined, &.transparent {
+        &.alt, &.success, &.info, &.error, &.warning, &.outlined, &.transparent {
             &.alt {
                 background-color: var(--alt-color);
                 color: var(--color);
@@ -149,7 +150,7 @@
                 }
             }
 
-            @each $type in success, info, error {
+            @each $type in success, info, error, warning {
                 &.#{$type} {
                     background-color: var(--#{$type}-color);
                     color: var(--color-alt);
@@ -170,8 +171,8 @@
                     color: var(--color-alt);
                 }
 
-                &.alt, &.success, &.info, &.error {
-                    @each $type in alt, success, info, error {
+                &.alt, &.success, &.info, &.error, &.warning {
+                    @each $type in alt, success, info, error, warning {
                         &.#{$type} {
                             border-color: var(--#{$type}-color);
                             color: var(--#{$type}-color);
@@ -201,9 +202,19 @@
             }
         }
 
+        &.small {
+            min-height: calc(var(--input-height) / 1.5);
+            max-height: calc(var(--input-height) / 1.5);
+
+            &.icon {
+                min-width: calc(var(--input-height) / 1.5);
+                max-width: calc(var(--input-height) / 1.5);
+            }
+        }
+
         // Accessibility support
         &:focus, &:active {
-            box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
+            box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color) inset;
             outline: none;
             border: var(--border-width) solid var(--focus-color);
         }

@@ -1,5 +1,5 @@
 import { Route, Shape } from "$lib/enums";
-import type { NavRoute } from "$lib/types";
+import type { Chat, NavRoute } from "$lib/types";
 
 export let routes: NavRoute[] = [
     {
@@ -13,13 +13,13 @@ export let routes: NavRoute[] = [
         name: "Files"
     },
     {
-        to: Route.Files,
-        icon: Shape.Folder,
-        name: "Files"
+        to: Route.Friends,
+        icon: Shape.Users,
+        name: "Friends"
     },
     {
         to: Route.Wallet,
-        icon: Shape.Cog,
+        icon: Shape.Wallet,
         name: "Wallet"
     },
     {

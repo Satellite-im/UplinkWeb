@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Appearance, Size, Status } from "$lib/enums";
+    import Loader from '$lib/elements/Loader.svelte';
 
     export let image: string = "";
     export let notifications: number = 0;
@@ -7,10 +8,15 @@
     export let highlight: Appearance = Appearance.Default;
     export let typing: boolean = false;
     export let status: Status = Status.Offline;
+    export let loading: boolean = false;
 </script>
 
 <div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}">
-    <img class="profile-image" src={image} alt="">
+    {#if loading}
+        <Loader />
+    {:else}
+        <img class="profile-image" src={image} alt="">
+    {/if}
     {#if typing}
         <div class="typing-indicator"></div>
     {/if}
@@ -30,6 +36,9 @@
     background-color: var(--alt-color-alt);
     border-radius: 50%;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &.large {
         height: calc(var(--profile-picture-size) * 2);

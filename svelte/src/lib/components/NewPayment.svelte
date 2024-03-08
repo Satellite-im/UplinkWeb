@@ -46,12 +46,12 @@
                     <ProfilePicture 
                         size={Size.Smallest}
                         image={recipient.profile.photo.image} />
-                    <p 
+                    <p
                         class="username hover-text"
                         data-hover-text={recipient.name}>
                         {recipient.name}
                     </p>
-                    <Icon 
+                    <Icon
                         icon={Shape.XMark}
                         class="control" />
                 </div>
@@ -171,13 +171,13 @@
                     display: inline-flex;
                     gap: var(--gap-less);
                     align-items: center;
-                    background-color: var(--primary-color);
+                    background-color: var(--info-color);
                     color: var(--color-alt);
                     padding-right: var(--padding-less);
                     border-radius: var(--border-radius-more);
                     max-width: 150px;
                     font-size: var(--font-size);
-                    border: var(--border-width) solid var(--primary-color);
+                    border: var(--border-width) solid var(--info-color);
                     height: fit-content;
 
                     .username {

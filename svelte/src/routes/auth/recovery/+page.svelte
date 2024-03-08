@@ -6,7 +6,7 @@
     import Label from "$lib/elements/Label.svelte";
     import Spacer from "$lib/elements/Spacer.svelte";
     import Title from "$lib/elements/Title.svelte";
-    import { Appearance, Shape } from "$lib/enums";
+    import { Appearance, Route, Shape } from "$lib/enums";
     import { initLocale } from "$lib/lang";
     import { onMount } from "svelte";
     import { _ } from 'svelte-i18n';
@@ -48,7 +48,7 @@
             class="full-width"
             text={$_('pages.auth.recovery.next_step')} 
             loading={loading}
-            on:click={() => goto('/auth/new_account')} >
+            on:click={() => goto(Route.NewAccount)} >
             <Icon icon={Shape.ArrowRight} />            
         </Button>
     </div>

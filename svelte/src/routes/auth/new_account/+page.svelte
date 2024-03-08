@@ -7,7 +7,7 @@
     import Label from "$lib/elements/Label.svelte";
     import Spacer from "$lib/elements/Spacer.svelte";
     import Title from "$lib/elements/Title.svelte";
-    import { Appearance, Shape, Size } from "$lib/enums";
+    import { Appearance, Route, Shape, Size } from "$lib/enums";
     import { initLocale } from "$lib/lang";
     import { onMount } from "svelte";
     import { _ } from 'svelte-i18n';
@@ -48,10 +48,16 @@
             text={$_('controls.go_back')} 
             appearance={Appearance.Alt} 
             loading={loading}
-            on:click={() => goto('/auth/recovery')} >
+            on:click={() => goto(Route.RecoverySeed)} >
             <Icon icon={Shape.ArrowLeft} />            
         </Button>
-        <Button class="full-width" text={$_('pages.auth.new_account.create')} loading={loading} >
+        <Button 
+            class="full-width" 
+            text={$_('pages.auth.new_account.create')} 
+            loading={loading}
+            on:click={(_) => {
+                goto(Route.Chat);
+            }} >
             <Icon icon={Shape.ArrowRight} />            
         </Button>
     </div>

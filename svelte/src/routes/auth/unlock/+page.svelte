@@ -7,6 +7,7 @@
     import { onMount } from "svelte";
     import { _ } from 'svelte-i18n';
     import Logo from "$lib/elements/Logo.svelte";
+    import { Route } from "$lib/enums";
 
     initLocale();
 
@@ -31,7 +32,7 @@
     {/if}
     <Spacer />
     <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={() => {
-        goto("/auth/recovery");
+        goto(Route.RecoverySeed);
     }}/>
     <Spacer />
 </div>

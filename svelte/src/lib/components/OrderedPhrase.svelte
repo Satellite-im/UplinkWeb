@@ -12,14 +12,16 @@
         {#if loading}
             <Loader />
         {:else}
-            {number}
+            <div in:fade={{ duration: 200, delay: number * 75 }}>
+                {number}
+            </div>
         {/if}
     </span>
     <span class="word">
         {#if loading}
             <Loader text />
         {:else}
-            <div in:fade={{ duration: 100 }}>
+            <div in:fade={{ duration: 200, delay: number * 75 }}>
                 {word}
             </div>
         {/if}

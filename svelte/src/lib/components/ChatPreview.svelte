@@ -4,34 +4,59 @@
 
     import { Size, Status } from "$lib/enums";
     import ProfilePicture from './ProfilePicture.svelte';
+    import type { User } from '$lib/types';
+    import { fade } from 'svelte/transition';
+    import Loader from '$lib/elements/Loader.svelte';
 
-    export let photo: string = "";
+    export let users: User[] = [];
     export let status: Status = Status.Offline;
-    export let unreads: number = 0;
+    export let notifications: number = 0;
     export let simpleUnreads: boolean = false;
     export let timestamp: Date = new Date();
-    export let username: string = "";
     export let message: string = "";
+    export let loading: boolean = true;
 
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
+
+    let photo = (users.length > 1) ?  "todo" : users[0].profile.photo.image;
+    let name = (users.length > 1) ? "todo" : users[0].name;
 </script>
 
 <div class="chat-preview">
-    <ProfilePicture image={photo} status={status} size={Size.Small} />
+    <ProfilePicture image={photo} status={status} size={Size.Small} loading={loading} />
     <div class="content">
         <div class="heading">
-            <h3 class="chat-user">{username}</h3>
-            <p class="timestamp">{timeAgo.format(timestamp)}</p>
-            {#if unreads > 0 && !simpleUnreads}
+            <h3 class="chat-user">
+                {#if loading}
+                    <Loader text />
+                {:else}
+                    {name}
+                {/if}
+            </h3>
+            <p class="timestamp">
+                {#if !loading}
+                    {timeAgo.format(timestamp)}
+                {/if}
+            </p>
+            {#if !loading}
+                {#if notifications > 0 && !simpleUnreads}
+                    <!-- svelte-ignore a11y-label-has-associated-control -->
+                    <label class="unreads">{notifications}</label>
+                {:else if notifications > 0 && simpleUnreads}
                 <!-- svelte-ignore a11y-label-has-associated-control -->
-                <label class="unreads">3</label>
-            {:else if unreads > 0 && simpleUnreads}
-              <!-- svelte-ignore a11y-label-has-associated-control -->
-              <label class="unreads simple"></label>
+                <label class="unreads simple"></label>
+                {/if}
             {/if}
         </div>
-        <p class="last-message">{message}</p>
+        <p class="last-message">
+            {#if loading}
+                <Loader text small />
+                <Loader text small />
+            {:else}
+                {message}
+            {/if}
+        </p>
     </div>
 </div>
 
@@ -41,7 +66,7 @@
         flex-direction: row;
         gap: var(--gap);
         background-color: var(--alt-color);
-        padding: var(--padding-less);
+        padding: var(--padding);
         border-radius: var(--border-radius);
         border: var(--border-width) solid var(--border-color);
         user-select: none;
@@ -85,23 +110,25 @@
                         border-radius: calc(var(--label-size) / 2);
                         background-color: var(--primary-color);
                         padding: 0;
+                        box-shadow: 0 0 0 var(--border-width-more) var(--alt-color);
                     }
                 }
             }
 
             .chat-user {
-                display: inline-flex;
                 align-items: center;
                 gap: var(--gap);
                 font-size: var(--text-size);
                 font-weight: bold;
                 white-space: nowrap;
+                min-width: 50%;
             }
 
             .heading .timestamp {
                 font-size: var(--font-size-smallest);
                 color: var(--color-muted);
                 white-space: nowrap;
+                min-width: 30%;
             }
 
             .last-message {

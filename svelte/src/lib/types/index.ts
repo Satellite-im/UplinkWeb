@@ -40,3 +40,11 @@ export type NavRoute = {
     icon: Shape,
     to: Route,
 }
+
+export type Chat = {
+    name: string,
+    notifications: number,
+    users: User[],
+    last_message_at: Date,
+    last_message_preview: string,
+}

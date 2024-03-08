@@ -1,5 +1,5 @@
 import { Appearance, Status } from "$lib/enums";
-import type { User } from "$lib/types";
+import type { Chat, User } from "$lib/types";
 
 const default_user = function(): User {
     return {  
@@ -77,3 +77,42 @@ export const mock_users: Array<User> = [
         }
     }
 ];
+
+
+export let chats: Chat[] = [
+    {
+        name: "",
+        notifications: 4,
+        users: [mock_users[0]],
+        last_message_at: new Date(),
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+        name: "",
+        notifications: 2,
+        users: [mock_users[1]],
+        last_message_at: new Date(),
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+        name: "",
+        notifications: 0,
+        users: [mock_users[2]],
+        last_message_at: new Date(),
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+        name: "",
+        notifications: 0,
+        users: [mock_users[3]],
+        last_message_at: new Date(),
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+        name: "",
+        notifications: 0,
+        users: [mock_users[4]],
+        last_message_at: new Date(),
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+]
