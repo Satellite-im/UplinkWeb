@@ -5,6 +5,7 @@
     import Icon from "$lib/elements/Icon.svelte";
     import Label from "$lib/elements/Label.svelte";
     import Spacer from "$lib/elements/Spacer.svelte";
+    import Text from "$lib/elements/Text.svelte";
     import Title from "$lib/elements/Title.svelte";
     import { Appearance, Route, Shape } from "$lib/enums";
     import { initLocale } from "$lib/lang";
@@ -29,7 +30,7 @@
 <div id="auth-recover">
     <div class="header">
         <Title>{$_('pages.auth.recovery.title')}</Title>
-        <Label text={$_('pages.auth.recovery.save_warning')} />
+        <Text muted>{$_('pages.auth.recovery.save_warning')}</Text>
     </div>
     <Spacer />
     {#each samplePhrase as word, i}
@@ -58,6 +59,7 @@
     #auth-recover {
         align-self: center;
         align-content: center;
+        justify-content: center;
         display: inline-flex;
         flex-direction: row;
         gap: var(--gap);

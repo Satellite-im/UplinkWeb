@@ -222,7 +222,7 @@
                 display: inline-block;
 
                 &.filled {
-                    background-color: var(--info-color);
+                    background-color: var(--primary-color);
                 }
             }
 

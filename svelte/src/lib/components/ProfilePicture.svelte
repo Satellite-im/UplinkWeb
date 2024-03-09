@@ -33,6 +33,8 @@
 .profile-picture {
     height: var(--profile-picture-size);
     width: var(--profile-picture-size);
+    min-height: var(--profile-picture-size);
+    min-width: var(--profile-picture-size);
     background-color: var(--alt-color-alt);
     border-radius: 50%;
     position: relative;
@@ -43,11 +45,15 @@
     &.large {
         height: calc(var(--profile-picture-size) * 2);
         width:calc(var(--profile-picture-size) * 2);
+        min-height: calc(var(--profile-picture-size) * 2);
+        min-width:calc(var(--profile-picture-size) * 2);
     }
 
     &.small {
         height: var(--input-height);
         width: var(--input-height);
+        min-height: var(--input-height);
+        min-width: var(--input-height);
     }
 
     &.smallest {
@@ -132,8 +138,8 @@
     .typing-indicator {
         position: absolute;
         z-index: 2;
-        top: calc(var(--border-width-more) * -1);
-        left: calc(var(--border-width-more) * -1 / 1.5);
+        top: 0;
+        left: 0;
         width: 100%;
         min-width: 100%;
         height: 100%;

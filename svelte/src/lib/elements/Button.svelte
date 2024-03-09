@@ -3,6 +3,7 @@
     import { Appearance, Shape } from "../enums/index";
     import Icon from './Icon.svelte';
     import Loader from './Loader.svelte';
+    import Text from './Text.svelte';
 
     export let tooltip: string | null = "";
     export let disabled: boolean = false;
@@ -13,6 +14,7 @@
     export let appearance: Appearance = Appearance.Default;
     export let loading: boolean = false;
     export let small: boolean = false;
+    export let fill: boolean = false;
 
     // Allow parent to override / add classes
     let clazz = "";
@@ -27,8 +29,8 @@
     }
 </script>
 
-<button 
-    class="button {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {small ? "small" : ""} {clazz || ''}"
+<button
+    class="button {fill ? "fill" : ""} {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {small ? "small" : ""} {clazz || ''}"
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click={onClick}>
@@ -38,7 +40,7 @@
             <slot></slot>
         {/if}
         {#if text.length > 0}
-            {text}
+            <Text appearance={appearance} loading={loading}>{text}</Text>
         {/if}
 </button>
 
@@ -55,11 +57,17 @@
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        min-width: var(--min-component-width);
         transition: background-color var(--animation-speed) var(--animation-style),
                     color var(--animation-speed) var(--animation-style),
                     border-color var(--animation-speed) var(--animation-style),
                     all var(--animation-speed);
+
+        &.fill {
+            flex: 1;
+            width: 100%;
+            justify-content: flex-start;
+            
+        }
 
         &.icon.rotate_on_hover:hover {
             transform: rotate(90deg);
@@ -95,6 +103,7 @@
             position: relative;
 
             &:before {
+                display: none;
                 content: attr(data-tooltip);
                 position: absolute;
                 bottom: calc(100% + var(--gap));
@@ -137,6 +146,12 @@
             &:hover:before {
                 opacity: 1;
             }
+
+            &.icon {
+                &:before {
+                    display: block;
+                }
+            }
         }
 
         // Style variations for button states and themes
@@ -152,11 +167,15 @@
 
             @each $type in success, info, error, warning {
                 &.#{$type} {
+                    border-color: var(--#{$type}-color);
                     background-color: var(--#{$type}-color);
                     color: var(--color-alt);
 
                     &:hover {
                         background-color: var(--#{$type}-color-alt);
+                        :global(.text) {
+                            color: var(--color-alt);
+                        }
                     }
                 }
             }

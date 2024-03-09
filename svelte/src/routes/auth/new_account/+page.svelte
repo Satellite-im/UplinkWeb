@@ -6,6 +6,7 @@
     import Input from "$lib/elements/Input.svelte";
     import Label from "$lib/elements/Label.svelte";
     import Spacer from "$lib/elements/Spacer.svelte";
+    import Text from "$lib/elements/Text.svelte";
     import Title from "$lib/elements/Title.svelte";
     import { Appearance, Route, Shape, Size } from "$lib/enums";
     import { initLocale } from "$lib/lang";
@@ -26,7 +27,7 @@
 <div id="auth-recover">
     <div class="header">
         <Title>{$_('pages.auth.new_account.title')}</Title>
-        <Label text={$_('pages.auth.new_account.subtext')} />
+        <Text muted>{$_('pages.auth.new_account.subtext')}</Text>
     </div>
     <Spacer />
     <div class="main">

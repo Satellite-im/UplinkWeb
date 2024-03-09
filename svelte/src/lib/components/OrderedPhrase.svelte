@@ -1,6 +1,8 @@
 <script lang="ts">
     import { fade } from 'svelte/transition'; 
     import Loader from "$lib/elements/Loader.svelte";
+    import { animationDelay, animationDuration } from '$lib/globals/animations';
+    import Text from '$lib/elements/Text.svelte';
 
     export let number: number = 0;
     export let word: string = "UNKNOWN";
@@ -12,7 +14,7 @@
         {#if loading}
             <Loader />
         {:else}
-            <div in:fade={{ duration: 200, delay: number * 75 }}>
+            <div in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
                 {number}
             </div>
         {/if}
@@ -21,8 +23,8 @@
         {#if loading}
             <Loader text />
         {:else}
-            <div in:fade={{ duration: 200, delay: number * 75 }}>
-                {word}
+            <div in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
+                <Text>{word}</Text>
             </div>
         {/if}
     </span>

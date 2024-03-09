@@ -7,6 +7,7 @@
     import type { User } from '$lib/types';
     import { fade } from 'svelte/transition';
     import Loader from '$lib/elements/Loader.svelte';
+    import Text from '$lib/elements/Text.svelte';
 
     export let users: User[] = [];
     export let status: Status = Status.Offline;
@@ -14,38 +15,30 @@
     export let simpleUnreads: boolean = false;
     export let timestamp: Date = new Date();
     export let message: string = "";
-    export let loading: boolean = true;
+    export let loading: boolean = false;
 
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
 
     let photo = (users.length > 1) ?  "todo" : users[0].profile.photo.image;
     let name = (users.length > 1) ? "todo" : users[0].name;
+
+    let cta = notifications > 0;
 </script>
 
-<div class="chat-preview">
+<button class="chat-preview {cta ? "cta" : ""}">
     <ProfilePicture image={photo} status={status} size={Size.Small} loading={loading} />
     <div class="content">
         <div class="heading">
-            <h3 class="chat-user">
-                {#if loading}
-                    <Loader text />
-                {:else}
-                    {name}
-                {/if}
-            </h3>
-            <p class="timestamp">
-                {#if !loading}
-                    {timeAgo.format(timestamp)}
-                {/if}
-            </p>
+            <Text class="chat-user" loading={loading}>{name}</Text>
+            <Text class="timestamp" loading={loading} size={Size.Smallest} muted>
+                {timeAgo.format(timestamp)}
+            </Text>
             {#if !loading}
                 {#if notifications > 0 && !simpleUnreads}
-                    <!-- svelte-ignore a11y-label-has-associated-control -->
-                    <label class="unreads">{notifications}</label>
+                    <span class="unreads">{notifications}</span>
                 {:else if notifications > 0 && simpleUnreads}
-                <!-- svelte-ignore a11y-label-has-associated-control -->
-                <label class="unreads simple"></label>
+                    <span class="unreads simple"></span>
                 {/if}
             {/if}
         </div>
@@ -54,25 +47,34 @@
                 <Loader text small />
                 <Loader text small />
             {:else}
-                {message}
+                <Text size={Size.Small} loading={loading}>{message}</Text>
             {/if}
         </p>
     </div>
-</div>
+</button>
 
 <style lang="scss">
     .chat-preview {
         display: inline-flex;
         flex-direction: row;
         gap: var(--gap);
-        background-color: var(--alt-color);
-        padding: var(--padding);
+        background-color: var(--background-alt);
+        padding: var(--padding-less);
         border-radius: var(--border-radius);
         border: var(--border-width) solid var(--border-color);
         user-select: none;
         transition: all var(--animation-speed);
+        min-width: var(--min-component-width);
 
-        p, h3 {
+        &.cta {
+            background-color: var(--alt-color);
+
+            &:hover {
+                border: var(--border-width) solid var(--primary-color);
+            }
+        }
+
+        p {
             margin: 0;
         }
 
@@ -90,11 +92,9 @@
                 gap: var(--gap);
                 width: 100%;
                 position: relative;
+                justify-content: space-between;
 
                 .unreads {
-                    position: absolute;
-                    right: calc(var(--padding-less) * -0.5);
-                    top: calc(var(--padding-less) * -0.5);
                     background-color: var(--error-color);
                     font-size: var(--font-size-smaller);
                     font-family: "Secondary";
@@ -105,8 +105,8 @@
                         content: none;
                         color: var(--primary-color);
                         font-size: 0rem;
-                        height: var(--label-size);
-                        width: var(--label-size);
+                        height: var(--font-size-smallest);
+                        width: var(--font-size-smallest);
                         border-radius: calc(var(--label-size) / 2);
                         background-color: var(--primary-color);
                         padding: 0;
@@ -115,20 +115,19 @@
                 }
             }
 
-            .chat-user {
+            :global(.chat-user) {
                 align-items: center;
                 gap: var(--gap);
                 font-size: var(--text-size);
                 font-weight: bold;
                 white-space: nowrap;
-                min-width: 50%;
+                flex: 1;
+                display: block;
+                max-width: unset;
             }
 
-            .heading .timestamp {
-                font-size: var(--font-size-smallest);
-                color: var(--color-muted);
+            :global(.timestamp) {
                 white-space: nowrap;
-                min-width: 30%;
             }
 
             .last-message {

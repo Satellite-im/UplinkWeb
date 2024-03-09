@@ -6,8 +6,10 @@
     import Loader from "$lib/elements/Loader.svelte";
     import { Appearance, Route, Shape, Status } from "$lib/enums";
     import { initLocale } from "$lib/lang";
+    import Navigation from "$lib/layouts/Navigation.svelte";
     import Sidebar from "$lib/layouts/Sidebar.svelte";
     import Slimbar from "$lib/layouts/Slimbar.svelte";
+    import { settingsRoutes } from "$lib/mock/routes";
     import { chats } from "$lib/mock/users";
     import { onMount } from "svelte";
     import { _ } from 'svelte-i18n';
@@ -28,50 +30,25 @@
     }
 </script>
 
-<div id="chat">
+<div id="settings">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} />
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
-        <Button outline appearance={Appearance.Alt} text="Market">
-            <Icon icon={Shape.Shop} />
-        </Button>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
+        <Navigation routes={settingsRoutes} vertical />
+    </Sidebar>
 
-        <div class="content-header">
-            <Label text="Chats" />
-            <Button icon small tooltip="Create Chat">
-                <Icon icon={Shape.ChatPlus} />
-            </Button>
-        </div>
-
-        {#each chats as chat}
-            <ChatPreview
-                loading={loading}
-                users={chat.users}
-                simpleUnreads
-                notifications={chat.notifications}
-                timestamp={chat.last_message_at}
-                message={chat.last_message_preview} />
-        {/each}
-        </Sidebar>
-    <div class="right">
-        Right
+    <div class="content">
+        <slot></slot>
     </div>
 </div>
 
 <style lang="scss">
-    #chat {
+    #settings {
         display: flex;
         width: 100vw;
         height: 100vh;
         margin: 0;
 
-        .content-header {
-            display: inline-flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .right {
+        .content {
             flex: 1;
         }
     }

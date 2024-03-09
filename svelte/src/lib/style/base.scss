@@ -95,6 +95,8 @@ body {
     font-family: "Primary";
     font-size: var(--font-size);
     color: var(--color);
+    display: flex;
+    justify-content: center;
     width: 100vw;
     height: 100vh;
 }
@@ -104,8 +106,6 @@ body {
     background: var(--highlight-color);
     border-radius: var(--border-radius);
 }
-
-
 
 .flex {
     flex: 1;

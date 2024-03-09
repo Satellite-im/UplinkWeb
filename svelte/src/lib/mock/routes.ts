@@ -1,11 +1,11 @@
-import { Route, Shape } from "$lib/enums";
-import type { Chat, NavRoute } from "$lib/types";
+import { Route, SettingsRoute, Shape } from "$lib/enums";
+import type { NavRoute } from "$lib/types";
 
 export let routes: NavRoute[] = [
     {
-        to: Route.Chat,
-        icon: Shape.ChatBubble,
-        name: "Chat"
+        to: Route.Wallet,
+        icon: Shape.Wallet,
+        name: "Wallet"
     },
     {
         to: Route.Files,
@@ -13,18 +13,41 @@ export let routes: NavRoute[] = [
         name: "Files"
     },
     {
+        to: Route.Chat,
+        icon: Shape.ChatBubble,
+        name: "Chat"
+    },
+    {
         to: Route.Friends,
         icon: Shape.Users,
         name: "Friends"
-    },
-    {
-        to: Route.Wallet,
-        icon: Shape.Wallet,
-        name: "Wallet"
     },
     {
         to: Route.Settings,
         icon: Shape.Cog,
         name: "Settings"
     },
+];
+
+export let settingsRoutes: NavRoute[] = [
+    {
+        to: SettingsRoute.Profile,
+        icon: Shape.ChatBubble,
+        name: "Chat"
+    },
+    {
+        to: SettingsRoute.Preferences,
+        icon: Shape.Preferences,
+        name: "Preferences"
+    },
+    {
+        to: SettingsRoute.AudioVideo,
+        icon: Shape.Speaker,
+        name: "Audio & Video"
+    },
+    {
+        to: SettingsRoute.Keybinds,
+        icon: Shape.Keybind,
+        name: "Keybinds"
+    }
 ];

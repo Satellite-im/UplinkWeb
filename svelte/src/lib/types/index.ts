@@ -1,4 +1,4 @@
-import type { Appearance, Route, Shape, Status } from "$lib/enums"
+import type { Appearance, Route, SettingsRoute, Shape, Status } from "$lib/enums"
 
 export type SelectOption = {
     value: string,
@@ -38,7 +38,7 @@ export type User = {
 export type NavRoute = {
     name: string,
     icon: Shape,
-    to: Route,
+    to: Route | SettingsRoute,
 }
 
 export type Chat = {

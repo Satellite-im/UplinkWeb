@@ -4,7 +4,7 @@
     import { Appearance, Shape } from "$lib/enums";
 
     export let icon: Shape = Shape.Beaker;
-    // export let percent: number = 0;
+    export let percent: number = 0;
     export let appearance: Appearance = Appearance.Default;
 </script>
 
