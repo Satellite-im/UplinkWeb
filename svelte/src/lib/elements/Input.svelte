@@ -4,13 +4,14 @@
     // export let loading: boolean = false;
     export let placeholder: string = "";
     export let alt: boolean = false;
+    export let rounded: boolean = false;
     export let highlight: Appearance = Appearance.Default;
     let clazz = "";
 	export { clazz as class };
 </script>
 
-<div class="input-group  {alt ? "alt" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ''}">
-    <div class="input-container {clazz || ''}">
+<div class="input-group {alt ? "alt" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ''}">
+    <div class="input-container {rounded ? "rounded" : ""} {clazz || ''}">
         <slot></slot>
         <input
             class="input"
@@ -39,6 +40,10 @@
             transition: all var(--animation-speed);
             padding: 0 var(--padding);
             flex: 1;
+
+            &.rounded {
+                border-radius: var(--border-radius-more);
+            }
         }
 
         .input {

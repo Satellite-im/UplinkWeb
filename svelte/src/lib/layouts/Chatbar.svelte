@@ -10,7 +10,7 @@
         <Icon icon={Shape.Plus} />
     </Button>
 
-    <Input alt placeholder="Say something..." />
+    <Input alt placeholder="Say something..." rounded />
 
     <Button icon appearance={Appearance.Alt} tooltip="Send Coin">
         <Icon icon={Shape.SendCoin} />
@@ -30,12 +30,8 @@
         display: inline-flex;
         align-items: center;
         padding: var(--padding);
-        gap: var(--gap-less);
+        gap: var(--gap);
         width: 100%;
         border-top: var(--border-width) solid var(--border-color);
-
-        :global(.input-group .input-container) {
-            border-radius: var(--border-radius-more);
-        }
     }
 </style>
