@@ -6,6 +6,7 @@
     import Loader from "$lib/elements/Loader.svelte";
     import { Appearance, Route, Shape, Status } from "$lib/enums";
     import { initLocale } from "$lib/lang";
+    import Chatbar from "$lib/layouts/Chatbar.svelte";
     import Sidebar from "$lib/layouts/Sidebar.svelte";
     import Slimbar from "$lib/layouts/Slimbar.svelte";
     import { chats } from "$lib/mock/users";
@@ -53,7 +54,10 @@
         {/each}
         </Sidebar>
     <div class="right">
-        Right
+        <div class="content">
+            Content
+        </div>
+        <Chatbar />
     </div>
 </div>
 
@@ -64,6 +68,7 @@
         height: 100vh;
         margin: 0;
 
+
         .content-header {
             display: inline-flex;
             flex-direction: row;
@@ -73,6 +78,11 @@
 
         .right {
             flex: 1;
+            display: inline-flex;
+            flex-direction: column;
+            .content {
+                flex: 1;
+            }
         }
     }
 </style>

@@ -32,8 +32,8 @@ export let routes: NavRoute[] = [
 export let settingsRoutes: NavRoute[] = [
     {
         to: SettingsRoute.Profile,
-        icon: Shape.ChatBubble,
-        name: "Chat"
+        icon: Shape.Profile,
+        name: "Profile"
     },
     {
         to: SettingsRoute.Preferences,
