@@ -152,16 +152,6 @@ body {
     color: var(--info-color);
 }
 
-.username,
-.subtext {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-            line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    font-size: var(--font-size-smaller);
-}
-
 .username {
     font-size: var(--font-size);
 }
@@ -218,7 +208,7 @@ code {
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: var(--alt-color);
+    background: var(--background-alt);
     border-radius: var(--border-radius);
 }
 

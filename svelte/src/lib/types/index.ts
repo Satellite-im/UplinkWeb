@@ -44,6 +44,7 @@ export type NavRoute = {
 export type Chat = {
     name: string,
     notifications: number,
+    activity: boolean,
     users: User[],
     last_message_at: Date,
     last_message_preview: string,

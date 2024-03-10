@@ -10,12 +10,12 @@
     import Text from '$lib/elements/Text.svelte';
 
     export let users: User[] = [];
-    export let status: Status = Status.Offline;
     export let notifications: number = 0;
     export let simpleUnreads: boolean = false;
     export let timestamp: Date = new Date();
     export let message: string = "";
     export let loading: boolean = false;
+    export let typing: boolean = false;
 
     TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
@@ -27,7 +27,7 @@
 </script>
 
 <button class="chat-preview {cta ? "cta" : ""}">
-    <ProfilePicture image={photo} status={status} size={Size.Small} loading={loading} />
+    <ProfilePicture typing={typing} image={photo} status={users[0].profile.status} size={Size.Small} loading={loading} />
     <div class="content">
         <div class="heading">
             <Text class="chat-user" loading={loading}>{name}</Text>

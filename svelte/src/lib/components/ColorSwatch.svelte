@@ -27,13 +27,14 @@
                 padding: var(--padding-less);
                 border-radius: var(--border-radius-minimal);
                 border: var(--border-width) solid var(--border-color);
-                background: var(--tooltip-color);
+                background-color: var(--opaque-color);
+                backdrop-filter: blur(var(--blur-radius));
                 color: var(--color);
                 font-size: var(--font-size-smaller);
                 text-align: center;
                 display: none;
                 height: fit-content;
-                z-index: 3;
+                z-index: 2;
             }
 
             &:hover:before {

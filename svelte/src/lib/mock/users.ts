@@ -24,7 +24,7 @@ export const mock_users: Array<User> = [
             photo: {
                 image: "/src/lib/assets/moon.png"
             },
-            status: Status.Idle,
+            status: Status.Online,
             status_message: "There is no cheese on this moon."
         }
     },
@@ -83,6 +83,7 @@ export let chats: Chat[] = [
     {
         name: "",
         notifications: 4,
+        activity: false,
         users: [mock_users[0]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
@@ -90,12 +91,14 @@ export let chats: Chat[] = [
     {
         name: "",
         notifications: 2,
+        activity: true,
         users: [mock_users[1]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     },
     {
         name: "",
+        activity: false,
         notifications: 0,
         users: [mock_users[2]],
         last_message_at: new Date(),
@@ -103,6 +106,7 @@ export let chats: Chat[] = [
     },
     {
         name: "",
+        activity: false,
         notifications: 0,
         users: [mock_users[3]],
         last_message_at: new Date(),
@@ -110,6 +114,7 @@ export let chats: Chat[] = [
     },
     {
         name: "",
+        activity: false,
         notifications: 0,
         users: [mock_users[4]],
         last_message_at: new Date(),

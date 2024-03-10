@@ -48,7 +48,7 @@
         width: var(--sidebar-width);
         display: inline-flex;
         flex-direction: column;
-        padding: var(--padding);
+        padding: var(--padding-less);
         gap: var(--gap);
         border-right: var(--border-width) solid var(--border-color);
 

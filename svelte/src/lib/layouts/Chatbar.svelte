@@ -29,7 +29,7 @@
     .chatbar {
         display: inline-flex;
         align-items: center;
-        padding: var(--padding);
+        padding: var(--padding-less);
         gap: var(--gap);
         width: 100%;
         border-top: var(--border-width) solid var(--border-color);

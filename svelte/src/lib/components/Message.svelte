@@ -29,7 +29,7 @@
         justify-content: center;
         display: inline-flex;
         gap: var(--gap);
-        color: var(--color-alt);
+        color: var(--color);
 
         &.remote {
             background-color: var(--alt-color);

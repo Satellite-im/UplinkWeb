@@ -12,7 +12,7 @@
         width: 100%;
 
         &.less {
-            height: 1rem;
+            height: calc(var(--spacer-size) / 3);
             width: 100%;
         }
     }

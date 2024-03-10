@@ -33,7 +33,7 @@
         background-color: var(--background-alt);
         border: var(--border-width) solid var(--success-color);
         border-radius: var(--border-radius);
-        padding: var(--padding);
+        padding: var(--padding-less);
         display: inline-flex;
         gap: var(--gap);
         min-width: var(--min-component-width);

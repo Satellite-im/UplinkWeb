@@ -25,6 +25,7 @@
                 fill={!icons}
                 tooltip={route.name}
                 icon={icons}
+                outline={!icons}
                 appearance={(activeRoute === route.to) ? Appearance.Primary : Appearance.Alt }
                 on:click={(_) => handleNavigate(route)}>
                 <Icon icon={route.icon} />

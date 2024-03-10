@@ -20,7 +20,7 @@
     {#if typing}
         <div class="typing-indicator"></div>
     {/if}
-    {#if size === Size.Medium}
+    {#if size === Size.Medium || size === Size.Small || size === Size.Large}
         <div class="status-indicator {status}"></div>
     {/if}
     {#if notifications > 0}
@@ -42,11 +42,11 @@
     align-items: center;
     justify-content: center;
 
-    &.large {
-        height: calc(var(--profile-picture-size) * 2);
-        width:calc(var(--profile-picture-size) * 2);
-        min-height: calc(var(--profile-picture-size) * 2);
-        min-width:calc(var(--profile-picture-size) * 2);
+    &.largest {
+        height: calc(var(--profile-picture-size) * 3);
+        width:calc(var(--profile-picture-size) * 3);
+        min-height: calc(var(--profile-picture-size) * 3);
+        min-width:calc(var(--profile-picture-size) * 3);
     }
 
     &.small {
@@ -75,14 +75,14 @@
     }
 
     .status-indicator {
-        height: var(--font-size);
-        width: var(--font-size);
+        height: var(--font-size-smaller);
+        width: var(--font-size-smaller);
         background-color: var(--alt-color);
         border-radius: calc(var(--font-size) / 2);
         position: absolute;
         bottom: 0;
         right: 0;
-        z-index: 3;
+        z-index: 1;
         box-shadow: 0 0 0 var(--border-width-more) var(--background);
 
         &.online {
@@ -99,6 +99,19 @@
 
         &.do-not-disturb {
             background-color: var(--error-color);
+        }
+    }
+
+    &.large {
+        height: calc(var(--profile-picture-size) * 2);
+        width:calc(var(--profile-picture-size) * 2);
+        min-height: calc(var(--profile-picture-size) * 2);
+        min-width:calc(var(--profile-picture-size) * 2);
+
+        .status-indicator {
+            height: var(--font-size-large);
+            width: var(--font-size-large);
+            border-radius: calc(var(--font-size-large) / 2);
         }
     }
 
@@ -137,7 +150,7 @@
 
     .typing-indicator {
         position: absolute;
-        z-index: 2;
+        z-index: 1;
         top: 0;
         left: 0;
         width: 100%;

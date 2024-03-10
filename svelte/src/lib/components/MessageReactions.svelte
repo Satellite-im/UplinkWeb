@@ -51,7 +51,6 @@
                 left: 50%;
                 transform: translate(-50%, 0);
                 padding: 0 var(--padding-less);
-                background-color: var(--alt-color);
                 border-radius: var(--border-radius);
                 display: none;
                 flex-direction: row;
@@ -59,6 +58,8 @@
                 align-items: center;
                 color: var(--color);
                 gap: var(--gap);
+                background-color: var(--opaque-color);
+                backdrop-filter: blur(var(--blur-radius));
 
                 .description {
                     font-size: var(--label-size);
@@ -76,7 +77,7 @@
             @each $type in primary, success, info, error {
                 &.highlight-#{$type} {
                     background-color: var(--#{$type}-color);
-                    color: var(--color-alt);
+                    color: var(--color);
 
                     &:hover {
                         background-color: var(--#{$type}-color-alt);

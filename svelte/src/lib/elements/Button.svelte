@@ -109,18 +109,19 @@
                 bottom: calc(100% + var(--gap));
                 white-space: nowrap;
                 width: fit-content;
-                padding: var(--padding-less);
+                padding: var(--padding-minimal) var(--padding-less);
                 border-radius: var(--border-radius-minimal);
                 border: var(--border-width) solid var(--border-color);
-                background: var(--tooltip-color);
                 color: var(--color);
                 font-size: var(--font-size-smaller);
                 text-align: center;
                 opacity: 0;
                 pointer-events: none;
-                height: fit-content;
-                z-index: 3;
+                z-index: 2;
                 transition: all var(--animation-speed);
+                background-color: var(--opaque-color);
+                backdrop-filter: blur(var(--blur-radius));
+
             }
 
             &.tooltip-right:before {
@@ -149,7 +150,7 @@
 
             &.icon {
                 &:before {
-                    display: block;
+                    display: flex;
                 }
             }
         }

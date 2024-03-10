@@ -56,7 +56,7 @@
     opacity: 0;
     pointer-events: none;
     height: fit-content;
-    z-index: 3;
+    z-index: 1000;
     transition: all var(--animation-speed);
 }
 .button.tooltip-right:before {

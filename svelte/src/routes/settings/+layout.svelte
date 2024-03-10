@@ -1,19 +1,12 @@
 <script lang="ts">
-    import ChatPreview from "$lib/components/ChatPreview.svelte";
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Label from "$lib/elements/Label.svelte";
-    import Loader from "$lib/elements/Loader.svelte";
-    import { Appearance, Route, Shape, Status } from "$lib/enums";
+    import { Route } from "$lib/enums";
     import { initLocale } from "$lib/lang";
     import Navigation from "$lib/layouts/Navigation.svelte";
     import Sidebar from "$lib/layouts/Sidebar.svelte";
     import Slimbar from "$lib/layouts/Slimbar.svelte";
     import { settingsRoutes } from "$lib/mock/routes";
-    import { chats } from "$lib/mock/users";
     import { onMount } from "svelte";
     import { _ } from 'svelte-i18n';
-    import { fade } from "svelte/transition";
 
     initLocale();
 
@@ -31,7 +24,7 @@
 </script>
 
 <div id="settings">
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} />
+    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
         <Navigation routes={settingsRoutes} vertical />
     </Sidebar>

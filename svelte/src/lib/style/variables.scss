@@ -45,6 +45,9 @@
 
     --disabled-opacity: 0.75;
 
+    --opaque-color: #21263ab3;
+    --blur-radius: 5px;
+
     /* Border Radius / Corners */
     --border-width: 1px;
     --border-width-more: 3px;
@@ -78,7 +81,8 @@
 
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
-    --sidebar-width: 400px;
+    --sidebar-width: 360px;
+    --profile-width: 300px;
 
     --shadow-depth: 1px;
     --min-scrollable-height: 200px;

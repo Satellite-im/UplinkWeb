@@ -3,7 +3,6 @@
     import OrderedPhrase from "$lib/components/OrderedPhrase.svelte";
     import Button from "$lib/elements/Button.svelte";
     import Icon from "$lib/elements/Icon.svelte";
-    import Label from "$lib/elements/Label.svelte";
     import Spacer from "$lib/elements/Spacer.svelte";
     import Text from "$lib/elements/Text.svelte";
     import Title from "$lib/elements/Title.svelte";
