@@ -13,9 +13,7 @@
 
     initLocale();
 
-    let create = false;
     let loading = false;
-    let scramble = true;
 
     // TODO: Mock
     onMount(() => {
@@ -37,18 +35,18 @@
     {/each}
     <Spacer />
     <div class="controls">
-        <Button 
-            class="full-width" 
-            text={$_('pages.auth.recovery.download')} 
-            appearance={Appearance.Alt} 
-            loading={loading} >
+        <Button
+            class="full-width"
+            text={$_('pages.auth.recovery.download')}
+            appearance={Appearance.Alt}
+            loading={loading}>
             <Icon icon={Shape.Download} />            
         </Button>
         <Button 
             class="full-width"
             text={$_('pages.auth.recovery.next_step')} 
             loading={loading}
-            on:click={() => goto(Route.NewAccount)} >
+            on:click={() => goto(Route.NewAccount)}>
             <Icon icon={Shape.ArrowRight} />            
         </Button>
     </div>

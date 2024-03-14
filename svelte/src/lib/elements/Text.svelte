@@ -38,6 +38,7 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             font-size: var(--font-size-smaller);
+            flex: 1;
         }
 
         &.small, &.smaller, &.smallest, &.large, &.larger {

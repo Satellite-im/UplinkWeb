@@ -66,7 +66,7 @@ export const mock_users: Array<User> = [
     },
     {
         ...default_user(),
-        name: "Daring Darius",
+        name: "Daring DariusDariusDariusDariusDariusDariusDariusDarius",
         key: "did:key:z7YkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         profile: {
             photo: {

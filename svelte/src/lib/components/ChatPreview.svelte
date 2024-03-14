@@ -1,11 +1,9 @@
 <script lang="ts">
     import TimeAgo from 'javascript-time-ago'
-    import en from 'javascript-time-ago/locale/en'
 
-    import { Size, Status } from "$lib/enums";
+    import { Size } from "$lib/enums";
     import ProfilePicture from './ProfilePicture.svelte';
     import type { User } from '$lib/types';
-    import { fade } from 'svelte/transition';
     import Loader from '$lib/elements/Loader.svelte';
     import Text from '$lib/elements/Text.svelte';
 
@@ -17,7 +15,6 @@
     export let loading: boolean = false;
     export let typing: boolean = false;
 
-    TimeAgo.addDefaultLocale(en)
     const timeAgo = new TimeAgo('en-US')
 
     let photo = (users.length > 1) ?  "todo" : users[0].profile.photo.image;
@@ -30,17 +27,19 @@
     <ProfilePicture typing={typing} image={photo} status={users[0].profile.status} size={Size.Small} loading={loading} />
     <div class="content">
         <div class="heading">
-            <Text class="chat-user" loading={loading}>{name}</Text>
-            <Text class="timestamp" loading={loading} size={Size.Smallest} muted>
-                {timeAgo.format(timestamp)}
-            </Text>
-            {#if !loading}
-                {#if notifications > 0 && !simpleUnreads}
-                    <span class="unreads">{notifications}</span>
-                {:else if notifications > 0 && simpleUnreads}
-                    <span class="unreads simple"></span>
+            <Text class="chat-user" singleLine loading={loading}>{name}</Text>
+            <div class="right">
+                <Text class="timestamp" loading={loading} size={Size.Smallest} muted>
+                    {timeAgo.format(timestamp)}
+                </Text>
+                {#if !loading}
+                    {#if notifications > 0 && !simpleUnreads}
+                        <span class="unreads">{notifications}</span>
+                    {:else if notifications > 0 && simpleUnreads}
+                        <span class="unreads simple"></span>
+                    {/if}
                 {/if}
-            {/if}
+            </div>
         </div>
         <p class="last-message">
             {#if loading}
@@ -85,6 +84,7 @@
 
         .content {
             flex: 1;
+            width: 1%;
 
             .heading {
                 display: inline-flex;
@@ -93,6 +93,12 @@
                 width: 100%;
                 position: relative;
                 justify-content: space-between;
+
+                .right {
+                    display: inline-flex;
+                    gap: var(--gap);
+                    align-items: center;
+                }
 
                 .unreads {
                     background-color: var(--error-color);
@@ -122,12 +128,12 @@
                 font-weight: bold;
                 white-space: nowrap;
                 flex: 1;
-                display: block;
-                max-width: unset;
             }
 
             :global(.timestamp) {
                 white-space: nowrap;
+                display: inline;
+                min-width: fit-content;
             }
 
             .last-message {

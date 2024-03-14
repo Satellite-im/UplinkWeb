@@ -1,5 +1,8 @@
 <script>
     import '/src/lib/style/global.scss';
-    export const prerender = true;
-    export const ssr = false;
+
+    import TimeAgo from 'javascript-time-ago'
+    import en from 'javascript-time-ago/locale/en'
+
+    TimeAgo.addDefaultLocale(en);
 </script><slot></slot>

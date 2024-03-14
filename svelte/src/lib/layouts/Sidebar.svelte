@@ -28,7 +28,7 @@
                 <Icon icon={Shape.Search} />
             </Input>
 
-            <Button icon appearance={Appearance.Alt} on:click={handleToggle}>
+            <Button icon appearance={Appearance.Alt} on:click={handleToggle} loading={loading}>
                 <Icon icon={Shape.Sidebar} />
             </Button>
         </div>

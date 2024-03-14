@@ -23,6 +23,7 @@
     import { animationDuration } from "$lib/globals/animations";
     import { slide } from "svelte/transition";
     import ProfilePicture from "$lib/components/ProfilePicture.svelte";
+    import CoinBalance from "$lib/components/CoinBalance.svelte";
 
     initLocale();
 
@@ -46,6 +47,7 @@
         <Button outline appearance={Appearance.Alt} text="Market">
             <Icon icon={Shape.Shop} />
         </Button>
+        
 
         <div class="content-header">
             <Label text="Chats" />
@@ -78,6 +80,7 @@
                 <Text singleLine muted size={Size.Smaller}>{mock_users[0].profile.status_message}</Text>
             </div>
             <div slot="controls">
+                <CoinBalance balance={4560.53} />
                 <Button icon appearance={Appearance.Alt}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
@@ -181,6 +184,7 @@
         <Chatbar />
     </div>
     {#if contentAsideOpen}
+        <!-- All aside menus should render from this element. Please display only one at a time. -->
         <div class="aside" transition:slide={{duration: animationDuration, axis: "x"}}>
             <Profile user={mock_users[0]}/>
         </div>

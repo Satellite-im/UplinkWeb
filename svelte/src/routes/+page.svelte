@@ -406,10 +406,10 @@
             <CoinBalance balance={30000} />
         </Container>
         <Container title="Highlight">
-            <CoinBalance balance={100} highlight={Appearance.Success} />
-            <CoinBalance balance={24} highlight={Appearance.Info} />
-            <CoinBalance balance={3} highlight={Appearance.Warning} />
-            <CoinBalance balance={0} highlight={Appearance.Error} />
+            <CoinBalance balance={100} />
+            <CoinBalance balance={24} />
+            <CoinBalance balance={3} />
+            <CoinBalance balance={0} />
         </Container>
     </Container>
 
