@@ -1,9 +1,0 @@
-.svg-icon {
-    width: var(--icon-size);
-    height: var(--icon-size);
-    min-width: var(--icon-size);
-    min-height: var(--icon-size);
-}
-.svg-icon path {
-    stroke: var(--color);
-}
