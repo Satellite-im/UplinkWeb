@@ -9,7 +9,7 @@ import '/src/lib/style/global.scss'
 </script>
 
 <div id="app">
-    <Titlebar />
+    <!-- <Titlebar /> -->
     <slot></slot>
 </div>
 

@@ -29,11 +29,9 @@
         <Title>{$_('pages.auth.recovery.title')}</Title>
         <Text muted>{$_('pages.auth.recovery.save_warning')}</Text>
     </div>
-    <Spacer />
     {#each samplePhrase as word, i}
         <OrderedPhrase number={i + 1} word={word} loading={loading} />
     {/each}
-    <Spacer />
     <div class="controls">
         <Button
             class="full-width"

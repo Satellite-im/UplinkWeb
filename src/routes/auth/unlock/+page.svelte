@@ -24,17 +24,15 @@
 
 <div id="auth-unlock">
     <Logo />
-    <Spacer less />
+    <Spacer  />
     {#if loading}
         <Label text={$_('generic.loading')} />
     {:else}
         <Label text={(create) ? $_('pages.auth.unlock.choose_pin') : $_('pages.auth.unlock.enter_pin')} />
     {/if}
-    <Spacer />
     <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={() => {
         goto(Route.RecoverySeed);
     }}/>
-    <Spacer />
 </div>
 
 <style lang="scss">
@@ -44,6 +42,7 @@
         flex: 1;
         align-items: center;
         justify-content: center;
+        padding: var(--padding);
         width: 100%;
         height: 100%;
     }

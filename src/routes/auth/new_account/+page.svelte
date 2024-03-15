@@ -29,7 +29,6 @@
         <Title>{$_('pages.auth.new_account.title')}</Title>
         <Text muted>{$_('pages.auth.new_account.subtext')}</Text>
     </div>
-    <Spacer />
     <div class="main">
         <div class="left">
             <ProfilePicture size={Size.Large} image="/src/lib/assets/moon.png" />
@@ -42,7 +41,6 @@
             <Input alt placeholder={$_('pages.auth.new_account.set_status')} />
         </div>
     </div>
-    <Spacer />
     <div class="controls">
         <Button 
             class="full-width"

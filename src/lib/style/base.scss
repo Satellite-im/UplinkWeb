@@ -120,6 +120,7 @@ body {
 .flex-row {
     display: inline-flex;
     flex-direction: row;
+    align-items: center;
     gap: var(--gap);
 }
 
@@ -141,6 +142,7 @@ body {
 .full-width {
     flex: 1;
     min-width: fit-content;
+    width: 100%;
 }
 
 

@@ -85,6 +85,9 @@
                 {#each samplePhrase as word, i}
                     <OrderedPhrase number={i + 1} word={word} loading={loading} />
                 {/each}
+                <Button appearance={Appearance.Alt} class="full-width" text="Copy to Clipboard">
+                    <Icon icon={Shape.Clipboard}/>
+                </Button>
             {/if}
         </div>
 

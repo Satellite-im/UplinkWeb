@@ -10,6 +10,7 @@
     export let disabled: boolean = false
     export let tooltip: string | null = ""
     export let copyOnInteract: boolean = false
+    export let centered: boolean = false
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -24,7 +25,7 @@
     <div class="input-container {rounded ? "rounded" : ""} {clazz || ''}">
         <slot></slot>
         <input
-            class="input"
+            class="input {centered ? "centered" : ""}"
             type="text"
             disabled={disabled}
             bind:value={value}
@@ -65,6 +66,10 @@
             flex: 1;
             width: 100%;
             cursor: text;
+
+            &.centered {
+                text-align: center;
+            }
 
             &:focus {
                 outline: none;

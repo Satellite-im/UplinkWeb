@@ -68,11 +68,11 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 720,
         "resizable": true,
         "title": "Uplink",
-        "width": 800,
-        "decorations": false,
+        "width": 1200,
+        "decorations": true,
         "transparent": true
       }
     ]

@@ -38,7 +38,12 @@ export let settingsRoutes: NavRoute[] = [
     {
         to: SettingsRoute.Preferences,
         icon: Shape.Preferences,
-        name: "Preferences"
+        name: "General"
+    },
+    {
+        to: SettingsRoute.Messages,
+        icon: Shape.ChatBubble,
+        name: "Messages"
     },
     {
         to: SettingsRoute.AudioVideo,
@@ -46,8 +51,33 @@ export let settingsRoutes: NavRoute[] = [
         name: "Audio & Video"
     },
     {
+        to: SettingsRoute.Extensions,
+        icon: Shape.Beaker,
+        name: "Extensions"
+    },
+    {
         to: SettingsRoute.Keybinds,
         icon: Shape.Keybind,
         name: "Keybinds"
-    }
+    },
+    {
+        to: SettingsRoute.Accessability,
+        icon: Shape.Eye,
+        name: "Accessability"
+    },
+    {
+        to: SettingsRoute.Notifications,
+        icon: Shape.BellAlert,
+        name: "Notifications"
+    },
+    {
+        to: SettingsRoute.About,
+        icon: Shape.Info,
+        name: "About"
+    },
+    {
+        to: SettingsRoute.Licenses,
+        icon: Shape.Document,
+        name: "Licenses"
+    },
 ];
