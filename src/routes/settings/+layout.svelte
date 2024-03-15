@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { Route } from "$lib/enums"
+    import { Route, SettingsRoute } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
@@ -13,6 +13,7 @@
 
     let loading = true
     let sidebarOpen = true
+    let activeRoute = SettingsRoute.Profile;
 
     // TODO: Mock
     onMount(() => {
@@ -27,7 +28,14 @@
 <div id="settings">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
-        <Navigation routes={settingsRoutes} vertical on:navigate={(e) => goto(e.detail)}/>
+        <Navigation 
+            routes={settingsRoutes} 
+            vertical
+            on:navigate={(e) => {
+                goto(e.detail)
+                activeRoute = e.detail
+            }} 
+            activeRoute={activeRoute}/>
     </Sidebar>
 
     <div class="content">

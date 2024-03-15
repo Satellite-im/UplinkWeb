@@ -29,7 +29,12 @@ export type ProfileData = {
     status_message: string
 }
 
+export type Id = {
+    short: string,
+}
+
 export type User = {
+    id: Id;
     key: string,
     name: string,
     profile: ProfileData,

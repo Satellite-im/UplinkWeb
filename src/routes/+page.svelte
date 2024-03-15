@@ -1,5 +1,5 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
 
-    goto("/chat")
+    goto("/auth/unlock")
 </script>

@@ -5,21 +5,10 @@
 
     initLocale()
 
-    let loading = true
-    let sidebarOpen = true
-
-    // TODO: Mock
-    onMount(() => {
-        setTimeout(() => loading = false, 1500)
-    })
-
-    function toggleSidebar() {
-        sidebarOpen = !sidebarOpen
-    }
 </script>
 
 <div id="page">
-    Keybind 
+    Keybinds
 </div>
 
 <style lang="scss">

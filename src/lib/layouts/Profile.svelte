@@ -19,7 +19,7 @@
         <Icon icon={Shape.CheckMark} />
     </Button>
     <div class="section">
-        <Label text="Name" />
+        <Label text="Username" />
         <Text size={Size.Large}>{user?.name}</Text>
     </div>
     <div class="section">

@@ -8,7 +8,7 @@
     import { createEventDispatcher } from "svelte";
 
     export let routes: NavRoute[] = [];
-    export let activeRoute: Route = Route.Home;
+    export let activeRoute: Route | SettingsRoute = Route.Home;
     export let icons: boolean = false;
     export let vertical: boolean = false;
 
@@ -25,7 +25,7 @@
                 fill={!icons}
                 tooltip={route.name}
                 icon={icons}
-                outline={!icons}
+                outline={(activeRoute !== route.to && !icons)}
                 appearance={(activeRoute === route.to) ? Appearance.Primary : Appearance.Alt }
                 on:click={(_) => handleNavigate(route)}>
                 <Icon icon={route.icon} />

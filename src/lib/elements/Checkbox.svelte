@@ -3,6 +3,7 @@
 </script>
 
 <input type="checkbox" checked={checked} />
+<slot></slot>
 
 <style lang="scss">
     input[type="checkbox"] {
@@ -38,11 +39,11 @@
         }
 
         &:checked {
-            border-color: var(--info-color);
+            border-color: var(--color);
 
             &::before {
                 transform: scale(1);
-                background-color: var(--info-color);
+                background-color: var(--color);
             }
         }
     }

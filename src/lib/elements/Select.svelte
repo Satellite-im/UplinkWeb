@@ -11,6 +11,7 @@
 </script>
 
 <div class="select-group {highlight !== null ? `highlight-${highlight}` : ""} {alt ? "alt" : ""}">
+    <slot></slot>
     <select name="generic-select" class="select" bind:value={selected}>
         {#each options as option}
             <option value={option.value}>{option.text}</option>

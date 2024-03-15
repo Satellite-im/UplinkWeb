@@ -1,31 +1,30 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
-    import { Appearance, Shape } from "../enums/index";
-    import Icon from './Icon.svelte';
-    import Loader from './Loader.svelte';
-    import Text from './Text.svelte';
+    import { createEventDispatcher } from 'svelte'
+    import { Appearance } from "../enums/index"
+    import Loader from './Loader.svelte'
+    import Text from './Text.svelte'
 
-    export let tooltip: string | null = "";
-    export let disabled: boolean = false;
-    export let rotateOnHover: boolean = false;
-    export let text: string = "";
-    export let outline: boolean = false;
-    export let icon: boolean = false;
-    export let appearance: Appearance = Appearance.Default;
-    export let loading: boolean = false;
-    export let small: boolean = false;
-    export let fill: boolean = false;
+    export let tooltip: string | null = ""
+    export let disabled: boolean = false
+    export let rotateOnHover: boolean = false
+    export let text: string = ""
+    export let outline: boolean = false
+    export let icon: boolean = false
+    export let appearance: Appearance = Appearance.Default
+    export let loading: boolean = false
+    export let small: boolean = false
+    export let fill: boolean = false
 
     // Allow parent to override / add classes
-    let clazz = "";
-	export { clazz as class };
+    let clazz = ""
+	export { clazz as class }
 
     // Create an event dispatcher
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
 
     // Function to dispatch a 'click' event
     function onClick(event: MouseEvent) {
-        dispatch('click', event);
+        dispatch('click', event)
     }
 </script>
 

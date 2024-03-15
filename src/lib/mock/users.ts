@@ -3,7 +3,10 @@ import type { Chat, User } from "$lib/types";
 
 const default_user = function(): User {
     return {  
-        key: "did:key:000",
+        id: {
+            short: "xxxxxxxx",
+        },
+        key: "did:key:000xxx",
         name: "Default User",
         profile: {
             photo: {
@@ -20,6 +23,9 @@ export const mock_users: Array<User> = [
         ...default_user(),
         name: "Lunar Lucas",
         key: "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        id: {
+            short: "xe89fsia",
+        },
         profile: {
             photo: {
                 image: "/src/lib/assets/moon.png"
@@ -32,6 +38,9 @@ export const mock_users: Array<User> = [
         ...default_user(),
         name: "Space Kev",
         key: "did:key:z4MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        id: {
+            short: "uw7r8sa9",
+        },
         profile: {
             photo: {
                 image: "/src/lib/assets/blue_marble.png"
@@ -44,6 +53,9 @@ export const mock_users: Array<User> = [
         ...default_user(),
         name: "Sara Saturn",
         key: "did:key:z8HkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        id: {
+            short: "tu728sce",
+        },
         profile: {
             photo: {
                 image: "/src/lib/assets/saturn.png"
@@ -56,6 +68,9 @@ export const mock_users: Array<User> = [
         ...default_user(),
         name: "Pluto Phill",
         key: "did:key:z9EkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        id: {
+            short: "6efyaui8",
+        },
         profile: {
             photo: {
                 image: "/src/lib/assets/pluto.png"
@@ -68,6 +83,9 @@ export const mock_users: Array<User> = [
         ...default_user(),
         name: "Daring DariusDariusDariusDariusDariusDariusDariusDarius",
         key: "did:key:z7YkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        id: {
+            short: "fya72e8z",
+        },
         profile: {
             photo: {
                 image: "/src/lib/assets/neptune.png"

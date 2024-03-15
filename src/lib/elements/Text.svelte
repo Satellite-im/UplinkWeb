@@ -7,12 +7,13 @@
     export let loading: boolean = false;
     export let size: Size = Size.Medium;
     export let singleLine: boolean = false;
+    export let doubleLine: boolean = false;
 
     let clazz = "";
 	export { clazz as class };
 </script>
 
-<p class="text {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {clazz}">
+<p class="text {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {doubleLine ? "double-line" : ""} {clazz}">
     {#if loading}
         <Loader text />
     {:else}
@@ -38,6 +39,15 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             font-size: var(--font-size-smaller);
+            flex: 1;
+        }
+
+        &.double-line {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+                    line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
             flex: 1;
         }
 
