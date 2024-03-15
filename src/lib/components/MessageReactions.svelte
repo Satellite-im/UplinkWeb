@@ -60,6 +60,7 @@
                 gap: var(--gap);
                 background-color: var(--opaque-color);
                 backdrop-filter: blur(var(--blur-radius));
+                -webkit-backdrop-filter: blur(var(--blur-radius));
 
                 .description {
                     font-size: var(--label-size);

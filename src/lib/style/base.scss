@@ -36,10 +36,10 @@ html:focus-within {
 
 /* Set core body defaults */
 body {
-    min-height: 100vh;
     text-rendering: optimizeSpeed;
     line-height: 1.5;
     width: 100%;
+    display: flex;
 }
 
 /* A elements that don't have a class get default styles */
@@ -90,6 +90,12 @@ select {
     src: url(../assets/font/SpaceMono-Regular.ttf);
 }
 
+
+html {
+    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--border-color);
+    overflow: hidden;
+}
 body {
     background-color: var(--background);
     font-family: "Primary";

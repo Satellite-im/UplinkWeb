@@ -1,8 +1,23 @@
 <script>
-    import '/src/lib/style/global.scss'
+    import Titlebar from '$lib/components/Titlebar.svelte';
+import '/src/lib/style/global.scss'
 
     import TimeAgo from 'javascript-time-ago'
     import en from 'javascript-time-ago/locale/en'
 
     TimeAgo.addDefaultLocale(en)
-</script><slot></slot>
+</script>
+
+<div id="app">
+    <Titlebar />
+    <slot></slot>
+</div>
+
+<style lang="scss">
+    #app {
+        display: inline-flex;
+        flex-direction: column;
+        flex: 1;    
+        overflow: hidden;
+    }
+</style>

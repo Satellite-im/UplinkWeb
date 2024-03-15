@@ -121,6 +121,7 @@
                 transition: all var(--animation-speed);
                 background-color: var(--opaque-color);
                 backdrop-filter: blur(var(--blur-radius));
+                -webkit-backdrop-filter: blur(var(--blur-radius));
 
             }
 
@@ -225,10 +226,11 @@
         &.small {
             min-height: calc(var(--input-height) / 1.5);
             max-height: calc(var(--input-height) / 1.5);
-
             &.icon {
                 min-width: calc(var(--input-height) / 1.5);
                 max-width: calc(var(--input-height) / 1.5);
+                max-height: calc(var(--input-height) / 1.5);
+                min-height: calc(var(--input-height) / 1.5);
             }
         }
 

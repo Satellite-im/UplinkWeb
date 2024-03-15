@@ -12,6 +12,10 @@
     .logo {
         width: 150px;
         stroke: none;
-        fill: var(--alt-color-alt);
+        fill: var(--color);
+
+        &.small {
+            width: var(--icon-size-large);
+        }
     }
 </style>

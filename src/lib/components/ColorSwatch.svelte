@@ -29,6 +29,7 @@
                 border: var(--border-width) solid var(--border-color);
                 background-color: var(--opaque-color);
                 backdrop-filter: blur(var(--blur-radius));
+                -webkit-backdrop-filter: blur(var(--blur-radius));
                 color: var(--color);
                 font-size: var(--font-size-smaller);
                 text-align: center;

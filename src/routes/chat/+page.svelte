@@ -194,9 +194,10 @@
 <style lang="scss">
     #chat {
         display: flex;
-        width: 100vw;
-        height: 100vh;
         margin: 0;
+        flex: 1;
+        height: 100%;
+        overflow: hidden;
 
         .content-header {
             display: inline-flex;
