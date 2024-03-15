@@ -45,6 +45,7 @@
 
 <style lang="scss">
     .sidebar {
+        min-width: var(--sidebar-width);
         width: var(--sidebar-width);
         display: inline-flex;
         flex-direction: column;

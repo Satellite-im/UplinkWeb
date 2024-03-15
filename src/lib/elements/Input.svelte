@@ -6,6 +6,7 @@
     export let alt: boolean = false;
     export let rounded: boolean = false;
     export let highlight: Appearance = Appearance.Default;
+    export let value: string = "";
     let clazz = "";
 	export { clazz as class };
 </script>
@@ -16,6 +17,7 @@
         <input
             class="input"
             type="text"
+            bind:value={value}
             placeholder="{placeholder}" />
     </div>
 </div>

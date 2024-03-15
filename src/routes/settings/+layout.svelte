@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import { Route } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
@@ -26,7 +27,7 @@
 <div id="settings">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
-        <Navigation routes={settingsRoutes} vertical />
+        <Navigation routes={settingsRoutes} vertical on:navigate={(e) => goto(e.detail)}/>
     </Sidebar>
 
     <div class="content">
@@ -37,12 +38,14 @@
 <style lang="scss">
     #settings {
         display: flex;
-        width: 100vw;
-        height: 100vh;
+        height: 100%;
         margin: 0;
+        flex: 1;
+        overflow: hidden;
 
         .content {
             flex: 1;
+            padding: var(--padding);
         }
     }
 </style>

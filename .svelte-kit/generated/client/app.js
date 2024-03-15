@@ -9,7 +9,10 @@ export const nodes = [
 	() => import('./nodes/5'),
 	() => import('./nodes/6'),
 	() => import('./nodes/7'),
-	() => import('./nodes/8')
+	() => import('./nodes/8'),
+	() => import('./nodes/9'),
+	() => import('./nodes/10'),
+	() => import('./nodes/11')
 ];
 
 export const server_loads = [];
@@ -20,7 +23,10 @@ export const dictionary = {
 		"/auth/recovery": [5],
 		"/auth/unlock": [6],
 		"/chat": [7],
-		"/settings/profile": [8,[2]]
+		"/settings/audio_video": [8,[2]],
+		"/settings/keybinds": [9,[2]],
+		"/settings/preferences": [10,[2]],
+		"/settings/profile": [11,[2]]
 	};
 
 export const hooks = {

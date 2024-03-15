@@ -18,6 +18,15 @@
 	"/settings": [
 		"src/routes/+layout.ts"
 	],
+	"/settings/audio_video": [
+		"src/routes/+layout.ts"
+	],
+	"/settings/keybinds": [
+		"src/routes/+layout.ts"
+	],
+	"/settings/preferences": [
+		"src/routes/+layout.ts"
+	],
 	"/settings/profile": [
 		"src/routes/+layout.ts"
 	]

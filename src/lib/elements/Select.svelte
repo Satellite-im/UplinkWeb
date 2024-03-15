@@ -34,6 +34,7 @@
         cursor: pointer;
         pointer-events: none;
         gap: var(--gap);
+        width: 100%;
 
         .select {
             pointer-events: all;
@@ -41,16 +42,18 @@
             height: var(--input-height);
             color: var(--color-alt);
             background-color: transparent;
-            margin-right: calc((var(--icon-size) + var(--gap)) * -1);
+            margin-right: calc(var(--icon-size) * -1);
+            margin-left: calc(var(--gap) * -1);
             border: none;
             padding: 0 var(--padding);
-            padding-right: calc(var(--padding) + var(--gap));
+            padding-right: calc(var(--icon-size) + var(--gap));
             font-size: var(--font-size-smaller);
             gap: var(--gap);
             display: inline-flex;
             outline: none;
             cursor: pointer;
-            margin-left: calc(var(--padding) * -1);
+            width: 100%;
+
         }
 
         &.alt {
