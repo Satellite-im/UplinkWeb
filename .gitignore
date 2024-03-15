@@ -6,3 +6,4 @@ yew/dist
 yew/target
 
 node_modules
+.svelte-kit
