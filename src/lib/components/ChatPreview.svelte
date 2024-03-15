@@ -125,7 +125,6 @@
                 align-items: center;
                 gap: var(--gap);
                 font-size: var(--text-size);
-                font-weight: bold;
                 white-space: nowrap;
                 flex: 1;
             }
