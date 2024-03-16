@@ -2,15 +2,15 @@
     import { Appearance } from "../enums/index"
 
     // export let loading: boolean = false;
-    export let placeholder: string = ""
-    export let alt: boolean = false
-    export let rounded: boolean = false
-    export let highlight: Appearance = Appearance.Default
-    export let value: string = ""
-    export let disabled: boolean = false
-    export let tooltip: string | null = ""
-    export let copyOnInteract: boolean = false
-    export let centered: boolean = false
+    export let placeholder: string          = ""
+    export let alt: boolean                 = false
+    export let rounded: boolean             = false
+    export let highlight: Appearance        = Appearance.Default
+    export let value: string                = ""
+    export let disabled: boolean            = false
+    export let tooltip: string | null       = ""
+    export let copyOnInteract: boolean      = false
+    export let centered: boolean            = false
 
     if (copyOnInteract) {
         tooltip = "Copy"

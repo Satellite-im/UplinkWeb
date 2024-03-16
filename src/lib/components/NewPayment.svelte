@@ -1,33 +1,27 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte";
-    import Checkbox from "$lib/elements/Checkbox.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Input from "$lib/elements/Input.svelte";
-    import Label from "$lib/elements/Label.svelte";
-    import { Appearance, Shape, Size } from "$lib/enums";
+    import { Appearance, Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types";
-    import PaymentSuccessSplash from "./PaymentSuccessSplash.svelte";
-    import ProfilePicture from "./ProfilePicture.svelte";
-    import ProgressBar from "./ProgressBar.svelte";
+    import { ProfilePicture, ProgressBar } from "./"
+    import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
 
-    export let recipients: Array<User> = [];
+    export let recipients: Array<User> = []
 
-    let selected_recipients: Array<User> = [];
+    let selected_recipients: Array<User> = []
 
     let update_recipients = function(recipient: User) {
-        let new_recipient_list = selected_recipients;
+        let new_recipient_list = selected_recipients
 
         if (selected_recipients.includes(recipient)) {
-            new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1);
+            new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1)
         } else {
-            new_recipient_list.push(recipient);
+            new_recipient_list.push(recipient)
         }
 
-        selected_recipients = new_recipient_list;
+        selected_recipients = new_recipient_list
     };
 
     function contains_recipient(list: User[], recipient: User): boolean {
-        return list.includes(recipient);
+        return list.includes(recipient)
     }
 </script>
 

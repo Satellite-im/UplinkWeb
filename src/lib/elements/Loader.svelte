@@ -1,7 +1,7 @@
 <script lang="ts">
-    export let small: boolean = false;
-    export let alt: boolean = false;
-    export let text: boolean = false;
+    export let small: boolean   = false
+    export let alt: boolean     = false
+    export let text: boolean    = false
 </script>
 
 {#if text}

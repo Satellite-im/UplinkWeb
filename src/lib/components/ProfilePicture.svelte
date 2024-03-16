@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { Appearance, Size, Status } from "$lib/enums";
-    import Loader from '$lib/elements/Loader.svelte';
+    import { Appearance, Size, Status } from "$lib/enums"
+    import { Loader } from '$lib/elements'
 
-    export let image: string = "";
-    export let notifications: number = 0;
-    export let size: Size = Size.Medium;
-    export let highlight: Appearance = Appearance.Default;
-    export let typing: boolean = false;
-    export let status: Status = Status.Offline;
-    export let loading: boolean = false;
+    export let image: string                    = ""
+    export let notifications: number            = 0
+    export let size: Size                       = Size.Medium
+    export let highlight: Appearance            = Appearance.Default
+    export let typing: boolean                  = false
+    export let status: Status                   = Status.Offline
+    export let loading: boolean                 = false
 </script>
 
 <div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}">

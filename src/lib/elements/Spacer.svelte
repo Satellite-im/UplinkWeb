@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let less: boolean = false;
+    export let less: boolean = false
 </script>
 
 <div class="spacer {less ? "less" : ""}"></div>

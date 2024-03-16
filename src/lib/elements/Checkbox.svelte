@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let checked: boolean = false;
+    export let checked: boolean = false
 </script>
 
 <input type="checkbox" checked={checked} />

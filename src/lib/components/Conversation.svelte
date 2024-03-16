@@ -1,17 +1,17 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { onMount } from "svelte"
 
-    let element: Element;
+    let element: Element
     const scrollToBottom = async (node: Element) => {
-        node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
-    }; 
+        node.scroll({ top: node.scrollHeight, behavior: 'smooth' })
+    }
 
     onMount(() => {
-        scrollToBottom(element);
-    });
+        scrollToBottom(element)
+    })
 
     $: if(element) {
-		scrollToBottom(element);
+		scrollToBottom(element)
 	}
 </script>
 

@@ -1,11 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
-    import OrderedPhrase from "$lib/components/OrderedPhrase.svelte"
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import Spacer from "$lib/elements/Spacer.svelte"
-    import Text from "$lib/elements/Text.svelte"
-    import Title from "$lib/elements/Title.svelte"
+    import { OrderedPhrase } from "$lib/components"
+    import { Button, Icon, Text, Title } from "$lib/elements" 
     import { Appearance, Route, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { onMount } from "svelte"

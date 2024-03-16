@@ -1,9 +1,8 @@
 <script lang="ts">
-    import Label from "$lib/elements/Label.svelte";
-    import Text from "$lib/elements/Text.svelte";
+    import { Label, Text } from "$lib/elements"
 
-    export let name: string = "Setting"
-    export let description: string = "Some setting description"
+    export let name: string         = "Setting"
+    export let description: string  = "Some setting description"
 
 </script>
 

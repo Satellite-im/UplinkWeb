@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { Appearance, Shape } from "$lib/enums";
+    import { Appearance, Shape } from "$lib/enums"
 
-    export let icon: Shape = Shape.Beaker;
-    export let alt: boolean = false;
-    export let large: boolean = false;
-    export let muted: boolean = false;
-    export let filled: boolean = false;
-    export let highlight: Appearance = Appearance.Default
-    export let spin: boolean = false;
+    export let icon: Shape              = Shape.Beaker
+    export let alt: boolean             = false
+    export let large: boolean           = false
+    export let muted: boolean           = false
+    export let filled: boolean          = false
+    export let highlight: Appearance    = Appearance.Default
+    export let spin: boolean            = false
 
-    let clazz = "";
-	export { clazz as class };
+    let clazz = ""
+	export { clazz as class }
 </script>
 
 <svg class="svg-icon {muted ? "muted" : ""} {spin ? "spin" : ""} {alt ? "alt" : ""} {filled ? "filled" : ""} {large ? "large" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" >

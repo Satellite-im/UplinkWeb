@@ -1,7 +1,7 @@
 <script lang="ts">
-    export let min: number = 0;
-    export let max: number = 100;
-    export let value: number = 0;
+    export let min: number      = 0
+    export let max: number      = 100
+    export let value: number    = 0
 </script>
 
 <div class="range-selector">

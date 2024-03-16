@@ -1,35 +1,31 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
-    import Button from "$lib/elements/Button.svelte";
-    import { Appearance, Shape } from "$lib/enums";
-    import Icon from '$lib/elements/Icon.svelte';
-    import Spacer from '$lib/elements/Spacer.svelte';
-    import Loader from '$lib/elements/Loader.svelte';
-    import Switch from '$lib/elements/Switch.svelte';
-    import Label from '$lib/elements/Label.svelte';
-    import { _ } from 'svelte-i18n';
+    import { createEventDispatcher, onMount } from 'svelte'
+    import { Appearance, Shape } from "$lib/enums"
 
-    export let error: boolean = false;
-    export let loading: boolean = false;
-    export let scramble: boolean = false;
-    export let showSettings: boolean = false;
+    import { Button, Icon, Spacer, Loader, Switch, Label } from "$lib/elements"
 
-    export let min: number = 4;
-    export let max: number = 6;
+    import { _ } from 'svelte-i18n'
 
-    let pinValue: string = ''; // This holds the actual pin value
-    let displayDots: Array<boolean> = []; // This holds the state for each dot (filled or not)
+    export let error: boolean           = false
+    export let loading: boolean         = false
+    export let scramble: boolean        = false
+    export let showSettings: boolean    = false
+    export let min: number              = 4
+    export let max: number              = 6
+
+    let pinValue: string = '' // This holds the actual pin value
+    let displayDots: Array<boolean> = [] // This holds the state for each dot (filled or not)
 
     // Initialize or shuffle digits for the keypad
-    const pinDigitsOriginal: string[] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-    let pinDigits: string[] = [...pinDigitsOriginal];
+    const pinDigitsOriginal: string[] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+    let pinDigits: string[] = [...pinDigitsOriginal]
 
     // Shuffle array using Fisher-Yates algorithm
     function shuffleArray<T>(array: T[]): T[] {
         if (scramble)
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+                [array[i], array[j]] = [array[j], array[i]]
             }
         return array;
     }
@@ -37,9 +33,8 @@
     // Update the pin value and the display dots
     const updatePinValue = (digit: string) => {
         if (pinValue.length < max) {
-            pinValue += digit;
-            updateDisplayDots();
-
+            pinValue += digit
+            updateDisplayDots()
         }
     };
 
@@ -47,47 +42,47 @@
     const updateDisplayDots = () => {
         displayDots = (pinValue.length < min) ? 
             Array.from({ length: min }, (_, i) => i < pinValue.length) :
-            Array.from({ length: pinValue.length }, () => true);
-        pinDigits = (scramble) ? shuffleArray(pinDigits) : [...pinDigitsOriginal];
+            Array.from({ length: pinValue.length }, () => true)
+        pinDigits = (scramble) ? shuffleArray(pinDigits) : [...pinDigitsOriginal]
     };
 
     // Clear the pin value and update display dots
     const clearPinValue = () => {
-        pinValue = '';
-        updateDisplayDots();
+        pinValue = ''
+        updateDisplayDots()
     };
 
     // Create an event dispatcher
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
 
     // Function to dispatch a 'click' event
     function onSubmit(pin: string) {
-        dispatch('submit', pin);
+        dispatch('submit', pin)
     }
     // Placeholder for submit action
     const submitPinValue = () => {
-        onSubmit(pinValue);
-        clearPinValue();
+        onSubmit(pinValue)
+        clearPinValue()
     };
 
     onMount(() => {
-        updateDisplayDots();
+        updateDisplayDots()
     });
 
     function handleToggleScramble(value: any) {
-        scramble = value.detail;
-        pinDigits = (scramble) ? shuffleArray(pinDigits) : [...pinDigitsOriginal];
+        scramble = value.detail
+        pinDigits = (scramble) ? shuffleArray(pinDigits) : [...pinDigitsOriginal]
     }
 
     function handleInput(event: any) {
-        const input = event.target.value;
+        const input = event.target.value
         if(input.length <= max) {
-            pinValue = input;
-            updateDisplayDots();
+            pinValue = input
+            updateDisplayDots()
         }
     }
 
-    $: pinValue, updateDisplayDots();
+    $: pinValue, updateDisplayDots()
 </script>
 
 <div class="pin-input-group {loading ? "loading" : ""}">

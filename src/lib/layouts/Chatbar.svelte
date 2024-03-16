@@ -1,26 +1,29 @@
 <script>
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Input from "$lib/elements/Input.svelte";
-    import { Appearance, Shape } from "$lib/enums";
-
+    import { Button, Icon, Input } from "$lib/elements"
+    import { Appearance, Shape } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
+    import { _ } from 'svelte-i18n'
+    initLocale()
 </script>
 <div class="chatbar">
-    <Button icon appearance={Appearance.Alt} tooltip="Add Attachment">
+    <Button 
+        icon 
+        appearance={Appearance.Alt} 
+        tooltip={$_("chat.add_attachment")}>
         <Icon icon={Shape.Plus} />
     </Button>
 
-    <Input alt placeholder="Say something..." rounded />
+    <Input alt placeholder={$_("generic.placeholder")} rounded />
 
-    <Button icon appearance={Appearance.Alt} tooltip="Send Coin">
+    <Button icon appearance={Appearance.Alt} tooltip={$_("payments.send_coin")}>
         <Icon icon={Shape.SendCoin} />
     </Button>
 
-    <Button icon appearance={Appearance.Alt} tooltip="Emoji">
+    <Button icon appearance={Appearance.Alt} tooltip={$_("chat.emoji")}>
         <Icon icon={Shape.Smile} />
     </Button>
 
-    <Button icon tooltip="Send">
+    <Button icon tooltip={$_("chat.send")}>
         <Icon icon={Shape.ChevronRight} />
     </Button>
 </div>

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { Reaction } from "$lib/types";
+    import type { Reaction } from "$lib/types"
 
-    export let reactions: Array<Reaction> = [];
-    export let remote: boolean = false;
+    export let reactions: Array<Reaction>   = []
+    export let remote: boolean              = false
 </script>
 
 <div class="message-reactions {remote ? "remote" : "local"}">

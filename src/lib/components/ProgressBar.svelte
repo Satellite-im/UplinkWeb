@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Label from "$lib/elements/Label.svelte";
-    import { Appearance } from "$lib/enums";
+    import { Label } from "$lib/elements"
+    import { Appearance } from "$lib/enums"
 
-    export let percent: number = 0;
-    export let appearance: Appearance = Appearance.Default;
-    export let label: string = "";
+    export let percent: number          = 0
+    export let appearance: Appearance   = Appearance.Default
+    export let label: string            = ""
 </script>
 
 <div class="progress-bar {appearance}">

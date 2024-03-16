@@ -1,7 +1,5 @@
 <script lang="ts">
-    import Label from "$lib/elements/Label.svelte";
-
-
+    import Label from "$lib/elements/Label.svelte"
 </script>
 
 <!-- Success Splash -->

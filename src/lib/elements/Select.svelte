@@ -1,13 +1,13 @@
 <script lang="ts">
-    import Icon from "$lib/elements/Icon.svelte";
-    import { Shape, Appearance } from "$lib/enums";
-    import type { SelectOption } from "$lib/types";
+    import { Icon } from "$lib/elements"
+    import { Shape, Appearance } from "$lib/enums"
+    import type { SelectOption } from "$lib/types"
 
-    export let options: Array<SelectOption> = [];
-    export let highlight: Appearance = Appearance.Default;
-    export let alt: boolean = false;
+    export let options: Array<SelectOption>     = []
+    export let highlight: Appearance            = Appearance.Default
+    export let alt: boolean                     = false
 
-    let selected: string;
+    let selected: string
 </script>
 
 <div class="select-group {highlight !== null ? `highlight-${highlight}` : ""} {alt ? "alt" : ""}">

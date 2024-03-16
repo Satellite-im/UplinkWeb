@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let percent: number = 0;
+    export let percent: number = 0
 </script>
 
 <div class="meter-container">

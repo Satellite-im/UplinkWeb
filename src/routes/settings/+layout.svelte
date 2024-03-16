@@ -29,27 +29,35 @@
         switch ($page.url.pathname) {
             case "/settings/preferences": {
                 activeRoute = SettingsRoute.Preferences
+                break
             }
             case "/settings/message": {
                 activeRoute = SettingsRoute.Messages
+                break
             }
             case "/settings/licenses": {
                 activeRoute = SettingsRoute.Licenses
+                break
             }
             case "/settings/keybinds": {
                 activeRoute = SettingsRoute.Keybinds
+                break
             }
             case "/settings/extensions": {
                 activeRoute = SettingsRoute.Extensions
+                break
             }
             case "/settings/audio_video": {
                 activeRoute = SettingsRoute.AudioVideo
+                break
             }
             case "/settings/notifications": {
                 activeRoute = SettingsRoute.Notifications
+                break
             }
             case "/settings/profile": {
                 activeRoute = SettingsRoute.Profile
+                break
             }
         }
     })

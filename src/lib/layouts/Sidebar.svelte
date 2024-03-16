@@ -1,30 +1,31 @@
 <script lang="ts">
-    import { routes } from "$lib/mock/routes";
-    import Navigation from "./Navigation.svelte";
-    import Input from "$lib/elements/Input.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import { Appearance, Route, Shape } from "$lib/enums";
-    import Button from "$lib/elements/Button.svelte";
-    import { createEventDispatcher } from "svelte";
-    import { slide } from "svelte/transition";
-    import { animationDuration } from "$lib/globals/animations";
-    import CallControls from "$lib/components/CallControls.svelte";
-    import { goto } from "$app/navigation";
+    import { routes } from "$lib/mock/routes"
+    import Navigation from "./Navigation.svelte"
+    import { Input, Icon, Button } from "$lib/elements"
+    import { CallControls } from "$lib/components"
+    import { Appearance, Route, Shape } from "$lib/enums"
+    import { createEventDispatcher } from "svelte"
+    import { slide } from "svelte/transition"
+    import { animationDuration } from "$lib/globals/animations"
+    import { goto } from "$app/navigation"
+    import { initLocale } from "$lib/lang"
+    import { _ } from 'svelte-i18n'
+    initLocale()
 
-    export let activeRoute: Route = Route.Chat;
-    export let open: boolean = true;
-    export let loading: boolean = true;
+    export let activeRoute: Route       = Route.Chat
+    export let open: boolean            = true
+    export let loading: boolean         = true
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
     function handleToggle() {
-        dispatch('toggle', open);
+        dispatch('toggle', open)
     }
 </script>
 
 {#if open}
     <div class="sidebar" transition:slide={{duration: animationDuration, axis: "x"}}>
         <div class="sidebar-pre">
-            <Input alt placeholder="Search . . .">
+            <Input alt placeholder={$_("generic.search_placeholder")}>
                 <Icon icon={Shape.Search} />
             </Input>
 

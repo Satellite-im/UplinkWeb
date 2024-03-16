@@ -1,13 +1,10 @@
 <script lang="ts">
-    import ProfilePicture from "$lib/components/ProfilePicture.svelte";
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Input from "$lib/elements/Input.svelte";
-    import Label from "$lib/elements/Label.svelte";
-    import Text from "$lib/elements/Text.svelte";
-    import { Appearance, Shape, Size } from "$lib/enums";
-    import type { User } from "$lib/types";
-    export let user: User | null = null;
+    import { ProfilePicture } from "$lib/components"
+    import { Button, Icon, Input, Label, Text } from "$lib/elements";
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import type { User } from "$lib/types"
+    
+    export let user: User | null = null
 </script>
 
 

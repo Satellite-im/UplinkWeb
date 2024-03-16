@@ -1,29 +1,15 @@
 <script lang="ts">
-    import ChatPreview from "$lib/components/ChatPreview.svelte"
-    import Conversation from "$lib/components/Conversation.svelte"
-    import Message from "$lib/components/Message.svelte"
-    import MessageContainer from "$lib/components/MessageContainer.svelte"
-    import MessageGroup from "$lib/components/MessageGroup.svelte"
-    import MessageReactions from "$lib/components/MessageReactions.svelte"
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import Label from "$lib/elements/Label.svelte"
-    import Text from "$lib/elements/Text.svelte"
     import { Appearance, MessagePosition, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import Chatbar from "$lib/layouts/Chatbar.svelte"
-    import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import MessageReplyContainer from "$lib/components/MessageReplyContainer.svelte"
     import { chats, mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
     import { _ } from 'svelte-i18n'
-    import Topbar from "$lib/layouts/Topbar.svelte"
-    import Profile from "$lib/layouts/Profile.svelte"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
-    import ProfilePicture from "$lib/components/ProfilePicture.svelte"
-    import CoinBalance from "$lib/components/CoinBalance.svelte"
+
+    import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
+    import { ChatPreview, Conversation, Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, CoinBalance } from "$lib/components"
+    import { Button, Icon, Label, Text } from "$lib/elements"
 
     initLocale()
 

@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher } from "svelte"
 
-    export let on: boolean = false;
-    export let small: boolean = false;
+    export let on: boolean      = false
+    export let small: boolean   = false
 
     // Create an event dispatcher
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
 
     // Function to dispatch a 'click' event
     function onToggle(_: Event) {
-        dispatch('toggle', on);
+        dispatch('toggle', on)
     }
 </script>
 

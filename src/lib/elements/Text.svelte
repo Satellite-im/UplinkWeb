@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { Appearance, Size } from "$lib/enums";
-    import Loader from "./Loader.svelte";
+    import { Appearance, Size } from "$lib/enums"
+    import { Loader } from "./"
 
-    export let appearance: Appearance = Appearance.Default;
-    export let muted: boolean = false;
-    export let loading: boolean = false;
-    export let size: Size = Size.Medium;
-    export let singleLine: boolean = false;
-    export let doubleLine: boolean = false;
+    export let appearance: Appearance   = Appearance.Default
+    export let muted: boolean           = false
+    export let loading: boolean         = false
+    export let size: Size               = Size.Medium
+    export let singleLine: boolean      = false
+    export let doubleLine: boolean      = false
 
-    let clazz = "";
-	export { clazz as class };
+    let clazz = ""
+	export { clazz as class }
 </script>
 
 <p class="text {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {doubleLine ? "double-line" : ""} {clazz}">

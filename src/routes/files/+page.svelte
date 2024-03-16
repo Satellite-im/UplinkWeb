@@ -1,20 +1,13 @@
 <script lang="ts">
-    import ChatPreview from "$lib/components/ChatPreview.svelte"
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import Label from "$lib/elements/Label.svelte"
-    import Text from "$lib/elements/Text.svelte"
-    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
+    import { Button, Icon } from "$lib/elements"
+    import { Appearance, Route, Shape } from "$lib/enums"
+    import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import ProfilePicture from "$lib/components/ProfilePicture.svelte"
-    import Input from "$lib/elements/Input.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { chats, mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
     import { _ } from 'svelte-i18n'
-    import Topbar from "$lib/layouts/Topbar.svelte"
-    import type { User } from "$lib/types";
+    import type { User } from "$lib/types"
 
     // Initialize locale
     initLocale()

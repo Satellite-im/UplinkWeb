@@ -1,9 +1,13 @@
 <script lang="ts">
-    export let color: string = "";
-    export let name: string = "";
+    export let color: string = ""
+    export let name: string = ""
 </script>
 
-<div class="color-swatch tooltip" data-tooltip="{name}" style="background-color: {color}"></div>
+<div 
+    class="color-swatch tooltip" 
+    data-tooltip="{name}" 
+    style="background-color: {color}">
+</div>
 
 <style lang="scss">
     .color-swatch {

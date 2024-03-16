@@ -2,39 +2,57 @@
     import TimeAgo from 'javascript-time-ago'
 
     import { Size } from "$lib/enums";
-    import ProfilePicture from './ProfilePicture.svelte';
     import type { User } from '$lib/types';
-    import Loader from '$lib/elements/Loader.svelte';
-    import Text from '$lib/elements/Text.svelte';
 
-    export let users: User[] = [];
-    export let notifications: number = 0;
-    export let simpleUnreads: boolean = false;
-    export let timestamp: Date = new Date();
-    export let message: string = "";
-    export let loading: boolean = false;
-    export let typing: boolean = false;
+    import { Text, Loader } from "$lib/elements"
+    import { ProfilePicture } from './';
+
+    export let users: User[]            = [];
+    export let notifications: number    = 0;
+    export let simpleUnreads: boolean   = false;
+    export let timestamp: Date          = new Date();
+    export let message: string          = "";
+    export let loading: boolean         = false;
+    export let typing: boolean          = false;
 
     const timeAgo = new TimeAgo('en-US')
 
-    let photo = (users.length > 1) ?  "todo" : users[0].profile.photo.image;
-    let name = (users.length > 1) ? "todo" : users[0].name;
+    let photo = (users.length > 1) ?  
+        "todo" : users[0].profile.photo.image
+    let name = (users.length > 1) ? 
+        "todo" : users[0].name
 
-    let cta = notifications > 0;
+    let cta = notifications > 0
 </script>
 
 <button class="chat-preview {cta ? "cta" : ""}">
-    <ProfilePicture typing={typing} image={photo} status={users[0].profile.status} size={Size.Small} loading={loading} />
+    <ProfilePicture 
+        typing={typing} 
+        image={photo} 
+        status={users[0].profile.status} 
+        size={Size.Small} 
+        loading={loading} />
     <div class="content">
         <div class="heading">
-            <Text class="chat-user" singleLine loading={loading}>{name}</Text>
+            <Text 
+                class="chat-user" 
+                singleLine 
+                loading={loading}>
+                {name}
+            </Text>
             <div class="right">
-                <Text class="timestamp" loading={loading} size={Size.Smallest} muted>
+                <Text 
+                    class="timestamp" 
+                    loading={loading} 
+                    size={Size.Smallest} 
+                    muted>
                     {timeAgo.format(timestamp)}
                 </Text>
                 {#if !loading}
                     {#if notifications > 0 && !simpleUnreads}
-                        <span class="unreads">{notifications}</span>
+                        <span class="unreads">
+                            {notifications}
+                        </span>
                     {:else if notifications > 0 && simpleUnreads}
                         <span class="unreads simple"></span>
                     {/if}
@@ -46,7 +64,11 @@
                 <Loader text small />
                 <Loader text small />
             {:else}
-                <Text size={Size.Small} loading={loading}>{message}</Text>
+                <Text 
+                    size={Size.Small} 
+                    loading={loading}>
+                    {message}
+                </Text>
             {/if}
         </p>
     </div>

@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { Size } from "$lib/enums";
-    import type { ProfilePictureRequirements } from "$lib/types";
-    import ProfilePicture from "./ProfilePicture.svelte";
+    import { Size } from "$lib/enums"
+    import type { ProfilePictureRequirements } from "$lib/types"
+    import { ProfilePicture } from './';
 
-    export let remote: boolean = false;
-    export let subtext: string | null = "";
-    export let profilePictureRequirements: ProfilePictureRequirements | null = null;
+    export let remote: boolean          = false
+    export let subtext: string | null   = ""
+
+    export let profilePictureRequirements: ProfilePictureRequirements | null = null
 </script>
 
 <div class="message-group">

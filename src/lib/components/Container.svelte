@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let title = "";
-    export let row: Boolean = false;
+    export let title = ""
+    export let row: Boolean = false
 </script>
 
 <div class="container bordered {row ? "flex-column" : ""}">

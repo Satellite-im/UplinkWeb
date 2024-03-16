@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Text from "$lib/elements/Text.svelte"
+    import {Text} from "$lib/elements"
 
     export let text: string = ""
 </script>

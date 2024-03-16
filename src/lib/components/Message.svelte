@@ -1,13 +1,15 @@
 <script lang="ts">
-    import { MessagePosition } from "$lib/enums";
+    import { MessagePosition } from "$lib/enums"
 
-    export let remote: boolean = false;
-    export let reply: boolean = false;
-    export let localSide: boolean = false;
-    export let position: MessagePosition = MessagePosition.Middle;
+    export let remote: boolean      = false
+    export let reply: boolean       = false
+    export let localSide: boolean   = false
+
+    export let position: MessagePosition = MessagePosition.Middle
 </script>
 
-<div class="message-bubble {remote ? "remote" : "local"} {position} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
+<div 
+    class="message-bubble {remote ? "remote" : "local"} {position} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
     {#if reply && !remote}
         <span class="reply-arrow">↪</span>
     {/if}

@@ -1,14 +1,12 @@
 <script lang="ts">
-    import PinInput from "$lib/components/PinInput.svelte"
-    import Label from "$lib/elements/Label.svelte"
-    import Spacer from "$lib/elements/Spacer.svelte"
+    import { Spacer, Label, Logo } from "$lib/elements"
+    import { PinInput } from "$lib/components"
     import { goto } from '$app/navigation'
-    import { initLocale } from "$lib/lang"
     import { onMount } from "svelte"
-    import { _ } from 'svelte-i18n'
-    import Logo from "$lib/elements/Logo.svelte"
     import { Route } from "$lib/enums"
 
+    import { initLocale } from "$lib/lang"
+    import { _ } from 'svelte-i18n'
     initLocale()
 
     let create = false

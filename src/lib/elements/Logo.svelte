@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Size } from "$lib/enums";
+    import { Size } from "$lib/enums"
 
-    export let size: Size = Size.Medium;
+    export let size: Size = Size.Medium
 </script>
 
 <svg class="logo {size}" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375.99 313.7">

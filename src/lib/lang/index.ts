@@ -1,4 +1,4 @@
-import { dictionary, locale } from 'svelte-i18n';
+import { dictionary, locale } from 'svelte-i18n'
 
 
 export function initLocale() {
@@ -9,6 +9,22 @@ export function initLocale() {
                 username: "Username",
                 status_message: "Status Message",
                 enter_pin: "Enter Pin",
+                placeholder: "Type something ...",
+                search_placeholder: "Search ...",
+            },
+            call: {
+                end: "End",
+                mute: "Mute",
+                stream: "Stream",
+                in_call: "In Call",
+            },
+            chat: {
+                add_attachment: "Add attachment",
+                emoji: "Emoji",
+                send: "Send",
+            },
+            payments: {
+                send_coin: "Send Coin"
             },
             controls: {
                 go_back: "Go Back",
@@ -36,7 +52,7 @@ export function initLocale() {
                 }
             },
         },
-    });
+    })
 
-    locale.set('en');
+    locale.set('en')
 }

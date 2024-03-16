@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Size } from "$lib/enums";
-    import ProfilePicture from "./ProfilePicture.svelte";
+    import { Size } from "$lib/enums"
+    import { ProfilePicture } from './';
 
-    export let remote: boolean = false;
-    export let image: string = "";
+    export let remote: boolean      = false
+    export let image: string        = ""
 </script>
 
 <div class="message-reply-container {remote ? "remote" : ""}">

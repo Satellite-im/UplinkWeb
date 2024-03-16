@@ -1,27 +1,52 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Label from "$lib/elements/Label.svelte";
-    import Text from "$lib/elements/Text.svelte";
-    import { Appearance, Shape } from "$lib/enums";
+    import { Text, Button, Icon, Label } from "$lib/elements"
 
-    export let loading: boolean = false;
+    import { Appearance, Shape } from "$lib/enums"
+    
+    import { initLocale } from "$lib/lang"
+    import { _ } from 'svelte-i18n'
+
+    initLocale()
+
+    export let loading: boolean     = false
+    export let duration: Date       = new Date()
+    export let muted: boolean       = false
+    export let streaming: boolean   = false
 </script>
 
 <div class="call-controls">
     <div class="info">
-        <Label text="In Call" />
-        <Text appearance={Appearance.Success} loading={loading}>3h:40m:34s</Text>
+        <Label text={$_('call.in_call')} />
+        <Text 
+            appearance={Appearance.Success} 
+            loading={loading}>
+            {duration.toISOString().substring(11, 19)}
+        </Text>
     </div>
 
     <div class="controls">
-        <Button icon appearance={Appearance.Alt} tooltip="Mute" loading={loading} >
+        <Button 
+            icon 
+            appearance={muted ? Appearance.Error : Appearance.Alt} 
+            outline={muted} 
+            tooltip={$_('call.mute')}
+            loading={loading} >
             <Icon icon={Shape.Microphone} />
         </Button>
-        <Button icon appearance={Appearance.Alt} tooltip="Stream" loading={loading}>
+        <Button 
+            icon 
+            appearance={streaming ? Appearance.Success : Appearance.Alt } 
+            outline={streaming} 
+            tooltip={$_('call.stream')} 
+            loading={loading}>
             <Icon icon={Shape.Stream} />
         </Button>
-        <Button text="End" outline appearance={Appearance.Error} tooltip="End" loading={loading}>
+        <Button 
+            text={$_('call.end')}
+            tooltip={$_('call.end')}
+            outline 
+            appearance={Appearance.Error} 
+            loading={loading}>
             <Icon icon={Shape.PhoneXMark} />
         </Button>
     </div>

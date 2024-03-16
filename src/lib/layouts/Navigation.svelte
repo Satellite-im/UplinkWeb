@@ -1,20 +1,17 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Text from "$lib/elements/Text.svelte";
-    import { Appearance, Route, SettingsRoute } from "$lib/enums";
-    import type { NavRoute } from "$lib/types";
-    import { createEventDispatcher } from "svelte";
+    import { Button, Icon, Text } from "$lib/elements"
+    import { Appearance, Route, SettingsRoute } from "$lib/enums"
+    import type { NavRoute } from "$lib/types"
+    import { createEventDispatcher } from "svelte"
 
-    export let routes: NavRoute[] = [];
-    export let activeRoute: Route | SettingsRoute = Route.Home;
-    export let icons: boolean = false;
-    export let vertical: boolean = false;
+    export let routes: NavRoute[]                   = []
+    export let activeRoute: Route | SettingsRoute   = Route.Home
+    export let icons: boolean                       = false
+    export let vertical: boolean                    = false
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
     function handleNavigate(route: NavRoute) {
-        dispatch('navigate', route.to.toString());
+        dispatch('navigate', route.to.toString())
     }
 </script>
 

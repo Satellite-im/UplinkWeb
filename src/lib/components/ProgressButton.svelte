@@ -1,11 +1,10 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import { Appearance, Shape } from "$lib/enums";
+    import { Button, Icon } from "$lib/elements"
+    import { Appearance, Shape } from "$lib/enums"
 
-    export let icon: Shape = Shape.Beaker;
-    export let percent: number = 0;
-    export let appearance: Appearance = Appearance.Default;
+    export let icon: Shape              = Shape.Beaker
+    // export let percent: number = 0;
+    export let appearance: Appearance   = Appearance.Default
 </script>
 
 <div class="progress-button">
