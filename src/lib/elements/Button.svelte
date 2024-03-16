@@ -45,6 +45,7 @@
 
 <style lang="scss">
     .button {
+        pointer-events: all;
         min-height: var(--input-height);
         color: var(--color);
         background-color: var(--primary-color);

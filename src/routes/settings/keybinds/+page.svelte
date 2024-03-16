@@ -75,11 +75,15 @@ import { initLocale } from "$lib/lang"
 
 <style lang="scss">
     #page {
-        display: flex;
-        flex-direction: column;
-        margin: 0;
         flex: 1;
+        width: 100%;
+        display: inline-flex;
+        flex-direction: column;
         gap: var(--gap);
+        height: 100%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        padding-right: var(--padding);
 
         .keybind {
             display: inline-flex;

@@ -4,7 +4,6 @@
     import Label from "$lib/elements/Label.svelte";
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import SettingSection from "$lib/layouts/SettingSection.svelte"
     import { _ } from 'svelte-i18n'
 
     initLocale()
@@ -36,6 +35,7 @@
         flex: 1;
         gap: var(--gap);
         height: 100%;
+        overflow-y: scroll;
 
         .controls {
             width: 100%;

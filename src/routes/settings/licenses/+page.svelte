@@ -1,7 +1,7 @@
 <script lang="ts">
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
-    import { Shape } from "$lib/enums"
+    import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import SettingSection from "$lib/layouts/SettingSection.svelte"
     import { _ } from 'svelte-i18n'
@@ -11,7 +11,7 @@
 
 <div id="page">
     <SettingSection name="Uplink" description="Both code and icons are under the MIT license.">
-        <Button text="View License">
+        <Button text="View License" appearance={Appearance.Alt}>
             <Icon icon={Shape.Document} />
         </Button>
     </SettingSection>
@@ -19,26 +19,14 @@
 
 <style lang="scss">
     #page {
-        display: flex;
-        flex-direction: column;
-        margin: 0;
         flex: 1;
+        width: 100%;
+        display: inline-flex;
+        flex-direction: column;
         gap: var(--gap);
-
-        .keybind {
-            display: inline-flex;
-            gap: var(--gap);
-            justify-content: space-between;
-
-            .controls {
-                display: inline-flex;
-                gap: var(--gap);
-
-                .binding {
-                    display: inline-flex;
-                    gap: var(--gap);
-                }
-            }
-        }
+        height: 100%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        padding-right: var(--padding);
     }
 </style>

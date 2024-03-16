@@ -37,7 +37,12 @@
     <!-- svelte-ignore missing-declaration -->
     <div class="profile">
         <div class="profile-header">
-            <ProfilePicture image={mock_users[0]?.profile.photo.image} size={Size.Large} status={mock_users[0]?.profile.status} />
+            <div class="profile-picture-container">
+                <ProfilePicture image={mock_users[0]?.profile.photo.image} size={Size.Large} status={mock_users[0]?.profile.status} />
+                <Button icon tooltip="Change Profile Photo">
+                    <Icon icon={Shape.Plus} />
+                </Button>
+            </div>
         </div>
         <div class="section">
             <Label text="Username" />
@@ -179,8 +184,41 @@
                 margin-bottom: 4rem;
                 position: relative;
 
+                .profile-picture-container {
+                    pointer-events: none;
+                    position: absolute;
+                    z-index: 2;
+                    height: calc(var(--profile-picture-size)* 2);
+                    margin-bottom: calc((var(--profile-picture-size) * 2) * -0.5);
+                    :global(.button) {
+                        position: absolute;
+                        bottom: calc(var(--padding-less) * -0.75);
+                        right: calc(var(--padding-less) * -0.75);
+                        z-index: 2;
+                    }
+                }
+
                 :global(.profile-picture) {
                     margin-bottom: -4rem;
+                }
+
+                &:hover {
+                    position: relative;
+                    &:after {
+                        content: "Change Banner Photo";
+                        top: 0;
+                        right: 0;
+                        bottom: 0;
+                        left: 0;
+                        background-color: var(--opaque-color);
+                        border-radius: var(--border-radius);
+                        backdrop-filter: blur(var(--blur-radius));
+                        position: absolute;
+                        display: inline-flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                    }
                 }
             }
 
