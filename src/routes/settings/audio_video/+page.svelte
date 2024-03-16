@@ -20,7 +20,7 @@
     </SettingSection>
     <div class="flex-row">
         <Button text="Test" small appearance={Appearance.Alt} />
-        <Meter />
+        <Meter percent={78} />
     </div>
     <SettingSection name="Output Device" description="Select your output device, this is usually your headphones or speakers.">
         <Select options={[
@@ -29,7 +29,7 @@
     </SettingSection>
     <div class="flex-row">
         <Button text="Test" small appearance={Appearance.Alt} />
-        <Meter />
+        <Meter percent={25} />
     </div>
     <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
         <Switch on />

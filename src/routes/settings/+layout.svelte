@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { page } from "$app/stores";
     import { Route, SettingsRoute } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
@@ -23,6 +24,35 @@
     function toggleSidebar() {
         sidebarOpen = !sidebarOpen
     }
+
+    onMount(() => {
+        switch ($page.url.pathname) {
+            case "/settings/preferences": {
+                activeRoute = SettingsRoute.Preferences
+            }
+            case "/settings/message": {
+                activeRoute = SettingsRoute.Messages
+            }
+            case "/settings/licenses": {
+                activeRoute = SettingsRoute.Licenses
+            }
+            case "/settings/keybinds": {
+                activeRoute = SettingsRoute.Keybinds
+            }
+            case "/settings/extensions": {
+                activeRoute = SettingsRoute.Extensions
+            }
+            case "/settings/audio_video": {
+                activeRoute = SettingsRoute.AudioVideo
+            }
+            case "/settings/notifications": {
+                activeRoute = SettingsRoute.Notifications
+            }
+            case "/settings/profile": {
+                activeRoute = SettingsRoute.Profile
+            }
+        }
+    })
 </script>
 
 <div id="settings">

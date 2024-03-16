@@ -10,7 +10,7 @@
 
 <style lang="scss">
     div.key {
-        width: var(--input-height);
+        min-width: var(--input-height);
         height: var(--input-height);
         font-family: "Secondary";
 
@@ -20,7 +20,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: var(--input-height);
+            min-width: var(--input-height);
+            padding: 0 var(--padding);
             height: calc(var(--input-height) - 4px);
             border: var(--border-width) solid var(--color);
             border-radius: var(--border-radius-minimal);

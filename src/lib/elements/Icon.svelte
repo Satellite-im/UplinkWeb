@@ -3,6 +3,7 @@
 
     export let icon: Shape = Shape.Beaker;
     export let alt: boolean = false;
+    export let large: boolean = false;
     export let muted: boolean = false;
     export let filled: boolean = false;
     export let highlight: Appearance = Appearance.Default
@@ -12,7 +13,7 @@
 	export { clazz as class };
 </script>
 
-<svg class="svg-icon {muted ? "muted" : ""} {spin ? "spin" : ""} {alt ? "alt" : ""} {filled ? "filled" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
+<svg class="svg-icon {muted ? "muted" : ""} {spin ? "spin" : ""} {alt ? "alt" : ""} {filled ? "filled" : ""} {large ? "large" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
     { @html icon }
 </svg>
 
@@ -29,6 +30,13 @@
 
         &.muted {
             color: var(--color-muted);
+        }
+
+        &.large {
+            width: var(--icon-size-large);
+            height: var(--icon-size-large);
+            min-width: var(--icon-size-large);
+            min-height: var(--icon-size-large);
         }
 
         &.spin {
