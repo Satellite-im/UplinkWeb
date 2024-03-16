@@ -205,20 +205,6 @@
                     }
                 }
             }
-
-            .footer {
-                flex: 1;
-                display: inline-flex;
-                align-items: flex-end;
-                .controls {
-                    width: 100%;
-                    display: inline-flex;
-                    flex-direction: row;
-                    gap: var(--gap);
-                    justify-content: space-between;
-                    height: var(--input-height);
-                }
-            }
         }
     }
 </style>

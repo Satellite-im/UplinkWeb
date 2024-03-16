@@ -10,7 +10,6 @@
     import ColorSwatch from "$lib/components/ColorSwatch.svelte"
 
     initLocale()
-
 </script>
 
 <div id="page">

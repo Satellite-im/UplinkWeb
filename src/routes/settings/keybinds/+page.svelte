@@ -1,13 +1,13 @@
 <script lang="ts">
-    import Banner from "$lib/components/Banner.svelte";
-    import Key from "$lib/components/Key.svelte";
-import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Spacer from "$lib/elements/Spacer.svelte";
-    import Text from "$lib/elements/Text.svelte";
-    import { Appearance, KeybindAction, Shape } from "$lib/enums";
-import { initLocale } from "$lib/lang"
-    import SettingSection from "$lib/layouts/SettingSection.svelte";
+    import Banner from "$lib/components/Banner.svelte"
+    import Key from "$lib/components/Key.svelte"
+    import Button from "$lib/elements/Button.svelte"
+    import Icon from "$lib/elements/Icon.svelte"
+    import Spacer from "$lib/elements/Spacer.svelte"
+    import Text from "$lib/elements/Text.svelte"
+    import { Appearance, KeybindAction, Shape } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
+    import SettingSection from "$lib/layouts/SettingSection.svelte"
     import { _ } from 'svelte-i18n'
 
     initLocale()
@@ -41,7 +41,7 @@ import { initLocale } from "$lib/lang"
             action: KeybindAction.FocusUplink,
             keys: ["Ctrl", "Shift", "U"]
         }
-    ];
+    ]
 
 </script>
 

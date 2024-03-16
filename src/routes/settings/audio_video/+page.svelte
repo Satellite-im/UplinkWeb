@@ -5,8 +5,8 @@
     import Switch from "$lib/elements/Switch.svelte"
     import Select from "$lib/elements/Select.svelte"
     import Meter from "$lib/components/Meter.svelte"
-    import Button from "$lib/elements/Button.svelte";
-    import { Appearance } from "$lib/enums";
+    import Button from "$lib/elements/Button.svelte"
+    import { Appearance } from "$lib/enums"
 
     initLocale()
 

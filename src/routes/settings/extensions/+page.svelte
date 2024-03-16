@@ -1,7 +1,7 @@
 <script lang="ts">
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
-    import Label from "$lib/elements/Label.svelte";
+    import Label from "$lib/elements/Label.svelte"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
@@ -36,6 +36,7 @@
         gap: var(--gap);
         height: 100%;
         overflow-y: scroll;
+        padding-right: var(--padding);
 
         .controls {
             width: 100%;
