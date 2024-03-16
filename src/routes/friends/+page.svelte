@@ -10,7 +10,7 @@
     import ProfilePicture from "$lib/components/ProfilePicture.svelte"
     import Input from "$lib/elements/Input.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { blocked_users, chats, mock_users } from "$lib/mock/users"
+    import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
     import { _ } from 'svelte-i18n'
     import Topbar from "$lib/layouts/Topbar.svelte"
@@ -47,7 +47,7 @@
     }
 </script>
 
-<div id="chat">
+<div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends} >
         <Button outline appearance={Appearance.Alt} text="Market">
@@ -137,9 +137,32 @@
             {#if tab === "active"}
                 <div class="section column">
                     <Label text="Outgoing Requests" />
-
+                    {#each fake_user_array as friend}
+                        <div class="friend">
+                            <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
+                            <Text class="username">{friend.name}</Text>
+                            <div class="controls">
+                                <Button appearance={Appearance.Alt} text="Cancel">
+                                    <Icon icon={Shape.NoSymbol} />
+                                </Button>
+                            </div>
+                        </div>
+                    {/each}
                     <Label text="Incoming Requests" />
-
+                    {#each fake_user_array as friend}
+                        <div class="friend">
+                            <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
+                            <Text class="username">{friend.name}</Text>
+                            <div class="controls">
+                                <Button appearance={Appearance.Success} text="Accept" outline>
+                                    <Icon icon={Shape.CheckMark} />
+                                </Button>
+                                <Button appearance={Appearance.Alt} text="Deny">
+                                    <Icon icon={Shape.XMark} />
+                                </Button>
+                            </div>
+                        </div>
+                    {/each}
                 </div>
             {/if}
             {#if tab === "blocked"}
@@ -150,13 +173,7 @@
                             <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
                             <Text class="username">{friend.name}</Text>
                             <div class="controls">
-                                <Button text="Chat">
-                                    <Icon icon={Shape.ChatBubble} />
-                                </Button>
-                                <Button icon appearance={Appearance.Alt} tooltip="Remove">
-                                    <Icon icon={Shape.UserMinus} />
-                                </Button>
-                                <Button icon appearance={Appearance.Alt} tooltip="Block">
+                                <Button appearance={Appearance.Alt} text="Unblock">
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </div>
@@ -169,7 +186,7 @@
 </div>
 
 <style lang="scss">
-    #chat {
+    #page {
         display: flex;
         margin: 0;
         flex: 1;

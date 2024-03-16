@@ -114,6 +114,25 @@ export const blocked_users: Array<User> = [
     },
 ];
 
+export const fake_user_array: Array<User> = [
+    {
+        ...default_user(),
+        name: "Fake User",
+        key: "did:key:3xwkfegBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        id: {
+            short: "xxxxxx",
+        },
+        profile: {
+            photo: {
+                image: "/src/lib/assets/neptune.png"
+            },
+            status: Status.Offline,
+            status_message: "This user is not real."
+        }
+    },
+];
+
+
 
 export let chats: Chat[] = [
     {

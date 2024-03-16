@@ -45,7 +45,7 @@
     }
 </script>
 
-<div id="chat">
+<div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} >
        
@@ -69,7 +69,7 @@
 </div>
 
 <style lang="scss">
-    #chat {
+    #page {
         display: flex;
         margin: 0;
         flex: 1;

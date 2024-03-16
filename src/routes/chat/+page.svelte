@@ -41,7 +41,7 @@
     }
 </script>
 
-<div id="chat">
+<div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
         <Button outline appearance={Appearance.Alt} text="Market">
@@ -192,7 +192,7 @@
 </div>
 
 <style lang="scss">
-    #chat {
+    #page {
         display: flex;
         margin: 0;
         flex: 1;
