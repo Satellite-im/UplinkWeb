@@ -10,7 +10,7 @@
     import ProfilePicture from "$lib/components/ProfilePicture.svelte"
     import Input from "$lib/elements/Input.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { chats, mock_users } from "$lib/mock/users"
+    import { blocked_users, chats, mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
     import { _ } from 'svelte-i18n'
     import Topbar from "$lib/layouts/Topbar.svelte"
@@ -21,6 +21,8 @@
 
     let loading: boolean = true
     let sidebarOpen: boolean = true
+
+    let tab: string = "all";
 
     // Mock loading behavior
     onMount(() => {
@@ -46,7 +48,7 @@
 </script>
 
 <div id="chat">
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat} />
+    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends} >
         <Button outline appearance={Appearance.Alt} text="Market">
             <Icon icon={Shape.Shop} />
@@ -74,62 +76,94 @@
     <div class="content">
         <Topbar>
             <div slot="controls">
-                <Button appearance={Appearance.Primary} text="All">
+                <Button appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} text="All" on:click={(_) => tab = "all"}>
                     <Icon icon={Shape.Users} />
                 </Button>
-                <Button appearance={Appearance.Alt} text="Incoming">
-                    <Icon icon={Shape.ArrowRight} />
+                <Button appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} text="Active" on:click={(_) => tab = "active"}>
+                    <Icon icon={Shape.ArrowsLeftRight} />
                 </Button>
-                <Button appearance={Appearance.Alt} text="Blocked">
+                <Button appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} text="Blocked" on:click={(_) => tab = "blocked"}>
                     <Icon icon={Shape.NoSymbol} />
                 </Button>
             </div>
         </Topbar>
 
         <div class="body">
-            <Label text="Add Someone" />
-            <div class="section">
-                <Input alt placeholder="Find Username#xxxxxx . . .">
-                    <Icon icon={Shape.Search} />
-                </Input>
-                <Button appearance={Appearance.Alt} text="Add">
-                    <Icon icon={Shape.Plus} />
-                </Button>
-                <Button appearance={Appearance.Alt} icon tooltip="Copy ID">
-                    <Icon icon={Shape.Clipboard} />
-                </Button>
-            </div>
+            {#if tab === "all"}
+                <Label text="Add Someone" />
+                <div class="section">
+                    <Input alt placeholder="Find Username#xxxxxx . . .">
+                        <Icon icon={Shape.Search} />
+                    </Input>
+                    <Button appearance={Appearance.Alt} text="Add">
+                        <Icon icon={Shape.Plus} />
+                    </Button>
+                    <Button appearance={Appearance.Alt} icon tooltip="Copy ID">
+                        <Icon icon={Shape.Clipboard} />
+                    </Button>
+                </div>
 
-            <Label text="Search Friends" />
-            <div class="section">
-                <Input alt placeholder="Search your friends . . .">
-                    <Icon icon={Shape.Search} />
-                </Input>
-            </div>
-            <div class="section column">
-                {#each Object.keys(groupUsersAlphabetically(mock_users)).sort() as letter}
-                    {#if groupUsersAlphabetically(mock_users)[letter].length > 0}
-                        <Label text={letter} />
-                        {#each groupUsersAlphabetically(mock_users)[letter] as friend}
-                            <div class="friend">
-                                <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
-                                <Text class="username">{friend.name}</Text>
-                                <div class="controls">
-                                    <Button text="Chat">
-                                        <Icon icon={Shape.ChatBubble} />
-                                    </Button>
-                                    <Button icon appearance={Appearance.Alt} tooltip="Remove">
-                                        <Icon icon={Shape.UserMinus} />
-                                    </Button>
-                                    <Button icon appearance={Appearance.Alt} tooltip="Block">
-                                        <Icon icon={Shape.NoSymbol} />
-                                    </Button>
+                <Label text="Search Friends" />
+                <div class="section">
+                    <Input alt placeholder="Search your friends . . .">
+                        <Icon icon={Shape.Search} />
+                    </Input>
+                </div>
+                <div class="section column">
+                    {#each Object.keys(groupUsersAlphabetically(mock_users)).sort() as letter}
+                        {#if groupUsersAlphabetically(mock_users)[letter].length > 0}
+                            <Label text={letter} />
+                            {#each groupUsersAlphabetically(mock_users)[letter] as friend}
+                                <div class="friend">
+                                    <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
+                                    <Text class="username">{friend.name}</Text>
+                                    <div class="controls">
+                                        <Button text="Chat">
+                                            <Icon icon={Shape.ChatBubble} />
+                                        </Button>
+                                        <Button icon appearance={Appearance.Alt} tooltip="Remove">
+                                            <Icon icon={Shape.UserMinus} />
+                                        </Button>
+                                        <Button icon appearance={Appearance.Alt} tooltip="Block">
+                                            <Icon icon={Shape.NoSymbol} />
+                                        </Button>
+                                    </div>
                                 </div>
+                            {/each}
+                        {/if}
+                    {/each}
+                </div>
+            {/if}
+            {#if tab === "active"}
+                <div class="section column">
+                    <Label text="Outgoing Requests" />
+
+                    <Label text="Incoming Requests" />
+
+                </div>
+            {/if}
+            {#if tab === "blocked"}
+                <div class="section column">
+                    <Label text="Blocked Users" />
+                    {#each blocked_users as friend}
+                        <div class="friend">
+                            <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
+                            <Text class="username">{friend.name}</Text>
+                            <div class="controls">
+                                <Button text="Chat">
+                                    <Icon icon={Shape.ChatBubble} />
+                                </Button>
+                                <Button icon appearance={Appearance.Alt} tooltip="Remove">
+                                    <Icon icon={Shape.UserMinus} />
+                                </Button>
+                                <Button icon appearance={Appearance.Alt} tooltip="Block">
+                                    <Icon icon={Shape.NoSymbol} />
+                                </Button>
                             </div>
-                        {/each}
-                    {/if}
-                {/each}
-            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
         </div>
     </div>
 </div>

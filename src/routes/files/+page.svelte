@@ -1,0 +1,87 @@
+<script lang="ts">
+    import ChatPreview from "$lib/components/ChatPreview.svelte"
+    import Button from "$lib/elements/Button.svelte"
+    import Icon from "$lib/elements/Icon.svelte"
+    import Label from "$lib/elements/Label.svelte"
+    import Text from "$lib/elements/Text.svelte"
+    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
+    import Sidebar from "$lib/layouts/Sidebar.svelte"
+    import ProfilePicture from "$lib/components/ProfilePicture.svelte"
+    import Input from "$lib/elements/Input.svelte"
+    import Slimbar from "$lib/layouts/Slimbar.svelte"
+    import { chats, mock_users } from "$lib/mock/users"
+    import { onMount } from "svelte"
+    import { _ } from 'svelte-i18n'
+    import Topbar from "$lib/layouts/Topbar.svelte"
+    import type { User } from "$lib/types";
+
+    // Initialize locale
+    initLocale()
+
+    let loading: boolean = true
+    let sidebarOpen: boolean = true
+
+    // Mock loading behavior
+    onMount(() => {
+        setTimeout(() => loading = false, 1500)
+    })
+
+    function toggleSidebar(): void {
+        sidebarOpen = !sidebarOpen
+    }
+
+    // Function to group users alphabetically by the first character of their usernames
+    function groupUsersAlphabetically(users: User[]): { [letter: string]: User[] } {
+        const groupedUsers: { [letter: string]: User[] } = {};
+        users.forEach(user => {
+            const firstChar: string = user.name.charAt(0).toUpperCase();
+            if (!groupedUsers[firstChar]) {
+                groupedUsers[firstChar] = [];
+            }
+            groupedUsers[firstChar].push(user);
+        });
+        return groupedUsers;
+    }
+</script>
+
+<div id="chat">
+    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} >
+       
+    </Sidebar>
+    <div class="content">
+        <Topbar>
+            <div slot="controls">
+                <Button appearance={Appearance.Alt} icon tooltip="New Folder">
+                    <Icon icon={Shape.FolderPlus} />
+                </Button>
+                <Button appearance={Appearance.Alt} icon tooltip="Upload">
+                    <Icon icon={Shape.Plus} />
+                </Button>
+            </div>
+        </Topbar>
+
+        <div class="body">
+            
+        </div>
+    </div>
+</div>
+
+<style lang="scss">
+    #chat {
+        display: flex;
+        margin: 0;
+        flex: 1;
+        height: 100%;
+        overflow: hidden;
+        
+        .content {
+            display: flex;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+    }
+</style>

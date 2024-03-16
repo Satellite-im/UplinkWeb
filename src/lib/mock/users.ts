@@ -96,6 +96,24 @@ export const mock_users: Array<User> = [
     }
 ];
 
+export const blocked_users: Array<User> = [
+    {
+        ...default_user(),
+        name: "Mean Person",
+        key: "did:key:7xMuiaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        id: {
+            short: "cixsu1o2",
+        },
+        profile: {
+            photo: {
+                image: "/src/lib/assets/uranis.png"
+            },
+            status: Status.DoNotDisturb,
+            status_message: "Something hostile and aggressive."
+        }
+    },
+];
+
 
 export let chats: Chat[] = [
     {
