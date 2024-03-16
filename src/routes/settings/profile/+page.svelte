@@ -101,21 +101,6 @@
                 <Text muted>Store recovery seed on account (disable for increased security, irriversable)</Text>
             </Checkbox>
         </div>
-
-        <Spacer />
-
-        <div class="footer">
-            <div class="controls">
-                <Button appearance={Appearance.Alt}>
-                    <Icon icon={Shape.XMark} />
-                    Cancel
-                </Button>
-                <Button appearance={Appearance.Primary}>
-                    <Icon icon={Shape.CheckMark} />
-                    Save
-                </Button>
-            </div>
-        </div>
     </div>
     
 </div>
@@ -132,7 +117,6 @@
         padding-right: var(--padding);
         
         .profile {
-            flex: 100%;
             display: inline-flex;
             flex-direction: column;
             gap: var(--gap);
