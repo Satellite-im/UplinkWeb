@@ -30,14 +30,14 @@
 <div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
-        <Button outline appearance={Appearance.Alt} text="Market">
+        <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
             <Icon icon={Shape.Shop} />
         </Button>
         
 
         <div class="content-header">
-            <Label text="Chats" />
-            <Button icon small tooltip="Create Chat">
+            <Label text={$_("chat.chat_plural")} />
+            <Button icon small tooltip={$_("chat.create")}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>

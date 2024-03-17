@@ -1,20 +1,13 @@
-<script lang="ts">
-    import ChatPreview from "$lib/components/ChatPreview.svelte"
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import Label from "$lib/elements/Label.svelte"
-    import Text from "$lib/elements/Text.svelte"
-    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
+<script lang="ts">  
+    import { Button, Icon, Label, Text, Input } from "$lib/elements"
+    import { ChatPreview, ProfilePicture } from "$lib/components"
+    import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
+    import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import ProfilePicture from "$lib/components/ProfilePicture.svelte"
-    import Input from "$lib/elements/Input.svelte"
-    import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
     import { _ } from 'svelte-i18n'
-    import Topbar from "$lib/layouts/Topbar.svelte"
-    import type { User } from "$lib/types";
+    import type { User } from "$lib/types"
 
     // Initialize locale
     initLocale()
@@ -50,14 +43,14 @@
 <div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends} >
-        <Button outline appearance={Appearance.Alt} text="Market">
+        <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
             <Icon icon={Shape.Shop} />
         </Button>
         
 
         <div class="content-header">
-            <Label text="Chats" />
-            <Button icon small tooltip="Create Chat">
+            <Label text={$_("chat.chat_plural")} />
+            <Button icon small tooltip={$_("chat.create")}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>
@@ -76,13 +69,22 @@
     <div class="content">
         <Topbar>
             <div slot="controls">
-                <Button appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} text="All" on:click={(_) => tab = "all"}>
+                <Button 
+                    appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} 
+                    text={$_("friends.all")}
+                    on:click={(_) => tab = "all"}>
                     <Icon icon={Shape.Users} />
                 </Button>
-                <Button appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} text="Active" on:click={(_) => tab = "active"}>
+                <Button 
+                    appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} 
+                    text={$_("friends.active")}
+                    on:click={(_) => tab = "active"}>
                     <Icon icon={Shape.ArrowsLeftRight} />
                 </Button>
-                <Button appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} text="Blocked" on:click={(_) => tab = "blocked"}>
+                <Button 
+                    appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} 
+                    text={$_("friends.blocked")}
+                    on:click={(_) => tab = "blocked"}>
                     <Icon icon={Shape.NoSymbol} />
                 </Button>
             </div>
@@ -90,22 +92,22 @@
 
         <div class="body">
             {#if tab === "all"}
-                <Label text="Add Someone" />
+                <Label text={$_("friends.add_someone")} />
                 <div class="section">
-                    <Input alt placeholder="Find Username#xxxxxx . . .">
+                    <Input alt placeholder={$_("friends.find_placeholder")}>
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Button appearance={Appearance.Alt} text="Add">
+                    <Button appearance={Appearance.Alt} text={$_("friends.add")}>
                         <Icon icon={Shape.Plus} />
                     </Button>
-                    <Button appearance={Appearance.Alt} icon tooltip="Copy ID">
+                    <Button appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")}>
                         <Icon icon={Shape.Clipboard} />
                     </Button>
                 </div>
 
                 <Label text="Search Friends" />
                 <div class="section">
-                    <Input alt placeholder="Search your friends . . .">
+                    <Input alt placeholder={$_("friends.search_friends_placeholder")}>
                         <Icon icon={Shape.Search} />
                     </Input>
                 </div>
@@ -115,16 +117,28 @@
                             <Label text={letter} />
                             {#each groupUsersAlphabetically(mock_users)[letter] as friend}
                                 <div class="friend">
-                                    <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
-                                    <Text class="username">{friend.name}</Text>
+                                    <ProfilePicture 
+                                        size={Size.Small} 
+                                        image={friend.profile.photo.image} 
+                                        status={friend.profile.status} />
+                                    <Text class="username">
+                                        {friend.name}
+                                    </Text>
                                     <div class="controls">
-                                        <Button text="Chat">
+                                        <Button 
+                                            text={$_("chat.chat")}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>
-                                        <Button icon appearance={Appearance.Alt} tooltip="Remove">
+                                        <Button 
+                                            icon 
+                                            appearance={Appearance.Alt} 
+                                            tooltip={$_("generic.remove")}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
-                                        <Button icon appearance={Appearance.Alt} tooltip="Block">
+                                        <Button 
+                                            icon 
+                                            appearance={Appearance.Alt} 
+                                            tooltip={$_("friends.block")}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
                                     </div>
@@ -136,28 +150,28 @@
             {/if}
             {#if tab === "active"}
                 <div class="section column">
-                    <Label text="Outgoing Requests" />
+                    <Label text={$_("friends.outgoing_requests")} />
                     {#each fake_user_array as friend}
                         <div class="friend">
                             <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
                             <Text class="username">{friend.name}</Text>
                             <div class="controls">
-                                <Button appearance={Appearance.Alt} text="Cancel">
+                                <Button appearance={Appearance.Alt} text={$_("generic.cancel")}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </div>
                         </div>
                     {/each}
-                    <Label text="Incoming Requests" />
+                    <Label text={$_("friends.incoming_requests")} />
                     {#each fake_user_array as friend}
                         <div class="friend">
                             <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
                             <Text class="username">{friend.name}</Text>
                             <div class="controls">
-                                <Button appearance={Appearance.Success} text="Accept" outline>
+                                <Button appearance={Appearance.Success} text={$_("generic.accept")} outline>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
-                                <Button appearance={Appearance.Alt} text="Deny">
+                                <Button appearance={Appearance.Alt} text={$_("generic.deny")}>
                                     <Icon icon={Shape.XMark} />
                                 </Button>
                             </div>
@@ -167,13 +181,13 @@
             {/if}
             {#if tab === "blocked"}
                 <div class="section column">
-                    <Label text="Blocked Users" />
+                    <Label text={$_("friends.blocked_users")} />
                     {#each blocked_users as friend}
                         <div class="friend">
                             <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
                             <Text class="username">{friend.name}</Text>
                             <div class="controls">
-                                <Button appearance={Appearance.Alt} text="Unblock">
+                                <Button appearance={Appearance.Alt} text={$_("friends.unblock")}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </div>

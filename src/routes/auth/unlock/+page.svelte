@@ -21,8 +21,6 @@
 </script>
 
 <div id="auth-unlock">
-    <Logo />
-    <Spacer  />
     {#if loading}
         <Label text={$_('generic.loading')} />
     {:else}

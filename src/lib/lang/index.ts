@@ -5,12 +5,20 @@ export function initLocale() {
     dictionary.set({
         en: {
             generic: {
+                accept: "Accept",
+                deny: "Deny",
+                add: "Add",
+                remove: "Remove",
+                cancel: "Cancel",
                 loading: "Loading",
                 username: "Username",
                 status_message: "Status Message",
                 enter_pin: "Enter Pin",
                 placeholder: "Type something ...",
                 search_placeholder: "Search ...",
+            },
+            market: {
+                market: "Marketplace",
             },
             call: {
                 end: "End",
@@ -19,9 +27,26 @@ export function initLocale() {
                 in_call: "In Call",
             },
             chat: {
+                chat: "Chat",
+                chat_plural: "Chats",
+                create: "Create Chat",
                 add_attachment: "Add attachment",
                 emoji: "Emoji",
                 send: "Send",
+            },
+            friends: {
+                copy_did: "Copy ID",
+                block: "Block",
+                blocked: "Blocked",
+                blocked_users: "Blocked Users",
+                unblock: "Unblock",
+                all: "All",
+                active: "Active",
+                add: "Add",
+                add_someone: "Add Someone",
+                search_friends_placeholder: "Search your friends ...",
+                find_placeholder: "Find Username#xxxxxx ...",
+                outgoing_requests: "Outgoing Requests",
             },
             payments: {
                 send_coin: "Send Coin"
