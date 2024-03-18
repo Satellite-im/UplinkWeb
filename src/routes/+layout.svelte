@@ -1,7 +1,5 @@
 <script>
-    import Titlebar from '$lib/components/Titlebar.svelte';
-import '/src/lib/style/global.scss'
-
+    import '/src/lib/style/global.scss'
     import TimeAgo from 'javascript-time-ago'
     import en from 'javascript-time-ago/locale/en'
 

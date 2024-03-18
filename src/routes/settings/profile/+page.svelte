@@ -1,20 +1,12 @@
 <script lang="ts">
-    import ProfilePicture from "$lib/components/ProfilePicture.svelte";
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import Label from "$lib/elements/Label.svelte";
-    import Input from "$lib/elements/Input.svelte";
-    import Text from "$lib/elements/Text.svelte";
-    import { Appearance, Shape, Size } from "$lib/enums";
+    import { Appearance, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import { mock_users } from "$lib/mock/users";
+    import { mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
-    import { _ } from 'svelte-i18n'
-    import Select from "$lib/elements/Select.svelte";
-    import SettingSection from "$lib/layouts/SettingSection.svelte";
-    import OrderedPhrase from "$lib/components/OrderedPhrase.svelte";
-    import Checkbox from "$lib/elements/Checkbox.svelte";
-    import Spacer from "$lib/elements/Spacer.svelte";
+    import { _ } from "svelte-i18n"
+    import { SettingSection } from "$lib/layouts"
+    import { ProfilePicture, OrderedPhrase } from "$lib/components"
+    import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements";
 
     initLocale()
 

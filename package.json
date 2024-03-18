@@ -27,6 +27,7 @@
   "type": "module",
   "dependencies": {
     "javascript-time-ago": "^2.5.9",
+    "pretty-bytes": "^6.1.1",
     "svelte-i18n": "^4.0.0"
   }
 }

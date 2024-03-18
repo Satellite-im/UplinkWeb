@@ -1,14 +1,11 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import Input from "$lib/elements/Input.svelte"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
-    import Select from "$lib/elements/Select.svelte"
-    import SettingSection from "$lib/layouts/SettingSection.svelte"
-    import ColorSwatch from "$lib/components/ColorSwatch.svelte"
-
+    import { ColorSwatch } from "$lib/components"
+    import { SettingSection } from "$lib/layouts"
+    import { Button, Icon, Input, Select } from "$lib/elements"
+    
     initLocale()
 </script>
 

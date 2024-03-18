@@ -129,7 +129,7 @@ body {
 
 .flex-column {
     display: inline-flex;
-    flex-direction: column;
+    flex-direction: column !important;
     gap: var(--gap);
 }
 

@@ -1,9 +1,8 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
+    import { Button, Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import SettingSection from "$lib/layouts/SettingSection.svelte"
+    import { SettingSection } from "$lib/layouts"
     import { _ } from 'svelte-i18n'
 
     initLocale()

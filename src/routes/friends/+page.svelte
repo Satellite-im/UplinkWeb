@@ -105,7 +105,7 @@
                     </Button>
                 </div>
 
-                <Label text="Search Friends" />
+                <Label text={$_("friends.search_friends_placeholder")} />
                 <div class="section">
                     <Input alt placeholder={$_("friends.search_friends_placeholder")}>
                         <Icon icon={Shape.Search} />

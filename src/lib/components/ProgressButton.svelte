@@ -22,16 +22,13 @@
     .progress-button {
         font-family: "Secondary";
         position: relative;
-        margin: var(--border-width-more);
-        width: var(--input-height);
-        height: var(--input-height);
         padding: unset;
 
         .svg {
             pointer-events: none;
             position: absolute;
-            left: calc(var(--border-width-more) * -1 - var(--border-width));
-            top: calc(var(--border-width-more) * -1 - var(--border-width));
+            left: calc((var(--border-width-more) / 2) * -1);
+            top: calc((var(--border-width-more) / 2) * -1);
 
             circle {
                 stroke-dashoffset: 0;

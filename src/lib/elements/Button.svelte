@@ -47,6 +47,7 @@
     .button {
         pointer-events: all;
         min-height: var(--input-height);
+        min-width: fit-content;
         color: var(--color);
         background-color: var(--primary-color);
         border: var(--border-width) solid var(--border-color);

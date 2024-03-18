@@ -1,7 +1,5 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import Label from "$lib/elements/Label.svelte"
+    import { Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'

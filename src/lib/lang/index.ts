@@ -46,7 +46,13 @@ export function initLocale() {
                 add_someone: "Add Someone",
                 search_friends_placeholder: "Search your friends ...",
                 find_placeholder: "Find Username#xxxxxx ...",
+                incoming_requests: "Incoming Requests",
                 outgoing_requests: "Outgoing Requests",
+            },
+            files: {
+                file_plural: "Files",
+                new_folder: "New Folder",
+                upload: "Upload",
             },
             payments: {
                 send_coin: "Send Coin"

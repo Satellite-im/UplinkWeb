@@ -2,15 +2,11 @@
 </script>
 
 <div class="topbar">
-    <div class="before">
-        <slot name="before" />
-    </div>
+    <slot name="before" />
     <div class="content">
         <slot name="content" />
     </div>
-    <div class="controls">
-        <slot name="controls" />
-    </div>
+    <slot name="controls" />
 </div>
 
 <style lang="scss">
@@ -22,18 +18,24 @@
         gap: var(--gap);
         border-bottom: var(--border-width) solid var(--border-color);
 
+        :global(.before) {
+            display: inline-flex;
+            flex-direction: row;
+            gap: var(--gap)
+        }
+
         .content {
             flex:1;
             height: 100%;
-            min-width: 40px;
+            min-width: 0;
             justify-self: flex-start;
         }
 
-        .controls {
+        :global(.controls) {
             min-width: fit-content;
             display: inline-flex;
             flex-direction: row;
-            gap: var(--gap);
+            gap: var(--gap-less);
         }
     }
 </style>

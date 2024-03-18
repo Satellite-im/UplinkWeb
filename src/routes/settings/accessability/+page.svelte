@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Switch from "$lib/elements/Switch.svelte"
     import { initLocale } from "$lib/lang"
-    import SettingSection from "$lib/layouts/SettingSection.svelte"
     import { _ } from 'svelte-i18n'
+    import { Switch } from "$lib/elements"
+    import { SettingSection } from "$lib/layouts"
 
     initLocale()
 

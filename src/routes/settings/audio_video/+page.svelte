@@ -1,11 +1,9 @@
 <script lang="ts">
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
-    import SettingSection from "$lib/layouts/SettingSection.svelte"
-    import Switch from "$lib/elements/Switch.svelte"
-    import Select from "$lib/elements/Select.svelte"
-    import Meter from "$lib/components/Meter.svelte"
-    import Button from "$lib/elements/Button.svelte"
+    import { SettingSection } from "$lib/layouts"
+    import { Button, Switch, Select } from "$lib/elements"
+    import { Meter } from "$lib/components"
     import { Appearance } from "$lib/enums"
 
     initLocale()
