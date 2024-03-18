@@ -5,16 +5,12 @@
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
-    import File from "$lib/components/files/File.svelte";
-    import Folder from "$lib/components/files/Folder.svelte";
-    import ProgressButton from "$lib/components/ui/ProgressButton.svelte";
     import Text from "$lib/elements/Text.svelte";
-    import Label from "$lib/elements/Label.svelte";
+    import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
-    import { chats } from "$lib/mock/users";
-    import { ChatPreview } from "$lib/components";
+    import { chats } from "$lib/mock/users"
+    import { ChatPreview, ImageEmbed, ImageFile, Modal, File, Folder, ProgressButton } from "$lib/components"
 
     // Initialize locale
     initLocale()
@@ -28,9 +24,27 @@
 
     let tabRoutes: string[] = ["chats", "files"]
     let activeTabRoute: string = tabRoutes[0]
+
+    let previewImage: string | null
 </script>
 
 <div id="page">
+    <!-- Modals -->
+    {#if previewImage}
+        <Modal on:close={(_) => {previewImage = null}}>
+            <div slot="controls" class="controls">
+                <Button 
+                    icon 
+                    small 
+                    appearance={Appearance.Alt}
+                    on:click={(_) => {previewImage = null}}>
+                    <Icon icon={Shape.XMark} />
+                </Button>
+            </div>
+            <ImageEmbed big source={previewImage} />
+        </Modal>
+    {/if}
+    
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} >
        <div class="controls">
@@ -120,6 +134,9 @@
 
         <div class="body">
             <div class="files">
+                <ImageFile filesize={39222} name="Fake File" on:click={(_) => {
+                    previewImage = "/src/lib/assets/library.avif"
+                }} />
                 <File filesize={39222} name="Fake File" />
                 <Folder filesize={39382992} name="Fake Folder 2" />
             </div>
