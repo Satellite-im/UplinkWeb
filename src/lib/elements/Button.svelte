@@ -48,7 +48,7 @@
         pointer-events: all;
         min-height: var(--input-height);
         min-width: fit-content;
-        color: var(--color-alt);
+        color: var(--color);
         background-color: var(--primary-color);
         border: var(--border-width) solid var(--border-color);
         border-radius: var(--button-border-radius);
@@ -159,15 +159,6 @@
 
         // Style variations for button states and themes
         &.alt, &.success, &.info, &.error, &.warning, &.outlined, &.transparent {
-            &.alt {
-                background-color: var(--alt-color);
-                color: var(--color);
-
-                &:hover {
-                    background-color: var(--alt-color-alt);
-                }
-            }
-
             @each $type in success, info, error, warning {
                 &.#{$type} {
                     border-color: var(--#{$type}-color);
@@ -180,6 +171,15 @@
                             color: var(--color-alt);
                         }
                     }
+                }
+            }
+            
+            &.alt {
+                background-color: var(--alt-color);
+                color: var(--color);
+
+                &:hover {
+                    background-color: var(--alt-color-alt);
                 }
             }
 

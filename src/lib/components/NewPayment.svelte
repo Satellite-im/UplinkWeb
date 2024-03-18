@@ -46,6 +46,7 @@
                     </Text>
                     <Icon
                         icon={Shape.XMark}
+                        alt
                         class="control" />
                 </div>
             {/each}

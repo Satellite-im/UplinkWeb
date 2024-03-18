@@ -72,7 +72,7 @@
         }
 
         &.alt {
-            color: var(--color-alt);
+            color: var(--color);
         }
     }
 </style>
