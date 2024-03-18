@@ -14,6 +14,8 @@ export {default as PinInput} from "$lib/components/PinInput.svelte"
 export {default as ProfilePicture} from "$lib/components/profile/ProfilePicture.svelte"
 export {default as ProgressBar} from "$lib/components/ui/ProgressBar.svelte"
 export {default as ProgressButton} from "$lib/components/ui/ProgressButton.svelte"
+export {default as PopupButton} from "$lib/components/ui/PopupButton.svelte"
+export {default as Modal} from "$lib/components/ui/Modal.svelte"
 export {default as Titlebar} from "$lib/components/ui/Titlebar.svelte"
 export {default as ContextMenu} from "$lib/components/ui/ContextMenu.svelte"
 export {default as Message} from "$lib/components/messaging/message/Message.svelte"
@@ -22,4 +24,5 @@ export {default as MessageContainer} from "$lib/components/messaging/MessageCont
 export {default as MessageGroup} from "$lib/components/messaging/MessageGroup.svelte"
 export {default as MessageReplyContainer} from "$lib/components/messaging/MessageReplyContainer.svelte"
 
+export {default as ImageEmbed} from "$lib/components/messaging/embeds/ImageEmbed.svelte"
 

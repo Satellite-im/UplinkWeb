@@ -7,9 +7,8 @@
     import { slide } from "svelte/transition"
 
     import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
-    import { ChatPreview, NewPayment, Conversation, Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, CoinBalance } from "$lib/components"
+    import { PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, CoinBalance, Modal } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
-    import PopupButton from "$lib/components/ui/PopupButton.svelte";
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte";
 
     initLocale()
@@ -21,9 +20,27 @@
     function toggleSidebar() {
         sidebarOpen = !sidebarOpen
     }
+
+    // Mock Data
+    let previewImage: string | null
 </script>
 
 <div id="page">
+    <!-- Modals -->
+    {#if previewImage}
+        <Modal on:close={(_) => {previewImage = null}}>
+            <div slot="controls" class="controls">
+                <Button 
+                    icon 
+                    small 
+                    appearance={Appearance.Alt}
+                    on:click={(_) => {previewImage = null}}>
+                    <Icon icon={Shape.XMark} />
+                </Button>
+            </div>
+            <ImageEmbed big source={previewImage} />
+        </Modal>
+    {/if}
     <!--
         <ContextMenu items={[
             {
@@ -148,6 +165,13 @@
                     ]}/>
                 </MessageContainer>
                 <MessageContainer>
+                    <Message>
+                        <ImageEmbed 
+                            source="/src/lib/assets/library.avif"
+                            on:click={(_) => {
+                                previewImage = "/src/lib/assets/library.avif"
+                            }}/>
+                    </Message>
                     <Message>This is another message.</Message>
                 </MessageContainer>
                 <MessageContainer>
