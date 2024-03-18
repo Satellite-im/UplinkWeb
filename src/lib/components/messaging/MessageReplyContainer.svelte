@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Size } from "$lib/enums"
-    import { ProfilePicture } from './';
+    import { ProfilePicture } from "$lib/components";
 
     export let remote: boolean      = false
     export let image: string        = ""

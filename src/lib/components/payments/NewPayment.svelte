@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Appearance, Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types";
-    import { ProfilePicture, ProgressBar } from "./"
+    import { ProfilePicture, ProgressBar } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte";
 

@@ -7,9 +7,9 @@
     import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
-    import File from "$lib/components/File.svelte";
-    import Folder from "$lib/components/Folder.svelte";
-    import ProgressButton from "$lib/components/ProgressButton.svelte";
+    import File from "$lib/components/files/File.svelte";
+    import Folder from "$lib/components/files/Folder.svelte";
+    import ProgressButton from "$lib/components/ui/ProgressButton.svelte";
     import Text from "$lib/elements/Text.svelte";
     import Label from "$lib/elements/Label.svelte";
     import prettyBytes from "pretty-bytes"

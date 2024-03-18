@@ -27,8 +27,10 @@
 <style lang="scss">
 .popup {
     position: relative;
-    .control {
+    
+    :global(.control) {
         display: inline-flex;
+        justify-content: center;
     }
     
     .popup-body {

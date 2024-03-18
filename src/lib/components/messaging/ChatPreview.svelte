@@ -1,19 +1,19 @@
 <script lang="ts">
     import TimeAgo from 'javascript-time-ago'
 
-    import { Size } from "$lib/enums";
-    import type { User } from '$lib/types';
+    import { Size } from "$lib/enums"
+    import type { User } from '$lib/types'
 
     import { Text, Loader } from "$lib/elements"
-    import { ProfilePicture } from './';
+    import { ProfilePicture } from "$lib/components"
 
-    export let users: User[]            = [];
-    export let notifications: number    = 0;
-    export let simpleUnreads: boolean   = false;
-    export let timestamp: Date          = new Date();
-    export let message: string          = "";
-    export let loading: boolean         = false;
-    export let typing: boolean          = false;
+    export let users: User[]            = []
+    export let notifications: number    = 0
+    export let simpleUnreads: boolean   = false
+    export let timestamp: Date          = new Date()
+    export let message: string          = ""
+    export let loading: boolean         = false
+    export let typing: boolean          = false
 
     const timeAgo = new TimeAgo('en-US')
 
