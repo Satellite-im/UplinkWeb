@@ -25,14 +25,16 @@ export const enum SettingsRoute {
     Licenses        = "/settings/licenses"
 }
 
+
 export const enum Appearance {
-    Default     = "",
-    Alt         = "alt",
-    Success     = "success",
-    Info        = "info",
-    Warning     = "warning",
-    Error       = "error",
-    Primary     = "Primary"
+    Default         = "",
+    Alt             = "alt",
+    Success         = "success",
+    Info            = "info",
+    Warning         = "warning",
+    Error           = "error",
+    Primary         = "primary",
+    Transparent     = "transparent"
 }
 
 export const enum Size {

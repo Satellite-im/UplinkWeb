@@ -20,6 +20,7 @@ export {default as ProfilePicture} from "$lib/components/ProfilePicture.svelte"
 export {default as ProgressBar} from "$lib/components/ProgressBar.svelte"
 export {default as ProgressButton} from "$lib/components/ProgressButton.svelte"
 export {default as Titlebar} from "$lib/components/Titlebar.svelte"
+export {default as ContextMenu} from "$lib/components/ContextMenu.svelte"
 
 
 

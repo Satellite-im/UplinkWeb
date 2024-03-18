@@ -54,3 +54,9 @@ export type Chat = {
     last_message_at: Date,
     last_message_preview: string,
 }
+
+export type ContextItem = {
+    id: string,
+    icon: Shape,
+    text: string
+}

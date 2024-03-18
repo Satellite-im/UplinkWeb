@@ -2,7 +2,6 @@
     import { Button } from "$lib/elements"
     import { Appearance } from "$lib/enums"
 
-
     export let open: boolean    = false
     export let name: string     = "name"
 </script>

@@ -10,6 +10,7 @@
     import { ChatPreview, NewPayment, Conversation, Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, CoinBalance } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import PopupButton from "$lib/components/PopupButton.svelte";
+    import ContextMenu from "$lib/components/ContextMenu.svelte";
 
     initLocale()
 
@@ -23,6 +24,45 @@
 </script>
 
 <div id="page">
+    <ContextMenu items={[
+        {
+            id: "something_1",
+            icon: Shape.Beaker,
+            text: "Something",
+        },
+        {
+            id: "something_1",
+            icon: Shape.Beaker,
+            text: "Something",
+        },
+        {
+            id: "something_1",
+            icon: Shape.Beaker,
+            text: "Something",
+        },
+        {
+            id: "something_1",
+            icon: Shape.Beaker,
+            text: "Something",
+        }
+    ]}>
+        <Button icon appearance={Appearance.Alt}>
+            <Icon icon={Shape.Beaker} />
+        </Button>
+        <Button icon appearance={Appearance.Alt}>
+            <Icon icon={Shape.Beaker} />
+        </Button>
+        <Button icon appearance={Appearance.Alt}>
+            <Icon icon={Shape.Beaker} />
+        </Button>
+        <Button icon appearance={Appearance.Alt}>
+            <Icon icon={Shape.Beaker} />
+        </Button>
+        <Button icon appearance={Appearance.Alt}>
+            <Icon icon={Shape.Plus} />
+        </Button>
+    </ContextMenu>
+    
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
