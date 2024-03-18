@@ -70,5 +70,9 @@
         &.muted {
             color: var(--color-muted);
         }
+
+        &.alt {
+            color: var(--color-alt);
+        }
     }
 </style>

@@ -10,12 +10,6 @@
     initLocale()
 
     let loading = false
-
-    // TODO: Mock
-    onMount(() => {
-        loading = true
-        setTimeout(() => loading = false, 1500)
-    })
 </script>
 
 <div id="auth-recover">

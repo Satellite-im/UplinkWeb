@@ -8,13 +8,8 @@
     // Initialize locale
     initLocale()
 
-    let loading: boolean = true
+    let loading: boolean = false
     let sidebarOpen: boolean = true
-
-    // Mock loading behavior
-    onMount(() => {
-        setTimeout(() => loading = false, 1500)
-    })
 
     function toggleSidebar(): void {
         sidebarOpen = !sidebarOpen
@@ -24,7 +19,7 @@
 <div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Wallet} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet} >
-       Wallet Sidebar
+        
     </Sidebar>
     <div class="content">
         Wallet

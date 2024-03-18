@@ -12,14 +12,9 @@
 
     initLocale()
 
-    let loading = true
+    let loading = false
     let sidebarOpen = true
     let activeRoute = SettingsRoute.Profile;
-
-    // TODO: Mock
-    onMount(() => {
-        setTimeout(() => loading = false, 1500)
-    })
 
     function toggleSidebar() {
         sidebarOpen = !sidebarOpen

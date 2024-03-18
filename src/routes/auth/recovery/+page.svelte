@@ -11,12 +11,6 @@
 
     let loading = false
 
-    // TODO: Mock
-    onMount(() => {
-        loading = true
-        setTimeout(() => loading = false, 1500)
-    })
-
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 </script>
 

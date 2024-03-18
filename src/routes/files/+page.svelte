@@ -19,13 +19,8 @@
     // Initialize locale
     initLocale()
 
-    let loading: boolean = true
+    let loading: boolean = false
     let sidebarOpen: boolean = true
-
-    // Mock loading behavior
-    onMount(() => {
-        setTimeout(() => loading = false, 1500)
-    })
 
     function toggleSidebar(): void {
         sidebarOpen = !sidebarOpen

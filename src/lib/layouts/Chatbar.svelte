@@ -15,13 +15,7 @@
 
     <Input alt placeholder={$_("generic.placeholder")} rounded />
 
-    <Button icon appearance={Appearance.Alt} tooltip={$_("payments.send_coin")}>
-        <Icon icon={Shape.SendCoin} />
-    </Button>
-
-    <Button icon appearance={Appearance.Alt} tooltip={$_("chat.emoji")}>
-        <Icon icon={Shape.Smile} />
-    </Button>
+    <slot></slot>
 
     <Button icon tooltip={$_("chat.send")}>
         <Icon icon={Shape.ChevronRight} />

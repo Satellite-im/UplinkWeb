@@ -12,12 +12,6 @@
     let create = false
     let loading = false
     let scramble = true
-
-    // TODO: Mock
-    onMount(() => {
-        loading = true
-        setTimeout(() => loading = false, 1500)
-    })
 </script>
 
 <div id="auth-unlock">

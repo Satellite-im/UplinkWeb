@@ -2,25 +2,20 @@
     import { Appearance, MessagePosition, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { chats, mock_users } from "$lib/mock/users"
-    import { onMount } from "svelte"
     import { _ } from 'svelte-i18n'
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
 
     import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
-    import { ChatPreview, Conversation, Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, CoinBalance } from "$lib/components"
+    import { ChatPreview, NewPayment, Conversation, Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, CoinBalance } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
+    import PopupButton from "$lib/components/PopupButton.svelte";
 
     initLocale()
 
-    let loading = true
+    let loading = false
     let sidebarOpen = true
     let contentAsideOpen = false
-
-    // TODO: Mock
-    onMount(() => {
-        setTimeout(() => loading = false, 1500)
-    })
 
     function toggleSidebar() {
         sidebarOpen = !sidebarOpen
@@ -167,7 +162,14 @@
                 </MessageContainer>
             </MessageGroup>
         </Conversation>
-        <Chatbar />
+        <Chatbar>
+            <PopupButton name={$_("payments.send_coin")}>
+                <NewPayment recipients={mock_users}/>
+                <div slot="icon" class="control">
+                    <Icon icon={Shape.SendCoin} />
+                </div>
+            </PopupButton>
+        </Chatbar>
     </div>
     {#if contentAsideOpen}
         <!-- All aside menus should render from this element. Please display only one at a time. -->

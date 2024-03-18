@@ -3,6 +3,7 @@
     import type { User } from "$lib/types";
     import { ProfilePicture, ProgressBar } from "./"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
+    import Text from "$lib/elements/Text.svelte";
 
     export let recipients: Array<User> = []
 
@@ -40,11 +41,9 @@
                     <ProfilePicture 
                         size={Size.Smallest}
                         image={recipient.profile.photo.image} />
-                    <p
-                        class="username hover-text"
-                        data-hover-text={recipient.name}>
+                    <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
-                    </p>
+                    </Text>
                     <Icon
                         icon={Shape.XMark}
                         class="control" />
@@ -61,12 +60,12 @@
                         image={recipient.profile.photo.image}
                         status={recipient.profile.status} />
                     <div class="info">
-                        <p class="username">
+                        <Text singleLine size={Size.Medium}>
                             {recipient.name}
-                        </p>
-                        <p class="subtext text-muted hover-text" data-hover-text={recipient.key}>
+                        </Text>
+                        <Text singleLine muted>
                             {recipient.key}
-                        </p>
+                        </Text>
                     </div>
                     <Checkbox checked={contains_recipient(selected_recipients, recipient)} />
                 </button>
@@ -80,6 +79,7 @@
             <Button 
                 appearance={Appearance.Success}
                 text="Confirm"
+                outline
                 class="flex" />
             <Button
                 appearance={Appearance.Alt}
@@ -97,9 +97,6 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        padding: var(--padding);
-        border: var(--border-width) solid var(--border-color);
-        border-radius: var(--border-radius);
         width: 100%;
         height: fit-content;
         position: relative;

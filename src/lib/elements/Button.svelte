@@ -48,7 +48,7 @@
         pointer-events: all;
         min-height: var(--input-height);
         min-width: fit-content;
-        color: var(--color);
+        color: var(--color-alt);
         background-color: var(--primary-color);
         border: var(--border-width) solid var(--border-color);
         border-radius: var(--button-border-radius);
