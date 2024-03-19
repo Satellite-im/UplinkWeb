@@ -2,7 +2,6 @@
     import { ContextMenu } from "$lib/components";
     import { Shape } from "$lib/enums";
     import type { ContextItem } from "$lib/types"
-    import { writable } from "svelte/store";
 
     const fakeData: ContextItem[] = [
         {
@@ -27,30 +26,11 @@
         }
     ];
 
-    let showMenu = false;
-
-    function handleContextMenu(event: MouseEvent) {
-        if (!event.target || !(event.target instanceof Element)) {
-            return;
-        }
-        const target = event.target as Element;
-
-        if (target.closest('.topbar')) {
-            showMenu = true;
-        } 
-        if (!target.closest('.topbar')) {
-            event.preventDefault();
-            showMenu = false;
-        }
-    }
-
-    // Add event listener for right-click events on the window
-    window.addEventListener('contextmenu', handleContextMenu);
 
 </script>
 
 <div class="topbar">
-    <ContextMenu items={fakeData} showMenu={writable(showMenu)}/>
+    <ContextMenu items={fakeData} parentClass=".topbar"/>
     <slot name="before" />
     <div class="content">
         <slot name="content" />

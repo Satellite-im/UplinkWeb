@@ -3,9 +3,10 @@
     import Icon from "$lib/elements/Icon.svelte";
     import { Appearance, Shape } from "$lib/enums";
     import type { ContextItem } from "$lib/types";
-    import { writable } from "svelte/store";
+    import { clickoutside } from '@svelte-put/clickoutside';
     export let items: ContextItem[] = [];
-    export let showMenu = writable(false);
+    export let showMenu = false;
+    export let parentClass = "";
 
     let pos = { x: 0, y: 0 };
     let menu = { h: 0, w: 0 };
@@ -27,8 +28,8 @@
             pos.x = pos.x - menu.w;
     }
 
-    function onPageClick(e: MouseEvent){
-        showMenu.set(false);
+    function onPageClick(){
+        showMenu = false;
     }
 
     function getContextMenuDimension(node: HTMLDivElement){
@@ -39,10 +40,28 @@
             w: width
         };
     }
+
+    function handleContextMenu(event: MouseEvent) {
+        if (!event.target || !(event.target instanceof Element)) {
+            return;
+        }
+        const target = event.target as Element;
+
+        if (target.closest(parentClass)) {
+            showMenu = true;
+        } 
+        if (!target.closest(parentClass)) {
+            event.preventDefault();
+            showMenu = false;
+        }
+    }
+
+    // Add event listener for right-click events on the window
+    window.addEventListener('contextmenu', handleContextMenu);
 </script>
 
-{#if $showMenu}
-<div class="context-menu" use:getContextMenuDimension style="position: absolute; top:{pos.y}px; left:{pos.x}px">
+{#if showMenu}
+<div class="context-menu" use:getContextMenuDimension use:clickoutside on:clickoutside={onPageClick} style="position: absolute; top:{pos.y}px; left:{pos.x}px">
     <div class="header">
         <slot></slot>
     </div>
@@ -80,4 +99,4 @@
     }
 </style>
 
-<svelte:window on:contextmenu|preventDefault={rightClickContextMenu} on:click={onPageClick} />
+<svelte:window on:contextmenu|preventDefault={rightClickContextMenu} />
