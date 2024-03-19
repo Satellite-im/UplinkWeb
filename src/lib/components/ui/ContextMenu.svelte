@@ -1,22 +1,17 @@
-<script lang="ts">    
-    import Button from "$lib/elements/Button.svelte"
-    import { Appearance } from "$lib/enums"
-    import { Icon } from "$lib/elements"
-    import type { ContextItem } from "$lib/types"
+<script lang="ts">
+    import Button from "$lib/elements/Button.svelte";
+    import Icon from "$lib/elements/Icon.svelte";
+    import { Appearance, Shape } from "$lib/enums";
+    import type { ContextItem } from "$lib/types";
+    import { writable } from "svelte/store";
+    export let items: ContextItem[] = [];
+    export let showMenu = writable(false);
 
-    export let items: ContextItem[] = []
+    let pos = { x: 0, y: 0 };
+    let menu = { h: 0, w: 0 };
+    let browser = { h: 0, w: 0 };
 
-    // pos is cursor position when right click occur
-    let pos = { x: 0, y: 0 }
-    // menu is dimension (height and width) of context menu
-    let menu = { h: 0, y: 0 }
-    // browser/window dimension (height and width)
-    let browser = { h: 0, y: 0 }
-    // showMenu is state of context-menu visibility
-    let showMenu = false;
-
-    function rightClickContextMenu(e: { clientX: any; clientY: any; }){
-        showMenu = true
+    function rightClickContextMenu(e: MouseEvent){
         browser = {
             w: window.innerWidth,
             h: window.innerHeight
@@ -25,34 +20,28 @@
             x: e.clientX,
             y: e.clientY
         };
-        // If bottom part of context menu will be displayed
-        // after right-click, then change the position of the
-        // context menu. This position is controlled by `top` and `left`
-        // at inline style. 
-        // Instead of context menu is displayed from top left of cursor position
-        // when right-click occur, it will be displayed from bottom left.
-        if (browser.h -  pos.y < menu.h)
-            pos.y = pos.y - menu.h
-        if (browser.w -  pos.x < menu.w)
-            pos.x = pos.x - menu.w
+
+        if (browser.h - pos.y < menu.h)
+            pos.y = pos.y - menu.h;
+        if (browser.w - pos.x < menu.w)
+            pos.x = pos.x - menu.w;
     }
-    function onPageClick(e: any){
-        // To make context menu disappear when
-        // mouse is clicked outside context menu
-        showMenu = false;
+
+    function onPageClick(e: MouseEvent){
+        showMenu.set(false);
     }
+
     function getContextMenuDimension(node: HTMLDivElement){
-        // This function will get context menu dimension
-        // when navigation is shown => showMenu = true
-        let height = node.offsetHeight
-        let width = node.offsetWidth
+        let height = node.offsetHeight;
+        let width = node.offsetWidth;
         menu = {
             h: height,
             w: width
-        }
+        };
     }
 </script>
-{#if showMenu}
+
+{#if $showMenu}
 <div class="context-menu" use:getContextMenuDimension style="position: absolute; top:{pos.y}px; left:{pos.x}px">
     <div class="header">
         <slot></slot>
@@ -90,5 +79,5 @@
         }
     }
 </style>
-<svelte:window on:contextmenu|preventDefault={rightClickContextMenu} 
-on:click={onPageClick} />
+
+<svelte:window on:contextmenu|preventDefault={rightClickContextMenu} on:click={onPageClick} />
