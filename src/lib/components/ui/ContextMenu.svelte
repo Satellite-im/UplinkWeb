@@ -1,13 +1,48 @@
-<script lang="ts">    
-    import Button from "$lib/elements/Button.svelte"
-    import { Appearance } from "$lib/enums"
-    import { Icon } from "$lib/elements"
-    import type { ContextItem } from "$lib/types"
+<script lang="ts">
+    import Button from "$lib/elements/Button.svelte";
+    import Icon from "$lib/elements/Icon.svelte";
+    import { Appearance, Shape } from "$lib/enums";
+    import type { ContextItem } from "$lib/types";
+    import { writable } from "svelte/store";
+    export let items: ContextItem[] = [];
+    export let showMenu = writable(false);
 
-    export let items: ContextItem[] = []
+    let pos = { x: 0, y: 0 };
+    let menu = { h: 0, w: 0 };
+    let browser = { h: 0, w: 0 };
+
+    function rightClickContextMenu(e: MouseEvent){
+        browser = {
+            w: window.innerWidth,
+            h: window.innerHeight
+        };
+        pos = {
+            x: e.clientX,
+            y: e.clientY
+        };
+
+        if (browser.h - pos.y < menu.h)
+            pos.y = pos.y - menu.h;
+        if (browser.w - pos.x < menu.w)
+            pos.x = pos.x - menu.w;
+    }
+
+    function onPageClick(e: MouseEvent){
+        showMenu.set(false);
+    }
+
+    function getContextMenuDimension(node: HTMLDivElement){
+        let height = node.offsetHeight;
+        let width = node.offsetWidth;
+        menu = {
+            h: height,
+            w: width
+        };
+    }
 </script>
 
-<div class="context-menu">
+{#if $showMenu}
+<div class="context-menu" use:getContextMenuDimension style="position: absolute; top:{pos.y}px; left:{pos.x}px">
     <div class="header">
         <slot></slot>
     </div>
@@ -17,6 +52,7 @@
         </Button>
     {/each}
 </div>
+{/if}
 
 <style lang="scss">
     .context-menu {
@@ -43,3 +79,5 @@
         }
     }
 </style>
+
+<svelte:window on:contextmenu|preventDefault={rightClickContextMenu} on:click={onPageClick} />
