@@ -2,7 +2,6 @@
     import { ContextMenu } from "$lib/components";
     import { Shape } from "$lib/enums";
     import type { ContextItem } from "$lib/types"
-    import { onDestroy } from "svelte";
     import { writable } from "svelte/store";
 
     const fakeData: ContextItem[] = [
@@ -48,10 +47,6 @@
     // Add event listener for right-click events on the window
     window.addEventListener('contextmenu', handleContextMenu);
 
-    // Cleanup function to remove the event listener when the component is destroyed
-    onDestroy(() => {
-        window.removeEventListener('contextmenu', handleContextMenu);
-    });
 </script>
 
 <div class="topbar">
