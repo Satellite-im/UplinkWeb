@@ -197,6 +197,7 @@
             subtext="Sent 2 minutes ago.">
                 <MessageContainer>
                     <Message remote position={MessagePosition.First}>Hello humans.</Message>
+                    <Message remote markdown="**woah** _it's_ __markdown__ ~~stuff~~." />
                     <MessageReactions remote reactions={[
                         {
                             emoji: "👽",

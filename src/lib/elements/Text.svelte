@@ -1,4 +1,6 @@
 <script lang="ts">
+    import SvelteMarkdown from "svelte-markdown"
+
     import { Appearance, Size } from "$lib/enums"
     import { Loader } from "./"
 
@@ -8,6 +10,7 @@
     export let size: Size               = Size.Medium
     export let singleLine: boolean      = false
     export let doubleLine: boolean      = false
+    export let markdown: string         =  ""
 
     let clazz = ""
 	export { clazz as class }
@@ -17,7 +20,11 @@
     {#if loading}
         <Loader text />
     {:else}
-        <slot></slot>
+        {#if markdown}
+            <SvelteMarkdown source={markdown} />
+        {:else}
+            <slot></slot>
+        {/if}
     {/if}
 </p>
 

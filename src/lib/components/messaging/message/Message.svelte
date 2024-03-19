@@ -1,9 +1,11 @@
 <script lang="ts">
+    import Text from "$lib/elements/Text.svelte"
     import { MessagePosition } from "$lib/enums"
 
     export let remote: boolean      = false
     export let reply: boolean       = false
     export let localSide: boolean   = false
+    export let markdown: string     = ""
 
     export let position: MessagePosition = MessagePosition.Middle
 </script>
@@ -13,7 +15,13 @@
     {#if reply && !remote}
         <span class="reply-arrow">↪</span>
     {/if}
-    <slot></slot>
+    {#if markdown}
+        <Text markdown={markdown} />
+    {:else}
+        <Text>
+            <slot></slot>
+        </Text>
+    {/if}
     {#if reply && remote}
         <span class="reply-arrow">↩</span>
     {/if}
@@ -22,7 +30,7 @@
 <style lang="scss">
     .message-bubble {
         background-color: var(--primary-color);
-        padding: var(--padding-less) var(--padding);
+        padding: var(--padding);
         border-radius: var(--border-radius-more);
         border-bottom-right-radius: var(--border-radius-minimal);
         width: fit-content;

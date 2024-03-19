@@ -8,12 +8,11 @@
 
     export let fileInfo: FileInfo = {
         name: "unknown",
-        size: 9999999999999999999,
+        size: 999999999999999,
         icon: Shape.Document,
         type: "unknown/unknown"
     }
 </script>
-
 
 <div class="file-embed">
     <Icon icon={fileInfo.icon} size={Size.Larger} />
@@ -31,7 +30,7 @@
             <Button icon appearance={Appearance.Alt} tooltip="Share">
                 <Icon icon={Shape.Share} />
             </Button>
-            <Button icon appearance={Appearance.Alt} tooltip="Add to Files">
+            <Button appearance={Appearance.Alt} text="Add to Files">
                 <Icon icon={Shape.Plus} />
             </Button>
         </div>
@@ -42,11 +41,11 @@
     .file-embed {
         min-width: var(--min-component-width);
         max-width: var(--max-component-width);
-        width: fit-content;
+        width: 100%;
         display: inline-flex;
-        padding: var(--padding-less);
+        padding: var(--padding);
         background-color: var(--background-alt);
-        border-radius: var(--border-radius);
+        border-radius: var(--border-radius-medium);
 
         .body {
             display: inline-flex;

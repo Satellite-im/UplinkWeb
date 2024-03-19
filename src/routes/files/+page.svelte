@@ -152,9 +152,10 @@
         height: 100%;
         overflow: hidden;
         
-        .controls {
+        :global(.controls) {
             display: inline-flex;
             gap: var(--gap);
+            padding: 0 var(--padding);
         }
         
         .stat {

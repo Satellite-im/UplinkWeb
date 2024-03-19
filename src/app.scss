@@ -92,6 +92,15 @@ select {
     src: url('$lib/assets/font/SpaceMono-Regular.ttf');
 }
 
+strong {
+    font-family: "Secondary";
+}
+
+del {
+    color: var(--color);
+    text-decoration-color: var(--error-color);
+}
+
 html {
     overflow: hidden;
 }
