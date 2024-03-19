@@ -1,7 +1,7 @@
 <script lang="ts">
     import Button from "$lib/elements/Button.svelte";
 import Label from "$lib/elements/Label.svelte"
-    import Controls from "../ui/Controls.svelte";
+    import Controls from "../../layouts/Controls.svelte";
 </script>
 
 <!-- Success Splash -->

@@ -11,7 +11,7 @@
     import prettyBytes from "pretty-bytes"
     import { chats } from "$lib/mock/users"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, File, Folder, ProgressButton } from "$lib/components"
-    import Controls from "$lib/components/ui/Controls.svelte";
+    import Controls from "$lib/layouts/Controls.svelte";
 
     // Initialize locale
     initLocale()

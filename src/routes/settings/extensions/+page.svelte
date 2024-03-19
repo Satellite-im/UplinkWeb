@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Controls from "$lib/components/ui/Controls.svelte";
+    import Controls from "$lib/layouts/Controls.svelte";
 import { Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"

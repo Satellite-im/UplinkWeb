@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
-    import Controls from "./Controls.svelte"
+    import Controls from "../../layouts/Controls.svelte"
     
     const dispatch = createEventDispatcher()
     function onClose(event: MouseEvent) {

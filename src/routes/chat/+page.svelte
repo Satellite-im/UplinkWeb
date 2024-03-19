@@ -144,7 +144,9 @@
                 </Button>
             </div>
         </Topbar>
+
         <CallScreen />
+
         <Conversation>
             <MessageGroup profilePictureRequirements={{
                 notifications: 0,
@@ -240,6 +242,7 @@
                 </MessageContainer>
             </MessageGroup>
         </Conversation>
+        
         <Chatbar>
             <PopupButton name={$_("payments.send_coin")}>
                 <NewPayment recipients={mock_users}/>
