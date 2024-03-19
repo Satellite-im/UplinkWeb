@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Controls from "$lib/layouts/Controls.svelte"
     import { Text } from "$lib/elements"
     import Button from "$lib/elements/Button.svelte";
     import Icon from "$lib/elements/Icon.svelte";
@@ -23,17 +24,17 @@
                 {prettyBytes(fileInfo.size)}
             </Text>
         </div>
-        <div class="controls">
-            <Button icon tooltip="Download">
-                <Icon icon={Shape.Download} />
-            </Button>
-            <Button icon appearance={Appearance.Alt} tooltip="Share">
-                <Icon icon={Shape.Share} />
-            </Button>
-            <Button appearance={Appearance.Alt} text="Add to Files">
-                <Icon icon={Shape.Plus} />
-            </Button>
-        </div>
+            <Controls>
+                <Button icon tooltip="Download">
+                    <Icon icon={Shape.Download} />
+                </Button>
+                <Button icon appearance={Appearance.Alt} tooltip="Share">
+                    <Icon icon={Shape.Share} />
+                </Button>
+                <Button appearance={Appearance.Alt} text="Add to Files">
+                    <Icon icon={Shape.Plus} />
+                </Button>
+            </Controls>
     </div>
 </div>
 
@@ -59,9 +60,6 @@
                 flex: 1;
             }
 
-            .controls {
-                width: fit-content;
-            }
         }
     }
 </style>

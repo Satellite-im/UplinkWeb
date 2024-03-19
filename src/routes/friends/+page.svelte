@@ -8,7 +8,7 @@
     import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
     import type { User } from "$lib/types"
-    import Controls from "$lib/components/ui/Controls.svelte";
+    import Controls from "$lib/layouts/Controls.svelte";
 
     // Initialize locale
     initLocale()

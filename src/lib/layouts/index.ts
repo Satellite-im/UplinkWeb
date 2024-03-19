@@ -5,7 +5,7 @@ export {default as SettingSection} from "$lib/layouts/SettingSection.svelte"
 export {default as Sidebar} from "$lib/layouts/Sidebar.svelte"
 export {default as Slimbar} from "$lib/layouts/Slimbar.svelte"
 export {default as Topbar} from "$lib/layouts/Topbar.svelte"
-
+export {default as Controls} from "$lib/layouts/Controls.svelte"
 
 
 

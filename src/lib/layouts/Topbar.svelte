@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { ContextMenu } from "$lib/components";
-    import Controls from "$lib/components/ui/Controls.svelte";
-    import { Shape } from "$lib/enums";
+    import { ContextMenu } from "$lib/components"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { Shape } from "$lib/enums"
     import type { ContextItem } from "$lib/types"
-    import { onDestroy } from "svelte";
-    import { writable } from "svelte/store";
+    import { onDestroy } from "svelte"
+    import { writable } from "svelte/store"
 
     const fakeData: ContextItem[] = [
         {
@@ -27,32 +27,32 @@
             icon: Shape.Beaker,
             text: "Something",
         }
-    ];
+    ]
 
     let showMenu = false;
 
     function handleContextMenu(event: MouseEvent) {
         if (!event.target || !(event.target instanceof Element)) {
-            return;
+            return
         }
-        const target = event.target as Element;
+        const target = event.target as Element
 
-        if (target.closest('.topbar')) {
-            showMenu = true;
-        } 
-        if (!target.closest('.topbar')) {
-            event.preventDefault();
-            showMenu = false;
-        }
+        // if (target.closest('.topbar')) {
+        //     showMenu = true
+        // } 
+        // if (!target.closest('.topbar')) {
+        //     event.preventDefault()
+        //     showMenu = false
+        // }
     }
 
     // Add event listener for right-click events on the window
-    window.addEventListener('contextmenu', handleContextMenu);
+    window.addEventListener('contextmenu', handleContextMenu)
 
     // Cleanup function to remove the event listener when the component is destroyed
     onDestroy(() => {
-        window.removeEventListener('contextmenu', handleContextMenu);
-    });
+        window.removeEventListener('contextmenu', handleContextMenu)
+    })
 </script>
 
 <div class="topbar">
