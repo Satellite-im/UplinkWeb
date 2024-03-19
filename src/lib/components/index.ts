@@ -28,4 +28,4 @@ export {default as MessageGroup} from "$lib/components/messaging/MessageGroup.sv
 export {default as MessageReplyContainer} from "$lib/components/messaging/MessageReplyContainer.svelte"
 
 export {default as ImageEmbed} from "$lib/components/messaging/embeds/ImageEmbed.svelte"
-
+export {default as FileEmbed} from "$lib/components/messaging/embeds/FileEmbed.svelte"

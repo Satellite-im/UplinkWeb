@@ -7,9 +7,13 @@
     import { slide } from "svelte/transition"
 
     import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
-    import { PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, CoinBalance, Modal } from "$lib/components"
+    import { 
+        FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
+        Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, 
+        ProfilePicture, CoinBalance, Modal 
+    } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
-    import ContextMenu from "$lib/components/ui/ContextMenu.svelte";
+    import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
 
     initLocale()
 
@@ -166,8 +170,13 @@
                 </MessageContainer>
                 <MessageContainer>
                     <Message>
+                        <FileEmbed />
+                    </Message>
+                    <Message>
                         <ImageEmbed 
                             source="/src/lib/assets/library.avif"
+                            name="Library.avif"
+                            filesize={1291235}
                             on:click={(_) => {
                                 previewImage = "/src/lib/assets/library.avif"
                             }}/>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Banner, Key } from "$lib/components"
     import { Button, Icon, Spacer, Text } from "$lib/elements"
-    import { Appearance, KeybindAction, Shape } from "$lib/enums"
+    import { Appearance, KeybindAction, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
     import { _ } from 'svelte-i18n'
@@ -43,7 +43,7 @@
 
 <div id="page">
     <Banner text="Global keybinds are disabled while on this page.">
-        <Icon icon={Shape.Info} large />
+        <Icon icon={Shape.Info} size={Size.Large} />
     </Banner>
     <Spacer />
     <SettingSection name="Revert" description="Revert keybinds to default bindings.">

@@ -60,3 +60,10 @@ export type ContextItem = {
     icon: Shape,
     text: string
 }
+
+export type FileInfo = {
+    type: string,
+    icon: Shape,
+    size: number,
+    name: string
+}
