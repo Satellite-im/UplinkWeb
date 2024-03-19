@@ -1,5 +1,3 @@
-import type Sidebar from "$lib/layouts/Sidebar.svelte";
-
 export const enum Route {
     Home = "/",
     Chat = "/chat",

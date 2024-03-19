@@ -14,6 +14,7 @@
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
+    import CallScreen from "$lib/components/calling/CallScreen.svelte";
 
     initLocale()
 
@@ -143,6 +144,7 @@
                 </Button>
             </div>
         </Topbar>
+        <CallScreen />
         <Conversation>
             <MessageGroup profilePictureRequirements={{
                 notifications: 0,

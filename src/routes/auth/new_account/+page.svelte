@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { ProfilePicture}  from "$lib/components"
+    import Controls from "$lib/components/ui/Controls.svelte";
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
@@ -29,7 +30,7 @@
             <Input alt placeholder={$_('pages.auth.new_account.set_status')} />
         </div>
     </div>
-    <div class="controls">
+    <Controls>
         <Button 
             class="full-width"
             text={$_('controls.go_back')} 
@@ -47,7 +48,7 @@
             }} >
             <Icon icon={Shape.ArrowRight} />            
         </Button>
-    </div>
+    </Controls>
 </div>
 
 <style lang="scss">
@@ -94,15 +95,6 @@
             display: inline-flex;
             flex-direction: column;
             gap: var(--gap);
-        }
-        
-        .controls {
-            gap: var(--gap);
-            display: inline-flex;
-            justify-content: space-between;
-            align-items: center;
-            flex: 100%;
-            flex-wrap: wrap;
         }
     }
 </style>

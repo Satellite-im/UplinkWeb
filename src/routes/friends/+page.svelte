@@ -4,10 +4,11 @@
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
+    import { _ } from 'svelte-i18n'
     import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
     import { onMount } from "svelte"
-    import { _ } from 'svelte-i18n'
     import type { User } from "$lib/types"
+    import Controls from "$lib/components/ui/Controls.svelte";
 
     // Initialize locale
     initLocale()
@@ -119,7 +120,7 @@
                                     <Text class="username">
                                         {friend.name}
                                     </Text>
-                                    <div class="controls">
+                                    <Controls>
                                         <Button 
                                             text={$_("chat.chat")}>
                                             <Icon icon={Shape.ChatBubble} />
@@ -136,7 +137,7 @@
                                             tooltip={$_("friends.block")}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
-                                    </div>
+                                    </Controls>
                                 </div>
                             {/each}
                         {/if}
@@ -150,11 +151,11 @@
                         <div class="friend">
                             <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
                             <Text class="username">{friend.name}</Text>
-                            <div class="controls">
+                            <Controls>
                                 <Button appearance={Appearance.Alt} text={$_("generic.cancel")}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
-                            </div>
+                            </Controls>
                         </div>
                     {/each}
                     <Label text={$_("friends.incoming_requests")} />
@@ -162,14 +163,14 @@
                         <div class="friend">
                             <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
                             <Text class="username">{friend.name}</Text>
-                            <div class="controls">
+                            <Controls>
                                 <Button appearance={Appearance.Success} text={$_("generic.accept")} outline>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
                                 <Button appearance={Appearance.Alt} text={$_("generic.deny")}>
                                     <Icon icon={Shape.XMark} />
                                 </Button>
-                            </div>
+                            </Controls>
                         </div>
                     {/each}
                 </div>
@@ -181,11 +182,11 @@
                         <div class="friend">
                             <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
                             <Text class="username">{friend.name}</Text>
-                            <div class="controls">
+                            <Controls>
                                 <Button appearance={Appearance.Alt} text={$_("friends.unblock")}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
-                            </div>
+                            </Controls>
                         </div>
                     {/each}
                 </div>
@@ -249,11 +250,6 @@
                         width: 100%;
                         min-width: fit-content;
                         max-width: 100%;
-                    }
-
-                    .controls {
-                        display: inline-flex;
-                        gap: var(--gap-less);
                     }
                 }
             }

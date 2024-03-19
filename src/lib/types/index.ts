@@ -1,4 +1,5 @@
-import type { Appearance, Route, SettingsRoute, Shape, Status } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape } from "$lib/enums"
+import type { Options } from "sass"
 
 export type SelectOption = {
     value: string,
@@ -29,6 +30,12 @@ export type ProfileData = {
     status_message: string
 }
 
+export let defaultProfileData = {
+    photo: { image: "" },
+    status: Status.Offline,
+    status_message: ""
+}
+
 export type Id = {
     short: string,
 }
@@ -38,6 +45,13 @@ export type User = {
     key: string,
     name: string,
     profile: ProfileData,
+}
+
+export let defaultUser: User = {
+    id: { short: "xxxxxx" },
+    key: "0x0",
+    name: "",
+    profile: defaultProfileData,
 }
 
 export type NavRoute = {

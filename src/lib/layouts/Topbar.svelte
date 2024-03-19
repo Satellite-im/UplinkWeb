@@ -1,5 +1,6 @@
 <script lang="ts">
     import { ContextMenu } from "$lib/components";
+    import Controls from "$lib/components/ui/Controls.svelte";
     import { Shape } from "$lib/enums";
     import type { ContextItem } from "$lib/types"
     import { onDestroy } from "svelte";
@@ -60,7 +61,9 @@
     <div class="content">
         <slot name="content" />
     </div>
-    <slot name="controls" />
+    <Controls>
+        <slot name="controls" />
+    </Controls>
 </div>
 
 <style lang="scss">
@@ -83,13 +86,6 @@
             height: 100%;
             min-width: 0;
             justify-self: flex-start;
-        }
-
-        :global(.controls) {
-            min-width: fit-content;
-            display: inline-flex;
-            flex-direction: row;
-            gap: var(--gap-less);
         }
     }
 </style>

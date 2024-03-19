@@ -11,6 +11,7 @@
     import prettyBytes from "pretty-bytes"
     import { chats } from "$lib/mock/users"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, File, Folder, ProgressButton } from "$lib/components"
+    import Controls from "$lib/components/ui/Controls.svelte";
 
     // Initialize locale
     initLocale()
@@ -47,7 +48,7 @@
     
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} >
-       <div class="controls">
+        <Controls>
             <Button 
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
                 text={$_("chat.chat_plural")}
@@ -56,7 +57,7 @@
                 }}>
                 <Icon icon={Shape.ChatBubble} />
             </Button>
-            <Button 
+            <Button
                 appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
                 text={$_("files.file_plural")}
                 on:click={(_) => {
@@ -64,8 +65,8 @@
                 }}>
                 <Icon icon={Shape.Folder} />
             </Button>
-       </div>
-       {#if activeTabRoute === "chats"}
+        </Controls>
+        {#if activeTabRoute === "chats"}
             {#each chats as chat}
                 <ChatPreview
                     loading={loading}
@@ -151,12 +152,6 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
-        
-        :global(.controls) {
-            display: inline-flex;
-            gap: var(--gap);
-            padding: 0 var(--padding);
-        }
         
         .stat {
             padding: 0 var(--padding-less);

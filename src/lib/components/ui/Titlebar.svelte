@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Button, Icon, Logo, Text } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
+    import Controls from "./Controls.svelte"
 
     export let title: string = "Uplink"
 </script>
@@ -10,7 +11,7 @@
         <Logo size={Size.Small} />
         <Text class="title">{title}</Text>
     </div>
-    <div class="controls">
+    <Controls>
         <Button small icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Plus} />
         </Button>
@@ -20,8 +21,9 @@
         <Button small icon appearance={Appearance.Alt}>
             <Icon icon={Shape.XMark} />
         </Button>
-    </div>
+    </Controls>
 </div>
+
 <style lang="scss">
     #titlebar {
         cursor: default;
@@ -46,10 +48,6 @@
             text-transform: uppercase;
             font-family: "Secondary";
             color: var(--color);
-        }
-        
-        .controls {
-            width: fit-content;
         }
     }
 </style>

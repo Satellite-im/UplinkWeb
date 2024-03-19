@@ -38,7 +38,6 @@
             keys: ["Ctrl", "Shift", "U"]
         }
     ]
-
 </script>
 
 <div id="page">

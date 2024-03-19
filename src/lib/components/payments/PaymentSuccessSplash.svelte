@@ -1,5 +1,7 @@
 <script lang="ts">
-    import Label from "$lib/elements/Label.svelte"
+    import Button from "$lib/elements/Button.svelte";
+import Label from "$lib/elements/Label.svelte"
+    import Controls from "../ui/Controls.svelte";
 </script>
 
 <!-- Success Splash -->
@@ -41,11 +43,9 @@
     </div>
 
      <!-- Controls -->
-    <div class="controls">
-        <button class="button full-width">
-            Done
-        </button>
-    </div>
+    <Controls>
+        <Button>Done</Button>
+    </Controls>
 </div>
 
 <style lang="scss">
@@ -75,12 +75,6 @@
             justify-content: space-between;
             border-bottom: var(--border-width) solid var(--border-color);
             padding: var(--padding-less) 0;
-        }
-
-        .controls {
-            flex: 1;
-            display: inline-flex;
-            align-items: flex-end;
         }
     }
 </style>

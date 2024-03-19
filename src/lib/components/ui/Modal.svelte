@@ -1,7 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
-    import { clickoutside } from '@svelte-put/clickoutside'
-
+    import Controls from "./Controls.svelte"
     
     const dispatch = createEventDispatcher()
     function onClose(event: MouseEvent) {
@@ -13,7 +12,9 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="modal" on:click={onClose}>
     <div class="body" on:click|stopPropagation>
-        <slot name="controls"></slot>
+        <Controls>
+            <slot name="controls"></slot>
+        </Controls>
         <div class="content">
             <slot></slot>
         </div>

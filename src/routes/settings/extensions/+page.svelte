@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Button, Icon, Label } from "$lib/elements"
+    import Controls from "$lib/components/ui/Controls.svelte";
+import { Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
@@ -8,7 +9,7 @@
 </script>
 
 <div id="page">
-    <div class="controls">
+    <Controls>
         <Button text="Installed" appearance={Appearance.Alt}>
             <Icon icon={Shape.CheckMark} />
         </Button>
@@ -18,7 +19,7 @@
         <Button text="Settings" appearance={Appearance.Alt} outline>
             <Icon icon={Shape.Cog} />
         </Button>
-    </div>
+    </Controls>
 
     <div class="content">
         <Label text="No extensions installed." />
@@ -35,13 +36,6 @@
         height: 100%;
         overflow-y: scroll;
         padding-right: var(--padding);
-
-        .controls {
-            width: 100%;
-            display: inline-flex;
-            gap: var(--gap);
-            justify-content: flex-end;
-        }
 
         .content {
             display: inline-flex;
