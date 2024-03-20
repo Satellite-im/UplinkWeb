@@ -1,7 +1,36 @@
-<script>
+<script lang="ts">
+    import { ContextMenu } from "$lib/components";
+    import { Shape } from "$lib/enums";
+    import type { ContextItem } from "$lib/types"
+
+    const fakeData: ContextItem[] = [
+        {
+            id: "something_1",
+            icon: Shape.Beaker,
+            text: "Something",
+        },
+        {
+            id: "something_2",
+            icon: Shape.Beaker,
+            text: "Something",
+        },
+        {
+            id: "something_3",
+            icon: Shape.Beaker,
+            text: "Something",
+        },
+        {
+            id: "something_4",
+            icon: Shape.Beaker,
+            text: "Something",
+        }
+    ];
+
+
 </script>
 
 <div class="topbar">
+    <ContextMenu items={fakeData} parentClass=".topbar"/>
     <slot name="before" />
     <div class="content">
         <slot name="content" />
