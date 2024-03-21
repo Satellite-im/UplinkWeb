@@ -122,7 +122,7 @@
                         {
                             id: "something_2",
                             icon: Shape.Beaker,
-                            text: `Remove ${chat.name}`,
+                            text: `Remove ${chat.users[0].name}`,
                         },
                         {
                             id: "something_3",
