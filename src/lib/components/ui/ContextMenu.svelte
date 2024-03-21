@@ -2,12 +2,13 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import { clickoutside } from "@svelte-put/clickoutside"
-    import { Appearance, Shape } from "$lib/enums"
+    import { Appearance } from "$lib/enums"
     import type { ContextItem } from "$lib/types"
     import { createEventDispatcher } from "svelte"
 
-    export let visible: boolean         = false
-    export let items: ContextItem[]     = []
+    export let visible: boolean             = false
+    export let coords: [number, number]     = [0, 0]
+    export let items: ContextItem[]         = []
 
     const dispatch = createEventDispatcher()
     function onClose(event: CustomEvent<MouseEvent>) {
@@ -18,9 +19,10 @@
 
 {#if visible}
     <div 
-        class="context-menu" 
+        id="context-menu" 
         use:clickoutside 
-        on:clickoutside={onClose}>
+        on:clickoutside={onClose}
+        style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
         <div class="header">
             <slot></slot>
         </div>
@@ -33,7 +35,7 @@
 {/if}
 
 <style lang="scss">
-    .context-menu {
+    #context-menu {
         z-index: 1000;
         position: fixed;
         top: 0;

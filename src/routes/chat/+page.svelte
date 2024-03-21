@@ -28,12 +28,13 @@
     }
 
     let previewImage: string | null
+    let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 </script>
 
 <div id="page">
     <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} on:close={(_) => contextData = []} />
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>
@@ -112,7 +113,8 @@
                 notifications={chat.notifications}
                 timestamp={chat.last_message_at}
                 message={chat.last_message_preview}
-                on:context={(_) => {
+                on:context={(evt) => {
+                    contextPosition = evt.detail
                     contextData = [
                         {
                             id: "something_1",

@@ -25,14 +25,14 @@
 
 
     const dispatch = createEventDispatcher()
-    function onContext(_: any) {
-        dispatch('context')
+    function onContext(coords: [number, number]) {
+        dispatch('context', coords)
     }
 </script>
 
 <button class="chat-preview {cta ? "cta" : ""}" on:contextmenu={(e) => {
     e.preventDefault()
-    onContext(e)
+    onContext([e.clientX, e.clientY])
 }}>
     <ProfilePicture 
         typing={typing} 
