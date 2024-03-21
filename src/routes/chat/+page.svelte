@@ -117,12 +117,12 @@
                         {
                             id: "something_1",
                             icon: Shape.Beaker,
-                            text: "Something",
+                            text: "Mark as read",
                         },
                         {
                             id: "something_2",
                             icon: Shape.Beaker,
-                            text: "Something",
+                            text: `Remove ${chat.name}`,
                         },
                         {
                             id: "something_3",
