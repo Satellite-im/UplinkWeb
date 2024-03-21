@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, MessagePosition, Route, Shape, Size, Status } from "$lib/enums"
+    import { Appearance, MessageAttachmentKind, MessagePosition, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { chats, mock_users } from "$lib/mock/users"
     import { _ } from 'svelte-i18n'
@@ -16,6 +16,7 @@
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
     import CallScreen from "$lib/components/calling/CallScreen.svelte";
     import type { ContextItem } from "$lib/types";
+    import { mock_messages } from "$lib/mock/messages";
 
     initLocale()
 
@@ -35,6 +36,7 @@
 <div id="page">
     <!-- Context Menu-->
     <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>
@@ -50,47 +52,8 @@
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
-    <!--
-        <ContextMenu items={[
-            {
-                id: "something_1",
-                icon: Shape.Beaker,
-                text: "Something",
-            },
-            {
-                id: "something_1",
-                icon: Shape.Beaker,
-                text: "Something",
-            },
-            {
-                id: "something_1",
-                icon: Shape.Beaker,
-                text: "Something",
-            },
-            {
-                id: "something_1",
-                icon: Shape.Beaker,
-                text: "Something",
-            }
-        ]}>
-            <Button icon appearance={Appearance.Alt}>
-                <Icon icon={Shape.Beaker} />
-            </Button>
-            <Button icon appearance={Appearance.Alt}>
-                <Icon icon={Shape.Beaker} />
-            </Button>
-            <Button icon appearance={Appearance.Alt}>
-                <Icon icon={Shape.Beaker} />
-            </Button>
-            <Button icon appearance={Appearance.Alt}>
-                <Icon icon={Shape.Beaker} />
-            </Button>
-            <Button icon appearance={Appearance.Alt}>
-                <Icon icon={Shape.Plus} />
-            </Button>
-        </ContextMenu>
-    -->
     
+    <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
@@ -140,6 +103,7 @@
                 }} />
         {/each}
     </Sidebar>
+
     <div class="content">
         <Topbar>
             <div slot="before">
@@ -176,101 +140,71 @@
         <CallScreen />
 
         <Conversation>
-            <MessageGroup profilePictureRequirements={{
-                notifications: 0,
-                image: "/src/lib/assets/mars.png",
-                status: Status.DoNotDisturb,
-                highlight: Appearance.Default
-            }}
-            subtext="Sent 3 minutes ago.">
-                <MessageContainer>
-                    <Message position={MessagePosition.First}>Hello, world!</Message>
-                    <MessageReactions reactions={[
-                        {
-                            emoji: "🔥",
-                            highlight: Appearance.Primary,
-                            count: 3,
-                            description: ":fire: you and 2 users reacted.",
-                        },
-                        {
-                            emoji: "🌎",
-                            highlight: Appearance.Default,
-                            count: 2,
-                            description: ":earth: 2 users reacted.",
-                        }
-                    ]}/>
-                </MessageContainer>
-                <MessageContainer>
-                    <Message>
-                        <FileEmbed />
-                    </Message>
-                    <Message>
-                        <ImageEmbed 
-                            source="/src/lib/assets/library.avif"
-                            name="Library.avif"
-                            filesize={1291235}
-                            on:click={(_) => {
-                                previewImage = "/src/lib/assets/library.avif"
-                            }}/>
-                    </Message>
-                    <Message>This is another message.</Message>
-                </MessageContainer>
-                <MessageContainer>
-                    <Message position={MessagePosition.Last}>And one last message!</Message>
-                </MessageContainer>
-            </MessageGroup>
+            {#each mock_messages as group}
+                <MessageGroup profilePictureRequirements={{
+                    notifications: 0,
+                    image: group.details.origin.profile.photo.image,
+                    status: group.details.origin.profile.status,
+                    highlight: Appearance.Default
+                }}
+                remote={group.details.remote}
+                subtext="Sent 3 minutes ago.">
+                    {#each group.messages as message, idx}
+                        {#if message.inReplyTo}
+                            <MessageReplyContainer 
+                                remote={message.inReplyTo.details.remote}
+                                image={message.inReplyTo.details.origin.profile.photo.image}
+                            >
+                                <Message
+                                    reply
+                                    remote={message.inReplyTo.details.remote}
+                                >
+                                {#each message.inReplyTo.text as line}
+                                    <Text markdown={line} muted size={Size.Small}/>
+                                {/each}
+                                </Message>
+                            </MessageReplyContainer>
+                        {/if}
+                        {#if message.text.length > 0 || message.attachments.length > 0}
+                            <Message
+                                remote={group.details.remote}
+                                position={
+                                    (idx === 0) ?
+                                        MessagePosition.First : 
+                                        (idx === group.messages.length - 1) ?  
+                                            MessagePosition.Last :
+                                                MessagePosition.Middle
+                                }
+                                morePadding={message.text.length > 1 || message.attachments.length > 0}
+                                >
+    
+                                {#each message.text as line}
+                                    <Text markdown={line} />
+                                {/each}
 
-            <MessageGroup remote profilePictureRequirements={{
-                notifications: 0,
-                image: "/src/lib/assets/moon.png",
-                status: Status.Online,
-                highlight: Appearance.Default
-            }}
-            subtext="Sent 2 minutes ago.">
-                <MessageContainer>
-                    <Message remote position={MessagePosition.First}>Hello humans.</Message>
-                    <Message remote markdown="**woah** _it's_ __markdown__ ~~stuff~~." />
-                    <MessageReactions remote reactions={[
-                        {
-                            emoji: "👽",
-                            highlight: Appearance.Default,
-                            count: 2,
-                            description: ":alien: 2 users reacted."
-                        },
-                        {
-                            emoji: "👀",
-                            highlight: Appearance.Default,
-                            count: 1,
-                            description: ":eyes: 1 user reacted."
-                        }
-                    ]}/>
-                </MessageContainer>
-                <MessageContainer>
-                    <Message remote>I am not an alien.</Message>
-                </MessageContainer>
-                <MessageContainer>
-                    <Message remote position={MessagePosition.Last}>Unless I am, oOoo who knows!?</Message>
-                </MessageContainer>
-            </MessageGroup>
-
-            <MessageGroup profilePictureRequirements={{
-                notifications: 0,
-                image: "/src/lib/assets/mars.png",
-                status: Status.DoNotDisturb,
-                highlight: Appearance.Default
-            }}
-            subtext="Sent 1 minutes ago.">
-                <MessageContainer>
-                    <MessageReplyContainer
-                        remote
-                        image="/src/lib/assets/moon.png">
-                        <Message reply remote localSide position={MessagePosition.First}>I am not an alien.</Message>
-                    </MessageReplyContainer>
-                    <ContextMenu visible={true}>
-                        <Message position={MessagePosition.Last}>Hmm, okay!</Message>
-                    </ContextMenu>
-                </MessageContainer>
-            </MessageGroup>
+                                {#if message.attachments.length > 0}
+                                    {#each message.attachments as attachment}
+                                        {#if attachment.kind === MessageAttachmentKind.Image}
+                                            <ImageEmbed
+                                                source={attachment.location}
+                                                name={attachment.name}
+                                                filesize={attachment.size}
+                                                on:click={(_) => {
+                                                    previewImage = attachment.location
+                                                }}/>
+                                        {:else if attachment.kind === MessageAttachmentKind.File}
+                                            <FileEmbed />
+                                        {/if}
+                                    {/each}
+                                {/if}
+                            </Message>
+                        {/if}
+                        {#if message.reactions.length > 0}
+                            <MessageReactions remote={group.details.remote} reactions={message.reactions} />
+                        {/if}
+                    {/each}
+                </MessageGroup>
+            {/each}
         </Conversation>
         
         <Chatbar>

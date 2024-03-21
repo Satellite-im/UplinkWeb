@@ -23,7 +23,6 @@
 
     let cta = notifications > 0
 
-
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
         dispatch('context', coords)

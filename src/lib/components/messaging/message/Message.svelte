@@ -1,36 +1,25 @@
 <script lang="ts">
-    import Text from "$lib/elements/Text.svelte"
     import { MessagePosition } from "$lib/enums"
 
-    export let remote: boolean      = false
-    export let reply: boolean       = false
-    export let localSide: boolean   = false
-    export let markdown: string     = ""
+    export let remote: boolean          = false
+    export let reply: boolean           = false
+    export let localSide: boolean       = false
+    export let morePadding: boolean     = false
 
     export let position: MessagePosition = MessagePosition.Middle
 </script>
 
 <div 
-    class="message-bubble {remote ? "remote" : "local"} {position} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
-    {#if reply && !remote}
-        <span class="reply-arrow">↪</span>
-    {/if}
-    {#if markdown}
-        <Text markdown={markdown} />
-    {:else}
-        <Text>
-            <slot></slot>
-        </Text>
-    {/if}
-    {#if reply && remote}
-        <span class="reply-arrow">↩</span>
-    {/if}
+    class="message-bubble {remote ? "remote" : "local"} {position} {morePadding ? "more-padding" : ""} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
+    <div class="content">
+        <slot></slot>
+    </div>
 </div>
 
 <style lang="scss">
     .message-bubble {
         background-color: var(--primary-color);
-        padding: var(--padding);
+        padding: var(--padding-less) var(--padding);
         border-radius: var(--border-radius-more);
         border-bottom-right-radius: var(--border-radius-minimal);
         width: fit-content;
@@ -41,24 +30,23 @@
         gap: var(--gap);
         color: var(--color);
 
+        .content {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: var(--gap-less);
+        }
+
+        &.more-padding {
+            padding: var(--padding);
+        }
+
         &.remote {
             background-color: var(--alt-color);
             border-radius: var(--border-radius-more);
             border-bottom-left-radius: var(--border-radius-minimal);
             align-self: flex-start;
             color: var(--color);
-        }
-
-        &.reply {
-            font-size: var(--font-size-smaller);
-
-            &.position-local {
-                align-self: flex-end;
-            }
-
-            .reply-arrow {
-                opacity: 0.5;
-            }
         }
 
         &.highlight-success {
@@ -109,5 +97,21 @@
             border-top-left-radius: var(--border-radius-minimal);
             border-bottom-left-radius: var(--border-radius-more);
         }
+
+
+        &.reply {
+            font-size: var(--font-size-smaller);
+            border-radius: var(--border-radius-more) !important;
+            padding: var(--padding-less);
+
+            &.position-local {
+                align-self: flex-end;
+            }
+
+            .reply-arrow {
+                opacity: 0.5;
+            }
+        }
+
     }
 </style>

@@ -115,6 +115,13 @@ export const enum MessagePosition {
     Last     = "last"
 }
 
+export const enum MessageAttachmentKind {
+    File    = "File",
+    Image   = "Image",
+    URL     = "URL",
+    User    = "User",
+}
+
 export const enum Status {
     Online          = "online",
     Offline         = "offline",

@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind } from "$lib/enums"
 
 export type SelectOption = {
     value: string,
@@ -79,4 +79,30 @@ export type FileInfo = {
     icon: Shape,
     size: number,
     name: string
+}
+
+export type Attachment = {
+    kind: MessageAttachmentKind,
+    name: string,
+    size: number,
+    location: string,
+}
+
+export type MessageDetails = {
+    at: Date,
+    origin: User,
+    remote: boolean,
+}
+
+export type Message = {
+    details: MessageDetails,
+    inReplyTo: Message | null,
+    reactions: Reaction[],
+    attachments: Attachment[],
+    text: string[], // Each string represents a line of content in the message. Line breaks are created by sending multiple text strings.
+}
+
+export type MessageGroup = {
+    details: MessageDetails,
+    messages: Message[],    
 }
