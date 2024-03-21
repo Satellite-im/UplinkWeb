@@ -34,7 +34,7 @@
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>
-            <div slot="controls" class="controls">
+            <svelte:fragment slot="controls">
                 <Button 
                     icon 
                     small 
@@ -42,7 +42,7 @@
                     on:click={(_) => {previewImage = null}}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-            </div>
+            </svelte:fragment>
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
@@ -92,7 +92,6 @@
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
             <Icon icon={Shape.Shop} />
         </Button>
-        
 
         <div class="content-header">
             <Label text={$_("chat.chat_plural")} />
@@ -124,7 +123,7 @@
                 <Text singleLine>{mock_users[0].name}</Text>
                 <Text singleLine muted size={Size.Smaller}>{mock_users[0].profile.status_message}</Text>
             </div>
-            <div slot="controls">
+            <svelte:fragment slot="controls">
                 <CoinBalance balance={4560.53} />
                 <Button icon appearance={Appearance.Alt}>
                     <Icon icon={Shape.PhoneCall} />
@@ -142,7 +141,7 @@
                 }>
                     <Icon icon={Shape.Profile} />
                 </Button>
-            </div>
+            </svelte:fragment>
         </Topbar>
 
         <CallScreen />

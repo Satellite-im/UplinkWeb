@@ -1,5 +1,4 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape } from "$lib/enums"
-import type { Options } from "sass"
 
 export type SelectOption = {
     value: string,

@@ -63,7 +63,7 @@
                 display: inline-flex;
                 justify-content: flex-end;
                 align-items: center;
-                padding: var(--padding-less);
+                padding: var(--padding-minimal);
             }
         }
     }

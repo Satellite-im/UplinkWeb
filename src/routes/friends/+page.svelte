@@ -6,7 +6,6 @@
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
     import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
-    import { onMount } from "svelte"
     import type { User } from "$lib/types"
     import Controls from "$lib/layouts/Controls.svelte";
 
@@ -64,7 +63,7 @@
     </Sidebar>
     <div class="content">
         <Topbar>
-            <div slot="controls">
+            <Controls>
                 <Button 
                     appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} 
                     text={$_("friends.all")}
@@ -83,7 +82,7 @@
                     on:click={(_) => tab = "blocked"}>
                     <Icon icon={Shape.NoSymbol} />
                 </Button>
-            </div>
+            </Controls>
         </Topbar>
 
         <div class="body">

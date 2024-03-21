@@ -33,7 +33,7 @@
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>
-            <div slot="controls" class="controls">
+            <svelte:fragment slot="controls">
                 <Button 
                     icon 
                     small 
@@ -41,7 +41,7 @@
                     on:click={(_) => {previewImage = null}}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-            </div>
+            </svelte:fragment>
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
@@ -122,7 +122,7 @@
                     </Text>
                 </button>
             </div>
-            <div slot="controls" class="controls">
+            <svelte:fragment slot="controls">
                 <Button appearance={Appearance.Alt} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
@@ -130,7 +130,7 @@
                     <Icon icon={Shape.Plus} />
                 </Button>
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
-            </div>
+            </svelte:fragment>
         </Topbar>
 
         <div class="body">

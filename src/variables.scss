@@ -1,5 +1,6 @@
 /* Variables and mixins declared here will be available in all other SCSS files */
 :root {
+    --black: #000;
     --background: #0d0e16;
     --background-alt: #141420;
 
@@ -10,7 +11,7 @@
     
     --color: #d6def4;
     --color-bright: #fff;
-    --color-muted: #6b78ac;
+    --color-muted: #a2b2ee;
     --color-alt: #000;
 
     --focus-color: var(--primary-color);
@@ -98,4 +99,5 @@
     --context-width: 300px;
     --popup-width: 30rem;
     --popup-height: 20rem;
+    --min-call-screen-height: 15rem;
 }

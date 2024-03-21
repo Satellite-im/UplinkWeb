@@ -30,7 +30,7 @@
         typing={typing} 
         image={photo} 
         status={users[0].profile.status} 
-        size={Size.Small} 
+        size={Size.Medium} 
         loading={loading} />
     <div class="content">
         <div class="heading">

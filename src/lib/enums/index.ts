@@ -23,7 +23,6 @@ export const enum SettingsRoute {
     Licenses        = "/settings/licenses"
 }
 
-
 export const enum Appearance {
     Default         = "",
     Alt             = "alt",

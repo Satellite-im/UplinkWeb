@@ -37,13 +37,13 @@
         }
         const target = event.target as Element
 
-        // if (target.closest('.topbar')) {
-        //     showMenu = true
-        // } 
-        // if (!target.closest('.topbar')) {
-        //     event.preventDefault()
-        //     showMenu = false
-        // }
+        if (target.closest('.topbar')) {
+            showMenu = true
+        } 
+        if (!target.closest('.topbar')) {
+            event.preventDefault()
+            showMenu = false
+        }
     }
 
     // Add event listener for right-click events on the window

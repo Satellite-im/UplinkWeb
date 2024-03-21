@@ -4,8 +4,10 @@
 
 <style lang="scss">
     .controls {
-        display: flex;
+        display: inline-flex;
         min-width: fit-content;
-        gap: var(--gap-less);
+        height: fit-content;
+        gap: var(--gap);
+
     }
 </style>

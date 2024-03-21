@@ -40,9 +40,9 @@
         background-color: var(--background-alt);
         border-radius: var(--border-radius);
 
-
         .image {
-            max-width: var(--max-component-width);
+            min-width: var(--min-component-width);
+            width: var(--max-component-width);
             border-radius: var(--border-radius);
             transition: all var(--animation-speed);
             cursor: pointer;
