@@ -5,6 +5,7 @@
     import { ColorSwatch } from "$lib/components"
     import { SettingSection } from "$lib/layouts"
     import { Button, Icon, Input, Select } from "$lib/elements"
+    import { counter, toggleRightClick } from "$lib/state/FullStore"
     
     initLocale()
 </script>
@@ -27,18 +28,18 @@
         </Button>
     </SettingSection>
     <SettingSection name="Font Scaling" description="Scale the font size up or down to your liking.">
-        <Button icon appearance={Appearance.Alt}>
+        <Button icon appearance={Appearance.Alt} on:click={counter.decrement}>
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
-            <Input value="1.0" centered />
+            <Input value={$counter.toString()} centered />
         </div>
-        <Button icon appearance={Appearance.Alt}>
+        <Button icon appearance={Appearance.Alt} on:click={counter.increment}>
             <Icon icon={Shape.Plus} />
         </Button>
     </SettingSection>
     <SettingSection name="Theme" description="Change the theme of the app.">
-        <Button icon appearance={Appearance.Alt}>
+        <Button icon appearance={Appearance.Alt} on:click={toggleRightClick}>
             <Icon icon={Shape.Moon} />
         </Button>
         <Select options={[
