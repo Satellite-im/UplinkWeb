@@ -6,6 +6,7 @@
     function onClose(event: MouseEvent) {
         dispatch('close', event)
     }
+    
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->

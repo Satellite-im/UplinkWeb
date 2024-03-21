@@ -1,62 +1,8 @@
 <script lang="ts">
-    import { ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { Shape } from "$lib/enums"
-    import type { ContextItem } from "$lib/types"
-    import { onDestroy } from "svelte"
-    import { writable } from "svelte/store"
-
-    const fakeData: ContextItem[] = [
-        {
-            id: "something_1",
-            icon: Shape.Beaker,
-            text: "Something",
-        },
-        {
-            id: "something_2",
-            icon: Shape.Beaker,
-            text: "Something",
-        },
-        {
-            id: "something_3",
-            icon: Shape.Beaker,
-            text: "Something",
-        },
-        {
-            id: "something_4",
-            icon: Shape.Beaker,
-            text: "Something",
-        }
-    ]
-
-    let showMenu = false;
-
-    function handleContextMenu(event: MouseEvent) {
-        if (!event.target || !(event.target instanceof Element)) {
-            return
-        }
-        const target = event.target as Element
-
-        if (target.closest('.topbar')) {
-            showMenu = true
-        } 
-        if (!target.closest('.topbar')) {
-            event.preventDefault()
-            showMenu = false
-        }
-    }
-
-    // Add event listener for right-click events on the window
-    window.addEventListener('contextmenu', handleContextMenu)
-
-    // Cleanup function to remove the event listener when the component is destroyed
-    onDestroy(() => {
-        window.removeEventListener('contextmenu', handleContextMenu)
-    })
 </script>
 
 <div class="topbar">
-    <ContextMenu items={fakeData} showMenu={writable(showMenu)}/>
     <slot name="before" />
     <div class="content">
         <slot name="content" />

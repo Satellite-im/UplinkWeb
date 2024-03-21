@@ -15,6 +15,7 @@
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
     import CallScreen from "$lib/components/calling/CallScreen.svelte";
+    import type { ContextItem } from "$lib/types";
 
     initLocale()
 
@@ -26,11 +27,13 @@
         sidebarOpen = !sidebarOpen
     }
 
-    // Mock Data
     let previewImage: string | null
+    let contextData: ContextItem[] = []
 </script>
 
 <div id="page">
+    <!-- Context Menu-->
+    <ContextMenu visible={contextData.length > 0} items={contextData} on:close={(_) => contextData = []} />
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>
@@ -108,7 +111,31 @@
                 simpleUnreads
                 notifications={chat.notifications}
                 timestamp={chat.last_message_at}
-                message={chat.last_message_preview} />
+                message={chat.last_message_preview}
+                on:context={(_) => {
+                    contextData = [
+                        {
+                            id: "something_1",
+                            icon: Shape.Beaker,
+                            text: "Something",
+                        },
+                        {
+                            id: "something_2",
+                            icon: Shape.Beaker,
+                            text: "Something",
+                        },
+                        {
+                            id: "something_3",
+                            icon: Shape.Beaker,
+                            text: "Something",
+                        },
+                        {
+                            id: "something_4",
+                            icon: Shape.Beaker,
+                            text: "Something",
+                        }
+                    ]
+                }} />
         {/each}
     </Sidebar>
     <div class="content">
@@ -237,7 +264,9 @@
                         image="/src/lib/assets/moon.png">
                         <Message reply remote localSide position={MessagePosition.First}>I am not an alien.</Message>
                     </MessageReplyContainer>
-                    <Message position={MessagePosition.Last}>Hmm, okay!</Message>
+                    <ContextMenu visible={true}>
+                        <Message position={MessagePosition.Last}>Hmm, okay!</Message>
+                    </ContextMenu>
                 </MessageContainer>
             </MessageGroup>
         </Conversation>

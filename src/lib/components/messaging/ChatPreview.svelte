@@ -1,11 +1,10 @@
 <script lang="ts">
-    import TimeAgo from 'javascript-time-ago'
-
+    import TimeAgo from "javascript-time-ago"
     import { Size } from "$lib/enums"
-    import type { User } from '$lib/types'
-
+    import type { User } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
+    import { createEventDispatcher } from "svelte";
 
     export let users: User[]            = []
     export let notifications: number    = 0
@@ -23,9 +22,18 @@
         "todo" : users[0].name
 
     let cta = notifications > 0
+
+
+    const dispatch = createEventDispatcher()
+    function onContext(_: any) {
+        dispatch('context')
+    }
 </script>
 
-<button class="chat-preview {cta ? "cta" : ""}">
+<button class="chat-preview {cta ? "cta" : ""}" on:contextmenu={(e) => {
+    e.preventDefault()
+    onContext(e)
+}}>
     <ProfilePicture 
         typing={typing} 
         image={photo} 
