@@ -37,8 +37,8 @@ export let settingsRoutes: NavRoute[] = [
     },
     {
         to: SettingsRoute.Preferences,
-        icon: Shape.Preferences,
-        name: "General"
+        icon: Shape.Brush,
+        name: "Customization"
     },
     {
         to: SettingsRoute.Messages,

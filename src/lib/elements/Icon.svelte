@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { Appearance, Shape } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
 
     export let icon: Shape              = Shape.Beaker
     export let alt: boolean             = false
-    export let large: boolean           = false
     export let muted: boolean           = false
     export let filled: boolean          = false
     export let highlight: Appearance    = Appearance.Default
     export let spin: boolean            = false
+    export let size: Size               = Size.Medium
 
     let clazz = ""
 	export { clazz as class }
 </script>
 
-<svg class="svg-icon {muted ? "muted" : ""} {spin ? "spin" : ""} {alt ? "alt" : ""} {filled ? "filled" : ""} {large ? "large" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
+<svg class="svg-icon {muted ? "muted" : ""} {spin ? "spin" : ""} {alt ? "alt" : ""} {filled ? "filled" : ""} {size} {highlight !== null ? `highlight-${highlight}` : ""} {clazz || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
     { @html icon }
 </svg>
 
@@ -37,6 +37,20 @@
             height: var(--icon-size-large);
             min-width: var(--icon-size-large);
             min-height: var(--icon-size-large);
+        }
+
+        &.larger {
+            width: var(--icon-size-larger);
+            height: var(--icon-size-larger);
+            min-width: var(--icon-size-larger);
+            min-height: var(--icon-size-larger);
+        }
+
+        &.largest {
+            width: var(--icon-size-largest);
+            height: var(--icon-size-largest);
+            min-width: var(--icon-size-largest);
+            min-height: var(--icon-size-largest);
         }
 
         &.spin {

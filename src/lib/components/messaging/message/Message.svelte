@@ -1,22 +1,30 @@
 <script lang="ts">
     import { MessagePosition } from "$lib/enums"
+    import { createEventDispatcher } from "svelte";
 
-    export let remote: boolean      = false
-    export let reply: boolean       = false
-    export let localSide: boolean   = false
+    export let remote: boolean          = false
+    export let reply: boolean           = false
+    export let localSide: boolean       = false
+    export let morePadding: boolean     = false
 
     export let position: MessagePosition = MessagePosition.Middle
+
+    const dispatch = createEventDispatcher()
+    function onContext(coords: [number, number]) {
+        dispatch('context', coords)
+    }
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div 
-    class="message-bubble {remote ? "remote" : "local"} {position} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
-    {#if reply && !remote}
-        <span class="reply-arrow">↪</span>
-    {/if}
-    <slot></slot>
-    {#if reply && remote}
-        <span class="reply-arrow">↩</span>
-    {/if}
+    on:contextmenu={(e) => {
+        e.preventDefault()
+        onContext([e.clientX, e.clientY])
+    }}
+    class="message-bubble {remote ? "remote" : "local"} {position} {morePadding ? "more-padding" : ""} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
+    <div class="content">
+        <slot></slot>
+    </div>
 </div>
 
 <style lang="scss">
@@ -33,24 +41,24 @@
         gap: var(--gap);
         color: var(--color);
 
+        .content {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: var(--gap-less);
+            cursor: default;
+        }
+
+        &.more-padding {
+            padding: var(--padding);
+        }
+
         &.remote {
             background-color: var(--alt-color);
             border-radius: var(--border-radius-more);
             border-bottom-left-radius: var(--border-radius-minimal);
             align-self: flex-start;
             color: var(--color);
-        }
-
-        &.reply {
-            font-size: var(--font-size-smaller);
-
-            &.position-local {
-                align-self: flex-end;
-            }
-
-            .reply-arrow {
-                opacity: 0.5;
-            }
         }
 
         &.highlight-success {
@@ -101,5 +109,21 @@
             border-top-left-radius: var(--border-radius-minimal);
             border-bottom-left-radius: var(--border-radius-more);
         }
+
+
+        &.reply {
+            font-size: var(--font-size-smaller);
+            border-radius: var(--border-radius-more) !important;
+            padding: var(--padding-less);
+
+            &.position-local {
+                align-self: flex-end;
+            }
+
+            .reply-arrow {
+                opacity: 0.5;
+            }
+        }
+
     }
 </style>

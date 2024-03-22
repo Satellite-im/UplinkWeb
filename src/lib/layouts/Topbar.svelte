@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+    import Controls from "$lib/layouts/Controls.svelte"
 </script>
 
 <div class="topbar">
@@ -6,7 +7,9 @@
     <div class="content">
         <slot name="content" />
     </div>
-    <slot name="controls" />
+    <Controls>
+        <slot name="controls" />
+    </Controls>
 </div>
 
 <style lang="scss">
@@ -29,13 +32,6 @@
             height: 100%;
             min-width: 0;
             justify-self: flex-start;
-        }
-
-        :global(.controls) {
-            min-width: fit-content;
-            display: inline-flex;
-            flex-direction: row;
-            gap: var(--gap-less);
         }
     }
 </style>

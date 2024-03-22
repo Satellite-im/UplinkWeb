@@ -1,22 +1,31 @@
 <script lang="ts">
-    import { Icon, Text } from "$lib/elements"
-    import { Shape, Size } from "$lib/enums"
+    import { Text } from "$lib/elements"
     import prettyBytes from "pretty-bytes"
+    import { Size } from "$lib/enums"
+    import { createEventDispatcher } from "svelte"
+
+    const dispatch = createEventDispatcher()
+    function onClick(event: MouseEvent) {
+        dispatch('click', event)
+    }
 
     export let name: string = "UNKNOWN"
-    export let filesize: number = 9349999999999999999 // Intentionally alarming to signify error
+    export let filesize: number = 9821239999999999999999 // Intentionally alarming to signify error
 </script>
 
-<div class="folder">
-    <Icon icon={Shape.Folder} />
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="image-file" on:click={onClick}>
+    <img class="preview" src="/src/lib/assets/library.avif" alt="preview" />
     <input type="text" value={name} />
     <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
 </div>
 
 <style lang="scss">
-    .folder {
+    .image-file {
         height: var(--file-folder-size);
         width: var(--file-folder-size);
+        overflow: hidden;
         border-radius: var(--border-radius);
         display: inline-flex;
         flex-direction: column;
@@ -24,6 +33,12 @@
         align-items: center;
         transition: background-color var(--animation-speed);
         padding: var(--padding-less);
+
+        .preview {
+            max-height: var(--icon-size-largest);
+            max-width: 100%;
+            border-radius: var(--border-radius-minimal);
+        }
 
         &:hover {
             background: var(--background-alt);

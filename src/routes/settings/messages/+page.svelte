@@ -14,6 +14,9 @@
     <SettingSection name="Markdown Support" description="Enabled the rendering of Markdown within messaging.">
         <Switch on />
     </SettingSection>
+    <SettingSection name="Spam/Bot Detection & Rejection" description="Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots detecting they have been blocked too quickly.">
+        <Switch on />
+    </SettingSection>
 </div>
 
 <style lang="scss">
