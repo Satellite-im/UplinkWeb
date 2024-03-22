@@ -5,6 +5,7 @@
     
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
+    import Controls from "../layouts/Controls.svelte";
 
     initLocale()
 
@@ -24,7 +25,7 @@
         </Text>
     </div>
 
-    <div class="controls">
+    <Controls>
         <Button 
             icon 
             appearance={muted ? Appearance.Error : Appearance.Alt} 
@@ -49,7 +50,7 @@
             loading={loading}>
             <Icon icon={Shape.PhoneXMark} />
         </Button>
-    </div>
+    </Controls>
 </div>
 
 <style lang="scss">
@@ -63,10 +64,6 @@
         gap: var(--gap);
         min-width: var(--min-component-width);
         align-items: center;
-
-        .controls {
-            min-width: fit-content;
-        }
 
         .info {
             flex: 1;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Icon, Text, Spacer } from "$lib/elements"
+    import { Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
     import prettyBytes from "pretty-bytes"
 
@@ -9,7 +9,6 @@
 
 <div class="file">
     <Icon icon={Shape.Document} />
-    <Spacer less />
     <input type="text" value={name} />
     <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
 </div>

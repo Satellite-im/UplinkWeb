@@ -42,11 +42,11 @@
     align-items: center;
     justify-content: center;
 
-    &.largest {
-        height: calc(var(--profile-picture-size) * 3);
-        width:calc(var(--profile-picture-size) * 3);
-        min-height: calc(var(--profile-picture-size) * 3);
-        min-width:calc(var(--profile-picture-size) * 3);
+    &.larger {
+        height: calc(var(--profile-picture-size) * 2);
+        width:calc(var(--profile-picture-size) * 2);
+        min-height: calc(var(--profile-picture-size) * 2);
+        min-width:calc(var(--profile-picture-size) * 2);
     }
 
     &.small {

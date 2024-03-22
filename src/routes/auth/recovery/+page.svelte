@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { OrderedPhrase } from "$lib/components"
+    import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Text, Title } from "$lib/elements" 
     import { Appearance, Route, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
@@ -22,7 +23,7 @@
     {#each samplePhrase as word, i}
         <OrderedPhrase number={i + 1} word={word} loading={loading} />
     {/each}
-    <div class="controls">
+    <Controls>
         <Button
             class="full-width"
             text={$_('pages.auth.recovery.download')}
@@ -37,7 +38,7 @@
             on:click={() => goto(Route.NewAccount)}>
             <Icon icon={Shape.ArrowRight} />            
         </Button>
-    </div>
+    </Controls>
 </div>
 
 <style lang="scss">
@@ -59,15 +60,6 @@
             display: inline-flex;
             flex-direction: column;
             gap: var(--gap);
-        }
-        
-        .controls {
-            gap: var(--gap);
-            display: inline-flex;
-            justify-content: space-between;
-            align-items: center;
-            flex: 100%;
-            flex-wrap: wrap;
         }
     }
 </style>

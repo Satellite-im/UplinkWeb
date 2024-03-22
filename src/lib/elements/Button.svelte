@@ -39,7 +39,7 @@
             <slot></slot>
         {/if}
         {#if text.length > 0}
-            <Text appearance={appearance} loading={loading}>{text}</Text>
+            <Text loading={loading} appearance={outline ? appearance : Appearance.Alt}>{text}</Text>
         {/if}
 </button>
 
