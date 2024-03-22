@@ -13,7 +13,7 @@
         <Icon icon={Shape.Plus} />
     </Button>
 
-    <Input alt placeholder={$_("generic.placeholder")} rounded />
+    <Input alt placeholder={$_("generic.placeholder")} rounded rich />
 
     <slot></slot>
 
