@@ -3,25 +3,8 @@
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
-    import { MarkdownEditor } from "markdown-editor"
-    import { onMount } from "svelte";
-
     initLocale()
-
-    /**
-     * @type {HTMLElement}
-     */
-    let input;
-    onMount(() => {
-        let editor = new MarkdownEditor(
-            input, {
-            only_autolink: true
-        });
-        // @ts-ignore
-        editor.updatePlaceholder(input.placeholder)
-    })
 </script>
-
 <div class="chatbar">
     <Button 
         icon 
@@ -30,7 +13,7 @@
         <Icon icon={Shape.Plus} />
     </Button>
 
-    <Input bind:input={input} alt placeholder={$_("generic.placeholder")} rounded />
+    <Input alt placeholder={$_("generic.placeholder")} rounded rich />
 
     <slot></slot>
 

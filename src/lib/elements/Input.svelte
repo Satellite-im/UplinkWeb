@@ -1,5 +1,7 @@
 <script lang="ts">
     import { Appearance } from "../enums/index"
+    import { MarkdownEditor } from "markdown-editor"
+    import { onMount } from "svelte";
 
     // export let loading: boolean = false;
     export let placeholder: string          = ""
@@ -11,7 +13,7 @@
     export let tooltip: string | null       = ""
     export let copyOnInteract: boolean      = false
     export let centered: boolean            = false
-    export let input: HTMLElement
+    export let rich: boolean                = false
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -19,6 +21,17 @@
     }
 
     let clazz = ""
+    let input: HTMLElement;
+    if (rich) {
+        onMount(() => {
+            let editor = new MarkdownEditor(
+                input, {
+                only_autolink: true
+            });
+            // @ts-ignore
+            editor.updatePlaceholder(input.placeholder)
+        })
+    }
 	export { clazz as class }
 </script>
 
