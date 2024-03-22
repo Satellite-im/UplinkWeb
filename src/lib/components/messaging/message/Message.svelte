@@ -1,5 +1,6 @@
 <script lang="ts">
     import { MessagePosition } from "$lib/enums"
+    import { createEventDispatcher } from "svelte";
 
     export let remote: boolean          = false
     export let reply: boolean           = false
@@ -7,9 +8,19 @@
     export let morePadding: boolean     = false
 
     export let position: MessagePosition = MessagePosition.Middle
+
+    const dispatch = createEventDispatcher()
+    function onContext(coords: [number, number]) {
+        dispatch('context', coords)
+    }
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div 
+    on:contextmenu={(e) => {
+        e.preventDefault()
+        onContext([e.clientX, e.clientY])
+    }}
     class="message-bubble {remote ? "remote" : "local"} {position} {morePadding ? "more-padding" : ""} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
     <div class="content">
         <slot></slot>
@@ -35,6 +46,7 @@
             flex-direction: column;
             justify-content: center;
             gap: var(--gap-less);
+            cursor: default;
         }
 
         &.more-padding {

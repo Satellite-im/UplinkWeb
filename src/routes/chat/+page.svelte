@@ -23,6 +23,7 @@
     let loading = false
     let sidebarOpen = true
     let contentAsideOpen = false
+    let conversation = mock_messages
 
     function toggleSidebar() {
         sidebarOpen = !sidebarOpen
@@ -140,7 +141,7 @@
         <CallScreen />
 
         <Conversation>
-            {#each mock_messages as group}
+            {#each conversation as group}
                 <MessageGroup profilePictureRequirements={{
                     notifications: 0,
                     image: group.details.origin.profile.photo.image,
@@ -151,7 +152,7 @@
                 subtext="Sent 3 minutes ago.">
                     {#each group.messages as message, idx}
                         {#if message.inReplyTo}
-                            <MessageReplyContainer 
+                            <MessageReplyContainer
                                 remote={message.inReplyTo.details.remote}
                                 image={message.inReplyTo.details.origin.profile.photo.image}
                             >
@@ -167,6 +168,16 @@
                         {/if}
                         {#if message.text.length > 0 || message.attachments.length > 0}
                             <Message
+                                on:context={(evt) => {
+                                    contextPosition = evt.detail
+                                    contextData = [
+                                        {
+                                            id: "something_1",
+                                            icon: Shape.Beaker,
+                                            text: "Placeholder",
+                                        }
+                                    ]
+                                }}
                                 remote={group.details.remote}
                                 position={
                                     (idx === 0) ?

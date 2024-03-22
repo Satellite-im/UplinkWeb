@@ -43,9 +43,11 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap-less);
-        background-color: var(--background-alt);
+        background-color: var(--opaque-color);
+        backdrop-filter: blur(var(--blur-radius));
+        -webkit-backdrop-filter: blur(var(--blur-radius));
         padding: var(--padding-less);
-        border-radius: var(--border-radius-more);
+        border-radius: var(--border-radius);
         border: var(--border-width) solid var(--border-color);
 
         .header {
