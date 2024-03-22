@@ -11,6 +11,7 @@
     export let tooltip: string | null       = ""
     export let copyOnInteract: boolean      = false
     export let centered: boolean            = false
+    export let input: HTMLElement
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -28,6 +29,7 @@
             class="input {centered ? "centered" : ""}"
             type="text"
             disabled={disabled}
+            bind:this={input}
             bind:value={value}
             placeholder="{placeholder}" />
     </div>
