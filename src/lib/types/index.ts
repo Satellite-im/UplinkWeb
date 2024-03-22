@@ -71,7 +71,8 @@ export type Chat = {
 export type ContextItem = {
     id: string,
     icon: Shape,
-    text: string
+    text: string,
+    appearance: Appearance,
 }
 
 export type FileInfo = {

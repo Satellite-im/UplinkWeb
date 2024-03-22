@@ -37,7 +37,6 @@
         <Button 
             icon 
             appearance={streaming ? Appearance.Success : Appearance.Alt } 
-            outline={streaming} 
             tooltip={$_('call.stream')} 
             loading={loading}>
             <Icon icon={Shape.Stream} />
@@ -45,7 +44,6 @@
         <Button 
             text={$_('call.end')}
             tooltip={$_('call.end')}
-            outline 
             appearance={Appearance.Error} 
             loading={loading}>
             <Icon icon={Shape.PhoneXMark} />

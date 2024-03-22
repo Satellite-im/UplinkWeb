@@ -6,7 +6,7 @@
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { ProfilePicture, OrderedPhrase } from "$lib/components"
-    import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements";
+    import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
 
     initLocale()
 
@@ -69,8 +69,7 @@
         <div class="section">
             <SettingSection name="Reveal Recovery Phrase" description="Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.">
                 <Button 
-                    outline
-                    appearance={!showSeed ? Appearance.Error : Appearance.Success}
+                    appearance={!showSeed ? Appearance.Error : Appearance.Alt}
                     text={!showSeed ? "Reveal Phrase" : "Hide Phrase"}
                     on:click={(_) => {
                         toggleSeedPhrase()
@@ -82,9 +81,11 @@
                 {#each samplePhrase as word, i}
                     <OrderedPhrase number={i + 1} word={word} loading={loading} />
                 {/each}
-                <Button appearance={Appearance.Alt} class="full-width" text="Copy to Clipboard">
-                    <Icon icon={Shape.Clipboard}/>
-                </Button>
+                <div class="full-width flex-end">
+                    <Button appearance={Appearance.Alt} text="Copy to Clipboard">
+                        <Icon icon={Shape.Clipboard}/>
+                    </Button>
+                </div>
             {/if}
         </div>
 

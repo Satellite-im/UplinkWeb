@@ -9,7 +9,7 @@
     import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
     import { 
         FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
-        Message, MessageContainer, MessageGroup, MessageReactions, MessageReplyContainer, 
+        Message, MessageGroup, MessageReactions, MessageReplyContainer, 
         ProfilePicture, CoinBalance, Modal 
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
@@ -53,7 +53,7 @@
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
-    
+
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
@@ -81,25 +81,17 @@
                     contextPosition = evt.detail
                     contextData = [
                         {
-                            id: "something_1",
-                            icon: Shape.Beaker,
-                            text: "Mark as read",
+                            id: "hide",
+                            icon: Shape.EyeSlash,
+                            text: "Hide",
+                            appearance: Appearance.Default
                         },
                         {
-                            id: "something_2",
-                            icon: Shape.Beaker,
-                            text: `Remove ${chat.users[0].name}`,
+                            id: "mark_read",
+                            icon: Shape.CheckMark,
+                            text: "Mark Read",
+                            appearance: Appearance.Default
                         },
-                        {
-                            id: "something_3",
-                            icon: Shape.Beaker,
-                            text: "Something",
-                        },
-                        {
-                            id: "something_4",
-                            icon: Shape.Beaker,
-                            text: "Something",
-                        }
                     ]
                 }} />
         {/each}
@@ -175,6 +167,7 @@
                                             id: "something_1",
                                             icon: Shape.Beaker,
                                             text: "Placeholder",
+                                            appearance: Appearance.Default
                                         }
                                     ]
                                 }}
@@ -256,6 +249,7 @@
             display: flex;
             flex-direction: column;
             flex: 1;
+            transition: all var(--animation-duration);
         }
 
         .aside {

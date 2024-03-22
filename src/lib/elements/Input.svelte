@@ -77,7 +77,7 @@
             }
 
             &::placeholder {
-                color: var(--color-alt);
+                color: var(--placeholder-color);
                 opacity: 0.75;
                 font-size: var(--label-size);
             }
@@ -92,7 +92,7 @@
                 color: var(--color);
 
                 &::placeholder {
-                    color: var(--color);
+                    color: var(--placeholder-color);
                 }
             }
         }

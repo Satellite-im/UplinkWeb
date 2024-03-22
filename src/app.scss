@@ -148,10 +148,14 @@ body {
     flex-wrap: wrap;
 }
 
+.flex-end {
+    justify-content: flex-end;
+}
+
 .full-width {
     flex: 1;
     min-width: fit-content;
-    width: 100%;
+    min-width: 100%;
 }
 
 

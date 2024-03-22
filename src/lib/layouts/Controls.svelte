@@ -7,7 +7,7 @@
         display: inline-flex;
         min-width: fit-content;
         height: fit-content;
-        gap: var(--gap);
+        gap: var(--gap-less);
 
     }
 </style>

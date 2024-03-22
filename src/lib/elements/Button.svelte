@@ -165,11 +165,12 @@
                     background-color: var(--#{$type}-color);
                     color: var(--color-alt);
 
+                    & .svg-icon {
+                        color: var(--color-alt);
+                    }
+
                     &:hover {
                         background-color: var(--#{$type}-color-alt);
-                        :global(.text) {
-                            color: var(--color-alt);
-                        }
                     }
                 }
             }

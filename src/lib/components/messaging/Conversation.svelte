@@ -38,7 +38,8 @@
             align-items: flex-end;
             flex-direction: column;
             width: 100%;
-            mask-image: linear-gradient(to top, var(--background) calc(100% - (var(--sidebar-width) / 6)), transparent 100%);
+            mask-image: linear-gradient(to top, var(--background) calc(100% - 1rem), transparent 100%);
+            padding-top: 2rem;
             height: 100%;
             overflow-y: scroll;
             overflow-x: hidden;

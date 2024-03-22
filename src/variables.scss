@@ -9,10 +9,11 @@
     --animation-speed-slow: 2s;
     --animation-style: ease;
     
-    --color: #d6def4;
+    --color: #d7e2ff;
     --color-bright: #fff;
     --color-muted: #a2b2ee;
     --color-alt: #000;
+    --placeholder-color: #97a7e4;
 
     --focus-color: var(--primary-color);
     --highlight-color: #4d4dff;
@@ -29,8 +30,8 @@
     --info-color: #546de5;
     --info-color-alt: #72e3f2;
 
-    --error-color: #ff6961;
-    --error-color-alt: #fa7069;
+    --error-color: #c44569;
+    --error-color-alt: #d54d74;
     
     --warning-color: #FFFAA0;
     --warning-color-alt: #fcf8ad;
@@ -70,7 +71,7 @@
     --padding-minimal: 0.25rem;
     --gap: 0.75rem;
     --gap-more: 1rem;
-    --gap-less: 0.25rem;
+    --gap-less: 0.45rem;
     
     --font-size-max: 3rem;
     --font-size-large: 1.5rem;
@@ -88,8 +89,8 @@
     --file-folder-size: 125px;
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
-    --sidebar-width: 360px;
-    --profile-width: 300px;
+    --sidebar-width: 320px;
+    --profile-width: 320px;
 
     --shadow-depth: 1px;
     --min-scrollable-height: 200px;
