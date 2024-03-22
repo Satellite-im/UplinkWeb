@@ -27,6 +27,7 @@
   "dependencies": {
     "@svelte-put/clickoutside": "^3.0.1",
     "javascript-time-ago": "^2.5.9",
+    "markdown-editor": "github:Flemmli97/markdown-editor#6522e14c1fee46211b3810b38d95059290ab05fd",
     "pretty-bytes": "^6.1.1",
     "svelte-i18n": "^4.0.0",
     "svelte-markdown": "^0.4.1"
