@@ -1,7 +1,8 @@
 <script lang="ts">
     import { Appearance } from "../enums/index"
     import { MarkdownEditor } from "markdown-editor"
-    import { onMount } from "svelte";
+    import { onMount } from "svelte"
+    import { EditorView } from '@codemirror/view'
 
     // export let loading: boolean = false;
     export let placeholder: string          = ""
@@ -24,15 +25,15 @@
     let input: HTMLElement;
     if (rich) {
         onMount(() => {
-            let editor = new MarkdownEditor(
-                input, {
-                only_autolink: true
-            });
+            let editor = new MarkdownEditor(input, {
+                only_autolink: true,
+                extensions: [EditorView.editorAttributes.of({class: input.classList.toString()})]
+            })
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
         })
     }
-	export { clazz as class }
+    export { clazz as class }
 </script>
 
 <div class="input-group {alt ? "alt" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {tooltip ? "tooltip" : ""} {clazz || ''}" data-tooltip={tooltip}>
