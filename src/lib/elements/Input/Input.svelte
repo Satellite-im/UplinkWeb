@@ -1,6 +1,6 @@
 <script lang="ts">
     import "./markdown.scss"
-    import { Appearance } from "../enums/index"
+    import { Appearance } from "../../enums/index"
     import { MarkdownEditor } from "markdown-editor"
     import { onMount } from "svelte"
     import { EditorView } from '@codemirror/view'
