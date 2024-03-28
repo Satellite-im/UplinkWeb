@@ -1,17 +1,41 @@
 <script lang="ts">
-    import { Icon, Text } from "$lib/elements"
+    import { Icon, Text, Spacer } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
     import prettyBytes from "pretty-bytes"
+    import {dndzone} from "svelte-dnd-action";
+    import {flip} from "svelte/animate";
 
     export let name: string = "UNKNOWN"
     export let filesize: number = 9821239999999999999999 // Intentionally alarming to signify error
+    const flipDurationMs = 300;
+
+    let items = [
+        {id: 1, name: "item1"},
+        {id: 2, name: "item2"},
+        {id: 3, name: "item7"},
+        {id: 5, name: "item2"},
+        {id: 6, name: "item5"},
+        {id: 4, name: "item4"}
+    ];
+
+    function handleDndConsider(e: { detail: { items: { id: number; name: string; }[]; }; }) {
+        items = e.detail.items;
+    }
+    function handleDndFinalize(e: { detail: { items: { id: number; name: string; }[]; }; }) {
+        items = e.detail.items;
+    }
 </script>
 
-<div class="file">
-    <Icon icon={Shape.Document} />
-    <input type="text" value={name} />
-    <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
-</div>
+<section use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
+    {#each items as file(file.id)}
+    <div class="file" animate:flip="{{duration: flipDurationMs}}">
+        <Icon icon={Shape.Document} />
+        <Spacer less />
+        <input type="text" value={file.name} />
+        <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
+    </div>
+    {/each}
+</section>
 
 <style lang="scss">
     .file {
