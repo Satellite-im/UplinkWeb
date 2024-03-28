@@ -11,12 +11,13 @@
     export let singleLine: boolean      = false
     export let doubleLine: boolean      = false
     export let markdown: string         =  ""
+    export let secondaryFont: boolean   = false
 
     let clazz = ""
 	export { clazz as class }
 </script>
 
-<p class="text {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {doubleLine ? "double-line" : ""} {clazz}">
+<p class="text {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {doubleLine ? "double-line" : ""} {secondaryFont ? "secondary-font" : ""} {clazz}">
     {#if loading}
         <Loader text />
     {:else}
@@ -37,6 +38,10 @@
         text-align: left;
         max-width: fit-content;
 
+
+        &.secondary-font {
+            font-family: "Secondary";
+        }        
 
         &.single-line {
             display: -webkit-box;

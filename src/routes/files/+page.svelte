@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
-    import { Appearance, Route, Shape } from "$lib/enums"
+    import { Appearance, FilesItemKind, Route, Shape } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
@@ -10,8 +10,9 @@
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
     import { chats } from "$lib/mock/users"
-    import { ChatPreview, ImageEmbed, ImageFile, Modal, File, Folder, ProgressButton } from "$lib/components"
+    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte";
+    import { mock_files } from "$lib/mock/files";
 
     // Initialize locale
     initLocale()
@@ -135,11 +136,17 @@
 
         <div class="body">
             <div class="files">
-                <ImageFile filesize={39222} name="Fake File" on:click={(_) => {
-                    previewImage = "/src/lib/assets/library.avif"
-                }} />
-                <File filesize={39222} name="Fake File" />
-                <Folder filesize={39382992} name="Fake Folder 2" />
+                {#each mock_files as item}
+                    {#if item.type === "file"}
+                        <FileFolder kind={FilesItemKind.File} info={item}/>       
+                    {:else if item.type === "folder"}
+                        <FileFolder kind={FilesItemKind.Folder} info={item}/>       
+                    {:else if item.type === "image"}
+                        <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
+                            previewImage = item.source
+                        }} />
+                    {/if}
+                {/each}
             </div>
         </div>
     </div>

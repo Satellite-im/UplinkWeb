@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Route, Size } from "$lib/enums"
+    import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { Sidebar, Slimbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
@@ -12,6 +12,9 @@
     import TransactionContainer from "$lib/components/wallet/TransactionContainer.svelte"
     import Container from "$lib/components/ui/Container.svelte";
     import { mock_users } from "$lib/mock/users";
+    import Controls from "$lib/layouts/Controls.svelte";
+    import Button from "$lib/elements/Button.svelte";
+    import Icon from "$lib/elements/Icon.svelte";
 
     // Initialize locale
     initLocale()
@@ -57,6 +60,11 @@
                         <Transaction transaction={transaction} />
                     {/each}
                 </TransactionContainer>
+                <Controls>
+                    <Button text="Load More" appearance={Appearance.Alt}>
+                        <Icon icon={Shape.ArrowDown} />
+                    </Button>
+                </Controls>
             </div>
         </div>
         <div id="transactions">
@@ -68,6 +76,11 @@
                             <Transaction transaction={transaction} />
                         {/each}
                     </TransactionContainer>
+                    <Controls>
+                        <Button text="Load More" appearance={Appearance.Alt}>
+                            <Icon icon={Shape.ArrowDown} />
+                        </Button>
+                    </Controls>
                 </div>
             </div>
             <div id="payments-out">
@@ -78,6 +91,11 @@
                             <Transaction transaction={transaction} />
                         {/each}
                     </TransactionContainer>
+                    <Controls>
+                        <Button text="Load More" appearance={Appearance.Alt}>
+                            <Icon icon={Shape.ArrowDown} />
+                        </Button>
+                    </Controls>
                 </div>
             </div>
         </div>
