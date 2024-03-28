@@ -205,6 +205,7 @@
                     padding: var(--padding);
                     width: 100%;
                     flex: 1;
+                    display: inline-flex;
                 }
             }
         }
