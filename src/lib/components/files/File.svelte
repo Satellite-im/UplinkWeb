@@ -1,28 +1,22 @@
 <script lang="ts">
     import { Icon, Text, Spacer } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
+    import { mock_files } from "$lib/mock/files"
     import prettyBytes from "pretty-bytes"
-    import {dndzone} from "svelte-dnd-action";
-    import {flip} from "svelte/animate";
+    import {dndzone} from "svelte-dnd-action"
+    import {flip} from "svelte/animate"
 
     export let name: string = "UNKNOWN"
     export let filesize: number = 9821239999999999999999 // Intentionally alarming to signify error
-    const flipDurationMs = 300;
+    const flipDurationMs = 300
 
-    let items = [
-        {id: 1, name: "item1"},
-        {id: 2, name: "item2"},
-        {id: 3, name: "item7"},
-        {id: 5, name: "item2"},
-        {id: 6, name: "item5"},
-        {id: 4, name: "item4"}
-    ];
+    let items = mock_files
 
-    function handleDndConsider(e: { detail: { items: { id: number; name: string; }[]; }; }) {
-        items = e.detail.items;
+    function handleDndConsider(e: { detail: { items: { id: number, type: string, icon: Shape, size: number, name: string }[]; }; }) {
+        items = e.detail.items
     }
-    function handleDndFinalize(e: { detail: { items: { id: number; name: string; }[]; }; }) {
-        items = e.detail.items;
+    function handleDndFinalize(e: { detail: { items: { id: number, type: string, icon: Shape, size: number, name: string }[]; }; }) {
+        items = e.detail.items
     }
 </script>
 
