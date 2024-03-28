@@ -13,6 +13,7 @@
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte";
     import { mock_files } from "$lib/mock/files";
+    import {dndzone} from "svelte-dnd-action"
 
     // Initialize locale
     initLocale()
@@ -28,6 +29,15 @@
     let activeTabRoute: string = tabRoutes[0]
 
     let previewImage: string | null
+    
+    const flipDurationMs = 300
+    let items = mock_files
+    function handleDndConsider(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
+        items = e.detail.items
+    }
+    function handleDndFinalize(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
+        items = e.detail.items
+    }
 </script>
 
 <div id="page">
@@ -135,8 +145,8 @@
         </Topbar>
 
         <div class="body">
-            <div class="files">
-                {#each mock_files as item}
+            <div class="files" use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
+                {#each items as item}
                     {#if item.type === "file"}
                         <FileFolder kind={FilesItemKind.File} info={item}/>       
                     {:else if item.type === "folder"}
