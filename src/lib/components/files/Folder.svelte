@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import { Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
     import prettyBytes from "pretty-bytes"
@@ -52,4 +52,4 @@
             height: var(--icon-size-largest);
         }
     }
-</style>
+</style> -->
