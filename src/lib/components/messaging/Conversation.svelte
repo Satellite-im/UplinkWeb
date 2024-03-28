@@ -3,6 +3,7 @@
     import Button from "$lib/elements/Button.svelte"
     import { Appearance, Shape } from "$lib/enums"
     import { animationDuration } from "$lib/globals/animations"
+    import { afterUpdate, tick } from 'svelte'
     import { onMount } from "svelte"
     import { fade } from "svelte/transition"
 
@@ -10,7 +11,7 @@
     let height: number
 
     let showScrollToBottom: boolean = false;
-    
+
     const scrollToBottom = async (node: Element) => {
         node.scroll({ top: node.scrollHeight, behavior: 'smooth' })
     }
@@ -19,9 +20,9 @@
         scrollToBottom(element)
     })
 
-    $: if(element) {
-		scrollToBottom(element)
-	}
+    afterUpdate(() => {
+        if (!showScrollToBottom) scrollToBottom(element)
+    })
 </script>
 
 <div class="conversation" bind:this={element}>
@@ -38,7 +39,9 @@
     </div>
     {#if showScrollToBottom}
         <div class="scroll-to-bottom" transition:fade={{duration: animationDuration}}>
-            <Button icon appearance={Appearance.Primary}>
+            <Button icon appearance={Appearance.Primary} on:click={(_) => {
+                scrollToBottom(element)
+            }}>
                 <Icon icon={Shape.ArrowDown} />
             </Button>
         </div>

@@ -107,3 +107,11 @@ export type MessageGroup = {
     details: MessageDetails,
     messages: Message[],    
 }
+
+export type Transaction = {
+    at: Date,
+    to: User,
+    from: User,
+    amount: number,
+    note: string
+}

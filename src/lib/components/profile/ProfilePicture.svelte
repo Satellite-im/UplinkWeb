@@ -57,10 +57,10 @@
     }
 
     &.smallest {
-        height: calc(var(--font-size) * 2);
-        min-height: calc(var(--font-size) * 2);
-        width: calc(var(--font-size) * 2);
-        min-width: calc(var(--font-size) * 2);
+        height: calc(var(--font-size) * 1.5);
+        min-height: calc(var(--font-size) * 1.5);
+        width: calc(var(--font-size) * 1.5);
+        min-width: calc(var(--font-size) * 1.5);
 
         .status-indicator, .notifications {
             display: none;

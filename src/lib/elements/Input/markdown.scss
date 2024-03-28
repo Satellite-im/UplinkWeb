@@ -77,7 +77,7 @@
 }
 
 .cm-placeholder {
-    color: var(--placeholder-color);
+    color: var(--placeholder-color) !important;
     opacity: 0.75;
     font-size: var(--label-size);
 }
