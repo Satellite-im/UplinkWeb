@@ -1,20 +1,19 @@
 <script lang="ts">
-    import { routes } from "$lib/mock/routes";
-    import Navigation from "./Navigation.svelte";
-    import Input from "$lib/elements/Input.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import { Appearance, Route, Shape } from "$lib/enums";
-    import Button from "$lib/elements/Button.svelte";
-    import { createEventDispatcher } from "svelte";
-    import { slide } from "svelte/transition";
-    import { animationDuration } from "$lib/globals/animations";
+    import { routes } from "$lib/mock/routes"
+    import Navigation from "./Navigation.svelte"
+    import Icon from "$lib/elements/Icon.svelte"
+    import { Appearance, Route, Shape } from "$lib/enums"
+    import Button from "$lib/elements/Button.svelte"
+    import { createEventDispatcher } from "svelte"
+    import { slide } from "svelte/transition"
+    import { animationDuration } from "$lib/globals/animations"
 
-    export let sidebarOpen: boolean = true;
-    export let activeRoute: Route = Route.Chat;
+    export let sidebarOpen: boolean = true
+    export let activeRoute: Route = Route.Chat
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher()
     function handleToggle() {
-        dispatch('toggle', sidebarOpen);
+        dispatch('toggle', sidebarOpen)
     }
 </script>
 

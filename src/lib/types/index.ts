@@ -71,7 +71,8 @@ export type Chat = {
 export type ContextItem = {
     id: string,
     icon: Shape,
-    text: string
+    text: string,
+    appearance: Appearance,
 }
 
 export type FileInfo = {
@@ -105,4 +106,12 @@ export type Message = {
 export type MessageGroup = {
     details: MessageDetails,
     messages: Message[],    
+}
+
+export type Transaction = {
+    at: Date,
+    to: User,
+    from: User,
+    amount: number,
+    note: string
 }

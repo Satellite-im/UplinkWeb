@@ -1,7 +1,7 @@
 export {default as Button} from "$lib/elements/Button.svelte"
 export {default as Checkbox} from "$lib/elements/Checkbox.svelte"
 export {default as Icon} from "$lib/elements/Icon.svelte"
-export {default as Input} from "$lib/elements/Input.svelte"
+export {default as Input} from "$lib/elements/Input/Input.svelte"
 export {default as Label} from "$lib/elements/Label.svelte"
 export {default as Loader} from "$lib/elements/Loader.svelte"
 export {default as Logo} from "$lib/elements/Logo.svelte"

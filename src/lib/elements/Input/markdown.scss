@@ -1,6 +1,6 @@
 .cm-editor {
     .cm-cursor {
-        border-left-color: var(--text-color);
+        border-left-color: var(--primary-color);
     }
 
     &.cm-focused {
@@ -29,7 +29,7 @@
         scrollbar-width: none;
     }
 
-    e &.cm-focused>.cm-scroller>.cm-selectionLayer .cm-selectionBackground,
+    &.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
     .cm-selectionBackground,
     .cm-content ::selection {
         color: var(--color-bright);
@@ -39,6 +39,8 @@
 
 .cm-strikethrough {
     text-decoration: line-through;
+    color: var(--color);
+    text-decoration-color: var(--error-color);
 }
 
 .cm-strong {
@@ -75,7 +77,7 @@
 }
 
 .cm-placeholder {
-    color: var(--color-alt);
+    color: var(--placeholder-color) !important;
     opacity: 0.75;
     font-size: var(--label-size);
 }

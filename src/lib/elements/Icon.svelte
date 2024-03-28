@@ -19,6 +19,7 @@
 
 <style lang="scss">
     :global(.svg-icon) {
+        color: var(--color);
         width: var(--icon-size);
         height: var(--icon-size);
         min-width: var(--icon-size);

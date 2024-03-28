@@ -1,7 +1,7 @@
 <script lang="ts">
-    import "./markdown.scss"
-    import { Appearance } from "../enums/index"
+    import { Appearance } from "../../enums/index"
     import { MarkdownEditor } from "markdown-editor"
+    import "./markdown.scss"
     import { onMount } from "svelte"
     import { EditorView } from '@codemirror/view'
 
@@ -94,7 +94,7 @@
             }
 
             &::placeholder {
-                color: var(--color-alt);
+                color: var(--placeholder-color);
                 opacity: 0.75;
                 font-size: var(--label-size);
             }
@@ -109,7 +109,7 @@
                 color: var(--color);
 
                 &::placeholder {
-                    color: var(--color);
+                    color: var(--placeholder-color);
                 }
             }
         }

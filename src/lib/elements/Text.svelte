@@ -36,7 +36,6 @@
         font-size: var(--font-size);
         text-align: left;
         max-width: fit-content;
-        min-width: calc(var(--font-size) * 2);
 
 
         &.single-line {

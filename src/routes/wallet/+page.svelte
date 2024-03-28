@@ -1,15 +1,24 @@
 <script lang="ts">
-    import { Route } from "$lib/enums"
+    import { Route, Size } from "$lib/enums"
     import { Sidebar, Slimbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
-    import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
+    import Label from "$lib/elements/Label.svelte"
+    import { Transaction } from "$lib/components"
+    import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
+    import Text from "$lib/elements/Text.svelte"
+    import Input from "$lib/elements/Input/Input.svelte"
+    import { balance, recent_transactions, transcations_in, transcations_out } from "$lib/mock/wallet"
+    import TransactionContainer from "$lib/components/wallet/TransactionContainer.svelte"
+    import Container from "$lib/components/ui/Container.svelte";
+    import { mock_users } from "$lib/mock/users";
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
     let sidebarOpen: boolean = true
+    let balace: number = balance
 
     function toggleSidebar(): void {
         sidebarOpen = !sidebarOpen
@@ -19,10 +28,59 @@
 <div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Wallet} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet} >
-        
+
     </Sidebar>
     <div class="content">
-        Wallet
+        <div class="header">
+            <div id="payment-profile">
+                <ProfilePicture image={mock_users[0]?.profile.photo.image} size={Size.Large} status={mock_users[0]?.profile.status} />
+
+                <div class="profile-details">
+                    <Label text="Username" />
+                    <Text>{mock_users[0].name}</Text>
+                    <Label text="Payment ID" />
+                    <Input alt disabled value={`${mock_users[0].name}#${mock_users[0].id.short}`} />
+                </div>
+            </div>
+
+            <div id="current-balance">
+                <Label text="Balance"></Label>
+                <Text size={Size.Large}>{balance}</Text>
+            </div>    
+        </div>
+
+        <div id="recent-transactions">
+            <Label text="Recent Transactions" />
+            <div class="transacitons">
+                <TransactionContainer>
+                    {#each recent_transactions as transaction}
+                        <Transaction transaction={transaction} />
+                    {/each}
+                </TransactionContainer>
+            </div>
+        </div>
+        <div id="transactions">
+            <div id="payments-in">
+                <Label text="Coin In" />
+                <div class="transacitons">
+                    <TransactionContainer>
+                        {#each transcations_in as transaction}
+                            <Transaction transaction={transaction} />
+                        {/each}
+                    </TransactionContainer>
+                </div>
+            </div>
+            <div id="payments-out">
+                <Label text="Coin Out" />
+                <div class="transacitons">
+                    <TransactionContainer>
+                        {#each transcations_out as transaction}
+                            <Transaction transaction={transaction} />
+                        {/each}
+                    </TransactionContainer>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -39,8 +97,71 @@
             display: flex;
             min-height: 0;
             display: flex;
+            overflow: hidden;
             flex-direction: column;
             flex: 1;
+            padding: var(--padding);
+            gap: var(--gap);
+            max-height: 100vh;
+            overflow-y: scroll;
+
+            .transacitons {
+                min-height: 0;
+                overflow-y: scroll;
+            }
+            
+
+            .header {
+                display: inline-flex;
+                flex-direction: row;
+                gap: var(--gap);
+            }
+
+            #payment-profile {
+                background-color: var(--background-alt);
+                padding: var(--padding);
+                width: fit-content;
+                display: inline-flex;
+                flex-direction: row;
+                gap: var(--gap);
+                border-radius: var(--border-radius);
+                flex: 50%;
+            }
+
+            #current-balance {
+                display: inline-flex;
+                flex-direction: column;
+                justify-content: center;
+                align-content: center;
+                text-align: center;
+                align-items: center;
+                flex: 50%;
+                border: var(--border-width) solid var(--border-color);
+                border-radius: var(--border-radius);
+            }
+
+            #transactions {
+                width: 100%;
+                display: inline-flex;
+                flex-direction: row;
+                gap: var(--gap);
+                flex: 1;
+
+                #payments-in,
+                #payments-out {
+                    width: 50%;
+                    padding: var(--padding);
+                    background: var(--background-alt);
+                    border-radius: var(--border-radius);
+                }
+            }
+
+            #recent-transactions {
+                width: 100%;
+                padding: var(--padding);
+                background: var(--background-alt);
+                border-radius: var(--border-radius);
+            }
 
         }
     }

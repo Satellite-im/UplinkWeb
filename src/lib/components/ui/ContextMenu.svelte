@@ -19,16 +19,14 @@
 
 {#if visible}
     <div 
-        id="context-menu" 
-        use:clickoutside 
+        id="context-menu"
+        use:clickoutside
         on:clickoutside={onClose}
         style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
-        <div class="header">
-            <slot></slot>
-        </div>
+        <slot></slot>
         {#each items as item}
-            <Button class="item" appearance={Appearance.Transparent} text={item.text}>
-                <Icon icon={item.icon}/>
+            <Button class="item" appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance} text={item.text}>
+                <Icon icon={item.icon} />
             </Button>
         {/each}
     </div>
@@ -49,11 +47,6 @@
         padding: var(--padding-less);
         border-radius: var(--border-radius);
         border: var(--border-width) solid var(--border-color);
-
-        .header {
-            display: inline-flex;
-            gap: var(--gap-less);
-        }
 
         :global(.item) {
             justify-content: flex-start;
