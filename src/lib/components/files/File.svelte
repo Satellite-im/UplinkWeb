@@ -22,17 +22,55 @@
 
 <section use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
     {#each items as file(file.id)}
-    <div class="file" animate:flip="{{duration: flipDurationMs}}">
-        <Icon icon={Shape.Document} />
+    <div class="{file.type}" animate:flip="{{duration: flipDurationMs}}">
+        <Icon icon={file.icon} />
         <Spacer less />
         <input type="text" value={file.name} />
-        <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
+        <Text size={Size.Smallest} muted>{prettyBytes(file.size)}</Text>
     </div>
     {/each}
 </section>
 
 <style lang="scss">
     .file {
+        height: var(--file-folder-size);
+        width: var(--file-folder-size);
+        border-radius: var(--border-radius);
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: background-color var(--animation-speed);
+        padding: var(--padding-less);
+
+        &:hover {
+            background: var(--background-alt);
+        }
+
+        input {
+            background-color: transparent;
+            border: none;
+            color: var(--color);
+            text-align: center;
+            width: 100%;
+            border-radius: var(--border-radius-less);
+            border: var(--border-width) solid transparent;
+            text-overflow: ellipsis;
+
+            &:focus {
+                border: var(--border-width) solid var(--border-color);
+                background-color: var(--alt-color);
+                outline: none;
+            }
+        }
+
+        :global(.svg-icon) {
+            color: var(--warning-color);
+            width: var(--icon-size-largest);
+            height: var(--icon-size-largest);
+        }
+    }
+    .folder {
         height: var(--file-folder-size);
         width: var(--file-folder-size);
         border-radius: var(--border-radius);
