@@ -10,10 +10,11 @@
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
     import { chats } from "$lib/mock/users"
-    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton } from "$lib/components"
-    import Controls from "$lib/layouts/Controls.svelte";
-    import { mock_files } from "$lib/mock/files";
+    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { mock_files } from "$lib/mock/files"
     import {dndzone} from "svelte-dnd-action"
+    import type { ContextItem } from "$lib/types"
 
     // Initialize locale
     initLocale()
@@ -38,9 +39,16 @@
     function handleDndFinalize(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
         items = e.detail.items
     }
+
+    // TODO: Move this into a global state
+    let contextPosition: [number, number] = [0, 0]
+    let contextData: ContextItem[] = []
 </script>
 
 <div id="page">
+    <!-- Context Menu-->
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>

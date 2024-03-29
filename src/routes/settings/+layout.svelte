@@ -1,14 +1,16 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
+    import { ContextMenu } from "$lib/components";
     import { Route, SettingsRoute } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { settingsRoutes } from "$lib/mock/routes"
+    import type { ContextItem } from "$lib/types"
     import { onMount } from "svelte"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
 
     initLocale()
 
@@ -56,9 +58,16 @@
             }
         }
     })
+    
+    // TODO: Move to global state
+    let contextPosition: [number, number] = [0, 0]
+    let contextData: ContextItem[] = []
 </script>
 
 <div id="settings">
+    <!-- Context Menu-->
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
         <Navigation 

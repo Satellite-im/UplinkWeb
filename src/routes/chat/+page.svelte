@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { Appearance, MessageAttachmentKind, MessagePosition, Route, Shape, Size, Status } from "$lib/enums"
+    import { Appearance, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { chats, mock_users } from "$lib/mock/users"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
-
     import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
     import { 
         FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
@@ -14,9 +13,9 @@
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
-    import CallScreen from "$lib/components/calling/CallScreen.svelte";
-    import type { ContextItem } from "$lib/types";
-    import { mock_messages } from "$lib/mock/messages";
+    import CallScreen from "$lib/components/calling/CallScreen.svelte"
+    import type { ContextItem } from "$lib/types"
+    import { mock_messages } from "$lib/mock/messages"
 
     initLocale()
 
@@ -29,6 +28,7 @@
         sidebarOpen = !sidebarOpen
     }
 
+    // TODO: Move this into a global state
     let previewImage: string | null
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []

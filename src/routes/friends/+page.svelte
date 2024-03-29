@@ -1,13 +1,13 @@
 <script lang="ts">  
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
-    import { ChatPreview, ProfilePicture } from "$lib/components"
+    import { ChatPreview, ContextMenu, ProfilePicture } from "$lib/components"
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
     import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
-    import type { User } from "$lib/types"
-    import Controls from "$lib/layouts/Controls.svelte";
+    import type { ContextItem, User } from "$lib/types"
+    import Controls from "$lib/layouts/Controls.svelte"
 
     // Initialize locale
     initLocale()
@@ -33,9 +33,16 @@
         });
         return groupedUsers;
     }
+
+    // TODO: Move this into a global state
+    let contextPosition: [number, number] = [0, 0]
+    let contextData: ContextItem[] = []
 </script>
 
 <div id="page">
+    <!-- Context Menu-->
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends} >
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
@@ -58,7 +65,24 @@
                 simpleUnreads
                 notifications={chat.notifications}
                 timestamp={chat.last_message_at}
-                message={chat.last_message_preview} />
+                message={chat.last_message_preview}
+                on:context={(evt) => {
+                    contextPosition = evt.detail
+                    contextData = [
+                        {
+                            id: "hide",
+                            icon: Shape.EyeSlash,
+                            text: "Hide",
+                            appearance: Appearance.Default
+                        },
+                        {
+                            id: "mark_read",
+                            icon: Shape.CheckMark,
+                            text: "Mark Read",
+                            appearance: Appearance.Default
+                        },
+                    ]
+                }} />
         {/each}
     </Sidebar>
     <div class="content">
