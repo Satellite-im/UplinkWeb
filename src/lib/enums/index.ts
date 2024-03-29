@@ -10,6 +10,12 @@ export const enum Route {
     NewAccount = "/auth/new_account"
 }
 
+export const enum FilesItemKind {
+    File,
+    Folder,
+    Image,
+}
+
 export const enum SettingsRoute {
     Profile         = "/settings/profile",
     Preferences     = "/settings/preferences",

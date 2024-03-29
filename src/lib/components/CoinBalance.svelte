@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Button, Icon } from "$lib/elements"
+    import { Button, Icon, Text } from "$lib/elements"
 
-    import { Appearance, Shape } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
 
     export let balance: number = 0
 
@@ -18,9 +18,9 @@
 <Button 
     outline 
     appearance={Appearance.Alt}>
-    <Icon icon={Shape.Coins} />
+    <Icon icon={Shape.Coins} highlight={Appearance.Warning} />
     <!-- svelte-ignore a11y-label-has-associated-control -->
-    <label class="label">
-        {NumberFormatter(balance, 2)}
-    </label>
+    <Text size={Size.Small} secondaryFont>
+        { NumberFormatter(balance, 2) }
+    </Text>
 </Button>

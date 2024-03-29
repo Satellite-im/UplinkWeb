@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
-    import { Appearance, Route, Shape } from "$lib/enums"
+    import { Appearance, FilesItemKind, Route, Shape } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
@@ -10,8 +10,11 @@
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
     import { chats } from "$lib/mock/users"
-    import { ChatPreview, ImageEmbed, ImageFile, Modal, File, Folder, ProgressButton } from "$lib/components"
-    import Controls from "$lib/layouts/Controls.svelte";
+    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { mock_files } from "$lib/mock/files"
+    import {dndzone} from "svelte-dnd-action"
+    import type { ContextItem } from "$lib/types"
 
     // Initialize locale
     initLocale()
@@ -27,9 +30,25 @@
     let activeTabRoute: string = tabRoutes[0]
 
     let previewImage: string | null
+    
+    const flipDurationMs = 300
+    let items = mock_files
+    function handleDndConsider(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
+        items = e.detail.items
+    }
+    function handleDndFinalize(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
+        items = e.detail.items
+    }
+
+    // TODO: Move this into a global state
+    let contextPosition: [number, number] = [0, 0]
+    let contextData: ContextItem[] = []
 </script>
 
 <div id="page">
+    <!-- Context Menu-->
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>
@@ -134,12 +153,18 @@
         </Topbar>
 
         <div class="body">
-            <div class="files">
-                <ImageFile filesize={39222} name="Fake File" on:click={(_) => {
-                    previewImage = "/src/lib/assets/library.avif"
-                }} />
-                <File filesize={39222} name="Fake File" />
-                <Folder filesize={39382992} name="Fake Folder 2" />
+            <div class="files" use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
+                {#each items as item}
+                    {#if item.type === "file"}
+                        <FileFolder kind={FilesItemKind.File} info={item}/>       
+                    {:else if item.type === "folder"}
+                        <FileFolder kind={FilesItemKind.Folder} info={item}/>       
+                    {:else if item.type === "image"}
+                        <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
+                            previewImage = item.source
+                        }} />
+                    {/if}
+                {/each}
             </div>
         </div>
     </div>
@@ -198,6 +223,7 @@
                     padding: var(--padding);
                     width: 100%;
                     flex: 1;
+                    display: inline-flex;
                 }
             }
         }

@@ -1,5 +1,6 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind } from "$lib/enums"
 
+
 export type SelectOption = {
     value: string,
     text: string
@@ -78,9 +79,9 @@ export type ContextItem = {
 export type FileInfo = {
     id: number,
     type: string,
-    icon: Shape,
     size: number,
-    name: string
+    name: string,
+    source: string
 }
 
 export type Attachment = {
