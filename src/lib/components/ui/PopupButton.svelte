@@ -1,25 +1,28 @@
 <script lang="ts">
     import { Button } from "$lib/elements"
     import { Appearance } from "$lib/enums"
+    import Modal from "./Modal.svelte";
 
     export let open: boolean    = false
     export let name: string     = "name"
+    
+    function toggle() {
+        open = !open 
+    }
 </script>
-
 <div class="popup">
     {#if open}
-        <div class="popup-body">
+        <Modal on:close={toggle}>
             <slot></slot>
-        </div>
+        </Modal>
     {/if}
     <Button 
-        icon 
+        icon
+        outline
         appearance={Appearance.Alt} 
         class="control" 
         tooltip={name}
-        on:click={(_) => {
-            open = !open
-        }}>
+        on:click={toggle}>
         <slot name="icon"></slot>
     </Button>
 </div>
@@ -40,10 +43,11 @@
         padding: var(--padding);    
         border-radius: var(--border-radius);
         border: var(--border-width) solid var(--boerder-color);
-        max-height: var(--min-height);
+        min-height: var(--min-height);
+        max-height: 80vh;
         max-width: var(--popup-width);
         background-color: var(--background-alt);
-        overflow: hidden;
+        overflow-y: auto;
     }
 }
 </style>

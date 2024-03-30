@@ -51,6 +51,8 @@
             border-radius: var(--border-radius);
             background-color: var(--background-alt);
             border: var(--border-width-more) solid var(--background-alt);
+            padding: var(--padding);
+
 
             .content {
                 max-width: 75vw;

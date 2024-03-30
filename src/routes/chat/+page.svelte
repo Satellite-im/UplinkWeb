@@ -212,6 +212,33 @@
         </Conversation>
         
         <Chatbar>
+
+            <svelte:fragment slot="pre-controls">
+                <Button 
+                    icon 
+                    appearance={Appearance.Alt} 
+                    tooltip={$_("chat.add_attachment")}
+                    on:context={(evt) => {
+                        contextPosition = evt.detail
+                        contextData = [
+                            {
+                                id: "upload",
+                                icon: Shape.ArrowUp,
+                                text: "Upload",
+                                appearance: Appearance.Default
+                            },
+                            {
+                                id: "from_files",
+                                icon: Shape.Eye,
+                                text: "Browse Files",
+                                appearance: Appearance.Default
+                            },
+                        ]
+                    }}>
+                    <Icon icon={Shape.Plus} />
+                </Button>
+            </svelte:fragment>
+
             <PopupButton name={$_("payments.send_coin")}>
                 <NewPayment recipients={mock_users}/>
                 <div slot="icon" class="control">

@@ -94,7 +94,24 @@
                     simpleUnreads
                     notifications={chat.notifications}
                     timestamp={chat.last_message_at}
-                    message={chat.last_message_preview} />
+                    message={chat.last_message_preview}
+                    on:context={(evt) => {
+                        contextPosition = evt.detail
+                        contextData = [
+                            {
+                                id: "hide",
+                                icon: Shape.EyeSlash,
+                                text: "Hide",
+                                appearance: Appearance.Default
+                            },
+                            {
+                                id: "mark_read",
+                                icon: Shape.CheckMark,
+                                text: "Mark Read",
+                                appearance: Appearance.Default
+                            },
+                        ]
+                    }} />
             {/each}
         {/if}
     </Sidebar>
@@ -156,9 +173,29 @@
             <div class="files" use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
                 {#each items as item}
                     {#if item.type === "file"}
-                        <FileFolder kind={FilesItemKind.File} info={item}/>       
+                        <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
+                            contextPosition = evt.detail
+                            contextData = [
+                                {
+                                    id: "delete",
+                                    icon: Shape.XMark,
+                                    text: "Delete",
+                                    appearance: Appearance.Default
+                                }
+                            ]
+                        }} />       
                     {:else if item.type === "folder"}
-                        <FileFolder kind={FilesItemKind.Folder} info={item}/>       
+                        <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
+                            contextPosition = evt.detail
+                            contextData = [
+                                {
+                                    id: "delete",
+                                    icon: Shape.XMark,
+                                    text: "Delete",
+                                    appearance: Appearance.Default
+                                }
+                            ]
+                        }}/>       
                     {:else if item.type === "image"}
                         <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
                             previewImage = item.source

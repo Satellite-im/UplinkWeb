@@ -4,7 +4,7 @@
     import type { User } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher } from "svelte"
 
     export let users: User[]            = []
     export let notifications: number    = 0

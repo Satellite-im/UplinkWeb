@@ -1,26 +1,9 @@
 import { Appearance, Status } from "$lib/enums";
-import type { Chat, User } from "$lib/types";
-
-const default_user = function(): User {
-    return {  
-        id: {
-            short: "xxxxxxxx",
-        },
-        key: "did:key:000xxx",
-        name: "Default User",
-        profile: {
-            photo: {
-                image: "/lib/assets/moon.png",
-            },
-            status: Status.Offline,
-            status_message: "Default status message"
-        }
-    };
-}
+import { defaultUser, type Chat, type User } from "$lib/types";
 
 export const mock_users: Array<User> = [
     {
-        ...default_user(),
+        ...defaultUser,
         name: "Lunar Lucas",
         key: "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {
@@ -32,10 +15,14 @@ export const mock_users: Array<User> = [
             },
             status: Status.Online,
             status_message: "There is no cheese on this moon."
+        },
+        media: {
+            ...defaultUser.media,
+            is_playing_audio: true,
         }
     },
     {
-        ...default_user(),
+        ...defaultUser,
         name: "Space Kev",
         key: "did:key:z4MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {
@@ -47,10 +34,16 @@ export const mock_users: Array<User> = [
             },
             status: Status.Online,
             status_message: "Space Kev is doing Space Kev things!"
+        },
+        media: {
+            ...defaultUser.media,
+            is_streaming_video: true,
+            is_muted: true,
+            is_deafened: true,
         }
     },
     {
-        ...default_user(),
+        ...defaultUser,
         name: "Sara Saturn",
         key: "did:key:z8HkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {
@@ -65,7 +58,7 @@ export const mock_users: Array<User> = [
         }
     },
     {
-        ...default_user(),
+        ...defaultUser,
         name: "Pluto Phill",
         key: "did:key:z9EkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {
@@ -77,10 +70,14 @@ export const mock_users: Array<User> = [
             },
             status: Status.Offline,
             status_message: "I am also testing a bunch of things a bunch of the time!"
+        },
+        media: {
+            ...defaultUser.media,
+            is_deafened: true,
         }
     },
     {
-        ...default_user(),
+        ...defaultUser,
         name: "Daring DariusDariusDariusDariusDariusDariusDariusDarius",
         key: "did:key:z7YkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {
@@ -98,7 +95,7 @@ export const mock_users: Array<User> = [
 
 export const blocked_users: Array<User> = [
     {
-        ...default_user(),
+        ...defaultUser,
         name: "Mean Person",
         key: "did:key:7xMuiaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {
@@ -116,7 +113,7 @@ export const blocked_users: Array<User> = [
 
 export const fake_user_array: Array<User> = [
     {
-        ...default_user(),
+        ...defaultUser,
         name: "Fake User",
         key: "did:key:3xwkfegBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {

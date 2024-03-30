@@ -28,11 +28,19 @@
 - [x] Color Swatch
 - [ ] Verification Code
 - [ ] Volume Slider (Horizontal & Vertical)
-- [ ] Wallet
-- [ ] Payment
+- [x] Wallet
+- [x] Payment
 - [ ] Payment Reciept
 - [ ] Payment Recipient
 - [ ] Local Share Drop - A space to click and drag files to share them with local devices running uplink.
+- [ ] Create Chat
+- [ ] Files
+  - [ ] Upload Modal
+  - [ ] Gift Space
+  - [ ] Rent Space
+  - [ ] Create Node
+  - [ ] New Folder
+  - [ ] File Tree (Sidebar "Files" Tab)
 
 ## Layouts
 
@@ -40,6 +48,18 @@
 - [x] Download Queue
 - [x] Sidebar
   - [ ] Sidebar Toggle Functionality
-- [ ] Slimbar
-- [ ] Message Group
-- [ ] Context Menu
+- [x] Slimbar
+- [x] Message Group
+- [x] Context Menu
+- [ ] Marketplace
+
+## Other
+
+- [ ] Group Chat UI
+  - [ ] Edit Group
+  - [ ] Edit Users
+  - [ ] Permissions Modal
+  - [ ] Group Chat Profile Picture
+  - [ ] Create Group Modal
+  - [ ] Chat Preview
+- [ ] Emoji Picker

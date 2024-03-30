@@ -1,8 +1,10 @@
 <script lang="ts">
     import Controls from "$lib/layouts/Controls.svelte"
+
+    export let simple: boolean = false
 </script>
 
-<div class="topbar">
+<div class="topbar {simple ? "simple" : ""}">
     <slot name="before" />
     <div class="content">
         <slot name="content" />
@@ -20,6 +22,11 @@
         padding: var(--padding-less);
         gap: var(--gap);
         border-bottom: var(--border-width) solid var(--border-color);
+
+        &.simple {
+            border: none;
+            padding: 0;
+        }
 
         :global(.before) {
             display: inline-flex;
