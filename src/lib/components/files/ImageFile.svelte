@@ -16,7 +16,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="image-file" on:click={onClick}>
-    <img class="preview" src="/src/lib/assets/library.avif" alt="preview" />
+    <img class="preview" src="/assets/library.avif" alt="preview" />
     <input type="text" value={name} />
     <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
 </div>

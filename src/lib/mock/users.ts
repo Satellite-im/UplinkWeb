@@ -11,7 +11,7 @@ export const mock_users: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/src/lib/assets/moon.png"
+                image: "/assets/moon.png"
             },
             status: Status.Online,
             status_message: "There is no cheese on this moon."
@@ -30,7 +30,7 @@ export const mock_users: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/src/lib/assets/blue_marble.png"
+                image: "/assets/blue_marble.png"
             },
             status: Status.Online,
             status_message: "Space Kev is doing Space Kev things!"
@@ -51,7 +51,7 @@ export const mock_users: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/src/lib/assets/saturn.png"
+                image: "/assets/saturn.png"
             },
             status: Status.Online,
             status_message: "Testing all of the things, all of the time."
@@ -66,7 +66,7 @@ export const mock_users: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/src/lib/assets/pluto.png"
+                image: "/assets/pluto.png"
             },
             status: Status.Offline,
             status_message: "I am also testing a bunch of things a bunch of the time!"
@@ -85,7 +85,7 @@ export const mock_users: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/src/lib/assets/neptune.png"
+                image: "/assets/neptune.png"
             },
             status: Status.DoNotDisturb,
             status_message: "This is a status message that you are reading."
@@ -103,7 +103,7 @@ export const blocked_users: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/src/lib/assets/uranis.png"
+                image: "/assets/uranis.png"
             },
             status: Status.DoNotDisturb,
             status_message: "Something hostile and aggressive."
@@ -121,7 +121,7 @@ export const fake_user_array: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/src/lib/assets/neptune.png"
+                image: "/assets/neptune.png"
             },
             status: Status.Offline,
             status_message: "This user is not real."

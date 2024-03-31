@@ -150,7 +150,7 @@
             .profile-header {
                 height: calc(var(--profile-width) / 1.5);
                 background-color: var(--background-alt);
-                background-image: url('$lib/assets/kumar.jpg');
+                background-image: url('$lib/static/assets/kumar.jpg');
                 background-size: cover;
                 padding: var(--padding-less);
                 width: 100%;
