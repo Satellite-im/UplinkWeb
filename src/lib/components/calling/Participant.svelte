@@ -29,7 +29,7 @@
             class="{isMuted ? "muted" : ""} {isDeafened ? "deafened" : ""}"
             autoplay 
             muted 
-            src="assets/mp4/sample.mp4" 
+            src="/assets/mp4/sample.mp4" 
             on:mouseover={() => toggleDetails(true)} 
             on:mouseleave={() => toggleDetails(false)}>
         </video>
