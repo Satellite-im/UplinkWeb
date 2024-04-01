@@ -9,7 +9,8 @@
     import type { ContextItem, User } from "$lib/types"
     import Controls from "$lib/layouts/Controls.svelte"
     import Fuse from "fuse.js"
-    
+    import Friend from "$lib/components/friends/Friend.svelte";
+
     // Initialize locale
     initLocale()
 
@@ -51,9 +52,9 @@
         includeMatches: true,
         // isCaseSensitive: false,
         // includeScore: false,
-        // shouldSort: true,
+        shouldSort: true,
         // findAllMatches: false,
-        // minMatchCharLength: 1,
+        minMatchCharLength: 2,
         keys: [
             "name"
         ]
@@ -62,11 +63,9 @@
     const fuse = new Fuse(mock_users, fuseOptions)
     let searchResult = fuse.search("")
 
-    function handleSearch(e: CustomEvent) {
+    function handleSearchInput(e: CustomEvent) {
         searchString = e.detail
         searchResult = fuse.search(e.detail)
-
-        console.log('result', searchResult)
     }
 </script>
 
@@ -137,7 +136,7 @@
     </Sidebar>
     <div class="content">
         <Topbar>
-            <Controls>
+            <svelte:fragment slot="controls">
                 <Button 
                     appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} 
                     text={$_("friends.all")}
@@ -156,7 +155,7 @@
                     on:click={(_) => tab = "blocked"}>
                     <Icon icon={Shape.NoSymbol} />
                 </Button>
-            </Controls>
+            </svelte:fragment>
         </Topbar>
 
         <div class="body">
@@ -179,43 +178,16 @@
 
                 <Label text={$_("friends.search_friends_placeholder")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.search_friends_placeholder")}  on:keypress={handleSearch}>
+                    <Input alt placeholder={$_("friends.search_friends_placeholder")}  on:keypress={handleSearchInput}>
                         <Icon icon={Shape.Search} />
                     </Input>
                 </div>
                 
-
                 {#if searchResult.length}
-                    <div class="section column">
+                    <div class="section column search-results">
                         <Label text="Search Results" />
                         {#each searchResult as result}
-                            <div class="friend">
-                                <ProfilePicture 
-                                    size={Size.Small} 
-                                    image={result.item.profile.photo.image} 
-                                    status={result.item.profile.status} />
-                                <Text class="username">
-                                    {result.item.name}
-                                </Text>
-                                <Controls>
-                                    <Button 
-                                        text={$_("chat.chat")}>
-                                        <Icon icon={Shape.ChatBubble} />
-                                    </Button>
-                                    <Button 
-                                        icon 
-                                        appearance={Appearance.Alt} 
-                                        tooltip={$_("generic.remove")}>
-                                        <Icon icon={Shape.UserMinus} />
-                                    </Button>
-                                    <Button 
-                                        icon 
-                                        appearance={Appearance.Alt} 
-                                        tooltip={$_("friends.block")}>
-                                        <Icon icon={Shape.NoSymbol} />
-                                    </Button>
-                                </Controls>
-                            </div>
+                            <Friend friend={result.item} />
                         {/each}
                     </div>
                 {/if}
@@ -224,33 +196,7 @@
                         {#if groupUsersAlphabetically(mock_users)[letter].length > 0}
                             <Label text={letter} />
                             {#each groupUsersAlphabetically(mock_users)[letter] as friend}
-                                <div class="friend">
-                                    <ProfilePicture 
-                                        size={Size.Small} 
-                                        image={friend.profile.photo.image} 
-                                        status={friend.profile.status} />
-                                    <Text class="username">
-                                        {friend.name}
-                                    </Text>
-                                    <Controls>
-                                        <Button 
-                                            text={$_("chat.chat")}>
-                                            <Icon icon={Shape.ChatBubble} />
-                                        </Button>
-                                        <Button 
-                                            icon 
-                                            appearance={Appearance.Alt} 
-                                            tooltip={$_("generic.remove")}>
-                                            <Icon icon={Shape.UserMinus} />
-                                        </Button>
-                                        <Button 
-                                            icon 
-                                            appearance={Appearance.Alt} 
-                                            tooltip={$_("friends.block")}>
-                                            <Icon icon={Shape.NoSymbol} />
-                                        </Button>
-                                    </Controls>
-                                </div>
+                                <Friend friend={friend} />
                             {/each}
                         {/if}
                     {/each}
@@ -342,8 +288,13 @@
                 display: inline-flex;
                 flex-direction: column;
                 padding: var(--padding);
+                gap: var(--gap-less);
 
-                
+                .search-results {
+                    border: var(--border-width) solid var(--border-color);
+                    padding: var(--padding);
+                    border-radius: var(--border-radius);
+                }
                 .section {
                     display: inline-flex;
                     gap: var(--gap);
@@ -354,22 +305,6 @@
                         min-height: var(--min-scroll-height);
                         overflow-y: scroll;
                         padding-right: var(--padding);
-                    }
-                }
-                
-
-                .friend {
-                    width: 100%;
-                    display: inline-flex;
-                    gap: var(--gap);
-                    align-items: center;
-
-                    :global(.username) {
-                        flex: 100%;
-                        display: inline-flex;
-                        width: 100%;
-                        min-width: fit-content;
-                        max-width: 100%;
                     }
                 }
             }
