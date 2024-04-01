@@ -8,8 +8,8 @@
     import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
     import type { ContextItem, User } from "$lib/types"
     import Controls from "$lib/layouts/Controls.svelte"
-    import Fuzzy from "svelte-fuzzy"
-
+    import Fuse from "fuse.js"
+    
     // Initialize locale
     initLocale()
 
@@ -45,16 +45,28 @@
         sentRequest = true
     }
 
-    // Fuse.js options
-    let options = { keys: ["name"] }
-    let formatted: any[] = []
     let searchString: string
 
-    function findFirstUserByName(line: any) {
-        console.log('line', line)
-        let name: string
-        line.forEach((item: { text: string }) => name += item.text)
-        return mock_users.filter(u => u.name = name)[0]
+    const fuseOptions = {
+        includeMatches: true,
+        // isCaseSensitive: false,
+        // includeScore: false,
+        // shouldSort: true,
+        // findAllMatches: false,
+        // minMatchCharLength: 1,
+        keys: [
+            "name"
+        ]
+    }
+
+    const fuse = new Fuse(mock_users, fuseOptions)
+    let searchResult = fuse.search("")
+
+    function handleSearch(e: CustomEvent) {
+        searchString = e.detail
+        searchResult = fuse.search(e.detail)
+
+        console.log('result', searchResult)
     }
 </script>
 
@@ -167,21 +179,23 @@
 
                 <Label text={$_("friends.search_friends_placeholder")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.search_friends_placeholder")}  on:keypress={(v) => { searchString = v.detail }}>
+                    <Input alt placeholder={$_("friends.search_friends_placeholder")}  on:keypress={handleSearch}>
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Fuzzy query={searchString} data={mock_users} {options} bind:formatted />
                 </div>
-                <div class="section column">
-                    {#each formatted as item}
-                        {#each item as line}
+                
+
+                {#if searchResult.length}
+                    <div class="section column">
+                        <Label text="Search Results" />
+                        {#each searchResult as result}
                             <div class="friend">
                                 <ProfilePicture 
                                     size={Size.Small} 
-                                    image={findFirstUserByName(line)?.profile.photo.image} 
-                                    status={findFirstUserByName(line)?.profile.status} />
+                                    image={result.item.profile.photo.image} 
+                                    status={result.item.profile.status} />
                                 <Text class="username">
-                                    {findFirstUserByName(line)?.name}
+                                    {result.item.name}
                                 </Text>
                                 <Controls>
                                     <Button 
@@ -203,8 +217,8 @@
                                 </Controls>
                             </div>
                         {/each}
-                    {/each}
-                </div>
+                    </div>
+                {/if}
                 <div class="section column">
                     {#each Object.keys(groupUsersAlphabetically(mock_users)).sort() as letter}
                         {#if groupUsersAlphabetically(mock_users)[letter].length > 0}
