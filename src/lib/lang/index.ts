@@ -16,6 +16,8 @@ export function initLocale() {
                 enter_pin: "Enter Pin",
                 placeholder: "Type something ...",
                 search_placeholder: "Search ...",
+                no_results: "No results found.",
+                search_results: "Search results"
             },
             market: {
                 market: "Marketplace",
@@ -44,7 +46,7 @@ export function initLocale() {
                 active: "Active",
                 add: "Add",
                 add_someone: "Add Someone",
-                search_friends_placeholder: "Search your friends ...",
+                search_friends_placeholder: "Search friends",
                 find_placeholder: "Find Username#xxxxxx ...",
                 incoming_requests: "Incoming Requests",
                 outgoing_requests: "Outgoing Requests",

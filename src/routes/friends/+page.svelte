@@ -9,7 +9,7 @@
     import type { ContextItem, User } from "$lib/types"
     import Controls from "$lib/layouts/Controls.svelte"
     import Fuse from "fuse.js"
-    import Friend from "$lib/components/friends/Friend.svelte";
+    import Friend from "$lib/components/friends/Friend.svelte"
 
     // Initialize locale
     initLocale()
@@ -46,7 +46,7 @@
         sentRequest = true
     }
 
-    let searchString: string
+    let searchString: string = ""
 
     const fuseOptions = {
         includeMatches: true,
@@ -54,7 +54,7 @@
         // includeScore: false,
         shouldSort: true,
         // findAllMatches: false,
-        minMatchCharLength: 2,
+        minMatchCharLength: 1,
         keys: [
             "name"
         ]
@@ -97,7 +97,6 @@
             <Icon icon={Shape.Shop} />
         </Button>
         
-
         <div class="content-header">
             <Label text={$_("chat.chat_plural")} />
             <Button icon small tooltip={$_("chat.create")}>
@@ -136,19 +135,19 @@
     <div class="content">
         <Topbar>
             <svelte:fragment slot="controls">
-                <Button 
-                    appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} 
+                <Button
+                    appearance={tab === "all" ? Appearance.Primary : Appearance.Alt}
                     text={$_("friends.all")}
                     on:click={(_) => tab = "all"}>
                     <Icon icon={Shape.Users} />
                 </Button>
-                <Button 
+                <Button
                     appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} 
                     text={$_("friends.active")}
                     on:click={(_) => tab = "active"}>
                     <Icon icon={Shape.ArrowsLeftRight} />
                 </Button>
-                <Button 
+                <Button
                     appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} 
                     text={$_("friends.blocked")}
                     on:click={(_) => tab = "blocked"}>
@@ -164,7 +163,7 @@
                     <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} bind:value={requestString} >
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Button 
+                    <Button
                         appearance={Appearance.Alt} 
                         text={$_("friends.add")}
                         on:click={submitRequest}>
@@ -182,12 +181,16 @@
                     </Input>
                 </div>
                 
-                {#if searchResult.length}
+                {#if searchResult.length || searchString.length}
                     <div class="section column search-results">
-                        <Label text="Search Results" />
-                        {#each searchResult as result}
-                            <Friend friend={result.item} />
-                        {/each}
+                        <Label text={$_("generic.search_results")} />
+                        {#if searchResult.length}
+                            {#each searchResult as result}
+                                <Friend friend={result.item} />
+                            {/each}
+                        {:else}
+                            <Text>{$_("generic.no_results")}</Text>
+                        {/if}
                     </div>
                 {/if}
                 <div class="section column">
