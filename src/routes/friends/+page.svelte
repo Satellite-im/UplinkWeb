@@ -65,7 +65,6 @@
 
     $: if (searchString !== undefined) {
         searchResult = fuse.search(searchString);
-        console.log('Updated search result', searchResult);
     }
 </script>
 
