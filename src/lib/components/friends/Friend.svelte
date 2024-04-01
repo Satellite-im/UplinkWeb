@@ -41,5 +41,18 @@
 </div>
 
 <style lang="scss">
+.friend {
+    width: 100%;
+    display: inline-flex;
+    gap: var(--gap);
+    align-items: center;
 
+    :global(.username) {
+        flex: 100%;
+        display: inline-flex;
+        width: 100%;
+        min-width: fit-content;
+        max-width: 100%;
+    }
+}
 </style>
