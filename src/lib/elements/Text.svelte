@@ -12,12 +12,13 @@
     export let doubleLine: boolean      = false
     export let markdown: string         =  ""
     export let secondaryFont: boolean   = false
+    export let withShadow: boolean      = false
 
     let clazz = ""
 	export { clazz as class }
 </script>
 
-<p class="text {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {doubleLine ? "double-line" : ""} {secondaryFont ? "secondary-font" : ""} {clazz}">
+<p class="text {withShadow ? "shadow" : ""} {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {doubleLine ? "double-line" : ""} {secondaryFont ? "secondary-font" : ""} {clazz}">
     {#if loading}
         <Loader text />
     {:else}
@@ -84,6 +85,10 @@
 
         &.alt {
             color: var(--color);
+        }
+
+        &.shadow {
+            text-shadow: 0 0  5px var(--background);
         }
     }
 </style>

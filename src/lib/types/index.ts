@@ -40,11 +40,20 @@ export type Id = {
     short: string,
 }
 
+export type MediaMeta = {
+    is_playing_audio: boolean,
+    is_streaming_video: boolean,
+    is_muted: boolean,
+    is_deafened: boolean,
+    is_unknown_status: boolean
+}
+
 export type User = {
     id: Id;
     key: string,
     name: string,
     profile: ProfileData,
+    media: MediaMeta
 }
 
 export let defaultUser: User = {
@@ -52,6 +61,13 @@ export let defaultUser: User = {
     key: "0x0",
     name: "",
     profile: defaultProfileData,
+    media: {
+        is_deafened: false,
+        is_muted: false,
+        is_unknown_status: true,
+        is_streaming_video: false,
+        is_playing_audio: false
+    }
 }
 
 export type NavRoute = {

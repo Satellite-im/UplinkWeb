@@ -63,7 +63,6 @@
             overflow-x: hidden;
             overflow-y: scroll;
             gap: var(--gap);
-            mask-image: linear-gradient(to bottom, var(--background) calc(100% - (var(--sidebar-width) / 6)), transparent 100%);
         }
 
         .sidebar-pre {

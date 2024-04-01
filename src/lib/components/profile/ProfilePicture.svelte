@@ -9,6 +9,7 @@
     export let typing: boolean                  = false
     export let status: Status                   = Status.Offline
     export let loading: boolean                 = false
+    export let noIndicator: boolean             = false
 </script>
 
 <div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}">
@@ -20,7 +21,7 @@
     {#if typing}
         <div class="typing-indicator"></div>
     {/if}
-    {#if size === Size.Medium || size === Size.Small || size === Size.Large}
+    {#if !noIndicator}
         <div class="status-indicator {status}"></div>
     {/if}
     {#if notifications > 0}
@@ -54,6 +55,13 @@
         width: var(--input-height);
         min-height: var(--input-height);
         min-width: var(--input-height);
+    }
+
+    &.smaller {
+        height: calc(var(--font-size) * 2);
+        width: calc(var(--font-size) * 2);
+        min-height: calc(var(--font-size) * 2);
+        min-width: calc(var(--font-size) * 2);
     }
 
     &.smallest {

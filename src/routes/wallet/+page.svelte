@@ -15,6 +15,7 @@
     import Controls from "$lib/layouts/Controls.svelte";
     import Button from "$lib/elements/Button.svelte";
     import Icon from "$lib/elements/Icon.svelte";
+    import NewPayment from "$lib/components/wallet/payments/NewPayment.svelte";
 
     // Initialize locale
     initLocale()
@@ -31,7 +32,7 @@
 <div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Wallet} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet} >
-
+        <NewPayment recipients={mock_users} embeded />
     </Sidebar>
     <div class="content">
         <div class="header">

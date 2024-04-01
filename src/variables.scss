@@ -2,7 +2,7 @@
 :root {
     --black: #000;
     --background: #0d0e16;
-    --background-alt: #141420;
+    --background-alt: rgb(16, 16, 27);
 
     --animation-speed: 0.2s;
     --animation-speed-mid: 1s;
@@ -27,8 +27,8 @@
     --success-color: #4acfab;
     --success-color-alt: #4edeb8;
 
-    --info-color: #546de5;
-    --info-color-alt: #72e3f2;
+    --info-color: #0a5fc1;
+    --info-color-alt: rgb(16, 187, 226);
 
     --error-color: #c44569;
     --error-color-alt: #d54d74;
@@ -47,7 +47,7 @@
 
     --disabled-opacity: 0.75;
 
-    --opaque-color: rgba(18, 21, 33, 0.90);
+    --opaque-color: rgba(18, 21, 33, 0.75);
     --blur-radius: 4px;
 
     /* Border Radius / Corners */
@@ -68,7 +68,7 @@
     --margin: 2rem;
     --padding: 1rem;
     --padding-less: 0.6rem;
-    --padding-minimal: 0.25rem;
+    --padding-minimal: 0.33rem;
     --gap: 0.75rem;
     --gap-more: 1rem;
     --gap-less: 0.45rem;
@@ -89,7 +89,7 @@
     --file-folder-size: 125px;
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
-    --sidebar-width: 320px;
+    --sidebar-width: 350px;
     --profile-width: 320px;
 
     --shadow-depth: 1px;

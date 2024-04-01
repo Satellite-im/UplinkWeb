@@ -1,21 +1,13 @@
 <script lang="ts">
     import { Icon, Text, Spacer } from "$lib/elements"
     import { FilesItemKind, Shape, Size } from "$lib/enums"
-    import type { FileInfo } from "$lib/types";
+    import type { FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
+    import { createEventDispatcher } from "svelte"
 
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
-
-    // function handleDndConsider(e: { detail: { items: { id: number, type: string, icon: Shape, size: number, name: string }[]; }; }) {
-    //     items = e.detail.items
-    // }
-    // function handleDndFinalize(e: { detail: { items: { id: number, type: string, icon: Shape, size: number, name: string }[]; }; }) {
-    //     items = e.detail.items
-    // }
-
-    // TODO: THIS GOES ON THE FILE use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}"
-
+    
     function getIcon() {
         switch (kind) {
             case FilesItemKind.File: return Shape.Document
@@ -23,10 +15,19 @@
             case FilesItemKind.Image: return Shape.Beaker
         }
     }
+
+    const dispatch = createEventDispatcher()
+    function onContext(coords: [number, number]) {
+        dispatch('context', coords)
+    }
 </script>
 
 <section>
-    <div class="filesitem">
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="filesitem" on:contextmenu={(e) => {
+        e.preventDefault()
+        onContext([e.clientX, e.clientY])
+    }}>
         <Icon icon={getIcon()} />
         <Spacer less />
         <input type="text" value={info?.name} />

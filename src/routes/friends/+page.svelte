@@ -1,6 +1,6 @@
 <script lang="ts">  
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
-    import { ChatPreview, ContextMenu, ProfilePicture } from "$lib/components"
+    import { ChatPreview, ContextMenu, Modal, ProfilePicture } from "$lib/components"
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
@@ -8,7 +8,8 @@
     import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
     import type { ContextItem, User } from "$lib/types"
     import Controls from "$lib/layouts/Controls.svelte"
-
+    import Fuse from "fuse.js"
+    
     // Initialize locale
     initLocale()
 
@@ -37,12 +38,61 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+
+    let sentRequest: boolean
+    let requestString: string
+    let submitRequest = function () {
+        sentRequest = true
+    }
+
+    let searchString: string
+
+    const fuseOptions = {
+        includeMatches: true,
+        // isCaseSensitive: false,
+        // includeScore: false,
+        // shouldSort: true,
+        // findAllMatches: false,
+        // minMatchCharLength: 1,
+        keys: [
+            "name"
+        ]
+    }
+
+    const fuse = new Fuse(mock_users, fuseOptions)
+    let searchResult = fuse.search("")
+
+    function handleSearch(e: CustomEvent) {
+        searchString = e.detail
+        searchResult = fuse.search(e.detail)
+
+        console.log('result', searchResult)
+    }
 </script>
 
 <div id="page">
     <!-- Context Menu-->
     <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
 
+    <!-- Modals -->
+    {#if sentRequest}
+        <Modal on:close={(_) => {sentRequest = false}}>
+            <svelte:fragment slot="controls">
+                <Button
+                    icon 
+                    small 
+                    appearance={Appearance.Alt}
+                    on:click={(_) => {sentRequest = false}}>
+                    <Icon icon={Shape.XMark} />
+                </Button>
+            </svelte:fragment>
+            <div class="request-sent">
+                <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success}/>
+                <Text size={Size.Large}>Request Dispatched!</Text>
+                <Text muted>Your request is making it's way to {requestString}.</Text>
+            </div>
+        </Modal>
+    {/if}
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends} >
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
@@ -113,10 +163,13 @@
             {#if tab === "all"}
                 <Label text={$_("friends.add_someone")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.find_placeholder")}>
+                    <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} on:keypress={(v) => { requestString = v.detail }} >
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Button appearance={Appearance.Alt} text={$_("friends.add")}>
+                    <Button 
+                        appearance={Appearance.Alt} 
+                        text={$_("friends.add")}
+                        on:click={submitRequest}>
                         <Icon icon={Shape.Plus} />
                     </Button>
                     <Button appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")}>
@@ -126,10 +179,46 @@
 
                 <Label text={$_("friends.search_friends_placeholder")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.search_friends_placeholder")}>
+                    <Input alt placeholder={$_("friends.search_friends_placeholder")}  on:keypress={handleSearch}>
                         <Icon icon={Shape.Search} />
                     </Input>
                 </div>
+                
+
+                {#if searchResult.length}
+                    <div class="section column">
+                        <Label text="Search Results" />
+                        {#each searchResult as result}
+                            <div class="friend">
+                                <ProfilePicture 
+                                    size={Size.Small} 
+                                    image={result.item.profile.photo.image} 
+                                    status={result.item.profile.status} />
+                                <Text class="username">
+                                    {result.item.name}
+                                </Text>
+                                <Controls>
+                                    <Button 
+                                        text={$_("chat.chat")}>
+                                        <Icon icon={Shape.ChatBubble} />
+                                    </Button>
+                                    <Button 
+                                        icon 
+                                        appearance={Appearance.Alt} 
+                                        tooltip={$_("generic.remove")}>
+                                        <Icon icon={Shape.UserMinus} />
+                                    </Button>
+                                    <Button 
+                                        icon 
+                                        appearance={Appearance.Alt} 
+                                        tooltip={$_("friends.block")}>
+                                        <Icon icon={Shape.NoSymbol} />
+                                    </Button>
+                                </Controls>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
                 <div class="section column">
                     {#each Object.keys(groupUsersAlphabetically(mock_users)).sort() as letter}
                         {#if groupUsersAlphabetically(mock_users)[letter].length > 0}
@@ -225,6 +314,14 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
+
+        .request-sent {
+            display: inline-flex;
+            justify-content: center;
+            flex-direction: column;
+            gap: var(--gap);
+            align-items: center;
+        }
 
         .content-header {
             display: inline-flex;

@@ -8,5 +8,5 @@ export let mock_files: FileInfo[] = [
     {id: 4, type: "folder", source: "", name: "Temp", size: 98212999},
     {id: 5, type: "file",  source: "", name: "Cat.tar", size: 985678999999},
     {id: 6, type: "file",  source: "", name: "Dog.zip", size: 9821239999},
-    {id: 7, type: "image",  source: "/src/lib/assets/library.avif", name: "Stock.png", size: 1341234543}
+    {id: 7, type: "image",  source: "/assets/library.avif", name: "Stock.png", size: 1341234543}
 ];

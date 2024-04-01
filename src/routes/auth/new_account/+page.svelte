@@ -20,7 +20,7 @@
     </div>
     <div class="main">
         <div class="left">
-            <ProfilePicture size={Size.Large} image="/src/lib/assets/moon.png" />
+            <ProfilePicture size={Size.Large} image="/assets/moon.png" />
         </div>
         <div class="right">
             <Label text={$_('generic.username')} />

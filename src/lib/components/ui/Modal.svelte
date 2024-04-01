@@ -57,6 +57,8 @@
                 max-height: 100%;
                 border-radius: var(--border-radius);
                 overflow: hidden;
+                padding: var(--padding);
+                padding-top: 0;
             }
 
             :global(.controls) {

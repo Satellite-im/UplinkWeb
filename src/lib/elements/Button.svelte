@@ -19,12 +19,14 @@
     let clazz = ""
 	export { clazz as class }
 
-    // Create an event dispatcher
     const dispatch = createEventDispatcher()
 
-    // Function to dispatch a 'click' event
     function onClick(event: MouseEvent) {
         dispatch('click', event)
+    }
+    
+    function onContext(coords: [number, number]) {
+        dispatch('context', coords)
     }
 </script>
 
@@ -32,7 +34,11 @@
     class="button {fill ? "fill" : ""} {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {small ? "small" : ""} {clazz || ''}"
     data-tooltip={tooltip}
     disabled={disabled || loading}
-    on:click={onClick}>
+    on:click={onClick}
+    on:contextmenu={(e) => {
+        e.preventDefault()
+        onContext([e.clientX, e.clientY])
+    }}>
         {#if loading}
             <Loader />
         {:else}
