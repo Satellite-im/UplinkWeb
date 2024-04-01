@@ -1,0 +1,1 @@
+import{s as n}from"../chunks/scheduler.DMQQ9JCZ.js";import{S as s,i as e}from"../chunks/index.BldGkFwo.js";import{g as r}from"../chunks/entry.DirsPGBA.js";function a(o){return r("/auth/unlock"),[]}class c extends s{constructor(t){super(),e(this,t,a,null,n,{})}}export{c as component};

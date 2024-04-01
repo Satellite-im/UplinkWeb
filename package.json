@@ -6,7 +6,7 @@
     "tauri": "tauri",
     "dev": "vite dev",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0 --port 8080",
+    "preview": "vite preview --host 0.0.0.0 --port 80",
     "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
   },
@@ -30,6 +30,7 @@
     "markdown-editor": "github:Flemmli97/markdown-editor#6522e14c1fee46211b3810b38d95059290ab05fd",
     "pretty-bytes": "^6.1.1",
     "svelte-dnd-action": "^0.9.42",
+    "svelte-fuzzy": "^2.1.0",
     "svelte-i18n": "^4.0.0",
     "svelte-markdown": "^0.4.1"
   }

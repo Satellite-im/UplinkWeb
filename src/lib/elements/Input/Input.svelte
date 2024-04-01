@@ -2,7 +2,7 @@
     import { Appearance } from "../../enums/index"
     import { MarkdownEditor } from "markdown-editor"
     import "./markdown.scss"
-    import { onMount } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import { EditorView } from '@codemirror/view'
 
     // export let loading: boolean = false;
@@ -24,6 +24,7 @@
 
     let clazz = ""
     let input: HTMLElement;
+    
     if (rich) {
         onMount(() => {
             let editor = new MarkdownEditor(input, {
@@ -35,6 +36,19 @@
         })
     }
     export { clazz as class }
+
+    const dispatch = createEventDispatcher()
+    function onKeypress() {
+        dispatch("keypress", value)
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+        if (event.code === "Enter") {
+            dispatch("enter", value)
+        } else {
+            onKeypress()
+        }
+    }
 </script>
 
 <div class="input-group {alt ? "alt" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {tooltip ? "tooltip" : ""} {clazz || ''}" data-tooltip={tooltip}>
@@ -46,7 +60,8 @@
             disabled={disabled}
             bind:this={input}
             bind:value={value}
-            placeholder="{placeholder}" />
+            placeholder="{placeholder}"
+            on:keypress={onKeyDown} />
     </div>
 </div>
 

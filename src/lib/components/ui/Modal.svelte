@@ -51,14 +51,14 @@
             border-radius: var(--border-radius);
             background-color: var(--background-alt);
             border: var(--border-width-more) solid var(--background-alt);
-            padding: var(--padding);
-
 
             .content {
                 max-width: 75vw;
                 max-height: 100%;
                 border-radius: var(--border-radius);
                 overflow: hidden;
+                padding: var(--padding);
+                padding-top: 0;
             }
 
             :global(.controls) {
