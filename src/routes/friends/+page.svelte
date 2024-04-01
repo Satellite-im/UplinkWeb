@@ -63,9 +63,9 @@
     const fuse = new Fuse(mock_users, fuseOptions)
     let searchResult = fuse.search("")
 
-    function handleSearchInput(e: CustomEvent) {
-        searchString = e.detail
-        searchResult = fuse.search(e.detail)
+    $: if (searchString !== undefined) {
+        searchResult = fuse.search(searchString);
+        console.log('Updated search result', searchResult);
     }
 </script>
 
@@ -162,7 +162,7 @@
             {#if tab === "all"}
                 <Label text={$_("friends.add_someone")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} on:keypress={(v) => { requestString = v.detail }} >
+                    <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} bind:value={requestString} >
                         <Icon icon={Shape.Search} />
                     </Input>
                     <Button 
@@ -178,7 +178,7 @@
 
                 <Label text={$_("friends.search_friends_placeholder")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.search_friends_placeholder")}  on:keypress={handleSearchInput}>
+                    <Input alt placeholder={$_("friends.search_friends_placeholder")} bind:value={searchString}>
                         <Icon icon={Shape.Search} />
                     </Input>
                 </div>
