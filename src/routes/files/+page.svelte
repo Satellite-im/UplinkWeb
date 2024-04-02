@@ -15,7 +15,7 @@
     import { mock_files } from "$lib/mock/files"
     import {dndzone} from "svelte-dnd-action"
     import type { ContextItem } from "$lib/types"
-    import {Draggable, Droppable} from '@shopify/draggable';
+    import {Draggable, Droppable, Plugins, Swappable} from '@shopify/draggable';
     import { afterUpdate, onDestroy, onMount } from 'svelte';
     import {Sortable} from '@shopify/draggable';
     // Initialize locale
@@ -45,69 +45,29 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-    // let draggingIndex: any = null;
-    let sortable: any = null;
-//     onMount(() => {
-//     let sortableElement = document.querySelector(".files") as HTMLElement;
-//     if (sortableElement) {
-//         console.log("in")
-//         sortable = new Sortable(sortableElement, {
-//             draggable: ".draggable-item",
-//             delay: 200, // Optional delay before drag starts, adjust as needed
-//             mirror: { constrainDimensions: true }
-//         });
-//         console.log(sortableElement)
-
-//         sortable.on('sortable:stop', (event) => {
-//             // Get the new order of the items
-//             let newOrder = Array.from(sortableElement.children).map(child => child.id);
-//             console.log(newOrder);
-//             // Update your items array or send the new order to your backend
-//         });
-//     }
-// });
 
 onMount(() => {
     let dropzone = document.querySelector('.files') as HTMLElement;
     if (dropzone) {
-    let droppable = new Droppable(dropzone, {
-        draggable: '.draggable-item',
-        dropzone: '.files',
-        mirror: { constrainDimensions: true }
-    });
-
-    droppable.on('droppable:dropped', () => console.log('droppable:dropped'));
-    sortable = new Sortable(dropzone, {
+    const swappable = new Swappable(dropzone, {
             draggable: ".draggable-item",
-            delay: 200, // Optional delay before drag starts, adjust as needed
-            mirror: { constrainDimensions: true }
+            mirror: {
+                constrainDimensions: true,
+                },
+            plugins: [Plugins.ResizeMirror],
         });
 
-        sortable.on('sortable:stop', (event) => {
-            // Get the new order of the items
-            let newOrder = Array.from(dropzone.children).map(child => child.id);
-            console.log(newOrder);
-            // Update your items array or send the new order to your backend
-            
+        swappable.on('swappable:stop', (event) => {
+            // Get the new order of the items, will need to save the order
+            console.log('droppable:dropped')
+            // let newOrder = Array.from(dropzone.children).map(child => child.id);
         });
-
     onDestroy(() => {
-        // Cleanup draggable instance
-        droppable.destroy();
+        // Cleanup draggable instance, Swap will NOT work without onDestroy()
+        swappable.destroy();
     });
 }
 });
-
-// function calculateDropIndex(dropzone, mouseY) {
-//     let children = Array.from(dropzone.children);
-//     for (let i = 0; i < children.length; i++) {
-//         let rect = children[i].getBoundingClientRect();
-//         if (mouseY < rect.top + rect.height / 2) {
-//             return i;
-//         }
-//     }
-//     return children.length; // If mouseY is below all items, return the last index
-// }
 
 </script>
 
@@ -302,10 +262,9 @@ onMount(() => {
         .content {
             display: flex;
             min-height: 0;
-            display: flex;
             flex-direction: column;
             flex: 1;
-            overflow: auto;
+            overflow: hidden;
             width: 100%;
 
             .before {
@@ -329,13 +288,16 @@ onMount(() => {
                 width: 100%;
                 display: inline-flex;
                 flex-direction: row;
-
-                .files {
+            }
+            .files {
                     padding: var(--padding);
                     width: 100%;
                     flex: 1;
+                    overflow: auto;
                     display: inline-flex;
                 }
+            .dragable-item {
+                position: relative;
             }
         }
     }
