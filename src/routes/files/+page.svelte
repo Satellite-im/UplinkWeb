@@ -54,7 +54,7 @@ onMount(() => {
             mirror: {
                 constrainDimensions: true,
                 },
-            plugins: [Plugins.ResizeMirror, Plugins.SwapAnimation],
+            plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
         });
 
         sortable.on('sortable:stop', (event) => {
