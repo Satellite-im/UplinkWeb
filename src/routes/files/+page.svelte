@@ -196,44 +196,42 @@ onMount(() => {
         </Topbar>
 
         <div class="body">
-            <div class="files">
-                {#each items as item}
-                    <div
-                        class="draggable-item"
-                        draggable="true"
-                    >
-                        {#if item.type === "file"}
-                            <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
-                                contextPosition = evt.detail
-                                contextData = [
-                                    {
-                                        id: "delete",
-                                        icon: Shape.XMark,
-                                        text: "Delete",
-                                        appearance: Appearance.Default
-                                    }
-                                ]
-                            }} />       
-                        {:else if item.type === "folder"}
-                            <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
-                                contextPosition = evt.detail
-                                contextData = [
-                                    {
-                                        id: "delete",
-                                        icon: Shape.XMark,
-                                        text: "Delete",
-                                        appearance: Appearance.Default
-                                    }
-                                ]
-                            }}/>       
-                        {:else if item.type === "image"}
-                            <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
-                                previewImage = item.source
-                            }} />
-                        {/if}
-                    </div>
-                {/each}
-            </div>
+            {#each items as item}
+                <div
+                    class="dragable-item"
+                    draggable="true"
+                >
+                    {#if item.type === "file"}
+                        <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
+                            contextPosition = evt.detail
+                            contextData = [
+                                {
+                                    id: "delete",
+                                    icon: Shape.XMark,
+                                    text: "Delete",
+                                    appearance: Appearance.Default
+                                }
+                            ]
+                        }} />       
+                    {:else if item.type === "folder"}
+                        <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
+                            contextPosition = evt.detail
+                            contextData = [
+                                {
+                                    id: "delete",
+                                    icon: Shape.XMark,
+                                    text: "Delete",
+                                    appearance: Appearance.Default
+                                }
+                            ]
+                        }}/>       
+                    {:else if item.type === "image"}
+                        <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
+                            previewImage = item.source
+                        }} />
+                    {/if}
+                </div>
+            {/each}
         </div>
     </div>
 </div>
@@ -288,16 +286,13 @@ onMount(() => {
                 width: 100%;
                 display: inline-flex;
                 flex-direction: row;
-            }
-            .files {
-                    padding: var(--padding);
-                    width: 100%;
-                    flex: 1;
-                    overflow: auto;
-                    display: inline-flex;
+                flex-wrap: wrap;
+                align-content: flex-start;
+                
+                .dragable-item {
+                    position: relative;
+                    height: fit-content;
                 }
-            .dragable-item {
-                position: relative;
             }
         }
     }
