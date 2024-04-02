@@ -11,8 +11,10 @@ const initialState: IState = {
 }
 
 class GlobalStore {
-    constructor() {
+    state: IState
 
+    constructor(state: IState) {
+        this.state = {...state}
     }
 
     get user(): User {
@@ -20,4 +22,4 @@ class GlobalStore {
     }
 }
 
-export const Store = new GlobalStore();
+export const Store = new GlobalStore(initialState);
