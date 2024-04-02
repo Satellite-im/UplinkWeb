@@ -1,5 +1,5 @@
 export {default as Banner} from "$lib/components/ui/Banner.svelte"
-export {default as CallControls} from "$lib/components/CallControls.svelte"
+export {default as CallControls} from "$lib/components/calling/CallControls.svelte"
 export {default as ChatPreview} from "$lib/components/messaging/ChatPreview.svelte"
 export {default as CoinBalance} from "$lib/components/CoinBalance.svelte"
 export {default as ColorSwatch} from "$lib/components/ui/ColorSwatch.svelte"

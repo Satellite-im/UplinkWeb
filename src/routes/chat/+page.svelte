@@ -72,13 +72,9 @@
 
         {#each chats as chat}
             <ChatPreview
+                chat={chat}
                 loading={loading}
-                users={chat.users}
-                typing={chat.activity}
                 simpleUnreads
-                notifications={chat.notifications}
-                timestamp={chat.last_message_at}
-                message={chat.last_message_preview}
                 on:context={(evt) => {
                     contextPosition = evt.detail
                     contextData = [

@@ -44,7 +44,7 @@
     </div>
     <div class="toolbar">
         <Controls>
-            <PopupButton open={showSettings} on:open={(_) => {
+            <PopupButton name="Settings" open={showSettings} on:open={(_) => {
                 showSettings = true
             }}>
                 <svelte:fragment slot="icon">

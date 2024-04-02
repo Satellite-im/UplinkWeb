@@ -1,27 +1,24 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
     import { Size } from "$lib/enums"
-    import type { User } from "$lib/types"
+    import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
+    import ProfilePictureMany from "../profile/ProfilePictureMany.svelte";
 
-    export let users: User[]            = []
-    export let notifications: number    = 0
+    export let chat: Chat
     export let simpleUnreads: boolean   = false
-    export let timestamp: Date          = new Date()
-    export let message: string          = ""
     export let loading: boolean         = false
-    export let typing: boolean          = false
 
     const timeAgo = new TimeAgo('en-US')
 
-    let photo = (users.length > 1) ?  
-        "todo" : users[0].profile.photo.image
-    let name = (users.length > 1) ? 
-        "todo" : users[0].name
+    let photo = (chat.users.length > 1) ?  
+        "todo" : chat.users[0].profile.photo.image
+    let name = (chat.users.length > 1) ? 
+        chat.name : chat.users[0].name
 
-    let cta = notifications > 0
+    let cta = chat.notifications > 0
 
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
@@ -33,12 +30,16 @@
     e.preventDefault()
     onContext([e.clientX, e.clientY])
 }}>
-    <ProfilePicture 
-        typing={typing} 
-        image={photo} 
-        status={users[0].profile.status} 
-        size={Size.Medium} 
-        loading={loading} />
+    {#if chat.users.length === 1}
+        <ProfilePicture 
+            typing={chat.activity} 
+            image={photo}
+            status={chat.users[0].profile.status} 
+            size={Size.Medium} 
+            loading={loading} />
+    {:else}
+        <ProfilePictureMany users={chat.users} />
+    {/if}
     <div class="content">
         <div class="heading">
             <Text 
@@ -53,14 +54,14 @@
                     loading={loading} 
                     size={Size.Smallest} 
                     muted>
-                    {timeAgo.format(timestamp)}
+                    {timeAgo.format(chat.last_message_at)}
                 </Text>
                 {#if !loading}
-                    {#if notifications > 0 && !simpleUnreads}
+                    {#if chat.notifications > 0 && !simpleUnreads}
                         <span class="unreads">
-                            {notifications}
+                            {chat.notifications}
                         </span>
-                    {:else if notifications > 0 && simpleUnreads}
+                    {:else if chat.notifications > 0 && simpleUnreads}
                         <span class="unreads simple"></span>
                     {/if}
                 {/if}
@@ -74,7 +75,7 @@
                 <Text 
                     size={Size.Small} 
                     loading={loading}>
-                    {message}
+                    {chat.last_message_preview}
                 </Text>
             {/if}
         </p>

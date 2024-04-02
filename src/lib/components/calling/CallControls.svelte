@@ -5,7 +5,7 @@
     
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
-    import Controls from "../layouts/Controls.svelte";
+    import Controls from "../../layouts/Controls.svelte";
 
     initLocale()
 

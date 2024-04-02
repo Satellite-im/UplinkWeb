@@ -1,0 +1,84 @@
+<script lang="ts">
+    import Icon from "$lib/elements/Icon.svelte"
+    import Text from "$lib/elements/Text.svelte"
+    import { Shape, Size } from "$lib/enums"
+    import type { User } from "$lib/types"
+    import ProfilePicture from "./ProfilePicture.svelte"
+
+    export let users: User[]
+
+    function getSize(index: number) {
+        switch (index) {
+            case 0: 
+                return Size.Small
+            case 1: 
+                return Size.Smaller
+            case 2: 
+                return Size.Smallest
+            default:
+                return Size.Smallest
+        }
+    }
+</script>
+
+<div class="profile-picture-many">
+    {#each users as user, i}
+        {#if i < 3}
+            <ProfilePicture
+                size={getSize(i)}
+                image={user.profile.photo.image} 
+                status={user.profile.status}
+                noIndicator />
+        {/if}
+    {/each}
+    <div class="count">
+        <Icon icon={Shape.Users} size={Size.Smaller} />
+        <Text size={Size.Smaller}>
+            {users.length}
+        </Text>
+    </div>
+</div>
+
+<style lang="scss">
+    .profile-picture-many {
+        height: var(--profile-picture-size);
+        width: var(--profile-picture-size);
+        position: relative;
+
+        .count {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            background-color: var(--primary-color);
+            padding: 0 var(--padding-minimal);
+            border-radius: var(--border-radius);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--gap-less);
+            z-index: 2;
+        }
+        
+        :global(.profile-picture) {
+            position: absolute;
+            border: var(--border-width) solid var(--background);
+
+            &:nth-child(1) {
+                left: 0;
+                z-index: 1;
+            }
+
+            &:nth-child(3) {
+                bottom: 0.5rem;
+                left: 0;
+                z-index: 1;
+            }
+
+            &:nth-child(2) {
+                top: 0.5rem;
+                right: 0;
+                z-index: 1;
+            }
+        }
+    }
+</style>

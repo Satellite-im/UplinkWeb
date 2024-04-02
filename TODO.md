@@ -59,7 +59,7 @@
   - [ ] Edit Group
   - [ ] Edit Users
   - [ ] Permissions Modal
-  - [ ] Group Chat Profile Picture
+  - [x] Group Chat Profile Picture
   - [ ] Create Group Modal
-  - [ ] Chat Preview
+  - [x] Chat Preview
 - [ ] Emoji Picker

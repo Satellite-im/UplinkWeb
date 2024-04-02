@@ -133,6 +133,18 @@ export const fake_user_array: Array<User> = [
 
 export let chats: Chat[] = [
     {
+        name: "RC Group Chat",
+        notifications: 0,
+        activity: false,
+        users: [
+            mock_users[0],
+            mock_users[1],
+            mock_users[3],
+        ],
+        last_message_at: new Date(),
+        last_message_preview: "Wow! I had no idea that you could fly that well, good work!"
+    },
+    {
         name: "",
         notifications: 4,
         activity: false,
