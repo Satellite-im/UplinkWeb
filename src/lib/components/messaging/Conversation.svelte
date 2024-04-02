@@ -58,6 +58,7 @@
         overflow: hidden;
         padding: var(--padding-less);
         position: relative;
+        gap: var(--gap);
         
         .scroll-to-bottom {
             display: inline-flex;

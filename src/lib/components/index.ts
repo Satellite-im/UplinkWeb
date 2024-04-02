@@ -27,3 +27,4 @@ export {default as MessageReplyContainer} from "$lib/components/messaging/Messag
 export {default as ImageEmbed} from "$lib/components/messaging/embeds/ImageEmbed.svelte"
 export {default as FileEmbed} from "$lib/components/messaging/embeds/FileEmbed.svelte"
 export {default as Transaction} from "$lib/components/wallet/Transaction.svelte"
+export {default as EncryptedNotice} from "$lib/components/messaging/EncryptedNotice.svelte"

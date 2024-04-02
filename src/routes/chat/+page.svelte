@@ -16,6 +16,8 @@
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import type { ContextItem } from "$lib/types"
     import { mock_messages } from "$lib/mock/messages"
+    import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte";
+    import Spacer from "$lib/elements/Spacer.svelte";
 
     initLocale()
 
@@ -133,6 +135,7 @@
         <CallScreen />
 
         <Conversation>
+            <EncryptedNotice />
             {#each conversation as group}
                 <MessageGroup profilePictureRequirements={{
                     notifications: 0,
@@ -212,7 +215,6 @@
         </Conversation>
         
         <Chatbar>
-
             <svelte:fragment slot="pre-controls">
                 <Button 
                     icon 
