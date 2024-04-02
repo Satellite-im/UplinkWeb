@@ -195,10 +195,10 @@ onMount(() => {
             </svelte:fragment>
         </Topbar>
 
-        <div class="body">
+        <div class="files">
             {#each items as item}
                 <div
-                    class="dragable-item"
+                    class="draggable-item"
                     draggable="true"
                 >
                     {#if item.type === "file"}
@@ -281,7 +281,7 @@ onMount(() => {
                 }
             }
 
-            .body {
+            .files {
                 height: 100%;
                 width: 100%;
                 display: inline-flex;
@@ -289,7 +289,7 @@ onMount(() => {
                 flex-wrap: wrap;
                 align-content: flex-start;
                 
-                .dragable-item {
+                .draggable-item {
                     position: relative;
                     height: fit-content;
                 }
