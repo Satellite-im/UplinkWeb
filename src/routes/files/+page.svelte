@@ -13,10 +13,9 @@
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
-    import {dndzone} from "svelte-dnd-action"
     import type { ContextItem } from "$lib/types"
-    import {Draggable, Droppable, Plugins, Swappable} from '@shopify/draggable';
-    import { afterUpdate, onDestroy, onMount } from 'svelte';
+    import { Plugins } from '@shopify/draggable';
+    import { onDestroy, onMount } from 'svelte';
     import {Sortable} from '@shopify/draggable';
     // Initialize locale
     initLocale()
@@ -32,15 +31,8 @@
     let activeTabRoute: string = tabRoutes[0]
 
     let previewImage: string | null
-    
-    const flipDurationMs = 300
     let items = mock_files
-    function handleDndConsider(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
-        items = e.detail.items
-    }
-    function handleDndFinalize(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
-        items = e.detail.items
-    }
+
 
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
@@ -56,12 +48,11 @@ onMount(() => {
                 },
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
         });
-
-        sortable.on('sortable:stop', (event) => {
-            // Get the new order of the items, will need to save the order
-            console.log('droppable:dropped', event)
-            // let newOrder = Array.from(dropzone.children).map(child => child.id);
-        });
+        // sortable.on('sortable:stop', (event) => {
+        //     // Get the new order of the items, will need to save the order later
+        //     console.log('droppable:dropped', event)
+        //     // let newOrder = Array.from(dropzone.children).map(child => child.id);
+        // });
     onDestroy(() => {
         // Cleanup draggable instance, Swap will NOT work without onDestroy()
         sortable.destroy();
