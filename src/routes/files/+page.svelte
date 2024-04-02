@@ -49,22 +49,22 @@
 onMount(() => {
     let dropzone = document.querySelector('.files') as HTMLElement;
     if (dropzone) {
-    const swappable = new Swappable(dropzone, {
+    const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
             mirror: {
                 constrainDimensions: true,
                 },
-            plugins: [Plugins.ResizeMirror],
+            plugins: [Plugins.ResizeMirror, Plugins.SwapAnimation],
         });
 
-        swappable.on('swappable:stop', (event) => {
+        sortable.on('sortable:stop', (event) => {
             // Get the new order of the items, will need to save the order
-            console.log('droppable:dropped')
+            console.log('droppable:dropped', event)
             // let newOrder = Array.from(dropzone.children).map(child => child.id);
         });
     onDestroy(() => {
         // Cleanup draggable instance, Swap will NOT work without onDestroy()
-        swappable.destroy();
+        sortable.destroy();
     });
 }
 });
