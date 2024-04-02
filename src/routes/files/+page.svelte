@@ -15,7 +15,9 @@
     import { mock_files } from "$lib/mock/files"
     import {dndzone} from "svelte-dnd-action"
     import type { ContextItem } from "$lib/types"
-
+    import {Draggable, Droppable} from '@shopify/draggable';
+    import { afterUpdate, onDestroy, onMount } from 'svelte';
+    import {Sortable} from '@shopify/draggable';
     // Initialize locale
     initLocale()
 
@@ -43,6 +45,70 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+    // let draggingIndex: any = null;
+    let sortable: any = null;
+//     onMount(() => {
+//     let sortableElement = document.querySelector(".files") as HTMLElement;
+//     if (sortableElement) {
+//         console.log("in")
+//         sortable = new Sortable(sortableElement, {
+//             draggable: ".draggable-item",
+//             delay: 200, // Optional delay before drag starts, adjust as needed
+//             mirror: { constrainDimensions: true }
+//         });
+//         console.log(sortableElement)
+
+//         sortable.on('sortable:stop', (event) => {
+//             // Get the new order of the items
+//             let newOrder = Array.from(sortableElement.children).map(child => child.id);
+//             console.log(newOrder);
+//             // Update your items array or send the new order to your backend
+//         });
+//     }
+// });
+
+onMount(() => {
+    let dropzone = document.querySelector('.files') as HTMLElement;
+    if (dropzone) {
+    let droppable = new Droppable(dropzone, {
+        draggable: '.draggable-item',
+        dropzone: '.files',
+        mirror: { constrainDimensions: true }
+    });
+
+    droppable.on('droppable:dropped', () => console.log('droppable:dropped'));
+    sortable = new Sortable(dropzone, {
+            draggable: ".draggable-item",
+            delay: 200, // Optional delay before drag starts, adjust as needed
+            mirror: { constrainDimensions: true }
+        });
+
+        sortable.on('sortable:stop', (event) => {
+            // Get the new order of the items
+            let newOrder = Array.from(dropzone.children).map(child => child.id);
+            console.log(newOrder);
+            // Update your items array or send the new order to your backend
+            
+        });
+
+    onDestroy(() => {
+        // Cleanup draggable instance
+        droppable.destroy();
+    });
+}
+});
+
+// function calculateDropIndex(dropzone, mouseY) {
+//     let children = Array.from(dropzone.children);
+//     for (let i = 0; i < children.length; i++) {
+//         let rect = children[i].getBoundingClientRect();
+//         if (mouseY < rect.top + rect.height / 2) {
+//             return i;
+//         }
+//     }
+//     return children.length; // If mouseY is below all items, return the last index
+// }
+
 </script>
 
 <div id="page">
@@ -170,37 +236,42 @@
         </Topbar>
 
         <div class="body">
-            <div class="files" use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
+            <div class="files">
                 {#each items as item}
-                    {#if item.type === "file"}
-                        <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail
-                            contextData = [
-                                {
-                                    id: "delete",
-                                    icon: Shape.XMark,
-                                    text: "Delete",
-                                    appearance: Appearance.Default
-                                }
-                            ]
-                        }} />       
-                    {:else if item.type === "folder"}
-                        <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail
-                            contextData = [
-                                {
-                                    id: "delete",
-                                    icon: Shape.XMark,
-                                    text: "Delete",
-                                    appearance: Appearance.Default
-                                }
-                            ]
-                        }}/>       
-                    {:else if item.type === "image"}
-                        <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
-                            previewImage = item.source
-                        }} />
-                    {/if}
+                    <div
+                        class="draggable-item"
+                        draggable="true"
+                    >
+                        {#if item.type === "file"}
+                            <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
+                                contextPosition = evt.detail
+                                contextData = [
+                                    {
+                                        id: "delete",
+                                        icon: Shape.XMark,
+                                        text: "Delete",
+                                        appearance: Appearance.Default
+                                    }
+                                ]
+                            }} />       
+                        {:else if item.type === "folder"}
+                            <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
+                                contextPosition = evt.detail
+                                contextData = [
+                                    {
+                                        id: "delete",
+                                        icon: Shape.XMark,
+                                        text: "Delete",
+                                        appearance: Appearance.Default
+                                    }
+                                ]
+                            }}/>       
+                        {:else if item.type === "image"}
+                            <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
+                                previewImage = item.source
+                            }} />
+                        {/if}
+                    </div>
                 {/each}
             </div>
         </div>
@@ -234,6 +305,8 @@
             display: flex;
             flex-direction: column;
             flex: 1;
+            overflow: auto;
+            width: 100%;
 
             .before {
                 gap: var(--gap-less);
@@ -253,8 +326,9 @@
 
             .body {
                 height: 100%;
+                width: 100%;
                 display: inline-flex;
-                flex-direction: column;
+                flex-direction: row;
 
                 .files {
                     padding: var(--padding);
