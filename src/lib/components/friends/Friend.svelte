@@ -21,22 +21,7 @@
         {friend.name}
     </Text>
     <Controls>
-        <Button 
-            text={$_("chat.chat")}>
-            <Icon icon={Shape.ChatBubble} />
-        </Button>
-        <Button 
-            icon 
-            appearance={Appearance.Alt} 
-            tooltip={$_("generic.remove")}>
-            <Icon icon={Shape.UserMinus} />
-        </Button>
-        <Button 
-            icon 
-            appearance={Appearance.Alt} 
-            tooltip={$_("friends.block")}>
-            <Icon icon={Shape.NoSymbol} />
-        </Button>
+        <slot name="controls"></slot>
     </Controls>
 </div>
 

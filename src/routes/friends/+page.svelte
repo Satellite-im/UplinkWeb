@@ -53,6 +53,7 @@
         // isCaseSensitive: false,
         // includeScore: false,
         shouldSort: true,
+        threshold: 0.35,
         // findAllMatches: false,
         minMatchCharLength: 1,
         keys: [
@@ -186,7 +187,26 @@
                         <Label text={$_("generic.search_results")} />
                         {#if searchResult.length}
                             {#each searchResult as result}
-                                <Friend friend={result.item} />
+                                <Friend friend={result.item}>
+                                    <svelte:fragment slot="controls">
+                                        <Button 
+                                            text={$_("chat.chat")}>
+                                            <Icon icon={Shape.ChatBubble} />
+                                        </Button>
+                                        <Button 
+                                            icon 
+                                            appearance={Appearance.Alt} 
+                                            tooltip={$_("generic.remove")}>
+                                            <Icon icon={Shape.UserMinus} />
+                                        </Button>
+                                        <Button 
+                                            icon 
+                                            appearance={Appearance.Alt} 
+                                            tooltip={$_("friends.block")}>
+                                            <Icon icon={Shape.NoSymbol} />
+                                        </Button>
+                                    </svelte:fragment>
+                                </Friend>
                             {/each}
                         {:else}
                             <Text>{$_("generic.no_results")}</Text>
@@ -198,56 +218,67 @@
                         {#if groupUsersAlphabetically(mock_users)[letter].length > 0}
                             <Label text={letter} />
                             {#each groupUsersAlphabetically(mock_users)[letter] as friend}
-                                <Friend friend={friend} />
+                                <Friend friend={friend}>
+                                    <svelte:fragment slot="controls">
+                                        <Button 
+                                            text={$_("chat.chat")}>
+                                            <Icon icon={Shape.ChatBubble} />
+                                        </Button>
+                                        <Button 
+                                            icon 
+                                            appearance={Appearance.Alt} 
+                                            tooltip={$_("generic.remove")}>
+                                            <Icon icon={Shape.UserMinus} />
+                                        </Button>
+                                        <Button 
+                                            icon 
+                                            appearance={Appearance.Alt} 
+                                            tooltip={$_("friends.block")}>
+                                            <Icon icon={Shape.NoSymbol} />
+                                        </Button>
+                                    </svelte:fragment>
+                                </Friend>
                             {/each}
                         {/if}
                     {/each}
                 </div>
-            {/if}
-            {#if tab === "active"}
+            {:else if tab === "active"}
                 <div class="section column">
                     <Label text={$_("friends.outgoing_requests")} />
                     {#each fake_user_array as friend}
-                        <div class="friend">
-                            <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
-                            <Text class="username">{friend.name}</Text>
-                            <Controls>
+                        <Friend friend={friend}>
+                            <svelte:fragment slot="controls">
                                 <Button appearance={Appearance.Alt} text={$_("generic.cancel")}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
-                            </Controls>
-                        </div>
+                            </svelte:fragment>
+                        </Friend>
                     {/each}
                     <Label text={$_("friends.incoming_requests")} />
                     {#each fake_user_array as friend}
-                        <div class="friend">
-                            <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
-                            <Text class="username">{friend.name}</Text>
-                            <Controls>
+                        <Friend friend={friend}>
+                            <svelte:fragment slot="controls">
                                 <Button appearance={Appearance.Success} text={$_("generic.accept")} outline>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
                                 <Button appearance={Appearance.Alt} text={$_("generic.deny")}>
                                     <Icon icon={Shape.XMark} />
                                 </Button>
-                            </Controls>
-                        </div>
+                            </svelte:fragment>
+                        </Friend>
                     {/each}
                 </div>
-            {/if}
-            {#if tab === "blocked"}
+            {:else if tab === "blocked"}
                 <div class="section column">
                     <Label text={$_("friends.blocked_users")} />
                     {#each blocked_users as friend}
-                        <div class="friend">
-                            <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
-                            <Text class="username">{friend.name}</Text>
-                            <Controls>
+                        <Friend friend={friend}>
+                            <svelte:fragment slot="controls">
                                 <Button appearance={Appearance.Alt} text={$_("friends.unblock")}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
-                            </Controls>
-                        </div>
+                            </svelte:fragment>
+                        </Friend>
                     {/each}
                 </div>
             {/if}
