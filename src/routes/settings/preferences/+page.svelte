@@ -13,6 +13,7 @@
     initLocale()
 
     let hex = "#f6f0dc"
+    let cssOverride = ""
     let fontSize = 1.0
 
     Store.state.ui.color.subscribe((c) => {
@@ -20,6 +21,9 @@
     })
     Store.state.ui.fontSize.subscribe((s) => {
         fontSize = s
+    })
+    Store.state.ui.cssOverride.subscribe((css) => {
+        cssOverride = css
     })
 
     $: if (hex !== undefined) {
@@ -90,6 +94,11 @@
         <ColorSwatch name="Apple Valley" color="#0a8560" />
         <ColorSwatch name="Pencil Lead" color="#3c424d" />
     </SettingSection>
+    <SettingSection name="Custom CSS" description="Add additional custom CSS to the applicaiton." fullWidth>
+        <textarea bind:value={cssOverride} on:change={(_) => {
+            Store.setCssOverride(cssOverride)
+        }}></textarea>
+    </SettingSection>
 </div>
 
 <style lang="scss">
@@ -124,5 +133,16 @@
             color: var(--color-alt);
         }
         
+
+        textarea {
+            height: var(--min-scrollable-height);
+            padding: var(--padding-less);
+            border: var(--border-width) solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--background-alt);
+            color: var(--color);
+            outline: none;
+            width: 100%;
+        }
     }
 </style>

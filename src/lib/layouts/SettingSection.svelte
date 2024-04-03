@@ -3,10 +3,11 @@
 
     export let name: string         = "Setting"
     export let description: string  = "Some setting description"
+    export let fullWidth: boolean   = false
 
 </script>
 
-<div class="setting-section">
+<div class="setting-section {fullWidth ? "full-width" : ""}">
     <div class="body">
         <div class="description">
             <Label text={name} />
@@ -47,6 +48,14 @@
                 min-width: var(--min-component-width);
                 gap: var(--gap);
                 
+            }
+        }
+
+        &.full-width {
+            .body {
+                .content {
+                    width: 100%;
+                }
             }
         }
 

@@ -8,9 +8,10 @@
 
     let color: string = ""
     let fontSize: string = "1.0"
+    let cssOverride: string = "body { background: red; }"
 
     function buildStyle() {
-        return `:root {
+        return cssOverride + `:root {
             --font-size: ${fontSize}rem;
             --primary-color: ${color};
         }`
@@ -24,10 +25,15 @@
         fontSize = s.toFixed(2).toString()
         style = buildStyle()
     })
+    Store.state.ui.cssOverride.subscribe(css => {
+        cssOverride = css
+        style = buildStyle()
+    })
 </script>
 
 <div id="app">
     {@html `<style>${style}</style>`}
+    {@html `<style>${cssOverride}</style>`}
     <!-- <Titlebar /> -->
     <slot></slot>
 </div>

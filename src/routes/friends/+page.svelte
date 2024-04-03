@@ -254,7 +254,7 @@
                     {#each fake_user_array as friend}
                         <Friend friend={friend}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Success} text={$_("generic.accept")} outline>
+                                <Button appearance={Appearance.Success} text={$_("generic.accept")}>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
                                 <Button appearance={Appearance.Alt} text={$_("generic.deny")}>

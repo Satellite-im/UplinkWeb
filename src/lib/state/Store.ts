@@ -6,7 +6,8 @@ interface IState {
     activeChat: Writable<Chat>,
     ui: {
         color: Writable<string>,
-        fontSize: Writable<number>
+        fontSize: Writable<number>,
+        cssOverride: Writable<string>
     }
 }
 
@@ -15,7 +16,8 @@ const initialState: IState = {
     activeChat: writable(defaultChat),
     ui: {
         color: writable("#4d4dff"),
-        fontSize: writable(1.0)
+        fontSize: writable(1.0),
+        cssOverride: writable("")
     }
 }
 
@@ -26,8 +28,11 @@ class GlobalStore {
         this.state = {...state}
     }
 
+    setCssOverride(css: string) {
+        this.state.ui.cssOverride.set(css)
+    }
+
     setThemeColor(color: string) {
-        console.log('color', color)
         this.state.ui.color.set(color)
     }
 

@@ -14,7 +14,6 @@
     --color-muted: #a2b2ee;
     --color-alt: #000;
     --placeholder-color: #97a7e4;
-    --mix: white
 
     --focus-color: var(--primary-color);
     --highlight-color: #4d4dff;
@@ -30,20 +29,20 @@
     --cp-border-color: transparent;
     --cp-input-color: var(--color);
 
-    --success-color: #00B894;
-    --success-color-alt: color-mix(in srgb, var(--success-color) 90%, var(--mix));
+    --success-color: #12c046;
+    --success-color-alt: color-mix(in srgb, var(--success-color) 90%, white);
 
     --info-color: #0771fa;
-    --info-color-alt: color-mix(in srgb, var(--info-color) 90%, var(--mix));
+    --info-color-alt: color-mix(in srgb, var(--info-color) 90%, white);
 
     --error-color: #b30c0c;
-    --error-color-alt: color-mix(in srgb, var(--error-color) 90%, var(--mix));
+    --error-color-alt: color-mix(in srgb, var(--error-color) 90%, white);
     
     --warning-color: #FECA57;
-    --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%, var(--mix));
+    --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%,white);
     
     --border-color: #1c1d2b;
-    --border-color-alt: color-mix(in srgb, var(--border-color) 90%, var(--mix));
+    --border-color-alt: color-mix(in srgb, var(--border-color) 90%, white);
 
     --tooltip-color: #0f121b;
 
@@ -79,17 +78,17 @@
     --gap-more: 1rem;
     --gap-less: 0.45rem;
     
-    --font-size-max: 3rem;
-    --font-size-large: 1.5rem;
+    --font-size-max: calc(var(--font-size) * 3);
+    --font-size-large: calc(var(--font-size) + 0.5rem);
     --font-size: 1rem;
-    --font-size-smaller: 0.85rem;
-    --font-size-smallest: 0.75rem;
+    --font-size-smaller: calc(var(--font-size) - 0.15rem);
+    --font-size-smallest: calc(var(--font-size) - 0.25rem);
     --icon-size: 1rem;
     --icon-size-large: 2rem;
     --icon-size-larger: 3rem;
     --icon-size-largest: 4rem;
-    --label-size: 0.9rem;
-    --code-size: 0.9rem;
+    --label-size: calc(var(--font-size) - 0.2rem);
+    --code-size: calc(var(--font-size) - 0.1rem);
     --profile-picture-size: 3.5rem;
 
     --file-folder-size: 125px;
