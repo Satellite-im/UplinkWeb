@@ -10,6 +10,7 @@ export const mock_users: Array<User> = [
             short: "xe89fsia",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/moon.png"
             },
@@ -29,6 +30,7 @@ export const mock_users: Array<User> = [
             short: "uw7r8sa9",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/blue_marble.png"
             },
@@ -50,6 +52,7 @@ export const mock_users: Array<User> = [
             short: "tu728sce",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/saturn.png"
             },
@@ -65,6 +68,7 @@ export const mock_users: Array<User> = [
             short: "6efyaui8",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/pluto.png"
             },
@@ -84,6 +88,7 @@ export const mock_users: Array<User> = [
             short: "fya72e8z",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/neptune.png"
             },
@@ -102,6 +107,7 @@ export const blocked_users: Array<User> = [
             short: "cixsu1o2",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/uranis.png"
             },
@@ -123,13 +129,14 @@ export const fake_user_array: Array<User> = [
             photo: {
                 image: "/assets/neptune.png"
             },
+            banner: {
+                image: ""
+            },
             status: Status.Offline,
             status_message: "This user is not real."
         }
     },
 ];
-
-
 
 export let chats: Chat[] = [
     {

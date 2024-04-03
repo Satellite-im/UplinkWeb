@@ -8,6 +8,7 @@
     import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
+    import Controls from "$lib/layouts/Controls.svelte";
 
     initLocale()
 
@@ -24,12 +25,54 @@
     Store.state.user.subscribe(val => {
         user = val
     })
+
+    let acceptableFiles: string  = ".jpg, .jpeg, .png, .avif"
+	let fileinput: HTMLElement
+	
+	const onFileSelected = (e: any) => {
+        let image = e.target.files[0]
+        let reader = new FileReader()
+        reader.readAsDataURL(image)
+        reader.onload = e => {
+            let imageString = e.target?.result?.toString()
+            Store.setBanner(imageString || "")
+        }
+    }
+
+    let changeList = {
+        username: false,
+        statusMessage: false,
+    }
+
+    let unsavedChanges: boolean
 </script>
 
 <div id="page">
+    {#if unsavedChanges}
+        <div class="save-controls">
+            <Controls>
+                <Button text="Cancel" appearance={Appearance.Alt}>
+                    <Icon icon={Shape.XMark} />
+                </Button>
+                <Button text="Save" appearance={Appearance.Primary} on:click={(_) => {
+                    Store.setUsername(user.name)
+                    Store.setStatus(user.profile.status_message)
+
+                    changeList.username = false
+                    changeList.statusMessage = false
+
+                    unsavedChanges = changeList.username || changeList.statusMessage
+                }}>
+                    <Icon icon={Shape.CheckMark} />
+                </Button>
+            </Controls>
+        </div>
+    {/if}
     <!-- svelte-ignore missing-declaration -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
-        <div class="profile-header">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}>
             <div class="profile-picture-container">
                 <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
                 <FileUploadButton icon tooltip="Change Profile Photo" on:upload={(picture) => {
@@ -37,13 +80,18 @@
                 }}/>
             </div>
         </div>
+        <input style="display:none" type="file" accept={acceptableFiles} on:change={(e) => onFileSelected(e)} bind:this={fileinput} />
+
         <div class="section">
             <Label text="Username" />
             <div class="username-section">
                 <div class="username">
                     <Input alt bind:value={user.name} placeholder="Set a note . . ." on:enter={(_) => {
-                        //TODO: Toast
+                        // TODO: Toast
                         Store.setUsername(user.name)
+                    }} on:keypress={(_) => {
+                        changeList.username = true
+                        unsavedChanges = changeList.username || changeList.statusMessage
                     }} />
                 </div>
                 <div class="short-id">
@@ -56,8 +104,11 @@
         <div class="section">
             <Label text="Status Message" />
             <Input alt bind:value={user.profile.status_message} placeholder="Set a note . . ." on:enter={(_) => {
-                //TODO: Toast
+                // TODO: Toast
                 Store.setStatus(user.profile.status_message)
+            }} on:keypress={(_) => {
+                changeList.statusMessage = true
+                unsavedChanges = changeList.username || changeList.statusMessage
             }} />
         </div>
         <div class="section">
@@ -115,7 +166,17 @@
         height: 100%;
         overflow-y: scroll;
         padding-right: var(--padding);
-        
+
+        .save-controls {
+            position: absolute;
+            bottom: var(--padding);
+            right: calc(var(--padding) * 2);
+            padding: var(--padding);
+            background-color: var(--background-alt);
+            border-radius: var(--border-radius);
+            border: var(--border-width) solid var(--border-color);
+        }
+
         .profile {
             display: inline-flex;
             flex-direction: column;
@@ -157,7 +218,6 @@
             .profile-header {
                 height: calc(var(--profile-width) / 1.5);
                 background-color: var(--background-alt);
-                background-image: url('/assets/kumar.jpg');
                 background-size: cover;
                 padding: var(--padding-less);
                 width: 100%;

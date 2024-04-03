@@ -45,7 +45,6 @@ interface IState {
     settings: Writable<ISettingsState>
 }
 
-
 function getLSItem(key: string, fallback: any) {
     return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback))
 }
@@ -158,13 +157,11 @@ class GlobalStore {
     }
 
     setPhoto(photo: string) {
-        this.state.user.update(u => u = { ...u, profile: {
-            ...u.profile,
-            photo: {
-                ...u.profile.photo, // Currently not needed, placing here to prevent future issues
-                image: photo
-            }
-        }})
+        this.state.user.update(u => u = { ...u, profile: { ...u.profile, photo: { ...u.profile.photo, image: photo }}})
+    }
+
+    setBanner(photo: string) {
+        this.state.user.update(u => u = { ...u, profile: { ...u.profile, banner: { ...u.profile.banner, image: photo }}})
     }
 
     setCssOverride(css: string) {

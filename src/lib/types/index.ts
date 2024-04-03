@@ -26,12 +26,14 @@ export type ProfilePicture = {
 
 export type ProfileData = {
     photo: ProfilePicture,
+    banner: ProfilePicture,
     status: Status,
     status_message: string
 }
 
 export let defaultProfileData = {
     photo: { image: "" },
+    banner: { image: "" },
     status: Status.Offline,
     status_message: "Unknown status message."
 }
