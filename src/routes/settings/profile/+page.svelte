@@ -1,28 +1,29 @@
 <script lang="ts">
     import { Appearance, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import { mock_users } from "$lib/mock/users"
-    import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { ProfilePicture, OrderedPhrase } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
+    import { Store } from "$lib/state/Store"
+    import type { User } from "$lib/types"
+    import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte";
 
     initLocale()
 
     let loading = true
     let showSeed = false
 
-    // TODO: Mock
-    onMount(() => {
-        setTimeout(() => loading = false, 1500)
-    })
-
     function toggleSeedPhrase() {
         showSeed = !showSeed
     }
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
+
+    let user: User
+    Store.state.user.subscribe(val => {
+        user = val
+    })
 </script>
 
 <div id="page">
@@ -30,20 +31,20 @@
     <div class="profile">
         <div class="profile-header">
             <div class="profile-picture-container">
-                <ProfilePicture image={mock_users[0]?.profile.photo.image} size={Size.Large} status={mock_users[0]?.profile.status} />
-                <Button icon tooltip="Change Profile Photo">
-                    <Icon icon={Shape.Plus} />
-                </Button>
+                <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
+                <FileUploadButton icon tooltip="Change Profile Photo" on:upload={(picture) => {
+                    user.profile.photo.image = picture.detail
+                }}/>
             </div>
         </div>
         <div class="section">
             <Label text="Username" />
             <div class="username-section">
                 <div class="username">
-                    <Input alt value={mock_users[0]?.name} placeholder="Set a note . . ."/>
+                    <Input alt bind:value={user.name} placeholder="Set a note . . ." />
                 </div>
                 <div class="short-id">
-                    <Input alt value={mock_users[0]?.id.short} disabled copyOnInteract>
+                    <Input alt value={user.id.short} disabled copyOnInteract>
                         <Icon icon={Shape.Hashtag} alt muted />
                     </Input>
                 </div>
@@ -51,7 +52,7 @@
         </div>
         <div class="section">
             <Label text="Status Message" />
-            <Input alt value={mock_users[0]?.profile.status_message} placeholder="Set a note . . ."/>
+            <Input alt bind:value={user.profile.status_message} placeholder="Set a note . . ." />
         </div>
         <div class="section">
             <SettingSection name="Status" description="Set your status indicator.">

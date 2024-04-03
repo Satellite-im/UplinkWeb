@@ -5,8 +5,24 @@
     import { ColorSwatch } from "$lib/components"
     import { SettingSection } from "$lib/layouts"
     import { Button, Icon, Input, Select } from "$lib/elements"
-    
+    import ColorPicker from 'svelte-awesome-color-picker'
+    import { Store } from "$lib/state/Store";
+    import PopupButton from "$lib/components/ui/PopupButton.svelte";
+    import Label from "$lib/elements/Label.svelte";
+
     initLocale()
+
+    let hex = "#f6f0dc"
+
+    Store.state.ui.color.subscribe((c) => {
+        hex = c
+    })
+
+    $: if (hex !== undefined) {
+        Store.setThemeColor(hex)
+    }
+
+
 </script>
 
 <div id="page">
@@ -49,16 +65,28 @@
         </Button>
     </SettingSection>
     <SettingSection name="Primary Color" description="Change the primary color of the app.">
-        <ColorSwatch name="Creamy Peach" color="#f3a683" />
-        <ColorSwatch name="Rosy Highlight" color="#f7d794" />
-        <ColorSwatch name="Soft Blue" color="#778beb" />
-        <ColorSwatch name="Brewed Mustard" color="#e77f67" />
-        <ColorSwatch name="Old Geranium" color="#cf6a87" />
+        <PopupButton name="Pick">
+            <ColorPicker
+                textInputModes={['hex']}
+                isDialog={false}
+                isAlpha={false}
+                bind:hex
+            />
+            <div slot="icon" class="control">
+                <Icon icon={Shape.Eyedropper} />
+            </div>
+        </PopupButton>
+        <ColorSwatch name="Neo Orbit" color="#4d4dff"/>
+        <ColorSwatch name="Creamy Peach" color="#ff008d"/>
+        <ColorSwatch name="Neon Sunflower" color="#be8c0d" />
+        <ColorSwatch name="Soft Blue" color="#6a00ff" />
+        <ColorSwatch name="Traffic Cone" color="#ff3c00" />
+        <ColorSwatch name="Firehouse" color="#b30c0c" />
         <ColorSwatch name="Purple Mountain Majesty" color="#786fa6" />
-        <ColorSwatch name="Rogue Pink" color="#f8a5c2" />
-        <ColorSwatch name="Squeaky" color="#63cdda" />
-        <ColorSwatch name="Apple Valley" color="#ea8685" />
-        <ColorSwatch name="Pencil Lead" color="#596275" />
+        <ColorSwatch name="Rogue Pink" color="#e80e4c" />
+        <ColorSwatch name="Squeaky" color="#075ff9" />
+        <ColorSwatch name="Apple Valley" color="#0a8560" />
+        <ColorSwatch name="Pencil Lead" color="#3c424d" />
     </SettingSection>
 </div>
 
@@ -76,6 +104,22 @@
 
         .font-size {
             width: 5rem;
+        }
+
+        :global(.button-like) {
+            display: none;
+        }
+
+        :global(.input-container) {
+            height: var(--input-height);
+        }
+
+        :global(input) {
+            height: var(--input-height);
+            border: var(--border-width) solid var(--border-color);
+            border-radius: var(--border-radius-minimal);
+            background-color: var(--color);
+            color: var(--color-alt);
         }
         
     }

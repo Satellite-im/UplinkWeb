@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Button } from "$lib/elements"
-    import { Appearance } from "$lib/enums"
+    import { Button, Icon } from "$lib/elements"
+    import { Appearance, Shape } from "$lib/enums"
     import Modal from "./Modal.svelte";
 
     export let open: boolean    = false
@@ -14,6 +14,15 @@
     {#if open}
         <Modal on:close={toggle}>
             <slot></slot>
+            <svelte:fragment slot="controls">
+                <Button 
+                    icon 
+                    small 
+                    appearance={Appearance.Alt}
+                    on:click={toggle}>
+                    <Icon icon={Shape.XMark} />
+                </Button>
+            </svelte:fragment>
         </Modal>
     {/if}
     <Button 

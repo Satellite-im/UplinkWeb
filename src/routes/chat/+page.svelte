@@ -16,8 +16,8 @@
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import type { ContextItem } from "$lib/types"
     import { mock_messages } from "$lib/mock/messages"
-    import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte";
-    import Spacer from "$lib/elements/Spacer.svelte";
+    import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
+    import { Store } from "$lib/state/Store"
 
     initLocale()
 

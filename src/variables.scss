@@ -14,30 +14,36 @@
     --color-muted: #a2b2ee;
     --color-alt: #000;
     --placeholder-color: #97a7e4;
+    --mix: white
 
     --focus-color: var(--primary-color);
     --highlight-color: #4d4dff;
 
     --primary-color: #4d4dff;
-    --primary-color-alt: #5454fd;
+    --primary-color-alt: color-mix(in srgb, var(--primary-color) 50%, white);
 
     --alt-color: #21263a;
     --alt-color-alt: #23293e;
 
-    --success-color: #4acfab;
-    --success-color-alt: #4edeb8;
+    --cp-bg-color: transparent;
+    --input-size: var(--input-height);
+    --cp-border-color: transparent;
+    --cp-input-color: var(--color);
 
-    --info-color: #0a5fc1;
-    --info-color-alt: rgb(16, 187, 226);
+    --success-color: #00B894;
+    --success-color-alt: color-mix(in srgb, var(--success-color) 50%, var(--mix));
 
-    --error-color: #c44569;
-    --error-color-alt: #d54d74;
+    --info-color: #0771fa;
+    --info-color-alt: color-mix(in srgb, var(--info-color) 50%, var(--mix));
+
+    --error-color: #b30c0c;
+    --error-color-alt: color-mix(in srgb, var(--error-color) 50%, var(--mix));
     
-    --warning-color: #FFFAA0;
-    --warning-color-alt: #fcf8ad;
+    --warning-color: #FECA57;
+    --warning-color-alt: color-mix(in srgb, var(--warning-color) 50%, var(--mix));
     
     --border-color: #1c1d2b;
-    --border-color-alt: #4c4b4b;
+    --border-color-alt: color-mix(in srgb, var(--border-color) 50%, var(--mix));
 
     --tooltip-color: #0f121b;
 

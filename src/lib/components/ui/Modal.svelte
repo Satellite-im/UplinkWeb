@@ -57,7 +57,7 @@
                 max-height: 100%;
                 border-radius: var(--border-radius);
                 overflow: hidden;
-                padding: var(--padding);
+                padding: var(--padding-less);
                 padding-top: 0;
             }
 

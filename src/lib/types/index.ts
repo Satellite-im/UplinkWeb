@@ -33,7 +33,7 @@ export type ProfileData = {
 export let defaultProfileData = {
     photo: { image: "" },
     status: Status.Offline,
-    status_message: ""
+    status_message: "Unknown status message."
 }
 
 export type Id = {
@@ -59,7 +59,7 @@ export type User = {
 export let defaultUser: User = {
     id: { short: "xxxxxx" },
     key: "0x0",
-    name: "",
+    name: "Unknown User",
     profile: defaultProfileData,
     media: {
         is_deafened: false,
@@ -83,6 +83,15 @@ export type Chat = {
     users: User[],
     last_message_at: Date,
     last_message_preview: string,
+}
+
+export let defaultChat = {
+    name: "",
+    notifications: 0,
+    activity: false,
+    users: [],
+    last_message_at: new Date,
+    last_message_preview: ""
 }
 
 export type ContextItem = {

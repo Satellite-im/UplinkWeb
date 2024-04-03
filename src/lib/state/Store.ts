@@ -1,13 +1,20 @@
-import { defaultUser, type User } from "$lib/types"
-import { derived, writable } from "svelte/store"
-import type { Writable } from "svelte/store"
+import { defaultUser, type Chat, type User, defaultChat } from "$lib/types"
+import { writable, type Writable } from "svelte/store"
 
 interface IState {
-    user: User
+    user: Writable<User>,
+    activeChat: Writable<Chat>,
+    ui: {
+        color: Writable<string>
+    }
 }
 
 const initialState: IState = {
-    user: defaultUser
+    user: writable(defaultUser),
+    activeChat: writable(defaultChat),
+    ui: {
+        color: writable("#4d4dff")
+    }
 }
 
 class GlobalStore {
@@ -17,8 +24,9 @@ class GlobalStore {
         this.state = {...state}
     }
 
-    get user(): User {
-        return this.user
+    setThemeColor(color: string) {
+        console.log('color', color)
+        this.state.ui.color.set(color)
     }
 }
 
