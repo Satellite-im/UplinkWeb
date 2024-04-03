@@ -4,40 +4,17 @@
     import { Appearance, KeybindAction, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
+    import { Store } from "$lib/state/Store";
+    import type { Keybind } from "$lib/types";
     import { _ } from 'svelte-i18n'
 
     initLocale()
 
-    let defaultKeybins = [
-        {
-            action: KeybindAction.IncreaseFontSize,
-            keys: ["Ctrl", "Shift", "+"]
-        },
-        {
-            action: KeybindAction.DecreaseFontSize,
-            keys: ["Ctrl", "Shift", "-"]
-        },
-        {
-            action: KeybindAction.ToggleMute,
-            keys: ["Ctrl", "Shift", "M"]
-        },
-        {
-            action: KeybindAction.ToggleDeafen,
-            keys: ["Ctrl", "Shift", "D"]
-        },
-        {
-            action: KeybindAction.OpenInspector,
-            keys: ["Ctrl", "Shift", "I"]
-        },
-        {
-            action: KeybindAction.ToggleDevmode,
-            keys: ["Ctrl", "Shift", "D"]
-        },
-        {
-            action: KeybindAction.FocusUplink,
-            keys: ["Ctrl", "Shift", "U"]
-        }
-    ]
+    let keybinds: Keybind[] = []
+
+    Store.state.settings.subscribe(settings => {
+        if (keybinds !== settings.keybinds) keybinds = settings.keybinds
+    })
 </script>
 
 <div id="page">
@@ -51,7 +28,7 @@
         </Button>
     </SettingSection>
 
-    {#each defaultKeybins as keybind}
+    {#each keybinds as keybind}
         <div class="keybind">
             <Text>{keybind.action}</Text>
             <div class="controls">

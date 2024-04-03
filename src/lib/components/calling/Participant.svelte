@@ -16,7 +16,6 @@
     export let isTalking: boolean           = false
 
     function toggleDetails(state: boolean) {
-        console.log('toggle', state)
         showDetails = state
     }
 </script>

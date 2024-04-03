@@ -134,6 +134,7 @@ export const fake_user_array: Array<User> = [
 export let chats: Chat[] = [
     {
         name: "RC Group Chat",
+        motd: "A place for people who love RC",
         notifications: 0,
         activity: false,
         users: [
@@ -146,6 +147,7 @@ export let chats: Chat[] = [
     },
     {
         name: "",
+        motd: "",
         notifications: 4,
         activity: false,
         users: [mock_users[0]],
@@ -154,6 +156,7 @@ export let chats: Chat[] = [
     },
     {
         name: "",
+        motd: "",
         notifications: 2,
         activity: true,
         users: [mock_users[1]],
@@ -162,6 +165,7 @@ export let chats: Chat[] = [
     },
     {
         name: "",
+        motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[2]],
@@ -170,6 +174,7 @@ export let chats: Chat[] = [
     },
     {
         name: "",
+        motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[3]],
@@ -178,6 +183,7 @@ export let chats: Chat[] = [
     },
     {
         name: "",
+        motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[4]],

@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction } from "$lib/enums"
 
 
 export type SelectOption = {
@@ -78,6 +78,7 @@ export type NavRoute = {
 
 export type Chat = {
     name: string,
+    motd: string,
     notifications: number,
     activity: boolean,
     users: User[],
@@ -87,6 +88,7 @@ export type Chat = {
 
 export let defaultChat = {
     name: "",
+    motd: "",
     notifications: 0,
     activity: false,
     users: [],
@@ -141,4 +143,9 @@ export type Transaction = {
     from: User,
     amount: number,
     note: string
+}
+
+export type Keybind = {
+    action: KeybindAction,
+    keys: string[]
 }

@@ -9,12 +9,12 @@
     import { 
         FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
         Message, MessageGroup, MessageReactions, MessageReplyContainer, 
-        ProfilePicture, CoinBalance, Modal 
+        ProfilePicture, CoinBalance, Modal , ProfilePictureMany
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import type { ContextItem } from "$lib/types"
+    import { defaultChat, type Chat, type ContextItem } from "$lib/types"
     import { mock_messages } from "$lib/mock/messages"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
@@ -34,6 +34,12 @@
     let previewImage: string | null
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+
+
+    let activeChat: Chat = defaultChat
+    Store.state.activeChat.subscribe((c) => {
+        activeChat = c
+    })
 </script>
 
 <div id="page">
@@ -91,6 +97,9 @@
                             appearance: Appearance.Default
                         },
                     ]
+                }}
+                on:click={(_) => {
+                    Store.setActiveChat(chat)
                 }} />
         {/each}
     </Sidebar>
@@ -98,14 +107,22 @@
     <div class="content">
         <Topbar>
             <div slot="before">
-                <ProfilePicture 
-                    image={mock_users[0].profile.photo.image} 
-                    size={Size.Small} 
-                    status={mock_users[0].profile.status} />
+                {#if activeChat.users.length === 1}
+                    <ProfilePicture 
+                        typing={activeChat.activity} 
+                        image={activeChat.users[0]?.profile.photo.image}
+                        status={activeChat.users[0]?.profile.status} 
+                        size={Size.Medium} 
+                        loading={loading} />
+                {:else}
+                    <ProfilePictureMany users={activeChat.users} />
+                {/if}
             </div>
             <div slot="content">
-                <Text singleLine>{mock_users[0].name}</Text>
-                <Text singleLine muted size={Size.Smaller}>{mock_users[0].profile.status_message}</Text>
+                <Text singleLine>{(activeChat.name.length) ? activeChat.name : activeChat.users[0]?.name}</Text>
+                <Text singleLine muted size={Size.Smaller}>
+                    {(activeChat.motd.length) ? activeChat.motd : activeChat.users[0]?.profile?.status_message}
+                </Text>
             </div>
             <svelte:fragment slot="controls">
                 <CoinBalance balance={4560.53} />

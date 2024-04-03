@@ -7,7 +7,7 @@
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
-    import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte";
+    import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
 
     initLocale()
 
@@ -33,7 +33,7 @@
             <div class="profile-picture-container">
                 <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
                 <FileUploadButton icon tooltip="Change Profile Photo" on:upload={(picture) => {
-                    user.profile.photo.image = picture.detail
+                    Store.setPhoto(picture.detail)
                 }}/>
             </div>
         </div>
@@ -41,7 +41,10 @@
             <Label text="Username" />
             <div class="username-section">
                 <div class="username">
-                    <Input alt bind:value={user.name} placeholder="Set a note . . ." />
+                    <Input alt bind:value={user.name} placeholder="Set a note . . ." on:enter={(_) => {
+                        //TODO: Toast
+                        Store.setUsername(user.name)
+                    }} />
                 </div>
                 <div class="short-id">
                     <Input alt value={user.id.short} disabled copyOnInteract>
@@ -52,7 +55,10 @@
         </div>
         <div class="section">
             <Label text="Status Message" />
-            <Input alt bind:value={user.profile.status_message} placeholder="Set a note . . ." />
+            <Input alt bind:value={user.profile.status_message} placeholder="Set a note . . ." on:enter={(_) => {
+                //TODO: Toast
+                Store.setStatus(user.profile.status_message)
+            }} />
         </div>
         <div class="section">
             <SettingSection name="Status" description="Set your status indicator.">

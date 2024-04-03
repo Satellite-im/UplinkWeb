@@ -125,8 +125,6 @@
         }
 
         :global(input) {
-            height: var(--input-height);
-            border: var(--border-width) solid var(--border-color);
             border-radius: var(--border-radius-minimal);
             background-color: var(--color);
             color: var(--color-alt);

@@ -20,9 +20,6 @@
 </script>
 <div id="call-screen" class={expanded ? "expanded" : ""}>
     <Topbar simple>
-        <svelte:fragment slot="before">
-            <ProfilePicture size={Size.Small} noIndicator image={mock_users[0].profile.photo.image} />
-        </svelte:fragment>
         <svelte:fragment slot="content">
             <Text>
                 Big Party Time

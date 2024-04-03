@@ -29,7 +29,8 @@
 <button class="chat-preview {cta ? "cta" : ""}" on:contextmenu={(e) => {
     e.preventDefault()
     onContext([e.clientX, e.clientY])
-}}>
+}}
+    on:click={(_) => dispatch('click')}>
     {#if chat.users.length === 1}
         <ProfilePicture 
             typing={chat.activity} 
