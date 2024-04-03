@@ -17,6 +17,10 @@
     .cm-scroller {
         overflow: hidden;
         overflow-y: scroll;
+        div:first-of-type {
+            display: inline-flex;
+            align-items: center;
+        }
 
         font-family: unset;
         line-height: unset;

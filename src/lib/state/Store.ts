@@ -36,6 +36,10 @@ class GlobalStore {
         this.state.ui.color.set(color)
     }
 
+    setActiveChat(chat: Chat) {
+        this.state.activeChat.set(chat)
+    }
+
     increaseFontSize(amount: number = 0.025) {
         this.state.ui.fontSize.update((s) => {
             if (s + amount <= 1.5) {

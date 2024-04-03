@@ -6,9 +6,8 @@
     import { SettingSection } from "$lib/layouts"
     import { Button, Icon, Input, Select } from "$lib/elements"
     import ColorPicker from 'svelte-awesome-color-picker'
-    import { Store } from "$lib/state/Store";
-    import PopupButton from "$lib/components/ui/PopupButton.svelte";
-    import Label from "$lib/elements/Label.svelte";
+    import { Store } from "$lib/state/Store"
+    import PopupButton from "$lib/components/ui/PopupButton.svelte"
 
     initLocale()
 
@@ -85,7 +84,7 @@
         <ColorSwatch name="Neo Orbit" color="#4d4dff"/>
         <ColorSwatch name="Creamy Peach" color="#ff008d"/>
         <ColorSwatch name="Neon Sunflower" color="#be8c0d" />
-        <ColorSwatch name="Soft Blue" color="#6a00ff" />
+        <ColorSwatch name="TV Character Purple" color="#6a00ff" />
         <ColorSwatch name="Traffic Cone" color="#ff3c00" />
         <ColorSwatch name="Firehouse" color="#b30c0c" />
         <ColorSwatch name="Purple Mountain Majesty" color="#786fa6" />
@@ -139,7 +138,7 @@
             padding: var(--padding-less);
             border: var(--border-width) solid var(--border-color);
             border-radius: var(--border-radius);
-            background-color: var(--background-alt);
+            background-color: var(--alt-color);
             color: var(--color);
             outline: none;
             width: 100%;
