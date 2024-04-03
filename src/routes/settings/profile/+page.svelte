@@ -8,7 +8,7 @@
     import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
-    import Controls from "$lib/layouts/Controls.svelte";
+    import Controls from "$lib/layouts/Controls.svelte"
 
     initLocale()
 
@@ -17,6 +17,8 @@
 
     function toggleSeedPhrase() {
         showSeed = !showSeed
+
+        if (loading) setTimeout(() => loading = false, 200)
     }
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
@@ -51,10 +53,15 @@
     {#if unsavedChanges}
         <div class="save-controls">
             <Controls>
-                <Button text="Cancel" appearance={Appearance.Alt}>
+                <Button text={$_("generic.cancel")} appearance={Appearance.Alt} on:click={(_) => {
+                    changeList.username = false
+                    changeList.statusMessage = false
+
+                    unsavedChanges = changeList.username || changeList.statusMessage
+                }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-                <Button text="Save" appearance={Appearance.Primary} on:click={(_) => {
+                <Button text={$_("generic.save")} appearance={Appearance.Primary} on:click={(_) => {
                     Store.setUsername(user.name)
                     Store.setStatus(user.profile.status_message)
 
@@ -75,7 +82,7 @@
         <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}>
             <div class="profile-picture-container">
                 <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
-                <FileUploadButton icon tooltip="Change Profile Photo" on:upload={(picture) => {
+                <FileUploadButton icon tooltip={$_("settings.profile.change_profile_photo")} on:upload={(picture) => {
                     Store.setPhoto(picture.detail)
                 }}/>
             </div>
@@ -83,10 +90,10 @@
         <input style="display:none" type="file" accept={acceptableFiles} on:change={(e) => onFileSelected(e)} bind:this={fileinput} />
 
         <div class="section">
-            <Label text="Username" />
+            <Label text={$_("generic.username")} />
             <div class="username-section">
                 <div class="username">
-                    <Input alt bind:value={user.name} placeholder="Set a note . . ." on:enter={(_) => {
+                    <Input alt bind:value={user.name} on:enter={(_) => {
                         // TODO: Toast
                         Store.setUsername(user.name)
                     }} on:keypress={(_) => {
@@ -102,8 +109,8 @@
             </div>
         </div>
         <div class="section">
-            <Label text="Status Message" />
-            <Input alt bind:value={user.profile.status_message} placeholder="Set a note . . ." on:enter={(_) => {
+            <Label text={$_("user.status_message")} />
+            <Input alt bind:value={user.profile.status_message} placeholder={$_("user.set_status_message")} on:enter={(_) => {
                 // TODO: Toast
                 Store.setStatus(user.profile.status_message)
             }} on:keypress={(_) => {
@@ -112,12 +119,12 @@
             }} />
         </div>
         <div class="section">
-            <SettingSection name="Status" description="Set your status indicator.">
+            <SettingSection name={$_("user.status.label")} description={$_("user.set_status")}>
                 <Select options={[
-                    { text: "Online", value: "online" },
-                    { text: "Offline", value: "offline" },
-                    { text: "Idle", value: "idle" },
-                    { text: "Do Not Disturb", value: "do-not-disturb" },
+                    { text: $_("user.status.online"), value: "online" },
+                    { text: $_("user.status.offline"), value: "offline" },
+                    { text: $_("user.status.idle"), value: "idle" },
+                    { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
                 ]} highlight={Appearance.Success}>
                     <Icon icon={Shape.Circle} highlight={Appearance.Success} filled />
                 </Select>
@@ -125,10 +132,10 @@
         </div>
 
         <div class="section">
-            <SettingSection name="Reveal Recovery Phrase" description="Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.">
+            <SettingSection name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
                 <Button 
                     appearance={!showSeed ? Appearance.Error : Appearance.Alt}
-                    text={!showSeed ? "Reveal Phrase" : "Hide Phrase"}
+                    text={!showSeed ? $_("settings.profile.reveal_phrase.show") : $_("settings.profile.reveal_phrase.hide")}
                     on:click={(_) => {
                         toggleSeedPhrase()
                     }}>
@@ -140,7 +147,7 @@
                     <OrderedPhrase number={i + 1} word={word} loading={loading} />
                 {/each}
                 <div class="full-width flex-end">
-                    <Button appearance={Appearance.Alt} text="Copy to Clipboard">
+                    <Button appearance={Appearance.Alt} text={$_("generic.copy")}>
                         <Icon icon={Shape.Clipboard}/>
                     </Button>
                 </div>
@@ -149,11 +156,10 @@
 
         <div class="section">
             <Checkbox checked>
-                <Text muted>Store recovery seed on account (disable for increased security, irriversable)</Text>
+                <Text muted>{$_("settings.profile.should_store")}</Text>
             </Checkbox>
         </div>
     </div>
-    
 </div>
 
 <style lang="scss">

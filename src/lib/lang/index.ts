@@ -9,7 +9,9 @@ export function initLocale() {
                 deny: "Deny",
                 add: "Add",
                 remove: "Remove",
+                save: "Save",
                 cancel: "Cancel",
+                copy: "Copy",
                 loading: "Loading",
                 username: "Username",
                 status_message: "Status Message",
@@ -84,6 +86,30 @@ export function initLocale() {
                     }
                 }
             },
+            user: {
+                status: {
+                    label: "Status",
+                    online: "Online",
+                    offline: "Offline",
+                    idle: "Idle",
+                    do_not_disturb: "Do Not Disturb"
+                },
+                status_message: "Status message",
+                set_status_message: "Set a status message",
+                set_status: "Set status appearance",
+            },
+            settings: {
+                profile: {
+                    change_profile_photo: "Change profile photo",
+                    reveal_phrase: {
+                        label: "Reveal recovery phrase",
+                        description: "Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.",
+                        show: "Reveal Phrase",
+                        hide: "Hide Phrase",
+                    },
+                    should_store: "Store recovery seed on account (disable for increased security, irriversable)"
+                }
+            }
         },
     })
 
