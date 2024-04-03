@@ -7,15 +7,21 @@
     TimeAgo.addDefaultLocale(en)
 
     let color: string = ""
+    let fontSize: string = "1.0"
 
     function buildStyle() {
         return `:root {
+            --font-size: ${fontSize}rem;
             --primary-color: ${color};
         }`
     }
     let style: string = buildStyle()
     Store.state.ui.color.subscribe(v => {
         color = v
+        style = buildStyle()
+    })
+    Store.state.ui.fontSize.subscribe(s => {
+        fontSize = s.toFixed(2).toString()
         style = buildStyle()
     })
 </script>

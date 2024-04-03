@@ -119,10 +119,6 @@
             &.position-local {
                 align-self: flex-end;
             }
-
-            .reply-arrow {
-                opacity: 0.5;
-            }
         }
 
     }

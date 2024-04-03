@@ -44,19 +44,5 @@
         display: inline-flex;
         justify-content: center;
     }
-    
-    .popup-body {
-        position: absolute;
-        bottom: calc(100% + var(--gap));
-        right: 0;
-        padding: var(--padding);    
-        border-radius: var(--border-radius);
-        border: var(--border-width) solid var(--boerder-color);
-        min-height: var(--min-height);
-        max-height: 80vh;
-        max-width: var(--popup-width);
-        background-color: var(--background-alt);
-        overflow-y: auto;
-    }
 }
 </style>

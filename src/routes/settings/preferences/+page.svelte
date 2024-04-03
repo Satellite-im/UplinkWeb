@@ -13,16 +13,18 @@
     initLocale()
 
     let hex = "#f6f0dc"
+    let fontSize = 1.0
 
     Store.state.ui.color.subscribe((c) => {
         hex = c
+    })
+    Store.state.ui.fontSize.subscribe((s) => {
+        fontSize = s
     })
 
     $: if (hex !== undefined) {
         Store.setThemeColor(hex)
     }
-
-
 </script>
 
 <div id="page">
@@ -43,13 +45,13 @@
         </Button>
     </SettingSection>
     <SettingSection name="Font Scaling" description="Scale the font size up or down to your liking.">
-        <Button icon appearance={Appearance.Alt}>
+        <Button icon appearance={Appearance.Alt} on:click={(_) => Store.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
-            <Input value="1.0" centered />
+            <Input value={fontSize.toFixed(2).toString()} centered />
         </div>
-        <Button icon appearance={Appearance.Alt}>
+        <Button icon appearance={Appearance.Alt} on:click={(_) => Store.increaseFontSize()}>
             <Icon icon={Shape.Plus} />
         </Button>
     </SettingSection>

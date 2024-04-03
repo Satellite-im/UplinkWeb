@@ -20,7 +20,7 @@
     --highlight-color: #4d4dff;
 
     --primary-color: #4d4dff;
-    --primary-color-alt: color-mix(in srgb, var(--primary-color) 50%, white);
+    --primary-color-alt: color-mix(in srgb, var(--primary-color) 90%, white);
 
     --alt-color: #21263a;
     --alt-color-alt: #23293e;
@@ -31,19 +31,19 @@
     --cp-input-color: var(--color);
 
     --success-color: #00B894;
-    --success-color-alt: color-mix(in srgb, var(--success-color) 50%, var(--mix));
+    --success-color-alt: color-mix(in srgb, var(--success-color) 90%, var(--mix));
 
     --info-color: #0771fa;
-    --info-color-alt: color-mix(in srgb, var(--info-color) 50%, var(--mix));
+    --info-color-alt: color-mix(in srgb, var(--info-color) 90%, var(--mix));
 
     --error-color: #b30c0c;
-    --error-color-alt: color-mix(in srgb, var(--error-color) 50%, var(--mix));
+    --error-color-alt: color-mix(in srgb, var(--error-color) 90%, var(--mix));
     
     --warning-color: #FECA57;
-    --warning-color-alt: color-mix(in srgb, var(--warning-color) 50%, var(--mix));
+    --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%, var(--mix));
     
     --border-color: #1c1d2b;
-    --border-color-alt: color-mix(in srgb, var(--border-color) 50%, var(--mix));
+    --border-color-alt: color-mix(in srgb, var(--border-color) 90%, var(--mix));
 
     --tooltip-color: #0f121b;
 

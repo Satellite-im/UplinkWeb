@@ -171,13 +171,6 @@
                     font-size: var(--font-size-smaller);
                     border: var(--border-width) solid var(--info-color);
                     height: fit-content;
-
-                    .username {
-                        font-size: var(--font-size-smaller);
-                        margin: 0;
-                        padding: 0;
-                        font-size: var(--font-size-smaller);
-                    }
                 }
             }
 
