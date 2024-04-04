@@ -44,6 +44,7 @@
         { text: Font.SpaceGrotesk, value: Font.SpaceGrotesk },
         { text: Font.MajorMono, value: Font.MajorMono },
         { text: Font.Merriweather, value: Font.Merriweather },
+        { text: Font.PoiretOne, value: Font.PoiretOne },
     ]
 
     $: if (hex !== undefined) {

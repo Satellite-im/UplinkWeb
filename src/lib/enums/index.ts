@@ -24,7 +24,8 @@ export const enum Font {
     SpaceGrotesk    = "SpaceGrotesk",
     PixelifySans    = "PixelifySans",
     MajorMono       = "MajorMono",
-    Merriweather    = "Merriweather"
+    Merriweather    = "Merriweather",
+    PoiretOne       = "PoiretOne"
 }
 
 export const enum Route {
