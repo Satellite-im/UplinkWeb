@@ -13,7 +13,7 @@
     let keybinds: Keybind[] = []
 
     Store.state.settings.subscribe(settings => {
-        if (keybinds !== settings.keybinds) keybinds = settings.keybinds
+        keybinds = settings.keybinds
     })
 </script>
 
@@ -28,21 +28,23 @@
         </Button>
     </SettingSection>
 
-    {#each keybinds as keybind}
-        <div class="keybind">
-            <Text>{keybind.action}</Text>
-            <div class="controls">
-                <div class="binding">
-                    {#each keybind.keys as key}
-                        <Key character={key} />
-                    {/each}
+    {#if keybinds}
+        {#each keybinds as keybind}
+            <div class="keybind">
+                <Text>{keybind.action}</Text>
+                <div class="controls">
+                    <div class="binding">
+                        {#each keybind.keys as key}
+                            <Key character={key} />
+                        {/each}
+                    </div>
+                    <Button icon appearance={Appearance.Alt}>
+                        <Icon icon={Shape.UTurn} />
+                    </Button>
                 </div>
-                <Button icon appearance={Appearance.Alt}>
-                    <Icon icon={Shape.UTurn} />
-                </Button>
             </div>
-        </div>
-    {/each}
+        {/each}
+    {/if}
 </div>
 
 <style lang="scss">

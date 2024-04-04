@@ -127,7 +127,7 @@ fontSize.subscribe(size => setLSItem("uplink.ui.fontSize", size))
 const cssOverride = writable(getLSItem("uplink.ui.cssOverride", ""))
 cssOverride.subscribe(css => setLSItem("uplink.ui.cssOverride", css))
 
-const settings = writable(getLSItem("uplink.settings", ""))
+const settings = writable(getLSItem("uplink.settings", defaultSettings))
 settings.subscribe(s => setLSItem("uplink.settings", s))
 
 const initialState: IState = {
