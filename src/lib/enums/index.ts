@@ -10,6 +10,23 @@ export const enum Locale {
     BS_BA   = "Bosnia and Hercegovina (Bosna i Hercegovina)"
 }
 
+export const enum Font {
+    Poppins         = "Poppins",
+    SpaceMono       = "SpaceMono",
+    ChakraPetch     = "ChakraPetch",
+    Comfortaa       = "Comfortaa",
+    Dosis           = "Dosis",
+    IBMPlexMono     = "IBMPlexMono",
+    IndieFlower     = "IndieFlower",
+    JosefinSans     = "JosefinSans",
+    Noto            = "Noto",
+    SourceCodePro   = "SourceCodePro",
+    SpaceGrotesk    = "SpaceGrotesk",
+    PixelifySans    = "PixelifySans",
+    MajorMono       = "MajorMono",
+    Merriweather    = "Merriweather"
+}
+
 export const enum Route {
     Home = "/",
     Chat = "/chat",

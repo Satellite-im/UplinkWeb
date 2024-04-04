@@ -114,7 +114,7 @@
             width: 100%;
 
             .custom-input {
-                font-family: "Secondary";
+                font-family: var(--secondary-font);
                 font-size: var(--font-size-max);
                 color: var(--success-color);
                 background-color: transparent;

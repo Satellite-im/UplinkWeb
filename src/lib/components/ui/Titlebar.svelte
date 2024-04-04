@@ -46,7 +46,7 @@
         :global(.title) {
             flex: 1;
             text-transform: uppercase;
-            font-family: "Secondary";
+            font-family: var(--secondary-font);
             color: var(--color);
         }
     }

@@ -1,4 +1,4 @@
-import { KeybindAction, Locale, Status } from "$lib/enums"
+import { Font, KeybindAction, Locale, Status } from "$lib/enums"
 import { defaultUser, type Chat, type User, defaultChat, type Keybind } from "$lib/types"
 import { writable, type Invalidator, type Subscriber, type Unsubscriber, type Updater, type Writable } from "svelte/store"
 
@@ -99,7 +99,8 @@ export interface IState {
     ui: {
         color: Writable<string>,
         fontSize: Writable<number>,
-        cssOverride: Writable<string>
+        cssOverride: Writable<string>,
+        font: Writable<Font>
     },
     settings: Writable<ISettingsState>
 }
@@ -124,6 +125,9 @@ color.subscribe(c => setLSItem("uplink.ui.color", c))
 const fontSize = writable(getLSItem("uplink.ui.fontSize", 1.0))
 fontSize.subscribe(size => setLSItem("uplink.ui.fontSize", size))
 
+const font = writable(getLSItem("uplink.ui.font", Font.Poppins))
+font.subscribe(f => setLSItem("uplink.ui.font", f))
+
 const cssOverride = writable(getLSItem("uplink.ui.cssOverride", ""))
 cssOverride.subscribe(css => setLSItem("uplink.ui.cssOverride", css))
 
@@ -140,6 +144,7 @@ const initialState: IState = {
     ui: {
         color,
         fontSize,
+        font,
         cssOverride
     },
     settings
@@ -184,6 +189,10 @@ class GlobalStore {
 
     setThemeColor(color: string) {
         this.state.ui.color.set(color)
+    }
+
+    setFont(font: Font) {
+        this.state.ui.font.set(font)
     }
 
     setActiveChat(chat: Chat) {

@@ -20,7 +20,7 @@
 
 <style lang="scss">
     .progress-button {
-        font-family: "Secondary";
+        font-family: var(--secondary-font);
         position: relative;
         padding: unset;
 

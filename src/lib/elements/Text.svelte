@@ -41,7 +41,7 @@
 
 
         &.secondary-font {
-            font-family: "Secondary";
+            font-family: var(--secondary-font);
         }        
 
         &.single-line {

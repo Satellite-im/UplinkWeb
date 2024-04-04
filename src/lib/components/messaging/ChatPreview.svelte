@@ -134,7 +134,7 @@
                 .unreads {
                     background-color: var(--error-color);
                     font-size: var(--font-size-smaller);
-                    font-family: "Secondary";
+                    font-family: var(--secondary-font);
                     padding: 0 var(--padding-minimal);
                     border-radius: var(--border-radius-minimal);
 

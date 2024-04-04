@@ -12,7 +12,7 @@
     div.key {
         min-width: var(--input-height);
         height: var(--input-height);
-        font-family: "Secondary";
+        font-family: var(--secondary-font);
 
         > span {
             background-color: var(--alt-color);

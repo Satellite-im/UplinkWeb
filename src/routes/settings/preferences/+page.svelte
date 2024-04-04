@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, Shape } from "$lib/enums"
+    import { Appearance, Font, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
     import { ColorSwatch } from "$lib/components"
@@ -12,11 +12,15 @@
     initLocale()
 
     let hex = "#f6f0dc"
+    let font: Font = Font.Poppins
     let cssOverride = ""
     let fontSize = 1.0
 
     Store.state.ui.color.subscribe((c) => {
         hex = c
+    })
+    Store.state.ui.font.subscribe((f) => {
+        font = f
     })
     Store.state.ui.fontSize.subscribe((s) => {
         fontSize = s
@@ -24,6 +28,23 @@
     Store.state.ui.cssOverride.subscribe((css) => {
         cssOverride = css
     })
+
+    const availableFonts = [
+        { text: Font.Poppins, value: Font.Poppins },
+        { text: Font.SpaceMono, value: Font.SpaceMono },
+        { text: Font.ChakraPetch, value: Font.ChakraPetch },
+        { text: Font.Comfortaa, value: Font.Comfortaa },
+        { text: Font.Dosis, value: Font.Dosis },
+        { text: Font.IBMPlexMono, value: Font.IBMPlexMono },
+        { text: Font.PixelifySans, value: Font.PixelifySans },
+        { text: Font.IndieFlower, value: Font.IndieFlower },
+        { text: Font.JosefinSans, value: Font.JosefinSans },
+        { text: Font.Noto, value: Font.Noto },
+        { text: Font.SourceCodePro, value: Font.SourceCodePro },
+        { text: Font.SpaceGrotesk, value: Font.SpaceGrotesk },
+        { text: Font.MajorMono, value: Font.MajorMono },
+        { text: Font.Merriweather, value: Font.Merriweather },
+    ]
 
     $: if (hex !== undefined) {
         Store.setThemeColor(hex)
@@ -37,9 +58,9 @@
         ]} />
     </SettingSection>
     <SettingSection name="Font" description="Change the font of the app.">
-        <Select options={[
-            { text: "Poppins", value: "poppins" }
-        ]} />
+        <Select selected={font} options={availableFonts} on:change={(v) => {
+            Store.setFont(v.detail)
+        }}/>
         <Button 
             icon 
             appearance={Appearance.Alt}
