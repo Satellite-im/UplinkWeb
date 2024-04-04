@@ -1,8 +1,9 @@
-import { KeybindAction } from "$lib/enums"
+import { KeybindAction, Locale, Status } from "$lib/enums"
 import { defaultUser, type Chat, type User, defaultChat, type Keybind } from "$lib/types"
 import { writable, type Invalidator, type Subscriber, type Unsubscriber, type Updater, type Writable } from "svelte/store"
 
-interface ISettingsState {
+export interface ISettingsState {
+    lang: Locale,
     messaging: {
         convertEmoji: boolean,
         markdownSupport: boolean,
@@ -30,7 +31,65 @@ interface ISettingsState {
     }
 }
 
-interface IState {
+export let defaultSettings = {
+    lang: Locale.EN_US,
+    messaging: {
+        convertEmoji: true,
+        markdownSupport: true,
+        spamRejection: true,
+    },
+    audio: {
+        inputDevice: "Default",
+        outputDevice: "Default",
+        echoCancellation: true,
+        interfaceSounds: false,
+        controlSounds: true,
+        messageSounds: true,
+        callTimer: true,
+    },
+    extensions: {},
+    keybinds: [
+        {
+            action: KeybindAction.IncreaseFontSize,
+            keys: ["Ctrl", "Shift", "+"]
+        },
+        {
+            action: KeybindAction.DecreaseFontSize,
+            keys: ["Ctrl", "Shift", "-"]
+        },
+        {
+            action: KeybindAction.ToggleMute,
+            keys: ["Ctrl", "Shift", "M"]
+        },
+        {
+            action: KeybindAction.ToggleDeafen,
+            keys: ["Ctrl", "Shift", "D"]
+        },
+        {
+            action: KeybindAction.OpenInspector,
+            keys: ["Ctrl", "Shift", "I"]
+        },
+        {
+            action: KeybindAction.ToggleDevmode,
+            keys: ["Ctrl", "Shift", "D"]
+        },
+        {
+            action: KeybindAction.FocusUplink,
+            keys: ["Ctrl", "Shift", "U"]
+        }
+    ],
+    accessability: {
+        openDyslexic: true,
+    },
+    notifications: {
+        enabled: true,
+        friends: true,
+        messages: true,
+        settings: true,
+    }
+}
+
+export interface IState {
     user: Writable<User>,
     devices: {
         muted: Writable<boolean>,
@@ -68,6 +127,9 @@ fontSize.subscribe(size => setLSItem("uplink.ui.fontSize", size))
 const cssOverride = writable(getLSItem("uplink.ui.cssOverride", ""))
 cssOverride.subscribe(css => setLSItem("uplink.ui.cssOverride", css))
 
+const settings = writable(getLSItem("uplink.settings", ""))
+settings.subscribe(s => setLSItem("uplink.settings", s))
+
 const initialState: IState = {
     user,
     devices: {
@@ -80,62 +142,7 @@ const initialState: IState = {
         fontSize,
         cssOverride
     },
-    settings: writable({
-        messaging: {
-            convertEmoji: true,
-            markdownSupport: true,
-            spamRejection: true,
-        },
-        audio: {
-            inputDevice: "Default",
-            outputDevice: "Default",
-            echoCancellation: true,
-            interfaceSounds: false,
-            controlSounds: true,
-            messageSounds: true,
-            callTimer: true,
-        },
-        extensions: {},
-        keybinds: [
-            {
-                action: KeybindAction.IncreaseFontSize,
-                keys: ["Ctrl", "Shift", "+"]
-            },
-            {
-                action: KeybindAction.DecreaseFontSize,
-                keys: ["Ctrl", "Shift", "-"]
-            },
-            {
-                action: KeybindAction.ToggleMute,
-                keys: ["Ctrl", "Shift", "M"]
-            },
-            {
-                action: KeybindAction.ToggleDeafen,
-                keys: ["Ctrl", "Shift", "D"]
-            },
-            {
-                action: KeybindAction.OpenInspector,
-                keys: ["Ctrl", "Shift", "I"]
-            },
-            {
-                action: KeybindAction.ToggleDevmode,
-                keys: ["Ctrl", "Shift", "D"]
-            },
-            {
-                action: KeybindAction.FocusUplink,
-                keys: ["Ctrl", "Shift", "U"]
-            }
-        ],
-        accessability: {
-            openDyslexic: true,
-        },
-        notifications: {
-            enabled: true,
-            friends: true,
-            messages: true,
-            settings: true,
-        }
-    })
+    settings
 }
 
 class GlobalStore {
@@ -153,6 +160,13 @@ class GlobalStore {
         this.state.user.update(u => u = { ...u, profile: {
             ...u.profile,
             status_message: message
+        } })
+    }
+
+    setActivityStatus(status: Status) {
+        this.state.user.update(u => u = { ...u, profile: {
+            ...u.profile,
+            status: status
         } })
     }
 
@@ -174,6 +188,10 @@ class GlobalStore {
 
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
+    }
+
+    updateSettings(settings: ISettingsState) {
+        this.state.settings.set(settings)
     }
 
     increaseFontSize(amount: number = 0.025) {

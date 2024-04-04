@@ -2,17 +2,23 @@
     import { Icon } from "$lib/elements"
     import { Shape, Appearance } from "$lib/enums"
     import type { SelectOption } from "$lib/types"
+    import { createEventDispatcher } from "svelte";
 
     export let options: Array<SelectOption>     = []
     export let highlight: Appearance            = Appearance.Default
     export let alt: boolean                     = false
+    export let selected: string                 = options[0].value
 
-    let selected: string
+    const dispatch = createEventDispatcher()
+
+    function onChange(value: string) {
+        dispatch("change", value)
+    }
 </script>
 
 <div class="select-group {highlight !== null ? `highlight-${highlight}` : ""} {alt ? "alt" : ""}">
     <slot></slot>
-    <select name="generic-select" class="select" bind:value={selected}>
+    <select name="generic-select" class="select" bind:value={selected} on:change={() => onChange(selected)}>
         {#each options as option}
             <option value={option.value}>{option.text}</option>
         {/each}

@@ -4,7 +4,7 @@
     import { _ } from 'svelte-i18n'
     import { ColorSwatch } from "$lib/components"
     import { SettingSection } from "$lib/layouts"
-    import { Button, Icon, Input, Select, UnderConstruction } from "$lib/elements"
+    import { Button, Icon, Input, Select } from "$lib/elements"
     import ColorPicker from 'svelte-awesome-color-picker'
     import { Store } from "$lib/state/Store"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
@@ -31,7 +31,6 @@
 </script>
 
 <div id="page">
-    <UnderConstruction />
     <SettingSection name="App Language" description="Change language.">
         <Select options={[
             { text: "English (USA)", value: "english" }

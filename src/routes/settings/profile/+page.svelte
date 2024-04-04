@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
@@ -24,13 +24,15 @@
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
     let user: User
+    let activityStatus: Status = Status.Online
     Store.state.user.subscribe(val => {
         user = val
+        activityStatus = user.profile.status
     })
 
     let acceptableFiles: string  = ".jpg, .jpeg, .png, .avif"
 	let fileinput: HTMLElement
-	
+
 	const onFileSelected = (e: any) => {
         let image = e.target.files[0]
         let reader = new FileReader()
@@ -93,7 +95,11 @@
             <Label text={$_("generic.username")} />
             <div class="username-section">
                 <div class="username">
-                    <Input alt bind:value={user.name} on:enter={(_) => {
+                    <Input 
+                        alt 
+                        bind:value={user.name} 
+                        highlight={(changeList.username) ? Appearance.Warning : Appearance.Default}
+                        on:enter={(_) => {
                         // TODO: Toast
                         Store.setUsername(user.name)
                     }} on:keypress={(_) => {
@@ -110,13 +116,18 @@
         </div>
         <div class="section">
             <Label text={$_("user.status_message")} />
-            <Input alt bind:value={user.profile.status_message} placeholder={$_("user.set_status_message")} on:enter={(_) => {
-                // TODO: Toast
-                Store.setStatus(user.profile.status_message)
-            }} on:keypress={(_) => {
-                changeList.statusMessage = true
-                unsavedChanges = changeList.username || changeList.statusMessage
-            }} />
+            <Input
+                alt
+                bind:value={user.profile.status_message}
+                placeholder={$_("user.set_status_message")}
+                highlight={(changeList.statusMessage) ? Appearance.Warning : Appearance.Default}
+                on:enter={(_) => {
+                    // TODO: Toast
+                    Store.setStatus(user.profile.status_message)
+                }} on:keypress={(_) => {
+                    changeList.statusMessage = true
+                    unsavedChanges = changeList.username || changeList.statusMessage
+                }} />
         </div>
         <div class="section">
             <SettingSection name={$_("user.status.label")} description={$_("user.set_status")}>
@@ -125,8 +136,23 @@
                     { text: $_("user.status.offline"), value: "offline" },
                     { text: $_("user.status.idle"), value: "idle" },
                     { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
-                ]} highlight={Appearance.Success}>
-                    <Icon icon={Shape.Circle} highlight={Appearance.Success} filled />
+                ]} on:change={(v) => {
+                    switch (v.detail) {
+                        case "online": return Store.setActivityStatus(Status.Online)
+                        case "offline": return Store.setActivityStatus(Status.Offline)
+                        case "idle": return Store.setActivityStatus(Status.Idle)
+                        case "do-not-disturb": return Store.setActivityStatus(Status.DoNotDisturb)
+                    }
+                }} bind:selected={user.profile.status}>
+                    {#if activityStatus === Status.Online}
+                        <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
+                    {:else if activityStatus === Status.Idle}
+                        <Icon icon={Shape.Circle} filled highlight={Appearance.Warning} />
+                    {:else if activityStatus === Status.DoNotDisturb}
+                        <Icon icon={Shape.Circle} filled highlight={Appearance.Error} />
+                    {:else}
+                        <Icon icon={Shape.Circle} filled highlight={Appearance.Alt} />
+                    {/if}
                 </Select>
             </SettingSection>
         </div>
