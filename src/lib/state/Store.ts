@@ -1,6 +1,6 @@
 import { Font, KeybindAction, Locale, Status } from "$lib/enums"
 import { defaultUser, type Chat, type User, defaultChat, type Keybind } from "$lib/types"
-import { writable, type Invalidator, type Subscriber, type Unsubscriber, type Updater, type Writable } from "svelte/store"
+import { writable, type Writable } from "svelte/store"
 
 export interface ISettingsState {
     lang: Locale,
@@ -51,31 +51,38 @@ export let defaultSettings = {
     keybinds: [
         {
             action: KeybindAction.IncreaseFontSize,
-            keys: ["Ctrl", "Shift", "+"]
+            key: "=",
+            modifiers: ["ctrl"]
         },
         {
             action: KeybindAction.DecreaseFontSize,
-            keys: ["Ctrl", "Shift", "-"]
+            key: "-",
+            modifiers: ["ctrl"]
         },
         {
             action: KeybindAction.ToggleMute,
-            keys: ["Ctrl", "Shift", "M"]
+            key: "M",
+            modifiers: ["shift", "ctrl"]
         },
         {
             action: KeybindAction.ToggleDeafen,
-            keys: ["Ctrl", "Shift", "D"]
+            key: "D",
+            modifiers: ["shift", "ctrl"]
         },
         {
             action: KeybindAction.OpenInspector,
-            keys: ["Ctrl", "Shift", "I"]
+            key: "I",
+            modifiers: ["shift", "ctrl"]
         },
         {
             action: KeybindAction.ToggleDevmode,
-            keys: ["Ctrl", "Shift", "D"]
+            key: ".",
+            modifiers: ["shift", "ctrl"]
         },
         {
             action: KeybindAction.FocusUplink,
-            keys: ["Ctrl", "Shift", "U"]
+            key: "U",
+            modifiers: ["shift", "ctrl"]
         }
     ],
     accessability: {

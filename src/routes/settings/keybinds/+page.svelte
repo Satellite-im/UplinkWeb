@@ -34,10 +34,12 @@
                 <Text>{keybind.action}</Text>
                 <div class="controls">
                     <div class="binding">
-                        {#each keybind.keys as key}
-                            <Key character={key} />
+                        <Key character={keybind.key} />
+                        {#each keybind.modifiers as modifier}
+                            <Key character={modifier} />
                         {/each}
                     </div>
+                    
                     <Button icon appearance={Appearance.Alt}>
                         <Icon icon={Shape.UTurn} />
                     </Button>

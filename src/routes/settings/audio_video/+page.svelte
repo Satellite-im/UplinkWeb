@@ -5,7 +5,7 @@
     import { Button, Switch, Select } from "$lib/elements"
     import { Meter } from "$lib/components"
     import { Appearance } from "$lib/enums"
-    import { Store } from "$lib/state/Store";
+    import { Store, type ISettingsState, defaultSettings } from "$lib/state/Store"
 
     initLocale()
 
@@ -40,6 +40,11 @@
         selectedInput = d
     })
 
+    let settings: ISettingsState = defaultSettings
+    Store.state.settings.subscribe((s: ISettingsState) => {
+        settings = s
+    })
+
     getDevices()
 </script>
 
@@ -63,19 +68,29 @@
         <Meter percent={25} />
     </div>
     <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
-        <Switch on />
+        <Switch on={(settings) ? settings.audio.echoCancellation : true} on:toggle={(on) => {
+            Store.updateSettings({...settings, audio: {...settings.audio, echoCancellation: on.detail }})
+        }} />
     </SettingSection>
     <SettingSection name="Interface Sounds" description="Play sounds when interacting with UI elements.">
-        <Switch  />
+        <Switch on={(settings) ? settings.audio.interfaceSounds : true} on:toggle={(on) => {
+            Store.updateSettings({...settings, audio: {...settings.audio, interfaceSounds: on.detail }})
+        }} />
     </SettingSection>
     <SettingSection name="Control Sounds" description="When enabled you will hear a sound when turning controls on or off, such as muting and unmuting.">
-        <Switch on />
+        <Switch on={(settings) ? settings.audio.controlSounds : true} on:toggle={(on) => {
+            Store.updateSettings({...settings, audio: {...settings.audio, controlSounds: on.detail }})
+        }} />
     </SettingSection>
     <SettingSection name="Message Sounds" description="Play a notification sound when a new message is recieved.">
-        <Switch on />
+        <Switch on={(settings) ? settings.audio.messageSounds : true} on:toggle={(on) => {
+            Store.updateSettings({...settings, audio: {...settings.audio, messageSounds: on.detail }})
+        }} />
     </SettingSection>
     <SettingSection name="Call Timer" description="Show the duration of an active call in the UI.">
-        <Switch on />
+        <Switch on={(settings) ? settings.audio.callTimer : true} on:toggle={(on) => {
+            Store.updateSettings({...settings, audio: {...settings.audio, callTimer: on.detail }})
+        }} />
     </SettingSection>
 </div>
 

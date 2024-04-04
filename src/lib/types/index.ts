@@ -149,5 +149,6 @@ export type Transaction = {
 
 export type Keybind = {
     action: KeybindAction,
-    keys: string[]
+    key: string,
+    modifiers: string[]
 }
