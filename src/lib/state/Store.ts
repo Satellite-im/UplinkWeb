@@ -52,12 +52,12 @@ export let defaultSettings = {
         {
             action: KeybindAction.IncreaseFontSize,
             key: "=",
-            modifiers: ["ctrl"]
+            modifiers: ["shift", "ctrl"]
         },
         {
             action: KeybindAction.DecreaseFontSize,
             key: "-",
-            modifiers: ["ctrl"]
+            modifiers: ["shift", "ctrl"]
         },
         {
             action: KeybindAction.ToggleMute,
