@@ -94,6 +94,8 @@ export interface IState {
     devices: {
         muted: Writable<boolean>,
         deafened: Writable<boolean>,
+        input: Writable<string>,
+        output: Writable<string>,
     },
     activeChat: Writable<Chat>,
     ui: {
@@ -134,11 +136,20 @@ cssOverride.subscribe(css => setLSItem("uplink.ui.cssOverride", css))
 const settings = writable(getLSItem("uplink.settings", defaultSettings))
 settings.subscribe(s => setLSItem("uplink.settings", s))
 
+const inputDevice = writable(getLSItem("uplink.devices.input", "default"))
+inputDevice.subscribe(d => setLSItem("uplink.devices.input", d))
+
+const outputDevice = writable(getLSItem("uplink.devices.output", "default"))
+outputDevice.subscribe(d => setLSItem("uplink.devices.output", d))
+
+
 const initialState: IState = {
     user,
     devices: {
         muted: writable(false),
         deafened: writable(false),
+        input: inputDevice,
+        output: outputDevice
     },
     activeChat,
     ui: {
@@ -197,6 +208,14 @@ class GlobalStore {
 
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
+    }
+
+    setInputDevice(device: string) {
+        this.state.devices.input.set(device)
+    }
+
+    setOutputDevice(device: string) {
+        this.state.devices.output.set(device)
     }
 
     updateSettings(settings: ISettingsState) {
