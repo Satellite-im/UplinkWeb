@@ -33,7 +33,6 @@
     let previewImage: string | null
     let items = mock_files
 
-
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
