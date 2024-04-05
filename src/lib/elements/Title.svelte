@@ -9,6 +9,5 @@
 <style lang="scss">
     .title {
         font-size: var(--font-size-large);
-        font-family: 'Secondary';
     }
 </style>

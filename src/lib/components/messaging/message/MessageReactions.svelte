@@ -29,7 +29,6 @@
 
         .reaction {
             position: relative;
-            font-family: var(--secondary-font);
             border: var(--border-width) solid var(--border-color);
             background-color: var(--alt-color-alt);
             width: fit-content;
@@ -46,7 +45,6 @@
                 position: absolute;
                 z-index: 2;
                 font-size: var(--font-size-large);
-                font-family: var(--secondary-font);
                 bottom: calc(100% + var(--gap-less));
                 left: 50%;
                 transform: translate(-50%, 0);

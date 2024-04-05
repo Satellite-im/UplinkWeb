@@ -236,7 +236,6 @@
 
                 .short-id {
                     :global(.input-group) {
-                        font-family: var(--secondary-font);
                         width: 9rem;
                         justify-content: center;
                     }
