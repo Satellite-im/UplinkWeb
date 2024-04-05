@@ -1,5 +1,5 @@
 import { Font, KeybindAction, Locale, Status } from "$lib/enums"
-import { defaultUser, type Chat, type User, defaultChat, type Keybind } from "$lib/types"
+import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call } from "$lib/types"
 import { writable, type Writable } from "svelte/store"
 
 export interface ISettingsState {
@@ -107,6 +107,7 @@ export interface IState {
         output: Writable<string>,
     },
     activeChat: Writable<Chat>,
+    activeCall: Writable<Call>,
     ui: {
         color: Writable<string>,
         fontSize: Writable<number>,
@@ -151,16 +152,24 @@ inputDevice.subscribe(d => setLSItem("uplink.devices.input", d))
 const outputDevice = writable(getLSItem("uplink.devices.output", "default"))
 outputDevice.subscribe(d => setLSItem("uplink.devices.output", d))
 
+const muted = writable(getLSItem("uplink.devices.muted", false))
+muted.subscribe(status => setLSItem("uplink.devices.muted", status))
+
 
 const initialState: IState = {
     user,
     devices: {
-        muted: writable(false),
+        muted,
         deafened: writable(false),
         input: inputDevice,
         output: outputDevice
     },
     activeChat,
+    activeCall: writable({
+        startedAt: new Date(),
+        inCall: false,
+        chat: defaultChat
+    }),
     ui: {
         color,
         fontSize,
@@ -237,6 +246,14 @@ class GlobalStore {
 
     decreaseFontSize(amount: number = 0.025) {
         this.state.ui.fontSize.update((s) => (s - amount >= 0.8) ? s -= amount : s)
+    }
+
+    updateMuted(muted: boolean) {
+        this.state.devices.muted.set(muted)
+    }
+
+    updateDeafened(deafened: boolean) {
+        this.state.devices.deafened.set(deafened)
     }
 }
 

@@ -15,14 +15,16 @@
     let font: Font = get(Store.state.ui.font)
     let cssOverride: string = get(Store.state.ui.cssOverride)
     let keybinds: Keybind[]
+    let muted: boolean       = get(Store.state.devices.muted)
+    let deafened: boolean    = get(Store.state.devices.deafened)
 
     function handleKeybindMatch(event: CustomEvent<any>) {
         let keybind: Keybind = event.detail
         switch (keybind.action) {
             case KeybindAction.IncreaseFontSize: Store.increaseFontSize(); break
             case KeybindAction.DecreaseFontSize: Store.decreaseFontSize(); break
-            case KeybindAction.ToggleMute: console.log('todo'); break
-            case KeybindAction.ToggleDeafen: console.log('todo'); break
+            case KeybindAction.ToggleMute: Store.updateMuted(!muted); break
+            case KeybindAction.ToggleDeafen: Store.updateDeafened(!deafened); break
             case KeybindAction.OpenInspector: console.log('todo'); break
             case KeybindAction.ToggleDevmode: console.log('todo'); break
             case KeybindAction.FocusUplink: console.log('todo'); break
@@ -44,20 +46,32 @@
         color = v
         style = buildStyle()
     })
+
     Store.state.ui.fontSize.subscribe(s => {
         fontSize = s
         style = buildStyle()
     })
+
     Store.state.ui.cssOverride.subscribe(css => {
         cssOverride = css
         style = buildStyle()
     })
+
     Store.state.ui.font.subscribe(f => {
         font = f
         style = buildStyle()
     })
+    
     Store.state.settings.subscribe(settings => {
         keybinds = settings.keybinds
+    })
+
+    Store.state.devices.muted.subscribe((state) => {
+        muted = state
+    })
+
+    Store.state.devices.deafened.subscribe((state) => {
+        deafened = state
     })
 </script>
 

@@ -1,18 +1,26 @@
 <script lang="ts">
     import { Text, Button, Icon, Label } from "$lib/elements"
-
     import { Appearance, Shape } from "$lib/enums"
-    
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
-    import Controls from "../../layouts/Controls.svelte";
+    import Controls from "../../layouts/Controls.svelte"
+    import { Store } from "$lib/state/Store"
+    import { get } from "svelte/store"
 
     initLocale()
 
     export let loading: boolean     = false
     export let duration: Date       = new Date()
-    export let muted: boolean       = false
-    export let streaming: boolean   = false
+    export let muted: boolean       = get(Store.state.devices.muted)
+    export let deafened: boolean    = get(Store.state.devices.deafened)
+
+    Store.state.devices.muted.subscribe((state) => {
+        muted = state
+    })
+
+    Store.state.devices.deafened.subscribe((state) => {
+        deafened = state
+    })
 </script>
 
 <div class="call-controls">
@@ -27,19 +35,24 @@
 
     <Controls>
         <Button 
-            icon 
+            icon
             appearance={muted ? Appearance.Error : Appearance.Alt} 
-            outline={muted} 
             tooltip={$_('call.mute')}
-            loading={loading} >
-            <Icon icon={Shape.Microphone} />
+            loading={loading}
+            on:click={(_) => {
+                Store.updateMuted(!muted)
+            }}>
+            <Icon icon={(muted) ? Shape.MicrophoneSlash : Shape.Microphone} />
         </Button>
         <Button 
             icon 
-            appearance={streaming ? Appearance.Success : Appearance.Alt } 
-            tooltip={$_('call.stream')} 
-            loading={loading}>
-            <Icon icon={Shape.Stream} />
+            appearance={deafened ? Appearance.Error : Appearance.Alt} 
+            tooltip={$_('call.deafean')}
+            loading={loading}
+            on:click={(_) => {
+                Store.updateDeafened(!deafened)
+            }}>
+            <Icon icon={(deafened) ? Shape.HeadphoneSlash : Shape.Headphones} />
         </Button>
         <Button 
             text={$_('call.end')}

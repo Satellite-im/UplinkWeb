@@ -10,7 +10,6 @@
     initLocale()
 
     let font: Font = get(Store.state.ui.font)
-
 </script>
 
 <div id="page">

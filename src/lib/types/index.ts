@@ -98,6 +98,12 @@ export let defaultChat = {
     last_message_preview: ""
 }
 
+export type Call = {
+    startedAt: Date,
+    chat: Chat,
+    inCall: boolean
+}
+
 export type ContextItem = {
     id: string,
     icon: Shape,
