@@ -6,7 +6,7 @@
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { _ } from "svelte-i18n"
-    import Text from "$lib/elements/Text.svelte";
+    import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
     import { chats } from "$lib/mock/users"
@@ -14,9 +14,9 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
     import type { ContextItem } from "$lib/types"
-    import { Plugins } from '@shopify/draggable';
-    import { onDestroy, onMount } from 'svelte';
-    import {Sortable} from '@shopify/draggable';
+    import { Plugins } from '@shopify/draggable'
+    import { onDestroy, onMount } from 'svelte'
+    import {Sortable} from '@shopify/draggable'
     // Initialize locale
     initLocale()
 
@@ -39,7 +39,7 @@
     let contextData: ContextItem[] = []
 
 onMount(() => {
-    let dropzone = document.querySelector('.files') as HTMLElement;
+    let dropzone = document.querySelector('.files') as HTMLElement
     if (dropzone) {
     const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
@@ -52,10 +52,10 @@ onMount(() => {
         //     // Get the new order of the items, will need to save the order later
         //     console.log('droppable:dropped', event)
         //     // let newOrder = Array.from(dropzone.children).map(child => child.id);
-        // });
+        // })
     onDestroy(() => {
         // Cleanup draggable instance, Swap will NOT work without onDestroy()
-        sortable.destroy();
+        sortable.destroy()
     });
 }
 });
