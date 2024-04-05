@@ -55,13 +55,13 @@
 </script>
 
 <div id="page">
-    <SettingSection name={$_("settings.preferences.appLangauge")} description={$_("settings.preferences.appLangaugeDescription")}>
-        <Select options={[
+    <SettingSection name={$_("settings.preferences.appLanguage")} description={$_("settings.preferences.appLanguageDescription")}>
+        <Select alt options={[
             { text: "English (USA)", value: "english" }
         ]} />
     </SettingSection>
     <SettingSection name={$_("settings.preferences.font")} description={$_("settings.preferences.fontDescription")}>
-        <Select selected={font} options={availableFonts} on:change={(v) => {
+        <Select selected={font} options={availableFonts} alt on:change={(v) => {
             Store.setFont(v.detail)
         }}/>
         <Button 
@@ -76,7 +76,7 @@
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
-            <Input value={fontSize.toFixed(2).toString()} centered />
+            <Input alt value={fontSize.toFixed(2).toString()} centered />
         </div>
         <Button icon appearance={Appearance.Alt} on:click={(_) => Store.increaseFontSize()}>
             <Icon icon={Shape.Plus} />
@@ -86,7 +86,7 @@
         <Button icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Moon} />
         </Button>
-        <Select options={[
+        <Select alt options={[
             { text: "Default", value: "default" }
         ]} />
         <Button icon appearance={Appearance.Alt}>
@@ -150,11 +150,10 @@
 
         :global(input) {
             border-radius: var(--border-radius-minimal);
-            background-color: var(--color);
-            color: var(--color-alt);
+            background-color: var(--alt-color);
+            color: var(--color);
         }
-        
-
+    
         textarea {
             height: var(--min-scrollable-height);
             padding: var(--padding-less);

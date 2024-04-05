@@ -60,7 +60,6 @@
             outline: none;
             cursor: pointer;
             width: 100%;
-
         }
 
         &.alt {

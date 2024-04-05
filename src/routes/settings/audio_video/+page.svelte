@@ -151,7 +151,7 @@
 
 <div id="page">
     <SettingSection name="Input Device" description="Select your input device, this is usually your microphone.">
-        <Select selected={selectedInput} options={inputOptions} on:change={(v) => {
+        <Select selected={selectedInput} options={inputOptions} alt on:change={(v) => {
             Store.setInputDevice(v.detail)
         }} />
     </SettingSection>
@@ -159,7 +159,7 @@
         <Meter percent={audioLevel} />
     </div>
     <SettingSection name="Output Device" description="Select your output device, this is usually your headphones or speakers.">
-        <Select selected={selectedOutput} options={outputOptions} on:change={(v) => {
+        <Select selected={selectedOutput} options={outputOptions} alt on:change={(v) => {
             Store.setOutputDevice(v.detail)
         }} />
     </SettingSection>

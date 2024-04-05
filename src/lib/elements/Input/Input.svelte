@@ -76,7 +76,8 @@
         .input-container {
             border: var(--border-width) solid var(--border-color);
             border-radius: var(--border-radius-minimal);
-            background-color: var(--color);
+            background-color: var(--alt-color);
+            color: var(--color);
             display: inline-flex;
             gap: var(--gap);
             align-items: center;
@@ -97,6 +98,7 @@
             border: none;
             flex: 1;
             width: 100%;
+            color: var(--color);
             cursor: text;
 
             &.centered {

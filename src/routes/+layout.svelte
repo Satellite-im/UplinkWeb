@@ -6,13 +6,14 @@
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
+    import { get } from "svelte/store";
 
     TimeAgo.addDefaultLocale(en)
 
-    let color: string = ""
-    let fontSize: string = "1.0"
-    let font: Font = Font.Poppins
-    let cssOverride: string = "body { background: red; }"
+    let color: string = get(Store.state.ui.color)
+    let fontSize: number = get(Store.state.ui.fontSize)
+    let font: Font = get(Store.state.ui.font)
+    let cssOverride: string = get(Store.state.ui.cssOverride)
     let keybinds: Keybind[]
 
     function handleKeybindMatch(event: CustomEvent<any>) {
@@ -44,7 +45,7 @@
         style = buildStyle()
     })
     Store.state.ui.fontSize.subscribe(s => {
-        fontSize = s.toFixed(2).toString()
+        fontSize = parseInt(s.toFixed(2))
         style = buildStyle()
     })
     Store.state.ui.cssOverride.subscribe(css => {
