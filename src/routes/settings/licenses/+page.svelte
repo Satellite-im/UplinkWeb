@@ -9,8 +9,8 @@
 </script>
 
 <div id="page">
-    <SettingSection name="Uplink" description="Both code and icons are under the MIT license.">
-        <Button text="View License" appearance={Appearance.Alt}>
+    <SettingSection name={$_("generic.uplink")} description={$_("settings.licenses.description")}>
+        <Button text={$_("settings.licenses.view")} appearance={Appearance.Alt}>
             <Icon icon={Shape.Document} />
         </Button>
     </SettingSection>

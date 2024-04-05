@@ -55,23 +55,23 @@
 </script>
 
 <div id="page">
-    <SettingSection name="App Language" description="Change language.">
+    <SettingSection name={$_("settings.preferences.appLangauge")} description={$_("settings.preferences.appLangaugeDescription")}>
         <Select options={[
             { text: "English (USA)", value: "english" }
         ]} />
     </SettingSection>
-    <SettingSection name="Font" description="Change the font of the app.">
+    <SettingSection name={$_("settings.preferences.font")} description={$_("settings.preferences.fontDescription")}>
         <Select selected={font} options={availableFonts} on:change={(v) => {
             Store.setFont(v.detail)
         }}/>
         <Button 
             icon 
             appearance={Appearance.Alt}
-            tooltip="Open Folder">
+            tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>
-    <SettingSection name="Font Scaling" description="Scale the font size up or down to your liking.">
+    <SettingSection name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
         <Button icon appearance={Appearance.Alt} on:click={(_) => Store.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
         </Button>
@@ -82,7 +82,7 @@
             <Icon icon={Shape.Plus} />
         </Button>
     </SettingSection>
-    <SettingSection name="Theme" description="Change the theme of the app.">
+    <SettingSection name={$_("settings.preferences.theme")} description={$_("settings.preferences.themeDescription")}>
         <Button icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Moon} />
         </Button>
@@ -93,8 +93,8 @@
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>
-    <SettingSection name="Primary Color" description="Change the primary color of the app.">
-        <PopupButton name="Pick">
+    <SettingSection name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")}>
+        <PopupButton name={$_("settings.preferences.pick")}>
             <ColorPicker
                 textInputModes={['hex']}
                 isDialog={false}
@@ -117,7 +117,7 @@
         <ColorSwatch name="Apple Valley" color="#0a8560" />
         <ColorSwatch name="Pencil Lead" color="#3c424d" />
     </SettingSection>
-    <SettingSection name="Custom CSS" description="Add additional custom CSS to the applicaiton." fullWidth>
+    <SettingSection name={$_("settings.preferences.customCss")} description={$_("settings.preferences.customCssDescription")} fullWidth>
         <textarea bind:value={cssOverride} on:change={(_) => {
             Store.setCssOverride(cssOverride)
         }}></textarea>

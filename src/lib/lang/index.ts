@@ -5,6 +5,7 @@ export function initLocale() {
     dictionary.set({
         en: {
             generic: {
+                uplink: "Uplink",
                 accept: "Accept",
                 deny: "Deny",
                 add: "Add",
@@ -19,7 +20,8 @@ export function initLocale() {
                 placeholder: "Type something ...",
                 search_placeholder: "Search ...",
                 no_results: "No results found.",
-                search_results: "Search results"
+                search_results: "Search results",
+                openFolder: "Open Folder"
             },
             market: {
                 market: "Marketplace",
@@ -132,6 +134,33 @@ export function initLocale() {
                     revert: "Revert",
                     revert_plural: "Revert Keybinds",
                     revertDescription: "Revert keybinds to default."
+                },
+                messages: {
+                    convertToEmoji: "Convert to Emoji",
+                    convertToEmojiDescription: "Convert smileys and other symbols like <3 to ❤️",
+                    markdownSupport: "Markdown Support",
+                    markdownSupportDescription: "Enabled the rendering of Markdown within messaging.",
+                    spamRejection: "Spam/Bot Detection & Rejection",
+                    spamRejectionDescription: "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots detecting they have been blocked too quickly."
+                },
+                preferences: {
+                    appLanguage: "App Language",
+                    appLanguageDescription: "Change language.",
+                    font: "Font",
+                    fontDescription: "Change the font used in the app.",
+                    fontScaling: "Font Scaling", 
+                    fontScalingDescription: "Scale the font size up or down to your liking.",
+                    theme: "Theme",
+                    themeDescription: "Change the theme of the app.",
+                    primaryColor: "Primary Color",
+                    primaryColorDescription: "Change the primary color of the app.",
+                    pick: "Pick",
+                    customCss: "Custom CSS",
+                    customCssDescription: "Add additional custom CSS to the applicaiton."
+                },
+                licenses: {
+                    description: "Both code and icons are under the MIT license.",
+                    view: "View License"
                 }
             }
         },
