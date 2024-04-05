@@ -33,7 +33,7 @@
 
     function buildStyle() {
         return cssOverride + `:root {
-            --font-size: ${fontSize}rem;
+            --font-size: ${fontSize.toFixed(2)}rem;
             --primary-color: ${color};
             --primary-font: ${font};
         }`
@@ -45,7 +45,7 @@
         style = buildStyle()
     })
     Store.state.ui.fontSize.subscribe(s => {
-        fontSize = parseInt(s.toFixed(2))
+        fontSize = s
         style = buildStyle()
     })
     Store.state.ui.cssOverride.subscribe(css => {
