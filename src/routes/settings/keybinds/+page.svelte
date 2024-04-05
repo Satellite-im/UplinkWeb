@@ -40,6 +40,22 @@
 
         keyboardRecording = { key: "", modifiers: [] }
     }
+
+    function isKeybindMatching(recorded: any, keybind: any) {
+        // Check if the main keys match
+        if (recorded.key !== keybind.key) return false;
+
+        // Check if all recorded modifiers are in the keybind's modifiers and vice versa
+        const uniqueModifiers = new Set([...recorded.modifiers, ...keybind.modifiers]);
+        for (let mod of uniqueModifiers) {
+            if (recorded.modifiers.includes(mod) !== keybind.modifiers.includes(mod)) {
+                return false;
+            }
+        }
+
+        // If both checks pass, the keybinds match
+        return true;
+    }
 </script>
 
 <div id="page">
@@ -95,7 +111,7 @@
 
     {#if keybinds}
         {#each keybinds as keybind}
-            <div class="keybind">
+            <div class="keybind {isKeybindMatching(keyboardRecording, keybind) ? "highlight" : ""}">
                 <Text>{keybind.action}</Text>
                 <div class="controls">
                     <div class="binding">
@@ -157,6 +173,13 @@
             display: inline-flex;
             gap: var(--gap);
             justify-content: space-between;
+            border: var(--border-width) solid transparent;
+            border-radius: var(--border-radius);
+            padding: var(--padding-minimal);
+
+            &.highlight {
+                border: var(--border-width) solid var(--info-color);
+            }
 
             .controls {
                 display: inline-flex;
