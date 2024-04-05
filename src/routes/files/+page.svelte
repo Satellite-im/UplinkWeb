@@ -47,7 +47,7 @@ onMount(() => {
                 constrainDimensions: true,
                 },
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-        });
+        })
         // sortable.on('sortable:stop', (event) => {
         //     // Get the new order of the items, will need to save the order later
         //     console.log('droppable:dropped', event)
@@ -56,9 +56,9 @@ onMount(() => {
     onDestroy(() => {
         // Cleanup draggable instance, Swap will NOT work without onDestroy()
         sortable.destroy()
-    });
+    })
 }
-});
+})
 
 </script>
 
