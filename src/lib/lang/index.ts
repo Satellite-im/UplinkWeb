@@ -108,6 +108,30 @@ export function initLocale() {
                         hide: "Hide Phrase",
                     },
                     should_store: "Store recovery seed on account (disable for increased security, irriversable)"
+                },
+                notifications: {
+                    enabled: "Enabled",
+                    enabledDescription: "Enable notifications for incoming calls, messages, and more.",
+                    friends: "Friends",
+                    messages: "Messages",
+                    settings: "Settings",
+                    friendsDescription: "Enable notifications for friend requests.",
+                    messagesDescription: "Enable notifications for incoming messages.",
+                    settingsDescription: "Enable notifications for updates and important alerts.",
+                },
+                accessability: {
+                    openDyslexic: "Open Dyslexic",
+                    openDyslexicDescription: "Open Dyslexic may help some users who suffer from dyslexia, it's a custom font you can enable."
+                },
+                keybinds: {
+                    banner: "Global keybinds are disabled while on this page.",
+                    recordKeybind: "Record Keybind",
+                    instructions: "Press any combination of keys while on this page, then select the action you'd like to bind to this keyboard combo. Custom shortcuts will override default shortcuts. Not all actions have default shortcuts.",
+                    pressAKey: "Press a key or combo to record.",
+                    action: "Action",
+                    revert: "Revert",
+                    revert_plural: "Revert Keybinds",
+                    revertDescription: "Revert keybinds to default."
                 }
             }
         },

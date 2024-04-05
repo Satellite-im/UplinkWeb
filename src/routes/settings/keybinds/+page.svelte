@@ -1,20 +1,19 @@
 <script lang="ts">
     import { Banner, Key } from "$lib/components"
-    import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte";
+    import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Button, Icon, Label, Select, Spacer, Text } from "$lib/elements"
-    import Input from "$lib/elements/Input/Input.svelte";
     import { Appearance, KeybindAction, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
-    import Controls from "$lib/layouts/Controls.svelte";
-    import { Store, type ISettingsState, defaultKeybinds } from "$lib/state/Store";
-    import type { Keybind } from "$lib/types";
+    import { Store, type ISettingsState, defaultKeybinds, defaultSettings } from "$lib/state/Store"
+    import type { Keybind } from "$lib/types"
     import { _ } from 'svelte-i18n'
+    import { get } from "svelte/store";
 
     initLocale()
 
-    let settings: ISettingsState
-    let keybinds: Keybind[] = []
+    let settings: ISettingsState = get(Store.state.settings)
+    let keybinds: Keybind[] = defaultKeybinds
     let recordedAction: KeybindAction = KeybindAction.ToggleMute
 
     let keyboardRecording = { key: "", modifiers: [] }
@@ -35,10 +34,24 @@
             }
             return keybind
         })
-           
+
         Store.updateSettings({...settings, keybinds: newKeybinds})
 
         keyboardRecording = { key: "", modifiers: [] }
+    }
+
+    function revertKeybind(actionToRevert: KeybindAction) {
+        const defaultKeybind = defaultKeybinds.find(kb => kb.action === actionToRevert)
+        if (!defaultKeybind) return;
+
+        const newKeybinds = keybinds.map(kb => {
+            if (kb.action === actionToRevert) {
+                return {...defaultKeybind}
+            }
+            return kb
+        })
+
+        Store.updateSettings({...settings, keybinds: newKeybinds})
     }
 
     function isKeybindMatching(recorded: any, keybind: any) {
@@ -61,13 +74,13 @@
 <div id="page">
     <KeyboardListener on:event={(e) => keyboardRecording = e.detail} />
 
-    <Banner text="Global keybinds are disabled while on this page.">
+    <Banner text={$_("settings.keybinds.banner")}>
         <Icon icon={Shape.Info} size={Size.Large} />
     </Banner>
     
     <Spacer />
-    <Label text="Record Keybind" />
-    <Text>Press any combination of keys while on this page, then select the action you'd like to bind to this keyboard combo. Custom shortcuts will override default shortcuts. Not all actions have default shortcuts.</Text>
+    <Label text={$_("settings.keybinds.recordKeybind")} />
+    <Text>{$_("settings.keybinds.instructions")}</Text>
     <div class="new-keybind">
         <div class="recorded-keys">
             <Label text="Recorded Keys"></Label>
@@ -78,31 +91,31 @@
                         <Key character={modifier} />
                     {/each}
                 {:else}
-                    <Key character="Press a key or combo to record." />
+                    <Key character={$_("settings.keybinds.pressAKey")} />
                 {/if}
             </div>
         </div>
         <div class="action">
-            <Label text="Action"></Label>
+            <Label text={$_("settings.keybinds.action")}></Label>
             <Select alt bind:selected={recordedAction} options={keybinds.map(keybind => { 
                 return { text: keybind.action.toString(), value: keybind.action.toString()}
             })}></Select>
         </div>
         <div>
             <Button 
-                text="Save" 
+                text={$_("generic.save")}
                 disabled={keyboardRecording.key === ""} 
                 appearance={keyboardRecording.key !== "" ? Appearance.Success : Appearance.Alt}
                 on:click={handleNewKeybind}></Button>
-            <Button text="Cancel" appearance={Appearance.Alt} on:click={(_) => {
+            <Button text={$_("generic.cancel")} appearance={Appearance.Alt} on:click={(_) => {
                 keyboardRecording = { key: "", modifiers: [] }
             }}></Button>
         </div>
     </div>
     <Spacer />
 
-    <SettingSection name="Revert" description="Revert keybinds to default bindings.">
-        <Button appearance={Appearance.Alt} text="Revert Keybinds" on:click={(_) => {
+    <SettingSection name={$_("settings.keybinds.revert")} description={$_("settings.keybinds.revertDescription")}>
+        <Button appearance={Appearance.Alt} text={$_("settings.keybinds.revert_plural")} on:click={(_) => {
              Store.updateSettings({...settings, keybinds: defaultKeybinds})
         }}>
             <Icon icon={Shape.UTurn} />
@@ -121,7 +134,9 @@
                         {/each}
                     </div>
                     
-                    <Button icon appearance={Appearance.Alt}>
+                    <Button icon appearance={Appearance.Alt} on:click={(_) => {
+                        revertKeybind(keybind.action)
+                    }}>
                         <Icon icon={Shape.UTurn} />
                     </Button>
                 </div>
@@ -179,6 +194,7 @@
 
             &.highlight {
                 border: var(--border-width) solid var(--info-color);
+                padding: var(--padding);
             }
 
             .controls {

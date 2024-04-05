@@ -7,6 +7,7 @@
     import { Appearance } from "$lib/enums"
     import { Store, type ISettingsState, defaultSettings } from "$lib/state/Store"
     import { onMount } from "svelte";
+    import { get } from "svelte/store";
 
     initLocale()
 
@@ -41,7 +42,7 @@
         selectedInput = d
     })
 
-    let settings: ISettingsState = defaultSettings
+    let settings: ISettingsState = get(Store.state.settings)
     Store.state.settings.subscribe((s: ISettingsState) => {
         settings = s
     })

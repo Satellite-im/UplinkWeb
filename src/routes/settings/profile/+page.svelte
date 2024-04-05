@@ -9,6 +9,7 @@
     import type { User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
+    import { get } from "svelte/store";
 
     initLocale()
 
@@ -23,7 +24,7 @@
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
-    let user: User
+    let user: User = get(Store.state.user)
     let activityStatus: Status = Status.Online
     Store.state.user.subscribe(val => {
         user = val

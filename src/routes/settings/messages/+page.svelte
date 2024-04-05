@@ -3,11 +3,12 @@
     import { _ } from 'svelte-i18n'
     import { SettingSection } from "$lib/layouts"
     import { Switch } from "$lib/elements"
-    import { Store, type ISettingsState, defaultSettings } from "$lib/state/Store"
+    import { Store, type ISettingsState } from "$lib/state/Store"
+    import { get } from "svelte/store";
 
     initLocale()
 
-    let settings: ISettingsState = defaultSettings
+    let settings: ISettingsState = get(Store.state.settings)
     Store.state.settings.subscribe((s: ISettingsState) => {
         settings = s
     })

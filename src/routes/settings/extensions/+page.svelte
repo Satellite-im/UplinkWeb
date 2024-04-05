@@ -4,6 +4,7 @@ import { Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
+    import UnderConstruction from "$lib/elements/UnderConstruction.svelte";
 
     initLocale()
 </script>
@@ -22,6 +23,7 @@ import { Button, Icon, Label } from "$lib/elements"
     </Controls>
 
     <div class="content">
+        <UnderConstruction />
         <Label text="No extensions installed." />
     </div>
 </div>

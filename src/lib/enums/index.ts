@@ -25,7 +25,8 @@ export const enum Font {
     PixelifySans    = "PixelifySans",
     MajorMono       = "MajorMono",
     Merriweather    = "Merriweather",
-    PoiretOne       = "PoiretOne"
+    PoiretOne       = "PoiretOne",
+    OpenDyslexic    = "OpenDyslexic"
 }
 
 export const enum Route {

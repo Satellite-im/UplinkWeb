@@ -152,6 +152,12 @@ select {
     src: url('/assets/font/SpaceGrotesk.ttf');
 }
 
+@font-face {
+    font-family: "OpenDyslexic";
+    src: url('/assets/font/OpenDyslexicAlta-Regular.otf');
+}
+
+
 strong {
     font-weight: bold;
 }

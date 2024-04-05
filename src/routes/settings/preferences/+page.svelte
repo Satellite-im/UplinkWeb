@@ -8,13 +8,14 @@
     import ColorPicker from 'svelte-awesome-color-picker'
     import { Store } from "$lib/state/Store"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
+    import { get } from "svelte/store";
 
     initLocale()
 
-    let hex = "#f6f0dc"
-    let font: Font = Font.Poppins
-    let cssOverride = ""
-    let fontSize = 1.0
+    let hex = get(Store.state.ui.color)
+    let font: Font = get(Store.state.ui.font)
+    let cssOverride = get(Store.state.ui.cssOverride)
+    let fontSize = get(Store.state.ui.fontSize)
 
     Store.state.ui.color.subscribe((c) => {
         hex = c
@@ -45,6 +46,7 @@
         { text: Font.MajorMono, value: Font.MajorMono },
         { text: Font.Merriweather, value: Font.Merriweather },
         { text: Font.PoiretOne, value: Font.PoiretOne },
+        { text: Font.OpenDyslexic, value: Font.OpenDyslexic },
     ]
 
     $: if (hex !== undefined) {
