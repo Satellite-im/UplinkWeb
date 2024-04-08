@@ -6,17 +6,17 @@
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
-    import { get } from "svelte/store";
+    import { get } from "svelte/store"
 
     TimeAgo.addDefaultLocale(en)
 
-    let color: string = get(Store.state.ui.color)
-    let fontSize: number = get(Store.state.ui.fontSize)
-    let font: Font = get(Store.state.ui.font)
-    let cssOverride: string = get(Store.state.ui.cssOverride)
     let keybinds: Keybind[]
-    let muted: boolean       = get(Store.state.devices.muted)
-    let deafened: boolean    = get(Store.state.devices.deafened)
+    let color: string           = get(Store.state.ui.color)
+    let fontSize: number        = get(Store.state.ui.fontSize)
+    let font: Font              = get(Store.state.ui.font)
+    let cssOverride: string     = get(Store.state.ui.cssOverride)
+    let muted: boolean          = get(Store.state.devices.muted)
+    let deafened: boolean       = get(Store.state.devices.deafened)
 
     function handleKeybindMatch(event: CustomEvent<any>) {
         let keybind: Keybind = event.detail
@@ -61,18 +61,10 @@
         font = f
         style = buildStyle()
     })
-    
-    Store.state.settings.subscribe(settings => {
-        keybinds = settings.keybinds
-    })
 
-    Store.state.devices.muted.subscribe((state) => {
-        muted = state
-    })
-
-    Store.state.devices.deafened.subscribe((state) => {
-        deafened = state
-    })
+    Store.state.settings.subscribe(settings => keybinds = settings.keybinds)
+    Store.state.devices.muted.subscribe((state) => muted = state)
+    Store.state.devices.deafened.subscribe((state) => deafened = state)
 </script>
 
 <div id="app">

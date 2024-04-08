@@ -37,7 +37,7 @@
         <Button 
             icon
             appearance={muted ? Appearance.Error : Appearance.Alt} 
-            tooltip={$_('call.mute')}
+            tooltip={$_("call.mute")}
             loading={loading}
             on:click={(_) => {
                 Store.updateMuted(!muted)
@@ -47,7 +47,7 @@
         <Button 
             icon 
             appearance={deafened ? Appearance.Error : Appearance.Alt} 
-            tooltip={$_('call.deafean')}
+            tooltip={$_("call.deafen")}
             loading={loading}
             on:click={(_) => {
                 Store.updateDeafened(!deafened)

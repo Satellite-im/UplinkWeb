@@ -77,7 +77,7 @@
             <Button 
                 icon 
                 appearance={deafened ? Appearance.Error : Appearance.Alt} 
-                tooltip={$_('call.deafean')}
+                tooltip={$_('call.deafen')}
                 on:click={(_) => {
                     Store.updateDeafened(!deafened)
                 }}>

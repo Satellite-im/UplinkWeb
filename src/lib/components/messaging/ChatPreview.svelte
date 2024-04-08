@@ -10,6 +10,7 @@
     import { goto } from "$app/navigation"
 
     export let chat: Chat
+    export let cta: boolean             = false
     export let simpleUnreads: boolean   = false
     export let loading: boolean         = false
 
@@ -20,7 +21,6 @@
     let name = (chat.users.length > 1) ? 
         chat.name : chat.users[0].name
 
-    let cta = chat.notifications > 0
 
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {

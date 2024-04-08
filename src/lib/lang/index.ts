@@ -29,6 +29,7 @@ export function initLocale() {
             call: {
                 end: "End",
                 mute: "Mute",
+                deafen: "Deafen",
                 stream: "Stream",
                 in_call: "In Call",
             },

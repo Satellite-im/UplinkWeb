@@ -18,6 +18,7 @@
     import { mock_messages } from "$lib/mock/messages"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
+    import { get } from "svelte/store";
 
     initLocale()
 
@@ -81,6 +82,7 @@
                 chat={chat}
                 loading={loading}
                 simpleUnreads
+                cta={activeChat === chat}
                 on:context={(evt) => {
                     contextPosition = evt.detail
                     contextData = [
