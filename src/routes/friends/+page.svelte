@@ -195,19 +195,28 @@
                                     <svelte:fragment slot="controls">
                                         <Button 
                                             text={$_("chat.chat")}
-                                            >
+                                            on:click={(_) => {
+                                                Store.setActiveDM(result.item)
+                                                goto(Route.Chat)
+                                            }}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>
                                         <Button 
                                             icon 
                                             appearance={Appearance.Alt} 
-                                            tooltip={$_("generic.remove")}>
+                                            tooltip={$_("generic.remove")}
+                                            on:click={(_) => {
+                                                Store.removeFriend(result.item)
+                                            }}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
                                         <Button 
                                             icon 
                                             appearance={Appearance.Alt} 
-                                            tooltip={$_("friends.block")}>
+                                            tooltip={$_("friends.block")}
+                                            on:click={(_) => {
+                                                Store.blockUser(result.item)
+                                            }}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
                                     </svelte:fragment>
@@ -237,18 +246,14 @@
                                             icon 
                                             appearance={Appearance.Alt} 
                                             tooltip={$_("generic.remove")}
-                                            on:click={(_) => {
-                                                Store.removeFriend(friend)
-                                            }}>
+                                            on:click={(_) => Store.removeFriend(friend) }>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
                                         <Button 
                                             icon 
                                             appearance={Appearance.Alt} 
                                             tooltip={$_("friends.block")}
-                                            on:click={(_) => {
-                                                Store.blockUser(friend)
-                                            }}>
+                                            on:click={(_) => Store.blockUser(friend) }>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
                                     </svelte:fragment>
@@ -263,7 +268,8 @@
                     {#each Store.outboundRequests as request}
                         <Friend friend={request.to}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Alt} text={$_("generic.cancel")}>
+                                <Button appearance={Appearance.Alt} text={$_("generic.cancel")}
+                                    on:click={(_) => Store.cancelRequest(request.to)}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>
@@ -276,10 +282,12 @@
                     {#each Store.inboundRequests as request}
                         <Friend friend={request.from}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Success} text={$_("generic.accept")}>
+                                <Button appearance={Appearance.Success} text={$_("generic.accept")}
+                                    on:click={(_) => Store.acceptRequest(request.from)}>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
-                                <Button appearance={Appearance.Alt} text={$_("generic.deny")}>
+                                <Button appearance={Appearance.Alt} text={$_("generic.deny")}
+                                    on:click={(_) => Store.denyRequest(request.from) }>
                                     <Icon icon={Shape.XMark} />
                                 </Button>
                             </svelte:fragment>
@@ -296,9 +304,7 @@
                         <Friend friend={user}>
                             <svelte:fragment slot="controls">
                                 <Button appearance={Appearance.Alt} text={$_("friends.unblock")}
-                                    on:click={(_) => {
-                                        Store.unblockUser(user)
-                                    }}>
+                                    on:click={(_) => Store.unblockUser(user) }>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>

@@ -97,9 +97,6 @@
                             appearance: Appearance.Default
                         },
                     ]
-                }}
-                on:click={(_) => {
-                    Store.setActiveChat(chat)
                 }} />
         {/each}
     </Sidebar>

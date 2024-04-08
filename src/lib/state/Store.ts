@@ -1,3 +1,4 @@
+import { Sound, Sounds } from "$lib/components/utils/Sounds"
 import { Font, KeybindAction, Locale, MessageDirection, Status } from "$lib/enums"
 import { mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest } from "$lib/types"
@@ -278,10 +279,47 @@ class GlobalStore {
 
     updateMuted(muted: boolean) {
         this.state.devices.muted.set(muted)
+        Sounds.play(muted ? Sound.Off : Sound.On)
     }
 
     updateDeafened(deafened: boolean) {
         this.state.devices.deafened.set(deafened)
+        Sounds.play(deafened ? Sound.Off : Sound.On)
+    }
+
+    addFriend(user: User) {
+        const currentFriends = get(this.state.friends)
+        const currentRequests = get(this.state.activeRequests)
+        if (!currentFriends.includes(user)) {
+            this.state.friends.set([...currentFriends, user])
+            this.state.activeRequests.set(
+                currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id)
+            )
+        }
+    }
+
+    acceptRequest(user: User) {
+        const currentFriends = get(this.state.friends)
+        const currentRequests = get(this.state.activeRequests)
+    
+        if (!currentFriends.some(friend => friend.id === user.id)) {
+            this.state.friends.set([...currentFriends, user])
+        }
+
+        this.state.activeRequests.set(
+            currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id)
+        )
+    }
+
+    denyRequest(user: User) {
+        const currentRequests = get(this.state.activeRequests)        
+        this.state.activeRequests.set(
+            currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id)
+        )
+    }
+
+    cancelRequest(user: User) {
+        this.denyRequest(user)
     }
 
     removeFriend(user: User) {
