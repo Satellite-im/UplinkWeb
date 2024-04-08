@@ -279,12 +279,14 @@ class GlobalStore {
 
     updateMuted(muted: boolean) {
         this.state.devices.muted.set(muted)
-        Sounds.play(muted ? Sound.Off : Sound.On)
+        if (get(this.state.settings).audio.controlSounds)
+            Sounds.play(muted ? Sound.Off : Sound.On)
     }
 
     updateDeafened(deafened: boolean) {
         this.state.devices.deafened.set(deafened)
-        Sounds.play(deafened ? Sound.Off : Sound.On)
+        if (get(this.state.settings).audio.controlSounds)
+            Sounds.play(deafened ? Sound.Off : Sound.On)
     }
 
     addFriend(user: User) {
