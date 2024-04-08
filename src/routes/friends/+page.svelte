@@ -1,23 +1,28 @@
 <script lang="ts">  
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
-    import { ChatPreview, ContextMenu, Modal, ProfilePicture } from "$lib/components"
+    import { ChatPreview, ContextMenu, Modal } from "$lib/components"
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { blocked_users, chats, fake_user_array, mock_users } from "$lib/mock/users"
+    import { blocked_users, chats, fake_user_array } from "$lib/mock/users"
     import type { ContextItem, User } from "$lib/types"
-    import Controls from "$lib/layouts/Controls.svelte"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
+    import { Store } from "$lib/state/Store"
+    import { get } from "svelte/store"
+    import { goto } from "$app/navigation";
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
     let sidebarOpen: boolean = true
+    let friends: User[] = get(Store.state.friends)
+    let blocked: User[] = get(Store.state.blocked)
 
-    let tab: string = "all";
+    
+    let tab: string = "all"
 
     function toggleSidebar(): void {
         sidebarOpen = !sidebarOpen
@@ -61,12 +66,15 @@
         ]
     }
 
-    const fuse = new Fuse(mock_users, fuseOptions)
+    const fuse = new Fuse(friends, fuseOptions)
     let searchResult = fuse.search("")
 
     $: if (searchString !== undefined) {
         searchResult = fuse.search(searchString);
     }
+
+    Store.state.friends.subscribe(f => friends = f)
+    Store.state.blocked.subscribe(u => blocked = u)
 </script>
 
 <div id="page">
@@ -186,7 +194,8 @@
                                 <Friend friend={result.item}>
                                     <svelte:fragment slot="controls">
                                         <Button 
-                                            text={$_("chat.chat")}>
+                                            text={$_("chat.chat")}
+                                            >
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>
                                         <Button 
@@ -210,26 +219,36 @@
                     </div>
                 {/if}
                 <div class="section column">
-                    {#each Object.keys(groupUsersAlphabetically(mock_users)).sort() as letter}
-                        {#if groupUsersAlphabetically(mock_users)[letter].length > 0}
+                    {#each Object.keys(groupUsersAlphabetically(friends)).sort() as letter}
+                        {#if groupUsersAlphabetically(friends)[letter].length > 0}
                             <Label text={letter} />
-                            {#each groupUsersAlphabetically(mock_users)[letter] as friend}
+                            {#each groupUsersAlphabetically(friends)[letter] as friend}
                                 <Friend friend={friend}>
                                     <svelte:fragment slot="controls">
                                         <Button 
-                                            text={$_("chat.chat")}>
+                                            text={$_("chat.chat")}
+                                            on:click={(_) => {
+                                                Store.setActiveDM(friend)
+                                                goto(Route.Chat)
+                                            }}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>
                                         <Button 
                                             icon 
                                             appearance={Appearance.Alt} 
-                                            tooltip={$_("generic.remove")}>
+                                            tooltip={$_("generic.remove")}
+                                            on:click={(_) => {
+                                                Store.removeFriend(friend)
+                                            }}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
                                         <Button 
                                             icon 
                                             appearance={Appearance.Alt} 
-                                            tooltip={$_("friends.block")}>
+                                            tooltip={$_("friends.block")}
+                                            on:click={(_) => {
+                                                Store.blockUser(friend)
+                                            }}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
                                     </svelte:fragment>
@@ -241,8 +260,8 @@
             {:else if tab === "active"}
                 <div class="section column">
                     <Label text={$_("friends.outgoing_requests")} />
-                    {#each fake_user_array as friend}
-                        <Friend friend={friend}>
+                    {#each Store.outboundRequests as request}
+                        <Friend friend={request.to}>
                             <svelte:fragment slot="controls">
                                 <Button appearance={Appearance.Alt} text={$_("generic.cancel")}>
                                     <Icon icon={Shape.NoSymbol} />
@@ -250,9 +269,12 @@
                             </svelte:fragment>
                         </Friend>
                     {/each}
+                    {#if Store.outboundRequests.length === 0}
+                        <Text>No outbound requests.</Text>
+                    {/if}
                     <Label text={$_("friends.incoming_requests")} />
-                    {#each fake_user_array as friend}
-                        <Friend friend={friend}>
+                    {#each Store.inboundRequests as request}
+                        <Friend friend={request.from}>
                             <svelte:fragment slot="controls">
                                 <Button appearance={Appearance.Success} text={$_("generic.accept")}>
                                     <Icon icon={Shape.CheckMark} />
@@ -263,19 +285,28 @@
                             </svelte:fragment>
                         </Friend>
                     {/each}
+                    {#if Store.inboundRequests.length === 0}
+                        <Text>No inbound requests.</Text>
+                    {/if}
                 </div>
             {:else if tab === "blocked"}
                 <div class="section column">
                     <Label text={$_("friends.blocked_users")} />
-                    {#each blocked_users as friend}
-                        <Friend friend={friend}>
+                    {#each blocked as user}
+                        <Friend friend={user}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Alt} text={$_("friends.unblock")}>
+                                <Button appearance={Appearance.Alt} text={$_("friends.unblock")}
+                                    on:click={(_) => {
+                                        Store.unblockUser(user)
+                                    }}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
+                    {#if Store.blockedUsers.length === 0}
+                        <Text>No users blocked.</Text>
+                    {/if}
                 </div>
             {/if}
         </div>

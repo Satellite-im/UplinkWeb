@@ -1,6 +1,7 @@
-import { Font, KeybindAction, Locale, Status } from "$lib/enums"
-import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call } from "$lib/types"
-import { writable, type Writable } from "svelte/store"
+import { Font, KeybindAction, Locale, MessageDirection, Status } from "$lib/enums"
+import { mock_users } from "$lib/mock/users"
+import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest } from "$lib/types"
+import { get, writable, type Writable } from "svelte/store"
 
 export interface ISettingsState {
     lang: Locale,
@@ -71,6 +72,9 @@ export let defaultKeybinds = [
 
 export let defaultSettings = {
     lang: Locale.EN_US,
+    friends: [],
+    activeRequests: [],
+    blocked: [],
     messaging: {
         convertEmoji: true,
         markdownSupport: true,
@@ -100,6 +104,9 @@ export let defaultSettings = {
 
 export interface IState {
     user: Writable<User>,
+    blocked: Writable<User[]>,
+    activeRequests: Writable<FriendRequest[]>,
+    friends: Writable<User[]>,
     devices: {
         muted: Writable<boolean>,
         deafened: Writable<boolean>,
@@ -155,9 +162,20 @@ outputDevice.subscribe(d => setLSItem("uplink.devices.output", d))
 const muted = writable(getLSItem("uplink.devices.muted", false))
 muted.subscribe(status => setLSItem("uplink.devices.muted", status))
 
+const friends = writable(getLSItem("uplink.friends", mock_users))
+friends.subscribe(f => setLSItem("uplink.friends", f))
+
+const blocked = writable(getLSItem("uplink.blocked", []))
+blocked.subscribe(f => setLSItem("uplink.blocked", f))
+
+const activeRequests = writable(getLSItem("uplink.requests", []))
+activeRequests.subscribe(f => setLSItem("uplink.requests", f))
 
 const initialState: IState = {
     user,
+    friends,
+    blocked,
+    activeRequests,
     devices: {
         muted,
         deafened: writable(false),
@@ -228,6 +246,16 @@ class GlobalStore {
         this.state.activeChat.set(chat)
     }
 
+    setActiveDM(user: User) {
+        this.state.activeChat.set({
+            ...defaultChat,
+            users: [ user ],
+            name: user.name,
+            motd: user.profile.status_message
+        })
+    }
+    
+
     setInputDevice(device: string) {
         this.state.devices.input.set(device)
     }
@@ -254,6 +282,33 @@ class GlobalStore {
 
     updateDeafened(deafened: boolean) {
         this.state.devices.deafened.set(deafened)
+    }
+
+    removeFriend(user: User) {
+        let friendsList = get(this.state.friends)
+        this.state.friends.set(friendsList.filter(f => f.id !== user.id))
+    }
+
+    blockUser(user: User) {
+        this.removeFriend(user)
+        this.state.blocked.set([...get(this.state.blocked), user])
+    }
+
+    unblockUser(user: User) {
+        let blocked = get(this.state.blocked)
+        this.state.blocked.set(blocked.filter(u => u.id !== user.id))
+    }
+
+    get outboundRequests() {
+        return get(this.state.activeRequests).filter((r: FriendRequest) => r.direction === MessageDirection.Outbound)
+    }
+
+    get inboundRequests() {
+        return get(this.state.activeRequests).filter((r: FriendRequest) => r.direction === MessageDirection.Inbound)
+    }
+
+    get blockedUsers() {
+        return get(this.state.blocked)
     }
 }
 

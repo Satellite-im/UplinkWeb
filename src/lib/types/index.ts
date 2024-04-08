@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection } from "$lib/enums"
 
 
 export type SelectOption = {
@@ -124,6 +124,13 @@ export type Attachment = {
     name: string,
     size: number,
     location: string,
+}
+
+export type FriendRequest = {
+    at: Date,
+    direction: MessageDirection,
+    to: User,
+    from: User
 }
 
 export type MessageDetails = {
