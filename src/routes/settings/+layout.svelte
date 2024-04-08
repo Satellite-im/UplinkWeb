@@ -8,18 +8,20 @@
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { settingsRoutes } from "$lib/mock/routes"
+    import { Store } from "$lib/state/Store"
     import type { ContextItem } from "$lib/types"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
+    import { get } from "svelte/store"
 
     initLocale()
 
     let loading = false
-    let sidebarOpen = true
+    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
     let activeRoute = SettingsRoute.Profile;
 
     function toggleSidebar() {
-        sidebarOpen = !sidebarOpen
+        Store.toggleSidebar()
     }
 
     onMount(() => {
@@ -62,6 +64,8 @@
     // TODO: Move to global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+
+    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
 </script>
 
 <div id="settings">

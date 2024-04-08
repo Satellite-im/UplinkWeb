@@ -14,7 +14,7 @@
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { defaultChat, type Chat, type ContextItem } from "$lib/types"
+    import { type Chat, type ContextItem } from "$lib/types"
     import { mock_messages } from "$lib/mock/messages"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
@@ -23,12 +23,14 @@
     initLocale()
 
     let loading = false
-    let sidebarOpen = true
     let contentAsideOpen = false
+    let activeChat: Chat = get(Store.state.activeChat)
+    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let isFavorite = Store.isFavorite(activeChat)
     let conversation = mock_messages
 
     function toggleSidebar() {
-        sidebarOpen = !sidebarOpen
+        Store.toggleSidebar()
     }
 
     // TODO: Move this into a global state
@@ -36,10 +38,12 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
-
-    let activeChat: Chat = defaultChat
+    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
     Store.state.activeChat.subscribe((c) => {
         activeChat = c
+    })
+    Store.state.favorites.subscribe(f => {
+        isFavorite = Store.isFavorite(activeChat)
     })
 </script>
 
@@ -64,7 +68,9 @@
     {/if}
 
     <!-- Sidebar -->
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat} />
+    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}>
+        
+    </Slimbar>
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
             <Icon icon={Shape.Shop} />
@@ -131,7 +137,9 @@
                 <Button icon appearance={Appearance.Alt}>
                     <Icon icon={Shape.VideoCamera} />
                 </Button>
-                <Button icon appearance={Appearance.Alt}>
+                <Button icon 
+                    appearance={isFavorite ? Appearance.Primary : Appearance.Alt}
+                    on:click={(_) => {Store.toggleFavorite(activeChat)}}>
                     <Icon icon={Shape.Heart} />
                 </Button>
                 <Button icon appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt} on:click={

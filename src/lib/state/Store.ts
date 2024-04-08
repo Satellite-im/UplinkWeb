@@ -74,6 +74,7 @@ export let defaultKeybinds = [
 export let defaultSettings = {
     lang: Locale.EN_US,
     friends: [],
+    favorites: [],
     activeRequests: [],
     blocked: [],
     messaging: {
@@ -108,6 +109,7 @@ export interface IState {
     blocked: Writable<User[]>,
     activeRequests: Writable<FriendRequest[]>,
     friends: Writable<User[]>,
+    favorites: Writable<Chat[]>,
     devices: {
         muted: Writable<boolean>,
         deafened: Writable<boolean>,
@@ -120,7 +122,8 @@ export interface IState {
         color: Writable<string>,
         fontSize: Writable<number>,
         cssOverride: Writable<string>,
-        font: Writable<Font>
+        font: Writable<Font>,
+        sidebarOpen: Writable<boolean>,
     },
     settings: Writable<ISettingsState>
 }
@@ -172,9 +175,16 @@ blocked.subscribe(f => setLSItem("uplink.blocked", f))
 const activeRequests = writable(getLSItem("uplink.requests", []))
 activeRequests.subscribe(f => setLSItem("uplink.requests", f))
 
+const favorites = writable(getLSItem("uplink.favorites", []) as Chat[])
+favorites.subscribe(favs => setLSItem("uplink.favorites", favs))
+
+const sidebarOpen = writable(getLSItem("uplink.ui.sidebarOpen", true))
+sidebarOpen.subscribe(value => setLSItem("uplink.ui.sidebarOpen", value))
+
 const initialState: IState = {
     user,
     friends,
+    favorites,
     blocked,
     activeRequests,
     devices: {
@@ -193,7 +203,8 @@ const initialState: IState = {
         color,
         fontSize,
         font,
-        cssOverride
+        cssOverride,
+        sidebarOpen
     },
     settings
 }
@@ -255,7 +266,6 @@ class GlobalStore {
             motd: user.profile.status_message
         })
     }
-    
 
     setInputDevice(device: string) {
         this.state.devices.input.set(device)
@@ -339,6 +349,46 @@ class GlobalStore {
         this.state.blocked.set(blocked.filter(u => u.id !== user.id))
     }
 
+    addFavorite(chat: Chat) {
+        const currentFavorites = get(this.state.favorites)
+        if (!currentFavorites.find(c => c.name === chat.name)) {
+            this.state.favorites.set([...currentFavorites, chat])
+        }
+    }
+
+    removeFavorite(chat: Chat) {
+        this.state.favorites.set(
+            get(this.state.favorites).filter(c => c.name !== chat.name)
+        )
+    }
+
+    toggleFavorite(chat: Chat) {
+        const currentFavorites = get(this.state.favorites)
+        const isFavorite = currentFavorites.some(f => f.name === chat.name)
+    
+        this.state.favorites.set(
+            isFavorite ? currentFavorites.filter(f => f.name !== chat.name) : [...currentFavorites, chat]
+        )
+    }
+
+    isFavorite(chat: Chat): boolean {
+        const currentFavorites = get(this.state.favorites)
+        return currentFavorites.some(f => f.name === chat.name)
+    }
+
+    openSidebar() {
+        this.state.ui.sidebarOpen.set(true)
+    }
+
+    closeSidebar() {
+        this.state.ui.sidebarOpen.set(false)
+    }
+
+    toggleSidebar() {
+        const current = get(this.state.ui.sidebarOpen)
+        this.state.ui.sidebarOpen.set(!current)
+    }
+
     get outboundRequests() {
         return get(this.state.activeRequests).filter((r: FriendRequest) => r.direction === MessageDirection.Outbound)
     }
@@ -352,4 +402,4 @@ class GlobalStore {
     }
 }
 
-export const Store = new GlobalStore(initialState);
+export const Store = new GlobalStore(initialState)

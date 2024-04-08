@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection } from "$lib/enums"
 
 
@@ -79,6 +80,7 @@ export type NavRoute = {
 }
 
 export type Chat = {
+    id: string,
     name: string,
     motd: string,
     notifications: number,
@@ -89,6 +91,7 @@ export type Chat = {
 }
 
 export let defaultChat = {
+    id: uuidv4(),
     name: "",
     motd: "",
     notifications: 0,

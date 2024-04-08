@@ -11,13 +11,13 @@
     import Friend from "$lib/components/friends/Friend.svelte"
     import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
-    import { goto } from "$app/navigation";
+    import { goto } from "$app/navigation"
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = true
+    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
     let friends: User[] = get(Store.state.friends)
     let blocked: User[] = get(Store.state.blocked)
 
@@ -25,7 +25,7 @@
     let tab: string = "all"
 
     function toggleSidebar(): void {
-        sidebarOpen = !sidebarOpen
+        Store.toggleSidebar()
     }
 
     // Function to group users alphabetically by the first character of their usernames
@@ -75,6 +75,7 @@
 
     Store.state.friends.subscribe(f => friends = f)
     Store.state.blocked.subscribe(u => blocked = u)
+    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
 </script>
 
 <div id="page">

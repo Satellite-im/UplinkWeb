@@ -4,34 +4,33 @@
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
     import Controls from "../../layouts/Controls.svelte"
-    import { Store } from "$lib/state/Store"
+    import { Store, type ISettingsState } from "$lib/state/Store"
     import { get } from "svelte/store"
 
     initLocale()
 
-    export let loading: boolean     = false
-    export let duration: Date       = new Date()
-    export let muted: boolean       = get(Store.state.devices.muted)
-    export let deafened: boolean    = get(Store.state.devices.deafened)
+    export let loading: boolean         = false
+    export let duration: Date           = new Date()
+    export let muted: boolean           = get(Store.state.devices.muted)
+    export let deafened: boolean        = get(Store.state.devices.deafened)
+    export let settings: ISettingsState = get(Store.state.settings)
 
-    Store.state.devices.muted.subscribe((state) => {
-        muted = state
-    })
-
-    Store.state.devices.deafened.subscribe((state) => {
-        deafened = state
-    })
+    Store.state.devices.muted.subscribe((state) =>  muted = state )
+    Store.state.devices.deafened.subscribe((state) => deafened = state )
+    Store.state.settings.subscribe((state) => settings = state)
 </script>
 
 <div class="call-controls">
-    <div class="info">
-        <Label text={$_('call.in_call')} />
-        <Text 
-            appearance={Appearance.Success} 
-            loading={loading}>
-            {duration.toISOString().substring(11, 19)}
-        </Text>
-    </div>
+    {#if settings?.audio?.callTimer}
+        <div class="info">
+            <Label text={$_('call.in_call')} />
+            <Text 
+                appearance={Appearance.Success} 
+                loading={loading}>
+                {duration.toISOString().substring(11, 19)}
+            </Text>
+        </div>
+    {/if}
 
     <Controls>
         <Button 
@@ -78,6 +77,11 @@
 
         .info {
             flex: 1;
+        }
+
+        :global(.controls) {
+            flex: 1;
+            justify-content: flex-end;
         }
     }
 </style>

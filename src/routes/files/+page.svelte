@@ -15,15 +15,17 @@
     import { mock_files } from "$lib/mock/files"
     import {dndzone} from "svelte-dnd-action"
     import type { ContextItem } from "$lib/types"
+    import { get } from "svelte/store"
+    import { Store } from "$lib/state/Store"
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = true
+    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
 
     function toggleSidebar(): void {
-        sidebarOpen = !sidebarOpen
+        Store.toggleSidebar()
     }
 
     let tabRoutes: string[] = ["chats", "files"]
@@ -43,6 +45,8 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+
+    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
 </script>
 
 <div id="page">

@@ -3,7 +3,7 @@ export enum Sound {
     Off          = "/assets/mp3/off.mp3",
     Joined       = "/assets/mp3/joined.mp3",
     Disconnect   = "/assets/mp3/disconnect.mp3",
-    Notification = "/assets/mp3/notifications.mp3",
+    Notification = "/assets/mp3/notification.mp3",
     OutgoingCall = "/assets/mp3/outgoing-call.mp3",
     IncomingCall = "/assets/mp3/incoming-call.mp3",
     Request      = "/assets/mp3/request.mp3"
