@@ -18,7 +18,7 @@
     import { mock_messages } from "$lib/mock/messages"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
-    import { get } from "svelte/store";
+    import { get } from "svelte/store"
 
     initLocale()
 
@@ -41,9 +41,10 @@
     Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
     Store.state.activeChat.subscribe((c) => {
         activeChat = c
+        isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
     })
     Store.state.favorites.subscribe(f => {
-        isFavorite = Store.isFavorite(activeChat)
+        isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
     })
 </script>
 
@@ -152,7 +153,9 @@
             </svelte:fragment>
         </Topbar>
 
-        <CallScreen />
+        {#if get(Store.state.activeCall)}
+            <CallScreen />
+        {/if}
 
         <Conversation>
             <EncryptedNotice />

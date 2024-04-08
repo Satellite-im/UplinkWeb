@@ -6,10 +6,9 @@
     import Topbar from "$lib/layouts/Topbar.svelte"
     import { mock_users } from "$lib/mock/users"
     import Participant from "./Participant.svelte"
-    import { ProfilePicture } from ".."
     import Text from "$lib/elements/Text.svelte"
-    import PopupButton from "../ui/PopupButton.svelte";
-    import CallSettings from "./CallSettings.svelte";
+    import PopupButton from "../ui/PopupButton.svelte"
+    import CallSettings from "./CallSettings.svelte"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import { _ } from 'svelte-i18n'

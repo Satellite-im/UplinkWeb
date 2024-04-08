@@ -117,7 +117,7 @@ export interface IState {
         output: Writable<string>,
     },
     activeChat: Writable<Chat>,
-    activeCall: Writable<Call>,
+    activeCall: Writable<Call | null>,
     ui: {
         color: Writable<string>,
         fontSize: Writable<number>,
@@ -194,11 +194,7 @@ const initialState: IState = {
         output: outputDevice
     },
     activeChat,
-    activeCall: writable({
-        startedAt: new Date(),
-        inCall: false,
-        chat: defaultChat
-    }),
+    activeCall: writable(null),
     ui: {
         color,
         fontSize,
@@ -263,7 +259,7 @@ class GlobalStore {
             ...defaultChat,
             users: [ user ],
             name: user.name,
-            motd: user.profile.status_message
+            motd: user.profile.status_message,
         })
     }
 
@@ -351,29 +347,28 @@ class GlobalStore {
 
     addFavorite(chat: Chat) {
         const currentFavorites = get(this.state.favorites)
-        if (!currentFavorites.find(c => c.name === chat.name)) {
+        if (!currentFavorites.find(c => c.id === chat.id)) {
             this.state.favorites.set([...currentFavorites, chat])
         }
     }
 
     removeFavorite(chat: Chat) {
         this.state.favorites.set(
-            get(this.state.favorites).filter(c => c.name !== chat.name)
+            get(this.state.favorites).filter(c => c.id !== chat.id)
         )
     }
 
     toggleFavorite(chat: Chat) {
         const currentFavorites = get(this.state.favorites)
-        const isFavorite = currentFavorites.some(f => f.name === chat.name)
+        const isFavorite = currentFavorites.some(f => f.id === chat.id)
     
         this.state.favorites.set(
-            isFavorite ? currentFavorites.filter(f => f.name !== chat.name) : [...currentFavorites, chat]
+            isFavorite ? currentFavorites.filter(f => f.id !== chat.id) : [...currentFavorites, chat]
         )
     }
 
     isFavorite(chat: Chat): boolean {
-        const currentFavorites = get(this.state.favorites)
-        return currentFavorites.some(f => f.name === chat.name)
+        return get(this.state.favorites).some(f => f.id === chat.id)
     }
 
     openSidebar() {

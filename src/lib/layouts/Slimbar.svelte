@@ -38,25 +38,27 @@
     {/if}
 
     <div class="content">
-        <Label text="Faves"/>
-        {#each favorites as favorite}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div class="fave" on:click={(_) => {
-                Store.setActiveChat(favorite)
-                goto(Route.Chat)
-            }}>
-                {#if favorite.users.length === 1}
-                    <ProfilePicture 
-                        typing={favorite.activity} 
-                        image={favorite.users[0]?.profile.photo.image}
-                        status={favorite.users[0].profile.status} 
-                        size={Size.Medium} />
-                {:else}
-                    <ProfilePictureMany users={favorite.users} />
-                {/if}
-            </div>
-        {/each}
+        {#if favorites.length}
+            <Label text="Faves"/>
+            {#each favorites as favorite}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div class="fave" on:click={(_) => {
+                    Store.setActiveChat(favorite)
+                    goto(Route.Chat)
+                }}>
+                    {#if favorite.users.length === 1}
+                        <ProfilePicture 
+                            typing={favorite.activity} 
+                            image={favorite.users[0]?.profile.photo.image}
+                            status={favorite.users[0].profile.status} 
+                            size={Size.Medium} />
+                    {:else}
+                        <ProfilePictureMany users={favorite.users} />
+                    {/if}
+                </div>
+            {/each}
+        {/if}
         <slot></slot>
     </div>
 

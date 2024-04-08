@@ -86,7 +86,7 @@
                 }
 
                 const average = values / length
-                audioLevel = Math.round((average / 120) * 100)
+                audioLevel = Math.round((average / 220) * 100)
             }
         } catch (err) {
             console.error("Accessing the microphone failed:", err)
@@ -132,20 +132,9 @@
         audio.play().catch(error => console.error("Error playing audio:", error))
     }
 
-    let testAudio = new Audio("/assets/mp3/sample.mp3")
-
     onMount(() => {
         startAudioMonitoring()
     })
-
-    function toggleTestAudio() {
-        startAudioOutputMonitoring()
-        if (testAudio.paused) {
-            testAudio.play()
-        } else {
-            testAudio.pause()
-        }
-    }
 
 </script>
 
@@ -164,7 +153,7 @@
         }} />
     </SettingSection>
     <div class="flex-row">
-        <Button small text="Test" appearance={Appearance.Alt} on:click={toggleTestAudio}/>
+        <Button small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring}/>
         <Meter percent={audioOutputLevel} />
     </div>
     <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">

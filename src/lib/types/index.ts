@@ -88,6 +88,7 @@ export type Chat = {
     users: User[],
     last_message_at: Date,
     last_message_preview: string,
+    conversation: Message[],
 }
 
 export let defaultChat = {
@@ -98,7 +99,8 @@ export let defaultChat = {
     activity: false,
     users: [],
     last_message_at: new Date,
-    last_message_preview: ""
+    last_message_preview: "",
+    conversation: []
 }
 
 export type Call = {

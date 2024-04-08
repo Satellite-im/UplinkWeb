@@ -1,6 +1,7 @@
-import { Appearance, Status } from "$lib/enums";
+import { Status } from "$lib/enums";
 import { defaultUser, type Chat, type User } from "$lib/types";
 
+import { v4 as uuidv4 } from "uuid"
 export const mock_users: Array<User> = [
     {
         ...defaultUser,
@@ -140,6 +141,7 @@ export const fake_user_array: Array<User> = [
 
 export let chats: Chat[] = [
     {
+        id: uuidv4(),
         name: "RC Group Chat",
         motd: "A place for people who love RC",
         notifications: 0,
@@ -150,51 +152,62 @@ export let chats: Chat[] = [
             mock_users[3],
         ],
         last_message_at: new Date(),
-        last_message_preview: "Wow! I had no idea that you could fly that well, good work!"
+        last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
+        conversation: []
     },
     {
+        id: uuidv4(),
         name: "",
         motd: "",
         notifications: 4,
         activity: false,
         users: [mock_users[0]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: uuidv4(),
         name: "",
         motd: "",
         notifications: 2,
         activity: true,
         users: [mock_users[1]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: uuidv4(),
         name: "",
         motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[2]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: uuidv4(),
         name: "",
         motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[3]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: uuidv4(),
         name: "",
         motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[4]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     }
 ]
