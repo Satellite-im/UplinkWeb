@@ -7,15 +7,19 @@
         dispatch('close', event)
     }
     
+
+    export let withControls: boolean = false
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="modal" on:click={onClose}>
     <div class="body" on:click|stopPropagation>
-        <Controls>
-            <slot name="controls"></slot>
-        </Controls>
+        {#if withControls}
+            <Controls>
+                <slot name="controls"></slot>
+            </Controls>
+        {/if}
         <div class="content">
             <slot></slot>
         </div>
@@ -57,7 +61,6 @@
                 max-height: 100%;
                 border-radius: var(--border-radius);
                 overflow: hidden;
-                padding: var(--padding-less);
                 padding-top: 0;
             }
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Appearance, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import { chats, mock_users } from "$lib/mock/users"
+    import { mock_users } from "$lib/mock/users"
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
@@ -60,15 +60,6 @@
     <!-- Modals -->
     {#if previewImage}
         <Modal on:close={(_) => {previewImage = null}}>
-            <svelte:fragment slot="controls">
-                <Button 
-                    icon 
-                    small 
-                    appearance={Appearance.Alt}
-                    on:click={(_) => {previewImage = null}}>
-                    <Icon icon={Shape.XMark} />
-                </Button>
-            </svelte:fragment>
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
