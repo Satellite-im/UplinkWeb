@@ -118,7 +118,7 @@ export type ContextItem = {
 }
 
 export type FileInfo = {
-    id: number,
+    id: string,
     type: string,
     size: number,
     name: string,

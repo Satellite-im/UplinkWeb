@@ -40,24 +40,28 @@
     let contextData: ContextItem[] = []
 
     onMount(() => {
-        let dropzone = document.querySelector('.files') as HTMLElement
+        const dropzone = document.querySelector('.files') as HTMLElement;
         if (dropzone) {
-          const sortable = new Sortable(dropzone, {
+            const sortable = new Sortable(dropzone, {
                 draggable: ".draggable-item",
                 mirror: {
                     constrainDimensions: true,
-                    },
+                },
                 plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-            })
+            });
+
             // sortable.on('sortable:stop', (event) => {
-            //     // Get the new order of the items, will need to save the order later
-            //     console.log('droppable:dropped', event)
-            //     // let newOrder = Array.from(dropzone.children).map(child => child.id);
-            // })
-          onDestroy(() => {
-              // Cleanup draggable instance, Swap will NOT work without onDestroy()
-              sortable.destroy()
-          })
+            //     const newOrder = Array.from(dropzone.children).map(child => child.getAttribute('data-id'))
+            //     console.log('new order', newOrder)
+            //     let reorderedFiles = newOrder.map(id => 
+            //         get(Store.state.files).find(file => file.id === id)
+            //     ).filter(file => file)
+            //     if (typeof reorderedFiles !== undefined) {
+            //         Store.state.files.set(reorderedFiles)
+            //     }
+            // });
+
+            onDestroy(() => sortable.destroy());
         }
     })
 
@@ -196,8 +200,9 @@
         <div class="files">
             {#each files as item}
                 <div
-                    class="draggable-item"
+                    class="draggable-item {item.type === "folder" ? "folder-draggable droppable" :""}"
                     draggable="true"
+                    data-id={item.id}
                 >
                     {#if item.type === "file"}
                         <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
