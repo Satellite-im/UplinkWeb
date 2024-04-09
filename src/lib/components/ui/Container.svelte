@@ -30,7 +30,6 @@
         }
 
         .title {
-            font-family: "Secondary";
             color: var(--color-muted);
             position: absolute;
             top: calc(var(--padding) * -1.5);

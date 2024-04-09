@@ -39,11 +39,6 @@
         text-align: left;
         max-width: fit-content;
 
-
-        &.secondary-font {
-            font-family: "Secondary";
-        }        
-
         &.single-line {
             display: -webkit-box;
             -webkit-line-clamp: 1;

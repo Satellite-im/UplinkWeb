@@ -1,11 +1,18 @@
 <script lang="ts">
+    import { Store } from "$lib/state/Store"
+
     export let color: string = ""
     export let name: string = ""
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
     class="color-swatch tooltip" 
     data-tooltip="{name}" 
+    on:click={() => {
+        Store.setThemeColor(color)
+    }}
     style="background-color: {color}">
 </div>
 

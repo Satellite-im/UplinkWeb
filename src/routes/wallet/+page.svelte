@@ -10,28 +10,32 @@
     import Input from "$lib/elements/Input/Input.svelte"
     import { balance, recent_transactions, transcations_in, transcations_out } from "$lib/mock/wallet"
     import TransactionContainer from "$lib/components/wallet/TransactionContainer.svelte"
-    import Container from "$lib/components/ui/Container.svelte";
-    import { mock_users } from "$lib/mock/users";
-    import Controls from "$lib/layouts/Controls.svelte";
-    import Button from "$lib/elements/Button.svelte";
-    import Icon from "$lib/elements/Icon.svelte";
-    import NewPayment from "$lib/components/wallet/payments/NewPayment.svelte";
+    import { mock_users } from "$lib/mock/users"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import Button from "$lib/elements/Button.svelte"
+    import Icon from "$lib/elements/Icon.svelte"
+    import NewPayment from "$lib/components/wallet/payments/NewPayment.svelte"
+    import { Store } from "$lib/state/Store"
+    import { get } from "svelte/store"
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = true
+    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
     let balace: number = balance
 
     function toggleSidebar(): void {
-        sidebarOpen = !sidebarOpen
+        Store.toggleSidebar()
     }
+
+    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
 </script>
 
 <div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Wallet} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet} >
+        <Label text="New Payment" />
         <NewPayment recipients={mock_users} embeded />
     </Sidebar>
     <div class="content">

@@ -1,6 +1,7 @@
-import { Appearance, Status } from "$lib/enums";
+import { Status } from "$lib/enums";
 import { defaultUser, type Chat, type User } from "$lib/types";
 
+import { v4 as uuidv4 } from "uuid"
 export const mock_users: Array<User> = [
     {
         ...defaultUser,
@@ -10,6 +11,7 @@ export const mock_users: Array<User> = [
             short: "xe89fsia",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/moon.png"
             },
@@ -29,6 +31,7 @@ export const mock_users: Array<User> = [
             short: "uw7r8sa9",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/blue_marble.png"
             },
@@ -50,6 +53,7 @@ export const mock_users: Array<User> = [
             short: "tu728sce",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/saturn.png"
             },
@@ -65,6 +69,7 @@ export const mock_users: Array<User> = [
             short: "6efyaui8",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/pluto.png"
             },
@@ -84,6 +89,7 @@ export const mock_users: Array<User> = [
             short: "fya72e8z",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/neptune.png"
             },
@@ -102,6 +108,7 @@ export const blocked_users: Array<User> = [
             short: "cixsu1o2",
         },
         profile: {
+            ...defaultUser.profile,
             photo: {
                 image: "/assets/uranis.png"
             },
@@ -123,53 +130,84 @@ export const fake_user_array: Array<User> = [
             photo: {
                 image: "/assets/neptune.png"
             },
+            banner: {
+                image: ""
+            },
             status: Status.Offline,
             status_message: "This user is not real."
         }
     },
 ];
 
-
-
 export let chats: Chat[] = [
     {
+        id: "p41",
+        name: "RC Group Chat",
+        motd: "A place for people who love RC",
+        notifications: 0,
+        activity: false,
+        users: [
+            mock_users[0],
+            mock_users[1],
+            mock_users[3],
+        ],
+        last_message_at: new Date(),
+        last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
+        conversation: []
+    },
+    {
+        id: "op23",
         name: "",
+        motd: "",
         notifications: 4,
         activity: false,
         users: [mock_users[0]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: "a45",
         name: "",
+        motd: "",
         notifications: 2,
         activity: true,
         users: [mock_users[1]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: "s12",
         name: "",
+        motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[2]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: "12s",
         name: "",
+        motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[3]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     },
     {
+        id: "as5",
         name: "",
+        motd: "",
         activity: false,
         notifications: 0,
         users: [mock_users[4]],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        conversation: []
     }
 ]

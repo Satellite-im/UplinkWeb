@@ -1,44 +1,56 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
-    import { Size } from "$lib/enums"
-    import type { User } from "$lib/types"
+    import { Route, Size } from "$lib/enums"
+    import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
+    import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
+    import { Store } from "$lib/state/Store"
+    import { goto } from "$app/navigation"
 
-    export let users: User[]            = []
-    export let notifications: number    = 0
+    export let chat: Chat
+    export let cta: boolean             = false
     export let simpleUnreads: boolean   = false
-    export let timestamp: Date          = new Date()
-    export let message: string          = ""
     export let loading: boolean         = false
-    export let typing: boolean          = false
 
     const timeAgo = new TimeAgo('en-US')
 
-    let photo = (users.length > 1) ?  
-        "todo" : users[0].profile.photo.image
-    let name = (users.length > 1) ? 
-        "todo" : users[0].name
-
-    let cta = notifications > 0
+    let photo = (chat.users.length > 1) ?  
+        "todo" : chat.users[0].profile.photo.image
+    let name = (chat.users.length > 1) ? 
+        chat.name : chat.users[0].name
 
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
         dispatch('context', coords)
+    }
+
+    function getTimeAgo(dateInput: string | Date) {
+        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput;
+        return timeAgo.format(date)
     }
 </script>
 
 <button class="chat-preview {cta ? "cta" : ""}" on:contextmenu={(e) => {
     e.preventDefault()
     onContext([e.clientX, e.clientY])
-}}>
-    <ProfilePicture 
-        typing={typing} 
-        image={photo} 
-        status={users[0].profile.status} 
-        size={Size.Medium} 
-        loading={loading} />
+}}
+    on:click={(_) => {
+        dispatch('click')
+        Store.setActiveChat(chat)
+        goto(Route.Chat)
+    }}>
+    {#if chat.users.length === 1}
+        <ProfilePicture 
+            typing={chat.activity} 
+            image={photo}
+            status={chat.users[0].profile.status} 
+            size={Size.Medium} 
+            loading={loading} />
+    {:else}
+        <ProfilePictureMany users={chat.users} />
+    {/if}
     <div class="content">
         <div class="heading">
             <Text 
@@ -53,14 +65,14 @@
                     loading={loading} 
                     size={Size.Smallest} 
                     muted>
-                    {timeAgo.format(timestamp)}
+                    {getTimeAgo(chat.last_message_at)}
                 </Text>
                 {#if !loading}
-                    {#if notifications > 0 && !simpleUnreads}
+                    {#if chat.notifications > 0 && !simpleUnreads}
                         <span class="unreads">
-                            {notifications}
+                            {chat.notifications}
                         </span>
-                    {:else if notifications > 0 && simpleUnreads}
+                    {:else if chat.notifications > 0 && simpleUnreads}
                         <span class="unreads simple"></span>
                     {/if}
                 {/if}
@@ -74,7 +86,7 @@
                 <Text 
                     size={Size.Small} 
                     loading={loading}>
-                    {message}
+                    {chat.last_message_preview || "No messages sent yet."}
                 </Text>
             {/if}
         </p>
@@ -132,7 +144,6 @@
                 .unreads {
                     background-color: var(--error-color);
                     font-size: var(--font-size-smaller);
-                    font-family: "Secondary";
                     padding: 0 var(--padding-minimal);
                     border-radius: var(--border-radius-minimal);
 

@@ -114,7 +114,6 @@
             width: 100%;
 
             .custom-input {
-                font-family: "Secondary";
                 font-size: var(--font-size-max);
                 color: var(--success-color);
                 background-color: transparent;
@@ -171,13 +170,6 @@
                     font-size: var(--font-size-smaller);
                     border: var(--border-width) solid var(--info-color);
                     height: fit-content;
-
-                    .username {
-                        font-size: var(--font-size-smaller);
-                        margin: 0;
-                        padding: 0;
-                        font-size: var(--font-size-smaller);
-                    }
                 }
             }
 

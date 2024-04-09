@@ -129,7 +129,6 @@
     }
 
     .badge {
-        font-family: "Secondary";
         position: absolute;
         top: 0;
         right: 0;

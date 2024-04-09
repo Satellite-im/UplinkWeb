@@ -1,4 +1,5 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind } from "$lib/enums"
+import { v4 as uuidv4 } from 'uuid'
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection } from "$lib/enums"
 
 
 export type SelectOption = {
@@ -26,14 +27,16 @@ export type ProfilePicture = {
 
 export type ProfileData = {
     photo: ProfilePicture,
+    banner: ProfilePicture,
     status: Status,
     status_message: string
 }
 
 export let defaultProfileData = {
     photo: { image: "" },
+    banner: { image: "" },
     status: Status.Offline,
-    status_message: ""
+    status_message: "Unknown status message."
 }
 
 export type Id = {
@@ -59,7 +62,7 @@ export type User = {
 export let defaultUser: User = {
     id: { short: "xxxxxx" },
     key: "0x0",
-    name: "",
+    name: "Unknown User",
     profile: defaultProfileData,
     media: {
         is_deafened: false,
@@ -77,12 +80,33 @@ export type NavRoute = {
 }
 
 export type Chat = {
+    id: string,
     name: string,
+    motd: string,
     notifications: number,
     activity: boolean,
     users: User[],
     last_message_at: Date,
     last_message_preview: string,
+    conversation: MessageGroup[],
+}
+
+export let defaultChat = {
+    id: uuidv4(),
+    name: "",
+    motd: "",
+    notifications: 0,
+    activity: false,
+    users: [],
+    last_message_at: new Date(),
+    last_message_preview: "",
+    conversation: []
+}
+
+export type Call = {
+    startedAt: Date,
+    chat: Chat,
+    inCall: boolean
 }
 
 export type ContextItem = {
@@ -90,6 +114,7 @@ export type ContextItem = {
     icon: Shape,
     text: string,
     appearance: Appearance,
+    onClick: () => void,
 }
 
 export type FileInfo = {
@@ -105,6 +130,13 @@ export type Attachment = {
     name: string,
     size: number,
     location: string,
+}
+
+export type FriendRequest = {
+    at: Date,
+    direction: MessageDirection,
+    to: User,
+    from: User
 }
 
 export type MessageDetails = {
@@ -132,4 +164,10 @@ export type Transaction = {
     from: User,
     amount: number,
     note: string
+}
+
+export type Keybind = {
+    action: KeybindAction,
+    key: string,
+    modifiers: string[]
 }

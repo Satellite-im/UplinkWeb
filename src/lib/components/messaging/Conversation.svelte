@@ -3,7 +3,7 @@
     import Button from "$lib/elements/Button.svelte"
     import { Appearance, Shape } from "$lib/enums"
     import { animationDuration } from "$lib/globals/animations"
-    import { afterUpdate, tick } from 'svelte'
+    import { afterUpdate } from 'svelte'
     import { onMount } from "svelte"
     import { fade } from "svelte/transition"
 
@@ -58,6 +58,7 @@
         overflow: hidden;
         padding: var(--padding-less);
         position: relative;
+        gap: var(--gap);
         
         .scroll-to-bottom {
             display: inline-flex;

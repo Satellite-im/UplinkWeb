@@ -42,7 +42,7 @@
         height: var(--input-height);
         padding-left: 1.5rem;
         border: var(--border-width) solid var(--primary-color);
-        font-family: 'Secondary';
+        font-family: "SpaceMono";
 
         .number {
             display: inline-flex;

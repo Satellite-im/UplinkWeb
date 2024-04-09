@@ -39,6 +39,9 @@
             height: 100%;
             min-width: 0;
             justify-self: flex-start;
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
         }
     }
 </style>

@@ -11,6 +11,7 @@ export {default as Spacer} from "$lib/elements/Spacer.svelte"
 export {default as Switch} from "$lib/elements/Switch.svelte"
 export {default as Text} from "$lib/elements/Text.svelte"
 export {default as Title} from "$lib/elements/Title.svelte"
+export {default as UnderConstruction} from "$lib/elements/UnderConstruction.svelte"
 
 
 

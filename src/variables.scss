@@ -1,8 +1,9 @@
-/* Variables and mixins declared here will be available in all other SCSS files */
 :root {
+    --primary-font: "Poppins";
+    
     --black: #000;
     --background: #0d0e16;
-    --background-alt: rgb(16, 16, 27);
+    --background-alt: color-mix(in srgb, var(--background) 60%, #21263a);
 
     --animation-speed: 0.2s;
     --animation-speed-mid: 1s;
@@ -19,25 +20,30 @@
     --highlight-color: #4d4dff;
 
     --primary-color: #4d4dff;
-    --primary-color-alt: #5454fd;
+    --primary-color-alt: color-mix(in srgb, var(--primary-color) 90%, white);
 
     --alt-color: #21263a;
     --alt-color-alt: #23293e;
 
-    --success-color: #4acfab;
-    --success-color-alt: #4edeb8;
+    --cp-bg-color: transparent;
+    --input-size: var(--input-height);
+    --cp-border-color: transparent;
+    --cp-input-color: var(--color);
 
-    --info-color: #0a5fc1;
-    --info-color-alt: rgb(16, 187, 226);
+    --success-color: #12c046;
+    --success-color-alt: color-mix(in srgb, var(--success-color) 90%, white);
 
-    --error-color: #c44569;
-    --error-color-alt: #d54d74;
+    --info-color: #0771fa;
+    --info-color-alt: color-mix(in srgb, var(--info-color) 90%, white);
+
+    --error-color: #F93854;
+    --error-color-alt: color-mix(in srgb, var(--error-color) 90%, white);
     
-    --warning-color: #FFFAA0;
-    --warning-color-alt: #fcf8ad;
+    --warning-color: #FECA57;
+    --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%,white);
     
     --border-color: #1c1d2b;
-    --border-color-alt: #4c4b4b;
+    --border-color-alt: color-mix(in srgb, var(--border-color) 90%, white);
 
     --tooltip-color: #0f121b;
 
@@ -73,17 +79,17 @@
     --gap-more: 1rem;
     --gap-less: 0.45rem;
     
-    --font-size-max: 3rem;
-    --font-size-large: 1.5rem;
+    --font-size-max: calc(var(--font-size) * 3);
+    --font-size-large: calc(var(--font-size) + 0.5rem);
     --font-size: 1rem;
-    --font-size-smaller: 0.85rem;
-    --font-size-smallest: 0.75rem;
+    --font-size-smaller: calc(var(--font-size) - 0.15rem);
+    --font-size-smallest: calc(var(--font-size) - 0.25rem);
     --icon-size: 1rem;
     --icon-size-large: 2rem;
     --icon-size-larger: 3rem;
     --icon-size-largest: 4rem;
-    --label-size: 0.9rem;
-    --code-size: 0.9rem;
+    --label-size: calc(var(--font-size) - 0.2rem);
+    --code-size: calc(var(--font-size) - 0.1rem);
     --profile-picture-size: 3.5rem;
 
     --file-folder-size: 125px;

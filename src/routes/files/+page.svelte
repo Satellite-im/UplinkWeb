@@ -9,22 +9,24 @@
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
-    import { chats } from "$lib/mock/users"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
-    import type { ContextItem } from "$lib/types"
     import { Plugins } from '@shopify/draggable'
     import { onDestroy, onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
+    import type { Chat, ContextItem } from "$lib/types"
+    import { get } from "svelte/store"
+    import { Store } from "$lib/state/Store"
+
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = true
+    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
 
     function toggleSidebar(): void {
-        sidebarOpen = !sidebarOpen
+        Store.toggleSidebar()
     }
 
     let tabRoutes: string[] = ["chats", "files"]
@@ -37,28 +39,33 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
-onMount(() => {
-    let dropzone = document.querySelector('.files') as HTMLElement
-    if (dropzone) {
-    const sortable = new Sortable(dropzone, {
-            draggable: ".draggable-item",
-            mirror: {
-                constrainDimensions: true,
-                },
-            plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-        })
-        // sortable.on('sortable:stop', (event) => {
-        //     // Get the new order of the items, will need to save the order later
-        //     console.log('droppable:dropped', event)
-        //     // let newOrder = Array.from(dropzone.children).map(child => child.id);
-        // })
-    onDestroy(() => {
-        // Cleanup draggable instance, Swap will NOT work without onDestroy()
-        sortable.destroy()
+    onMount(() => {
+        let dropzone = document.querySelector('.files') as HTMLElement
+        if (dropzone) {
+          const sortable = new Sortable(dropzone, {
+                draggable: ".draggable-item",
+                mirror: {
+                    constrainDimensions: true,
+                    },
+                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+            })
+            // sortable.on('sortable:stop', (event) => {
+            //     // Get the new order of the items, will need to save the order later
+            //     console.log('droppable:dropped', event)
+            //     // let newOrder = Array.from(dropzone.children).map(child => child.id);
+            // })
+          onDestroy(() => {
+              // Cleanup draggable instance, Swap will NOT work without onDestroy()
+              sortable.destroy()
+          })
+        }
     })
-}
-})
 
+    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
+    Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
+    let activeChat: Chat = get(Store.state.activeChat)
+    Store.state.activeChat.subscribe((c) => activeChat = c)
 </script>
 
 <div id="page">
@@ -102,15 +109,12 @@ onMount(() => {
             </Button>
         </Controls>
         {#if activeTabRoute === "chats"}
-            {#each chats as chat}
+            {#each sidebarChats as chat}
                 <ChatPreview
+                    chat={chat}
                     loading={loading}
-                    users={chat.users}
-                    typing={chat.activity}
                     simpleUnreads
-                    notifications={chat.notifications}
-                    timestamp={chat.last_message_at}
-                    message={chat.last_message_preview}
+                    cta={activeChat === chat}
                     on:context={(evt) => {
                         contextPosition = evt.detail
                         contextData = [
@@ -118,13 +122,15 @@ onMount(() => {
                                 id: "hide",
                                 icon: Shape.EyeSlash,
                                 text: "Hide",
-                                appearance: Appearance.Default
+                                appearance: Appearance.Default,
+                                onClick: () => Store.removeSidebarChat(chat)
                             },
                             {
                                 id: "mark_read",
                                 icon: Shape.CheckMark,
                                 text: "Mark Read",
-                                appearance: Appearance.Default
+                                appearance: Appearance.Default,
+                                onClick: () => {}
                             },
                         ]
                     }} />
@@ -199,7 +205,8 @@ onMount(() => {
                                     id: "delete",
                                     icon: Shape.XMark,
                                     text: "Delete",
-                                    appearance: Appearance.Default
+                                    appearance: Appearance.Default,
+                                    onClick: () => {}
                                 }
                             ]
                         }} />       
@@ -211,7 +218,8 @@ onMount(() => {
                                     id: "delete",
                                     icon: Shape.XMark,
                                     text: "Delete",
-                                    appearance: Appearance.Default
+                                    appearance: Appearance.Default,
+                                    onClick: () => {}
                                 }
                             ]
                         }}/>       

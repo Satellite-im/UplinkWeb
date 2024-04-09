@@ -6,10 +6,12 @@
     import Topbar from "$lib/layouts/Topbar.svelte"
     import { mock_users } from "$lib/mock/users"
     import Participant from "./Participant.svelte"
-    import { ProfilePicture } from ".."
     import Text from "$lib/elements/Text.svelte"
-    import PopupButton from "../ui/PopupButton.svelte";
-    import CallSettings from "./CallSettings.svelte";
+    import PopupButton from "../ui/PopupButton.svelte"
+    import CallSettings from "./CallSettings.svelte"
+    import { get } from "svelte/store"
+    import { Store } from "$lib/state/Store"
+    import { _ } from 'svelte-i18n'
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -17,12 +19,20 @@
     }
 
     let showSettings = false
+
+    export let muted: boolean       = get(Store.state.devices.muted)
+    export let deafened: boolean    = get(Store.state.devices.deafened)
+
+    Store.state.devices.muted.subscribe((state) => {
+        muted = state
+    })
+
+    Store.state.devices.deafened.subscribe((state) => {
+        deafened = state
+    })
 </script>
 <div id="call-screen" class={expanded ? "expanded" : ""}>
     <Topbar simple>
-        <svelte:fragment slot="before">
-            <ProfilePicture size={Size.Small} noIndicator image={mock_users[0].profile.photo.image} />
-        </svelte:fragment>
         <svelte:fragment slot="content">
             <Text>
                 Big Party Time
@@ -44,7 +54,7 @@
     </div>
     <div class="toolbar">
         <Controls>
-            <PopupButton open={showSettings} on:open={(_) => {
+            <PopupButton name="Settings" open={showSettings} on:open={(_) => {
                 showSettings = true
             }}>
                 <svelte:fragment slot="icon">
@@ -54,6 +64,24 @@
             </PopupButton>
         </Controls>
         <Controls>
+            <Button 
+                icon
+                appearance={muted ? Appearance.Error : Appearance.Alt} 
+                tooltip={$_('call.mute')}
+                on:click={(_) => {
+                    Store.updateMuted(!muted)
+                }}>
+                <Icon icon={(muted) ? Shape.MicrophoneSlash : Shape.Microphone} />
+            </Button>
+            <Button 
+                icon 
+                appearance={deafened ? Appearance.Error : Appearance.Alt} 
+                tooltip={$_('call.deafen')}
+                on:click={(_) => {
+                    Store.updateDeafened(!deafened)
+                }}>
+                <Icon icon={(deafened) ? Shape.HeadphoneSlash : Shape.Headphones} />
+            </Button>
             <Button appearance={Appearance.Alt} icon tooltip="Stream">
                 <Icon icon={Shape.Stream} />
             </Button>

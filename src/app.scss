@@ -42,6 +42,7 @@ body {
     width: 100%;
     display: flex;
     background-color: red;
+    touch-action: manipulation;
 }
 
 /* A elements that don't have a class get default styles */
@@ -83,17 +84,83 @@ select {
 /* End CSS Clear */
 
 @font-face {
-    font-family: "Primary";
+    font-family: "Poppins";
     src: url('/assets/font/Poppins-Regular.ttf');
 }
 
 @font-face {
-    font-family: "Secondary";
+    font-family: "SpaceMono";
     src: url('/assets/font/SpaceMono-Regular.ttf');
 }
 
+@font-face {
+    font-family: "ChakraPetch";
+    src: url('/assets/font/ChakraPetch.ttf');
+}
+
+@font-face {
+    font-family: "Comfortaa";
+    src: url('/assets/font/Comfortaa.ttf');
+}
+
+@font-face {
+    font-family: "Dosis";
+    src: url('/assets/font/Dosis.ttf');
+}
+
+@font-face {
+    font-family: "MajorMono";
+    src: url('/assets/font/MajorMonoDisplay-Regular.ttf');
+}
+
+@font-face {
+    font-family: "PixelifySans";
+    src: url('/assets/font/PixelifySans.ttf');
+}
+
+@font-face {
+    font-family: "PoiretOne";
+    src: url('/assets/font/PoiretOne-Regular.ttf');
+}
+
+@font-face {
+    font-family: "IBMPlexMono";
+    src: url('/assets/font/IBMPlexMono-Regular.ttf');
+}
+
+@font-face {
+    font-family: "IndieFlower";
+    src: url('/assets/font/IndieFlower.ttf');
+}
+
+@font-face {
+    font-family: "JosefinSans";
+    src: url('/assets/font/JosefinSans.ttf');
+}
+
+@font-face {
+    font-family: "Noto";
+    src: url('/assets/font/NotoSans.ttf');
+}
+
+@font-face {
+    font-family: "SourceCodePro";
+    src: url('/assets/font/SourceCodePro.ttf');
+}
+
+@font-face {
+    font-family: "SpaceGrotesk";
+    src: url('/assets/font/SpaceGrotesk.ttf');
+}
+
+@font-face {
+    font-family: "OpenDyslexic";
+    src: url('/assets/font/OpenDyslexicAlta-Regular.otf');
+}
+
+
 strong {
-    font-family: "Secondary";
+    font-weight: bold;
 }
 
 del {
@@ -107,7 +174,7 @@ html {
 
 body {
     background-color: var(--background);
-    font-family: "Primary";
+    font-family: var(--primary-font);
     font-size: var(--font-size);
     color: var(--color);
     display: flex;
