@@ -6,13 +6,15 @@
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { _ } from "svelte-i18n"
-    import Text from "$lib/elements/Text.svelte";
+    import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
-    import {dndzone} from "svelte-dnd-action"
+    import { Plugins } from '@shopify/draggable'
+    import { onDestroy, onMount } from 'svelte'
+    import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem } from "$lib/types"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
@@ -31,19 +33,33 @@
     let activeTabRoute: string = tabRoutes[0]
 
     let previewImage: string | null
-    
-    const flipDurationMs = 300
     let items = mock_files
-    function handleDndConsider(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
-        items = e.detail.items
-    }
-    function handleDndFinalize(e: { detail: { items: { id: number, type: string, source: string, size: number, name: string }[]; }; }) {
-        items = e.detail.items
-    }
 
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+
+    onMount(() => {
+        let dropzone = document.querySelector('.files') as HTMLElement
+        if (dropzone) {
+          const sortable = new Sortable(dropzone, {
+                draggable: ".draggable-item",
+                mirror: {
+                    constrainDimensions: true,
+                    },
+                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+            })
+            // sortable.on('sortable:stop', (event) => {
+            //     // Get the new order of the items, will need to save the order later
+            //     console.log('droppable:dropped', event)
+            //     // let newOrder = Array.from(dropzone.children).map(child => child.id);
+            // })
+          onDestroy(() => {
+              // Cleanup draggable instance, Swap will NOT work without onDestroy()
+              sortable.destroy()
+          })
+        }
+    })
 
     Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
@@ -175,9 +191,12 @@
             </svelte:fragment>
         </Topbar>
 
-        <div class="body">
-            <div class="files" use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
-                {#each items as item}
+        <div class="files">
+            {#each items as item}
+                <div
+                    class="draggable-item"
+                    draggable="true"
+                >
                     {#if item.type === "file"}
                         <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
                             contextPosition = evt.detail
@@ -209,8 +228,8 @@
                             previewImage = item.source
                         }} />
                     {/if}
-                {/each}
-            </div>
+                </div>
+            {/each}
         </div>
     </div>
 </div>
@@ -239,9 +258,10 @@
         .content {
             display: flex;
             min-height: 0;
-            display: flex;
             flex-direction: column;
             flex: 1;
+            overflow: hidden;
+            width: 100%;
 
             .before {
                 gap: var(--gap-less);
@@ -259,16 +279,17 @@
                 }
             }
 
-            .body {
+            .files {
                 height: 100%;
+                width: 100%;
                 display: inline-flex;
-                flex-direction: column;
-
-                .files {
-                    padding: var(--padding);
-                    width: 100%;
-                    flex: 1;
-                    display: inline-flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-content: flex-start;
+                
+                .draggable-item {
+                    position: relative;
+                    height: fit-content;
                 }
             }
         }

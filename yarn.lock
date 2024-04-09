@@ -1542,6 +1542,11 @@
   resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.12.0.tgz"
   integrity sha512-X64tZd8dRE/QTrBIEs63kaOBG0b5GVEd3ccoLtyf6IdXtHdh8h+I56C2yC3PtC9Ucnv0CpNFJLqKFVgCYe0lOQ==
 
+"@shopify/draggable@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.npmjs.org/@shopify/draggable/-/draggable-1.1.3.tgz"
+  integrity sha512-okZG6FTOX1HpfToN2uFVXTicum+NtHFGEY+0MFkZsdChP5qvLSlkffQormMxoDQVIDsK+jso3yz03tteIJ/A0w==
+
 "@svelte-put/clickoutside@^3.0.1":
   version "3.0.1"
   resolved "https://registry.npmjs.org/@svelte-put/clickoutside/-/clickoutside-3.0.1.tgz"
