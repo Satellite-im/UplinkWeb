@@ -83,108 +83,112 @@
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}>
-            <div class="profile-picture-container">
-                <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
-                <FileUploadButton icon tooltip={$_("settings.profile.change_profile_photo")} on:upload={(picture) => {
-                    Store.setPhoto(picture.detail)
-                }}/>
-            </div>
         </div>
-        <input style="display:none" type="file" accept={acceptableFiles} on:change={(e) => onFileSelected(e)} bind:this={fileinput} />
 
-        <div class="section">
-            <Label text={$_("generic.username")} />
-            <div class="username-section">
-                <div class="username">
-                    <Input 
-                        alt 
-                        bind:value={user.name} 
-                        highlight={(changeList.username) ? Appearance.Warning : Appearance.Default}
-                        on:enter={(_) => {
+        <div class="profile-picture-container">
+            <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
+            <FileUploadButton icon tooltip={$_("settings.profile.change_profile_photo")} on:upload={(picture) => {
+                Store.setPhoto(picture.detail)
+            }}/>
+        </div>
+
+        <input style="display:none" type="file" accept={acceptableFiles} on:change={(e) => onFileSelected(e)} bind:this={fileinput} />
+        
+        <div class="content">
+            <div class="section">
+                <Label text={$_("generic.username")} />
+                <div class="username-section">
+                    <div class="username">
+                        <Input 
+                            alt 
+                            bind:value={user.name} 
+                            highlight={(changeList.username) ? Appearance.Warning : Appearance.Default}
+                            on:enter={(_) => {
+                            // TODO: Toast
+                            Store.setUsername(user.name)
+                        }} on:keypress={(_) => {
+                            changeList.username = true
+                            unsavedChanges = changeList.username || changeList.statusMessage
+                        }} />
+                    </div>
+                    <div class="short-id">
+                        <Input alt value={user.id.short} disabled copyOnInteract>
+                            <Icon icon={Shape.Hashtag} alt muted />
+                        </Input>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <Label text={$_("user.status_message")} />
+                <Input
+                    alt
+                    bind:value={user.profile.status_message}
+                    placeholder={$_("user.set_status_message")}
+                    highlight={(changeList.statusMessage) ? Appearance.Warning : Appearance.Default}
+                    on:enter={(_) => {
                         // TODO: Toast
-                        Store.setUsername(user.name)
+                        Store.setStatus(user.profile.status_message)
                     }} on:keypress={(_) => {
-                        changeList.username = true
+                        changeList.statusMessage = true
                         unsavedChanges = changeList.username || changeList.statusMessage
                     }} />
-                </div>
-                <div class="short-id">
-                    <Input alt value={user.id.short} disabled copyOnInteract>
-                        <Icon icon={Shape.Hashtag} alt muted />
-                    </Input>
-                </div>
             </div>
-        </div>
-        <div class="section">
-            <Label text={$_("user.status_message")} />
-            <Input
-                alt
-                bind:value={user.profile.status_message}
-                placeholder={$_("user.set_status_message")}
-                highlight={(changeList.statusMessage) ? Appearance.Warning : Appearance.Default}
-                on:enter={(_) => {
-                    // TODO: Toast
-                    Store.setStatus(user.profile.status_message)
-                }} on:keypress={(_) => {
-                    changeList.statusMessage = true
-                    unsavedChanges = changeList.username || changeList.statusMessage
-                }} />
-        </div>
-        <div class="section">
-            <SettingSection name={$_("user.status.label")} description={$_("user.set_status")}>
-                <Select options={[
-                    { text: $_("user.status.online"), value: "online" },
-                    { text: $_("user.status.offline"), value: "offline" },
-                    { text: $_("user.status.idle"), value: "idle" },
-                    { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
-                ]} on:change={(v) => {
-                    switch (v.detail) {
-                        case "online": return Store.setActivityStatus(Status.Online)
-                        case "offline": return Store.setActivityStatus(Status.Offline)
-                        case "idle": return Store.setActivityStatus(Status.Idle)
-                        case "do-not-disturb": return Store.setActivityStatus(Status.DoNotDisturb)
-                    }
-                }} bind:selected={user.profile.status}>
-                    {#if activityStatus === Status.Online}
-                        <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
-                    {:else if activityStatus === Status.Idle}
-                        <Icon icon={Shape.Circle} filled highlight={Appearance.Warning} />
-                    {:else if activityStatus === Status.DoNotDisturb}
-                        <Icon icon={Shape.Circle} filled highlight={Appearance.Error} />
-                    {:else}
-                        <Icon icon={Shape.Circle} filled highlight={Appearance.Alt} />
-                    {/if}
-                </Select>
-            </SettingSection>
-        </div>
+            <div class="section">
+                <SettingSection name={$_("user.status.label")} description={$_("user.set_status")}>
+                    <Select options={[
+                        { text: $_("user.status.online"), value: "online" },
+                        { text: $_("user.status.offline"), value: "offline" },
+                        { text: $_("user.status.idle"), value: "idle" },
+                        { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
+                    ]} on:change={(v) => {
+                        switch (v.detail) {
+                            case "online": return Store.setActivityStatus(Status.Online)
+                            case "offline": return Store.setActivityStatus(Status.Offline)
+                            case "idle": return Store.setActivityStatus(Status.Idle)
+                            case "do-not-disturb": return Store.setActivityStatus(Status.DoNotDisturb)
+                        }
+                    }} bind:selected={user.profile.status}>
+                        {#if activityStatus === Status.Online}
+                            <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
+                        {:else if activityStatus === Status.Idle}
+                            <Icon icon={Shape.Circle} filled highlight={Appearance.Warning} />
+                        {:else if activityStatus === Status.DoNotDisturb}
+                            <Icon icon={Shape.Circle} filled highlight={Appearance.Error} />
+                        {:else}
+                            <Icon icon={Shape.Circle} filled highlight={Appearance.Alt} />
+                        {/if}
+                    </Select>
+                </SettingSection>
+            </div>
 
-        <div class="section">
-            <SettingSection name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
-                <Button 
-                    appearance={!showSeed ? Appearance.Error : Appearance.Alt}
-                    text={!showSeed ? $_("settings.profile.reveal_phrase.show") : $_("settings.profile.reveal_phrase.hide")}
-                    on:click={(_) => {
-                        toggleSeedPhrase()
-                    }}>
-                    <Icon icon={showSeed ? Shape.EyeSlash : Shape.Eye} />
-                </Button>
-            </SettingSection>
-            {#if showSeed}
-                {#each samplePhrase as word, i}
-                    <OrderedPhrase number={i + 1} word={word} loading={loading} />
-                {/each}
-                <div class="full-width flex-end">
-                    <Button appearance={Appearance.Alt} text={$_("generic.copy")}>
-                        <Icon icon={Shape.Clipboard}/>
+            <div class="section">
+                <SettingSection name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
+                    <Button 
+                        appearance={!showSeed ? Appearance.Error : Appearance.Alt}
+                        text={!showSeed ? $_("settings.profile.reveal_phrase.show") : $_("settings.profile.reveal_phrase.hide")}
+                        on:click={(_) => {
+                            toggleSeedPhrase()
+                        }}>
+                        <Icon icon={showSeed ? Shape.EyeSlash : Shape.Eye} />
                     </Button>
-                </div>
-            {/if}
-        </div>
+                </SettingSection>
+                {#if showSeed}
+                    {#each samplePhrase as word, i}
+                        <OrderedPhrase number={i + 1} word={word} loading={loading} />
+                    {/each}
+                    <div class="full-width flex-end">
+                        <Button appearance={Appearance.Alt} text={$_("generic.copy")}>
+                            <Icon icon={Shape.Clipboard}/>
+                        </Button>
+                    </div>
+                {/if}
+            </div>
 
-        <div class="section">
-            <Checkbox checked>
-                <Text muted>{$_("settings.profile.should_store")}</Text>
-            </Checkbox>
+            <div class="section">
+                <Checkbox checked>
+                    <Text muted>{$_("settings.profile.should_store")}</Text>
+                </Checkbox>
+            </div>
         </div>
     </div>
 </div>
@@ -213,7 +217,14 @@
         .profile {
             display: inline-flex;
             flex-direction: column;
-            gap: var(--gap);
+            position: relative;
+            align-items: center;
+
+            .content {
+                display: inline-flex;
+                flex-direction: column;
+                gap: var(--gap);
+            }
 
             .section {
                 display: inline-flex;
@@ -247,6 +258,21 @@
                 }
             }
 
+            .profile-picture-container {
+                pointer-events: none;
+                position: absolute;
+                z-index: 2;
+                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size)* 2 / 2));
+                height: calc(var(--profile-picture-size)* 2);
+                margin-bottom: calc((var(--profile-picture-size) * 2) * -0.5);
+                :global(.button) {
+                    position: absolute;
+                    bottom: calc(var(--padding-less) * -0.75);
+                    right: calc(var(--padding-less) * -0.75);
+                    z-index: 2;
+                }
+            }
+
             .profile-header {
                 height: calc(var(--profile-width) / 1.5);
                 background-color: var(--background-alt);
@@ -259,20 +285,6 @@
                 justify-content: center;
                 margin-bottom: 4rem;
                 position: relative;
-
-                .profile-picture-container {
-                    pointer-events: none;
-                    position: absolute;
-                    z-index: 2;
-                    height: calc(var(--profile-picture-size)* 2);
-                    margin-bottom: calc((var(--profile-picture-size) * 2) * -0.5);
-                    :global(.button) {
-                        position: absolute;
-                        bottom: calc(var(--padding-less) * -0.75);
-                        right: calc(var(--padding-less) * -0.75);
-                        z-index: 2;
-                    }
-                }
 
                 :global(.profile-picture) {
                     margin-bottom: -4rem;

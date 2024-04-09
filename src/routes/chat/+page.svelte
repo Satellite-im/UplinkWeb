@@ -15,7 +15,6 @@
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import { type Chat, type ContextItem } from "$lib/types"
-    import { mock_messages } from "$lib/mock/messages"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
@@ -46,6 +45,7 @@
         activeChat = c
         conversation = c.conversation
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
+        contentAsideOpen = false
     })
     Store.state.favorites.subscribe(f => {
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
@@ -161,17 +161,18 @@
                     on:click={(_) => {Store.toggleFavorite(activeChat)}}>
                     <Icon icon={Shape.Heart} />
                 </Button>
-                <Button 
-                    icon 
-                    disabled={activeChat.users.length === 0}
-                    appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt} 
-                    on:click={
-                    (_) => {
-                        contentAsideOpen = !contentAsideOpen;
-                    }
-                }>
-                    <Icon icon={Shape.Profile} />
-                </Button>
+                {#if activeChat.users.length === 1}
+                    <Button 
+                        icon 
+                        appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt} 
+                        on:click={
+                        (_) => {
+                            contentAsideOpen = !contentAsideOpen;
+                        }
+                    }>
+                        <Icon icon={Shape.Profile} />
+                    </Button>
+                {/if}
             </svelte:fragment>
         </Topbar>
 
@@ -319,7 +320,7 @@
     {#if contentAsideOpen}
         <!-- All aside menus should render from this element. Please display only one at a time. -->
         <div class="aside" transition:slide={{duration: animationDuration, axis: "x"}}>
-            <Profile user={mock_users[0]}/>
+            <Profile user={activeChat.users[0]}/>
         </div>
     {/if}
 </div>
