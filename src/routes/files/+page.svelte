@@ -66,8 +66,8 @@
     })
 
     Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
-    let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
-    Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
+    let chats: Chat[] = get(Store.state.ui.chats)
+    Store.state.ui.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
     let files: FileInfo[] = get(Store.state.files)
@@ -115,7 +115,7 @@
             </Button>
         </Controls>
         {#if activeTabRoute === "chats"}
-            {#each sidebarChats as chat}
+            {#each chats as chat}
                 <ChatPreview
                     chat={chat}
                     loading={loading}

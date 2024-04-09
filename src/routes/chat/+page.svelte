@@ -40,8 +40,8 @@
     let contextData: ContextItem[] = []
 
     Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
-    let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
-    Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
+    let chats: Chat[] = get(Store.state.ui.chats)
+    Store.state.ui.chats.subscribe((sc) => chats = sc)
     Store.state.activeChat.subscribe((c) => {
         activeChat = c
         conversation = c.conversation
@@ -86,7 +86,7 @@
             </Button>
         </div>
 
-        {#each sidebarChats as chat}
+        {#each chats as chat}
             <ChatPreview
                 chat={chat}
                 loading={loading}

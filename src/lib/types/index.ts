@@ -91,8 +91,21 @@ export type Chat = {
     conversation: MessageGroup[],
 }
 
+export function hashChat(chat: Chat): string {
+    const dataString = chat.name + chat.users.map(user => user.name).sort().join('')
+
+    let hash = 0, i, chr
+    if (dataString.length === 0) return hash.toString()
+    for (i = 0; i < dataString.length; i++) {
+        chr   = dataString.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr
+        hash |= 0
+    }
+    return hash.toString()
+}
+
 export let defaultChat = {
-    id: uuidv4(),
+    id: "",
     name: "",
     motd: "",
     notifications: 0,

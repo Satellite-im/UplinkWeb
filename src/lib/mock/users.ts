@@ -1,5 +1,5 @@
 import { Status } from "$lib/enums";
-import { defaultUser, type Chat, type User } from "$lib/types";
+import { defaultUser, type Chat, type User, hashChat } from "$lib/types";
 
 import { v4 as uuidv4 } from "uuid"
 export const mock_users: Array<User> = [
@@ -139,7 +139,7 @@ export const fake_user_array: Array<User> = [
     },
 ];
 
-export let chats: Chat[] = [
+let mock_chats: Chat[] = [
     {
         id: "p41",
         name: "RC Group Chat",
@@ -211,3 +211,13 @@ export let chats: Chat[] = [
         conversation: []
     }
 ]
+
+mock_chats[0].id = hashChat(mock_chats[0])
+mock_chats[1].id = hashChat(mock_chats[1])
+mock_chats[2].id = hashChat(mock_chats[2])
+mock_chats[3].id = hashChat(mock_chats[3])
+mock_chats[4].id = hashChat(mock_chats[4])
+mock_chats[5].id = hashChat(mock_chats[5])
+
+
+export let mchats = mock_chats

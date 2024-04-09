@@ -2,8 +2,8 @@ import { Sound, Sounds } from "$lib/components/utils/Sounds"
 import { Font, KeybindAction, Locale, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
-import { blocked_users, chats, mock_users } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest, type FileInfo } from "$lib/types"
+import { blocked_users, mchats, mock_users } from "$lib/mock/users"
+import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest, type FileInfo, hashChat } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 
@@ -129,7 +129,7 @@ export interface IState {
         cssOverride: Writable<string>,
         font: Writable<Font>,
         sidebarOpen: Writable<boolean>,
-        sidebarChats: Writable<Chat[]>,
+        chats: Writable<Chat[]>,
     },
     settings: Writable<ISettingsState>
 }
@@ -187,8 +187,8 @@ favorites.subscribe(favs => setLSItem("uplink.favorites", favs))
 const sidebarOpen = writable(getLSItem("uplink.ui.sidebarOpen", true))
 sidebarOpen.subscribe(value => setLSItem("uplink.ui.sidebarOpen", value))
 
-const sidebarChats = writable(getLSItem("uplink.ui.sidebarChats", []))
-sidebarChats.subscribe(chats => setLSItem("uplink.ui.sidebarChats", chats))
+const chats = writable(getLSItem("uplink.ui.chats", []))
+chats.subscribe(chats => setLSItem("uplink.ui.chats", chats))
 
 const files = writable(getLSItem("uplink.files", []))
 files.subscribe(f => setLSItem("uplink.files", f))
@@ -214,7 +214,7 @@ const initialState: IState = {
         font,
         cssOverride,
         sidebarOpen,
-        sidebarChats
+        chats
     },
     settings
 }
@@ -267,22 +267,24 @@ class GlobalStore {
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
     
-        const currentSidebarChats = get(this.state.ui.sidebarChats)
-        const chatExistsInSidebar = currentSidebarChats.some(c => c.id === chat.id)
+        const currentchats = get(this.state.ui.chats)
+        const chatExistsInSidebar = currentchats.some(c => c.id === chat.id)
 
         if (!chatExistsInSidebar) 
-            this.state.ui.sidebarChats.set([...currentSidebarChats, chat])
+            this.state.ui.chats.set([...currentchats, chat])
     }
 
     setActiveDM(user: User) {
-        this.setActiveChat({
+        let chat = {
             ...defaultChat,
-            id: uuidv4(),
+            id: "",
             users: [ user ],
             name: user.name,
             last_message_at: new Date(),
             motd: user.profile.status_message,
-        })
+        }
+        chat.id = hashChat(chat)
+        this.setActiveChat(chat)
     }
 
     setInputDevice(device: string) {
@@ -407,15 +409,15 @@ class GlobalStore {
     }
 
     addSidebarChat(chat: Chat) {
-        const currentSidebarChats = get(this.state.ui.sidebarChats)
-        if (!currentSidebarChats.some(c => c.id === chat.id)) {
-            this.state.ui.sidebarChats.set([...currentSidebarChats, chat])
+        const currentchats = get(this.state.ui.chats)
+        if (!currentchats.some(c => c.id === chat.id)) {
+            this.state.ui.chats.set([...currentchats, chat])
         }
     }
 
     removeSidebarChat(chat: Chat) {
-        this.state.ui.sidebarChats.set(
-            get(this.state.ui.sidebarChats).filter(c => c.id !== chat.id)
+        this.state.ui.chats.set(
+            get(this.state.ui.chats).filter(c => c.id !== chat.id)
         )
     }
 
@@ -432,15 +434,18 @@ class GlobalStore {
     }
 
     load_mock_data() {
+        let mchatsMod = mchats
+        let activeChat = mchatsMod[0]
+
+        activeChat.conversation = mock_messages
+        mchatsMod[0] = activeChat
+
+        this.state.activeChat.set(mchatsMod[0])
+        this.state.ui.chats.set(mchatsMod)
+        this.state.files.set(mock_files)
         this.state.friends.set(mock_users)
         this.state.blocked.set(blocked_users)
-        this.state.activeChat.set(chats[0])
-        this.state.ui.sidebarChats.set(chats)
-        this.state.activeChat.set({
-            ...get(this.state.activeChat),
-            conversation: mock_messages
-        })
-        this.state.files.set(mock_files)
+        this.state.favorites.set([activeChat])
     }
 }
 
