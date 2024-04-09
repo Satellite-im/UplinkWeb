@@ -61,7 +61,7 @@
             //     }
             // });
 
-            onDestroy(() => sortable.destroy());
+            // onDestroy(() => sortable.destroy());
         }
     })
 
