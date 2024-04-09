@@ -378,6 +378,7 @@
                         flex-direction: column;
                         min-height: var(--min-scroll-height);
                         overflow-y: scroll;
+                        overflow-x: hidden;
                         padding-right: var(--padding);
                     }
                 }

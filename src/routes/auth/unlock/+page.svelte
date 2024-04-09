@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { Spacer, Label, Logo } from "$lib/elements"
+    import { Label } from "$lib/elements"
     import { PinInput } from "$lib/components"
     import { goto } from '$app/navigation'
-    import { onMount } from "svelte"
     import { Route } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"

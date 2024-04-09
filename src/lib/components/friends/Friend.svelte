@@ -17,7 +17,7 @@
         size={Size.Small} 
         image={friend.profile.photo.image} 
         status={friend.profile.status} />
-    <Text class="username">
+    <Text class="username" singleLine>
         {friend.name}
     </Text>
     <Controls>

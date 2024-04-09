@@ -182,86 +182,88 @@
         <Conversation>
             {#if activeChat.users.length > 0}
                 <EncryptedNotice />
-                {#each conversation as group}
-                    <MessageGroup profilePictureRequirements={{
-                        notifications: 0,
-                        image: group.details.origin.profile.photo.image,
-                        status: group.details.origin.profile.status,
-                        highlight: Appearance.Default
-                    }}
-                    remote={group.details.remote}
-                    subtext="Sent 3 minutes ago.">
-                        {#each group.messages as message, idx}
-                            {#if message.inReplyTo}
-                                <MessageReplyContainer
-                                    remote={message.inReplyTo.details.remote}
-                                    image={message.inReplyTo.details.origin.profile.photo.image}
-                                >
-                                    <Message
-                                        reply
+                {#if conversation}
+                    {#each conversation as group}
+                        <MessageGroup profilePictureRequirements={{
+                            notifications: 0,
+                            image: group.details.origin.profile.photo.image,
+                            status: group.details.origin.profile.status,
+                            highlight: Appearance.Default
+                        }}
+                        remote={group.details.remote}
+                        subtext="Sent 3 minutes ago.">
+                            {#each group.messages as message, idx}
+                                {#if message.inReplyTo}
+                                    <MessageReplyContainer
                                         remote={message.inReplyTo.details.remote}
+                                        image={message.inReplyTo.details.origin.profile.photo.image}
                                     >
-                                    {#each message.inReplyTo.text as line}
-                                        <Text markdown={line} muted size={Size.Small}/>
-                                    {/each}
-                                    </Message>
-                                </MessageReplyContainer>
-                            {/if}
-                            {#if message.text.length > 0 || message.attachments.length > 0}
-                                <Message
-                                    on:context={(evt) => {
-                                        contextPosition = evt.detail
-                                        contextData = [
-                                            {
-                                                id: "something_1",
-                                                icon: Shape.Beaker,
-                                                text: "Placeholder",
-                                                appearance: Appearance.Default,
-                                                onClick: () => {}
-                                            }
-                                        ]
-                                    }}
-                                    remote={group.details.remote}
-                                    position={
-                                        (idx === 0) ?
-                                            MessagePosition.First : 
-                                            (idx === group.messages.length - 1) ?  
-                                                MessagePosition.Last :
-                                                    MessagePosition.Middle
-                                    }
-                                    morePadding={message.text.length > 1 || message.attachments.length > 0}
-                                    >
-        
-                                    {#each message.text as line}
-                                        <Text markdown={line} />
-                                    {/each}
-
-                                    {#if message.attachments.length > 0}
-                                        {#each message.attachments as attachment}
-                                            {#if attachment.kind === MessageAttachmentKind.Image}
-                                                <ImageEmbed
-                                                    source={attachment.location}
-                                                    name={attachment.name}
-                                                    filesize={attachment.size}
-                                                    on:click={(_) => {
-                                                        previewImage = attachment.location
-                                                    }}/>
-                                            {:else if attachment.kind === MessageAttachmentKind.File}
-                                                <FileEmbed />
-                                            {/if}
+                                        <Message
+                                            reply
+                                            remote={message.inReplyTo.details.remote}
+                                        >
+                                        {#each message.inReplyTo.text as line}
+                                            <Text markdown={line} muted size={Size.Small}/>
                                         {/each}
-                                    {/if}
-                                </Message>
-                            {/if}
-                            {#if message.reactions.length > 0}
-                                <MessageReactions remote={group.details.remote} reactions={message.reactions} />
-                            {/if}
-                        {/each}
-                    </MessageGroup>
-                {/each}
+                                        </Message>
+                                    </MessageReplyContainer>
+                                {/if}
+                                {#if message.text.length > 0 || message.attachments.length > 0}
+                                    <Message
+                                        on:context={(evt) => {
+                                            contextPosition = evt.detail
+                                            contextData = [
+                                                {
+                                                    id: "something_1",
+                                                    icon: Shape.Beaker,
+                                                    text: "Placeholder",
+                                                    appearance: Appearance.Default,
+                                                    onClick: () => {}
+                                                }
+                                            ]
+                                        }}
+                                        remote={group.details.remote}
+                                        position={
+                                            (idx === 0) ?
+                                                MessagePosition.First : 
+                                                (idx === group.messages.length - 1) ?  
+                                                    MessagePosition.Last :
+                                                        MessagePosition.Middle
+                                        }
+                                        morePadding={message.text.length > 1 || message.attachments.length > 0}
+                                        >
+            
+                                        {#each message.text as line}
+                                            <Text markdown={line} />
+                                        {/each}
+
+                                        {#if message.attachments.length > 0}
+                                            {#each message.attachments as attachment}
+                                                {#if attachment.kind === MessageAttachmentKind.Image}
+                                                    <ImageEmbed
+                                                        source={attachment.location}
+                                                        name={attachment.name}
+                                                        filesize={attachment.size}
+                                                        on:click={(_) => {
+                                                            previewImage = attachment.location
+                                                        }}/>
+                                                {:else if attachment.kind === MessageAttachmentKind.File}
+                                                    <FileEmbed />
+                                                {/if}
+                                            {/each}
+                                        {/if}
+                                    </Message>
+                                {/if}
+                                {#if message.reactions.length > 0}
+                                    <MessageReactions remote={group.details.remote} reactions={message.reactions} />
+                                {/if}
+                            {/each}
+                        </MessageGroup>
+                    {/each}
+                {/if}
             {:else}
                 <div class="add-someone">
-                    <img src="/assets/mascot/better_with_friends.webp" style="max-width: 350px;"/>
+                    <img src="/assets/mascot/better_with_friends.webp" style="max-width: 350px;" alt="Better with friends!"/>
                     <Text>Let's get something started!</Text>
                     <Text muted>You don't have any active chats yet, click the button below to head to the friends page to start one.</Text>
                     <Button
