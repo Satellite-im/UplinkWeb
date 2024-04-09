@@ -41,6 +41,7 @@
     let fileElementsMap = new Map();
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
+    
     if (dropzone) {
         const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
@@ -49,10 +50,10 @@
             },
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
         });
-
+        const items = sortable.getDraggableElementsForContainer(dropzone)
         sortable.on('sortable:start', (event) => {
             fileElementsMap.clear();
-            Array.from(dropzone.children)
+            Array.from(items)
                 .filter(child => child.getAttribute('data-id'))
                 .forEach(child => {
                     fileElementsMap.set(child.getAttribute('data-id'), child);
@@ -60,7 +61,9 @@
         });
 
         sortable.on('sortable:stop', (event) => {
-            let currentOrder = Array.from(dropzone.children)
+            
+        console.log(items, dropzone)
+            let currentOrder = Array.from(items)
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'));
 
@@ -83,7 +86,7 @@
 
             Store.state.files.set(reorderedFiles);
 
-            console.log('new order', currentOrder, reorderedFiles);
+            // console.log('new order', currentOrder, reorderedFiles);
         });
 
         // onDestroy(() => sortable.destroy());
