@@ -25,7 +25,14 @@
         style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
         <slot></slot>
         {#each items as item}
-            <Button class="item" appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance} text={item.text} on:click={item.onClick}>
+            <Button 
+                class="item" 
+                appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance} 
+                text={item.text} 
+                on:click={(e) => {
+                    item.onClick()
+                    onClose(e)
+                }}>
                 <Icon icon={item.icon} />
             </Button>
         {/each}

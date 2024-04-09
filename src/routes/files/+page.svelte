@@ -15,7 +15,7 @@
     import { Plugins } from '@shopify/draggable'
     import { onDestroy, onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
-    import type { Chat, ContextItem } from "$lib/types"
+    import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
 
@@ -66,6 +66,8 @@
     Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
+    let files: FileInfo[] = get(Store.state.files)
+    Store.state.files.subscribe((f) => files = f)
 </script>
 
 <div id="page">
@@ -192,7 +194,7 @@
         </Topbar>
 
         <div class="files">
-            {#each items as item}
+            {#each files as item}
                 <div
                     class="draggable-item"
                     draggable="true"

@@ -1,8 +1,9 @@
 import { Sound, Sounds } from "$lib/components/utils/Sounds"
 import { Font, KeybindAction, Locale, MessageDirection, Status } from "$lib/enums"
+import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, chats, mock_users } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest } from "$lib/types"
+import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest, type FileInfo } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 
@@ -79,6 +80,7 @@ export let defaultSettings = {
     favorites: [],
     activeRequests: [],
     blocked: [],
+    files: [],
     messaging: {
         convertEmoji: true,
         markdownSupport: true,
@@ -103,7 +105,7 @@ export let defaultSettings = {
         friends: true,
         messages: true,
         settings: true,
-    }
+    },
 }
 
 export interface IState {
@@ -112,6 +114,7 @@ export interface IState {
     activeRequests: Writable<FriendRequest[]>,
     friends: Writable<User[]>,
     favorites: Writable<Chat[]>,
+    files: Writable<FileInfo[]>,
     devices: {
         muted: Writable<boolean>,
         deafened: Writable<boolean>,
@@ -187,12 +190,16 @@ sidebarOpen.subscribe(value => setLSItem("uplink.ui.sidebarOpen", value))
 const sidebarChats = writable(getLSItem("uplink.ui.sidebarChats", []))
 sidebarChats.subscribe(chats => setLSItem("uplink.ui.sidebarChats", chats))
 
+const files = writable(getLSItem("uplink.files", []))
+files.subscribe(f => setLSItem("uplink.files", f))
+
 const initialState: IState = {
     user,
     friends,
     favorites,
     blocked,
     activeRequests,
+    files,
     devices: {
         muted,
         deafened: writable(false),
@@ -433,6 +440,7 @@ class GlobalStore {
             ...get(this.state.activeChat),
             conversation: mock_messages
         })
+        this.state.files.set(mock_files)
     }
 }
 
