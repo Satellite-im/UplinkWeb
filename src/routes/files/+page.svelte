@@ -53,7 +53,7 @@
         const items = sortable.getDraggableElementsForContainer(dropzone)
         sortable.on('sortable:start', (event) => {
             fileElementsMap.clear();
-            Array.from(items)
+            items
                 .filter(child => child.getAttribute('data-id'))
                 .forEach(child => {
                     fileElementsMap.set(child.getAttribute('data-id'), child);
@@ -61,9 +61,7 @@
         });
 
         sortable.on('sortable:stop', (event) => {
-            
-        console.log(items, dropzone)
-            let currentOrder = Array.from(items)
+            let currentOrder = items
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'));
 
@@ -86,7 +84,7 @@
 
             Store.state.files.set(reorderedFiles);
 
-            // console.log('new order', currentOrder, reorderedFiles);
+            console.log('new order', currentOrder, reorderedFiles);
         });
 
         // onDestroy(() => sortable.destroy());
