@@ -88,7 +88,7 @@ export type Chat = {
     users: User[],
     last_message_at: Date,
     last_message_preview: string,
-    conversation: Message[],
+    conversation: MessageGroup[],
 }
 
 export let defaultChat = {
@@ -98,7 +98,7 @@ export let defaultChat = {
     notifications: 0,
     activity: false,
     users: [],
-    last_message_at: new Date,
+    last_message_at: new Date(),
     last_message_preview: "",
     conversation: []
 }
@@ -114,6 +114,7 @@ export type ContextItem = {
     icon: Shape,
     text: string,
     appearance: Appearance,
+    onClick: () => void,
 }
 
 export type FileInfo = {

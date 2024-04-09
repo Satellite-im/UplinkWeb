@@ -9,12 +9,11 @@
     import Text from "$lib/elements/Text.svelte";
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
-    import { chats } from "$lib/mock/users"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
     import {dndzone} from "svelte-dnd-action"
-    import type { ContextItem } from "$lib/types"
+    import type { Chat, ContextItem } from "$lib/types"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
 
@@ -47,6 +46,10 @@
     let contextData: ContextItem[] = []
 
     Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
+    Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
+    let activeChat: Chat = get(Store.state.activeChat)
+    Store.state.activeChat.subscribe((c) => activeChat = c)
 </script>
 
 <div id="page">
@@ -90,11 +93,12 @@
             </Button>
         </Controls>
         {#if activeTabRoute === "chats"}
-            {#each chats as chat}
+            {#each sidebarChats as chat}
                 <ChatPreview
-                    loading={loading}
                     chat={chat}
+                    loading={loading}
                     simpleUnreads
+                    cta={activeChat === chat}
                     on:context={(evt) => {
                         contextPosition = evt.detail
                         contextData = [
@@ -102,13 +106,15 @@
                                 id: "hide",
                                 icon: Shape.EyeSlash,
                                 text: "Hide",
-                                appearance: Appearance.Default
+                                appearance: Appearance.Default,
+                                onClick: () => Store.removeSidebarChat(chat)
                             },
                             {
                                 id: "mark_read",
                                 icon: Shape.CheckMark,
                                 text: "Mark Read",
-                                appearance: Appearance.Default
+                                appearance: Appearance.Default,
+                                onClick: () => {}
                             },
                         ]
                     }} />
@@ -180,7 +186,8 @@
                                     id: "delete",
                                     icon: Shape.XMark,
                                     text: "Delete",
-                                    appearance: Appearance.Default
+                                    appearance: Appearance.Default,
+                                    onClick: () => {}
                                 }
                             ]
                         }} />       
@@ -192,7 +199,8 @@
                                     id: "delete",
                                     icon: Shape.XMark,
                                     text: "Delete",
-                                    appearance: Appearance.Default
+                                    appearance: Appearance.Default,
+                                    onClick: () => {}
                                 }
                             ]
                         }}/>       

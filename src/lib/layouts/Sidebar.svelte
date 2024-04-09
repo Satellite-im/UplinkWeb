@@ -10,16 +10,23 @@
     import { goto } from "$app/navigation"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
+    import { get } from "svelte/store"
+    import { Store } from "$lib/state/Store"
+    import type { Call } from "$lib/types"
+
     initLocale()
 
     export let activeRoute: Route       = Route.Chat
     export let open: boolean            = true
     export let loading: boolean         = true
-
+    export let activeCall: Call | null  = get(Store.state.activeCall)
+    
     const dispatch = createEventDispatcher()
     function handleToggle() {
         dispatch('toggle', open)
     }
+
+    Store.state.activeCall.subscribe((c) => activeCall = c)
 </script>
 
 {#if open}
@@ -38,7 +45,9 @@
         </div>
 
         <div class="popups">
-            <CallControls />
+            {#if activeCall}
+                <CallControls />
+            {/if}
         </div>
         <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={(e) => goto(e.detail)}/>
     </div>

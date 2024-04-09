@@ -6,7 +6,7 @@
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { blocked_users, chats, fake_user_array } from "$lib/mock/users"
-    import type { ContextItem, User } from "$lib/types"
+    import type { Chat, ContextItem, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
     import { Store } from "$lib/state/Store"
@@ -76,6 +76,10 @@
     Store.state.friends.subscribe(f => friends = f)
     Store.state.blocked.subscribe(u => blocked = u)
     Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
+    Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
+    let activeChat: Chat = get(Store.state.activeChat)
+    Store.state.activeChat.subscribe((c) => activeChat = c)
 </script>
 
 <div id="page">
@@ -114,11 +118,12 @@
             </Button>
         </div>
 
-        {#each chats as chat}
+        {#each sidebarChats as chat}
             <ChatPreview
-                loading={loading}
                 chat={chat}
+                loading={loading}
                 simpleUnreads
+                cta={activeChat === chat}
                 on:context={(evt) => {
                     contextPosition = evt.detail
                     contextData = [
@@ -126,13 +131,15 @@
                             id: "hide",
                             icon: Shape.EyeSlash,
                             text: "Hide",
-                            appearance: Appearance.Default
+                            appearance: Appearance.Default,
+                            onClick: () => Store.removeSidebarChat(chat)
                         },
                         {
                             id: "mark_read",
                             icon: Shape.CheckMark,
                             text: "Mark Read",
-                            appearance: Appearance.Default
+                            appearance: Appearance.Default,
+                            onClick: () => {}
                         },
                     ]
                 }} />

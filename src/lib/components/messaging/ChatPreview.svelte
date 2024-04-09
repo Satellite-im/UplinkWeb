@@ -21,10 +21,14 @@
     let name = (chat.users.length > 1) ? 
         chat.name : chat.users[0].name
 
-
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
         dispatch('context', coords)
+    }
+
+    function getTimeAgo(dateInput: string | Date) {
+        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput;
+        return timeAgo.format(date)
     }
 </script>
 
@@ -61,7 +65,7 @@
                     loading={loading} 
                     size={Size.Smallest} 
                     muted>
-                    {timeAgo.format(chat.last_message_at)}
+                    {getTimeAgo(chat.last_message_at)}
                 </Text>
                 {#if !loading}
                     {#if chat.notifications > 0 && !simpleUnreads}
@@ -82,7 +86,7 @@
                 <Text 
                     size={Size.Small} 
                     loading={loading}>
-                    {chat.last_message_preview}
+                    {chat.last_message_preview || "No messages sent yet."}
                 </Text>
             {/if}
         </p>

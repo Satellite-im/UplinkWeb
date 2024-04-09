@@ -57,7 +57,8 @@ export const enum SettingsRoute {
     Accessability   = "/settings/accessability",
     Notifications   = "/settings/notifications",
     About           = "/settings/about",
-    Licenses        = "/settings/licenses"
+    Licenses        = "/settings/licenses",
+    Developer       = "/settings/developer"
 }
 
 export const enum Appearance {

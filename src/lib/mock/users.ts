@@ -141,7 +141,7 @@ export const fake_user_array: Array<User> = [
 
 export let chats: Chat[] = [
     {
-        id: uuidv4(),
+        id: "p41",
         name: "RC Group Chat",
         motd: "A place for people who love RC",
         notifications: 0,
@@ -156,7 +156,7 @@ export let chats: Chat[] = [
         conversation: []
     },
     {
-        id: uuidv4(),
+        id: "op23",
         name: "",
         motd: "",
         notifications: 4,
@@ -167,7 +167,7 @@ export let chats: Chat[] = [
         conversation: []
     },
     {
-        id: uuidv4(),
+        id: "a45",
         name: "",
         motd: "",
         notifications: 2,
@@ -178,7 +178,7 @@ export let chats: Chat[] = [
         conversation: []
     },
     {
-        id: uuidv4(),
+        id: "s12",
         name: "",
         motd: "",
         activity: false,
@@ -189,7 +189,7 @@ export let chats: Chat[] = [
         conversation: []
     },
     {
-        id: uuidv4(),
+        id: "12s",
         name: "",
         motd: "",
         activity: false,
@@ -200,7 +200,7 @@ export let chats: Chat[] = [
         conversation: []
     },
     {
-        id: uuidv4(),
+        id: "as5",
         name: "",
         motd: "",
         activity: false,

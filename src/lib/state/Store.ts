@@ -1,8 +1,10 @@
 import { Sound, Sounds } from "$lib/components/utils/Sounds"
 import { Font, KeybindAction, Locale, MessageDirection, Status } from "$lib/enums"
-import { mock_users } from "$lib/mock/users"
+import { mock_messages } from "$lib/mock/messages"
+import { blocked_users, chats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
+import { v4 as uuidv4 } from "uuid"
 
 export interface ISettingsState {
     lang: Locale,
@@ -124,6 +126,7 @@ export interface IState {
         cssOverride: Writable<string>,
         font: Writable<Font>,
         sidebarOpen: Writable<boolean>,
+        sidebarChats: Writable<Chat[]>,
     },
     settings: Writable<ISettingsState>
 }
@@ -166,7 +169,7 @@ outputDevice.subscribe(d => setLSItem("uplink.devices.output", d))
 const muted = writable(getLSItem("uplink.devices.muted", false))
 muted.subscribe(status => setLSItem("uplink.devices.muted", status))
 
-const friends = writable(getLSItem("uplink.friends", mock_users))
+const friends = writable(getLSItem("uplink.friends", []))
 friends.subscribe(f => setLSItem("uplink.friends", f))
 
 const blocked = writable(getLSItem("uplink.blocked", []))
@@ -180,6 +183,9 @@ favorites.subscribe(favs => setLSItem("uplink.favorites", favs))
 
 const sidebarOpen = writable(getLSItem("uplink.ui.sidebarOpen", true))
 sidebarOpen.subscribe(value => setLSItem("uplink.ui.sidebarOpen", value))
+
+const sidebarChats = writable(getLSItem("uplink.ui.sidebarChats", []))
+sidebarChats.subscribe(chats => setLSItem("uplink.ui.sidebarChats", chats))
 
 const initialState: IState = {
     user,
@@ -200,7 +206,8 @@ const initialState: IState = {
         fontSize,
         font,
         cssOverride,
-        sidebarOpen
+        sidebarOpen,
+        sidebarChats
     },
     settings
 }
@@ -252,13 +259,21 @@ class GlobalStore {
 
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
+    
+        const currentSidebarChats = get(this.state.ui.sidebarChats)
+        const chatExistsInSidebar = currentSidebarChats.some(c => c.id === chat.id)
+
+        if (!chatExistsInSidebar) 
+            this.state.ui.sidebarChats.set([...currentSidebarChats, chat])
     }
 
     setActiveDM(user: User) {
-        this.state.activeChat.set({
+        this.setActiveChat({
             ...defaultChat,
+            id: uuidv4(),
             users: [ user ],
             name: user.name,
+            last_message_at: new Date(),
             motd: user.profile.status_message,
         })
     }
@@ -384,6 +399,19 @@ class GlobalStore {
         this.state.ui.sidebarOpen.set(!current)
     }
 
+    addSidebarChat(chat: Chat) {
+        const currentSidebarChats = get(this.state.ui.sidebarChats)
+        if (!currentSidebarChats.some(c => c.id === chat.id)) {
+            this.state.ui.sidebarChats.set([...currentSidebarChats, chat])
+        }
+    }
+
+    removeSidebarChat(chat: Chat) {
+        this.state.ui.sidebarChats.set(
+            get(this.state.ui.sidebarChats).filter(c => c.id !== chat.id)
+        )
+    }
+
     get outboundRequests() {
         return get(this.state.activeRequests).filter((r: FriendRequest) => r.direction === MessageDirection.Outbound)
     }
@@ -394,6 +422,17 @@ class GlobalStore {
 
     get blockedUsers() {
         return get(this.state.blocked)
+    }
+
+    load_mock_data() {
+        this.state.friends.set(mock_users)
+        this.state.blocked.set(blocked_users)
+        this.state.activeChat.set(chats[0])
+        this.state.ui.sidebarChats.set(chats)
+        this.state.activeChat.set({
+            ...get(this.state.activeChat),
+            conversation: mock_messages
+        })
     }
 }
 

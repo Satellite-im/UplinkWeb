@@ -38,6 +38,9 @@
     {/if}
 
     <div class="content">
+        <Button icon appearance={Appearance.Alt}>
+            <Icon icon={Shape.Beaker} />
+        </Button>
         {#if favorites.length}
             <Label text="Faves"/>
             {#each favorites as favorite}

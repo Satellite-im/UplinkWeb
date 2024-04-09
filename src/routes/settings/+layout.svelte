@@ -2,17 +2,75 @@
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
     import { ContextMenu } from "$lib/components";
-    import { Route, SettingsRoute } from "$lib/enums"
+    import { Route, SettingsRoute, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { settingsRoutes } from "$lib/mock/routes"
     import { Store } from "$lib/state/Store"
-    import type { ContextItem } from "$lib/types"
+    import type { ContextItem, NavRoute } from "$lib/types"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
+
+
+    export let settingsRoutes: NavRoute[] = [
+        {
+            to: SettingsRoute.Profile,
+            icon: Shape.Profile,
+            name: "Profile"
+        },
+        {
+            to: SettingsRoute.Preferences,
+            icon: Shape.Brush,
+            name: "Customization"
+        },
+        {
+            to: SettingsRoute.Messages,
+            icon: Shape.ChatBubble,
+            name: "Messages"
+        },
+        {
+            to: SettingsRoute.AudioVideo,
+            icon: Shape.Speaker,
+            name: "Audio & Video"
+        },
+        {
+            to: SettingsRoute.Extensions,
+            icon: Shape.Beaker,
+            name: "Extensions"
+        },
+        {
+            to: SettingsRoute.Keybinds,
+            icon: Shape.Keybind,
+            name: "Keybinds"
+        },
+        {
+            to: SettingsRoute.Accessability,
+            icon: Shape.Eye,
+            name: "Accessability"
+        },
+        {
+            to: SettingsRoute.Notifications,
+            icon: Shape.BellAlert,
+            name: "Notifications"
+        },
+        {
+            to: SettingsRoute.About,
+            icon: Shape.Info,
+            name: "About"
+        },
+        {
+            to: SettingsRoute.Licenses,
+            icon: Shape.Document,
+            name: "Licenses"
+        },
+        {
+            to: SettingsRoute.Developer,
+            icon: Shape.Code,
+            name: "Developer"
+        },
+    ]
 
     initLocale()
 
@@ -56,6 +114,10 @@
             }
             case "/settings/profile": {
                 activeRoute = SettingsRoute.Profile
+                break
+            }
+            case "/settings/developer": {
+                activeRoute = SettingsRoute.Developer
                 break
             }
         }
