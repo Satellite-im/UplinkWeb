@@ -5,7 +5,6 @@ import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest, type FileInfo, hashChat } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
-import { v4 as uuidv4 } from "uuid"
 
 export interface ISettingsState {
     lang: Locale,

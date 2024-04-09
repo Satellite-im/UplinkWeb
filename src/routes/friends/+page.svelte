@@ -5,7 +5,6 @@
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { blocked_users, chats, fake_user_array } from "$lib/mock/users"
     import type { Chat, ContextItem, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
