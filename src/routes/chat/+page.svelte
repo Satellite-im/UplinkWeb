@@ -14,11 +14,11 @@
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { type Chat, type ContextItem } from "$lib/types"
+    import { type Chat, type ContextItem, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
-    import { goto } from "$app/navigation";
+    import { goto } from "$app/navigation"
 
     initLocale()
 
@@ -35,6 +35,7 @@
 
     // TODO: Move this into a global state
     let previewImage: string | null
+    let previewProfile: User | null
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
@@ -69,6 +70,12 @@
                 </Button>
             </svelte:fragment>
             <ImageEmbed big source={previewImage} />
+        </Modal>
+    {/if}
+
+    {#if previewProfile}
+        <Modal on:close={(_) => {previewProfile = null}}>
+            <Profile user={previewProfile} />
         </Modal>
     {/if}
 
@@ -190,6 +197,9 @@
                             image: group.details.origin.profile.photo.image,
                             status: group.details.origin.profile.status,
                             highlight: Appearance.Default
+                        }}
+                        on:profileClick={(_) => {
+                            previewProfile = group.details.origin
                         }}
                         remote={group.details.remote}
                         subtext="Sent 3 minutes ago.">

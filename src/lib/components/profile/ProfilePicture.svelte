@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from '$lib/elements'
+    import { createEventDispatcher } from "svelte";
 
     export let image: string                    = ""
     export let notifications: number            = 0
@@ -10,9 +11,15 @@
     export let status: Status                   = Status.Offline
     export let loading: boolean                 = false
     export let noIndicator: boolean             = false
+
+    const dispatch = createEventDispatcher()
 </script>
 
-<div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div 
+    class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}"
+    on:click={(_) => dispatch("click")}>
     {#if loading}
         <Loader />
     {:else}

@@ -7,7 +7,7 @@
 
     let scrollContainer: Element
 
-    let showScrollToBottom: boolean = false;
+    let showScrollToBottom: boolean = false
 
     const scrollToBottom = (node: Element) => {
         node.scrollTop = node.scrollHeight
@@ -23,7 +23,9 @@
     })
 
     onMount(() => {
-        scrollToBottom(scrollContainer)
+        setTimeout(() => {
+            scrollToBottom(scrollContainer)
+        }, 100)
     })
 </script>
 

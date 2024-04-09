@@ -9,7 +9,7 @@
     import type { User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { get } from "svelte/store";
+    import { get } from "svelte/store"
 
     initLocale()
 
@@ -18,7 +18,6 @@
 
     function toggleSeedPhrase() {
         showSeed = !showSeed
-
         if (loading) setTimeout(() => loading = false, 200)
     }
 
