@@ -38,32 +38,57 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-
+    let fileElementsMap = new Map();
     onMount(() => {
-        const dropzone = document.querySelector('.files') as HTMLElement;
-        if (dropzone) {
-            const sortable = new Sortable(dropzone, {
-                draggable: ".draggable-item",
-                mirror: {
-                    constrainDimensions: true,
-                },
-                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+    const dropzone = document.querySelector('.files') as HTMLElement;
+    if (dropzone) {
+        const sortable = new Sortable(dropzone, {
+            draggable: ".draggable-item",
+            mirror: {
+                constrainDimensions: true,
+            },
+            plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+        });
+
+        sortable.on('sortable:start', (event) => {
+            fileElementsMap.clear();
+            Array.from(dropzone.children)
+                .filter(child => child.getAttribute('data-id'))
+                .forEach(child => {
+                    fileElementsMap.set(child.getAttribute('data-id'), child);
+                });
+        });
+
+        sortable.on('sortable:stop', (event) => {
+            let currentOrder = Array.from(dropzone.children)
+                .filter(child => child.getAttribute('data-id'))
+                .map(child => child.getAttribute('data-id'));
+
+            const reorderedFiles: FileInfo[] = [];
+            const addedIds = new Set();
+
+            currentOrder.forEach(id => {
+                if (!addedIds.has(id)) {
+                    const fileElement = fileElementsMap.get(id);
+                    if (fileElement) {
+                        const file = get(Store.state.files).find(file => file.id === id);
+                        if (file) {
+                            console.log("inside")
+                            reorderedFiles.push({ ...file });
+                            addedIds.add(id);
+                        }
+                    }
+                }
             });
 
-            // sortable.on('sortable:stop', (event) => {
-            //     const newOrder = Array.from(dropzone.children).map(child => child.getAttribute('data-id'))
-            //     console.log('new order', newOrder)
-            //     let reorderedFiles = newOrder.map(id => 
-            //         get(Store.state.files).find(file => file.id === id)
-            //     ).filter(file => file)
-            //     if (typeof reorderedFiles !== undefined) {
-            //         Store.state.files.set(reorderedFiles)
-            //     }
-            // });
+            Store.state.files.set(reorderedFiles);
 
-            // onDestroy(() => sortable.destroy());
-        }
-    })
+            console.log('new order', currentOrder, reorderedFiles);
+        });
+
+        // onDestroy(() => sortable.destroy());
+    }
+})
 
     Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
@@ -200,7 +225,7 @@
         <div class="files">
             {#each files as item}
                 <div
-                    class="draggable-item {item.type === "folder" ? "folder-draggable droppable" :""}"
+                    class="draggable-item {item.id} {item.type === "folder" ? "folder-draggable droppable" :""}"
                     draggable="true"
                     data-id={item.id}
                 >
