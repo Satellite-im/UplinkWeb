@@ -6,7 +6,7 @@
     import { Appearance, Font } from "$lib/enums"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
-    import Button from "$lib/elements/Button.svelte";
+    import Button from "$lib/elements/Button.svelte"
 
     initLocale()
 

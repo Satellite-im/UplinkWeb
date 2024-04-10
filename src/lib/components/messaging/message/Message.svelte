@@ -1,6 +1,6 @@
 <script lang="ts">
     import { MessagePosition } from "$lib/enums"
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher } from "svelte"
 
     export let remote: boolean          = false
     export let reply: boolean           = false

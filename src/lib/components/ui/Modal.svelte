@@ -6,7 +6,6 @@
     function onClose(event: MouseEvent) {
         dispatch('close', event)
     }
-    
 
     export let withControls: boolean = false
 </script>

@@ -13,7 +13,7 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
     import { Plugins } from '@shopify/draggable'
-    import { onDestroy, onMount } from 'svelte'
+    import { onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"

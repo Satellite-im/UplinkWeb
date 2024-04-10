@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
-    import Modal from "./Modal.svelte";
+    import Modal from "./Modal.svelte"
 
     export let open: boolean    = false
     export let name: string     = "name"

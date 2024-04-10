@@ -5,8 +5,7 @@
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import { onMount } from "svelte"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
 
     initLocale()
 

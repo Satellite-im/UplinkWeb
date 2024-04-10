@@ -8,7 +8,7 @@
     import ColorPicker from 'svelte-awesome-color-picker'
     import { Store } from "$lib/state/store"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
-    import { get } from "svelte/store";
+    import { get } from "svelte/store"
 
     initLocale()
 

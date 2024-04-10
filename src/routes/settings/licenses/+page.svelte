@@ -3,7 +3,7 @@
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
 
     initLocale()
 </script>

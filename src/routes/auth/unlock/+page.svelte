@@ -5,7 +5,7 @@
     import { Route } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
     initLocale()
 
     let create = false

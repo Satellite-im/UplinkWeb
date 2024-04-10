@@ -2,7 +2,7 @@
     import { Text } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
     import { defaultUser, type Transaction } from "$lib/types"
-    import { Size } from "$lib/enums";
+    import { Size } from "$lib/enums"
 
     export let transaction: Transaction = {
         amount: 0,
