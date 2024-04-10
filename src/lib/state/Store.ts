@@ -5,9 +5,9 @@ import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest,  hashChat, type Message, type MessageGroup } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
-import { createPersistentState } from "./persistedState"
-import { defaultSettings, type ISettingsState, type IState } from "./inital"
-
+import { type IState } from "./inital"
+import { createPersistentState, defaultSettings, SettingsStore, type ISettingsState } from "."
+import { UIStore } from "./ui"
 
 class GlobalStore {
     state: IState
@@ -17,15 +17,6 @@ class GlobalStore {
             activeCall: writable(null),
             user: createPersistentState("uplink.user", defaultUser),
             activeChat: createPersistentState("uplink.activeChat", defaultChat),
-            ui: {
-                color: createPersistentState("uplink.color", "#4d4dff"),
-                fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
-                font: createPersistentState("uplink.ui.font", Font.Poppins),
-                cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
-                sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),
-                chats: createPersistentState("uplink.ui.chats", []),
-            },
-            settings: createPersistentState("uplink.settings", defaultSettings),
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
                 output: createPersistentState("uplink.devices.output", "default"),
@@ -66,29 +57,17 @@ class GlobalStore {
         this.state.user.update(u => u = { ...u, profile: { ...u.profile, banner: { ...u.profile.banner, image: photo }}})
     }
 
-    setCssOverride(css: string) {
-        this.state.ui.cssOverride.set(css)
-    }
-
-    setThemeColor(color: string) {
-        this.state.ui.color.set(color)
-    }
-
-    setFont(font: Font) {
-        this.state.ui.font.set(font)
-    }
-
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
         
-        const chats = get(this.state.ui.chats)
+        const chats = get(UIStore.state.chats)
         const chatIndex = chats.findIndex(c => c.id === chat.id)
     
         if (chatIndex !== -1) {
             const updatedChat = {...chats[chatIndex], notifications: 0}
             const updatedChats = [...chats]
             updatedChats[chatIndex] = updatedChat
-            this.state.ui.chats.set(updatedChats)
+            UIStore.state.chats.set(updatedChats)
         }
     }
 
@@ -113,27 +92,15 @@ class GlobalStore {
         this.state.devices.output.set(device)
     }
 
-    updateSettings(settings: ISettingsState) {
-        this.state.settings.set(settings)
-    }
-
-    increaseFontSize(amount: number = 0.025) {
-        this.state.ui.fontSize.update((s) => (s + amount <= 1.5) ? s += amount : s)
-    }
-
-    decreaseFontSize(amount: number = 0.025) {
-        this.state.ui.fontSize.update((s) => (s - amount >= 0.8) ? s -= amount : s)
-    }
-
     updateMuted(muted: boolean) {
         this.state.devices.muted.set(muted)
-        if (get(this.state.settings).audio.controlSounds)
+        if (get(SettingsStore.state).audio.controlSounds)
             Sounds.play(muted ? Sound.Off : Sound.On)
     }
 
     updateDeafened(deafened: boolean) {
         this.state.devices.deafened.set(deafened)
-        if (get(this.state.settings).audio.controlSounds)
+        if (get(SettingsStore.state).audio.controlSounds)
             Sounds.play(deafened ? Sound.Off : Sound.On)
     }
 
@@ -213,34 +180,8 @@ class GlobalStore {
         return get(this.state.favorites).some(f => f.id === chat.id)
     }
 
-    openSidebar() {
-        this.state.ui.sidebarOpen.set(true)
-    }
-
-    closeSidebar() {
-        this.state.ui.sidebarOpen.set(false)
-    }
-
-    toggleSidebar() {
-        const current = get(this.state.ui.sidebarOpen)
-        this.state.ui.sidebarOpen.set(!current)
-    }
-
-    addSidebarChat(chat: Chat) {
-        const currentchats = get(this.state.ui.chats)
-        if (!currentchats.some(c => c.id === chat.id)) {
-            this.state.ui.chats.set([...currentchats, chat])
-        }
-    }
-
-    removeSidebarChat(chat: Chat) {
-        this.state.ui.chats.set(
-            get(this.state.ui.chats).filter(c => c.id !== chat.id)
-        )
-    }
-
     newMessage(chatId: string, newMessage: Message) {
-        const chats = get(this.state.ui.chats)
+        const chats = get(UIStore.state.chats)
         const chatIndex = chats.findIndex(chat => chat.id === chatId)
 
         if (chatIndex !== -1) {
@@ -263,7 +204,7 @@ class GlobalStore {
             // Update the chat in the state
             const updatedChats = [...chats]
             updatedChats[chatIndex] = updatedChat
-            this.state.ui.chats.set(updatedChats)
+            UIStore.state.chats.set(updatedChats)
         } else {
             console.error("Chat not found")
         }
@@ -289,7 +230,7 @@ class GlobalStore {
         mchatsMod[0] = activeChat
 
         this.state.activeChat.set(mchatsMod[0])
-        this.state.ui.chats.set(mchatsMod)
+        UIStore.state.chats.set(mchatsMod)
         this.state.files.set(mock_files)
         this.state.friends.set(mock_users)
         this.state.blocked.set(blocked_users)

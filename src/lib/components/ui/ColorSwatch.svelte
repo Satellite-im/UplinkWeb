@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Store } from "$lib/state/store"
+    import { UIStore } from "$lib/state/ui"
 
     export let color: string = ""
     export let name: string = ""
@@ -11,7 +11,7 @@
     class="color-swatch tooltip" 
     data-tooltip="{name}" 
     on:click={() => {
-        Store.setThemeColor(color)
+        UIStore.setThemeColor(color)
     }}
     style="background-color: {color}">
 </div>

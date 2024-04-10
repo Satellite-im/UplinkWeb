@@ -6,19 +6,20 @@
     import { Font } from "$lib/enums"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
+    import { UIStore } from "$lib/state/ui";
 
     initLocale()
 
-    let font: Font = get(Store.state.ui.font)
+    let font: Font = get(UIStore.state.font)
 </script>
 
 <div id="page">
     <SettingSection name={$_("settings.accessability.openDyslexic")} description={$_("settings.accessability.openDyslexicDescription")}>
         <Switch on={font === Font.OpenDyslexic} on:toggle={(e) => {
             if (e.detail) {
-                Store.setFont(Font.OpenDyslexic)
+                UIStore.setFont(Font.OpenDyslexic)
             } else {
-                Store.setFont(Font.Poppins)
+                UIStore.setFont(Font.Poppins)
             }
         }} />
     </SettingSection>

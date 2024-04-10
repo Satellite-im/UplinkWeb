@@ -18,15 +18,16 @@
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
+    import { UIStore } from "$lib/state/ui"
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
 
     function toggleSidebar(): void {
-        Store.toggleSidebar()
+        UIStore.toggleSidebar()
     }
 
     let tabRoutes: string[] = ["chats", "files"]
@@ -65,9 +66,9 @@
         }
     })
 
-    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
-    let chats: Chat[] = get(Store.state.ui.chats)
-    Store.state.ui.chats.subscribe((sc) => chats = sc)
+    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let chats: Chat[] = get(UIStore.state.chats)
+    UIStore.state.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
     let files: FileInfo[] = get(Store.state.files)
@@ -129,7 +130,7 @@
                                 icon: Shape.EyeSlash,
                                 text: "Hide",
                                 appearance: Appearance.Default,
-                                onClick: () => Store.removeSidebarChat(chat)
+                                onClick: () => UIStore.removeSidebarChat(chat)
                             },
                             {
                                 id: "mark_read",

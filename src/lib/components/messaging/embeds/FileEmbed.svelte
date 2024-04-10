@@ -1,7 +1,7 @@
 <script lang="ts">
     import Controls from "$lib/layouts/Controls.svelte"
     import { Text } from "$lib/elements"
-    import Button from "$lib/elements/Button.svelte";
+    import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte";
     import { Appearance, Shape, Size } from "$lib/enums"
     import type { FileInfo } from "$lib/types"

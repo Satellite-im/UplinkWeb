@@ -19,18 +19,19 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
+    import { UIStore } from "$lib/state/ui";
 
     initLocale()
 
     let loading = false
     let contentAsideOpen = false
-    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let activeChat: Chat = get(Store.state.activeChat)
     let isFavorite = Store.isFavorite(activeChat)
     let conversation = get(Store.state.activeChat).conversation
 
     function toggleSidebar() {
-        Store.toggleSidebar()
+        UIStore.toggleSidebar()
     }
 
     // TODO: Move this into a global state
@@ -39,9 +40,9 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
-    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
-    let chats: Chat[] = get(Store.state.ui.chats)
-    Store.state.ui.chats.subscribe((sc) => chats = sc)
+    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let chats: Chat[] = get(UIStore.state.chats)
+    UIStore.state.chats.subscribe((sc) => chats = sc)
     Store.state.activeChat.subscribe((c) => {
         activeChat = c
         conversation = c.conversation
@@ -100,7 +101,7 @@
                             icon: Shape.EyeSlash,
                             text: "Hide",
                             appearance: Appearance.Default,
-                            onClick: () => Store.removeSidebarChat(chat)
+                            onClick: () => UIStore.removeSidebarChat(chat)
                         },
                         {
                             id: "mark_read",

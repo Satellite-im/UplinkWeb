@@ -5,21 +5,20 @@
     import { Appearance, KeybindAction, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
-    import { defaultKeybinds, type ISettingsState } from "$lib/state/inital"
-    import { Store } from "$lib/state/store"
+    import { defaultKeybinds, SettingsStore, type ISettingsState } from "$lib/state"
     import type { Keybind } from "$lib/types"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
 
     initLocale()
 
-    let settings: ISettingsState = get(Store.state.settings)
+    let settings: ISettingsState = get(SettingsStore.state)
     let keybinds: Keybind[] = defaultKeybinds
     let recordedAction: KeybindAction = KeybindAction.ToggleMute
 
     let keyboardRecording = { key: "", modifiers: [] }
 
-    Store.state.settings.subscribe(settings => {
+    SettingsStore.state.subscribe(settings => {
         keybinds = settings.keybinds
         settings = settings
     })
@@ -36,7 +35,7 @@
             return keybind
         })
 
-        Store.updateSettings({...settings, keybinds: newKeybinds})
+        SettingsStore.update({...settings, keybinds: newKeybinds})
 
         keyboardRecording = { key: "", modifiers: [] }
     }
@@ -52,7 +51,7 @@
             return kb
         })
 
-        Store.updateSettings({...settings, keybinds: newKeybinds})
+        SettingsStore.update({...settings, keybinds: newKeybinds})
     }
 
     function isKeybindMatching(recorded: any, keybind: any) {
@@ -117,7 +116,7 @@
 
     <SettingSection name={$_("settings.keybinds.revert")} description={$_("settings.keybinds.revertDescription")}>
         <Button appearance={Appearance.Alt} text={$_("settings.keybinds.revert_plural")} on:click={(_) => {
-             Store.updateSettings({...settings, keybinds: defaultKeybinds})
+             SettingsStore.update({...settings, keybinds: defaultKeybinds})
         }}>
             <Icon icon={Shape.UTurn} />
         </Button>

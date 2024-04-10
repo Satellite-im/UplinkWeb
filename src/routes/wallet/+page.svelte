@@ -17,19 +17,20 @@
     import NewPayment from "$lib/components/wallet/payments/NewPayment.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
+    import { UIStore } from "$lib/state/ui";
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let balace: number = balance
 
     function toggleSidebar(): void {
-        Store.toggleSidebar()
+        UIStore.toggleSidebar()
     }
 
-    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
 </script>
 
 <div id="page">

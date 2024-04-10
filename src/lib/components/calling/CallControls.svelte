@@ -6,7 +6,7 @@
     import Controls from "../../layouts/Controls.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
-    import type { ISettingsState } from "$lib/state/inital"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
 
     initLocale()
 
@@ -14,11 +14,11 @@
     export let duration: Date           = new Date()
     export let muted: boolean           = get(Store.state.devices.muted)
     export let deafened: boolean        = get(Store.state.devices.deafened)
-    export let settings: ISettingsState = get(Store.state.settings)
+    export let settings: ISettingsState = get(SettingsStore.state)
 
     Store.state.devices.muted.subscribe((state) =>  muted = state )
     Store.state.devices.deafened.subscribe((state) => deafened = state )
-    Store.state.settings.subscribe((state) => settings = state)
+    SettingsStore.state.subscribe((state) => settings = state)
 </script>
 
 <div class="call-controls">

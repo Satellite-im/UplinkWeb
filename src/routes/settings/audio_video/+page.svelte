@@ -8,7 +8,7 @@
     import { Store } from "$lib/state/store"
     import { onMount } from "svelte"
     import { get } from "svelte/store"
-    import type { ISettingsState } from "$lib/state/inital"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
 
     initLocale()
 
@@ -43,8 +43,8 @@
         selectedInput = d
     })
 
-    let settings: ISettingsState = get(Store.state.settings)
-    Store.state.settings.subscribe((s: ISettingsState) => {
+    let settings: ISettingsState = get(SettingsStore.state)
+    SettingsStore.state.subscribe((s: ISettingsState) => {
         settings = s
     })
 
@@ -159,27 +159,27 @@
     </div>
     <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
         <Switch on={(settings) ? settings.audio.echoCancellation : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, audio: {...settings.audio, echoCancellation: on.detail }})
+            SettingsStore.update({...settings, audio: {...settings.audio, echoCancellation: on.detail }})
         }} />
     </SettingSection>
     <SettingSection name="Interface Sounds" description="Play sounds when interacting with UI elements.">
         <Switch on={(settings) ? settings.audio.interfaceSounds : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, audio: {...settings.audio, interfaceSounds: on.detail }})
+            SettingsStore.update({...settings, audio: {...settings.audio, interfaceSounds: on.detail }})
         }} />
     </SettingSection>
     <SettingSection name="Control Sounds" description="When enabled you will hear a sound when turning controls on or off, such as muting and unmuting.">
         <Switch on={(settings) ? settings.audio.controlSounds : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, audio: {...settings.audio, controlSounds: on.detail }})
+            SettingsStore.update({...settings, audio: {...settings.audio, controlSounds: on.detail }})
         }} />
     </SettingSection>
     <SettingSection name="Message Sounds" description="Play a notification sound when a new message is recieved.">
         <Switch on={(settings) ? settings.audio.messageSounds : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, audio: {...settings.audio, messageSounds: on.detail }})
+            SettingsStore.update({...settings, audio: {...settings.audio, messageSounds: on.detail }})
         }} />
     </SettingSection>
     <SettingSection name="Call Timer" description="Show the duration of an active call in the UI.">
         <Switch on={(settings) ? settings.audio.callTimer : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, audio: {...settings.audio, callTimer: on.detail }})
+            SettingsStore.update({...settings, audio: {...settings.audio, callTimer: on.detail }})
         }} />
     </SettingSection>
 </div>

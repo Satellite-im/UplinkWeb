@@ -6,9 +6,10 @@
     import Controls from "./Controls.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
+    import { SettingsStore } from "$lib/state"
 
     initLocale()
-    let markdown = get(Store.state.settings).messaging.markdownSupport
+    let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
 </script>
 

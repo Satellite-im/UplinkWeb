@@ -11,12 +11,13 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
+    import { UIStore } from "$lib/state/ui";
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let friends: User[] = get(Store.state.friends)
     let blocked: User[] = get(Store.state.blocked)
 
@@ -24,7 +25,7 @@
     let tab: string = "all"
 
     function toggleSidebar(): void {
-        Store.toggleSidebar()
+        UIStore.toggleSidebar()
     }
 
     // Function to group users alphabetically by the first character of their usernames
@@ -74,9 +75,9 @@
 
     Store.state.friends.subscribe(f => friends = f)
     Store.state.blocked.subscribe(u => blocked = u)
-    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
-    let chats: Chat[] = get(Store.state.ui.chats)
-    Store.state.ui.chats.subscribe((sc) => chats = sc)
+    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let chats: Chat[] = get(UIStore.state.chats)
+    UIStore.state.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
 </script>
@@ -131,7 +132,7 @@
                             icon: Shape.EyeSlash,
                             text: "Hide",
                             appearance: Appearance.Default,
-                            onClick: () => Store.removeSidebarChat(chat)
+                            onClick: () => UIStore.removeSidebarChat(chat)
                         },
                         {
                             id: "mark_read",
