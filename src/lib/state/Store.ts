@@ -6,6 +6,59 @@ import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest, type FileInfo, hashChat, type Message, type MessageGroup } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 
+
+const dbName = "UplinkAppState"
+const storeName = "stateStore"
+
+async function initDB() {
+    return new Promise<IDBDatabase>((resolve, _) => {
+        const request = indexedDB.open(dbName, 1)
+        request.onupgradeneeded = (_) => {
+            const db = request.result
+            if (!db.objectStoreNames.contains(storeName)) {
+                db.createObjectStore(storeName, { keyPath: 'key' })
+            }
+        }
+        request.onsuccess = (_) => resolve(request.result);
+    })
+}
+
+async function getStateFromDB<T>(key: string, defaultState: T): Promise<T> {
+    const db = await initDB()
+    return new Promise<T>((resolve) => {
+        const transaction = db.transaction([storeName], 'readonly')
+        const objectStore = transaction.objectStore(storeName)
+        const request = objectStore.get(key)
+        request.onsuccess = () => {
+            resolve(request.result?.value ?? defaultState)
+        }
+    })
+}
+
+async function setStateToDB<T>(key: string, state: T): Promise<void> {
+    const db = await initDB()
+    return new Promise<void>((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readwrite')
+        const objectStore = transaction.objectStore(storeName)
+        const request = objectStore.put({ key, value: state })
+        request.onsuccess = () => resolve()
+        request.onerror = () => reject('Error writing to DB')
+    });
+}
+
+function createPersistentState<T>(key: string, defaultState: T) {
+    const state = writable<T>(defaultState)
+    getStateFromDB<T>(key, defaultState).then((loadedState) => {
+        state.set(loadedState)
+
+        state.subscribe((value) => {
+            setStateToDB<T>(key, value)
+        })
+    })
+
+    return state
+}
+
 export interface ISettingsState {
     lang: Locale,
     messaging: {
@@ -133,64 +186,23 @@ export interface IState {
     settings: Writable<ISettingsState>
 }
 
-function getLSItem(key: string, fallback: any) {
-    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback))
-}
-
-function setLSItem(key: string, value: any) {
-    localStorage.setItem(key, JSON.stringify(value))
-}
-
-const user = writable(getLSItem("uplink.user", defaultUser) as User)
-user.subscribe(user => setLSItem("uplink.user", user))
-
-const activeChat = writable(getLSItem("uplink.activeChat", defaultChat))
-activeChat.subscribe(chat => setLSItem("uplink.activeChat", chat))
-
-const color = writable(getLSItem("uplink.ui.color", "#4d4dff"))
-color.subscribe(c => setLSItem("uplink.ui.color", c))
-
-const fontSize = writable(getLSItem("uplink.ui.fontSize", 1.0))
-fontSize.subscribe(size => setLSItem("uplink.ui.fontSize", size))
-
-const font = writable(getLSItem("uplink.ui.font", Font.Poppins))
-font.subscribe(f => setLSItem("uplink.ui.font", f))
-
-const cssOverride = writable(getLSItem("uplink.ui.cssOverride", ""))
-cssOverride.subscribe(css => setLSItem("uplink.ui.cssOverride", css))
-
-const settings = writable(getLSItem("uplink.settings", defaultSettings))
-settings.subscribe(s => setLSItem("uplink.settings", s))
-
-const inputDevice = writable(getLSItem("uplink.devices.input", "default"))
-inputDevice.subscribe(d => setLSItem("uplink.devices.input", d))
-
-const outputDevice = writable(getLSItem("uplink.devices.output", "default"))
-outputDevice.subscribe(d => setLSItem("uplink.devices.output", d))
-
-const muted = writable(getLSItem("uplink.devices.muted", false))
-muted.subscribe(status => setLSItem("uplink.devices.muted", status))
-
-const friends = writable(getLSItem("uplink.friends", []))
-friends.subscribe(f => setLSItem("uplink.friends", f))
-
-const blocked = writable(getLSItem("uplink.blocked", []))
-blocked.subscribe(f => setLSItem("uplink.blocked", f))
-
-const activeRequests = writable(getLSItem("uplink.requests", []))
-activeRequests.subscribe(f => setLSItem("uplink.requests", f))
-
-const favorites = writable(getLSItem("uplink.favorites", []) as Chat[])
-favorites.subscribe(favs => setLSItem("uplink.favorites", favs))
-
-const sidebarOpen = writable(getLSItem("uplink.ui.sidebarOpen", true))
-sidebarOpen.subscribe(value => setLSItem("uplink.ui.sidebarOpen", value))
-
-const chats = writable(getLSItem("uplink.ui.chats", []))
-chats.subscribe(chats => setLSItem("uplink.ui.chats", chats))
-
-const files = writable(getLSItem("uplink.files", []))
-files.subscribe(f => setLSItem("uplink.files", f))
+const user = createPersistentState<User>('uplink.user', defaultUser)
+const activeChat = createPersistentState<Chat>('uplink.activeChat', defaultChat)
+const color = createPersistentState<string>('uplink.color', '#4d4dff')
+const fontSize = createPersistentState<number>('uplink.fontSize', 1.0)
+const font = createPersistentState("uplink.ui.font", Font.Poppins)
+const cssOverride = createPersistentState("uplink.ui.cssOverride", "")
+const settings = createPersistentState("uplink.settings", defaultSettings)
+const inputDevice = createPersistentState("uplink.devices.input", "default")
+const outputDevice = createPersistentState("uplink.devices.output", "default")
+const muted = createPersistentState("uplink.devices.muted", false)
+const friends = createPersistentState("uplink.friends", [])
+const blocked = createPersistentState("uplink.blocked", [])
+const activeRequests = createPersistentState("uplink.requests", [])
+const favorites = createPersistentState("uplink.favorites", [])
+const sidebarOpen = createPersistentState("uplink.ui.sidebarOpen", true)
+const chats = createPersistentState("uplink.ui.chats", [])
+const files = createPersistentState("uplink.files", [])
 
 const initialState: IState = {
     user,
@@ -221,8 +233,32 @@ const initialState: IState = {
 class GlobalStore {
     state: IState
 
-    constructor(state: IState) {
-        this.state = {...state}
+    constructor() {
+        this.state = {
+            ...initialState,
+            user: createPersistentState("uplink.user", defaultUser),
+            activeChat: createPersistentState("uplink.activeChat", defaultChat),
+            ui: {
+                color: createPersistentState("uplink.color", "#4d4dff"),
+                fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
+                font: createPersistentState("uplink.ui.font", Font.Poppins),
+                cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
+                sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),
+                chats: createPersistentState("uplink.ui.chats", []),
+            },
+            settings: createPersistentState("uplink.settings", defaultSettings),
+            devices: {
+                input: createPersistentState("uplink.devices.input", "default"),
+                output: createPersistentState("uplink.devices.output", "default"),
+                muted: createPersistentState("uplink.devices.muted", false),
+                deafened: createPersistentState("uplink.devices.deafened", false),
+            },
+            friends: createPersistentState("uplink.friends", []),
+            blocked: createPersistentState("uplink.blocked", []),
+            activeRequests: createPersistentState("uplink.requests", []),
+            favorites: createPersistentState("uplink.favorites", []),
+            files: createPersistentState("uplink.files", [])
+        }
     }
 
     setUsername(name: string) {
@@ -274,7 +310,6 @@ class GlobalStore {
             const updatedChats = [...chats]
             updatedChats[chatIndex] = updatedChat
             this.state.ui.chats.set(updatedChats)
-            setLSItem("uplink.ui.chats", updatedChats)
         }
     }
 
@@ -483,4 +518,4 @@ class GlobalStore {
     }
 }
 
-export const Store = new GlobalStore(initialState)
+export const Store = new GlobalStore()
