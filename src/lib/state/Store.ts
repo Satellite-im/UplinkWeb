@@ -451,7 +451,7 @@ class GlobalStore {
             updatedChats[chatIndex] = updatedChat
             this.state.ui.chats.set(updatedChats)
         } else {
-            console.error("Chat not found");
+            console.error("Chat not found")
         }
     }
 

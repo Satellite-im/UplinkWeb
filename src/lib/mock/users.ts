@@ -1,7 +1,6 @@
 import { Status } from "$lib/enums";
 import { defaultUser, type Chat, type User, hashChat } from "$lib/types";
 
-import { v4 as uuidv4 } from "uuid"
 export const mock_users: Array<User> = [
     {
         ...defaultUser,
