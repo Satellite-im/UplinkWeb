@@ -3,7 +3,7 @@ import { Font, KeybindAction, Locale, MessageDirection, Status } from "$lib/enum
 import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest, type FileInfo, hashChat } from "$lib/types"
+import { defaultUser, type Chat, type User, defaultChat, type Keybind, type Call, type FriendRequest, type FileInfo, hashChat, type Message, type MessageGroup } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 
 export interface ISettingsState {
@@ -265,12 +265,17 @@ class GlobalStore {
 
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
+        
+        const chats = get(this.state.ui.chats)
+        const chatIndex = chats.findIndex(c => c.id === chat.id)
     
-        const currentchats = get(this.state.ui.chats)
-        const chatExistsInSidebar = currentchats.some(c => c.id === chat.id)
-
-        if (!chatExistsInSidebar) 
-            this.state.ui.chats.set([...currentchats, chat])
+        if (chatIndex !== -1) {
+            const updatedChat = {...chats[chatIndex], notifications: 0}
+            const updatedChats = [...chats]
+            updatedChats[chatIndex] = updatedChat
+            this.state.ui.chats.set(updatedChats)
+            setLSItem("uplink.ui.chats", updatedChats)
+        }
     }
 
     setActiveDM(user: User) {
@@ -418,6 +423,36 @@ class GlobalStore {
         this.state.ui.chats.set(
             get(this.state.ui.chats).filter(c => c.id !== chat.id)
         )
+    }
+
+    newMessage(chatId: string, newMessage: Message) {
+        const chats = get(this.state.ui.chats)
+        const chatIndex = chats.findIndex(chat => chat.id === chatId)
+
+        if (chatIndex !== -1) {
+            const updatedChat = {...chats[chatIndex]}
+            const lastMessageGroup = updatedChat.conversation[updatedChat.conversation.length - 1]
+            const now = new Date()
+
+            // Check if the last message group was created less than a minute ago
+            if (lastMessageGroup && (now.getTime() - new Date(lastMessageGroup.details.at).getTime()) < 60000) {
+                lastMessageGroup.messages.push(newMessage)
+            } else {
+                // Create a new message group
+                const newMessageGroup: MessageGroup = {
+                    details: newMessage.details,
+                    messages: [newMessage],
+                }
+                updatedChat.conversation.push(newMessageGroup)
+            }
+
+            // Update the chat in the state
+            const updatedChats = [...chats]
+            updatedChats[chatIndex] = updatedChat
+            this.state.ui.chats.set(updatedChats)
+        } else {
+            console.error("Chat not found");
+        }
     }
 
     get outboundRequests() {

@@ -45,7 +45,7 @@
         }
 
         .profile-header {
-            height: calc(var(--profile-width) / 1.5);
+            height: calc(var(--profile-width) / 2);
             background-color: var(--background-alt);
             background-image: url('/assets/space.jpg');
             background-size: cover;

@@ -9,6 +9,7 @@
 
     initLocale()
     let markdown = get(Store.state.settings).messaging.markdownSupport
+    let message: string = ""
 </script>
 
 <div class="chatbar">
@@ -16,11 +17,45 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input alt placeholder={$_("generic.placeholder")} rounded rich={markdown} />
+    <Input alt placeholder={$_("generic.placeholder")} bind:value={message} rounded rich={markdown} on:enter={(_) => {
+        Store.newMessage(get(Store.state.activeChat).id, {
+            details: {
+                at: new Date,
+                origin: get(Store.state.user),
+                remote: false,
+            },
+            text: [
+                message 
+            ],
+            inReplyTo: null,
+            reactions: [],
+            attachments: []
+        })
+        message = ""
+    }} />
 
     <slot></slot>
 
-    <Button icon tooltip={$_("chat.send")}>
+    <Button 
+        icon 
+        tooltip={$_("chat.send")} 
+        on:click={(_) => {
+            console.log('text', message)
+            Store.newMessage(get(Store.state.activeChat).id, {
+                details: {
+                    at: new Date,
+                    origin: get(Store.state.user),
+                    remote: false,
+                },
+                text: [
+                    message 
+                ],
+                inReplyTo: null,
+                reactions: [],
+                attachments: []
+            })
+            message = ""
+        }}>
         <Icon icon={Shape.ChevronRight} />
     </Button>
 </div>
