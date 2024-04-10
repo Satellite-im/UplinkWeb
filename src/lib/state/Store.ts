@@ -1,12 +1,12 @@
 import { Sound, Sounds } from "$lib/components/utils/Sounds"
-import { Font, MessageDirection, Status } from "$lib/enums"
+import { MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest,  hashChat, type Message, type MessageGroup } from "$lib/types"
-import { get, writable, type Writable } from "svelte/store"
+import { get, writable} from "svelte/store"
 import { type IState } from "./inital"
-import { createPersistentState, defaultSettings, SettingsStore, type ISettingsState } from "."
+import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
 
 class GlobalStore {

@@ -1,4 +1,3 @@
-import { type Font} from "$lib/enums"
 import type { Call, Chat, FileInfo, FriendRequest, User } from "$lib/types"
 import type { Writable } from "svelte/store"
 
