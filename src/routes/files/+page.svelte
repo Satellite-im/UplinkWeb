@@ -39,6 +39,7 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
     let fileElementsMap = new Map();
+ 
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
     
@@ -61,30 +62,24 @@
         });
 
         sortable.on('sortable:stop', (event) => {
-            let currentOrder = items
-                .filter(child => child.getAttribute('data-id'))
-                .map(child => child.getAttribute('data-id'));
-
             const reorderedFiles: FileInfo[] = [];
             const addedIds = new Set();
 
-            currentOrder.forEach(id => {
-                if (!addedIds.has(id)) {
-                    const fileElement = fileElementsMap.get(id);
-                    if (fileElement) {
+            Array.from(dropzone.children)
+                .filter(child => child.getAttribute('data-id'))
+                .forEach(child => {
+                    const id = child.getAttribute('data-id');
+                    // console.log(child)
+                    if (id && !addedIds.has(id)) {
                         const file = get(Store.state.files).find(file => file.id === id);
                         if (file) {
-                            console.log("inside")
-                            reorderedFiles.push({ ...file });
+                            reorderedFiles.push(file);
                             addedIds.add(id);
                         }
                     }
-                }
-            });
+                });
 
             Store.state.files.set(reorderedFiles);
-
-            console.log('new order', currentOrder, reorderedFiles);
         });
 
         // onDestroy(() => sortable.destroy());
