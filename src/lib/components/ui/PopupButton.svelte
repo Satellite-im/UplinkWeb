@@ -12,7 +12,7 @@
 </script>
 <div class="popup">
     {#if open}
-        <Modal on:close={toggle}>
+        <Modal on:close={toggle} padded>
             <slot></slot>
             <svelte:fragment slot="controls">
                 <Button 

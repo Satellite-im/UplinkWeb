@@ -42,7 +42,7 @@
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
-    UIStore.state.chats.subscribe((sc) => chats = sc)
+    UIStore.state.chats.subscribe((c) => chats = c)
     Store.state.activeChat.subscribe((c) => {
         activeChat = c
         conversation = c.conversation

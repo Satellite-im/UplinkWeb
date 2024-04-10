@@ -64,7 +64,7 @@ class Store {
     addSidebarChat(chat: Chat) {
         const currentchats = get(this.state.chats)
         if (!currentchats.some(c => c.id === chat.id)) {
-            this.state.chats.set([...currentchats, chat])
+            this.state.chats.set([chat, ...currentchats])
         }
     }
 

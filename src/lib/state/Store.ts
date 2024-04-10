@@ -69,6 +69,8 @@ class GlobalStore {
             updatedChats[chatIndex] = updatedChat
             UIStore.state.chats.set(updatedChats)
         }
+
+        UIStore.addSidebarChat(chat)
     }
 
     setActiveDM(user: User) {

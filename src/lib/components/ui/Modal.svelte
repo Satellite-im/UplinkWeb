@@ -7,13 +7,14 @@
         dispatch('close', event)
     }
 
+    export let padded: boolean = false
     export let withControls: boolean = false
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="modal" on:click={onClose}>
-    <div class="body" on:click|stopPropagation>
+    <div class="body {padded ? "padded" : ""}" on:click|stopPropagation>
         {#if withControls}
             <Controls>
                 <slot name="controls"></slot>
@@ -54,6 +55,10 @@
             border-radius: var(--border-radius);
             background-color: var(--background-alt);
             border: var(--border-width-more) solid var(--background-alt);
+
+            &.padded {
+                padding: var(--padding);
+            }
 
             .content {
                 max-width: 75vw;
