@@ -1,7 +1,7 @@
 <script lang="ts">
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Font, KeybindAction } from "$lib/enums"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import type { Keybind } from "$lib/types"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"

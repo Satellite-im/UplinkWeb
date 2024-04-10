@@ -5,10 +5,11 @@
     import { Appearance, KeybindAction, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
-    import { Store, type ISettingsState, defaultKeybinds, defaultSettings } from "$lib/state/Store"
+    import { defaultKeybinds, type ISettingsState } from "$lib/state/inital"
+    import { Store } from "$lib/state/store"
     import type { Keybind } from "$lib/types"
-    import { _ } from 'svelte-i18n'
-    import { get } from "svelte/store";
+    import { _ } from "svelte-i18n"
+    import { get } from "svelte/store"
 
     initLocale()
 

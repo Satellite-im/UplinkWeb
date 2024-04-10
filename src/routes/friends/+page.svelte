@@ -8,7 +8,7 @@
     import type { Chat, ContextItem, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
 

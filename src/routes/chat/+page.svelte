@@ -16,7 +16,7 @@
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import { type Chat, type ContextItem, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
 

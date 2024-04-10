@@ -17,7 +17,7 @@
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
 
     // Initialize locale
     initLocale()

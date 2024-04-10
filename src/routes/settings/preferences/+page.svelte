@@ -6,7 +6,7 @@
     import { SettingSection } from "$lib/layouts"
     import { Button, Icon, Input, Select } from "$lib/elements"
     import ColorPicker from 'svelte-awesome-color-picker'
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
     import { get } from "svelte/store";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
 
     export let color: string = ""
     export let name: string = ""

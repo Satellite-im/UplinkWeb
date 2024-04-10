@@ -3,8 +3,9 @@
     import { _ } from 'svelte-i18n'
     import { SettingSection } from "$lib/layouts"
     import { Switch } from "$lib/elements"
-    import { Store, type ISettingsState } from "$lib/state/Store"
-    import { get } from "svelte/store";
+    import { Store } from "$lib/state/store"
+    import { get } from "svelte/store"
+    import type { ISettingsState } from "$lib/state/inital"
 
     initLocale()
 

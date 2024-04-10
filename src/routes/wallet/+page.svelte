@@ -15,7 +15,7 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import NewPayment from "$lib/components/wallet/payments/NewPayment.svelte"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
 
     // Initialize locale

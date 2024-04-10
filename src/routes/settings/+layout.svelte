@@ -7,7 +7,7 @@
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import type { ContextItem, NavRoute } from "$lib/types"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"

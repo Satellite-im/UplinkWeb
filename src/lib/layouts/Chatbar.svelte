@@ -4,7 +4,7 @@
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
     import Controls from "./Controls.svelte"
-    import { Store, type ISettingsState } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store";
 
     initLocale()

@@ -5,9 +5,10 @@
     import { Button, Switch, Select } from "$lib/elements"
     import { Meter } from "$lib/components"
     import { Appearance } from "$lib/enums"
-    import { Store, type ISettingsState, defaultSettings } from "$lib/state/Store"
-    import { onMount } from "svelte";
-    import { get } from "svelte/store";
+    import { Store } from "$lib/state/store"
+    import { onMount } from "svelte"
+    import { get } from "svelte/store"
+    import type { ISettingsState } from "$lib/state/inital"
 
     initLocale()
 

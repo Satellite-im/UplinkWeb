@@ -7,7 +7,7 @@
     import { createEventDispatcher } from "svelte"
     import { slide } from "svelte/transition"
     import { animationDuration } from "$lib/globals/animations"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import type { Chat } from "$lib/types"
     import { get } from "svelte/store"
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
