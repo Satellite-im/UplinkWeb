@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Appearance, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
+    import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
     import { mock_users } from "$lib/mock/users"
     import { _ } from "svelte-i18n"
@@ -32,8 +33,15 @@
     let isFavorite = Store.isFavorite(activeChat)
     let conversation = ConversationStore.getConversation(activeChat)
 
+    const timeAgo = new TimeAgo('en-US')
+
     function toggleSidebar() {
         UIStore.toggleSidebar()
+    }
+
+    function getTimeAgo(dateInput: string | Date) {
+        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput;
+        return timeAgo.format(date)
     }
 
     let previewImage: string | null
@@ -205,7 +213,7 @@
                             previewProfile = group.details.origin
                         }}
                         remote={group.details.remote}
-                        subtext="Sent 3 minutes ago.">
+                        subtext={getTimeAgo(group.messages[0].details.at)}>
                             {#each group.messages as message, idx}
                                 {#if message.inReplyTo}
                                     <MessageReplyContainer
