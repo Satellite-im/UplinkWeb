@@ -159,11 +159,12 @@ export type MessageDetails = {
 }
 
 export type Message = {
+    id: string,
     details: MessageDetails,
     inReplyTo: Message | null,
     reactions: Reaction[],
     attachments: Attachment[],
-    text: string[], // Each string represents a line of content in the message. Line breaks are created by sending multiple text strings.
+    text: string[]
 }
 
 export type MessageGroup = {

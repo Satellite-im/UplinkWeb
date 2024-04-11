@@ -2,6 +2,7 @@ import { Appearance, MessageAttachmentKind, Shape } from "$lib/enums"
 import type { MessageGroup } from "$lib/types"
 import { mock_users } from "./users"
 
+import { v4 as uuidv4 } from "uuid"
 
 export let mock_messages: MessageGroup[] = [
     {
@@ -12,6 +13,7 @@ export let mock_messages: MessageGroup[] = [
         },
         messages: [
             {
+                id: uuidv4(),
                 details: {
                     at: new Date,
                     origin: mock_users[0],
@@ -36,6 +38,7 @@ export let mock_messages: MessageGroup[] = [
                 attachments: [],
             },
             {
+                id: uuidv4(),
                 details: {
                     at: new Date,
                     origin: mock_users[0],
@@ -60,6 +63,7 @@ export let mock_messages: MessageGroup[] = [
                 ],
             },
             {
+                id: uuidv4(),
                 details: {
                     at: new Date,
                     origin: mock_users[0],
@@ -71,6 +75,7 @@ export let mock_messages: MessageGroup[] = [
                 attachments: [],
             },
             {
+                id: uuidv4(),
                 details: {
                     at: new Date,
                     origin: mock_users[0],
@@ -91,6 +96,7 @@ export let mock_messages: MessageGroup[] = [
         },
         messages: [
             {
+                id: uuidv4(),
                 details: {
                     at: new Date,
                     origin: mock_users[1],
@@ -125,6 +131,7 @@ export let mock_messages: MessageGroup[] = [
                 ],
             },
             {
+                id: uuidv4(),
                 details: {
                     at: new Date,
                     origin: mock_users[2],
@@ -147,6 +154,7 @@ export let mock_messages: MessageGroup[] = [
         },
         messages: [
             {
+                id: uuidv4(),
                 details: {
                     at: new Date,
                     origin: mock_users[0],
@@ -156,6 +164,7 @@ export let mock_messages: MessageGroup[] = [
                     "Hmm, okay!", 
                 ],
                 inReplyTo: {
+                    id: uuidv4(),
                     details: {
                         at: new Date,
                         origin: mock_users[1],

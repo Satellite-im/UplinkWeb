@@ -34,6 +34,7 @@
     "svelte-awesome-color-picker": "^3.0.6",
     "svelte-dnd-action": "^0.9.42",
     "svelte-i18n": "^4.0.0",
-    "svelte-markdown": "^0.4.1"
+    "svelte-markdown": "^0.4.1",
+    "uuid": "^9.0.1"
   }
 }
