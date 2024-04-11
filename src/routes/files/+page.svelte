@@ -73,7 +73,6 @@
                 }
             });
 
-            // console.log(newOrder)
             const updatedFiles = existingFiles.map(file => {
                 const updatedFile = newOrder.find(f => f.id === file.id);
                 return updatedFile ? updatedFile : file;
