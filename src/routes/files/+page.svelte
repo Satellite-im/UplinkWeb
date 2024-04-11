@@ -156,7 +156,7 @@
                         <Icon icon={Shape.Gift} />
                     </Button>
                     <Button appearance={Appearance.Alt} text="Rent Space">
-                        <Icon icon={Shape.Coins} />
+                        <Icon icon={Shape.Starlight} />
                     </Button>
                     <Button appearance={Appearance.Alt} text="Create Node">
                         <Icon icon={Shape.Info} />

@@ -19,7 +19,8 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
-    import { UIStore } from "$lib/state/ui";
+    import { UIStore } from "$lib/state/ui"
+    import CreateGroup from "$lib/components/group/CreateGroup.svelte"
 
     initLocale()
 
@@ -34,9 +35,9 @@
         UIStore.toggleSidebar()
     }
 
-    // TODO: Move this into a global state
     let previewImage: string | null
     let previewProfile: User | null
+    let newGroup: boolean = false
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
@@ -71,6 +72,12 @@
         </Modal>
     {/if}
 
+    {#if newGroup}
+        <Modal on:close={(_) => {newGroup = false}}>
+            <CreateGroup on:create={(_) => newGroup = false}/> 
+        </Modal>
+    {/if}
+
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}>
         
@@ -82,7 +89,7 @@
 
         <div class="content-header">
             <Label text={$_("chat.chat_plural")} />
-            <Button icon small tooltip={$_("chat.create")}>
+            <Button icon small tooltip={$_("chat.create")} on:click={(_) => newGroup = true}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>
@@ -313,7 +320,7 @@
                 <PopupButton name={$_("payments.send_coin")}>
                     <NewPayment recipients={mock_users}/>
                     <div slot="icon" class="control">
-                        <Icon icon={Shape.SendCoin} />
+                        <Icon icon={Shape.Starlight} />
                     </div>
                 </PopupButton>
             </Chatbar>
