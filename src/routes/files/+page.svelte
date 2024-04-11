@@ -77,15 +77,14 @@
             // });
 
             const updatedFiles: FileInfo[] = newOrderIds
-                .filter(id => id !== null)
                 .map(id => {
                     const file = get(Store.state.files).find(file => file.id === id);
                     return file ? file : null;
                 })
                 .filter(file => file !== null) as FileInfo[];
 
-            // Store.state.files.set(updatedFiles)
-            console.log(items,newOrderIds)
+            Store.state.files.set(updatedFiles)
+            // console.log(updatedFiles,newOrderIds)
         });
 
         // onDestroy(() => sortable.destroy());
