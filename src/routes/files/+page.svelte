@@ -11,7 +11,6 @@
     import prettyBytes from "pretty-bytes"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { mock_files } from "$lib/mock/files"
     import { Plugins } from '@shopify/draggable'
     import { onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
@@ -20,7 +19,6 @@
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
 
-    // Initialize locale
     initLocale()
 
     let loading: boolean = false
@@ -38,54 +36,29 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-    let reorderedFiles: FileInfo[] = [];
  
     onMount(() => {
-    const dropzone = document.querySelector('.files') as HTMLElement;
-    
-    if (dropzone) {
-        const sortable = new Sortable(dropzone, {
-            draggable: ".draggable-item",
-            plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-        });
-            const addedIds = new Set();
-        sortable.on('sortable:start', (event) => {
-            // fileElementsMap.clear();
-            // reorderedFiles = Array.from(dropzone.children)
-            //     .filter(child => child.getAttribute('data-id'))
-            //     .map(child => {
-            //         child
-            //     });
-            // reorderedFiles = []
-        });
+        const dropzone = document.querySelector('.files') as HTMLElement
+        
+        if (dropzone) {
+            const sortable = new Sortable(dropzone, {
+                draggable: ".draggable-item",
+                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+            })
 
-        sortable.on('sortable:stop', (event) => {
-            const existingFiles = get(Store.state.files);
-            const newOrderIds = Array.from(dropzone.children)
-                .filter(child => child.getAttribute('data-id'))
-                .map(child => child.getAttribute('data-id'));
-
-            const newOrder: FileInfo[] = [];
-
-            newOrderIds.forEach(id => {
-                const file = existingFiles.find(file => file.id === id);
-                if (file) {
-                    newOrder.push(file);
-                }
-            });
-
-            const updatedFiles = existingFiles.map(file => {
-                const updatedFile = newOrder.find(f => f.id === file.id);
-                return updatedFile ? updatedFile : file;
-            });
-
-            Store.state.files.set(updatedFiles)
-            console.log(newOrder,updatedFiles)
-        });
-
-        // onDestroy(() => sortable.destroy());
-    }
-})
+            sortable.on('sortable:stop', (event) => {
+                let children = Array.from(event.newContainer.children)
+                let f: FileInfo[] = []
+                children.forEach(element => {
+                    let id = element.getAttribute("data-id")
+                    const file = files.find(file => file.id === id)
+                    if (file) f.push(file)
+                })
+                f = f.slice(0, files.length)        
+                Store.state.files.set(f)
+            })
+        }
+    })
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
