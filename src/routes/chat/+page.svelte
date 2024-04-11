@@ -21,6 +21,7 @@
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
     import CreateGroup from "$lib/components/group/CreateGroup.svelte"
+    import { ConversationStore } from "$lib/state/conversation";
 
     initLocale()
 
@@ -29,7 +30,7 @@
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let activeChat: Chat = get(Store.state.activeChat)
     let isFavorite = Store.isFavorite(activeChat)
-    let conversation = get(Store.state.activeChat).conversation
+    let conversation = ConversationStore.getConversation(activeChat)
 
     function toggleSidebar() {
         UIStore.toggleSidebar()
@@ -45,14 +46,16 @@
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe((c) => chats = c)
     Store.state.activeChat.subscribe((c) => {
-        console.log('c', c)
         activeChat = c
-        conversation = c.conversation
+        conversation = ConversationStore.getConversation(c)
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
         contentAsideOpen = false
     })
     Store.state.favorites.subscribe(f => {
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
+    })
+    ConversationStore.conversations.subscribe(_ => {
+        conversation = ConversationStore.getConversation(activeChat)
     })
 </script>
 
@@ -191,7 +194,7 @@
             {#if activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
-                    {#each conversation as group}
+                    {#each conversation.messages as group}
                         <MessageGroup profilePictureRequirements={{
                             notifications: 0,
                             image: group.details.origin.profile.photo.image,
