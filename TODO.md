@@ -30,7 +30,7 @@
 - [ ] Volume Slider (Horizontal & Vertical)
 - [x] Wallet
 - [x] Payment
-- [ ] Payment Reciept
+- [ ] Payment Receipt
 - [ ] Payment Recipient
 - [ ] Local Share Drop - A space to click and drag files to share them with local devices running uplink.
 - [ ] Create Chat

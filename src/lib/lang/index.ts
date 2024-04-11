@@ -157,7 +157,7 @@ export function initLocale() {
                     primaryColorDescription: "Change the primary color of the app.",
                     pick: "Pick",
                     customCss: "Custom CSS",
-                    customCssDescription: "Add additional custom CSS to the applicaiton."
+                    customCssDescription: "Add additional custom CSS to the application."
                 },
                 licenses: {
                     description: "Both code and icons are under the MIT license.",
