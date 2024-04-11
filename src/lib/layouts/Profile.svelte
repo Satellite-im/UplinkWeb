@@ -1,6 +1,6 @@
 <script lang="ts">
     import { ProfilePicture } from "$lib/components"
-    import { Button, Icon, Input, Label, Text } from "$lib/elements";
+    import { Button, Icon, Input, Label, Text } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types"
     
@@ -45,9 +45,9 @@
         }
 
         .profile-header {
-            height: calc(var(--profile-width) / 1.5);
+            height: calc(var(--profile-width) / 2);
             background-color: var(--background-alt);
-            background-image: url('/assets/kumar.jpg');
+            background-image: url('/assets/space.jpg');
             background-size: cover;
             padding: var(--padding-less);
             width: 100%;

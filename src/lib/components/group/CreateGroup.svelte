@@ -1,61 +1,76 @@
 <script lang="ts">
     import { Appearance, Shape, Size } from "$lib/enums"
-    import type { User } from "$lib/types";
-    import { ProfilePicture, ProgressBar } from "$lib/components"
+    import { defaultChat, type Chat, type User, hashChat } from "$lib/types";
+    import { ProfilePicture } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
+    import { get } from "svelte/store"
+    import { Store } from "$lib/state/store"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { createEventDispatcher } from "svelte"
 
-    export let recipients: Array<User> = []
-    export let embeded: boolean        = false
-    let selected_recipients: Array<User> = []
+    export let embeded: boolean             = false
+    let chat: Chat = defaultChat
 
     let update_recipients = function(recipient: User) {
-        let new_recipient_list = selected_recipients
+        let new_recipient_list = chat.users
 
-        if (selected_recipients.includes(recipient)) {
+        if (chat.users.includes(recipient)) {
             new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1)
         } else {
             new_recipient_list.push(recipient)
         }
 
-        selected_recipients = new_recipient_list
-    };
+        chat.users = new_recipient_list
+    }
 
     function contains_recipient(list: User[], recipient: User): boolean {
         return list.includes(recipient)
     }
+
+    let friends: User[] = get(Store.state.friends)
+    const dispatch = createEventDispatcher()
+    function onCreate() {
+        dispatch('create')
+    }
 </script>
 
-<div class="payment" id="payment">
-    <div class="payment-amount">
-        <input class="custom-input" type="number" min="0.01" step="0.01" value="0.00" placeholder="0.00" max="999,999.99" />
-    </div>
-    <div class="payment-note">
-        <Input alt placeholder="Add a note..." class="flex" />
-    </div>
-    <div class="select-recipient">
-        <Label text="Recipients:" />
-        <div class="recipient-list">
-            {#each selected_recipients as recipient}
-                <div class="mini-recipient">
+<div class="new-chat">
+    <div class="select-user">
+        <Label text="Group Name:" />
+        <Input alt bind:value={chat.name} />
+        <Label text="Group Members:" />
+        <div class="user-list">
+            {#each chat.users as recipient}
+                <div class="mini-user">
                     <ProfilePicture 
-                        size={Size.Smallest}
+                        size={Size.Smaller}
+                        noIndicator
                         image={recipient.profile.photo.image} />
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Icon
-                        icon={Shape.XMark}
-                        alt
-                        class="control" />
+                    <Button
+                        small
+                        outline
+                        icon
+                        on:click={(_) => {
+                            update_recipients(recipient)
+                        }}>
+                        <Icon
+                            icon={Shape.XMark}
+                            alt
+                            class="control" />
+                    </Button>
+                    
                 </div>
             {/each}
         </div>
-        <Label text="Select recipient(s)" />
-        <div class="recipient-selection-list {embeded ? "embeded" : ""}">
-            {#each recipients as recipient}
+        <Label text="Select member(s)" />
+        <div class="user-selection-list {embeded ? "embeded" : ""}">
+            {#each friends as recipient}
                 <button
-                    class="recipient" 
+                    class="user" 
                     on:click={() => update_recipients(recipient)}>
                     <ProfilePicture 
                         size={Size.Small}
@@ -69,33 +84,26 @@
                             {recipient.key}
                         </Text>
                     </div>
-                    <Checkbox checked={contains_recipient(selected_recipients, recipient)} />
+                    <Checkbox checked={contains_recipient(chat.users, recipient)} />
                 </button>
             {/each}
         </div>
-    </div>
-    <div class="payment-controls">
-        <ProgressBar label={`Hold for ${3} seconds...`} />
-        
-        <div class="buttons">
+        <Controls>
             <Button 
-                appearance={Appearance.Success}
-                text="Confirm"
-                outline
-                class="flex" />
-            <Button
-                appearance={Appearance.Alt}
-                text="Cancel"
-                class="flex" />
-        </div>
+                text="Create Group"
+                on:click={(_) => {
+                    chat.id = hashChat(chat)
+                    Store.setActiveChat(chat)
+                    onCreate()
+                }}>
+                <Icon icon={Shape.ChatPlus} />
+            </Button>
+        </Controls>
     </div>
-    <!--
-        <PaymentSuccessSplash />
-    -->
 </div>
 
 <style lang="scss">
-    .payment {
+    .new-chat {
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
@@ -104,38 +112,9 @@
         position: relative;
         justify-content: center;
         flex: 1;
+        max-width: var(--max-component-width);
 
-        .payment-amount {
-            display: inline-flex;
-            flex-direction: row;
-            justify-content: space-evenly;
-            align-items: center;
-            color: var(--success-color);
-            width: 100%;
-
-            .custom-input {
-                font-size: var(--font-size-max);
-                color: var(--success-color);
-                background-color: transparent;
-                border: none;
-                outline: none;
-                width: 100%;
-                text-align: center;
-
-                &::-webkit-outer-spin-button,
-                &::-webkit-inner-spin-button {
-                    -webkit-appearance: none;
-                    margin: 0;
-                }
-
-                &[type=number] {
-                    -moz-appearance: textfield;
-                    appearance: textfield;
-                }
-            }
-        }
-
-        .select-recipient {
+        .select-user {
             min-height: fit-content;
             flex: 1;
             border: var(--border-width) solid var(--border-color);
@@ -147,7 +126,7 @@
             position: relative;
             user-select: none;
 
-            .recipient-list {
+            .user-list {
                 display: inline-flex;
                 flex-wrap: wrap;
                 gap: var(--gap-less);
@@ -158,22 +137,21 @@
                 height: fit-content;
                 min-height: var(--input-height);
 
-                .mini-recipient {
+                .mini-user {
                     display: inline-flex;
                     gap: var(--gap-less);
                     align-items: center;
-                    background-color: var(--info-color);
+                    background-color: var(--primary-color);
                     color: var(--color-alt);
-                    padding-right: var(--padding-less);
                     border-radius: var(--border-radius-more);
                     max-width: 150px;
                     font-size: var(--font-size-smaller);
-                    border: var(--border-width) solid var(--info-color);
+                    border: var(--border-width-more) solid var(--primary-color);
                     height: fit-content;
                 }
             }
 
-            .recipient-selection-list {
+            .user-selection-list {
                 display: inline-flex;
                 flex-direction: column;
                 gap: var(--gap);
@@ -188,7 +166,7 @@
                 }
             }
 
-            .recipient {
+            .user {
                 display: inline-flex;
                 gap: var(--gap);
                 padding: var(--padding-less);
@@ -231,16 +209,5 @@
                 }
             }
         }
-
-        .payment-controls {
-            display: inline-flex;
-            flex-direction: column;
-            gap: var(--gap-less);
-
-            .buttons {
-                display: inline-flex;
-            }
-        }
     }
-
 </style>

@@ -130,7 +130,7 @@ export function initLocale() {
                     banner: "Global keybinds are disabled while on this page.",
                     recordKeybind: "Record Keybind",
                     instructions: "Press any combination of keys while on this page, then select the action you'd like to bind to this keyboard combo. Custom shortcuts will override default shortcuts. Not all actions have default shortcuts.",
-                    pressAKey: "Press a key or combo to record.",
+                    pressAKey: "Press Key",
                     action: "Action",
                     revert: "Revert",
                     revert_plural: "Revert Keybinds",

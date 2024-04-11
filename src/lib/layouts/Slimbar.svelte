@@ -7,12 +7,12 @@
     import { createEventDispatcher } from "svelte"
     import { slide } from "svelte/transition"
     import { animationDuration } from "$lib/globals/animations"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import type { Chat } from "$lib/types"
     import { get } from "svelte/store"
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { Label } from "$lib/elements"
-    import { goto } from "$app/navigation";
+    import { goto } from "$app/navigation"
 
     export let sidebarOpen: boolean = true
     export let activeRoute: Route = Route.Chat

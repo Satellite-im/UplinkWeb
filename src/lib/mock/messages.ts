@@ -136,19 +136,6 @@ export let mock_messages: MessageGroup[] = [
                 inReplyTo: null,
                 reactions: [],
                 attachments: [],
-            },
-            {
-                details: {
-                    at: new Date,
-                    origin: mock_users[1],
-                    remote: true,
-                },
-                text: [
-                    "Unless I am, oOoo who knows!?",
-                ],
-                inReplyTo: null,
-                reactions: [],
-                attachments: [],
             }
         ]
     },
@@ -175,7 +162,7 @@ export let mock_messages: MessageGroup[] = [
                         remote: true,
                     },
                     text: [
-                        "Unless I am, oOoo who knows!?",
+                        "I am not an alien.",
                     ],
                     inReplyTo: null,
                     reactions: [],

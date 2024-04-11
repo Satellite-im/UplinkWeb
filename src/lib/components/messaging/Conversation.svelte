@@ -1,47 +1,42 @@
 <script lang="ts">
-    import { Icon } from "$lib/elements"
+    import { afterUpdate, onMount } from "svelte"
     import Button from "$lib/elements/Button.svelte"
+    import { Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
-    import { animationDuration } from "$lib/globals/animations"
-    import { afterUpdate } from 'svelte'
-    import { onMount } from "svelte"
     import { fade } from "svelte/transition"
 
-    let element: Element
-    let height: number
+    let scrollContainer: Element
 
-    let showScrollToBottom: boolean = false;
+    let showScrollToBottom: boolean = false
 
-    const scrollToBottom = async (node: Element) => {
-        node.scroll({ top: node.scrollHeight, behavior: 'smooth' })
+    const scrollToBottom = (node: Element) => {
+        node.scrollTop = node.scrollHeight
     }
 
-    onMount(() => {
-        scrollToBottom(element)
-    })
+    const handleScroll = () => {
+        const isScrolledUp = scrollContainer.scrollHeight - scrollContainer.scrollTop > (scrollContainer.clientHeight * 1.5)
+        showScrollToBottom = isScrolledUp
+    }
 
     afterUpdate(() => {
-        if (!showScrollToBottom) scrollToBottom(element)
+        if (!showScrollToBottom) scrollToBottom(scrollContainer)
+    })
+
+    onMount(() => {
+        setTimeout(() => {
+            scrollToBottom(scrollContainer)
+        }, 100)
     })
 </script>
 
-<div class="conversation" bind:this={element}>
-    <div bind:clientHeight={height} class="scroll" on:scroll={(e) => {
-        // @ts-expect-error: This value does indeed exist at runtime.
-        if (e.target?.scrollHeight - e.target?.scrollTop > (height * 3)) {
-            showScrollToBottom = true
-        } else {
-            showScrollToBottom = false
-        }
-    }}>
+<div class="conversation">
+    <div bind:this={scrollContainer} class="scroll" on:scroll={handleScroll}>
         <div class="spacer"></div>
         <slot></slot>
     </div>
     {#if showScrollToBottom}
-        <div class="scroll-to-bottom" transition:fade={{duration: animationDuration}}>
-            <Button icon appearance={Appearance.Primary} on:click={(_) => {
-                scrollToBottom(element)
-            }}>
+        <div class="scroll-to-bottom" transition:fade={{duration: 300}}>
+            <Button icon appearance={Appearance.Primary} on:click={() => scrollToBottom(scrollContainer)}>
                 <Icon icon={Shape.ArrowDown} />
             </Button>
         </div>

@@ -13,20 +13,21 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
     import { Plugins } from '@shopify/draggable'
-    import { onDestroy, onMount } from 'svelte'
+    import { onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
+    import { UIStore } from "$lib/state/ui"
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
 
     function toggleSidebar(): void {
-        Store.toggleSidebar()
+        UIStore.toggleSidebar()
     }
 
     let tabRoutes: string[] = ["chats", "files"]
@@ -86,9 +87,9 @@
     }
 })
 
-    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
-    let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
-    Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
+    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let chats: Chat[] = get(UIStore.state.chats)
+    UIStore.state.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
     let files: FileInfo[] = get(Store.state.files);
@@ -136,7 +137,7 @@
             </Button>
         </Controls>
         {#if activeTabRoute === "chats"}
-            {#each sidebarChats as chat}
+            {#each chats as chat}
                 <ChatPreview
                     chat={chat}
                     loading={loading}
@@ -150,7 +151,7 @@
                                 icon: Shape.EyeSlash,
                                 text: "Hide",
                                 appearance: Appearance.Default,
-                                onClick: () => Store.removeSidebarChat(chat)
+                                onClick: () => UIStore.removeSidebarChat(chat)
                             },
                             {
                                 id: "mark_read",
@@ -176,7 +177,7 @@
                         <Icon icon={Shape.Gift} />
                     </Button>
                     <Button appearance={Appearance.Alt} text="Rent Space">
-                        <Icon icon={Shape.Coins} />
+                        <Icon icon={Shape.Starlight} />
                     </Button>
                     <Button appearance={Appearance.Alt} text="Create Node">
                         <Icon icon={Shape.Info} />

@@ -5,12 +5,13 @@
     import { SettingSection } from "$lib/layouts"
     import { Appearance, Font } from "$lib/enums"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/Store"
-    import Button from "$lib/elements/Button.svelte";
+    import { Store } from "$lib/state/store"
+    import Button from "$lib/elements/Button.svelte"
+    import { UIStore } from "$lib/state/ui";
 
     initLocale()
 
-    let font: Font = get(Store.state.ui.font)
+    let font: Font = get(UIStore.state.font)
 </script>
 
 <div id="page">

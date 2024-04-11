@@ -7,7 +7,8 @@
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
+    import { UIStore } from "$lib/state/ui";
     import type { ContextItem, NavRoute } from "$lib/types"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
@@ -75,11 +76,11 @@
     initLocale()
 
     let loading = false
-    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let activeRoute = SettingsRoute.Profile;
 
     function toggleSidebar() {
-        Store.toggleSidebar()
+        UIStore.toggleSidebar()
     }
 
     onMount(() => {
@@ -127,7 +128,7 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
-    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
 </script>
 
 <div id="settings">

@@ -5,19 +5,19 @@
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { blocked_users, chats, fake_user_array } from "$lib/mock/users"
     import type { Chat, ContextItem, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
+    import { UIStore } from "$lib/state/ui";
 
     // Initialize locale
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(Store.state.ui.sidebarOpen)
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let friends: User[] = get(Store.state.friends)
     let blocked: User[] = get(Store.state.blocked)
 
@@ -25,7 +25,7 @@
     let tab: string = "all"
 
     function toggleSidebar(): void {
-        Store.toggleSidebar()
+        UIStore.toggleSidebar()
     }
 
     // Function to group users alphabetically by the first character of their usernames
@@ -75,9 +75,9 @@
 
     Store.state.friends.subscribe(f => friends = f)
     Store.state.blocked.subscribe(u => blocked = u)
-    Store.state.ui.sidebarOpen.subscribe((s) => sidebarOpen = s)
-    let sidebarChats: Chat[] = get(Store.state.ui.sidebarChats)
-    Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
+    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    let chats: Chat[] = get(UIStore.state.chats)
+    UIStore.state.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
 </script>
@@ -118,7 +118,7 @@
             </Button>
         </div>
 
-        {#each sidebarChats as chat}
+        {#each chats as chat}
             <ChatPreview
                 chat={chat}
                 loading={loading}
@@ -132,7 +132,7 @@
                             icon: Shape.EyeSlash,
                             text: "Hide",
                             appearance: Appearance.Default,
-                            onClick: () => Store.removeSidebarChat(chat)
+                            onClick: () => UIStore.removeSidebarChat(chat)
                         },
                         {
                             id: "mark_read",
@@ -378,6 +378,7 @@
                         flex-direction: column;
                         min-height: var(--min-scroll-height);
                         overflow-y: scroll;
+                        overflow-x: hidden;
                         padding-right: var(--padding);
                     }
                 }

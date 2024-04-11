@@ -6,27 +6,28 @@
     import { SettingSection } from "$lib/layouts"
     import { Button, Icon, Input, Select } from "$lib/elements"
     import ColorPicker from 'svelte-awesome-color-picker'
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
-    import { get } from "svelte/store";
+    import { get } from "svelte/store"
+    import { UIStore } from "$lib/state/ui";
 
     initLocale()
 
-    let hex = get(Store.state.ui.color)
-    let font: Font = get(Store.state.ui.font)
-    let cssOverride = get(Store.state.ui.cssOverride)
-    let fontSize = get(Store.state.ui.fontSize)
+    let hex = get(UIStore.state.color)
+    let font: Font = get(UIStore.state.font)
+    let cssOverride = get(UIStore.state.cssOverride)
+    let fontSize = get(UIStore.state.fontSize)
 
-    Store.state.ui.color.subscribe((c) => {
+    UIStore.state.color.subscribe((c) => {
         hex = c
     })
-    Store.state.ui.font.subscribe((f) => {
+    UIStore.state.font.subscribe((f) => {
         font = f
     })
-    Store.state.ui.fontSize.subscribe((s) => {
+    UIStore.state.fontSize.subscribe((s) => {
         fontSize = s
     })
-    Store.state.ui.cssOverride.subscribe((css) => {
+    UIStore.state.cssOverride.subscribe((css) => {
         cssOverride = css
     })
 
@@ -50,7 +51,7 @@
     ]
 
     $: if (hex !== undefined) {
-        Store.setThemeColor(hex)
+        UIStore.setThemeColor(hex)
     }
 </script>
 
@@ -62,7 +63,7 @@
     </SettingSection>
     <SettingSection name={$_("settings.preferences.font")} description={$_("settings.preferences.fontDescription")}>
         <Select selected={font} options={availableFonts} alt on:change={(v) => {
-            Store.setFont(v.detail)
+            UIStore.setFont(v.detail)
         }}/>
         <Button 
             icon 
@@ -72,13 +73,13 @@
         </Button>
     </SettingSection>
     <SettingSection name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
-        <Button icon appearance={Appearance.Alt} on:click={(_) => Store.decreaseFontSize()}>
+        <Button icon appearance={Appearance.Alt} on:click={(_) => UIStore.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
             <Input alt value={fontSize.toFixed(2).toString()} centered />
         </div>
-        <Button icon appearance={Appearance.Alt} on:click={(_) => Store.increaseFontSize()}>
+        <Button icon appearance={Appearance.Alt} on:click={(_) => UIStore.increaseFontSize()}>
             <Icon icon={Shape.Plus} />
         </Button>
     </SettingSection>
@@ -119,7 +120,7 @@
     </SettingSection>
     <SettingSection name={$_("settings.preferences.customCss")} description={$_("settings.preferences.customCssDescription")} fullWidth>
         <textarea bind:value={cssOverride} on:change={(_) => {
-            Store.setCssOverride(cssOverride)
+            UIStore.setCssOverride(cssOverride)
         }}></textarea>
     </SettingSection>
 </div>

@@ -1,12 +1,13 @@
 <script lang="ts">
     import { Size } from "$lib/enums"
     import type { ProfilePictureRequirements } from "$lib/types"
-    import { ProfilePicture } from "$lib/components";
+    import { ProfilePicture } from "$lib/components"
+    import { createEventDispatcher } from "svelte"
 
     export let remote: boolean          = false
     export let subtext: string | null   = ""
-
     export let profilePictureRequirements: ProfilePictureRequirements | null = null
+    const dispatch = createEventDispatcher()
 </script>
 
 <div class="message-group">
@@ -17,7 +18,8 @@
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
                 highlight={profilePictureRequirements.highlight}
-                notifications={profilePictureRequirements.notifications} />
+                notifications={profilePictureRequirements.notifications}
+                on:click={(_) => dispatch("profileClick")} />
         </div>
     {/if}
     <div class="flex">
@@ -30,7 +32,8 @@
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
                 highlight={profilePictureRequirements.highlight}
-                notifications={profilePictureRequirements.notifications} />
+                notifications={profilePictureRequirements.notifications}
+                on:click={(_) => dispatch("profileClick")} />
         </div>
     {/if}
 

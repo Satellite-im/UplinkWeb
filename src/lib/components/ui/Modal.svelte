@@ -6,16 +6,20 @@
     function onClose(event: MouseEvent) {
         dispatch('close', event)
     }
-    
+
+    export let padded: boolean = false
+    export let withControls: boolean = false
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="modal" on:click={onClose}>
-    <div class="body" on:click|stopPropagation>
-        <Controls>
-            <slot name="controls"></slot>
-        </Controls>
+    <div class="body {padded ? "padded" : ""}" on:click|stopPropagation>
+        {#if withControls}
+            <Controls>
+                <slot name="controls"></slot>
+            </Controls>
+        {/if}
         <div class="content">
             <slot></slot>
         </div>
@@ -52,12 +56,15 @@
             background-color: var(--background-alt);
             border: var(--border-width-more) solid var(--background-alt);
 
+            &.padded {
+                padding: var(--padding);
+            }
+
             .content {
                 max-width: 75vw;
                 max-height: 100%;
                 border-radius: var(--border-radius);
                 overflow: hidden;
-                padding: var(--padding-less);
                 padding-top: 0;
             }
 

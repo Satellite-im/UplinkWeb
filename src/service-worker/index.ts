@@ -1,5 +1,3 @@
-/// <reference types="@sveltejs/kit" />
-
 // @ts-nocheck
 import { build, files, version } from '$service-worker';
 

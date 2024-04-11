@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "$lib/enums"
-    import { Button, Icon, Text } from "$lib/elements"
+    import { Text } from "$lib/elements"
     import { defaultUser, type User } from "$lib/types"
     import { ProfilePicture } from ".."
     import Controls from "$lib/layouts/Controls.svelte"
     import { initLocale } from "$lib/lang"
     import { _ } from 'svelte-i18n'
+    import { Size } from "$lib/enums"
 
     initLocale()
     
@@ -17,7 +17,7 @@
         size={Size.Small} 
         image={friend.profile.photo.image} 
         status={friend.profile.status} />
-    <Text class="username">
+    <Text class="username" singleLine>
         {friend.name}
     </Text>
     <Controls>

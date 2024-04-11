@@ -1,10 +1,10 @@
 <script lang="ts">
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte";
-    import { Appearance, Shape, Size } from "$lib/enums"
+    import { Appearance, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte";
 
-    export let acceptableFiles: string  = ".jpg, .jpeg, .png"
+    export let acceptableFiles: string  = ".jpg, .jpeg, .png, .heic, .avif"
     export let appearance: Appearance   = Appearance.Default
     export let small: boolean           = false
     export let icon: boolean            = false

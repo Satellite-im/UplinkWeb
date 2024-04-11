@@ -3,13 +3,13 @@
     import { _ } from 'svelte-i18n'
     import { SettingSection } from "$lib/layouts"
     import { Switch } from "$lib/elements"
-    import { Store, type ISettingsState } from "$lib/state/Store"
-    import { get } from "svelte/store";
+    import { get } from "svelte/store"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
 
     initLocale()
 
-    let settings: ISettingsState = get(Store.state.settings)
-    Store.state.settings.subscribe((s: ISettingsState) => {
+    let settings: ISettingsState = get(SettingsStore.state)
+    SettingsStore.state.subscribe((s: ISettingsState) => {
         settings = s
     })
 </script>
@@ -17,17 +17,17 @@
 <div id="page">
     <SettingSection name={$_("settings.messages.convertToEmoji")} description={$_("settings.messages.convertToEmojiDescription")}>
         <Switch on={(settings) ? settings.messaging.convertEmoji : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, messaging: {...settings.messaging, convertEmoji: on.detail}})
+            SettingsStore.update({...settings, messaging: {...settings.messaging, convertEmoji: on.detail}})
         }}/>
     </SettingSection>
     <SettingSection name={$_("settings.messages.markdownSupport")} description={$_("settings.messages.markdownSupportDescription")}>
         <Switch on={(settings) ? settings.messaging.markdownSupport : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, messaging: {...settings.messaging, markdownSupport: on.detail}})
+            SettingsStore.update({...settings, messaging: {...settings.messaging, markdownSupport: on.detail}})
         }}/>
     </SettingSection>
     <SettingSection name={$_("settings.messages.spamRejection")} description={$_("settings.messages.spamRejectionDescription")}>
         <Switch on={(settings) ? settings.messaging.spamRejection : true} on:toggle={(on) => {
-            Store.updateSettings({...settings, messaging: {...settings.messaging, spamRejection: on.detail}})
+            SettingsStore.update({...settings, messaging: {...settings.messaging, spamRejection: on.detail}})
         }}/>
     </SettingSection>
 </div>
