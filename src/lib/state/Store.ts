@@ -182,36 +182,6 @@ class GlobalStore {
         return get(this.state.favorites).some(f => f.id === chat.id)
     }
 
-    newMessage(chatId: string, newMessage: Message) {
-        const chats = get(UIStore.state.chats)
-        const chatIndex = chats.findIndex(chat => chat.id === chatId)
-
-        if (chatIndex !== -1) {
-            const updatedChat = {...chats[chatIndex]}
-            const lastMessageGroup = updatedChat.conversation[updatedChat.conversation.length - 1]
-            const now = new Date()
-
-            // Check if the last message group was created less than a minute ago
-            if (lastMessageGroup && (now.getTime() - new Date(lastMessageGroup.details.at).getTime()) < 60000) {
-                lastMessageGroup.messages.push(newMessage)
-            } else {
-                // Create a new message group
-                const newMessageGroup: MessageGroup = {
-                    details: newMessage.details,
-                    messages: [newMessage],
-                }
-                updatedChat.conversation.push(newMessageGroup)
-            }
-
-            // Update the chat in the state
-            const updatedChats = [...chats]
-            updatedChats[chatIndex] = updatedChat
-            UIStore.state.chats.set(updatedChats)
-        } else {
-            console.error("Chat not found")
-        }
-    }
-
     get outboundRequests() {
         return get(this.state.activeRequests).filter((r: FriendRequest) => r.direction === MessageDirection.Outbound)
     }
@@ -228,7 +198,6 @@ class GlobalStore {
         let mchatsMod = mchats
         let activeChat = mchatsMod[0]
 
-        activeChat.conversation = mock_messages
         mchatsMod[0] = activeChat
 
         this.state.activeChat.set(mchatsMod[0])

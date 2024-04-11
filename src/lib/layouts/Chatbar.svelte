@@ -7,10 +7,30 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
+    import { ConversationStore } from "$lib/state/conversation";
 
     initLocale()
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
+
+    function addMessage(text: string) {
+        let newMessage = {
+            id: "",
+            details: {
+                at: new Date,
+                origin: get(Store.state.user),
+                remote: false,
+            },
+            text: [
+                text 
+            ],
+            inReplyTo: null,
+            reactions: [],
+            attachments: []
+        }
+        ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
+        message = ""
+    }
 </script>
 
 <div class="chatbar">
@@ -18,45 +38,14 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input alt placeholder={$_("generic.placeholder")} bind:value={message} rounded rich={markdown} on:enter={(_) => {
-        Store.newMessage(get(Store.state.activeChat).id, {
-            details: {
-                at: new Date,
-                origin: get(Store.state.user),
-                remote: false,
-            },
-            text: [
-                message 
-            ],
-            inReplyTo: null,
-            reactions: [],
-            attachments: []
-        })
-        message = ""
-    }} />
+    <Input alt placeholder={$_("generic.placeholder")} bind:value={message} rounded rich={markdown} on:enter={(_) => addMessage(message)} />
 
     <slot></slot>
 
     <Button 
         icon 
         tooltip={$_("chat.send")} 
-        on:click={(_) => {
-            console.log('text', message)
-            Store.newMessage(get(Store.state.activeChat).id, {
-                details: {
-                    at: new Date,
-                    origin: get(Store.state.user),
-                    remote: false,
-                },
-                text: [
-                    message 
-                ],
-                inReplyTo: null,
-                reactions: [],
-                attachments: []
-            })
-            message = ""
-        }}>
+        on:click={(_) => addMessage(message)}>
         <Icon icon={Shape.ChevronRight} />
     </Button>
 </div>

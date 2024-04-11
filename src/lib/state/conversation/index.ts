@@ -35,13 +35,13 @@ class Conversations {
                 const updatedLastGroup = {
                     ...lastGroup,
                     messages: [...lastGroup.messages, message]
-                };
+                }
                 conversation.messages[conversation.messages.length - 1] = updatedLastGroup
             } else {
                 const newMessageGroup: MessageGroup = {
                     details: message.details,
                     messages: [message]
-                };
+                }
                 conversation.messages.push(newMessageGroup)
             }
 
@@ -58,6 +58,8 @@ class Conversations {
             }
             this.conversations.update(convs => [...convs, newConversation])
         }
+
+        console.log('conversations', get(this.conversations))
     }
 
     editMessage(chat: Chat, message: Message, editedContent: string) {
@@ -69,7 +71,7 @@ class Conversations {
                 const messageIndex = group.messages.findIndex(m => m.id === message.id)
                 if (messageIndex !== -1) {
                     // Update the message content
-                    const message = group.messages[messageIndex];
+                    const message = group.messages[messageIndex]
                     group.messages[messageIndex] = {
                         ...message,
                         text: [editedContent]
@@ -82,6 +84,20 @@ class Conversations {
     }
 
     removeMessage(chat: Chat, message: Message) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat.id)
 
+        if (conversation) {
+            conversation.messages.forEach(group => {
+                const index = group.messages.findIndex(m => m.id === message.id)
+                if (index !== -1) {
+                    group.messages.splice(index, 1)
+                }
+            })
+            conversation.messages = conversation.messages.filter(group => group.messages.length > 0)
+            this.conversations.set(conversations)
+        }
     }
 }
+
+export const ConversationStore = new Conversations()

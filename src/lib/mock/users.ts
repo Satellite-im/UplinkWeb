@@ -152,7 +152,6 @@ let mock_chats: Chat[] = [
         ],
         last_message_at: new Date(),
         last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
-        conversation: []
     },
     {
         id: "op23",
@@ -163,7 +162,6 @@ let mock_chats: Chat[] = [
         users: [mock_users[0]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
         id: "a45",
@@ -174,7 +172,6 @@ let mock_chats: Chat[] = [
         users: [mock_users[1]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
         id: "s12",
@@ -185,7 +182,6 @@ let mock_chats: Chat[] = [
         users: [mock_users[2]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
         id: "12s",
@@ -196,7 +192,6 @@ let mock_chats: Chat[] = [
         users: [mock_users[3]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
         id: "as5",
@@ -207,7 +202,6 @@ let mock_chats: Chat[] = [
         users: [mock_users[4]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     }
 ]
 
