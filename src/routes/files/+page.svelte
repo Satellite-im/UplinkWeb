@@ -49,7 +49,7 @@
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
         });
             const addedIds = new Set();
-            
+            const items = sortable.getDraggableElementsForContainer(dropzone)
         sortable.on('sortable:start', (event) => {
             // fileElementsMap.clear();
             // reorderedFiles = Array.from(dropzone.children)
@@ -61,8 +61,7 @@
         });
 
         sortable.on('sortable:stop', (event) => {
-            const items = sortable.getDraggableElementsForContainer(dropzone)
-            const existingFiles = get(Store.state.files);
+
             const newOrderIds = Array.from(items)
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'));
