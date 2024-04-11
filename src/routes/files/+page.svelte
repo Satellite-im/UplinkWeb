@@ -59,32 +59,29 @@
         });
 
         sortable.on('sortable:stop', (event) => {
-    const existingFiles = get(Store.state.files);
-    const newOrderIds = Array.from(dropzone.children)
-        .filter(child => child.getAttribute('data-id'))
-        .map(child => child.getAttribute('data-id'));
+            const existingFiles = get(Store.state.files);
+            const newOrderIds = Array.from(dropzone.children)
+                .filter(child => child.getAttribute('data-id'))
+                .map(child => child.getAttribute('data-id'));
 
-    const newOrder: FileInfo[] = [];
+            const newOrder: FileInfo[] = [];
 
-    // Update the order of files in existingFiles based on newOrderIds
-    newOrderIds.forEach(id => {
-        const file = existingFiles.find(file => file.id === id);
-        if (file) {
-            newOrder.push(file);
-        }
-    });
+            newOrderIds.forEach(id => {
+                const file = existingFiles.find(file => file.id === id);
+                if (file) {
+                    newOrder.push(file);
+                }
+            });
 
-    // console.log(newOrder)
-    // Create a new array with the modified order
-    const updatedFiles = existingFiles.map(file => {
-        const updatedFile = newOrder.find(f => f.id === file.id);
-        return updatedFile ? updatedFile : file;
-    });
+            // console.log(newOrder)
+            const updatedFiles = existingFiles.map(file => {
+                const updatedFile = newOrder.find(f => f.id === file.id);
+                return updatedFile ? updatedFile : file;
+            });
 
-    // Update the state with the modified array
-    Store.state.files.set(updatedFiles)
-    console.log(newOrderIds,updatedFiles)
-});
+            Store.state.files.set(updatedFiles)
+            console.log(newOrder,updatedFiles)
+        });
 
         // onDestroy(() => sortable.destroy());
     }
