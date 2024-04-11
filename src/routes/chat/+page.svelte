@@ -45,6 +45,7 @@
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe((c) => chats = c)
     Store.state.activeChat.subscribe((c) => {
+        console.log('c', c)
         activeChat = c
         conversation = c.conversation
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)

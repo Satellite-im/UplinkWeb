@@ -25,7 +25,7 @@
     onMount(() => {
         setTimeout(() => {
             scrollToBottom(scrollContainer)
-        }, 100)
+        }, 250)
     })
 </script>
 

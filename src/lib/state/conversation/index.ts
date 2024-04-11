@@ -1,4 +1,4 @@
-import type { MessageGroup, Chat } from "$lib/types"
+import type { MessageGroup, Chat, Message } from "$lib/types"
 import { writable, type Writable } from "svelte/store"
 
 export type ConversationMessages = {
@@ -14,6 +14,18 @@ class Conversations {
     }
 
     getConversation(chat: Chat) {
+        
+    }
+
+    addMessage(chat: Chat, message: Message) {
+
+    }
+
+    editMessage(chat: Chat, message: Message, edited: Message) {
+
+    }
+
+    removeMessage(chat: Chat, message: Message) {
         
     }
 }
