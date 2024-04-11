@@ -12,7 +12,7 @@
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { mock_files } from "$lib/mock/files"
-    import { Plugins } from '@shopify/draggable'
+    import { Draggable, Plugins } from '@shopify/draggable'
     import { onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
@@ -49,6 +49,7 @@
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
         });
             const addedIds = new Set();
+            
         sortable.on('sortable:start', (event) => {
             // fileElementsMap.clear();
             // reorderedFiles = Array.from(dropzone.children)
@@ -60,27 +61,31 @@
         });
 
         sortable.on('sortable:stop', (event) => {
+            const items = sortable.getDraggableElementsForContainer(dropzone)
             const existingFiles = get(Store.state.files);
-            const newOrderIds = Array.from(dropzone.children)
+            const newOrderIds = Array.from(items)
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'));
 
-            const newOrder: FileInfo[] = [];
+            // const newOrder: FileInfo[] = [];
 
-            newOrderIds.forEach(id => {
-                const file = existingFiles.find(file => file.id === id);
-                if (file) {
-                    newOrder.push(file);
-                }
-            });
+            // newOrderIds.forEach(id => {
+            //     const file = existingFiles.find(file => file.id === id);
+            //     if (file) {
+            //         newOrder.push(file);
+            //     }
+            // });
 
-            const updatedFiles = existingFiles.map(file => {
-                const updatedFile = newOrder.find(f => f.id === file.id);
-                return updatedFile ? updatedFile : file;
-            });
+            const updatedFiles: FileInfo[] = newOrderIds
+                .filter(id => id !== null)
+                .map(id => {
+                    const file = get(Store.state.files).find(file => file.id === id);
+                    return file ? file : null;
+                })
+                .filter(file => file !== null) as FileInfo[];
 
-            Store.state.files.set(updatedFiles)
-            console.log(newOrder,updatedFiles)
+            // Store.state.files.set(updatedFiles)
+            console.log(items,newOrderIds)
         });
 
         // onDestroy(() => sortable.destroy());
