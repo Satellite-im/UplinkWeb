@@ -33,12 +33,11 @@
     let activeTabRoute: string = tabRoutes[0]
 
     let previewImage: string | null
-    let items = mock_files
 
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-    let fileElementsMap = new Map();
+    let reorderedFiles: FileInfo[] = [];
  
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
@@ -46,41 +45,46 @@
     if (dropzone) {
         const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
-            mirror: {
-                constrainDimensions: true,
-            },
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
         });
-        const items = sortable.getDraggableElementsForContainer(dropzone)
+            const addedIds = new Set();
         sortable.on('sortable:start', (event) => {
-            fileElementsMap.clear();
-            items
-                .filter(child => child.getAttribute('data-id'))
-                .forEach(child => {
-                    fileElementsMap.set(child.getAttribute('data-id'), child);
-                });
+            // fileElementsMap.clear();
+            // reorderedFiles = Array.from(dropzone.children)
+            //     .filter(child => child.getAttribute('data-id'))
+            //     .map(child => {
+            //         child
+            //     });
+            // reorderedFiles = []
         });
 
         sortable.on('sortable:stop', (event) => {
-            const reorderedFiles: FileInfo[] = [];
-            const addedIds = new Set();
+    const existingFiles = get(Store.state.files);
+    const newOrderIds = Array.from(dropzone.children)
+        .filter(child => child.getAttribute('data-id'))
+        .map(child => child.getAttribute('data-id'));
 
-            Array.from(dropzone.children)
-                .filter(child => child.getAttribute('data-id'))
-                .forEach(child => {
-                    const id = child.getAttribute('data-id');
-                    // console.log(child)
-                    if (id && !addedIds.has(id)) {
-                        const file = get(Store.state.files).find(file => file.id === id);
-                        if (file) {
-                            reorderedFiles.push(file);
-                            addedIds.add(id);
-                        }
-                    }
-                });
+    const newOrder: FileInfo[] = [];
 
-            Store.state.files.set(reorderedFiles);
-        });
+    // Update the order of files in existingFiles based on newOrderIds
+    newOrderIds.forEach(id => {
+        const file = existingFiles.find(file => file.id === id);
+        if (file) {
+            newOrder.push(file);
+        }
+    });
+
+    // console.log(newOrder)
+    // Create a new array with the modified order
+    const updatedFiles = existingFiles.map(file => {
+        const updatedFile = newOrder.find(f => f.id === file.id);
+        return updatedFile ? updatedFile : file;
+    });
+
+    // Update the state with the modified array
+    Store.state.files.set(updatedFiles)
+    console.log(newOrderIds,updatedFiles)
+});
 
         // onDestroy(() => sortable.destroy());
     }
@@ -91,7 +95,7 @@
     Store.state.ui.sidebarChats.subscribe((sc) => sidebarChats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
-    let files: FileInfo[] = get(Store.state.files)
+    let files: FileInfo[] = get(Store.state.files);
     Store.state.files.subscribe((f) => files = f)
 </script>
 
@@ -314,6 +318,7 @@
                 flex-direction: row;
                 flex-wrap: wrap;
                 align-content: flex-start;
+                overflow-y: scroll;
                 
                 .draggable-item {
                     position: relative;
