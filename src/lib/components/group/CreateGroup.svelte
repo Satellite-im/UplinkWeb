@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "$lib/enums"
-    import { defaultChat, type Chat, type User, hashChat } from "$lib/types";
+    import { Appearance, ChatType, Shape, Size } from "$lib/enums"
+    import { defaultChat, type Chat, type User, hashChat } from "$lib/types"
     import { ProfilePicture } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
@@ -9,8 +9,10 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { createEventDispatcher } from "svelte"
 
-    export let embeded: boolean             = false
+    export let embeded: boolean = false
     let chat: Chat = defaultChat
+
+    chat.kind = ChatType.Group
 
     let update_recipients = function(recipient: User) {
         let new_recipient_list = chat.users
@@ -31,6 +33,7 @@
     let friends: User[] = get(Store.state.friends)
     const dispatch = createEventDispatcher()
     function onCreate() {
+        chat = defaultChat
         dispatch('create')
     }
 </script>

@@ -1,9 +1,8 @@
-const dbName = "UplinkAppState"
 const storeName = "stateStore"
 
 export async function initDB() {
     return new Promise<IDBDatabase>((resolve, _) => {
-        const request = indexedDB.open(dbName, 1)
+        const request = indexedDB.open("UplinkAppState", 1)
         request.onupgradeneeded = (_) => {
             const db = request.result
             if (!db.objectStoreNames.contains(storeName)) {

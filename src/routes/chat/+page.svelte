@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
     import { mock_users } from "$lib/mock/users"
@@ -91,10 +91,9 @@
     {/if}
 
     <!-- Sidebar -->
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}>
-        
-    </Slimbar>
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
+    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
+
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
             <Icon icon={Shape.Shop} />
         </Button>
@@ -115,6 +114,13 @@
                 on:context={(evt) => {
                     contextPosition = evt.detail
                     contextData = [
+                        {
+                            id: "favorite",
+                            icon: Shape.Heart,
+                            text: "Favorite",
+                            appearance: Appearance.Default,
+                            onClick: () => Store.toggleFavorite(chat)
+                        },
                         {
                             id: "hide",
                             icon: Shape.EyeSlash,
@@ -179,6 +185,20 @@
                     on:click={(_) => {Store.toggleFavorite(activeChat)}}>
                     <Icon icon={Shape.Heart} />
                 </Button>
+                {#if activeChat.kind === ChatType.Group}
+                    <Button 
+                        icon 
+                        appearance={Appearance.Alt}
+                        on:click={(_) => {}}>
+                        <Icon icon={Shape.Users} />
+                    </Button>
+                    <Button 
+                        icon 
+                        appearance={Appearance.Alt}
+                        on:click={(_) => {}}>
+                        <Icon icon={Shape.Cog} />
+                    </Button>
+                {/if}
                 {#if activeChat.users.length === 1}
                     <Button 
                         icon 
@@ -332,7 +352,7 @@
                 <PopupButton name={$_("payments.send_coin")}>
                     <NewPayment recipients={mock_users}/>
                     <div slot="icon" class="control">
-                        <Icon icon={Shape.Starlight} />
+                        <Icon icon={Shape.Starlight} size={Size.Large} />
                     </div>
                 </PopupButton>
             </Chatbar>

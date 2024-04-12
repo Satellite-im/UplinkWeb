@@ -2,19 +2,23 @@
     import { ProfilePicture } from "$lib/components"
     import { Button, Icon, Input, Label, Text } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
+    import { Store } from "$lib/state/store"
     import type { User } from "$lib/types"
+    import { get } from "svelte/store"
     
     export let user: User | null = null
 </script>
 
 
 <div class="profile">
-    <div class="profile-header">
+    <div class="profile-header" style="background-image: url('{user?.profile.banner.image}')">
         <ProfilePicture image={user?.profile.photo.image} size={Size.Large} status={user?.profile.status} />
     </div>
-    <Button outline appearance={Appearance.Alt} text="You're Friends.">
-        <Icon icon={Shape.CheckMark} />
-    </Button>
+    {#if user?.id !== get(Store.state.user).id}
+        <Button outline appearance={Appearance.Alt} text="You're Friends.">
+            <Icon icon={Shape.CheckMark} />
+        </Button>
+    {/if}
     <div class="section">
         <Label text="Username" />
         <Text size={Size.Large}>{user?.name}</Text>
@@ -47,7 +51,6 @@
         .profile-header {
             height: calc(var(--profile-width) / 2);
             background-color: var(--background-alt);
-            background-image: url('/assets/space.jpg');
             background-size: cover;
             padding: var(--padding-less);
             width: 100%;

@@ -1,7 +1,7 @@
 import type { MessageGroup, Chat, Message } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
-import { initDB, getStateFromDB, setStateToDB } from ".."
+import { getStateFromDB, setStateToDB } from ".."
 
 export type ConversationMessages = {
     id: string,

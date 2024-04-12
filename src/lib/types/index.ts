@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType } from "$lib/enums"
 
 
 export type SelectOption = {
@@ -73,6 +73,18 @@ export let defaultUser: User = {
     }
 }
 
+
+
+export type ChatSettings = {
+    displayOwnerBadge: boolean,
+    readReciepts: boolean,
+    permissions: {
+        allowAnyoneToAddUsers: boolean,
+        allowAnyoneToModifyPhoto: boolean,
+        allowAnyoneToModifyName: boolean
+    }
+}
+
 export type NavRoute = {
     name: string,
     icon: Shape,
@@ -83,6 +95,8 @@ export type Chat = {
     id: string,
     name: string,
     motd: string,
+    kind: ChatType,
+    settings: ChatSettings,
     notifications: number,
     activity: boolean,
     users: User[],
@@ -108,10 +122,20 @@ export let defaultChat = {
     name: "",
     motd: "",
     notifications: 0,
+    kind: ChatType.DirectMessage,
+    settings: {
+        displayOwnerBadge: true,
+        readReciepts: true,
+        permissions: {
+            allowAnyoneToAddUsers: false,
+            allowAnyoneToModifyPhoto: false,
+            allowAnyoneToModifyName: false,
+        },
+    },
     activity: false,
     users: [],
     last_message_at: new Date(),
-    last_message_preview: ""
+    last_message_preview: "",
 }
 
 export type Call = {
