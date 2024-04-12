@@ -7,16 +7,26 @@
     import { get } from "svelte/store"
     
     export let user: User | null = null
-</script>
 
+    let friends: User[] = get(Store.state.friends)
+    $: friends = get(Store.state.friends)
+    $: currentUserShortId = get(Store.state.user)?.id.short
+
+    function isFriended(targetUser: User) {
+        return friends.some(friend => friend.id.short === targetUser.id.short)
+    }
+</script>
 
 <div class="profile">
     <div class="profile-header" style="background-image: url('{user?.profile.banner.image}')">
         <ProfilePicture image={user?.profile.photo.image} size={Size.Large} status={user?.profile.status} />
     </div>
-    {#if user?.id !== get(Store.state.user).id}
-        <Button outline appearance={Appearance.Alt} text="You're Friends.">
-            <Icon icon={Shape.CheckMark} />
+    {#if user && user.id.short !== currentUserShortId}
+        <Button 
+            outline 
+            appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} 
+            text={isFriended(user) ? "You're friends" : "Add Friend"}>
+            <Icon icon={isFriended(user) ? Shape.CheckMark : Shape.Plus} />
         </Button>
     {/if}
     <div class="section">

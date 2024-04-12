@@ -81,8 +81,7 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}>
-        </div>
+        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}></div>
 
         <div class="profile-picture-container">
             <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
