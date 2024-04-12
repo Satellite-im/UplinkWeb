@@ -33,6 +33,7 @@
             })
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
+            editor.registerListener("input", (_element: any, _: any, val: string) => value = val)
         })
     }
     export { clazz as class }
