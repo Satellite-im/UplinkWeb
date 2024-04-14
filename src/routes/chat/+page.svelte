@@ -22,7 +22,9 @@
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
     import CreateGroup from "$lib/components/group/CreateGroup.svelte"
-    import { ConversationStore } from "$lib/state/conversation";
+    import { ConversationStore } from "$lib/state/conversation"
+    import GroupSettings from "$lib/components/group/GroupSettings.svelte"
+    import ViewMembers from "$lib/components/group/ViewMembers.svelte";
 
     initLocale()
 
@@ -40,13 +42,15 @@
     }
 
     function getTimeAgo(dateInput: string | Date) {
-        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput;
+        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
 
     let previewImage: string | null
     let previewProfile: User | null
     let newGroup: boolean = false
+    let showUsers: boolean = false
+    let groupSettings: boolean = false
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
@@ -87,6 +91,21 @@
     {#if newGroup}
         <Modal on:close={(_) => {newGroup = false}}>
             <CreateGroup on:create={(_) => newGroup = false}/> 
+        </Modal>
+    {/if}
+
+    {#if groupSettings}
+        <Modal on:close={(_) => {groupSettings = false}}>
+            <GroupSettings on:create={(_) => groupSettings = false}/> 
+        </Modal>
+    {/if}
+
+    {#if showUsers}
+        <Modal on:close={(_) => {showUsers = false}}>
+            <ViewMembers 
+                adminControls 
+                members={activeChat.users} 
+                on:create={(_) => showUsers = false} /> 
         </Modal>
     {/if}
 
@@ -188,14 +207,14 @@
                 {#if activeChat.kind === ChatType.Group}
                     <Button 
                         icon 
-                        appearance={Appearance.Alt}
-                        on:click={(_) => {}}>
+                        appearance={(showUsers) ? Appearance.Primary : Appearance.Alt}
+                        on:click={(_) => {showUsers = true}}>
                         <Icon icon={Shape.Users} />
                     </Button>
                     <Button 
                         icon 
-                        appearance={Appearance.Alt}
-                        on:click={(_) => {}}>
+                        appearance={(groupSettings) ? Appearance.Primary : Appearance.Alt}
+                        on:click={(_) => {groupSettings = true}}>
                         <Icon icon={Shape.Cog} />
                     </Button>
                 {/if}

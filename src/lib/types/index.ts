@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType } from "$lib/enums"
 
 
@@ -97,6 +96,7 @@ export type Chat = {
     motd: string,
     kind: ChatType,
     settings: ChatSettings,
+    creator: User,
     notifications: number,
     activity: boolean,
     users: User[],
@@ -123,6 +123,7 @@ export let defaultChat = {
     motd: "",
     notifications: 0,
     kind: ChatType.DirectMessage,
+    creator: defaultUser,
     settings: {
         displayOwnerBadge: true,
         readReciepts: true,
