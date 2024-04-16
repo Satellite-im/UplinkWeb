@@ -14,7 +14,7 @@ let on: HTMLAudioElement = new Audio(Sound.On)
 let off: HTMLAudioElement = new Audio(Sound.Off)
 let joined: HTMLAudioElement = new Audio(Sound.Joined)
 let disconnect: HTMLAudioElement = new Audio(Sound.Disconnect)
-let notificaiton: HTMLAudioElement = new Audio(Sound.Notification)
+let notification: HTMLAudioElement = new Audio(Sound.Notification)
 let outgoingCall: HTMLAudioElement = new Audio(Sound.OutgoingCall)
 let incomingCall: HTMLAudioElement = new Audio(Sound.IncomingCall)
 let request: HTMLAudioElement = new Audio(Sound.Request)
@@ -41,7 +41,7 @@ export class Sounds {
         off.pause()
         joined.pause()
         disconnect.pause()
-        notificaiton.pause()
+        notification.pause()
         incomingCall.pause()
         outgoingCall.pause()
         request.pause()
@@ -50,7 +50,7 @@ export class Sounds {
         off.currentTime = 0
         joined.currentTime = 0
         disconnect.currentTime = 0
-        notificaiton.currentTime = 0
+        notification.currentTime = 0
         incomingCall.currentTime = 0
         outgoingCall.currentTime = 0
         request.currentTime = 0
@@ -78,7 +78,7 @@ export class Sounds {
 
     static notification() {
         this.stopAll()
-        notificaiton.play()
+        notification.play()
     }
 
     static incomingCall() {

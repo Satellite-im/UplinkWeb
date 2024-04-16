@@ -8,7 +8,7 @@
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
     import Text from "$lib/elements/Text.svelte"
     import Input from "$lib/elements/Input/Input.svelte"
-    import { balance, recent_transactions, transcations_in, transcations_out } from "$lib/mock/wallet"
+    import { balance, recent_transactions, transactions_in, transactions_out } from "$lib/mock/wallet"
     import TransactionContainer from "$lib/components/wallet/TransactionContainer.svelte"
     import { mock_users } from "$lib/mock/users"
     import Controls from "$lib/layouts/Controls.svelte"
@@ -37,7 +37,7 @@
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Wallet} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet} >
         <Label text="New Payment" />
-        <NewPayment recipients={mock_users} embeded />
+        <NewPayment recipients={mock_users} embedded />
     </Sidebar>
     <div class="content">
         <div class="header">
@@ -78,7 +78,7 @@
                 <Label text="Coin In" />
                 <div class="transacitons">
                     <TransactionContainer>
-                        {#each transcations_in as transaction}
+                        {#each transactions_in as transaction}
                             <Transaction transaction={transaction} />
                         {/each}
                     </TransactionContainer>
@@ -93,7 +93,7 @@
                 <Label text="Coin Out" />
                 <div class="transacitons">
                     <TransactionContainer>
-                        {#each transcations_out as transaction}
+                        {#each transactions_out as transaction}
                             <Transaction transaction={transaction} />
                         {/each}
                     </TransactionContainer>

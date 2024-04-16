@@ -9,7 +9,7 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { createEventDispatcher } from "svelte"
 
-    export let embeded: boolean = false
+    export let embedded: boolean = false
     let chat: Chat = defaultChat
 
     chat.kind = ChatType.Group
@@ -70,7 +70,7 @@
             {/each}
         </div>
         <Label text="Select member(s)" />
-        <div class="user-selection-list {embeded ? "embeded" : ""}">
+        <div class="user-selection-list {embedded ? "embedded" : ""}">
             {#each friends as recipient}
                 <button
                     class="user" 
@@ -163,7 +163,7 @@
                 overflow-x: hidden;
                 padding-right: var(--padding-less);
 
-                &.embeded {
+                &.embedded {
                     flex: 1;
                     padding-right: unset;
                 }

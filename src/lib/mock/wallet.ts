@@ -2,7 +2,7 @@ import type { Transaction } from "$lib/types";
 import { mock_users } from "./users";
 
 export let balance: number = 0
-export let transcations_out: Transaction[] = [
+export let transactions_out: Transaction[] = [
     {
         at: new Date(),
         to: mock_users[0],
@@ -39,10 +39,10 @@ export let transcations_out: Transaction[] = [
         note: "This is a payment note"
     }
 ]
-export let transcations_in: Transaction[] = [...transcations_out]
+export let transactions_in: Transaction[] = [...transactions_out]
 
 
 export let recent_transactions: Transaction[] = [
-    ...transcations_in,
-    ...transcations_out
+    ...transactions_in,
+    ...transactions_out
 ]

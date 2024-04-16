@@ -53,7 +53,7 @@
             &.fill {
                 flex: 1;
 
-                :gloabl(.text) {
+                :global(.text) {
                     justify-content: space-between;
                 }
             }
