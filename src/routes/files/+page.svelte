@@ -11,8 +11,7 @@
     import prettyBytes from "pretty-bytes"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { mock_files } from "$lib/mock/files"
-    import { Draggable, Plugins } from '@shopify/draggable'
+    import { Plugins } from '@shopify/draggable'
     import { onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
@@ -38,26 +37,23 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-    let reorderedFiles: FileInfo[] = [];
- 
+    let updatedFiles: FileInfo[] = []
+    $: files = get(Store.state.files);
+    const unsubscribeFiles = Store.state.files.subscribe((f) => {
+            // console.log(f, "subs")
+    files = f;
+        })
     onMount(() => {
+        
+//             onDestroy(() => {
+//     unsubscribe();
+// });
     const dropzone = document.querySelector('.files') as HTMLElement;
     
     if (dropzone) {
         const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-        });
-            const addedIds = new Set();
-            
-        sortable.on('sortable:start', (event) => {
-            // fileElementsMap.clear();
-            // reorderedFiles = Array.from(dropzone.children)
-            //     .filter(child => child.getAttribute('data-id'))
-            //     .map(child => {
-            //         child
-            //     });
-            // reorderedFiles = []
         });
 
         sortable.on('sortable:stop', (event) => {
@@ -67,37 +63,28 @@
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'));
 
-            // const newOrder: FileInfo[] = [];
-
-            // newOrderIds.forEach(id => {
-            //     const file = existingFiles.find(file => file.id === id);
-            //     if (file) {
-            //         newOrder.push(file);
-            //     }
-            // });
-
-            const updatedFiles: FileInfo[] = newOrderIds
+            updatedFiles = newOrderIds
                 .map(id => {
-                    const file = get(Store.state.files).find(file => file.id === id);
+                    const file = files.find(file => file.id === id);
                     return file ? file : null;
-                })
-                .filter(file => file !== null) as FileInfo[];
+                }) as FileInfo[];
 
-            // Store.state.files.set(updatedFiles)
-            console.log(updatedFiles,newOrderIds)
+            Store.updateFileOrder(updatedFiles)
+            // console.log(files, updatedFiles)
+
         });
 
-        // onDestroy(() => sortable.destroy());
     }
 })
+
+
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
-    let files: FileInfo[] = get(Store.state.files);
-    Store.state.files.subscribe((f) => files = f)
+    
 </script>
 
 <div id="page">
@@ -224,11 +211,12 @@
         </Topbar>
 
         <div class="files">
-            {#each files as item}
+            {#each files as item (item.id)}
                 <div
-                    class="draggable-item {item.id} {item.type === "folder" ? "folder-draggable droppable" :""}"
+                    class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}"
                     draggable="true"
                     data-id={item.id}
+                    key={item.id}
                 >
                     {#if item.type === "file"}
                         <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
