@@ -81,14 +81,13 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}>
-        </div>
+        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}></div>
 
         <div class="profile-picture-container">
             <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
             <FileUploadButton icon tooltip={$_("settings.profile.change_profile_photo")} on:upload={(picture) => {
                 Store.setPhoto(picture.detail)
-            }}/>
+            }} />
         </div>
 
         <input style="display:none" type="file" accept={acceptableFiles} on:change={(e) => onFileSelected(e)} bind:this={fileinput} />
@@ -223,6 +222,7 @@
                 display: inline-flex;
                 flex-direction: column;
                 gap: var(--gap);
+                width: 100%;
             }
 
             .section {

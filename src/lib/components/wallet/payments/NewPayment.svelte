@@ -6,7 +6,7 @@
     import Text from "$lib/elements/Text.svelte"
 
     export let recipients: Array<User> = []
-    export let embeded: boolean        = false
+    export let embedded: boolean        = false
     let selected_recipients: Array<User> = []
 
     let update_recipients = function(recipient: User) {
@@ -52,7 +52,7 @@
             {/each}
         </div>
         <Label text="Select recipient(s)" />
-        <div class="recipient-selection-list {embeded ? "embeded" : ""}">
+        <div class="recipient-selection-list {embedded ? "embedded" : ""}">
             {#each recipients as recipient}
                 <button
                     class="recipient" 
@@ -182,7 +182,7 @@
                 overflow-x: hidden;
                 padding-right: var(--padding-less);
 
-                &.embeded {
+                &.embedded {
                     flex: 1;
                     padding-right: unset;
                 }

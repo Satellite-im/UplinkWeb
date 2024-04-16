@@ -1,5 +1,5 @@
-import { Status } from "$lib/enums";
-import { defaultUser, type Chat, type User, hashChat } from "$lib/types";
+import { ChatType, Status } from "$lib/enums";
+import { defaultUser, type Chat, type User, hashChat, defaultChat } from "$lib/types";
 
 export const mock_users: Array<User> = [
     {
@@ -13,6 +13,9 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/moon.png"
+            },
+            banner: {
+                image: "/assets/space.jpg"
             },
             status: Status.Online,
             status_message: "There is no cheese on this moon."
@@ -33,6 +36,9 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/blue_marble.png"
+            },
+            banner: {
+                image: "/assets/space.jpg"
             },
             status: Status.Online,
             status_message: "Space Kev is doing Space Kev things!"
@@ -55,6 +61,9 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/saturn.png"
+            },
+            banner: {
+                image: "/assets/space.jpg"
             },
             status: Status.Online,
             status_message: "Testing all of the things, all of the time."
@@ -91,6 +100,9 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/neptune.png"
+            },
+            banner: {
+                image: "/assets/space.jpg"
             },
             status: Status.DoNotDisturb,
             status_message: "This is a status message that you are reading."
@@ -139,10 +151,12 @@ export const fake_user_array: Array<User> = [
 ];
 
 let mock_chats: Chat[] = [
-    {
+    {   
+        ...defaultChat,
         id: "p41",
         name: "RC Group Chat",
         motd: "A place for people who love RC",
+        kind: ChatType.Group,
         notifications: 0,
         activity: false,
         users: [
@@ -152,9 +166,9 @@ let mock_chats: Chat[] = [
         ],
         last_message_at: new Date(),
         last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
-        conversation: []
     },
     {
+        ...defaultChat,
         id: "op23",
         name: "",
         motd: "",
@@ -163,9 +177,9 @@ let mock_chats: Chat[] = [
         users: [mock_users[0]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
+        ...defaultChat,
         id: "a45",
         name: "",
         motd: "",
@@ -174,9 +188,9 @@ let mock_chats: Chat[] = [
         users: [mock_users[1]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
+        ...defaultChat,
         id: "s12",
         name: "",
         motd: "",
@@ -185,9 +199,9 @@ let mock_chats: Chat[] = [
         users: [mock_users[2]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
+        ...defaultChat,
         id: "12s",
         name: "",
         motd: "",
@@ -196,9 +210,9 @@ let mock_chats: Chat[] = [
         users: [mock_users[3]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     },
     {
+        ...defaultChat,
         id: "as5",
         name: "",
         motd: "",
@@ -207,7 +221,6 @@ let mock_chats: Chat[] = [
         users: [mock_users[4]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        conversation: []
     }
 ]
 

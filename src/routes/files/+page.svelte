@@ -19,7 +19,6 @@
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
 
-    // Initialize locale
     initLocale()
 
     let loading: boolean = false

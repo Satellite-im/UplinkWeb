@@ -8,6 +8,16 @@
 		%sveltekit.head%
 	</head>
 	<body>
-		%sveltekit.body%
+		<div id="app">
+			%sveltekit.body%
+		</div>
 	</body>
 </html>
+
+
+<style lang="scss">
+	#app {
+		width: 100vw;
+		height: 100vh;
+	}
+</style>

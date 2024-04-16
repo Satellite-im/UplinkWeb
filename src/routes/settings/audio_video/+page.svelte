@@ -172,7 +172,7 @@
             SettingsStore.update({...settings, audio: {...settings.audio, controlSounds: on.detail }})
         }} />
     </SettingSection>
-    <SettingSection name="Message Sounds" description="Play a notification sound when a new message is recieved.">
+    <SettingSection name="Message Sounds" description="Play a notification sound when a new message is received.">
         <Switch on={(settings) ? settings.audio.messageSounds : true} on:toggle={(on) => {
             SettingsStore.update({...settings, audio: {...settings.audio, messageSounds: on.detail }})
         }} />
