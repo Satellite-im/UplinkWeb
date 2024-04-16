@@ -12,7 +12,7 @@
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Plugins } from '@shopify/draggable'
-    import { onMount } from 'svelte'
+    import { onDestroy, onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
@@ -40,14 +40,10 @@
     let updatedFiles: FileInfo[] = []
     $: files = get(Store.state.files);
     const unsubscribeFiles = Store.state.files.subscribe((f) => {
-            // console.log(f, "subs")
-    files = f;
+        files = f;
         })
-    onMount(() => {
         
-//             onDestroy(() => {
-//     unsubscribe();
-// });
+    onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
     
     if (dropzone) {
@@ -58,7 +54,6 @@
 
         sortable.on('sortable:stop', (event) => {
             const items = sortable.getDraggableElementsForContainer(dropzone)
-            // const existingFiles = get(Store.state.files);
             const newOrderIds = Array.from(items)
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'));
@@ -70,13 +65,14 @@
                 }) as FileInfo[];
 
             Store.updateFileOrder(updatedFiles)
-            // console.log(files, updatedFiles)
 
         });
 
     }
 })
-
+    onDestroy(() => {
+        unsubscribeFiles();
+    });
 
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
@@ -85,6 +81,11 @@
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
     
+
+
+  function unsubscribe() {
+    throw new Error("Function not implemented.");
+  }
 </script>
 
 <div id="page">
