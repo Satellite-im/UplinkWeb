@@ -42,7 +42,7 @@
     const unsubscribeFiles = Store.state.files.subscribe((f) => {
         files = f;
         })
-        
+
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
     
@@ -217,7 +217,6 @@
                     class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}"
                     draggable="true"
                     data-id={item.id}
-                    key={item.id}
                 >
                     {#if item.type === "file"}
                         <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
