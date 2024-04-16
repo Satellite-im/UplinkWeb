@@ -107,7 +107,6 @@ class GlobalStore {
     }
     
     updateFileOrder(newOrder: FileInfo[]) {
-        console.log(this.state.files)
         this.state.files.set(newOrder)
     }
     
