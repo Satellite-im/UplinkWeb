@@ -1,5 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType } from "$lib/enums"
 
 
 export type SelectOption = {
@@ -73,6 +72,18 @@ export let defaultUser: User = {
     }
 }
 
+
+
+export type ChatSettings = {
+    displayOwnerBadge: boolean,
+    readReciepts: boolean,
+    permissions: {
+        allowAnyoneToAddUsers: boolean,
+        allowAnyoneToModifyPhoto: boolean,
+        allowAnyoneToModifyName: boolean
+    }
+}
+
 export type NavRoute = {
     name: string,
     icon: Shape,
@@ -83,12 +94,14 @@ export type Chat = {
     id: string,
     name: string,
     motd: string,
+    kind: ChatType,
+    settings: ChatSettings,
+    creator: User,
     notifications: number,
     activity: boolean,
     users: User[],
     last_message_at: Date,
     last_message_preview: string,
-    conversation: MessageGroup[],
 }
 
 export function hashChat(chat: Chat): string {
@@ -109,11 +122,21 @@ export let defaultChat = {
     name: "",
     motd: "",
     notifications: 0,
+    kind: ChatType.DirectMessage,
+    creator: defaultUser,
+    settings: {
+        displayOwnerBadge: true,
+        readReciepts: true,
+        permissions: {
+            allowAnyoneToAddUsers: false,
+            allowAnyoneToModifyPhoto: false,
+            allowAnyoneToModifyName: false,
+        },
+    },
     activity: false,
     users: [],
     last_message_at: new Date(),
     last_message_preview: "",
-    conversation: []
 }
 
 export type Call = {
@@ -159,11 +182,12 @@ export type MessageDetails = {
 }
 
 export type Message = {
+    id: string,
     details: MessageDetails,
     inReplyTo: Message | null,
     reactions: Reaction[],
     attachments: Attachment[],
-    text: string[], // Each string represents a line of content in the message. Line breaks are created by sending multiple text strings.
+    text: string[]
 }
 
 export type MessageGroup = {

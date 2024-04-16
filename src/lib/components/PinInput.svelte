@@ -32,6 +32,7 @@
 
     // Update the pin value and the display dots
     const updatePinValue = (digit: string) => {
+        dispatch('updatePinValue', digit);
         if (pinValue.length < max) {
             pinValue += digit
             updateDisplayDots()
@@ -65,8 +66,20 @@
         clearPinValue()
     };
 
+    function handleKeyDown(event: { key: any; }) {
+        const key = event.key
+        // Check if the key is a digit
+        if (!isNaN(key) && key !== ' ') {
+            updatePinValue(key)
+        }
+    }
+
     onMount(() => {
+        window.addEventListener('keydown', handleKeyDown)
         updateDisplayDots()
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+        };
     });
 
     function handleToggleScramble(value: any) {

@@ -1,7 +1,6 @@
-import type { Chat, Keybind } from "$lib/types"
-import type { Locale } from "javascript-time-ago"
+import type { Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
-import { createPersistentState, defaultSettings } from ".."
+import { createPersistentState } from ".."
 import { Font } from "$lib/enums"
 
 export interface IUIState {

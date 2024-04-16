@@ -1,5 +1,5 @@
-import { writable } from 'svelte/store'
-import { getStateFromDB, setStateToDB } from './dbOperations'
+import { writable } from "svelte/store"
+import { getStateFromDB, setStateToDB } from "./dbOperations"
 
 export function createPersistentState<T>(key: string, defaultState: T) {
     const state = writable<T>(defaultState)

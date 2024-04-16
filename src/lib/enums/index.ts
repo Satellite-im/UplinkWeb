@@ -1,5 +1,10 @@
 export * from "./icons"
 
+export const enum ChatType {
+    Group,
+    DirectMessage
+}
+
 export const enum Locale {
     EN_US   = "English (US)",
     ES_MX   = "Español (México)",

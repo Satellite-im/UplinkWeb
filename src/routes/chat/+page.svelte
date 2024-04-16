@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Appearance, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
+    import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
     import { mock_users } from "$lib/mock/users"
     import { _ } from "svelte-i18n"
@@ -21,6 +22,9 @@
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
     import CreateGroup from "$lib/components/group/CreateGroup.svelte"
+    import { ConversationStore } from "$lib/state/conversation"
+    import GroupSettings from "$lib/components/group/GroupSettings.svelte"
+    import ViewMembers from "$lib/components/group/ViewMembers.svelte";
 
     initLocale()
 
@@ -29,15 +33,24 @@
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let activeChat: Chat = get(Store.state.activeChat)
     let isFavorite = Store.isFavorite(activeChat)
-    let conversation = get(Store.state.activeChat).conversation
+    let conversation = ConversationStore.getConversation(activeChat)
+
+    const timeAgo = new TimeAgo('en-US')
 
     function toggleSidebar() {
         UIStore.toggleSidebar()
     }
 
+    function getTimeAgo(dateInput: string | Date) {
+        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput
+        return timeAgo.format(date)
+    }
+
     let previewImage: string | null
     let previewProfile: User | null
     let newGroup: boolean = false
+    let showUsers: boolean = false
+    let groupSettings: boolean = false
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
@@ -46,12 +59,15 @@
     UIStore.state.chats.subscribe((c) => chats = c)
     Store.state.activeChat.subscribe((c) => {
         activeChat = c
-        conversation = c.conversation
+        conversation = ConversationStore.getConversation(c)
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
         contentAsideOpen = false
     })
     Store.state.favorites.subscribe(f => {
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
+    })
+    ConversationStore.conversations.subscribe(_ => {
+        conversation = ConversationStore.getConversation(activeChat)
     })
 </script>
 
@@ -78,11 +94,25 @@
         </Modal>
     {/if}
 
+    {#if groupSettings}
+        <Modal on:close={(_) => {groupSettings = false}}>
+            <GroupSettings on:create={(_) => groupSettings = false}/> 
+        </Modal>
+    {/if}
+
+    {#if showUsers}
+        <Modal on:close={(_) => {showUsers = false}}>
+            <ViewMembers 
+                adminControls 
+                members={activeChat.users} 
+                on:create={(_) => showUsers = false} /> 
+        </Modal>
+    {/if}
+
     <!-- Sidebar -->
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}>
-        
-    </Slimbar>
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} >
+    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
+
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
         <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
             <Icon icon={Shape.Shop} />
         </Button>
@@ -103,6 +133,13 @@
                 on:context={(evt) => {
                     contextPosition = evt.detail
                     contextData = [
+                        {
+                            id: "favorite",
+                            icon: Shape.Heart,
+                            text: "Favorite",
+                            appearance: Appearance.Default,
+                            onClick: () => Store.toggleFavorite(chat)
+                        },
                         {
                             id: "hide",
                             icon: Shape.EyeSlash,
@@ -167,6 +204,20 @@
                     on:click={(_) => {Store.toggleFavorite(activeChat)}}>
                     <Icon icon={Shape.Heart} />
                 </Button>
+                {#if activeChat.kind === ChatType.Group}
+                    <Button 
+                        icon 
+                        appearance={(showUsers) ? Appearance.Primary : Appearance.Alt}
+                        on:click={(_) => {showUsers = true}}>
+                        <Icon icon={Shape.Users} />
+                    </Button>
+                    <Button 
+                        icon 
+                        appearance={(groupSettings) ? Appearance.Primary : Appearance.Alt}
+                        on:click={(_) => {groupSettings = true}}>
+                        <Icon icon={Shape.Cog} />
+                    </Button>
+                {/if}
                 {#if activeChat.users.length === 1}
                     <Button 
                         icon 
@@ -190,7 +241,7 @@
             {#if activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
-                    {#each conversation as group}
+                    {#each conversation.messages as group}
                         <MessageGroup profilePictureRequirements={{
                             notifications: 0,
                             image: group.details.origin.profile.photo.image,
@@ -201,7 +252,7 @@
                             previewProfile = group.details.origin
                         }}
                         remote={group.details.remote}
-                        subtext="Sent 3 minutes ago.">
+                        subtext={getTimeAgo(group.messages[0].details.at)}>
                             {#each group.messages as message, idx}
                                 {#if message.inReplyTo}
                                     <MessageReplyContainer
@@ -320,7 +371,7 @@
                 <PopupButton name={$_("payments.send_coin")}>
                     <NewPayment recipients={mock_users}/>
                     <div slot="icon" class="control">
-                        <Icon icon={Shape.Starlight} />
+                        <Icon icon={Shape.Starlight} size={Size.Large} />
                     </div>
                 </PopupButton>
             </Chatbar>
