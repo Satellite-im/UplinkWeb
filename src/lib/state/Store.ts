@@ -3,7 +3,7 @@ import { MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type FriendRequest,  hashChat, type Message, type MessageGroup } from "$lib/types"
+import { defaultUser, type Chat, type User, defaultChat, type FriendRequest,  hashChat, type Message, type MessageGroup, type FileInfo } from "$lib/types"
 import { get, writable} from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
@@ -105,7 +105,11 @@ class GlobalStore {
         if (get(SettingsStore.state).audio.controlSounds)
             Sounds.play(deafened ? Sound.Off : Sound.On)
     }
-
+    
+    updateFileOrder(newOrder: FileInfo[]) {
+        this.state.files.set(newOrder)
+    }
+    
     addFriend(user: User) {
         const currentFriends = get(this.state.friends)
         const currentRequests = get(this.state.activeRequests)

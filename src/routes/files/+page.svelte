@@ -12,7 +12,7 @@
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Plugins } from '@shopify/draggable'
-    import { onMount } from 'svelte'
+    import { onDestroy, onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
@@ -36,37 +36,55 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
- 
-    onMount(() => {
-        const dropzone = document.querySelector('.files') as HTMLElement
-        
-        if (dropzone) {
-            const sortable = new Sortable(dropzone, {
-                draggable: ".draggable-item",
-                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-            })
+    let updatedFiles: FileInfo[] = []
+    $: files = get(Store.state.files);
+    const unsubscribeFiles = Store.state.files.subscribe((f) => {
+        files = f;
+        })
 
-            sortable.on('sortable:stop', (event) => {
-                let children = Array.from(event.newContainer.children)
-                let f: FileInfo[] = []
-                children.forEach(element => {
-                    let id = element.getAttribute("data-id")
-                    const file = files.find(file => file.id === id)
-                    if (file) f.push(file)
-                })
-                f = f.slice(0, files.length)        
-                Store.state.files.set(f)
-            })
-        }
-    })
+    onMount(() => {
+    const dropzone = document.querySelector('.files') as HTMLElement;
+    
+    if (dropzone) {
+        const sortable = new Sortable(dropzone, {
+            draggable: ".draggable-item",
+            plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+        });
+
+        sortable.on('sortable:stop', (event) => {
+            const items = sortable.getDraggableElementsForContainer(dropzone)
+            const newOrderIds = Array.from(items)
+                .filter(child => child.getAttribute('data-id'))
+                .map(child => child.getAttribute('data-id'));
+
+            updatedFiles = newOrderIds
+                .map(id => {
+                    const file = files.find(file => file.id === id);
+                    return file ? file : null;
+                }) as FileInfo[];
+
+            Store.updateFileOrder(updatedFiles)
+
+        });
+
+    }
+})
+    onDestroy(() => {
+        unsubscribeFiles();
+    });
+
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
-    let files: FileInfo[] = get(Store.state.files);
-    Store.state.files.subscribe((f) => files = f)
+    
+
+
+  function unsubscribe() {
+    throw new Error("Function not implemented.");
+  }
 </script>
 
 <div id="page">
@@ -193,9 +211,9 @@
         </Topbar>
 
         <div class="files">
-            {#each files as item}
+            {#each files as item (item.id)}
                 <div
-                    class="draggable-item {item.id} {item.type === "folder" ? "folder-draggable droppable" :""}"
+                    class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}"
                     draggable="true"
                     data-id={item.id}
                 >
