@@ -25,27 +25,38 @@
     let clazz = ""
     let input: HTMLElement;
     
+    let onsend: any[] = [];
     if (rich) {
         onMount(() => {
             let editor = new MarkdownEditor(input, {
+                keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
                 extensions: [EditorView.editorAttributes.of({class: input.classList.toString()})]
             })
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
-            editor.registerListener("input", (_element: any, _: any, val: string) => value = val)
+            editor.registerListener("input", ({ value: val }: {value:string}) => {
+                value = val
+            })
+            onsend.push(() => {
+                editor.value("")
+            })
         })
     }
     export { clazz as class }
 
     const dispatch = createEventDispatcher()
+    const send = () => {
+        dispatch("enter", value)
+        onsend.forEach(e => e())
+    }
     function onKeypress() {
         dispatch("keypress", value)
     }
 
     function onKeyDown(event: KeyboardEvent) {
         if (event.code === "Enter") {
-            dispatch("enter", value)
+            send()
         } else {
             onKeypress()
         }
