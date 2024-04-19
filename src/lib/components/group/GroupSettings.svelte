@@ -23,6 +23,5 @@
         flex-direction: column;
         padding: var(--padding);
         gap: var(--gap);
-
     }
 </style>

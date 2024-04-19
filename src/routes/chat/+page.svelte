@@ -171,7 +171,7 @@
                             size={Size.Medium} 
                             loading={loading} />
                     {:else}
-                        <ProfilePictureMany users={activeChat.users} />
+                        <ProfilePictureMany users={activeChat.users} on:click={(_) => showUsers = true}/>
                     {/if}
                 {/if}
             </div>

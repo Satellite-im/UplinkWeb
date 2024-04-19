@@ -3,9 +3,12 @@
     import Text from "$lib/elements/Text.svelte"
     import { Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types"
+    import { createEventDispatcher } from "svelte"
     import ProfilePicture from "./ProfilePicture.svelte"
 
     export let users: User[]
+    const dispatch = createEventDispatcher()
+
 
     function getSize(index: number) {
         switch (index) {
@@ -21,7 +24,9 @@
     }
 </script>
 
-<div class="profile-picture-many">
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="profile-picture-many" on:click={(_) => dispatch("click")}>
     {#each users as user, i}
         {#if i < 3}
             <ProfilePicture

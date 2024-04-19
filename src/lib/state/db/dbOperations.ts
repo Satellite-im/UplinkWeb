@@ -13,6 +13,15 @@ export async function initDB() {
     })
 }
 
+
+export async function clearState() {
+    return new Promise((resolve, _) => {
+        const request = indexedDB.deleteDatabase("UplinkAppState")
+        request.onsuccess = () => resolve("")
+    })
+}
+
+
 export async function getStateFromDB<T>(key: string, defaultState: T): Promise<T> {
     const db = await initDB()
     return new Promise<T>((resolve) => {

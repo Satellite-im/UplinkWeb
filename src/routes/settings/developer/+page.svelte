@@ -7,7 +7,8 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import Button from "$lib/elements/Button.svelte"
-    import { UIStore } from "$lib/state/ui";
+    import { UIStore } from "$lib/state/ui"
+    import { clearState } from "$lib/state"
 
     initLocale()
 
@@ -21,6 +22,15 @@
             on:click={(_) => Store.load_mock_data()}
             >
             Load Mock Data
+        </Button>
+    </SettingSection>
+
+    <SettingSection name="Clear State" description="Reset the application state.">
+        <Button
+            appearance={Appearance.Alt}
+            on:click={(_) => clearState()}
+            >
+            Clear State
         </Button>
     </SettingSection>
 </div>
