@@ -2,6 +2,7 @@ import type { MessageGroup, Chat, Message } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
+import { mock_messages } from "$lib/mock/messages"
 
 export type ConversationMessages = {
     id: string,
@@ -96,6 +97,24 @@ class Conversations {
             this.conversations.set(conversations)
             await setStateToDB('conversations', conversations)
         }
+    }
+
+    async loadMockData() {
+        const firstChatId = get(this.conversations)[0].id
+        const initialData: ConversationMessages = {
+            id: firstChatId,
+            messages: mock_messages
+        }
+        this.conversations.update(currentConversations => {
+            const index = currentConversations.findIndex(c => c.id === firstChatId)
+            if (index !== -1) {
+                currentConversations[index] = initialData
+            } else {
+                currentConversations.push(initialData)
+            }
+            return currentConversations
+        })
+        await setStateToDB("conversations", get(this.conversations))
     }
 }
 

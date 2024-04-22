@@ -70,4 +70,5 @@ export let defaultSettings = {
         messages: true,
         settings: true,
     },
+    devmode: false,
 }

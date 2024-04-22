@@ -4,8 +4,19 @@
     import { Appearance, Shape } from "$lib/enums"
     import { Button, Icon } from "$lib/elements"
     import { SettingSection } from "$lib/layouts"
+    import { SettingsStore } from "$lib/state"
 
     initLocale()
+
+    let clicked: number = 0
+
+    function increment() {
+        if (clicked < 10) {
+            clicked ++
+        } else  if (clicked >= 10) {
+            SettingsStore.toggleDevmode(true)
+        }
+    }
 
 </script>
 
@@ -32,7 +43,11 @@
             🇺🇸 🇮🇹 🇩🇪 🇵🇹 🇧🇷 🇺🇦 🇧🇾 🇯🇵 🇦🇺 🇮🇩
         </div>
     </SettingSection>
-    
+    <SettingSection name="DevMode" description="Click 10 times to enable developer settings.">
+        <Button on:click={(_) => increment()} icon appearance={Appearance.Alt}>
+            <Icon icon={Shape.Beaker} />
+        </Button>
+    </SettingSection>
 </div>
 
 <style lang="scss">

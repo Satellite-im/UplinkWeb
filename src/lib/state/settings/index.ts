@@ -1,6 +1,6 @@
 import type { Keybind } from "$lib/types"
 import type { Locale } from "javascript-time-ago"
-import type { Writable } from "svelte/store"
+import { get, type Writable } from "svelte/store"
 import { createPersistentState, defaultSettings } from ".."
 
 export interface ISettingsState {
@@ -29,7 +29,8 @@ export interface ISettingsState {
         friends: boolean,
         messages: boolean,
         settings: boolean,
-    }
+    },
+    devmode: boolean
 }
 
 export { defaultKeybinds, defaultSettings} from "./default"
@@ -43,6 +44,10 @@ class Store {
 
     update(settings: ISettingsState) {
         this.state.set(settings)
+    }
+
+    toggleDevmode(state: boolean) {
+        this.state.set({...get(this.state), devmode: state})
     }
 }
 

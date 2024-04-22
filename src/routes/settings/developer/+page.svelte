@@ -8,7 +8,8 @@
     import { Store } from "$lib/state/store"
     import Button from "$lib/elements/Button.svelte"
     import { UIStore } from "$lib/state/ui"
-    import { clearState } from "$lib/state"
+    import { SettingsStore, clearState } from "$lib/state"
+    import { ConversationStore } from "$lib/state/conversation";
 
     initLocale()
 
@@ -16,10 +17,22 @@
 </script>
 
 <div id="page">
+    <SettingSection name="Devmode" description="Disable devmode.">
+        <Button
+            appearance={Appearance.Alt}
+            on:click={(_) => SettingsStore.toggleDevmode(false)}
+            >
+            Exit Devmode
+        </Button>
+    </SettingSection>
+    
     <SettingSection name="Load Mock" description="Loads mock data into state.">
         <Button
             appearance={Appearance.Alt}
-            on:click={(_) => Store.load_mock_data()}
+            on:click={(_) => {
+                Store.load_mock_data()
+                ConversationStore.loadMockData()    
+            }}
             >
             Load Mock Data
         </Button>
@@ -33,6 +46,8 @@
             Clear State
         </Button>
     </SettingSection>
+
+
 </div>
 
 <style lang="scss">

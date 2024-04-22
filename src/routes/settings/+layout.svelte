@@ -7,6 +7,8 @@
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
+    import { routes } from "$lib/mock/routes";
+    import { SettingsStore } from "$lib/state";
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui";
     import type { ContextItem, NavRoute } from "$lib/types"
@@ -66,11 +68,6 @@
             icon: Shape.Document,
             name: "Licenses"
         },
-        {
-            to: SettingsRoute.Developer,
-            icon: Shape.Code,
-            name: "Developer"
-        },
     ]
 
     initLocale()
@@ -129,6 +126,17 @@
     let contextData: ContextItem[] = []
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+
+
+    let devmode: boolean = get(SettingsStore.state).devmode
+
+    if (devmode) settingsRoutes.push({
+        to: SettingsRoute.Developer,
+        icon: Shape.Code,
+        name: "Developer"
+    })
+
+    console.log('isdevmode', devmode)
 </script>
 
 <div id="settings">
