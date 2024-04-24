@@ -1,45 +1,73 @@
 <script lang="ts">
-    import Icon from './Icon.svelte'
-    import Button from './Button.svelte'
-    import { Appearance, Shape } from '$lib/enums'
-    import type { FileInfo } from '$lib/types'
-    
+    import { onMount } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
+    import Button from './Button.svelte';
+    import Icon from './Icon.svelte';
+    import { Appearance, Shape } from '$lib/enums';
+    import type { FileInfo } from '$lib/types';
+
     export let folder: FileInfo
     export let folderPath: FileInfo[] = []
-    
-    const currentFolder: FileInfo = {
-      id: '',
-      type: '',
-      size: 0,
-      name: '',
-      source: ''
-    }
+
+    let folderTree: FileInfo[] = []
+
+    const dispatch = createEventDispatcher()
+
     const handleClick = () => {
-        console.log(folderPath)
-        folderPath = [...folderPath, folder];
+        folderTree = [...folderTree, folder]
+        folderPath = [...folderTree];
     };
-  
+
+    const goHomeClick = () => {
+        folderTree = []
+        folderPath = []
+    }
+
     const handleCrumbClick = (index: number) => {
-        folderPath = folderPath.slice(0, index);
+        console.log("Crumb clicked, index:", index)
+        folderPath = folderPath.slice(0, index)
+        folderTree = folderPath.slice()
     };
+
+    $: {
+        if (folder) {
+            handleClick()
+        }
+    }
+
+    onMount(() => {
+        const handleDocumentClick = (event: MouseEvent) => {
+            if ((event.target as HTMLElement).classList.contains('crumb')) {
+            console.log("full click area")
+                const index = Array.from(document.querySelectorAll('.crumble')).indexOf(event.target as HTMLElement)
+                handleCrumbClick(index)
+            }
+        };
+
+        document.body.addEventListener('click', handleDocumentClick)
+
+        return () => {
+            document.body.removeEventListener('click', handleDocumentClick)
+        };
+    });
 </script>
-  
+
 <div class="crumb">
     <Button
         icon
         small
         appearance={Appearance.Alt}
-        on:click={(_) => handleClick()}
+        on:click={goHomeClick}
     >
         <Icon icon={Shape.FolderOpen} />
     </Button>
-    {#each folderPath as folder, index (folder.id)}
-        <div class="crumble" on:click={() => handleCrumbClick(index)}>
-            {folder.name}
-        </div>
+    {#each folderPath as folder, index}
+    <button class="crumble">
+        {folder.name}
+    </button>
     {/each}
 </div>
-      
+
 <style lang="scss">
     .crumb {
         display: inline-flex;
@@ -47,6 +75,7 @@
         color: var(--text-color-muted);
         font-size: var(--text-size);
         padding: var(--gap-less) var(--gap);
+        width: fit-content;
         align-items: center;
         position: relative;
 
