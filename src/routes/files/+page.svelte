@@ -18,6 +18,7 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
+  import Breadcrumb from "$lib/elements/Breadcrumb.svelte";
 
     initLocale()
 
@@ -37,14 +38,19 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
     let updatedFiles: FileInfo[] = []
-    $: files = get(Store.state.files);
+    $: files = get(Store.state.files)
     const unsubscribeFiles = Store.state.files.subscribe((f) => {
         files = f;
         })
-
+    let folderClicked: FileInfo = {
+      id: "",
+      type: "",
+      size: 0,
+      name: "",
+      source: ""
+    }
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
-    let clickCount = 0;
     if (dropzone) {
         const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
@@ -55,20 +61,20 @@
             const items = sortable.getDraggableElementsForContainer(dropzone)
             const newOrderIds = Array.from(items)
                 .filter(child => child.getAttribute('data-id'))
-                .map(child => child.getAttribute('data-id'));
+                .map(child => child.getAttribute('data-id'))
 
             updatedFiles = newOrderIds
                 .map(id => {
                     const file = files.find(file => file.id === id);
-                    return file ? file : null;
-                }) as FileInfo[];
+                    return file ? file : null
+                }) as FileInfo[]
 
             Store.updateFileOrder(updatedFiles)
 
         });
 
-        let lastClickTime = 0;
-        let lastClickTarget: HTMLElement | null = null;
+        let lastClickTime = 0
+        let lastClickTarget: HTMLElement | null = null
 
         dropzone.addEventListener('mousedown', (event) => {
             let target = event.target as HTMLElement;
@@ -76,18 +82,21 @@
                 target = target.parentElement as HTMLElement;
             }
 
-            const currentTime = Date.now();
+            const currentTime = Date.now()
             if (lastClickTarget === target && currentTime - lastClickTime < 200) {
-                // Double click detected
-                if (lastClickTarget.classList.contains('folder-draggable')) {
-                    console.log("folderrrrrrrrrrr")
+            if (lastClickTarget.classList.contains('folder-draggable')) {
+                const targetId = target.dataset.id
+                const targetFolder = files.find(item => item.id === targetId)
+                if (targetFolder) {
+                    folderClicked = targetFolder
+                    console.log('Folder clicked:', targetFolder);
                 }
-                console.log('Double click on:', lastClickTarget);
             }
+        }
 
-            lastClickTarget = target;
-            lastClickTime = currentTime;
-        });
+            lastClickTarget = target
+            lastClickTime = currentTime
+        })
 
     }
 })
@@ -232,6 +241,7 @@
             </svelte:fragment>
         </Topbar>
 
+        <Breadcrumb folder={folderClicked}></Breadcrumb>
         <div class="files">
             {#each files as item (item.id)}
                 <div

@@ -159,6 +159,7 @@ export type FileInfo = {
     size: number,
     name: string,
     source: string
+    items?: FileInfo[]
 }
 
 export type Attachment = {
