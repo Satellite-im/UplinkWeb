@@ -10,7 +10,8 @@
     import { 
         FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
         Message, MessageGroup, MessageReactions, MessageReplyContainer, 
-        ProfilePicture, CoinBalance, Modal , ProfilePictureMany
+        ProfilePicture, CoinBalance, Modal , ProfilePictureMany, STLViewer
+
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
@@ -310,6 +311,8 @@
                                                         }}/>
                                                 {:else if attachment.kind === MessageAttachmentKind.File}
                                                     <FileEmbed />
+                                                {:else if attachment.kind === MessageAttachmentKind.STL}
+                                                    <STLViewer url={attachment.location}/>
                                                 {/if}
                                             {/each}
                                         {/if}

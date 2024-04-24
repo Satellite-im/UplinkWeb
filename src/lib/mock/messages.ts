@@ -146,6 +146,7 @@ export let mock_messages: MessageGroup[] = [
             }
         ]
     },
+    
     {
         details: {
             at: new Date,
@@ -179,7 +180,26 @@ export let mock_messages: MessageGroup[] = [
                 },
                 reactions: [],
                 attachments: [],
-            }
+            },
+            {
+                id: uuidv4(),
+                details: {
+                    at: new Date,
+                    origin: mock_users[0],
+                    remote: false,
+                },
+                text: [],
+                inReplyTo: null,
+                reactions: [],
+                attachments: [
+                    {
+                        kind: MessageAttachmentKind.STL,
+                        name: "3DBenchy.stl",
+                        location: "/assets/3DBenchy.stl",
+                        size: 1130000,
+                    }
+                ],
+            },
         ]
     }
 ]

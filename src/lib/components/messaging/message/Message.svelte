@@ -47,6 +47,7 @@
             justify-content: center;
             gap: var(--gap-less);
             cursor: default;
+            max-width: var(--max-component-width);
         }
 
         &.more-padding {

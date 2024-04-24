@@ -1,23 +1,21 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { page } from "$app/stores";
-    import { ContextMenu } from "$lib/components";
+    import { goto } from "$app/navigation"
+    import { page } from "$app/stores"
+    import { ContextMenu } from "$lib/components"
     import { Route, SettingsRoute, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { routes } from "$lib/mock/routes";
-    import { SettingsStore } from "$lib/state";
-    import { Store } from "$lib/state/store"
-    import { UIStore } from "$lib/state/ui";
+    import { SettingsStore } from "$lib/state"
+    import { UIStore } from "$lib/state/ui"
     import type { ContextItem, NavRoute } from "$lib/types"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
-    import { get } from "svelte/store"
+    import { get, writable, type Writable } from "svelte/store"
 
 
-    export let settingsRoutes: NavRoute[] = [
+    let settingsRoutes: Writable<NavRoute[]> = writable([
         {
             to: SettingsRoute.Profile,
             icon: Shape.Profile,
@@ -68,7 +66,7 @@
             icon: Shape.Document,
             name: "Licenses"
         },
-    ]
+    ])
 
     initLocale()
 
@@ -127,16 +125,22 @@
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
 
-
     let devmode: boolean = get(SettingsStore.state).devmode
 
-    if (devmode) settingsRoutes.push({
-        to: SettingsRoute.Developer,
-        icon: Shape.Code,
-        name: "Developer"
-    })
-
-    console.log('isdevmode', devmode)
+    $: {
+        let devmode = get(SettingsStore.state).devmode
+        if (devmode) {
+            if (!get(settingsRoutes).find(route => route.to === SettingsRoute.Developer)) {
+                settingsRoutes.set([...get(settingsRoutes), {
+                    to: SettingsRoute.Developer,
+                    icon: Shape.Code,
+                    name: "Developer"
+                }])
+            }
+        } else {
+            settingsRoutes.set(get(settingsRoutes).filter(route => route.to !== SettingsRoute.Developer))
+        }
+    }
 </script>
 
 <div id="settings">
@@ -146,7 +150,7 @@
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
         <Navigation 
-            routes={settingsRoutes} 
+            routes={get(settingsRoutes)} 
             vertical
             on:navigate={(e) => {
                 goto(e.detail)

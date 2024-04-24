@@ -1,7 +1,6 @@
 <script lang="ts">
     import { initLocale } from "$lib/lang"
-    import { _ } from 'svelte-i18n'
-    import { Switch } from "$lib/elements"
+    import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Appearance, Font } from "$lib/enums"
     import { get } from "svelte/store"
@@ -9,7 +8,7 @@
     import Button from "$lib/elements/Button.svelte"
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, clearState } from "$lib/state"
-    import { ConversationStore } from "$lib/state/conversation";
+    import { ConversationStore } from "$lib/state/conversation"
 
     initLocale()
 
