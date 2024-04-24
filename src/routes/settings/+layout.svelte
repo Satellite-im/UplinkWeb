@@ -125,8 +125,6 @@
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
 
-    let devmode: boolean = get(SettingsStore.state).devmode
-
     $: {
         let devmode = get(SettingsStore.state).devmode
         if (devmode) {
