@@ -44,7 +44,7 @@
 
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
-    
+    let clickCount = 0;
     if (dropzone) {
         const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
@@ -65,6 +65,28 @@
 
             Store.updateFileOrder(updatedFiles)
 
+        });
+
+        let lastClickTime = 0;
+        let lastClickTarget: HTMLElement | null = null;
+
+        dropzone.addEventListener('mousedown', (event) => {
+            let target = event.target as HTMLElement;
+            while (target && !target.classList.contains('draggable-item')) {
+                target = target.parentElement as HTMLElement;
+            }
+
+            const currentTime = Date.now();
+            if (lastClickTarget === target && currentTime - lastClickTime < 200) {
+                // Double click detected
+                if (lastClickTarget.classList.contains('folder-draggable')) {
+                    console.log("folderrrrrrrrrrr")
+                }
+                console.log('Double click on:', lastClickTarget);
+            }
+
+            lastClickTarget = target;
+            lastClickTime = currentTime;
         });
 
     }
