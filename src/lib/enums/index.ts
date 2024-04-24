@@ -96,10 +96,11 @@ export const enum MessagePosition {
 }
 
 export const enum MessageAttachmentKind {
-    File    = "File",
-    Image   = "Image",
-    URL     = "URL",
-    User    = "User",
+    File = "File",
+    Image = "Image",
+    URL = "URL",
+    User = "User",
+    STL = "STL"
 }
 
 export const enum Status {
