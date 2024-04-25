@@ -313,7 +313,7 @@
                                                 {:else if attachment.kind === MessageAttachmentKind.File}
                                                     <FileEmbed />
                                                 {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                    <STLViewer url={attachment.location}/>
+                                                    <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size}/>
                                                 {:else if attachment.kind === MessageAttachmentKind.Audio}
                                                     <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
                                                 {/if}

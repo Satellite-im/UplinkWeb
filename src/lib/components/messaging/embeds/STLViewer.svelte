@@ -1,12 +1,19 @@
 <script lang="ts">
     import * as THREE from "three"
+    import Text from "$lib/elements/Text.svelte"
     import { STLLoader } from "three/addons/loaders/STLLoader.js"
     import { OrbitControls } from "three/addons/controls/OrbitControls.js"
     import { onMount } from "svelte"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import prettyBytes from "pretty-bytes"
+    import Icon from "$lib/elements/Icon.svelte";
+    import { Button } from "$lib/elements";
   
     export let url: string = ""
-
+    export let wireframe: boolean = false
     export let size: number = 400
+    export let name: string = ""
+    export let filesize: number = 0
 
     let container: HTMLDivElement
   
@@ -21,22 +28,22 @@
     })
   
     function init() {
-      camera = new THREE.PerspectiveCamera(50, size / size, 0.1, 100)
-      camera.position.set(0, 0, 2)
+      camera = new THREE.PerspectiveCamera(50, size / size, 0.1, 2000)
+      camera.position.set(0, 0, 0)
   
       scene = new THREE.Scene()
-      scene.background = null
+      scene.background = new THREE.Color(0x000000)
   
       const loader = new STLLoader()
       loader.load(url, function (geometry: THREE.BufferGeometry) {
-        const material = new THREE.MeshPhongMaterial({ color: 0xf7f1e3, specular: 0x494949, shininess: 200 })
+        const material = new THREE.MeshPhongMaterial({ color: 0xb66a50, specular: 0xffffff, shininess: 2000, wireframe })
         const mesh = new THREE.Mesh(geometry, material)
   
         mesh.position.set(0, 0, 0)
         scene.add(mesh)
       })
   
-      scene.add(new THREE.HemisphereLight(0xffffff, 0x444444))
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x61554a))
   
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       renderer.setSize(size, size)
@@ -45,8 +52,9 @@
       controls = new OrbitControls(camera, renderer.domElement)
       controls.enableDamping = true
       controls.dampingFactor = 0.05
-      controls.screenSpacePanning = false
+      controls.screenSpacePanning = true
       controls.minDistance = 0.1
+      controls.zoom0 = 50
       controls.maxDistance = 200
       controls.zoomSpeed = 1.2 
     
@@ -61,7 +69,7 @@
   
     function animate() {
       requestAnimationFrame(animate)
-      controls.update()  // only required if controls.enableDamping = true, or if controls.autoRotate = true
+      controls.update()
       render()
     }
   
@@ -70,13 +78,34 @@
     }
 </script>
 
-<div bind:this={container} class="stl-container"></div>
+<div class="stl">
+    <div bind:this={container} class="stl-container"></div>
+    <div class="details">
+        <Text size={Size.Smaller}>{name} ({prettyBytes(filesize)})</Text> 
+        <Button small text="Download" appearance={Appearance.Alt}>
+            <Icon icon={Shape.ArrowDown} />
+        </Button>
+    </div>
+</div>
 
-<style>
-  .stl-container {
-    width: 100%;
-    height: 400px;
-    display: block;
-    overflow: hidden;
-  }
+<style lang="scss">
+    .stl{
+        display: inline-flex;
+        flex-direction: column;
+        gap: var(--gap);
+        .stl-container {
+            width: 100%;
+            height: 400px;
+            display: block;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+        }
+        .details {
+            display: inline-flex;
+            flex-direction: row;
+            gap: var(--gap);
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
 </style>
