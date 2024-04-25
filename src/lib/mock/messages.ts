@@ -134,6 +134,44 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date,
+                    origin: mock_users[0],
+                    remote: false,
+                },
+                text: [],
+                inReplyTo: null,
+                reactions: [],
+                attachments: [
+                    {
+                        kind: MessageAttachmentKind.STL,
+                        name: "3DBenchy.stl",
+                        location: "/assets/3DBenchy.stl",
+                        size: 1130000,
+                    }
+                ],
+            },
+            {
+                id: uuidv4(),
+                details: {
+                    at: new Date,
+                    origin: mock_users[0],
+                    remote: false,
+                },
+                text: [],
+                inReplyTo: null,
+                reactions: [],
+                attachments: [
+                    {
+                        kind: MessageAttachmentKind.Audio,
+                        name: "Sample.mp3",
+                        location: "/assets/mp3/sample.mp3",
+                        size: 1130000,
+                    }
+                ],
+            },
+            {
+                id: uuidv4(),
+                details: {
+                    at: new Date,
                     origin: mock_users[2],
                     remote: true,
                 },
@@ -180,45 +218,7 @@ export let mock_messages: MessageGroup[] = [
                 },
                 reactions: [],
                 attachments: [],
-            },
-            {
-                id: uuidv4(),
-                details: {
-                    at: new Date,
-                    origin: mock_users[0],
-                    remote: false,
-                },
-                text: [],
-                inReplyTo: null,
-                reactions: [],
-                attachments: [
-                    {
-                        kind: MessageAttachmentKind.STL,
-                        name: "3DBenchy.stl",
-                        location: "/assets/3DBenchy.stl",
-                        size: 1130000,
-                    }
-                ],
-            },
-            {
-                id: uuidv4(),
-                details: {
-                    at: new Date,
-                    origin: mock_users[0],
-                    remote: false,
-                },
-                text: [],
-                inReplyTo: null,
-                reactions: [],
-                attachments: [
-                    {
-                        kind: MessageAttachmentKind.Audio,
-                        name: "Sample.mp3",
-                        location: "/assets/mp3/sample.mp3",
-                        size: 1130000,
-                    }
-                ],
-            },
+            }
         ]
     }
 ]

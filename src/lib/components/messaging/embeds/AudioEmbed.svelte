@@ -16,7 +16,7 @@
     </audio>
     <div class="details">
         <Text size={Size.Smaller}>{name} ({prettyBytes(size)})</Text> 
-        <Button small text="Download" appearance={Appearance.Alt}>
+        <Button text="Download" appearance={Appearance.Alt}>
             <Icon icon={Shape.ArrowDown} />
         </Button>
     </div>

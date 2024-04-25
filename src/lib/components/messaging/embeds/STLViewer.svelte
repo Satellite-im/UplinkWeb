@@ -6,8 +6,8 @@
     import { onMount } from "svelte"
     import { Appearance, Shape, Size } from "$lib/enums"
     import prettyBytes from "pretty-bytes"
-    import Icon from "$lib/elements/Icon.svelte";
-    import { Button } from "$lib/elements";
+    import Icon from "$lib/elements/Icon.svelte"
+    import { Button } from "$lib/elements"
   
     export let url: string = ""
     export let wireframe: boolean = false
@@ -82,7 +82,7 @@
     <div bind:this={container} class="stl-container"></div>
     <div class="details">
         <Text size={Size.Smaller}>{name} ({prettyBytes(filesize)})</Text> 
-        <Button small text="Download" appearance={Appearance.Alt}>
+        <Button text="Download" appearance={Appearance.Alt}>
             <Icon icon={Shape.ArrowDown} />
         </Button>
     </div>
