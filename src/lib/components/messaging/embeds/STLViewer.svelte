@@ -1,20 +1,19 @@
 <script lang="ts">
     import * as THREE from "three"
     import { STLLoader } from "three/addons/loaders/STLLoader.js"
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js"
     import { onMount } from "svelte"
   
     export let url: string = ""
 
-
-    let height = 400
-    let width = 400
+    export let size: number = 400
 
     let container: HTMLDivElement
   
     let camera: THREE.PerspectiveCamera
-    let cameraTarget: THREE.Vector3
     let scene: THREE.Scene
     let renderer: THREE.WebGLRenderer
+    let controls: OrbitControls
   
     onMount(() => {
       init()
@@ -22,93 +21,62 @@
     })
   
     function init() {
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 50)
-      let scale = 0.15
-
-      camera.position.set(0, 0, 0)
-  
-      cameraTarget = new THREE.Vector3(0, -0.55, 0)
+      camera = new THREE.PerspectiveCamera(50, size / size, 0.1, 100)
+      camera.position.set(0, 0, 2)
   
       scene = new THREE.Scene()
-      scene.background = new THREE.Color(0x000000)
-
+      scene.background = null
+  
       const loader = new STLLoader()
       loader.load(url, function (geometry: THREE.BufferGeometry) {
-        const material = new THREE.MeshPhongMaterial({ color: 0xffffff, specular: 0xeeeeee, shininess: 200 })
+        const material = new THREE.MeshPhongMaterial({ color: 0xf7f1e3, specular: 0x494949, shininess: 200 })
         const mesh = new THREE.Mesh(geometry, material)
   
         mesh.position.set(0, 0, 0)
-        mesh.rotation.set(0, 0, 0)
-        mesh.scale.set(scale, scale, scale)
-  
-        mesh.castShadow = true
-        mesh.receiveShadow = true
-  
         scene.add(mesh)
       })
   
-      scene.add(new THREE.HemisphereLight(0x0, 0x0, 3))
-      addShadowedLight(1, 1, 1, 0xffffff, 3.5)
-      addShadowedLight(0.5, 1, -1, 0xffffff, 3)
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x444444))
   
-      renderer = new THREE.WebGLRenderer({ antialias: true })
-      renderer.setPixelRatio(window.devicePixelRatio)
-      renderer.setSize(width, height)
-      renderer.shadowMap.enabled = true
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+      renderer.setSize(size, size)
       container.appendChild(renderer.domElement)
   
+      controls = new OrbitControls(camera, renderer.domElement)
+      controls.enableDamping = true
+      controls.dampingFactor = 0.05
+      controls.screenSpacePanning = false
+      controls.minDistance = 0.1
+      controls.maxDistance = 200
+      controls.zoomSpeed = 1.2 
+    
       window.addEventListener('resize', onWindowResize)
     }
   
-    function addShadowedLight(x: number, y: number, z: number, color: number, intensity: number) {
-      const directionalLight = new THREE.DirectionalLight(color, intensity)
-      directionalLight.position.set(x, y, z)
-      scene.add(directionalLight)
-  
-      directionalLight.castShadow = true
-  
-      const d = 1
-      directionalLight.shadow.camera.left = -d
-      directionalLight.shadow.camera.right = d
-      directionalLight.shadow.camera.top = d
-      directionalLight.shadow.camera.bottom = -d
-  
-      directionalLight.shadow.camera.near = 1
-      directionalLight.shadow.camera.far = 4
-  
-      directionalLight.shadow.bias = -0.002
-    }
-  
     function onWindowResize() {
-      camera.aspect = 1
+      camera.aspect = size / size
       camera.updateProjectionMatrix()
-      renderer.setSize(width, height)
+      renderer.setSize(size, size)
     }
   
     function animate() {
       requestAnimationFrame(animate)
+      controls.update()  // only required if controls.enableDamping = true, or if controls.autoRotate = true
       render()
     }
   
     function render() {
-      const timer = Date.now() * 0.0005
-  
-      camera.position.x = Math.cos(timer) * 3
-      camera.position.z = Math.sin(timer) * 3
-  
-      camera.lookAt(cameraTarget)
-  
       renderer.render(scene, camera)
     }
-  </script>
-  
-  <div bind:this={container} class="stl-container"></div>
-  
-  <style>
-    .stl-container {
-      width: 100%;
-      height: 400px;
-      display: block;
-      overflow: hidden;
-    }
-  </style>
+</script>
+
+<div bind:this={container} class="stl-container"></div>
+
+<style>
+  .stl-container {
+    width: 100%;
+    height: 400px;
+    display: block;
+    overflow: hidden;
+  }
+</style>

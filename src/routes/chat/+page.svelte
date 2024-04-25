@@ -26,6 +26,7 @@
     import { ConversationStore } from "$lib/state/conversation"
     import GroupSettings from "$lib/components/group/GroupSettings.svelte"
     import ViewMembers from "$lib/components/group/ViewMembers.svelte";
+    import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte";
 
     initLocale()
 
@@ -313,6 +314,8 @@
                                                     <FileEmbed />
                                                 {:else if attachment.kind === MessageAttachmentKind.STL}
                                                     <STLViewer url={attachment.location}/>
+                                                {:else if attachment.kind === MessageAttachmentKind.Audio}
+                                                    <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
                                                 {/if}
                                             {/each}
                                         {/if}

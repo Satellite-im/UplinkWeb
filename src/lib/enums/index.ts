@@ -100,7 +100,8 @@ export const enum MessageAttachmentKind {
     Image = "Image",
     URL = "URL",
     User = "User",
-    STL = "STL"
+    STL = "STL",
+    Audio = "Audio"
 }
 
 export const enum Status {
