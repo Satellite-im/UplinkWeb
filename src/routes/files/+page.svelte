@@ -18,7 +18,7 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
-  import Breadcrumb from "$lib/elements/Breadcrumb.svelte";
+    import Breadcrumb from "$lib/elements/Breadcrumb.svelte"
 
     initLocale()
 
@@ -40,7 +40,7 @@
     let updatedFiles: FileInfo[] = []
     $: files = get(Store.state.files)
     const unsubscribeFiles = Store.state.files.subscribe((f) => {
-        files = f;
+        files = f
         })
     let folderClicked: FileInfo = {
       id: "",
@@ -65,7 +65,7 @@
 
             updatedFiles = newOrderIds
                 .map(id => {
-                    const file = files.find(file => file.id === id);
+                    const file = files.find(file => file.id === id)
                     return file ? file : null
                 }) as FileInfo[]
 
@@ -75,11 +75,16 @@
 
         let lastClickTime = 0
         let lastClickTarget: HTMLElement | null = null
-
+        function updateFilesFromFolder(folder: FileInfo): void {
+            if (folder.items && folder.items.length > 0) {
+                console.log(folder)
+                Store.updateFileOrder(folder.items)
+            }
+        }
         dropzone.addEventListener('mousedown', (event) => {
-            let target = event.target as HTMLElement;
+            let target = event.target as HTMLElement
             while (target && !target.classList.contains('draggable-item')) {
-                target = target.parentElement as HTMLElement;
+                target = target.parentElement as HTMLElement
             }
 
             const currentTime = Date.now()
@@ -89,11 +94,17 @@
                 const targetFolder = files.find(item => item.id === targetId)
                 if (targetFolder) {
                     folderClicked = targetFolder
-                    console.log('Folder clicked:', targetFolder);
+                }
+                if (target) {
+                const targetId = target.dataset.id
+                const targetFolder = files.find(item => item.id === targetId)
+                if (targetFolder) {
+                    updateFilesFromFolder(targetFolder)
+                    // Update breadcrumb or other navigation state to track current folder
                 }
             }
+            }
         }
-
             lastClickTarget = target
             lastClickTime = currentTime
         })
@@ -114,7 +125,7 @@
 
 
   function unsubscribe() {
-    throw new Error("Function not implemented.");
+    throw new Error("Function not implemented.")
   }
 </script>
 
@@ -241,7 +252,7 @@
             </svelte:fragment>
         </Topbar>
 
-        <Breadcrumb folder={folderClicked}></Breadcrumb>
+        <Breadcrumb folder={folderClicked} folderRoot={files}></Breadcrumb>
         <div class="files">
             {#each files as item (item.id)}
                 <div

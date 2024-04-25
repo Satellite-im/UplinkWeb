@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { createEventDispatcher } from 'svelte';
-    import Button from './Button.svelte';
-    import Icon from './Icon.svelte';
-    import { Appearance, Shape } from '$lib/enums';
-    import type { FileInfo } from '$lib/types';
+    import { onMount } from 'svelte'
+    import { createEventDispatcher } from 'svelte'
+    import Button from './Button.svelte'
+    import Icon from './Icon.svelte'
+    import { Appearance, Shape } from '$lib/enums'
+    import type { FileInfo } from '$lib/types'
+    import { Store } from '$lib/state/store'
 
+    export const folderRoot: FileInfo[] = []
     export let folder: FileInfo
     export let folderPath: FileInfo[] = []
 
@@ -19,15 +21,26 @@
     };
 
     const goHomeClick = () => {
+        console.log("Go Home", folderRoot)
         folderTree = []
         folderPath = []
+        Store.updateFileOrder(folderRoot)
     }
 
     const handleCrumbClick = (index: number) => {
-        console.log("Crumb clicked, index:", index)
-        folderPath = folderPath.slice(0, index)
-        folderTree = folderPath.slice()
-    };
+    console.log("Crumb clicked, index:", index)
+    folderPath = folderPath.slice(0, index + 1);
+    folderTree = folderPath.slice();
+    if (folderPath.length > 0) {
+        const currentFolder = folderPath[folderPath.length - 1];
+        if (currentFolder && currentFolder.items) {
+            Store.updateFileOrder(currentFolder.items);
+        }
+    } else {
+        // If the breadcrumb is empty, show the root files
+        Store.updateFileOrder(folderRoot); // Update with the root files or initial files
+    }
+};
 
     $: {
         if (folder) {
@@ -108,6 +121,7 @@
             border-bottom-left-radius: var(--border-radius);
             background: var(--secondary);
             color: var(--text-color-bright);
+            margin-top: 20px;
             &:hover {
                 background-color: var(--secondary-light);
                 cursor: pointer;
