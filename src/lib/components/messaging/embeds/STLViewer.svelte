@@ -90,9 +90,13 @@
 
 <style lang="scss">
     .stl{
+        background-color: var(--background-alt);
+        padding: var(--padding);
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
+        border-radius: var(--border-radius-medium);
+
         .stl-container {
             width: 100%;
             height: 400px;

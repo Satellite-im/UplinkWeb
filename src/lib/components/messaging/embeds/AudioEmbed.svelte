@@ -24,6 +24,8 @@
 
 <style lang="scss">
     .audio-embed {
+        background-color: var(--background-alt);
+        padding: var(--padding);
         min-width: var(--min-component-width);
         max-width: var(--max-component-width);
         width: fit-content;
