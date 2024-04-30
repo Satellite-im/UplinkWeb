@@ -66,6 +66,7 @@
                 border-radius: var(--border-radius);
                 overflow: hidden;
                 padding-top: 0;
+                width: 100%;
             }
 
             :global(.controls) {

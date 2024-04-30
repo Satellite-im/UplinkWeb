@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, Shape, Size, Status } from "$lib/enums"
+    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
@@ -10,6 +10,7 @@
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
+    import { goto } from "$app/navigation";
 
     initLocale()
 
@@ -186,6 +187,19 @@
                 <Checkbox checked>
                     <Text muted>{$_("settings.profile.should_store")}</Text>
                 </Checkbox>
+            </div>
+
+            <div class="section">
+                <SettingSection name={$_("settings.profile.log_out.label")} description={$_("settings.profile.log_out.description")}>
+                    <Button 
+                        appearance={Appearance.Alt}
+                        text={$_("settings.profile.log_out.label")}
+                        on:click={(_) => {
+                            goto(Route.Unlock)
+                        }}>
+                        <Icon icon={Shape.Lock} />
+                    </Button>
+                </SettingSection>
             </div>
         </div>
     </div>

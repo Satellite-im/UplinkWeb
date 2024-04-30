@@ -172,6 +172,25 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date,
+                    origin: mock_users[0],
+                    remote: false,
+                },
+                text: [],
+                inReplyTo: null,
+                reactions: [],
+                attachments: [
+                    {
+                        kind: MessageAttachmentKind.Video,
+                        name: "Launch.mp4",
+                        location: "/assets/mp4/sample.mp4",
+                        size: 1130000,
+                    }
+                ],
+            },
+            {
+                id: uuidv4(),
+                details: {
+                    at: new Date,
                     origin: mock_users[2],
                     remote: true,
                 },

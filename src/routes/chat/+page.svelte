@@ -27,6 +27,8 @@
     import GroupSettings from "$lib/components/group/GroupSettings.svelte"
     import ViewMembers from "$lib/components/group/ViewMembers.svelte";
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte";
+    import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte";
+    import Market from "$lib/components/market/Market.svelte";
 
     initLocale()
 
@@ -110,6 +112,9 @@
                 on:create={(_) => showUsers = false} /> 
         </Modal>
     {/if}
+
+
+    <Market />
 
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
@@ -316,6 +321,8 @@
                                                     <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size}/>
                                                 {:else if attachment.kind === MessageAttachmentKind.Audio}
                                                     <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                                {:else if attachment.kind === MessageAttachmentKind.Video}
+                                                    <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
                                                 {/if}
                                             {/each}
                                         {/if}

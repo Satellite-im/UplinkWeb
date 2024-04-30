@@ -36,6 +36,7 @@ export const enum Font {
     OpenDyslexic    = "OpenDyslexic"
 }
 
+
 export const enum Route {
     Home = "/",
     Chat = "/chat",
@@ -45,7 +46,8 @@ export const enum Route {
     Settings = "/settings/profile",
     Unlock = "/auth/unlock",
     RecoverySeed = "/auth/recovery",
-    NewAccount = "/auth/new_account"
+    NewAccount = "/auth/new_account",
+    Pre = "/pre"
 }
 
 export const enum FilesItemKind {
@@ -101,7 +103,8 @@ export const enum MessageAttachmentKind {
     URL = "URL",
     User = "User",
     STL = "STL",
-    Audio = "Audio"
+    Audio = "Audio",
+    Video = "Video"
 }
 
 export const enum Status {

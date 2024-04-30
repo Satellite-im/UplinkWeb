@@ -21,7 +21,8 @@ export function initLocale() {
                 search_placeholder: "Search ...",
                 no_results: "No results found.",
                 search_results: "Search results",
-                openFolder: "Open Folder"
+                openFolder: "Open Folder",
+                profiles: "Profiles",
             },
             market: {
                 market: "Marketplace",
@@ -103,6 +104,10 @@ export function initLocale() {
             },
             settings: {
                 profile: {
+                    log_out: {
+                        label: "Log Out",
+                        description: "Log out of the current account and return to the unlock page."
+                    },
                     change_profile_photo: "Change profile photo",
                     reveal_phrase: {
                         label: "Reveal recovery phrase",
