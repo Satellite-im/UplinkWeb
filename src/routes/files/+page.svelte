@@ -34,14 +34,16 @@
     $: openFolders = get(Store.state.openFolders);
     function toggleFolder(folderId: string | number) {
     const currentOpenFolders = openFolders;
+    console.log(openFolders, "STATE FOLXER")
     const updatedOpenFolders = {
         ...currentOpenFolders,
         [folderId]: !currentOpenFolders[folderId]
     };
-    console.log(updatedOpenFolders)
-    openFolders.updateFolderTree(updatedOpenFolders);
+    Store.updateFolderTree(updatedOpenFolders);
 }
-
+    const unsubscribeopenFolders = Store.state.openFolders.subscribe((f) => {
+        openFolders = f
+        })
     let previewImage: string | null
 
     // TODO: Move this into a global state
@@ -123,8 +125,8 @@
 })
     onDestroy(() => {
         unsubscribeFiles();
+        unsubscribeopenFolders();
     });
-
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
@@ -132,8 +134,6 @@
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
     
-
-
   function unsubscribe() {
     throw new Error("Function not implemented.")
   }

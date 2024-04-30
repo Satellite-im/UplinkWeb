@@ -112,6 +112,7 @@ class GlobalStore {
     }
     updateFolderTree(newFolderTree: Record<string, boolean>) {
         this.state.openFolders.set(newFolderTree)
+        console.log(get(this.state.openFolders))
     }
     addFriend(user: User) {
         const currentFriends = get(this.state.friends)

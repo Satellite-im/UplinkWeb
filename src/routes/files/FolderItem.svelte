@@ -9,11 +9,7 @@
         return function(event) {
             event.stopPropagation(); // Stop event propagation
             if (!isChild || !openFolders[file.id]) {
-            console.log(file, event)
-                toggleFolder(file.id);
-            }
-            if (!isChild || !openFolders[file.id]) {
-            console.log(file, event)
+                console.log(openFolders, isChild);
                 toggleFolder(file.id);
             }
         }
