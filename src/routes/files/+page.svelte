@@ -19,6 +19,7 @@
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import Breadcrumb from "$lib/elements/Breadcrumb.svelte"
+    import FolderItem from "./FolderItem.svelte";
 
     initLocale()
 
@@ -28,9 +29,18 @@
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
     }
-
     let tabRoutes: string[] = ["chats", "files"]
     let activeTabRoute: string = tabRoutes[0]
+    $: openFolders = get(Store.state.openFolders);
+    function toggleFolder(folderId: string | number) {
+    const currentOpenFolders = openFolders;
+    const updatedOpenFolders = {
+        ...currentOpenFolders,
+        [folderId]: !currentOpenFolders[folderId]
+    };
+    console.log(updatedOpenFolders)
+    openFolders.updateFolderTree(updatedOpenFolders);
+}
 
     let previewImage: string | null
 
@@ -127,6 +137,7 @@
   function unsubscribe() {
     throw new Error("Function not implemented.")
   }
+
 </script>
 
 <div id="page">
@@ -197,6 +208,17 @@
                     }} />
             {/each}
         {/if}
+        {#if activeTabRoute === "files"}
+        <ul>
+            {#each files as file}
+                <FolderItem
+                    file={file}
+                    openFolders={openFolders}
+                    toggleFolder={toggleFolder}
+                />
+            {/each}
+        </ul>
+    {/if}
     </Sidebar>
     <div class="content">
         <Topbar>

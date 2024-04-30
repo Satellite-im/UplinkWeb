@@ -4,7 +4,7 @@ import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest,  hashChat, type Message, type MessageGroup, type FileInfo } from "$lib/types"
-import { get, writable} from "svelte/store"
+import { get, writable, type Writable} from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
@@ -27,7 +27,8 @@ class GlobalStore {
             blocked: createPersistentState("uplink.blocked", []),
             activeRequests: createPersistentState("uplink.requests", []),
             favorites: createPersistentState("uplink.favorites", []),
-            files: createPersistentState("uplink.files", [])
+            files: createPersistentState("uplink.files", []),
+            openFolders:createPersistentState<Record<string, boolean>>("uplink.openFolders", {})
         }
     }
 
@@ -109,7 +110,9 @@ class GlobalStore {
     updateFileOrder(newOrder: FileInfo[]) {
         this.state.files.set(newOrder)
     }
-    
+    updateFolderTree(newFolderTree: Record<string, boolean>) {
+        this.state.openFolders.set(newFolderTree)
+    }
     addFriend(user: User) {
         const currentFriends = get(this.state.friends)
         const currentRequests = get(this.state.activeRequests)

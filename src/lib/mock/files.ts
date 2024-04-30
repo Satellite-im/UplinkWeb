@@ -18,11 +18,20 @@ export let mock_files: FileInfo[] = [
         items: [
             {
                 id: "21",
-                type: "file",
+                type: "folder",
                 source: "",
-                name: "Panda.zip",
+                name: "Panda",
                 size: 789456123,
-                items: [],
+                items: [
+                    {
+                        id: "45",
+                        type: "file",
+                        source: "",
+                        name: "ExampleFile.mp4",
+                        size: 982199999,
+                        items: [],
+                    },
+                ],
             },
             {
                 id: "3",
@@ -46,7 +55,7 @@ export let mock_files: FileInfo[] = [
                     size: 982199999,
                     items: [],
                 },{
-                    id: "1",
+                    id: "17",
                     type: "file",
                     source: "",
                     name: "ExampleFile.mp4",
@@ -73,12 +82,21 @@ export let mock_files: FileInfo[] = [
         items: [],
     },
     {
-        id: "4",
+        id: "64",
         type: "folder",
         source: "",
         name: "Temp",
         size: 98212999,
-        items: [],
+        items: [
+            {
+                id: "242",
+                type: "image",
+                source: "/assets/wildlife.avif",
+                name: "Wildlife.png",
+                size: 987654321,
+                items: [],
+            },
+        ],
     },
     {
         id: "5",
