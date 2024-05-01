@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Icon } from "$lib/elements";
+  import { Shape } from "$lib/enums";
     import type { FileInfo } from "$lib/types"
     export let file: FileInfo
     export let openFolders: Record<string, boolean>
@@ -13,11 +15,21 @@
             toggleFolder(file.id)
         }
     }
+    let folderOpenClosedIcon =  () => {if (file.items && file.items.length > 0 && file.type === "folder") {
+        return Shape.Folder
+    } else if(openFolders[file.id] && file.type === "folder") {return Shape.FolderOpen}
+    if(file.type === "file") {return Shape.Document}
+    if(file.type === "image") {return Shape.Image}}
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <li on:click={createClickHandler(file, false)} class:folder={file.items && file.items.length > 0} class:open={openFolders[file.id]}>
+    <Icon
+    icon={folderOpenClosedIcon()}
+    muted
+    filled
+    ></Icon>
     {file.name}
     {#if openFolders[file.id] && file.items && file.items.length > 0}
         <ul>
@@ -33,26 +45,26 @@
 </li>
 
 <style>
-    .folder {
+  
+    /* .folder {
         position: relative;
-        list-style-type: none;
-        padding-left: 20px; /* Adjust the padding as needed */
+        padding-left: 20px; 
     }
 
     .folder::before {
-        content: "▶"; /* Default icon character */
+        content: "📁"; 
         position: absolute;
         left: 0;
         top: 0;
-        transition: transform 0.3s; /* Smooth transition for the transform property */
+        color: grey;
+        transition: transform 0.3s; 
     }
 
     .folder.open::before {
-        transform: rotate(90deg); /* Rotate the icon to point down */
+        content: "📂"; 
     }
 
     .folder.no-items::before {
-        list-style-type: none;
-        content: ""; /* No icon when folder has no items */
-    }
+        content: ""; 
+    } */
 </style>

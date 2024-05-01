@@ -340,9 +340,6 @@
                 user-select: none;
             }
         }
-        .folderList { 
-            list-style-type: none;
-        }
         
         .content {
             display: flex;
