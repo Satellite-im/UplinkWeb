@@ -1,17 +1,16 @@
-<script>
-// @ts-nocheck
+<script lang="ts">
+    import type { FileInfo } from "$lib/types"
+    export let file: FileInfo
+    export let openFolders: Record<string, boolean>
+    export let toggleFolder: any
 
-    export let file;
-    export let openFolders;
-    export let toggleFolder;
-
-    function createClickHandler(file, isChild) {
-        return function(event) {
-            event.stopPropagation(); // Stop event propagation
-            if (!isChild || !openFolders[file.id]) {
-                console.log(openFolders, isChild);
-                toggleFolder(file.id);
+    function createClickHandler(file: FileInfo, isChild: boolean) {
+        return function(event: { stopPropagation: () => void; preventDefault: () => void; }) {
+            event.stopPropagation()
+            if (isChild) {
+                event.preventDefault()
             }
+            toggleFolder(file.id)
         }
     }
 </script>
@@ -23,7 +22,11 @@
     {#if openFolders[file.id] && file.items && file.items.length > 0}
         <ul>
             {#each file.items as item}
-                <li on:click={createClickHandler(item, true)}>{item.name}</li>
+                <svelte:self
+                    file={item}
+                    openFolders={openFolders}
+                    toggleFolder={toggleFolder}
+                />
             {/each}
         </ul>
     {/if}

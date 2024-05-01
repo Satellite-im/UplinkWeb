@@ -31,6 +31,23 @@ export let mock_files: FileInfo[] = [
                         size: 982199999,
                         items: [],
                     },
+                    {
+                        id: "555",
+                        type: "folder",
+                        source: "",
+                        name: "ExampleFile.mp4",
+                        size: 982199999,
+                        items: [
+                            {
+                                id: "45",
+                                type: "file",
+                                source: "",
+                                name: "Exame.mp4",
+                                size: 982199999,
+                                items: [],
+                            },
+                        ],
+                    },
                 ],
             },
             {

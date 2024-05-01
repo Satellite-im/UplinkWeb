@@ -19,7 +19,7 @@
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import Breadcrumb from "$lib/elements/Breadcrumb.svelte"
-    import FolderItem from "./FolderItem.svelte";
+    import FolderItem from "./FolderItem.svelte"
 
     initLocale()
 
@@ -29,18 +29,19 @@
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
     }
+
     let tabRoutes: string[] = ["chats", "files"]
     let activeTabRoute: string = tabRoutes[0]
-    $: openFolders = get(Store.state.openFolders);
+    $: openFolders = get(Store.state.openFolders)
+    
     function toggleFolder(folderId: string | number) {
-    const currentOpenFolders = openFolders;
-    console.log(openFolders, "STATE FOLXER")
+    const currentOpenFolders = openFolders
     const updatedOpenFolders = {
         ...currentOpenFolders,
         [folderId]: !currentOpenFolders[folderId]
-    };
-    Store.updateFolderTree(updatedOpenFolders);
-}
+    }
+        Store.updateFolderTree(updatedOpenFolders)
+    }
     const unsubscribeopenFolders = Store.state.openFolders.subscribe((f) => {
         openFolders = f
         })
@@ -62,12 +63,12 @@
       source: ""
     }
     onMount(() => {
-    const dropzone = document.querySelector('.files') as HTMLElement;
+    const dropzone = document.querySelector('.files') as HTMLElement
     if (dropzone) {
         const sortable = new Sortable(dropzone, {
             draggable: ".draggable-item",
             plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-        });
+        })
 
         sortable.on('sortable:stop', (event) => {
             const items = sortable.getDraggableElementsForContainer(dropzone)
@@ -83,7 +84,7 @@
 
             Store.updateFileOrder(updatedFiles)
 
-        });
+        })
 
         let lastClickTime = 0
         let lastClickTarget: HTMLElement | null = null
@@ -124,9 +125,9 @@
     }
 })
     onDestroy(() => {
-        unsubscribeFiles();
-        unsubscribeopenFolders();
-    });
+        unsubscribeFiles()
+        unsubscribeopenFolders()
+    })
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
