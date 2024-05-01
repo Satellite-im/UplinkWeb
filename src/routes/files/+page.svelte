@@ -210,7 +210,7 @@
             {/each}
         {/if}
         {#if activeTabRoute === "files"}
-        <ul>
+        <ul class="folderList">
             {#each files as file}
                 <FolderItem
                     file={file}
@@ -339,6 +339,9 @@
                 border: var(--border-width) solid var(--primary-color);
                 user-select: none;
             }
+        }
+        .folderList { 
+            list-style-type: none;
         }
         
         .content {
