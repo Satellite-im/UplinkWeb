@@ -17,7 +17,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<li on:click={createClickHandler(file, false)}>
+<li on:click={createClickHandler(file, false)} class:folder={file.items && file.items.length > 0} class:open={openFolders[file.id]}>
     {file.name}
     {#if openFolders[file.id] && file.items && file.items.length > 0}
         <ul>
@@ -31,3 +31,28 @@
         </ul>
     {/if}
 </li>
+
+<style>
+    .folder {
+        position: relative;
+        list-style-type: none;
+        padding-left: 20px; /* Adjust the padding as needed */
+    }
+
+    .folder::before {
+        content: "▶"; /* Default icon character */
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition: transform 0.3s; /* Smooth transition for the transform property */
+    }
+
+    .folder.open::before {
+        transform: rotate(90deg); /* Rotate the icon to point down */
+    }
+
+    .folder.no-items::before {
+        list-style-type: none;
+        content: ""; /* No icon when folder has no items */
+    }
+</style>
