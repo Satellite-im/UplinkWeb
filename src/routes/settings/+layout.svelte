@@ -22,6 +22,11 @@
             name: "Profile"
         },
         {
+            to: SettingsRoute.Inventory,
+            icon: Shape.Backpack,
+            name: "Inventory"
+        },
+        {
             to: SettingsRoute.Preferences,
             icon: Shape.Brush,
             name: "Customization"
@@ -82,6 +87,10 @@
         switch ($page.url.pathname) {
             case "/settings/preferences": {
                 activeRoute = SettingsRoute.Preferences
+                break
+            }
+            case "/settings/inventory": {
+                activeRoute = SettingsRoute.Inventory
                 break
             }
             case "/settings/message": {

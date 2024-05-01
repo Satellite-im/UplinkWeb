@@ -56,18 +56,20 @@ export const enum FilesItemKind {
     Image,
 }
 
+
 export const enum SettingsRoute {
-    Profile         = "/settings/profile",
-    Preferences     = "/settings/preferences",
-    Messages        = "/settings/messages",
-    AudioVideo      = "/settings/audio_video",
-    Extensions      = "/settings/extensions",
-    Keybinds        = "/settings/keybinds",
-    Accessability   = "/settings/accessability",
-    Notifications   = "/settings/notifications",
-    About           = "/settings/about",
-    Licenses        = "/settings/licenses",
-    Developer       = "/settings/developer"
+    Profile = "/settings/profile",
+    Preferences = "/settings/preferences",
+    Messages = "/settings/messages",
+    AudioVideo = "/settings/audio_video",
+    Extensions = "/settings/extensions",
+    Keybinds = "/settings/keybinds",
+    Accessability = "/settings/accessability",
+    Notifications = "/settings/notifications",
+    About = "/settings/about",
+    Licenses = "/settings/licenses",
+    Developer = "/settings/developer",
+    Inventory = "/settings/inventory"
 }
 
 

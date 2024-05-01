@@ -57,8 +57,8 @@
         .profile-image-frame {
             position: fixed;
             z-index: 2;
-            height: calc(var(--profile-picture-size) * 1.25);
-            width: calc(var(--profile-picture-size) * 1.25);
+            height: calc(var(--profile-picture-size) * 1.20);
+            width: calc(var(--profile-picture-size) * 1.20);
             pointer-events: none;
         }
 
@@ -69,8 +69,8 @@
             min-width:calc(var(--profile-picture-size) * 2);
 
             .profile-image-frame {
-                height: calc(var(--profile-picture-size) * 2.25);
-                width: calc(var(--profile-picture-size) * 2.25);
+                height: calc(var(--profile-picture-size) * 2.20);
+                width: calc(var(--profile-picture-size) * 2.20);
             }
         }
 
@@ -145,10 +145,10 @@
                 width: var(--font-size-large);
                 border-radius: calc(var(--font-size-large) / 2);
             }
-            
+
             .profile-image-frame {
-                height: calc(var(--profile-picture-size) * 2.25);
-                width: calc(var(--profile-picture-size) * 2.25);
+                height: calc(var(--profile-picture-size) * 2.50);
+                width: calc(var(--profile-picture-size) * 2.50);
             }
         }
 
