@@ -54,6 +54,7 @@
     let previewProfile: User | null
     let newGroup: boolean = false
     let showUsers: boolean = false
+    let showMarket: boolean = false
     let groupSettings: boolean = false
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
@@ -113,14 +114,15 @@
         </Modal>
     {/if}
 
-
-    <Market />
+    {#if showMarket}
+        <Market on:close={(_) => {showMarket = false}}/>
+    {/if}
 
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
 
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
-        <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
+        <Button appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={(_) => showMarket = true}>
             <Icon icon={Shape.Shop} />
         </Button>
 
@@ -174,6 +176,7 @@
                         <ProfilePicture 
                             typing={activeChat.activity} 
                             image={activeChat.users[0]?.profile.photo.image}
+                            frame={activeChat.users[0]?.profile.photo.frame}
                             status={activeChat.users[0]?.profile.status} 
                             size={Size.Medium} 
                             loading={loading} />

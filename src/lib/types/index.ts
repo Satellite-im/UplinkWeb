@@ -1,6 +1,24 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType } from "$lib/enums"
 
 
+export type Frame = {
+    image: string,
+    name: string
+}
+
+export type ProfileOverlay = {
+    image: string,
+    name: string
+}
+
+export type Bundle = {
+    name: string,
+    frames: Frame[],
+    profileOverlays: ProfileOverlay[],
+    // themes: []
+    // fonts: []
+}
+
 export type SelectOption = {
     value: string,
     text: string
@@ -22,18 +40,24 @@ export type ProfilePictureRequirements = {
 
 export type ProfilePicture = {
     image: string,
+    frame: string,
+}
+
+export type BannerPicture = {
+    image: string,
+    overlay: string,
 }
 
 export type ProfileData = {
     photo: ProfilePicture,
-    banner: ProfilePicture,
+    banner: BannerPicture,
     status: Status,
-    status_message: string
+    status_message: string,
 }
 
 export let defaultProfileData = {
-    photo: { image: "" },
-    banner: { image: "" },
+    photo: { image: "", frame: "" },
+    banner: { image: "", overlay: "" },
     status: Status.Offline,
     status_message: "Unknown status message."
 }

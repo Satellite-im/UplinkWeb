@@ -47,7 +47,8 @@
             image={photo}
             status={chat.users[0].profile.status} 
             size={Size.Medium} 
-            loading={loading} />
+            loading={loading}
+            frame={chat.users[0].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={chat.users} />
     {/if}

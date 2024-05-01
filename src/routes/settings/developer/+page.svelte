@@ -2,17 +2,14 @@
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
-    import { Appearance, Font } from "$lib/enums"
-    import { get } from "svelte/store"
+    import { Appearance } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import Button from "$lib/elements/Button.svelte"
-    import { UIStore } from "$lib/state/ui"
     import { SettingsStore, clearState } from "$lib/state"
     import { ConversationStore } from "$lib/state/conversation"
+    import { InventoryStore } from "$lib/state/inventory"
 
     initLocale()
-
-    let font: Font = get(UIStore.state.font)
 </script>
 
 <div id="page">
@@ -29,8 +26,9 @@
         <Button
             appearance={Appearance.Alt}
             on:click={(_) => {
-                Store.load_mock_data()
-                ConversationStore.loadMockData()    
+                Store.loadMockData()
+                ConversationStore.loadMockData()   
+                InventoryStore.loadMockData() 
             }}
             >
             Load Mock Data

@@ -12,10 +12,12 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/moon.png"
+                image: "/assets/moon.png",
+                frame: "/assets/frames/water.png"
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: ""
             },
             status: Status.Online,
             status_message: "There is no cheese on this moon."
@@ -35,10 +37,12 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/blue_marble.png"
+                image: "/assets/blue_marble.png",
+                frame: "",
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: ""
             },
             status: Status.Online,
             status_message: "Space Kev is doing Space Kev things!"
@@ -60,10 +64,12 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/saturn.png"
+                image: "/assets/saturn.png",
+                frame: "/assets/frames/fire.png"
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: ""
             },
             status: Status.Online,
             status_message: "Testing all of the things, all of the time."
@@ -79,7 +85,8 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/pluto.png"
+                image: "/assets/pluto.png",
+                frame: "/assets/frames/gold.png"
             },
             status: Status.Offline,
             status_message: "I am also testing a bunch of things a bunch of the time!"
@@ -99,10 +106,12 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/neptune.png"
+                image: "/assets/neptune.png",
+                frame: "/assets/frames/mustache.png",
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: ""
             },
             status: Status.DoNotDisturb,
             status_message: "This is a status message that you are reading."
@@ -121,7 +130,8 @@ export const blocked_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/uranis.png"
+                image: "/assets/uranis.png",
+                frame: ""
             },
             status: Status.DoNotDisturb,
             status_message: "Something hostile and aggressive."
@@ -139,10 +149,12 @@ export const fake_user_array: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/assets/neptune.png"
+                image: "/assets/neptune.png",
+                frame: ""
             },
             banner: {
-                image: ""
+                image: "",
+                overlay: ""
             },
             status: Status.Offline,
             status_message: "This user is not real."

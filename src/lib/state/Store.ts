@@ -198,7 +198,7 @@ class GlobalStore {
         return get(this.state.blocked)
     }
 
-    load_mock_data() {
+    loadMockData() {
         let mchatsMod = mchats
         let activeChat = mchatsMod[0]
 

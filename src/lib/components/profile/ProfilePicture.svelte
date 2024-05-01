@@ -11,6 +11,7 @@
     export let status: Status                   = Status.Offline
     export let loading: boolean                 = false
     export let noIndicator: boolean             = false
+    export let frame: string                    = ""
 
     const dispatch = createEventDispatcher()
 </script>
@@ -23,6 +24,9 @@
     {#if loading}
         <Loader />
     {:else}
+        {#if frame.length}
+            <img class="profile-image-frame" src={frame} alt="" />
+        {/if}
         <img class="profile-image" src={image} alt="">
     {/if}
     {#if typing}
@@ -50,11 +54,24 @@
         align-items: center;
         justify-content: center;
 
+        .profile-image-frame {
+            position: fixed;
+            z-index: 2;
+            height: calc(var(--profile-picture-size) * 1.25);
+            width: calc(var(--profile-picture-size) * 1.25);
+            pointer-events: none;
+        }
+
         &.larger {
             height: calc(var(--profile-picture-size) * 2);
             width:calc(var(--profile-picture-size) * 2);
             min-height: calc(var(--profile-picture-size) * 2);
             min-width:calc(var(--profile-picture-size) * 2);
+
+            .profile-image-frame {
+                height: calc(var(--profile-picture-size) * 2.25);
+                width: calc(var(--profile-picture-size) * 2.25);
+            }
         }
 
         &.small {
@@ -97,7 +114,7 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            z-index: 1;
+            z-index: 3;
             box-shadow: 0 0 0 var(--border-width-more) var(--background);
 
             &.online {
@@ -127,6 +144,11 @@
                 height: var(--font-size-large);
                 width: var(--font-size-large);
                 border-radius: calc(var(--font-size-large) / 2);
+            }
+            
+            .profile-image-frame {
+                height: calc(var(--profile-picture-size) * 2.25);
+                width: calc(var(--profile-picture-size) * 2.25);
             }
         }
 

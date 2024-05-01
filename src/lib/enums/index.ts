@@ -70,6 +70,7 @@ export const enum SettingsRoute {
     Developer       = "/settings/developer"
 }
 
+
 export const enum Appearance {
     Default         = "",
     Alt             = "alt",

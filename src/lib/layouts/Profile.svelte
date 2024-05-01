@@ -19,7 +19,7 @@
 
 <div class="profile">
     <div class="profile-header" style="background-image: url('{user?.profile.banner.image}')">
-        <ProfilePicture image={user?.profile.photo.image} size={Size.Large} status={user?.profile.status} />
+        <ProfilePicture image={user?.profile.photo.image} size={Size.Large} status={user?.profile.status} frame={user?.profile.photo.frame} />
     </div>
     {#if user && user.id.short !== currentUserShortId}
         <Button 
