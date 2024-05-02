@@ -342,8 +342,7 @@
         }
         
         .folderList {
-            overflow: scroll;
-            padding: .25rem;
+            width: fit-content;
         }
         
         .content {

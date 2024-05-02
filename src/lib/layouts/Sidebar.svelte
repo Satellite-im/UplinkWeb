@@ -69,7 +69,6 @@
             padding-right : var(--gap);
             flex: 1;
             width: 100%;
-            overflow-x: hidden;
             overflow-y: scroll;
             gap: var(--gap);
         }
