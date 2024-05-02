@@ -15,7 +15,7 @@
             toggleFolder(file.id)
         }
     }
-    let folderOpenClosedIcon =  () => {if (file.items && file.type === "folder") {
+    let folderOpenClosedIcon =  () => {if (file.items?.length && file.type === "folder") {
         return Shape.Folder
     } 
     if(!openFolders[file.id] && file.type === "folder") { 
@@ -47,11 +47,7 @@
 </li>
 
 <style>
-  
     ul, li {
         list-style-type: none
     }
-    /* ul {
-        padding-left: 0;
-    } */
 </style>
