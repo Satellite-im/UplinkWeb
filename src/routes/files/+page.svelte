@@ -344,6 +344,7 @@
         .folderList {
             list-style-type: none;
             width: fit-content;
+            margin-left: -40px;
         }
         
         .content {

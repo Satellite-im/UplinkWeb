@@ -19,7 +19,7 @@
         return Shape.Folder
     } 
     if(!openFolders[file.id] && file.type === "folder") { 
-        console.log(openFolders[file.id], "why"); return Shape.FolderOpen}
+        return Shape.FolderOpen}
     if(file.type === "file") {return Shape.Document}
     if(file.type === "image") {return Shape.Image}}
 </script>
@@ -51,4 +51,7 @@
     ul, li {
         list-style-type: none
     }
+    /* ul {
+        padding-left: 0;
+    } */
 </style>
