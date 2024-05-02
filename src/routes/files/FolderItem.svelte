@@ -26,7 +26,9 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+
 <li on:click={createClickHandler(file, false)}>
+    <div class="tree">
     <Icon
     icon={folderOpenClosedIcon()}
     muted
@@ -44,10 +46,16 @@
             {/each}
         </ul>
     {/if}
+</div>
 </li>
-
 <style>
+    .tree > * {
+    display: inline;
+}
     ul, li {
         list-style-type: none
+    }
+    li {
+        margin-left: 10px;
     }
 </style>
