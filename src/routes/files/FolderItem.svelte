@@ -48,25 +48,7 @@
 
 <style>
   
-    /* .folder {
-        position: relative;
-        padding-left: 20px; 
+    ul, li {
+        list-style-type: none
     }
-
-    .folder::before {
-        content: "📁"; 
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: grey;
-        transition: transform 0.3s; 
-    }
-
-    .folder.open::before {
-        content: "📂"; 
-    }
-
-    .folder.no-items::before {
-        content: ""; 
-    } */
 </style>

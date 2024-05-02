@@ -342,6 +342,7 @@
         }
         
         .folderList {
+            list-style-type: none;
             width: fit-content;
         }
         
