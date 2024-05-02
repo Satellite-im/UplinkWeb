@@ -15,16 +15,18 @@
             toggleFolder(file.id)
         }
     }
-    let folderOpenClosedIcon =  () => {if (file.items && file.items.length > 0 && file.type === "folder") {
+    let folderOpenClosedIcon =  () => {if (file.items && file.type === "folder") {
         return Shape.Folder
-    } else if(openFolders[file.id] && file.type === "folder") {return Shape.FolderOpen}
+    } 
+    if(!openFolders[file.id] && file.type === "folder") { 
+        console.log(openFolders[file.id], "why"); return Shape.FolderOpen}
     if(file.type === "file") {return Shape.Document}
     if(file.type === "image") {return Shape.Image}}
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<li on:click={createClickHandler(file, false)} class:folder={file.items && file.items.length > 0} class:open={openFolders[file.id]}>
+<li on:click={createClickHandler(file, false)}>
     <Icon
     icon={folderOpenClosedIcon()}
     muted

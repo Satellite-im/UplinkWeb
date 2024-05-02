@@ -341,6 +341,11 @@
             }
         }
         
+        .folderList {
+            overflow: scroll;
+            padding: .25rem;
+        }
+        
         .content {
             display: flex;
             min-height: 0;
