@@ -255,6 +255,7 @@
                         <MessageGroup profilePictureRequirements={{
                             notifications: 0,
                             image: group.details.origin.profile.photo.image,
+                            frame: group.details.origin.profile.photo.frame,
                             status: group.details.origin.profile.status,
                             highlight: Appearance.Default
                         }}

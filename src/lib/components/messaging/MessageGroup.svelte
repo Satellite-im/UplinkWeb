@@ -33,6 +33,7 @@
                 status={profilePictureRequirements.status}
                 highlight={profilePictureRequirements.highlight}
                 notifications={profilePictureRequirements.notifications}
+                frame={profilePictureRequirements.frame}
                 on:click={(_) => dispatch("profileClick")} />
         </div>
     {/if}

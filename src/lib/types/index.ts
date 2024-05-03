@@ -36,6 +36,7 @@ export type ProfilePictureRequirements = {
     status: Status, // TODO: Remove this
     notifications: number,
     highlight: Appearance,
+    frame: string
 }
 
 export type ProfilePicture = {

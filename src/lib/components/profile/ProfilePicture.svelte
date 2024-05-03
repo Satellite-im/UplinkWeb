@@ -81,6 +81,11 @@
             width: var(--input-height);
             min-height: var(--input-height);
             min-width: var(--input-height);
+            .profile-image-frame {
+                height: var(--profile-picture-size);
+                width: var(--profile-picture-size);
+                min-width: var(--profile-picture-size);
+            }
         }
 
         &.smaller {
