@@ -55,7 +55,7 @@
             right: 0;
             bottom: 0;
             background-color: var(--primary-color);
-            padding: 0 var(--padding-minimal);
+            padding: 1px var(--padding-minimal);
             border-radius: var(--border-radius);
             display: inline-flex;
             justify-content: center;

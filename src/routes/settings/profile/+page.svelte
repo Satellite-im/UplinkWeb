@@ -85,7 +85,7 @@
         <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}></div>
 
         <div class="profile-picture-container">
-            <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} noIndicator />
+            <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
             <FileUploadButton icon tooltip={$_("settings.profile.change_profile_photo")} on:upload={(picture) => {
                 Store.setPhoto(picture.detail)
             }} />

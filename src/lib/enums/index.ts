@@ -132,3 +132,10 @@ export enum MessageDirection {
     Outbound,
     Unknown
 }
+
+export enum InventoryKind {
+    Frame   = "Profile Picture Frame",
+    Overlay = "Profile Overlay",
+    Theme   = "Application Theme",
+    Item    = "Item"
+}

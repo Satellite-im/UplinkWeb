@@ -55,10 +55,11 @@
         justify-content: center;
 
         .profile-image-frame {
-            position: fixed;
+            position: absolute;
             z-index: 2;
             height: calc(var(--profile-picture-size) * 1.20);
             width: calc(var(--profile-picture-size) * 1.20);
+            min-width:calc(var(--profile-picture-size) * 1.20);
             pointer-events: none;
         }
 
@@ -71,6 +72,7 @@
             .profile-image-frame {
                 height: calc(var(--profile-picture-size) * 2.20);
                 width: calc(var(--profile-picture-size) * 2.20);
+                min-width:calc(var(--profile-picture-size) * 2.20);
             }
         }
 
@@ -149,6 +151,7 @@
             .profile-image-frame {
                 height: calc(var(--profile-picture-size) * 2.50);
                 width: calc(var(--profile-picture-size) * 2.50);
+                min-width: calc(var(--profile-picture-size) * 2.50);
             }
         }
 

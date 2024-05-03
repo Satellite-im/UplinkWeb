@@ -23,7 +23,7 @@
         },
         {
             to: SettingsRoute.Inventory,
-            icon: Shape.Backpack,
+            icon: Shape.Inventory,
             name: "Inventory"
         },
         {

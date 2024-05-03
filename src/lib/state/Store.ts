@@ -3,7 +3,7 @@ import { MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type FriendRequest,  hashChat, type Message, type MessageGroup, type FileInfo } from "$lib/types"
+import { defaultUser, type Chat, type User, defaultChat, type FriendRequest,  hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
 import { get, writable} from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
@@ -51,6 +51,10 @@ class GlobalStore {
 
     setPhoto(photo: string) {
         this.state.user.update(u => u = { ...u, profile: { ...u.profile, photo: { ...u.profile.photo, image: photo }}})
+    }
+
+    setFrame(frame: Frame) {
+        this.state.user.update(u => u = { ...u, profile: { ...u.profile, photo: { ...u.profile.photo, frame: frame.image }}})
     }
 
     setBanner(photo: string) {
