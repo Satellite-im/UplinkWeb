@@ -34,7 +34,7 @@
         align-items: center;
         gap: var(--gap);
         position: fixed;
-        z-index: 3;
+        z-index: 4;
         top: 0;
         left: 0;
         bottom: 0;

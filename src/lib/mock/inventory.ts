@@ -31,5 +31,9 @@ export let mock_frames: Frame[] = [
     {
         image: "/assets/frames/mustache.png",
         name: "Mustache"
+    },
+    {
+        image: "/assets/frames/moon.png",
+        name: "Orbiting Moon"
     }
 ]

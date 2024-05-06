@@ -25,7 +25,7 @@
     {#if loading}
         <Loader />
     {:else}
-        {#if frame.name}
+        {#if frame && frame.name}
             <img class="profile-image-frame" src={frame.image} alt="" />
         {/if}
         <img class="profile-image" src={image} alt="">
