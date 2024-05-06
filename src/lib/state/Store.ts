@@ -57,6 +57,10 @@ class GlobalStore {
         this.state.user.update(u => u = { ...u, profile: { ...u.profile, photo: { ...u.profile.photo, frame }}})
     }
 
+    unequipFrame() {
+        this.state.user.update(u => u = { ...u, profile: { ...u.profile, photo: { ...u.profile.photo, frame: { name: "", image: "" } }}})
+    }
+
     setBanner(photo: string) {
         this.state.user.update(u => u = { ...u, profile: { ...u.profile, banner: { ...u.profile.banner, image: photo }}})
     }

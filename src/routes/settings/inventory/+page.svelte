@@ -28,7 +28,7 @@
                     noButton
                     unequip
                     on:apply={() => {
-                        Store.setFrame({ name: "", image: "" })
+                        Store.unequipFrame()
                         user = get(Store.state.user)
                     }}
                 />
