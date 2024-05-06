@@ -54,7 +54,7 @@ class GlobalStore {
     }
 
     setFrame(frame: Frame) {
-        this.state.user.update(u => u = { ...u, profile: { ...u.profile, photo: { ...u.profile.photo, frame: frame.image }}})
+        this.state.user.update(u => u = { ...u, profile: { ...u.profile, photo: { ...u.profile.photo, frame }}})
     }
 
     setBanner(photo: string) {

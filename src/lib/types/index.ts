@@ -36,12 +36,12 @@ export type ProfilePictureRequirements = {
     status: Status, // TODO: Remove this
     notifications: number,
     highlight: Appearance,
-    frame: string
+    frame: Frame
 }
 
 export type ProfilePicture = {
     image: string,
-    frame: string,
+    frame: Frame,
 }
 
 export type BannerPicture = {
@@ -57,7 +57,7 @@ export type ProfileData = {
 }
 
 export let defaultProfileData = {
-    photo: { image: "", frame: "" },
+    photo: { image: "", frame: { name: "", image: "" } },
     banner: { image: "", overlay: "" },
     status: Status.Offline,
     status_message: "Unknown status message."

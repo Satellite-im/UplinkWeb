@@ -2,6 +2,7 @@
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from "$lib/elements"
     import { createEventDispatcher } from "svelte"
+    import type { Frame } from "$lib/types"
 
     export let image: string                    = ""
     export let notifications: number            = 0
@@ -11,7 +12,7 @@
     export let status: Status                   = Status.Offline
     export let loading: boolean                 = false
     export let noIndicator: boolean             = false
-    export let frame: string                    = ""
+    export let frame: Frame                     = { name: "", image: "" }
 
     const dispatch = createEventDispatcher()
 </script>
@@ -24,8 +25,8 @@
     {#if loading}
         <Loader />
     {:else}
-        {#if frame.length}
-            <img class="profile-image-frame" src={frame} alt="" />
+        {#if frame.name}
+            <img class="profile-image-frame" src={frame.image} alt="" />
         {/if}
         <img class="profile-image" src={image} alt="">
     {/if}

@@ -13,7 +13,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/moon.png",
-                frame: "/assets/frames/water.png"
+                frame: { name: "Water", image: "/assets/frames/water.png" }
             },
             banner: {
                 image: "/assets/space.jpg",
@@ -38,7 +38,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/blue_marble.png",
-                frame: "",
+                frame: { name:"", image: ""}
             },
             banner: {
                 image: "/assets/space.jpg",
@@ -65,7 +65,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/saturn.png",
-                frame: "/assets/frames/fire.png"
+                frame: { name: "Fire", image: "/assets/frames/fire.png" }
             },
             banner: {
                 image: "/assets/space.jpg",
@@ -86,7 +86,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/pluto.png",
-                frame: "/assets/frames/gold.png"
+                frame: { name: "Gold Ring", image: "/assets/frames/gold.png" }
             },
             status: Status.Offline,
             status_message: "I am also testing a bunch of things a bunch of the time!"
@@ -107,7 +107,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/neptune.png",
-                frame: "/assets/frames/mustache.png",
+                frame: { name: "Mustache", image: "/assets/frames/mustache.png" }
             },
             banner: {
                 image: "/assets/space.jpg",
@@ -131,7 +131,7 @@ export const blocked_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/uranis.png",
-                frame: ""
+                frame: { name: "", image: "" }
             },
             status: Status.DoNotDisturb,
             status_message: "Something hostile and aggressive."
@@ -150,7 +150,7 @@ export const fake_user_array: Array<User> = [
         profile: {
             photo: {
                 image: "/assets/neptune.png",
-                frame: ""
+                frame: { name: "", image: "" }
             },
             banner: {
                 image: "",

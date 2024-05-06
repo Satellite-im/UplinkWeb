@@ -7,6 +7,8 @@
     export let preview: string      = ""
     export let kind: InventoryKind  = InventoryKind.Item
     export let equipped: boolean    = false
+    export let noButton: boolean    = false
+    export let unequip: boolean     = false
 
     const dispatch = createEventDispatcher()
 </script>
@@ -15,16 +17,32 @@
     <img src={preview} alt="" />
     <Text>{name}</Text>
     <Text muted>{kind}</Text>
-    <Button text={equipped ? "Equipped" : "Equip"} fill on:click={() => {
-        dispatch('apply')
-    }}
-    appearance={equipped ? Appearance.Primary : Appearance.Alt}>
-        {#if equipped}
-            <Icon icon={Shape.CheckMark} />
-        {:else}
-            <Icon icon={Shape.Plus} />
-        {/if}
-    </Button>
+    {#if !noButton}
+        <Button 
+            text={equipped ? "Equipped" : "Equip"} 
+            fill 
+            on:click={() => {
+                dispatch('apply')
+            }}
+            appearance={equipped ? Appearance.Primary : Appearance.Alt}>
+            {#if equipped}
+                <Icon icon={Shape.CheckMark} />
+            {:else}
+                <Icon icon={Shape.Plus} />
+            {/if}
+        </Button>
+    {/if}
+    {#if unequip}
+        <Button 
+            text="Unequip"
+            fill 
+            on:click={() => {
+                dispatch('apply')
+            }}
+            appearance={Appearance.Alt}>
+            <Icon icon={Shape.Minus} />
+        </Button>
+    {/if}
 </div>
 
 <style>
