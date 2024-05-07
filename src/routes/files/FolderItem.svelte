@@ -15,10 +15,11 @@
             toggleFolder(file.id)
         }
     }
-    let folderOpenClosedIcon =  () => {if (file.items?.length && file.type === "folder") {
+    $: folderOpenClosedIcon =  () => {if ( !openFolders[file.id] && file.items?.length && file.type === "folder") {
         return Shape.Folder
     } 
-    if(!openFolders[file.id] && file.type === "folder") { 
+    if(openFolders[file.id] && file.items?.length && file.type === "folder") { 
+        console.log(openFolders, openFolders[file.id])
         return Shape.FolderOpen}
     if(file.type === "file") {return Shape.Document}
     if(file.type === "image") {return Shape.Image}}
