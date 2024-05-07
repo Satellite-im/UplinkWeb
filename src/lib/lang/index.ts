@@ -41,6 +41,7 @@ export function initLocale() {
                 add_attachment: "Add attachment",
                 emoji: "Emoji",
                 send: "Send",
+                upload_files: "Upload files to chat"
             },
             friends: {
                 copy_did: "Copy ID",
@@ -61,6 +62,7 @@ export function initLocale() {
                 file_plural: "Files",
                 new_folder: "New Folder",
                 upload: "Upload",
+                add_files: "Drop files to upload here"
             },
             payments: {
                 send_coin: "Send Coin"
