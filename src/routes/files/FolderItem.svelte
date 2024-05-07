@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Icon } from "$lib/elements";
-  import { Shape } from "$lib/enums";
+    import { Icon } from "$lib/elements"
+    import { Shape } from "$lib/enums"
     import type { FileInfo } from "$lib/types"
     export let file: FileInfo
     export let openFolders: Record<string, boolean>
@@ -51,7 +51,7 @@
 <style>
     .tree > * {
     display: inline;
-}
+    }
     ul, li {
         list-style-type: none
     }
