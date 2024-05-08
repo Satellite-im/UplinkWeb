@@ -1,5 +1,5 @@
-class Multipass {
 
+class Multipass {
 }
 
 class Tesseract {
