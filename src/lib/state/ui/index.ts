@@ -2,8 +2,8 @@ import type { Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { Font } from "$lib/enums"
-import { identity_set_created }  from "$lib/pkg/warp_bg.wasm";
-import init, * as wasm from '$lib/pkg/warp.js';
+import { identity_set_created }  from "../../../../warp-wasm/pkg/warp_bg.wasm";
+
 
 export interface IUIState {
     color: Writable<string>,
