@@ -5,6 +5,7 @@
   "scripts": {
     "tauri": "tauri",
     "dev": "vite dev",
+    "predev": "node check-warp-wasm.js",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 80",
     "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
