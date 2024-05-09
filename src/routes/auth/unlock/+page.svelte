@@ -20,7 +20,7 @@
     let showAccounts = false
 </script>
 
-<div id="auth-unlock">
+<div id="auth-unlock" data-cy="auth-unlock">
     {#if showAccounts}
         <Modal on:close={(_) => showAccounts = false} padded>
             <div class="profiles">
