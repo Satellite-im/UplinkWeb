@@ -15,14 +15,10 @@
     import Spacer from "$lib/elements/Spacer.svelte";
 
     init().then((_exports) => {
-     
-     console.log(wasm)
-
-     let tesseract = new wasm.Tesseract
-     tesseract.load_from_storage()
-    // console.log("Tesseract created", tesseract)
-   })
-   console.log("Tesseract created")
+        console.log(wasm)
+        let tesseract = new wasm.Tesseract
+        tesseract.load_from_storage()
+    })
 
     initLocale()
 
