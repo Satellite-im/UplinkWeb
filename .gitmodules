@@ -1,3 +1,6 @@
 [submodule "warp-wasm"]
 	path = warp-wasm
 	url = https://github.com/Satellite-im/warp-wasm.git
+[submodule "automated-tests"]
+	path = automated-tests
+	url = git@github.com:Satellite-im/automated-tests-web.git
