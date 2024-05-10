@@ -1,24 +1,11 @@
-# create-svelte
-
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+# Uplink Web
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've cloned the project and installed dependencies with `npm install`, start a development server:
 
 ```bash
+git submodule update --init --recursive
 npm run dev
 
 # or start the server and open the app in a new browser tab
@@ -36,3 +23,15 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## Run automated tests
+
+- Start server in one terminal window/tab
+- In another terminal window/tab, run the following commands:
+
+```bash
+git submodule update --init --recursive
+cd ./automated-tests
+yarn
+yarn cypress run
+```
