@@ -115,7 +115,7 @@
             {#each pinDigits.slice(0, -1) as digit}
                 <Button 
                     class="pin-key"
-                    testid="pin-key-{digit}"
+                    testid="button-pin-{digit}"
                     icon
                     disabled={error || loading}
                     on:click={() => updatePinValue(digit)}
