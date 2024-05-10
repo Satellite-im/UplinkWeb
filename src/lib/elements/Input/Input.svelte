@@ -4,6 +4,7 @@
     import "./markdown.scss"
     import { createEventDispatcher, onMount } from "svelte"
     import { EditorView } from '@codemirror/view'
+    import type { FormEventHandler } from "svelte/elements";
 
     // export let loading: boolean = false;
     export let placeholder: string          = ""
@@ -50,15 +51,13 @@
         dispatch("enter", value)
         onsend.forEach(e => e())
     }
-    function onKeypress() {
-        dispatch("keypress", value)
+    function onInput() {
+        dispatch("input", value)
     }
 
     function onKeyDown(event: KeyboardEvent) {
         if (event.code === "Enter") {
             send()
-        } else {
-            onKeypress()
         }
     }
 </script>
@@ -73,7 +72,8 @@
             bind:this={input}
             bind:value={value}
             placeholder="{placeholder}"
-            on:keypress={onKeyDown} />
+            on:keydown={onKeyDown}
+            on:input={onInput} />
     </div>
 </div>
 

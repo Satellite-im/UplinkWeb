@@ -21,9 +21,18 @@
     export let loading: boolean         = true
     export let activeCall: Call | null  = get(Store.state.activeCall)
     
+    export let search: string = ""
     const dispatch = createEventDispatcher()
     function handleToggle() {
         dispatch('toggle', open)
+    }
+
+    function handleEnter() {
+        dispatch('enter', search)
+    }
+
+    function handleSearch() {
+        dispatch('search', search)
     }
 
     Store.state.activeCall.subscribe((c) => activeCall = c)
@@ -32,7 +41,10 @@
 {#if open}
     <div class="sidebar" transition:slide={{duration: animationDuration, axis: "x"}}>
         <div class="sidebar-pre">
-            <Input alt placeholder={$_("generic.search_placeholder")}>
+            <Input alt placeholder={$_("generic.search_placeholder")}
+                bind:value={search}
+                on:enter={handleEnter}
+                on:input={handleSearch}>
                 <Icon icon={Shape.Search} />
             </Input>
 

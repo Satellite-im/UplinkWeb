@@ -6,7 +6,7 @@
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
-    import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
+    import { Chatbar, ChatFilter, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
     import { 
         FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
         Message, MessageGroup, MessageReactions, MessageReplyContainer, 
@@ -58,10 +58,14 @@
     let groupSettings: boolean = false
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+    let search_filter: string
+    let search_component: ChatFilter
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
+    let friends: User[] = get(Store.state.friends)
     UIStore.state.chats.subscribe((c) => chats = c)
+    Store.state.friends.subscribe((f) => friends = f)
     Store.state.activeChat.subscribe((c) => {
         activeChat = c
         conversation = ConversationStore.getConversation(c)
@@ -121,7 +125,9 @@
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
 
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={() => search_component.select_first()}>
+        <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
+        
         <Button appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={(_) => showMarket = true}>
             <Icon icon={Shape.Shop} />
         </Button>

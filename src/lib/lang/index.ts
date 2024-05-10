@@ -23,6 +23,8 @@ export function initLocale() {
                 search_results: "Search results",
                 openFolder: "Open Folder",
                 profiles: "Profiles",
+                users: "Users",
+                groups: "Groups"
             },
             market: {
                 market: "Marketplace",

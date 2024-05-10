@@ -5,6 +5,7 @@
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
+    import ChatFilter from "$lib/layouts/ChatFilter.svelte"
     import { _ } from "svelte-i18n"
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
@@ -18,6 +19,7 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
+    import { goto } from "$app/navigation"
 
     initLocale()
 
@@ -37,6 +39,10 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
     let updatedFiles: FileInfo[] = []
+
+    let search_filter: string
+    let search_component: ChatFilter
+
     $: files = get(Store.state.files);
     const unsubscribeFiles = Store.state.files.subscribe((f) => {
         files = f;
@@ -80,11 +86,14 @@
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
     
+    function unsubscribe() {
+        throw new Error("Function not implemented.");
+    }
 
-
-  function unsubscribe() {
-    throw new Error("Function not implemented.");
-  }
+    function onSearchEnter() {
+        goto(Route.Chat)
+        search_component.select_first()
+    }
 </script>
 
 <div id="page">
@@ -108,7 +117,8 @@
     {/if}
     
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} >
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
+        <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>
             <Button 
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}

@@ -1,4 +1,5 @@
 export {default as Chatbar} from "$lib/layouts/Chatbar.svelte"
+export {default as ChatFilter} from "$lib/layouts/ChatFilter.svelte"
 export {default as Navigation} from "$lib/layouts/Navigation.svelte"
 export {default as Profile} from "$lib/layouts/Profile.svelte"
 export {default as SettingSection} from "$lib/layouts/SettingSection.svelte"
