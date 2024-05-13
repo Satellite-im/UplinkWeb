@@ -1,8 +1,12 @@
 <script lang="ts">
+	import init, * as wasm from '../../../../warp-wasm/pkg/warp';
+
     import { Route, Size } from "$lib/enums"
     import { Text } from "$lib/elements"
     import Logo from "$lib/elements/Logo.svelte"
     import { goto } from "$app/navigation";
+
+   
 
     let stepLabels: string[] = [
         "Fetching your friends from space.",

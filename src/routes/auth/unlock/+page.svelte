@@ -1,6 +1,5 @@
 <script lang="ts">
-	import init, * as wasm from '../../../../warp-wasm/pkg/warp';
-	// import {tesseract_new } from '../../../../warp-wasm/pkg/warp_bg.wasm';
+	import init, * as wasm from '../../../../warp-wasm/pkg/warp_ipfs';
 
     import { Label } from "$lib/elements"
     import { Modal, PinInput } from "$lib/components"
@@ -8,17 +7,74 @@
     import { Appearance, Route, Shape } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
-    import { _, t } from "svelte-i18n"
+    import { _ } from "svelte-i18n"
     import { Text, Button, Icon} from "$lib/elements"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
     import { mock_users } from "$lib/mock/users";
     import Spacer from "$lib/elements/Spacer.svelte";
 
-    init().then((_exports) => {
-        console.log(wasm)
-        let tesseract = new wasm.Tesseract
-        tesseract.load_from_storage()
+    function initTesseract(pin: string) {
+        init().then((_exports) => {
+      console.log(wasm)
+
+      let tesseract = new wasm.Tesseract()
+      tesseract.load_from_storage()
+      console.log(`loaded data`)
+
+      const encoder = new TextEncoder();
+      const passphrase = encoder.encode(pin);
+
+      // const passphrase = new Uint8Array([1,2,3,4,5,6,7,8,9,0]);
+      //self.crypto.getRandomValues(passphrase);
+      console.log(`passphrase: ${passphrase}`);
+      tesseract.unlock(passphrase)
+      console.log(`unlocked`)
+
+      if (!tesseract.autosave_enabled()) {
+        tesseract.set_autosave()
+      }
+      console.log(`enabled saving`)
+
+    //   let key = `mykey`
+    //   if (tesseract.exist(key)) {
+    //     console.log(`${key} exists: ${tesseract.retrieve(key)}`)
+    //   } else {
+    //     console.log(`${key} does not exist yet`)
+    //   }
+
+    //   tesseract.set(key, `value123`)
+    //   console.log(`set ${key}: ${tesseract.retrieve(key)}`)
+    //   tesseract.set(key, `persisted123`)
+    //   console.log(`set ${key}: ${tesseract.retrieve(key)}`)
+
+    //   tesseract.save()
+    //   console.log(`saved: ${key}`)
+
+    //   let stream = {}
+    //   stream[Symbol.asyncIterator] = () => { return tesseract.subscribe() }
+    //   console.log(`subscribed to stream`)
+
+      
+    //   async function stream_reader() {
+    //     for await (const value of stream) {
+    //       console.log(wasm.TesseractEvent[await value])
+    //     }
+    //   };
+    //   stream_reader()
+    //   console.log(`started stream reader loop`)
+
+    //   async function tesseract_lock_loop() {
+    //     for (let i = 0; i < 10; i++) {
+    //       await new Promise(resolve => setTimeout(resolve, 50))
+    //       tesseract.lock()
+    //     }
+    //   }
+    //   tesseract_lock_loop()
+    //   console.log(`started tesseract lock loop`)
+
     })
+    }
+   
 
     initLocale()
 
@@ -56,8 +112,10 @@
         <Label text={(create) ? $_('pages.auth.unlock.choose_pin') : $_('pages.auth.unlock.enter_pin')} />
     {/if}
 
-    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={() => {
-        goto(Route.Pre);
+    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} 
+        on:submit={(event) => {
+            initTesseract(event.detail)
+            goto(Route.Pre);
     }}/>
 
     <div class="switch-profile">
