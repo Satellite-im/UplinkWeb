@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
 import { mock_messages } from "$lib/mock/messages"
 
+
 export type ConversationMessages = {
     id: string,
     messages: MessageGroup[]

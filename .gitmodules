@@ -1,0 +1,3 @@
+[submodule "warp-wasm"]
+	path = warp-wasm
+	url = https://github.com/Satellite-im/warp-wasm.git
