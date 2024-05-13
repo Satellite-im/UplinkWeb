@@ -32,6 +32,7 @@
     "javascript-time-ago": "^2.5.9",
     "js-3d-model-viewer": "^0.2.2",
     "markdown-editor": "github:Flemmli97/markdown-editor#6522e14c1fee46211b3810b38d95059290ab05fd",
+    "warp": "github:Satellite-im/Warp#b138db0198a8c2061fd2e86c1f671e170b4ee204",
     "pretty-bytes": "^6.1.1",
     "svelte-awesome-color-picker": "^3.0.6",
     "svelte-dnd-action": "^0.9.42",
