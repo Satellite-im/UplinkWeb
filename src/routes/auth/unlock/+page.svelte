@@ -1,7 +1,4 @@
 <script lang="ts">
-	import init, * as wasm from '../../../../warp-wasm/pkg/warp';
-	// import {tesseract_new } from '../../../../warp-wasm/pkg/warp_bg.wasm';
-
     import { Label } from "$lib/elements"
     import { Modal, PinInput } from "$lib/components"
     import { goto } from '$app/navigation'
@@ -14,12 +11,6 @@
     import { mock_users } from "$lib/mock/users"
     import Spacer from "$lib/elements/Spacer.svelte"
     import { Tesseract } from "$lib/wasm/tesseract"
-
-    init().then((_exports) => {
-        console.log(wasm)
-        let tesseract = new wasm.Tesseract
-        tesseract.load_from_storage()
-    })
 
     initLocale()
 
