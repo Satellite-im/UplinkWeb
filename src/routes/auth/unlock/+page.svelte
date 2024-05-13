@@ -11,7 +11,7 @@
     import { mock_users } from "$lib/mock/users"
     import Spacer from "$lib/elements/Spacer.svelte"
     import { Tesseract } from "$lib/wasm/tesseract"
-
+    
     initLocale()
 
     let create = false
