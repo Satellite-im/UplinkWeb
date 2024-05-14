@@ -27,6 +27,7 @@
                     preview={user.profile.photo.frame.image}
                     noButton
                     unequip
+                    empty={user.profile.photo.frame.image === ""}
                     on:apply={() => {
                         Store.unequipFrame()
                         user = get(Store.state.user)

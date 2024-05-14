@@ -9,13 +9,14 @@
     export let equipped: boolean    = false
     export let noButton: boolean    = false
     export let unequip: boolean     = false
+    export let empty: boolean       = false
 
     const dispatch = createEventDispatcher()
 </script>
 
 <div class="inventory-item {equipped ? "equipped" : ""}">
-    <img src={preview} alt="" />
-    <Text>{name}</Text>
+    <img src={empty ? "/assets/frames/empty.png" : preview} alt="" />
+    <Text>{empty ? "None Equipped" : name}</Text>
     <Text muted>{kind}</Text>
     {#if !noButton}
         <Button 
@@ -34,13 +35,14 @@
     {/if}
     {#if unequip}
         <Button 
-            text="Unequip"
+            text={ empty ? "No Frame" : "Unequip"}
             fill 
             on:click={() => {
                 dispatch('apply')
             }}
-            appearance={Appearance.Alt}>
-            <Icon icon={Shape.Minus} />
+            appearance={Appearance.Alt}
+            disabled={empty}>
+            <Icon icon={empty ? Shape.Plus : Shape.Minus} />
         </Button>
     {/if}
 </div>
