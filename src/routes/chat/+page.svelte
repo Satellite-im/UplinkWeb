@@ -6,11 +6,11 @@
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
-    import { Chatbar, ChatFilter, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
+    import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
     import { 
         FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
         Message, MessageGroup, MessageReactions, MessageReplyContainer, 
-        ProfilePicture, CoinBalance, Modal , ProfilePictureMany, STLViewer
+        ProfilePicture, CoinBalance, Modal , ProfilePictureMany, STLViewer, ChatFilter
 
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"

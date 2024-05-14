@@ -5,12 +5,11 @@
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import ChatFilter from "$lib/layouts/ChatFilter.svelte"
     import { _ } from "svelte-i18n"
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
-    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
+    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu, ChatFilter } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Plugins } from '@shopify/draggable'
     import { onDestroy, onMount } from 'svelte'
