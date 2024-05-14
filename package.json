@@ -36,6 +36,7 @@
         "js-3d-model-viewer": "^0.2.2",
         "markdown-editor": "github:Flemmli97/markdown-editor#6522e14c1fee46211b3810b38d95059290ab05fd",
         "pretty-bytes": "^6.1.1",
+        "simple-peer": "^9.11.1",
         "svelte-awesome-color-picker": "^3.0.6",
         "svelte-dnd-action": "^0.9.42",
         "svelte-i18n": "^4.0.0",

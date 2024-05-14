@@ -109,9 +109,9 @@
     </div>
     <Spacer less />
     {#key pinDigits.join()}
-        <div class="pin-keypad" data-keyorder={pinDigits.join()} data-shuffle="true">
+        <div class="pin-keypad" data-keyorder={pinDigits.join()} data-shuffle="true" data-cy="pin-keypad">
             {#each pinDigits.slice(0, -1) as digit}
-                <Button class="pin-key" icon disabled={error || loading} on:click={() => updatePinValue(digit)} appearance={Appearance.Alt}>
+                <Button class="pin-key" testid="button-pin-{digit}" icon disabled={error || loading} on:click={() => updatePinValue(digit)} appearance={Appearance.Alt}>
                     {#if loading}
                         <Loader />
                     {:else}
@@ -119,21 +119,21 @@
                     {/if}
                 </Button>
             {/each}
-            <Button class="pin-key" disabled={loading} icon rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
+            <Button class="pin-key" disabled={loading} testid="button-clear-input" rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
                 {#if loading}
                     <Loader alt />
                 {:else}
                     <Icon icon={Shape.Refresh} />
                 {/if}
             </Button>
-            <Button class="pin-key" disabled={error || loading} icon on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>
+            <Button class="pin-key" disabled={error || loading} testid="button-pin-{pinDigits.slice(-1)}" icon on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>
                 {#if loading}
                     <Loader />
                 {:else}
                     {pinDigits.slice(-1)}
                 {/if}
             </Button>
-            <Button class="pin-key" icon on:click={submitPinValue} appearance={pinValue.length < min && !loading ? Appearance.Alt : Appearance.Success} disabled={pinValue.length < min || error || loading}>
+            <Button class="pin-key" icon on:click={submitPinValue} testid="button-confirm-pin" appearance={pinValue.length < min && !loading ? Appearance.Alt : Appearance.Success} disabled={pinValue.length < min || error || loading}>
                 {#if loading}
                     <Loader alt />
                 {:else}
@@ -146,6 +146,7 @@
     <div class="flex-column">
         <Button
             outline={!showSettings}
+            testid="button-settings"
             appearance={Appearance.Alt}
             on:click={_ => {
                 showSettings = !showSettings
