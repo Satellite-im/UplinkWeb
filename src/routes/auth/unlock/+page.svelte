@@ -1,5 +1,5 @@
 <script lang="ts">
-    import init, * as wasm from "../../../../warp-wasm/pkg/warp"
+    import init, * as wasm from "../../../../warp-wasm/pkg/"
     // import {tesseract_new } from '../../../../warp-wasm/pkg/warp_bg.wasm';
 
     import { Label } from "$lib/elements"
