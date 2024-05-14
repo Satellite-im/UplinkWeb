@@ -11,7 +11,8 @@
     import { mock_users } from "$lib/mock/users"
     import Spacer from "$lib/elements/Spacer.svelte"
     import { Tesseract } from "$lib/wasm/tesseract"
-    
+    import { Multipass } from "$lib/wasm/multipass"
+
     initLocale()
 
     let create = false
@@ -51,6 +52,7 @@
     <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={(e) => {
         // TODO: We need to decide if this should unlock or create tesseract
         Tesseract.unlock(e.detail)
+        Multipass.init(Tesseract.getTesseract())
         goto(Route.Pre)
     }}/>
 

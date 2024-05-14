@@ -1,27 +1,37 @@
 import init, * as wasm from '../../../warp-wasm/pkg/warp_ipfs'
 
 class CTesseract {
+    private tesseract: wasm.Tesseract
+
+    constructor() {
+        this.tesseract = new wasm.Tesseract()
+      }
+
+    getTesseract(): wasm.Tesseract {
+        return this.tesseract
+    }
+
     getAccounts() {}
 
     unlock(pin: string) {
         init().then((_: any) => {
-            let tesseract = new wasm.Tesseract()
-            tesseract.load_from_storage()
+            this.tesseract.load_from_storage()
+
 
             const encoder = new TextEncoder();
             const passphrase = encoder.encode(pin);
-            
-            tesseract.unlock(passphrase)
 
-            if (!tesseract.autosave_enabled()) {
-              tesseract.set_autosave()
+            this.tesseract.unlock(passphrase)
+
+            if (!this.tesseract.autosave_enabled()) {
+                this.tesseract.set_autosave()
             }
+            console.log('Tesseract: ', this.tesseract)
         })
     }
     
     lock() {
-        let tesseract = new wasm.Tesseract()
-        tesseract.lock()
+        this.tesseract.lock()
     }
 }
 
