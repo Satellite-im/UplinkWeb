@@ -1,6 +1,4 @@
 <script lang="ts">
-    import init, * as wasm from "../../../../warp-wasm/pkg/warp_ipfs"
-
     import { Label } from "$lib/elements"
     import { Modal, PinInput } from "$lib/components"
     import { goto } from "$app/navigation"
