@@ -14,37 +14,24 @@
 
 <div id="page">
     <SettingSection name="Devmode" description="Disable devmode.">
-        <Button
-            appearance={Appearance.Alt}
-            on:click={(_) => SettingsStore.toggleDevmode(false)}
-            >
-            Exit Devmode
-        </Button>
+        <Button appearance={Appearance.Alt} on:click={_ => SettingsStore.toggleDevmode(false)}>Exit Devmode</Button>
     </SettingSection>
-    
+
     <SettingSection name="Load Mock" description="Loads mock data into state.">
         <Button
             appearance={Appearance.Alt}
-            on:click={(_) => {
+            on:click={_ => {
                 Store.loadMockData()
-                ConversationStore.loadMockData()   
-                InventoryStore.loadMockData() 
-            }}
-            >
+                ConversationStore.loadMockData()
+                InventoryStore.loadMockData()
+            }}>
             Load Mock Data
         </Button>
     </SettingSection>
 
     <SettingSection name="Clear State" description="Reset the application state.">
-        <Button
-            appearance={Appearance.Alt}
-            on:click={(_) => clearState()}
-            >
-            Clear State
-        </Button>
+        <Button appearance={Appearance.Alt} on:click={_ => clearState()}>Clear State</Button>
     </SettingSection>
-
-
 </div>
 
 <style lang="scss">

@@ -3,27 +3,27 @@
     import { Appearance, InventoryKind, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
 
-    export let name: string         = ""
-    export let preview: string      = ""
-    export let kind: InventoryKind  = InventoryKind.Item
-    export let equipped: boolean    = false
-    export let noButton: boolean    = false
-    export let unequip: boolean     = false
-    export let empty: boolean       = false
+    export let name: string = ""
+    export let preview: string = ""
+    export let kind: InventoryKind = InventoryKind.Item
+    export let equipped: boolean = false
+    export let noButton: boolean = false
+    export let unequip: boolean = false
+    export let empty: boolean = false
 
     const dispatch = createEventDispatcher()
 </script>
 
-<div class="inventory-item {equipped ? "equipped" : ""}">
-    <img src={empty ? "/assets/frames/empty.png" : preview} alt="" />
-    <Text>{empty ? "None Equipped" : name}</Text>
+<div class="inventory-item {equipped ? 'equipped' : ''}">
+    <img src={preview} alt="" />
+    <Text>{name}</Text>
     <Text muted>{kind}</Text>
     {#if !noButton}
-        <Button 
-            text={equipped ? "Equipped" : "Equip"} 
-            fill 
+        <Button
+            text={equipped ? "Equipped" : "Equip"}
+            fill
             on:click={() => {
-                dispatch('apply')
+                dispatch("apply")
             }}
             appearance={equipped ? Appearance.Primary : Appearance.Alt}>
             {#if equipped}
@@ -34,11 +34,11 @@
         </Button>
     {/if}
     {#if unequip}
-        <Button 
-            text={ empty ? "No Frame" : "Unequip"}
-            fill 
+        <Button
+            text={empty ? "No Frame" : "Unequip"}
+            fill
             on:click={() => {
-                dispatch('apply')
+                dispatch("apply")
             }}
             appearance={Appearance.Alt}
             disabled={empty}>

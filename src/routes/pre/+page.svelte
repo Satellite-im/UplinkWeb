@@ -2,23 +2,15 @@
     import { Route, Size } from "$lib/enums"
     import { Text } from "$lib/elements"
     import Logo from "$lib/elements/Logo.svelte"
-    import { goto } from "$app/navigation";
+    import { goto } from "$app/navigation"
 
-   
-
-    let stepLabels: string[] = [
-        "Fetching your friends from space.",
-        "Aligning multiple satellites.",
-        "Spinning up warp drives.",
-        "Initalizing forward shields for maximum saftey.",
-        "Almost ready, finalizing."
-    ]
+    let stepLabels: string[] = ["Fetching your friends from space.", "Aligning multiple satellites.", "Spinning up warp drives.", "Initializing forward shields for maximum safety.", "Almost ready, finalizing."]
     let step: number = 0
     let loadingTime: number = 1000
 
-    const stepAhead = function() {
+    const stepAhead = function () {
         if (step < stepLabels.length - 1) {
-            step ++
+            step++
             loadingTime -= 200
             setTimeout(stepAhead, loadingTime)
         } else {

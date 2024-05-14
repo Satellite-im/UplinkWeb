@@ -1,6 +1,6 @@
 <script lang="ts">
     import { initLocale } from "$lib/lang"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Switch } from "$lib/elements"
     import { get } from "svelte/store"
@@ -16,19 +16,25 @@
 
 <div id="page">
     <SettingSection name={$_("settings.messages.convertToEmoji")} description={$_("settings.messages.convertToEmojiDescription")}>
-        <Switch on={(settings) ? settings.messaging.convertEmoji : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, messaging: {...settings.messaging, convertEmoji: on.detail}})
-        }}/>
+        <Switch
+            on={settings ? settings.messaging.convertEmoji : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, convertEmoji: on.detail } })
+            }} />
     </SettingSection>
     <SettingSection name={$_("settings.messages.markdownSupport")} description={$_("settings.messages.markdownSupportDescription")}>
-        <Switch on={(settings) ? settings.messaging.markdownSupport : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, messaging: {...settings.messaging, markdownSupport: on.detail}})
-        }}/>
+        <Switch
+            on={settings ? settings.messaging.markdownSupport : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, markdownSupport: on.detail } })
+            }} />
     </SettingSection>
     <SettingSection name={$_("settings.messages.spamRejection")} description={$_("settings.messages.spamRejectionDescription")}>
-        <Switch on={(settings) ? settings.messaging.spamRejection : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, messaging: {...settings.messaging, spamRejection: on.detail}})
-        }}/>
+        <Switch
+            on={settings ? settings.messaging.spamRejection : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, spamRejection: on.detail } })
+            }} />
     </SettingSection>
 </div>
 
@@ -43,6 +49,5 @@
         overflow-y: scroll;
         overflow-x: hidden;
         padding-right: var(--padding);
-        
     }
 </style>

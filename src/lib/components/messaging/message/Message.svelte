@@ -2,26 +2,26 @@
     import { MessagePosition } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
 
-    export let remote: boolean          = false
-    export let reply: boolean           = false
-    export let localSide: boolean       = false
-    export let morePadding: boolean     = false
+    export let remote: boolean = false
+    export let reply: boolean = false
+    export let localSide: boolean = false
+    export let morePadding: boolean = false
 
     export let position: MessagePosition = MessagePosition.Middle
 
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
-        dispatch('context', coords)
+        dispatch("context", coords)
     }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div 
-    on:contextmenu={(e) => {
+<div
+    on:contextmenu={e => {
         e.preventDefault()
         onContext([e.clientX, e.clientY])
     }}
-    class="message-bubble {remote ? "remote" : "local"} {position} {morePadding ? "more-padding" : ""} {reply ? "reply" : ""} {localSide ? "position-local" : ""}">
+    class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''}">
     <div class="content">
         <slot></slot>
     </div>
@@ -101,7 +101,6 @@
             border-bottom-left-radius: var(--border-radius-minimal);
         }
 
-
         &.middle.remote {
             border-top-left-radius: var(--border-radius-minimal);
         }
@@ -110,7 +109,6 @@
             border-top-left-radius: var(--border-radius-minimal);
             border-bottom-left-radius: var(--border-radius-more);
         }
-
 
         &.reply {
             font-size: var(--font-size-smaller);
@@ -121,6 +119,5 @@
                 align-self: flex-end;
             }
         }
-
     }
 </style>

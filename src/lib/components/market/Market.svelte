@@ -4,11 +4,11 @@
     import Topbar from "$lib/layouts/Topbar.svelte"
     import Text from "$lib/elements/Text.svelte"
     import Sidebar from "$lib/layouts/market/Sidebar.svelte"
-    import MarketNav from "./MarketNav.svelte";
+    import MarketNav from "./MarketNav.svelte"
 
     const dispatch = createEventDispatcher()
     function onClose() {
-        dispatch('close')
+        dispatch("close")
     }
 </script>
 
@@ -25,9 +25,7 @@
                     <MarketNav />
                 </Sidebar>
             </div>
-            <div class="body">
-                body
-            </div>
+            <div class="body">body</div>
         </div>
     </div>
 </Modal>

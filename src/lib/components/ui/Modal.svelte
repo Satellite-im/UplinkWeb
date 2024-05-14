@@ -1,10 +1,10 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
     import Controls from "../../layouts/Controls.svelte"
-    
+
     const dispatch = createEventDispatcher()
     function onClose(event: MouseEvent) {
-        dispatch('close', event)
+        dispatch("close", event)
     }
 
     export let padded: boolean = false
@@ -14,7 +14,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="modal" on:click={onClose}>
-    <div class="body {padded ? "padded" : ""}" on:click|stopPropagation>
+    <div class="body {padded ? 'padded' : ''}" on:click|stopPropagation>
         {#if withControls}
             <Controls>
                 <slot name="controls"></slot>

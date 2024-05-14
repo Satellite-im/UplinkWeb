@@ -3,5 +3,6 @@
         "./yew/Cargo.toml",
         "./yew/Cargo.toml"
     ],
-    "html.format.indentInnerHtml": true
+    "html.format.indentInnerHtml": true,
+    "editor.formatOnSave": true
 }

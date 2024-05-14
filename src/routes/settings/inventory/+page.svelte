@@ -31,8 +31,7 @@
                     on:apply={() => {
                         Store.unequipFrame()
                         user = get(Store.state.user)
-                    }}
-                />
+                    }} />
             </div>
         </div>
     </div>
@@ -47,8 +46,7 @@
                 on:apply={() => {
                     Store.setFrame(frame)
                     user = get(Store.state.user)
-                }}
-            />
+                }} />
         {/each}
     </div>
     <Label text="Profile Overlays" />
