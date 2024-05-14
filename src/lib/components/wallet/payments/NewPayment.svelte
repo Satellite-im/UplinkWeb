@@ -1,15 +1,15 @@
 <script lang="ts">
     import { Appearance, Shape, Size } from "$lib/enums"
-    import type { User } from "$lib/types";
+    import type { User } from "$lib/types"
     import { ProfilePicture, ProgressBar } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
 
     export let recipients: Array<User> = []
-    export let embedded: boolean        = false
+    export let embedded: boolean = false
     let selected_recipients: Array<User> = []
 
-    let update_recipients = function(recipient: User) {
+    let update_recipients = function (recipient: User) {
         let new_recipient_list = selected_recipients
 
         if (selected_recipients.includes(recipient)) {
@@ -19,7 +19,7 @@
         }
 
         selected_recipients = new_recipient_list
-    };
+    }
 
     function contains_recipient(list: User[], recipient: User): boolean {
         return list.includes(recipient)
@@ -38,29 +38,19 @@
         <div class="recipient-list">
             {#each selected_recipients as recipient}
                 <div class="mini-recipient">
-                    <ProfilePicture 
-                        size={Size.Smallest}
-                        image={recipient.profile.photo.image} />
+                    <ProfilePicture size={Size.Smallest} image={recipient.profile.photo.image} />
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Icon
-                        icon={Shape.XMark}
-                        alt
-                        class="control" />
+                    <Icon icon={Shape.XMark} alt class="control" />
                 </div>
             {/each}
         </div>
         <Label text="Select recipient(s)" />
-        <div class="recipient-selection-list {embedded ? "embedded" : ""}">
+        <div class="recipient-selection-list {embedded ? 'embedded' : ''}">
             {#each recipients as recipient}
-                <button
-                    class="recipient" 
-                    on:click={() => update_recipients(recipient)}>
-                    <ProfilePicture 
-                        size={Size.Small}
-                        image={recipient.profile.photo.image}
-                        status={recipient.profile.status} />
+                <button class="recipient" on:click={() => update_recipients(recipient)}>
+                    <ProfilePicture size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
                     <div class="info">
                         <Text singleLine size={Size.Medium}>
                             {recipient.name}
@@ -76,17 +66,10 @@
     </div>
     <div class="payment-controls">
         <ProgressBar label={`Hold for ${3} seconds...`} />
-        
+
         <div class="buttons">
-            <Button 
-                appearance={Appearance.Success}
-                text="Confirm"
-                outline
-                class="flex" />
-            <Button
-                appearance={Appearance.Alt}
-                text="Cancel"
-                class="flex" />
+            <Button appearance={Appearance.Success} text="Confirm" outline class="flex" />
+            <Button appearance={Appearance.Alt} text="Cancel" class="flex" />
         </div>
     </div>
     <!--
@@ -128,7 +111,7 @@
                     margin: 0;
                 }
 
-                &[type=number] {
+                &[type="number"] {
                     -moz-appearance: textfield;
                     appearance: textfield;
                 }
@@ -204,7 +187,7 @@
                 text-align: left;
                 cursor: pointer;
 
-                :global(input[type=checkbox]:checked::after) {
+                :global(input[type="checkbox"]:checked::after) {
                     content: "";
                     width: 100%;
                     height: 100%;
@@ -242,5 +225,4 @@
             }
         }
     }
-
 </style>

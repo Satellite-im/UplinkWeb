@@ -1,13 +1,7 @@
-
-class Multipass {
-}
+class Multipass {}
 
 class Tesseract {
-
-
-    public create() {
-        
-    }
+    public create() {}
 }
 
 class Warp {

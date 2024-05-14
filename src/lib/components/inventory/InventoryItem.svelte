@@ -3,26 +3,26 @@
     import { Appearance, InventoryKind, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
 
-    export let name: string         = ""
-    export let preview: string      = ""
-    export let kind: InventoryKind  = InventoryKind.Item
-    export let equipped: boolean    = false
-    export let noButton: boolean    = false
-    export let unequip: boolean     = false
+    export let name: string = ""
+    export let preview: string = ""
+    export let kind: InventoryKind = InventoryKind.Item
+    export let equipped: boolean = false
+    export let noButton: boolean = false
+    export let unequip: boolean = false
 
     const dispatch = createEventDispatcher()
 </script>
 
-<div class="inventory-item {equipped ? "equipped" : ""}">
+<div class="inventory-item {equipped ? 'equipped' : ''}">
     <img src={preview} alt="" />
     <Text>{name}</Text>
     <Text muted>{kind}</Text>
     {#if !noButton}
-        <Button 
-            text={equipped ? "Equipped" : "Equip"} 
-            fill 
+        <Button
+            text={equipped ? "Equipped" : "Equip"}
+            fill
             on:click={() => {
-                dispatch('apply')
+                dispatch("apply")
             }}
             appearance={equipped ? Appearance.Primary : Appearance.Alt}>
             {#if equipped}
@@ -33,11 +33,11 @@
         </Button>
     {/if}
     {#if unequip}
-        <Button 
+        <Button
             text="Unequip"
-            fill 
+            fill
             on:click={() => {
-                dispatch('apply')
+                dispatch("apply")
             }}
             appearance={Appearance.Alt}>
             <Icon icon={Shape.Minus} />

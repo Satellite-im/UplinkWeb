@@ -4,38 +4,38 @@ export let defaultKeybinds = [
     {
         action: KeybindAction.IncreaseFontSize,
         key: ".",
-        modifiers: ["shift", "ctrl"]
+        modifiers: ["shift", "ctrl"],
     },
     {
         action: KeybindAction.DecreaseFontSize,
         key: ",",
-        modifiers: ["shift", "ctrl"]
+        modifiers: ["shift", "ctrl"],
     },
     {
         action: KeybindAction.ToggleMute,
         key: "M",
-        modifiers: ["shift", "ctrl"]
+        modifiers: ["shift", "ctrl"],
     },
     {
         action: KeybindAction.ToggleDeafen,
         key: "D",
-        modifiers: ["shift", "ctrl"]
+        modifiers: ["shift", "ctrl"],
     },
     {
         action: KeybindAction.OpenInspector,
         key: "I",
-        modifiers: ["shift", "ctrl"]
+        modifiers: ["shift", "ctrl"],
     },
     {
         action: KeybindAction.ToggleDevmode,
         key: "~",
-        modifiers: []
+        modifiers: [],
     },
     {
         action: KeybindAction.FocusUplink,
         key: "U",
-        modifiers: ["shift", "ctrl"]
-    }
+        modifiers: ["shift", "ctrl"],
+    },
 ]
 
 export let defaultSettings = {

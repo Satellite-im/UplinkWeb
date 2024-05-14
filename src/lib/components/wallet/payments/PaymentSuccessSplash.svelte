@@ -8,17 +8,12 @@
 <div id="success-splash">
     <h2>It's Sent!</h2>
 
-    <p class="label">Your payment to 
+    <p class="label">
+        Your payment to
         <span id="success-recipients">
-            <span class="recipient">
-                Johnny Space,
-            </span>
-            <span class="recipient">
-                Manny Mars,
-            </span>
-            <span class="recipient">
-                and Space Kevin
-            </span>
+            <span class="recipient"> Johnny Space, </span>
+            <span class="recipient"> Manny Mars, </span>
+            <span class="recipient"> and Space Kevin </span>
         </span>
         has been sent.
     </p>
@@ -36,13 +31,13 @@
         <Label text="Amount (x3):" /> <span class="subtext">$30.44</span>
     </div>
     <div class="transaction-detail">
-        <Label text="Fees:"/> <span class="subtext">$00.04</span>
+        <Label text="Fees:" /> <span class="subtext">$00.04</span>
     </div>
     <div class="transaction-detail">
         <Label text="Total:" /> <span class="subtext">$91.36</span>
     </div>
 
-     <!-- Controls -->
+    <!-- Controls -->
     <Controls>
         <Button>Done</Button>
     </Controls>

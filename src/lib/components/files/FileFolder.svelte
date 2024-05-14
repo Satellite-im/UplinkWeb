@@ -7,27 +7,32 @@
 
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
-    
+
     function getIcon() {
         switch (kind) {
-            case FilesItemKind.File: return Shape.Document
-            case FilesItemKind.Folder: return Shape.Folder
-            case FilesItemKind.Image: return Shape.Beaker
+            case FilesItemKind.File:
+                return Shape.Document
+            case FilesItemKind.Folder:
+                return Shape.Folder
+            case FilesItemKind.Image:
+                return Shape.Beaker
         }
     }
 
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
-        dispatch('context', coords)
+        dispatch("context", coords)
     }
 </script>
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="filesitem" on:contextmenu={(e) => {
-        e.preventDefault()
-        onContext([e.clientX, e.clientY])
-    }}>
+    <div
+        class="filesitem"
+        on:contextmenu={e => {
+            e.preventDefault()
+            onContext([e.clientX, e.clientY])
+        }}>
         <Icon icon={getIcon()} />
         <Spacer less />
         <input type="text" value={info?.name} />

@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition'
-    import { animationDelay, animationDuration } from '$lib/globals/animations'
-    import { Text, Loader } from '$lib/elements'
+    import { fade } from "svelte/transition"
+    import { animationDelay, animationDuration } from "$lib/globals/animations"
+    import { Text, Loader } from "$lib/elements"
 
-    export let number: number       = 0
-    export let word: string         = "UNKNOWN"
-    export let loading: boolean     = false
+    export let number: number = 0
+    export let word: string = "UNKNOWN"
+    export let loading: boolean = false
 </script>
 
 <div class="ordered-phrase">

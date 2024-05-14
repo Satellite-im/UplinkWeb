@@ -1,5 +1,1 @@
-
-
-<div class="call-settings">
-    Call Settings
-</div>
+<div class="call-settings">Call Settings</div>

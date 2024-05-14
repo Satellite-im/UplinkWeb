@@ -11,7 +11,7 @@
     import CallSettings from "./CallSettings.svelte"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -20,23 +20,22 @@
 
     let showSettings = false
 
-    export let muted: boolean       = get(Store.state.devices.muted)
-    export let deafened: boolean    = get(Store.state.devices.deafened)
+    export let muted: boolean = get(Store.state.devices.muted)
+    export let deafened: boolean = get(Store.state.devices.deafened)
 
-    Store.state.devices.muted.subscribe((state) => {
+    Store.state.devices.muted.subscribe(state => {
         muted = state
     })
 
-    Store.state.devices.deafened.subscribe((state) => {
+    Store.state.devices.deafened.subscribe(state => {
         deafened = state
     })
 </script>
+
 <div id="call-screen" class={expanded ? "expanded" : ""}>
     <Topbar simple>
         <svelte:fragment slot="content">
-            <Text>
-                Big Party Time
-            </Text>
+            <Text>Big Party Time</Text>
             <Text muted size={Size.Smaller}>
                 ({mock_users.length}) users in the call
             </Text>
@@ -44,19 +43,17 @@
     </Topbar>
     <div id="participants">
         {#each mock_users as user}
-            <Participant
-                participant={user}
-                hasVideo={user.media.is_streaming_video}
-                isMuted={user.media.is_muted}
-                isDeafened={user.media.is_deafened}
-                isTalking={user.media.is_playing_audio} />
+            <Participant participant={user} hasVideo={user.media.is_streaming_video} isMuted={user.media.is_muted} isDeafened={user.media.is_deafened} isTalking={user.media.is_playing_audio} />
         {/each}
     </div>
     <div class="toolbar">
         <Controls>
-            <PopupButton name="Settings" open={showSettings} on:open={(_) => {
-                showSettings = true
-            }}>
+            <PopupButton
+                name="Settings"
+                open={showSettings}
+                on:open={_ => {
+                    showSettings = true
+                }}>
                 <svelte:fragment slot="icon">
                     <Icon icon={Shape.Cog} />
                 </svelte:fragment>
@@ -64,23 +61,23 @@
             </PopupButton>
         </Controls>
         <Controls>
-            <Button 
+            <Button
                 icon
-                appearance={muted ? Appearance.Error : Appearance.Alt} 
-                tooltip={$_('call.mute')}
-                on:click={(_) => {
+                appearance={muted ? Appearance.Error : Appearance.Alt}
+                tooltip={$_("call.mute")}
+                on:click={_ => {
                     Store.updateMuted(!muted)
                 }}>
-                <Icon icon={(muted) ? Shape.MicrophoneSlash : Shape.Microphone} />
+                <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
-            <Button 
-                icon 
-                appearance={deafened ? Appearance.Error : Appearance.Alt} 
-                tooltip={$_('call.deafen')}
-                on:click={(_) => {
+            <Button
+                icon
+                appearance={deafened ? Appearance.Error : Appearance.Alt}
+                tooltip={$_("call.deafen")}
+                on:click={_ => {
                     Store.updateDeafened(!deafened)
                 }}>
-                <Icon icon={(deafened) ? Shape.HeadphoneSlash : Shape.Headphones} />
+                <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
             <Button appearance={Appearance.Alt} icon tooltip="Stream">
                 <Icon icon={Shape.Stream} />

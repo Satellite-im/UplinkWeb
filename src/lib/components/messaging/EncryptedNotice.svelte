@@ -5,9 +5,7 @@
 
 <div class="encrypted-notice">
     <Icon icon={Shape.Lock} />
-    <Text size={Size.Smaller}>
-        Messages are secured by end-to-end encryption, sent over a peer-to-peer network.
-    </Text>
+    <Text size={Size.Smaller}>Messages are secured by end-to-end encryption, sent over a peer-to-peer network.</Text>
 </div>
 
 <style lang="scss">

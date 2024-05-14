@@ -22,16 +22,19 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
 
-    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
 </script>
 
 <div id="page">
     <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
 
     <!-- Modals -->
     {#if previewImage}
-        <Modal on:close={(_) => {previewImage = null}}>
+        <Modal
+            on:close={_ => {
+                previewImage = null
+            }}>
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
@@ -39,13 +42,9 @@
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
 
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
-        
-    </Sidebar>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}></Sidebar>
 
-    <div class="content">
-       
-    </div>
+    <div class="content"></div>
 </div>
 
 <style lang="scss">
@@ -55,6 +54,5 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
-
     }
 </style>

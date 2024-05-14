@@ -1,12 +1,12 @@
 <script lang="ts">
     import { Size } from "$lib/enums"
-    import { ProfilePicture } from "$lib/components";
+    import { ProfilePicture } from "$lib/components"
 
-    export let remote: boolean      = false
-    export let image: string        = ""
+    export let remote: boolean = false
+    export let image: string = ""
 </script>
 
-<div class="message-reply-container {remote ? "remote" : ""}">
+<div class="message-reply-container {remote ? 'remote' : ''}">
     {#if remote}
         <ProfilePicture size={Size.Smallest} image={image} />
     {/if}
