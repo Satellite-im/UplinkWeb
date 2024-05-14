@@ -48,6 +48,8 @@
         files = f;
         })
 
+    let dragging_files = 0
+
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement;
     
@@ -90,13 +92,39 @@
         throw new Error("Function not implemented.");
     }
 
+    function dragEnter(event: DragEvent) {
+        event.preventDefault();
+        dragging_files++;
+    }
+
+    function dragLeave() {
+        dragging_files--;
+    }
+
+    function dragDrop(event: DragEvent) {
+        event.preventDefault();
+        dragging_files = 0;
+        // upload files
+        console.log("dropping files ", event.dataTransfer?.files);
+    }
+
     function onSearchEnter() {
         goto(Route.Chat)
         search_component.select_first()
     }
 </script>
 
-<div id="page">
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div id="page"
+    on:dragover|preventDefault
+    on:dragenter={(e) => {
+        dragEnter(e);
+    }}
+    on:dragleave={dragLeave}
+    on:drop={(e) => {
+        dragDrop(e);
+    }}
+>
     <!-- Context Menu-->
     <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
 
@@ -220,6 +248,14 @@
             </svelte:fragment>
         </Topbar>
 
+        {#if dragging_files > 0}
+            <div class="upload-file-count-container">
+                <p class="upload-file-count">
+                    {$_("files.add_files")}
+                </p>
+            </div>
+        {/if}
+
         <div class="files">
             {#each files as item (item.id)}
                 <div
@@ -322,6 +358,19 @@
                     position: relative;
                     height: fit-content;
                 }
+            }
+        }
+
+        .upload-file-count-container {
+            display: flex;
+            height: 90px;
+            width: 100%;
+            align-items: center;
+            background: var(--opaque-color);
+            border-bottom: var(--border-width) solid var(--border-color);
+            .upload-file-count {
+                color: var(--text-color-muted);
+                padding-left: 24px;
             }
         }
     }

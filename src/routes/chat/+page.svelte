@@ -60,6 +60,7 @@
     let contextData: ContextItem[] = []
     let search_filter: string
     let search_component: ChatFilter
+    let dragging_files = 0;
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
@@ -78,9 +79,35 @@
     ConversationStore.conversations.subscribe(_ => {
         conversation = ConversationStore.getConversation(activeChat)
     })
+
+    function dragEnter(event: DragEvent) {
+        event.preventDefault();
+        dragging_files++;
+    }
+
+    function dragLeave() {
+        dragging_files--;
+    }
+
+    function dragDrop(event: DragEvent) {
+        event.preventDefault();
+        dragging_files = 0;
+        // upload files
+        console.log("dropping files ", event.dataTransfer?.files);
+    }
 </script>
 
-<div id="page">
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div id="page"
+    on:dragover|preventDefault
+    on:dragenter={(e) => {
+        dragEnter(e);
+    }}
+    on:dragleave={dragLeave}
+    on:drop={(e) => {
+        dragDrop(e);
+    }}
+>
     <!-- Context Menu-->
     <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
 
@@ -122,6 +149,15 @@
         <Market on:close={(_) => {showMarket = false}}/>
     {/if}
 
+    {#if dragging_files > 0}
+        <div class="upload-overlay">
+            <div class="upload-element">
+                <div class="dash-border"></div>
+                <div class="upload-text">{$_("chat.upload_files")}</div>
+            </div>
+        </div>
+    {/if}
+    
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
 
@@ -452,6 +488,84 @@
         .aside {
             border-left: var(--border-width) solid var(--border-color);
         }
-        
+
+        .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 4;
+            .upload-element {
+                position: fixed;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 5;
+                width: calc(var(--sidebar-width) - (var(--gap) * 2));
+                height: 200px;
+                border-radius: var(--border-width);
+                background-color: var(--background-alt);
+
+                .upload-text {
+                    z-index: 3;
+                    pointer-events: none;
+                    text-align: center;
+                    font-size: var(--font-size);
+                    color: var(--color);
+                }
+            }
+            .dash-border {
+                background: transparent;
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                background-image: linear-gradient(
+                        90deg,
+                        var(--color) 50%,
+                        transparent 50%
+                    ),
+                    linear-gradient(90deg, var(--color) 50%, transparent 50%),
+                    linear-gradient(0deg, var(--color) 50%, transparent 50%),
+                    linear-gradient(0deg, var(--color) 50%, transparent 50%);
+                background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+                background-size:
+                    15px 3px,
+                    15px 3px,
+                    3px 15px,
+                    3px 15px;
+                background-position:
+                    left top,
+                    right bottom,
+                    left bottom,
+                    right top;
+                animation: 0.5s linear infinite border-dance;
+
+                @keyframes border-dance {
+                    0% {
+                        background-position:
+                            left top,
+                            right bottom,
+                            left bottom,
+                            right top;
+                    }
+                    100% {
+                        background-position:
+                            left 15px top,
+                            right 15px bottom,
+                            left bottom 15px,
+                            right top 15px;
+                    }
+                }
+            }
+        }
     }
 </style>

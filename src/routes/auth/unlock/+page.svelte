@@ -5,12 +5,13 @@
     import { Appearance, Route, Shape } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
-    import { _ } from "svelte-i18n"
+    import { _, t } from "svelte-i18n"
     import { Text, Button, Icon} from "$lib/elements"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
-    import { mock_users } from "$lib/mock/users";
-    import Spacer from "$lib/elements/Spacer.svelte";
-
+    import { mock_users } from "$lib/mock/users"
+    import Spacer from "$lib/elements/Spacer.svelte"
+    import { Tesseract } from "$lib/wasm/tesseract"
+    
     initLocale()
 
     let create = false
@@ -47,12 +48,14 @@
         <Label text={(create) ? $_('pages.auth.unlock.choose_pin') : $_('pages.auth.unlock.enter_pin')} />
     {/if}
 
-    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={() => {
+    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={(e) => {
+        // TODO: We need to decide if this should unlock or create tesseract
+        Tesseract.unlock(e.detail)
         goto(Route.Pre);
     }}/>
 
     <div class="switch-profile">
-        <Button tooltip="Change User" icon on:click={(_) => showAccounts = true}>
+        <Button tooltip="Change User" icon on:click={(_) => showAccounts = true}>b
             <Icon icon={Shape.Profile} />
         </Button>
     </div>

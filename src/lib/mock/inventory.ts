@@ -17,6 +17,10 @@ export let mock_bundle_elemental: Bundle = {
 
 export let mock_frames: Frame[] = [
     {
+        image: "/assets/frames/skulls.png",
+        name: "Skull Party",
+    },
+    {
         image: "/assets/frames/fire.png",
         name: "Fire",
     },
