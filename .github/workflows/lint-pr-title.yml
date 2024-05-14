@@ -39,7 +39,7 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   labels: |
-                      invalid PR title
+                      Invalid PR title
                   type: add
 
             - name: Remove label if regex is matching
@@ -48,7 +48,7 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   labels: |
-                      invalid PR title
+                      Invalid PR title
                   type: remove
 
             - run: exit 1
