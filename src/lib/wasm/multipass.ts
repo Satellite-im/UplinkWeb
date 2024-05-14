@@ -1,23 +1,17 @@
 import init, * as wasm from '../../../warp-wasm/pkg/warp_ipfs'
+import { WarpInstance } from './warp'
 
 class CMultipass {
-    private multipass: wasm.MultiPassBox | undefined
+    private multipass: wasm.MultiPassBox
 
     constructor() {
-        this.multipass = undefined
+        this.multipass = WarpInstance.getMultipass()
       }
 
-    createIdentity() {
-    }
+    create_identity(username: string, passphrase: string) {
+        this.multipass.create_identity(username, passphrase)
 
-    init(tesseract: wasm.Tesseract) {
-        init().then(async (_exports) => {
-             let ipfs = await new wasm.WarpIpfs(wasm.Config.minimal_testing(), tesseract)
-
-             let multipass = ipfs
-
-             console.log('Ipfs: ', ipfs)
-        })
+        console.log('Own Identity: ', this.multipass.get_own_identity())
     }
 }
 

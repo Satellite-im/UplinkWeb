@@ -12,6 +12,8 @@
     import Spacer from "$lib/elements/Spacer.svelte"
     import { Tesseract } from "$lib/wasm/tesseract"
     import { Multipass } from "$lib/wasm/multipass"
+    import { WarpInstance } from "$lib/wasm/warp"
+
 
     initLocale()
 
@@ -57,7 +59,8 @@
         showSettings={false}
         on:submit={(e) => {
             Tesseract.unlock(e.detail)
-            Multipass.init(Tesseract.getTesseract())
+            WarpInstance.init(Tesseract.getTesseract())
+            Multipass.create_identity('Lucas', e.detail)
             goto(Route.Pre)
         }} />
 
