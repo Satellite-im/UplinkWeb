@@ -1,20 +1,17 @@
 name: Add Label
 on:
-  pull_request:
-    types:
-      - opened
+    pull_request:
+        types:
+            - opened
 jobs:
-  add-label:
-    name: Add Label
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: delivery-much/actions-assigner@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: christianvuerings/add-labels@v1.1
-        with:
-          labels: |
-            Missing dev review
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    add-label:
+        name: Add Label
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: christianvuerings/add-labels@v1.1
+              with:
+                  labels: |
+                      Missing dev review
+              env:
+                  GITHUB_TOKEN: ${{ secrets.github_token }}
