@@ -8,7 +8,7 @@
         "Fetching your friends from space.",
         "Aligning multiple satellites.",
         "Spinning up warp drives.",
-        "Initalizing forward shields for maximum saftey.",
+        "Initializing forward shields for maximum safety.",
         "Almost ready, finalizing."
     ]
     let step: number = 0
