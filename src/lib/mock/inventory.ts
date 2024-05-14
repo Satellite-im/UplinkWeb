@@ -9,10 +9,10 @@ export let mock_bundle_elemental: Bundle = {
         },
         {
             image: "/assets/frames/water.png",
-            name: "Water"
+            name: "Water",
         },
     ],
-    profileOverlays: []
+    profileOverlays: [],
 }
 
 export let mock_frames: Frame[] = [
@@ -26,18 +26,18 @@ export let mock_frames: Frame[] = [
     },
     {
         image: "/assets/frames/water.png",
-        name: "Water"
+        name: "Water",
     },
     {
         image: "/assets/frames/gold.png",
-        name: "Gold"
+        name: "Gold",
     },
     {
         image: "/assets/frames/mustache.png",
-        name: "Mustache"
+        name: "Mustache",
     },
     {
         image: "/assets/frames/moon.png",
-        name: "Orbiting Moon"
-    }
+        name: "Orbiting Moon",
+    },
 ]

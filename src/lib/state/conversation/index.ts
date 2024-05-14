@@ -4,9 +4,8 @@ import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
 import { mock_messages } from "$lib/mock/messages"
 
-
 export type ConversationMessages = {
-    id: string,
+    id: string
     messages: MessageGroup[]
 }
 
@@ -20,7 +19,7 @@ class Conversations {
 
     async loadConversations() {
         // TODO: Instead of storing all conversations under one entry, we should store each conversation in it's own table row.
-        const dbConversations = await getStateFromDB<ConversationMessages[]>('conversations', [])
+        const dbConversations = await getStateFromDB<ConversationMessages[]>("conversations", [])
         this.conversations.set(dbConversations)
     }
 
@@ -39,28 +38,29 @@ class Conversations {
             const lastGroup = conversation.messages[conversation.messages.length - 1]
             const now = new Date()
 
-            if (lastGroup && lastGroup.details.origin === message.details.origin &&
-                (now.getTime() - new Date(lastGroup.details.at).getTime()) < 60000) {
+            if (lastGroup && lastGroup.details.origin === message.details.origin && now.getTime() - new Date(lastGroup.details.at).getTime() < 60000) {
                 lastGroup.messages.push(message)
             } else {
                 const newMessageGroup: MessageGroup = {
                     details: message.details,
-                    messages: [message]
+                    messages: [message],
                 }
                 conversation.messages.push(newMessageGroup)
             }
         } else {
             const newConversation: ConversationMessages = {
                 id: chat.id,
-                messages: [{
-                    details: message.details,
-                    messages: [message]
-                }]
+                messages: [
+                    {
+                        details: message.details,
+                        messages: [message],
+                    },
+                ],
             }
             conversations.push(newConversation)
         }
         this.conversations.set(conversations)
-        await setStateToDB('conversations', conversations)
+        await setStateToDB("conversations", conversations)
     }
 
     async editMessage(chat: Chat, messageId: string, editedContent: string) {
@@ -73,13 +73,13 @@ class Conversations {
                 if (messageIndex !== -1) {
                     group.messages[messageIndex] = {
                         ...group.messages[messageIndex],
-                        text: [ editedContent ]
+                        text: [editedContent],
                     }
                 }
             })
 
             this.conversations.set(conversations)
-            await setStateToDB('conversations', conversations)
+            await setStateToDB("conversations", conversations)
         }
     }
 
@@ -96,16 +96,16 @@ class Conversations {
             })
             conversation.messages = conversation.messages.filter(group => group.messages.length > 0)
             this.conversations.set(conversations)
-            await setStateToDB('conversations', conversations)
+            await setStateToDB("conversations", conversations)
         }
     }
 
     async loadMockData() {
-        console.log('conversations', get(this.conversations))
+        console.log("conversations", get(this.conversations))
         const firstChatId = get(this.conversations)[0].id
         const initialData: ConversationMessages = {
             id: firstChatId,
-            messages: mock_messages
+            messages: mock_messages,
         }
         this.conversations.update(currentConversations => {
             const index = currentConversations.findIndex(c => c.id === firstChatId)
@@ -117,7 +117,7 @@ class Conversations {
             return currentConversations
         })
         await setStateToDB("conversations", get(this.conversations))
-        console.log('adding mock data')
+        console.log("adding mock data")
     }
 }
 

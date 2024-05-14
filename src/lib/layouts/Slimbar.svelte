@@ -20,7 +20,7 @@
 
     const dispatch = createEventDispatcher()
     function handleToggle() {
-        dispatch('toggle', sidebarOpen)
+        dispatch("toggle", sidebarOpen)
     }
 
     Store.state.favorites.subscribe(f => {
@@ -30,7 +30,7 @@
 
 <div class="slimbar">
     {#if !sidebarOpen}
-        <div transition:slide={{duration: animationDuration, axis: "y"}}>
+        <div transition:slide={{ duration: animationDuration, axis: "y" }}>
             <Button icon appearance={Appearance.Alt} on:click={handleToggle}>
                 <Icon icon={Shape.Sidebar} />
             </Button>
@@ -42,20 +42,18 @@
             <Icon icon={Shape.Beaker} />
         </Button>
         {#if favorites.length}
-            <Label text="Faves"/>
+            <Label text="Faves" />
             {#each favorites as favorite}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <div class="fave" on:click={(_) => {
-                    Store.setActiveChat(favorite)
-                    goto(Route.Chat)
-                }}>
+                <div
+                    class="fave"
+                    on:click={_ => {
+                        Store.setActiveChat(favorite)
+                        goto(Route.Chat)
+                    }}>
                     {#if favorite.users.length === 1}
-                        <ProfilePicture 
-                            typing={favorite.activity} 
-                            image={favorite.users[0]?.profile.photo.image}
-                            status={favorite.users[0].profile.status} 
-                            size={Size.Medium} />
+                        <ProfilePicture typing={favorite.activity} image={favorite.users[0]?.profile.photo.image} status={favorite.users[0].profile.status} size={Size.Medium} />
                     {:else}
                         <ProfilePictureMany users={favorite.users} />
                     {/if}
@@ -66,9 +64,9 @@
     </div>
 
     {#if !sidebarOpen}
-    <div transition:slide={{duration: animationDuration, axis: "y"}}>
-        <Navigation vertical icons routes={routes} activeRoute={activeRoute} on:navigate={(e) => goto(e.detail)} />
-    </div>
+        <div transition:slide={{ duration: animationDuration, axis: "y" }}>
+            <Navigation vertical icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />
+        </div>
     {/if}
 </div>
 

@@ -11,9 +11,9 @@
     import prettyBytes from "pretty-bytes"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { Plugins } from '@shopify/draggable'
-    import { onDestroy, onMount } from 'svelte'
-    import {Sortable} from '@shopify/draggable'
+    import { Plugins } from "@shopify/draggable"
+    import { onDestroy, onMount } from "svelte"
+    import { Sortable } from "@shopify/draggable"
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
@@ -37,109 +37,110 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
     let updatedFiles: FileInfo[] = []
-    $: files = get(Store.state.files);
-    const unsubscribeFiles = Store.state.files.subscribe((f) => {
-        files = f;
-        })
+    $: files = get(Store.state.files)
+    const unsubscribeFiles = Store.state.files.subscribe(f => {
+        files = f
+    })
 
     let dragging_files = 0
 
     onMount(() => {
-    const dropzone = document.querySelector('.files') as HTMLElement;
-    
-    if (dropzone) {
-        const sortable = new Sortable(dropzone, {
-            draggable: ".draggable-item",
-            plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-        });
+        const dropzone = document.querySelector(".files") as HTMLElement
 
-        sortable.on('sortable:stop', (event) => {
-            const items = sortable.getDraggableElementsForContainer(dropzone)
-            const newOrderIds = Array.from(items)
-                .filter(child => child.getAttribute('data-id'))
-                .map(child => child.getAttribute('data-id'));
+        if (dropzone) {
+            const sortable = new Sortable(dropzone, {
+                draggable: ".draggable-item",
+                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+            })
 
-            updatedFiles = newOrderIds
-                .map(id => {
-                    const file = files.find(file => file.id === id);
-                    return file ? file : null;
-                }) as FileInfo[];
+            sortable.on("sortable:stop", event => {
+                const items = sortable.getDraggableElementsForContainer(dropzone)
+                const newOrderIds = Array.from(items)
+                    .filter(child => child.getAttribute("data-id"))
+                    .map(child => child.getAttribute("data-id"))
 
-            Store.updateFileOrder(updatedFiles)
+                updatedFiles = newOrderIds.map(id => {
+                    const file = files.find(file => file.id === id)
+                    return file ? file : null
+                }) as FileInfo[]
 
-        });
-
-    }
-})
+                Store.updateFileOrder(updatedFiles)
+            })
+        }
+    })
     onDestroy(() => {
-        unsubscribeFiles();
-    });
+        unsubscribeFiles()
+    })
 
-
-    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
-    UIStore.state.chats.subscribe((sc) => chats = sc)
+    UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
-    Store.state.activeChat.subscribe((c) => activeChat = c)
+    Store.state.activeChat.subscribe(c => (activeChat = c))
 
     function unsubscribe() {
-        throw new Error("Function not implemented.");
+        throw new Error("Function not implemented.")
     }
 
     function dragEnter(event: DragEvent) {
-        event.preventDefault();
-        dragging_files++;
+        event.preventDefault()
+        dragging_files++
     }
 
     function dragLeave() {
-        dragging_files--;
+        dragging_files--
     }
 
     function dragDrop(event: DragEvent) {
-        event.preventDefault();
-        dragging_files = 0;
+        event.preventDefault()
+        dragging_files = 0
         // upload files
-        console.log("dropping files ", event.dataTransfer?.files);
+        console.log("dropping files ", event.dataTransfer?.files)
     }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div id="page"
+<div
+    id="page"
     on:dragover|preventDefault
-    on:dragenter={(e) => {
-        dragEnter(e);
+    on:dragenter={e => {
+        dragEnter(e)
     }}
     on:dragleave={dragLeave}
-    on:drop={(e) => {
-        dragDrop(e);
-    }}
->
+    on:drop={e => {
+        dragDrop(e)
+    }}>
     <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
 
     <!-- Modals -->
     {#if previewImage}
-        <Modal on:close={(_) => {previewImage = null}}>
+        <Modal
+            on:close={_ => {
+                previewImage = null
+            }}>
             <svelte:fragment slot="controls">
-                <Button 
-                    icon 
-                    small 
+                <Button
+                    icon
+                    small
                     appearance={Appearance.Alt}
-                    on:click={(_) => {previewImage = null}}>
+                    on:click={_ => {
+                        previewImage = null
+                    }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
             </svelte:fragment>
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
-    
+
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} >
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files}>
         <Controls>
-            <Button 
+            <Button
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
                 text={$_("chat.chat_plural")}
-                on:click={(_) => {
+                on:click={_ => {
                     activeTabRoute = "chats"
                 }}>
                 <Icon icon={Shape.ChatBubble} />
@@ -147,7 +148,7 @@
             <Button
                 appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
                 text={$_("files.file_plural")}
-                on:click={(_) => {
+                on:click={_ => {
                     activeTabRoute = "files"
                 }}>
                 <Icon icon={Shape.Folder} />
@@ -160,7 +161,7 @@
                     loading={loading}
                     simpleUnreads
                     cta={activeChat === chat}
-                    on:context={(evt) => {
+                    on:context={evt => {
                         contextPosition = evt.detail
                         contextData = [
                             {
@@ -168,14 +169,14 @@
                                 icon: Shape.EyeSlash,
                                 text: "Hide",
                                 appearance: Appearance.Default,
-                                onClick: () => UIStore.removeSidebarChat(chat)
+                                onClick: () => UIStore.removeSidebarChat(chat),
                             },
                             {
                                 id: "mark_read",
                                 icon: Shape.CheckMark,
                                 text: "Mark Read",
                                 appearance: Appearance.Default,
-                                onClick: () => {}
+                                onClick: () => {},
                             },
                         ]
                     }} />
@@ -205,22 +206,22 @@
         <Topbar>
             <div slot="before" class="before">
                 <button class="stat">
-                    <Label text="Free Space"/><Text singleLine>
+                    <Label text="Free Space" /><Text singleLine>
                         {prettyBytes(885312355333383)}
                     </Text>
                 </button>
                 <button class="stat">
-                    <Label text="Total Space"/><Text singleLine>
+                    <Label text="Total Space" /><Text singleLine>
                         {prettyBytes(13223423884917234002)}
                     </Text>
                 </button>
                 <button class="stat">
-                    <Label text="Sync Size"/><Text singleLine>
+                    <Label text="Sync Size" /><Text singleLine>
                         {prettyBytes(38481083182)}
                     </Text>
                 </button>
                 <button class="stat">
-                    <Label text="Shuttle"/><Text singleLine>
+                    <Label text="Shuttle" /><Text singleLine>
                         {prettyBytes(12345344)}
                     </Text>
                 </button>
@@ -246,41 +247,46 @@
 
         <div class="files">
             {#each files as item (item.id)}
-                <div
-                    class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}"
-                    draggable="true"
-                    data-id={item.id}
-                >
+                <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
-                        <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail
-                            contextData = [
-                                {
-                                    id: "delete",
-                                    icon: Shape.XMark,
-                                    text: "Delete",
-                                    appearance: Appearance.Default,
-                                    onClick: () => {}
-                                }
-                            ]
-                        }} />       
+                        <FileFolder
+                            kind={FilesItemKind.File}
+                            info={item}
+                            on:context={evt => {
+                                contextPosition = evt.detail
+                                contextData = [
+                                    {
+                                        id: "delete",
+                                        icon: Shape.XMark,
+                                        text: "Delete",
+                                        appearance: Appearance.Default,
+                                        onClick: () => {},
+                                    },
+                                ]
+                            }} />
                     {:else if item.type === "folder"}
-                        <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail
-                            contextData = [
-                                {
-                                    id: "delete",
-                                    icon: Shape.XMark,
-                                    text: "Delete",
-                                    appearance: Appearance.Default,
-                                    onClick: () => {}
-                                }
-                            ]
-                        }}/>       
+                        <FileFolder
+                            kind={FilesItemKind.Folder}
+                            info={item}
+                            on:context={evt => {
+                                contextPosition = evt.detail
+                                contextData = [
+                                    {
+                                        id: "delete",
+                                        icon: Shape.XMark,
+                                        text: "Delete",
+                                        appearance: Appearance.Default,
+                                        onClick: () => {},
+                                    },
+                                ]
+                            }} />
                     {:else if item.type === "image"}
-                        <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
-                            previewImage = item.source
-                        }} />
+                        <ImageFile
+                            filesize={item.size}
+                            name={item.name}
+                            on:click={_ => {
+                                previewImage = item.source
+                            }} />
                     {/if}
                 </div>
             {/each}
@@ -295,7 +301,7 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
-        
+
         .stat {
             padding: 0 var(--padding-less);
             border-radius: var(--border-radius-minimal);
@@ -308,7 +314,7 @@
                 user-select: none;
             }
         }
-        
+
         .content {
             display: flex;
             min-height: 0;
@@ -341,7 +347,7 @@
                 flex-wrap: wrap;
                 align-content: flex-start;
                 overflow-y: scroll;
-                
+
                 .draggable-item {
                     position: relative;
                     height: fit-content;

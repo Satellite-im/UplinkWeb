@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, Icon } from "$lib/elements";
+    import { Button, Icon } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
     import { Appearance, Shape, Size } from "$lib/enums"
     import prettyBytes from "pretty-bytes"
@@ -9,13 +9,12 @@
     export let size: number = 0
 </script>
 
-
 <div class="audio-embed">
     <audio controls>
-        <source src={location}>
+        <source src={location} />
     </audio>
     <div class="details">
-        <Text size={Size.Smaller}>{name} ({prettyBytes(size)})</Text> 
+        <Text size={Size.Smaller}>{name} ({prettyBytes(size)})</Text>
         <Button text="Download" appearance={Appearance.Alt}>
             <Icon icon={Shape.ArrowDown} />
         </Button>

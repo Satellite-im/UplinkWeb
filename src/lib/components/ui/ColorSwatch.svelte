@@ -7,9 +7,9 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div 
-    class="color-swatch tooltip" 
-    data-tooltip="{name}" 
+<div
+    class="color-swatch tooltip"
+    data-tooltip={name}
     on:click={() => {
         UIStore.setThemeColor(color)
     }}
@@ -50,7 +50,7 @@
             }
 
             &:hover:before {
-                display:block;
+                display: block;
             }
         }
     }

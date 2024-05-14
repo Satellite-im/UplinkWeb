@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid"
 export let mock_messages: MessageGroup[] = [
     {
         details: {
-            at: new Date,
+            at: new Date(),
             origin: mock_users[0],
             remote: false,
         },
@@ -15,7 +15,7 @@ export let mock_messages: MessageGroup[] = [
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
@@ -33,14 +33,14 @@ export let mock_messages: MessageGroup[] = [
                         highlight: Appearance.Default,
                         count: 2,
                         description: ":earth: 2 users reacted.",
-                    }
+                    },
                 ],
                 attachments: [],
             },
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
@@ -59,13 +59,13 @@ export let mock_messages: MessageGroup[] = [
                         name: "Unreal.docx",
                         location: "",
                         size: 284012384,
-                    }
+                    },
                 ],
             },
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
@@ -77,7 +77,7 @@ export let mock_messages: MessageGroup[] = [
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
@@ -85,12 +85,12 @@ export let mock_messages: MessageGroup[] = [
                 inReplyTo: null,
                 reactions: [],
                 attachments: [],
-            }
-        ]
+            },
+        ],
     },
     {
         details: {
-            at: new Date,
+            at: new Date(),
             origin: mock_users[1],
             remote: true,
         },
@@ -98,28 +98,25 @@ export let mock_messages: MessageGroup[] = [
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[1],
                     remote: true,
                 },
-                text: [
-                    "Hello humans.",
-                    "**woah** _it's_ __markdown__ ~~stuff~~.", 
-                ],
+                text: ["Hello humans.", "**woah** _it's_ __markdown__ ~~stuff~~."],
                 inReplyTo: null,
                 reactions: [
                     {
                         emoji: "👽",
                         highlight: Appearance.Default,
                         count: 2,
-                        description: ":alien: 2 users reacted."
+                        description: ":alien: 2 users reacted.",
                     },
                     {
                         emoji: "👀",
                         highlight: Appearance.Default,
                         count: 1,
-                        description: ":eyes: 1 user reacted."
-                    }
+                        description: ":eyes: 1 user reacted.",
+                    },
                 ],
                 attachments: [
                     {
@@ -127,13 +124,13 @@ export let mock_messages: MessageGroup[] = [
                         name: "Unreal.docx",
                         location: "",
                         size: 284012384,
-                    }
+                    },
                 ],
             },
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
@@ -146,13 +143,13 @@ export let mock_messages: MessageGroup[] = [
                         name: "3DBenchy.stl",
                         location: "/assets/3DBenchy.stl",
                         size: 1130000,
-                    }
+                    },
                 ],
             },
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
@@ -165,13 +162,13 @@ export let mock_messages: MessageGroup[] = [
                         name: "Sample.mp3",
                         location: "/assets/mp3/sample.mp3",
                         size: 1130000,
-                    }
+                    },
                 ],
             },
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
@@ -184,29 +181,27 @@ export let mock_messages: MessageGroup[] = [
                         name: "Launch.mp4",
                         location: "/assets/mp4/sample.mp4",
                         size: 1130000,
-                    }
+                    },
                 ],
             },
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[2],
                     remote: true,
                 },
-                text: [
-                    "I am not an alien.",
-                ],
+                text: ["I am not an alien."],
                 inReplyTo: null,
                 reactions: [],
                 attachments: [],
-            }
-        ]
+            },
+        ],
     },
-    
+
     {
         details: {
-            at: new Date,
+            at: new Date(),
             origin: mock_users[0],
             remote: false,
         },
@@ -214,30 +209,26 @@ export let mock_messages: MessageGroup[] = [
             {
                 id: uuidv4(),
                 details: {
-                    at: new Date,
+                    at: new Date(),
                     origin: mock_users[0],
                     remote: false,
                 },
-                text: [
-                    "Hmm, okay!", 
-                ],
+                text: ["Hmm, okay!"],
                 inReplyTo: {
                     id: uuidv4(),
                     details: {
-                        at: new Date,
+                        at: new Date(),
                         origin: mock_users[1],
                         remote: true,
                     },
-                    text: [
-                        "I am not an alien.",
-                    ],
+                    text: ["I am not an alien."],
                     inReplyTo: null,
                     reactions: [],
                     attachments: [],
                 },
                 reactions: [],
                 attachments: [],
-            }
-        ]
-    }
+            },
+        ],
+    },
 ]

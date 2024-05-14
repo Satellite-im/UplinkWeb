@@ -41,7 +41,8 @@
     </td>
     <td>
         <Text singleLine>
-            {transaction.at.toLocaleString('default', { month: 'long' })} {transaction.at.getDate()}, {transaction.at.getFullYear()}
+            {transaction.at.toLocaleString("default", { month: "long" })}
+            {transaction.at.getDate()}, {transaction.at.getFullYear()}
         </Text>
     </td>
 </tr>
@@ -62,6 +63,5 @@
             padding-right: var(--padding);
             border-radius: var(--border-radius-more);
         }
-
     }
 </style>

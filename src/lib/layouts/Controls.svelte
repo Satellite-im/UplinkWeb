@@ -8,6 +8,5 @@
         min-width: fit-content;
         height: fit-content;
         gap: var(--gap-less);
-
     }
 </style>

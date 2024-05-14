@@ -1,12 +1,12 @@
 <script lang="ts">
-    import {Text} from "$lib/elements"
+    import { Text } from "$lib/elements"
 
     export let text: string = ""
 </script>
 
-
 <div class="banner">
-    <slot></slot> <Text>{text}</Text>
+    <slot></slot>
+    <Text>{text}</Text>
 </div>
 
 <style lang="scss">

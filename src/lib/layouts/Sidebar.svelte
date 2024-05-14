@@ -9,28 +9,28 @@
     import { animationDuration } from "$lib/globals/animations"
     import { goto } from "$app/navigation"
     import { initLocale } from "$lib/lang"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import type { Call } from "$lib/types"
 
     initLocale()
 
-    export let activeRoute: Route       = Route.Chat
-    export let open: boolean            = true
-    export let loading: boolean         = true
-    export let activeCall: Call | null  = get(Store.state.activeCall)
-    
+    export let activeRoute: Route = Route.Chat
+    export let open: boolean = true
+    export let loading: boolean = true
+    export let activeCall: Call | null = get(Store.state.activeCall)
+
     const dispatch = createEventDispatcher()
     function handleToggle() {
-        dispatch('toggle', open)
+        dispatch("toggle", open)
     }
 
-    Store.state.activeCall.subscribe((c) => activeCall = c)
+    Store.state.activeCall.subscribe(c => (activeCall = c))
 </script>
 
 {#if open}
-    <div class="sidebar" transition:slide={{duration: animationDuration, axis: "x"}}>
+    <div class="sidebar" transition:slide={{ duration: animationDuration, axis: "x" }}>
         <div class="sidebar-pre">
             <Input alt placeholder={$_("generic.search_placeholder")}>
                 <Icon icon={Shape.Search} />
@@ -49,7 +49,7 @@
                 <CallControls />
             {/if}
         </div>
-        <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={(e) => goto(e.detail)}/>
+        <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />
     </div>
 {/if}
 
@@ -66,7 +66,7 @@
         .sidebar-content {
             display: flex;
             flex-direction: column;
-            padding-right : var(--gap);
+            padding-right: var(--gap);
             flex: 1;
             width: 100%;
             overflow-x: hidden;
@@ -81,5 +81,4 @@
             align-items: center;
         }
     }
-
 </style>
