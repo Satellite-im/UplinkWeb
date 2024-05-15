@@ -14,7 +14,6 @@
     import { Multipass } from "$lib/wasm/multipass"
     import { WarpInstance } from "$lib/wasm/warp"
 
-
     initLocale()
 
     let create = false
@@ -48,7 +47,7 @@
     {#if loading}
         <Label text={$_("generic.loading")} />
     {:else}
-        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} testid="label-choose-enter-pin" />
+        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} />
     {/if}
 
     <PinInput
@@ -57,16 +56,16 @@
         loading={loading}
         scramble={scramble}
         showSettings={false}
-        on:submit={async (e) => {
+        on:submit={async e => {
             loading = true
             let tesseract = await Tesseract.unlock(e.detail)
             await WarpInstance.initWarp(tesseract)
-            await Multipass.createIdentity('Satellite_user', undefined)
+            await Multipass.createIdentity("Satellite_user", undefined)
             goto(Route.Pre)
         }} />
 
     <div class="switch-profile">
-        <Button tooltip="Change User" testid="button-change-user" icon on:click={_ => (showAccounts = true)}>
+        <Button tooltip="Change User" icon on:click={_ => (showAccounts = true)}>
             <Icon icon={Shape.Profile} />
         </Button>
     </div>
