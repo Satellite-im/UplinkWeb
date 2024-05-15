@@ -47,7 +47,7 @@
     {#if loading}
         <Label text={$_("generic.loading")} />
     {:else}
-        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} />
+        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} testid="label-choose-enter-pin" />
     {/if}
 
     <PinInput
@@ -65,7 +65,7 @@
         }} />
 
     <div class="switch-profile">
-        <Button tooltip="Change User" icon on:click={_ => (showAccounts = true)}>
+        <Button tooltip="Change User" testid="button-change-user" icon on:click={_ => (showAccounts = true)}>
             <Icon icon={Shape.Profile} />
         </Button>
     </div>
