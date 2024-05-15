@@ -2717,8 +2717,8 @@ magic-string@^0.30.3, magic-string@^0.30.4, magic-string@^0.30.5:
 
 "markdown-editor@github:Flemmli97/markdown-editor#6522e14c1fee46211b3810b38d95059290ab05fd":
   version "1.0.0"
-  resolved "git+ssh://git@github.com/Flemmli97/markdown-editor.git"
-  integrity sha512-L6U5ucurwlNduGV50C68yysQYMB5ZxfKzUYZ4PoN5FTZ6HwjzR4LGHTIz1I1vXth25JRL1yewfExFBMNLpRU9w==
+  resolved "git+ssh://git@github.com/Flemmli97/markdown-editor.git#6522e14c1fee46211b3810b38d95059290ab05fd"
+  integrity sha512-1BoX9YiGxxh6ojiy/ZL6hWPZHCN9jdIrl4gMNBZ72sHjf1BurvLZuF2NuWXMXJ5H2mywYfXQ+uBWMmx3Ali5qQ==
   dependencies:
     "@babel/preset-env" "^7.23.8"
     "@codemirror/lang-markdown" "^6.2.3"
