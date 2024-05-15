@@ -6,7 +6,7 @@
 
     const dispatch = createEventDispatcher()
     function onClick(event: MouseEvent) {
-        dispatch('click', event)
+        dispatch("click", event)
     }
 
     export let name: string = "UNKNOWN"

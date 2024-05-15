@@ -7,11 +7,22 @@
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
     import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
-    import { 
-        FileEmbed, PopupButton, ImageEmbed, ChatPreview, NewPayment, Conversation, 
-        Message, MessageGroup, MessageReactions, MessageReplyContainer, 
-        ProfilePicture, CoinBalance, Modal , ProfilePictureMany, STLViewer
-
+    import {
+        FileEmbed,
+        PopupButton,
+        ImageEmbed,
+        ChatPreview,
+        NewPayment,
+        Conversation,
+        Message,
+        MessageGroup,
+        MessageReactions,
+        MessageReplyContainer,
+        ProfilePicture,
+        CoinBalance,
+        Modal,
+        ProfilePictureMany,
+        STLViewer,
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
@@ -25,10 +36,10 @@
     import CreateGroup from "$lib/components/group/CreateGroup.svelte"
     import { ConversationStore } from "$lib/state/conversation"
     import GroupSettings from "$lib/components/group/GroupSettings.svelte"
-    import ViewMembers from "$lib/components/group/ViewMembers.svelte";
-    import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte";
-    import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte";
-    import Market from "$lib/components/market/Market.svelte";
+    import ViewMembers from "$lib/components/group/ViewMembers.svelte"
+    import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
+    import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
+    import Market from "$lib/components/market/Market.svelte"
 
     initLocale()
 
@@ -39,14 +50,14 @@
     let isFavorite = Store.isFavorite(activeChat)
     let conversation = ConversationStore.getConversation(activeChat)
 
-    const timeAgo = new TimeAgo('en-US')
+    const timeAgo = new TimeAgo("en-US")
 
     function toggleSidebar() {
         UIStore.toggleSidebar()
     }
 
     function getTimeAgo(dateInput: string | Date) {
-        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput
+        const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
 
@@ -58,12 +69,12 @@
     let groupSettings: boolean = false
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-    let dragging_files = 0;
+    let dragging_files = 0
 
-    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
-    UIStore.state.chats.subscribe((c) => chats = c)
-    Store.state.activeChat.subscribe((c) => {
+    UIStore.state.chats.subscribe(c => (chats = c))
+    Store.state.activeChat.subscribe(c => {
         activeChat = c
         conversation = ConversationStore.getConversation(c)
         isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
@@ -77,72 +88,87 @@
     })
 
     function dragEnter(event: DragEvent) {
-        event.preventDefault();
-        dragging_files++;
+        event.preventDefault()
+        dragging_files++
     }
 
     function dragLeave() {
-        dragging_files--;
+        dragging_files--
     }
 
     function dragDrop(event: DragEvent) {
-        event.preventDefault();
-        dragging_files = 0;
+        event.preventDefault()
+        dragging_files = 0
         // upload files
-        console.log("dropping files ", event.dataTransfer?.files);
+        console.log("dropping files ", event.dataTransfer?.files)
     }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div id="page"
+<div
+    id="page"
     on:dragover|preventDefault
-    on:dragenter={(e) => {
-        dragEnter(e);
+    on:dragenter={e => {
+        dragEnter(e)
     }}
     on:dragleave={dragLeave}
-    on:drop={(e) => {
-        dragDrop(e);
-    }}
->
+    on:drop={e => {
+        dragDrop(e)
+    }}>
     <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
 
     <!-- Modals -->
     {#if previewImage}
-        <Modal on:close={(_) => {previewImage = null}}>
+        <Modal
+            on:close={_ => {
+                previewImage = null
+            }}>
             <ImageEmbed big source={previewImage} />
         </Modal>
     {/if}
 
     {#if previewProfile}
-        <Modal on:close={(_) => {previewProfile = null}}>
+        <Modal
+            on:close={_ => {
+                previewProfile = null
+            }}>
             <Profile user={previewProfile} />
         </Modal>
     {/if}
 
     {#if newGroup}
-        <Modal on:close={(_) => {newGroup = false}}>
-            <CreateGroup on:create={(_) => newGroup = false}/> 
+        <Modal
+            on:close={_ => {
+                newGroup = false
+            }}>
+            <CreateGroup on:create={_ => (newGroup = false)} />
         </Modal>
     {/if}
 
     {#if groupSettings}
-        <Modal on:close={(_) => {groupSettings = false}}>
-            <GroupSettings on:create={(_) => groupSettings = false}/> 
+        <Modal
+            on:close={_ => {
+                groupSettings = false
+            }}>
+            <GroupSettings on:create={_ => (groupSettings = false)} />
         </Modal>
     {/if}
 
     {#if showUsers}
-        <Modal on:close={(_) => {showUsers = false}}>
-            <ViewMembers 
-                adminControls 
-                members={activeChat.users} 
-                on:create={(_) => showUsers = false} /> 
+        <Modal
+            on:close={_ => {
+                showUsers = false
+            }}>
+            <ViewMembers adminControls members={activeChat.users} on:create={_ => (showUsers = false)} />
         </Modal>
     {/if}
 
     {#if showMarket}
-        <Market on:close={(_) => {showMarket = false}}/>
+        <Market
+            on:close={_ => {
+                showMarket = false
+            }} />
     {/if}
 
     {#if dragging_files > 0}
@@ -153,18 +179,18 @@
             </div>
         </div>
     {/if}
-    
+
     <!-- Sidebar -->
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
 
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
-        <Button appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={(_) => showMarket = true}>
+        <Button appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={_ => (showMarket = true)}>
             <Icon icon={Shape.Shop} />
         </Button>
 
         <div class="content-header">
             <Label text={$_("chat.chat_plural")} />
-            <Button icon small tooltip={$_("chat.create")} on:click={(_) => newGroup = true}>
+            <Button icon small tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>
@@ -175,7 +201,7 @@
                 loading={loading}
                 simpleUnreads
                 cta={activeChat === chat}
-                on:context={(evt) => {
+                on:context={evt => {
                     contextPosition = evt.detail
                     contextData = [
                         {
@@ -183,21 +209,21 @@
                             icon: Shape.Heart,
                             text: "Favorite",
                             appearance: Appearance.Default,
-                            onClick: () => Store.toggleFavorite(chat)
+                            onClick: () => Store.toggleFavorite(chat),
                         },
                         {
                             id: "hide",
                             icon: Shape.EyeSlash,
                             text: "Hide",
                             appearance: Appearance.Default,
-                            onClick: () => UIStore.removeSidebarChat(chat)
+                            onClick: () => UIStore.removeSidebarChat(chat),
                         },
                         {
                             id: "mark_read",
                             icon: Shape.CheckMark,
                             text: "Mark Read",
                             appearance: Appearance.Default,
-                            onClick: () => {}
+                            onClick: () => {},
                         },
                     ]
                 }} />
@@ -209,70 +235,68 @@
             <div slot="before">
                 {#if activeChat.users.length > 0}
                     {#if activeChat.users.length === 1}
-                        <ProfilePicture 
-                            typing={activeChat.activity} 
+                        <ProfilePicture
+                            typing={activeChat.activity}
                             image={activeChat.users[0]?.profile.photo.image}
                             frame={activeChat.users[0]?.profile.photo.frame}
-                            status={activeChat.users[0]?.profile.status} 
-                            size={Size.Medium} 
+                            status={activeChat.users[0]?.profile.status}
+                            size={Size.Medium}
                             loading={loading} />
                     {:else}
-                        <ProfilePictureMany users={activeChat.users} on:click={(_) => showUsers = true}/>
+                        <ProfilePictureMany users={activeChat.users} on:click={_ => (showUsers = true)} />
                     {/if}
                 {/if}
             </div>
             <div slot="content">
                 {#if activeChat.users.length > 0}
-                    <Text singleLine>{(activeChat.name.length) ? activeChat.name : activeChat.users[0]?.name}</Text>
+                    <Text singleLine>{activeChat.name.length ? activeChat.name : activeChat.users[0]?.name}</Text>
                     <Text singleLine muted size={Size.Smaller}>
-                        {(activeChat.motd.length) ? activeChat.motd : activeChat.users[0]?.profile?.status_message}
+                        {activeChat.motd.length ? activeChat.motd : activeChat.users[0]?.profile?.status_message}
                     </Text>
                 {/if}
             </div>
             <svelte:fragment slot="controls">
                 <CoinBalance balance={4560.53} />
-                <Button 
-                    icon 
-                    appearance={Appearance.Alt} 
-                    disabled={activeChat.users.length === 0}>
+                <Button icon appearance={Appearance.Alt} disabled={activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
-                <Button 
-                    icon 
-                    appearance={Appearance.Alt} 
-                    disabled={activeChat.users.length === 0}>
+                <Button icon appearance={Appearance.Alt} disabled={activeChat.users.length === 0}>
                     <Icon icon={Shape.VideoCamera} />
                 </Button>
-                <Button 
-                    icon 
+                <Button
+                    icon
                     disabled={activeChat.users.length === 0}
                     appearance={isFavorite ? Appearance.Primary : Appearance.Alt}
-                    on:click={(_) => {Store.toggleFavorite(activeChat)}}>
+                    on:click={_ => {
+                        Store.toggleFavorite(activeChat)
+                    }}>
                     <Icon icon={Shape.Heart} />
                 </Button>
                 {#if activeChat.kind === ChatType.Group}
-                    <Button 
-                        icon 
-                        appearance={(showUsers) ? Appearance.Primary : Appearance.Alt}
-                        on:click={(_) => {showUsers = true}}>
+                    <Button
+                        icon
+                        appearance={showUsers ? Appearance.Primary : Appearance.Alt}
+                        on:click={_ => {
+                            showUsers = true
+                        }}>
                         <Icon icon={Shape.Users} />
                     </Button>
-                    <Button 
-                        icon 
-                        appearance={(groupSettings) ? Appearance.Primary : Appearance.Alt}
-                        on:click={(_) => {groupSettings = true}}>
+                    <Button
+                        icon
+                        appearance={groupSettings ? Appearance.Primary : Appearance.Alt}
+                        on:click={_ => {
+                            groupSettings = true
+                        }}>
                         <Icon icon={Shape.Cog} />
                     </Button>
                 {/if}
                 {#if activeChat.users.length === 1}
-                    <Button 
-                        icon 
-                        appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt} 
-                        on:click={
-                        (_) => {
-                            contentAsideOpen = !contentAsideOpen;
-                        }
-                    }>
+                    <Button
+                        icon
+                        appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt}
+                        on:click={_ => {
+                            contentAsideOpen = !contentAsideOpen
+                        }}>
                         <Icon icon={Shape.Profile} />
                     </Button>
                 {/if}
@@ -288,37 +312,32 @@
                 <EncryptedNotice />
                 {#if conversation}
                     {#each conversation.messages as group}
-                        <MessageGroup profilePictureRequirements={{
-                            notifications: 0,
-                            image: group.details.origin.profile.photo.image,
-                            frame: group.details.origin.profile.photo.frame,
-                            status: group.details.origin.profile.status,
-                            highlight: Appearance.Default
-                        }}
-                        on:profileClick={(_) => {
-                            previewProfile = group.details.origin
-                        }}
-                        remote={group.details.remote}
-                        subtext={getTimeAgo(group.messages[0].details.at)}>
+                        <MessageGroup
+                            profilePictureRequirements={{
+                                notifications: 0,
+                                image: group.details.origin.profile.photo.image,
+                                frame: group.details.origin.profile.photo.frame,
+                                status: group.details.origin.profile.status,
+                                highlight: Appearance.Default,
+                            }}
+                            on:profileClick={_ => {
+                                previewProfile = group.details.origin
+                            }}
+                            remote={group.details.remote}
+                            subtext={getTimeAgo(group.messages[0].details.at)}>
                             {#each group.messages as message, idx}
                                 {#if message.inReplyTo}
-                                    <MessageReplyContainer
-                                        remote={message.inReplyTo.details.remote}
-                                        image={message.inReplyTo.details.origin.profile.photo.image}
-                                    >
-                                        <Message
-                                            reply
-                                            remote={message.inReplyTo.details.remote}
-                                        >
-                                        {#each message.inReplyTo.text as line}
-                                            <Text markdown={line} muted size={Size.Small}/>
-                                        {/each}
+                                    <MessageReplyContainer remote={message.inReplyTo.details.remote} image={message.inReplyTo.details.origin.profile.photo.image}>
+                                        <Message reply remote={message.inReplyTo.details.remote}>
+                                            {#each message.inReplyTo.text as line}
+                                                <Text markdown={line} muted size={Size.Small} />
+                                            {/each}
                                         </Message>
                                     </MessageReplyContainer>
                                 {/if}
                                 {#if message.text.length > 0 || message.attachments.length > 0}
                                     <Message
-                                        on:context={(evt) => {
+                                        on:context={evt => {
                                             contextPosition = evt.detail
                                             contextData = [
                                                 {
@@ -326,21 +345,13 @@
                                                     icon: Shape.Beaker,
                                                     text: "Placeholder",
                                                     appearance: Appearance.Default,
-                                                    onClick: () => {}
-                                                }
+                                                    onClick: () => {},
+                                                },
                                             ]
                                         }}
                                         remote={group.details.remote}
-                                        position={
-                                            (idx === 0) ?
-                                                MessagePosition.First : 
-                                                (idx === group.messages.length - 1) ?  
-                                                    MessagePosition.Last :
-                                                        MessagePosition.Middle
-                                        }
-                                        morePadding={message.text.length > 1 || message.attachments.length > 0}
-                                        >
-            
+                                        position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
+                                        morePadding={message.text.length > 1 || message.attachments.length > 0}>
                                         {#each message.text as line}
                                             <Text markdown={line} />
                                         {/each}
@@ -352,13 +363,13 @@
                                                         source={attachment.location}
                                                         name={attachment.name}
                                                         filesize={attachment.size}
-                                                        on:click={(_) => {
+                                                        on:click={_ => {
                                                             previewImage = attachment.location
-                                                        }}/>
+                                                        }} />
                                                 {:else if attachment.kind === MessageAttachmentKind.File}
                                                     <FileEmbed />
                                                 {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                    <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size}/>
+                                                    <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
                                                 {:else if attachment.kind === MessageAttachmentKind.Audio}
                                                     <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
                                                 {:else if attachment.kind === MessageAttachmentKind.Video}
@@ -377,28 +388,24 @@
                 {/if}
             {:else}
                 <div class="add-someone">
-                    <img src="/assets/mascot/better_with_friends.webp" style="max-width: 350px;" alt="Better with friends!"/>
+                    <img src="/assets/mascot/better_with_friends.webp" style="max-width: 350px;" alt="Better with friends!" />
                     <Text>Let's get something started!</Text>
                     <Text muted>You don't have any active chats yet, click the button below to head to the friends page to start one.</Text>
-                    <Button
-                        appearance={Appearance.Primary}
-                        text="Add Friends"
-                        on:click={(_) => goto(Route.Friends)}>
+                    <Button appearance={Appearance.Primary} text="Add Friends" on:click={_ => goto(Route.Friends)}>
                         <Icon icon={Shape.Users} />
                     </Button>
                 </div>
             {/if}
         </Conversation>
-        
 
         {#if activeChat.users.length > 0}
             <Chatbar>
                 <svelte:fragment slot="pre-controls">
-                    <Button 
-                        icon 
-                        appearance={Appearance.Alt} 
+                    <Button
+                        icon
+                        appearance={Appearance.Alt}
                         tooltip={$_("chat.add_attachment")}
-                        on:context={(evt) => {
+                        on:context={evt => {
                             contextPosition = evt.detail
                             contextData = [
                                 {
@@ -406,14 +413,14 @@
                                     icon: Shape.ArrowUp,
                                     text: "Upload",
                                     appearance: Appearance.Default,
-                                    onClick: () => {}
+                                    onClick: () => {},
                                 },
                                 {
                                     id: "from_files",
                                     icon: Shape.Eye,
                                     text: "Browse Files",
                                     appearance: Appearance.Default,
-                                    onClick: () => {}
+                                    onClick: () => {},
                                 },
                             ]
                         }}>
@@ -422,7 +429,7 @@
                 </svelte:fragment>
 
                 <PopupButton name={$_("payments.send_coin")}>
-                    <NewPayment recipients={mock_users}/>
+                    <NewPayment recipients={mock_users} />
                     <div slot="icon" class="control">
                         <Icon icon={Shape.Starlight} size={Size.Large} />
                     </div>
@@ -432,8 +439,8 @@
     </div>
     {#if contentAsideOpen}
         <!-- All aside menus should render from this element. Please display only one at a time. -->
-        <div class="aside" transition:slide={{duration: animationDuration, axis: "x"}}>
-            <Profile user={activeChat.users[0]}/>
+        <div class="aside" transition:slide={{ duration: animationDuration, axis: "x" }}>
+            <Profile user={activeChat.users[0]} />
         </div>
     {/if}
 </div>
@@ -452,7 +459,7 @@
             justify-content: space-between;
             align-items: flex-end;
         }
-        
+
         .content {
             display: flex;
             min-height: 0;
@@ -460,7 +467,6 @@
             flex-direction: column;
             flex: 1;
             transition: all var(--animation-duration);
-
 
             .add-someone {
                 position: absolute;
@@ -522,13 +528,7 @@
                 left: 12px;
                 right: 12px;
                 bottom: 12px;
-                background-image: linear-gradient(
-                        90deg,
-                        var(--color) 50%,
-                        transparent 50%
-                    ),
-                    linear-gradient(90deg, var(--color) 50%, transparent 50%),
-                    linear-gradient(0deg, var(--color) 50%, transparent 50%),
+                background-image: linear-gradient(90deg, var(--color) 50%, transparent 50%), linear-gradient(90deg, var(--color) 50%, transparent 50%), linear-gradient(0deg, var(--color) 50%, transparent 50%),
                     linear-gradient(0deg, var(--color) 50%, transparent 50%);
                 background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
                 background-size:

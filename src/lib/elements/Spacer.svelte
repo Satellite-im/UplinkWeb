@@ -2,7 +2,7 @@
     export let less: boolean = false
 </script>
 
-<div class="spacer {less ? "less" : ""}"></div>
+<div class="spacer {less ? 'less' : ''}"></div>
 
 <style lang="scss">
     .spacer {

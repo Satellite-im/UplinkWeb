@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
-    import { ProfilePicture}  from "$lib/components"
+    import { ProfilePicture } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
@@ -14,38 +14,33 @@
 
 <div id="auth-recover">
     <div class="header">
-        <Title>{$_('pages.auth.new_account.title')}</Title>
-        <Text muted>{$_('pages.auth.new_account.subtext')}</Text>
+        <Title>{$_("pages.auth.new_account.title")}</Title>
+        <Text muted>{$_("pages.auth.new_account.subtext")}</Text>
     </div>
     <div class="main">
         <div class="left">
             <ProfilePicture size={Size.Large} image="/assets/moon.png" />
         </div>
         <div class="right">
-            <Label text={$_('generic.username')} />
-            <Input alt placeholder={$_('pages.auth.new_account.enter_username')} />
+            <Label text={$_("generic.username")} />
+            <Input alt placeholder={$_("pages.auth.new_account.enter_username")} />
             <Spacer less />
-            <Label text={$_('generic.status_message')} />
-            <Input alt placeholder={$_('pages.auth.new_account.set_status')} />
+            <Label text={$_("generic.status_message")} />
+            <Input alt placeholder={$_("pages.auth.new_account.set_status")} />
         </div>
     </div>
     <Controls>
-        <Button 
-            class="full-width"
-            text={$_('controls.go_back')} 
-            appearance={Appearance.Alt} 
-            loading={loading}
-            on:click={() => goto(Route.RecoverySeed)} >
-            <Icon icon={Shape.ArrowLeft} />            
+        <Button class="full-width" text={$_("controls.go_back")} appearance={Appearance.Alt} loading={loading} on:click={() => goto(Route.RecoverySeed)}>
+            <Icon icon={Shape.ArrowLeft} />
         </Button>
-        <Button 
-            class="full-width" 
-            text={$_('pages.auth.new_account.create')} 
+        <Button
+            class="full-width"
+            text={$_("pages.auth.new_account.create")}
             loading={loading}
-            on:click={(_) => {
-                goto(Route.Chat);
-            }} >
-            <Icon icon={Shape.ArrowRight} />            
+            on:click={_ => {
+                goto(Route.Chat)
+            }}>
+            <Icon icon={Shape.ArrowRight} />
         </Button>
     </Controls>
 </div>
@@ -73,14 +68,14 @@
             border: var(--border-width) solid var(--border-color);
             border-radius: var(--border-radius);
             flex-wrap: wrap;
-            
+
             .left {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
             }
 
-            .right { 
+            .right {
                 flex: 1;
                 display: inline-flex;
                 flex-direction: column;

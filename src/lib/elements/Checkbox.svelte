@@ -32,8 +32,9 @@
             width: 0.65em;
             height: 0.65em;
             transform: scale(0);
-            transition: var(--animation-speed) transform var(--animation-style), 
-                        var(--animation-speed) border-color var(--animation-style);
+            transition:
+                var(--animation-speed) transform var(--animation-style),
+                var(--animation-speed) border-color var(--animation-style);
             box-shadow: inset 2em 2em var(--form-control-color);
             clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
         }

@@ -14,7 +14,7 @@
     }
 
     const handleScroll = () => {
-        const isScrolledUp = scrollContainer.scrollHeight - scrollContainer.scrollTop > (scrollContainer.clientHeight * 1.5)
+        const isScrolledUp = scrollContainer.scrollHeight - scrollContainer.scrollTop > scrollContainer.clientHeight * 1.5
         showScrollToBottom = isScrolledUp
     }
 
@@ -35,7 +35,7 @@
         <slot></slot>
     </div>
     {#if showScrollToBottom}
-        <div class="scroll-to-bottom" transition:fade={{duration: 300}}>
+        <div class="scroll-to-bottom" transition:fade={{ duration: 300 }}>
             <Button icon appearance={Appearance.Primary} on:click={() => scrollToBottom(scrollContainer)}>
                 <Icon icon={Shape.ArrowDown} />
             </Button>
@@ -54,7 +54,7 @@
         padding: var(--padding-less);
         position: relative;
         gap: var(--gap);
-        
+
         .scroll-to-bottom {
             display: inline-flex;
             position: absolute;

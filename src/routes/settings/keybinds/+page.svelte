@@ -29,55 +29,55 @@
                 return {
                     action: recordedAction,
                     key: keyboardRecording.key,
-                    modifiers: keyboardRecording.modifiers
+                    modifiers: keyboardRecording.modifiers,
                 }
             }
             return keybind
         })
 
-        SettingsStore.update({...settings, keybinds: newKeybinds})
+        SettingsStore.update({ ...settings, keybinds: newKeybinds })
 
         keyboardRecording = { key: "", modifiers: [] }
     }
 
     function revertKeybind(actionToRevert: KeybindAction) {
         const defaultKeybind = defaultKeybinds.find(kb => kb.action === actionToRevert)
-        if (!defaultKeybind) return;
+        if (!defaultKeybind) return
 
         const newKeybinds = keybinds.map(kb => {
             if (kb.action === actionToRevert) {
-                return {...defaultKeybind}
+                return { ...defaultKeybind }
             }
             return kb
         })
 
-        SettingsStore.update({...settings, keybinds: newKeybinds})
+        SettingsStore.update({ ...settings, keybinds: newKeybinds })
     }
 
     function isKeybindMatching(recorded: any, keybind: any) {
         // Check if the main keys match
-        if (recorded.key !== keybind.key) return false;
+        if (recorded.key !== keybind.key) return false
 
         // Check if all recorded modifiers are in the keybind's modifiers and vice versa
-        const uniqueModifiers = new Set([...recorded.modifiers, ...keybind.modifiers]);
+        const uniqueModifiers = new Set([...recorded.modifiers, ...keybind.modifiers])
         for (let mod of uniqueModifiers) {
             if (recorded.modifiers.includes(mod) !== keybind.modifiers.includes(mod)) {
-                return false;
+                return false
             }
         }
 
         // If both checks pass, the keybinds match
-        return true;
+        return true
     }
 </script>
 
 <div id="page">
-    <KeyboardListener on:event={(e) => keyboardRecording = e.detail} />
+    <KeyboardListener on:event={e => (keyboardRecording = e.detail)} />
 
     <Banner text={$_("settings.keybinds.banner")}>
         <Icon icon={Shape.Info} size={Size.Large} />
     </Banner>
-    
+
     <Spacer />
     <Label text={$_("settings.keybinds.recordKeybind")} />
     <Text>{$_("settings.keybinds.instructions")}</Text>
@@ -97,34 +97,39 @@
         </div>
         <div class="action">
             <Label text={$_("settings.keybinds.action")}></Label>
-            <Select alt bind:selected={recordedAction} options={keybinds.map(keybind => { 
-                return { text: keybind.action.toString(), value: keybind.action.toString()}
-            })}></Select>
+            <Select
+                alt
+                bind:selected={recordedAction}
+                options={keybinds.map(keybind => {
+                    return { text: keybind.action.toString(), value: keybind.action.toString() }
+                })}></Select>
         </div>
         <div>
-            <Button 
-                text={$_("generic.save")}
-                disabled={keyboardRecording.key === ""} 
-                appearance={keyboardRecording.key !== "" ? Appearance.Success : Appearance.Alt}
-                on:click={handleNewKeybind}></Button>
-            <Button text={$_("generic.cancel")} appearance={Appearance.Alt} on:click={(_) => {
-                keyboardRecording = { key: "", modifiers: [] }
-            }}></Button>
+            <Button text={$_("generic.save")} disabled={keyboardRecording.key === ""} appearance={keyboardRecording.key !== "" ? Appearance.Success : Appearance.Alt} on:click={handleNewKeybind}></Button>
+            <Button
+                text={$_("generic.cancel")}
+                appearance={Appearance.Alt}
+                on:click={_ => {
+                    keyboardRecording = { key: "", modifiers: [] }
+                }}></Button>
         </div>
     </div>
     <Spacer />
 
     <SettingSection name={$_("settings.keybinds.revert")} description={$_("settings.keybinds.revertDescription")}>
-        <Button appearance={Appearance.Alt} text={$_("settings.keybinds.revert_plural")} on:click={(_) => {
-             SettingsStore.update({...settings, keybinds: defaultKeybinds})
-        }}>
+        <Button
+            appearance={Appearance.Alt}
+            text={$_("settings.keybinds.revert_plural")}
+            on:click={_ => {
+                SettingsStore.update({ ...settings, keybinds: defaultKeybinds })
+            }}>
             <Icon icon={Shape.UTurn} />
         </Button>
     </SettingSection>
 
     {#if keybinds}
         {#each keybinds as keybind}
-            <div class="keybind {isKeybindMatching(keyboardRecording, keybind) ? "highlight" : ""}">
+            <div class="keybind {isKeybindMatching(keyboardRecording, keybind) ? 'highlight' : ''}">
                 <Text>{keybind.action}</Text>
                 <div class="controls">
                     <div class="binding">
@@ -133,10 +138,13 @@
                             <Key character={modifier} />
                         {/each}
                     </div>
-                    
-                    <Button icon appearance={Appearance.Alt} on:click={(_) => {
-                        revertKeybind(keybind.action)
-                    }}>
+
+                    <Button
+                        icon
+                        appearance={Appearance.Alt}
+                        on:click={_ => {
+                            revertKeybind(keybind.action)
+                        }}>
                         <Icon icon={Shape.UTurn} />
                     </Button>
                 </div>
@@ -163,7 +171,7 @@
             gap: var(--gap);
             justify-content: space-between;
             align-items: flex-end;
-            
+
             .recorded-keys,
             .action {
                 display: inline-flex;
@@ -182,7 +190,6 @@
             display: inline-flex;
             gap: var(--gap);
         }
-        
 
         .keybind {
             display: inline-flex;

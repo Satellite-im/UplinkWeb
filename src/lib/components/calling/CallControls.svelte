@@ -2,7 +2,7 @@
     import { Text, Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
-    import { _ } from 'svelte-i18n'
+    import { _ } from "svelte-i18n"
     import Controls from "../../layouts/Controls.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
@@ -10,55 +10,49 @@
 
     initLocale()
 
-    export let loading: boolean         = false
-    export let duration: Date           = new Date()
-    export let muted: boolean           = get(Store.state.devices.muted)
-    export let deafened: boolean        = get(Store.state.devices.deafened)
+    export let loading: boolean = false
+    export let duration: Date = new Date()
+    export let muted: boolean = get(Store.state.devices.muted)
+    export let deafened: boolean = get(Store.state.devices.deafened)
     export let settings: ISettingsState = get(SettingsStore.state)
 
-    Store.state.devices.muted.subscribe((state) =>  muted = state )
-    Store.state.devices.deafened.subscribe((state) => deafened = state )
-    SettingsStore.state.subscribe((state) => settings = state)
+    Store.state.devices.muted.subscribe(state => (muted = state))
+    Store.state.devices.deafened.subscribe(state => (deafened = state))
+    SettingsStore.state.subscribe(state => (settings = state))
 </script>
 
 <div class="call-controls">
     {#if settings?.audio?.callTimer}
         <div class="info">
-            <Label text={$_('call.in_call')} />
-            <Text 
-                appearance={Appearance.Success} 
-                loading={loading}>
+            <Label text={$_("call.in_call")} />
+            <Text appearance={Appearance.Success} loading={loading}>
                 {duration.toISOString().substring(11, 19)}
             </Text>
         </div>
     {/if}
 
     <Controls>
-        <Button 
+        <Button
             icon
-            appearance={muted ? Appearance.Error : Appearance.Alt} 
+            appearance={muted ? Appearance.Error : Appearance.Alt}
             tooltip={$_("call.mute")}
             loading={loading}
-            on:click={(_) => {
+            on:click={_ => {
                 Store.updateMuted(!muted)
             }}>
-            <Icon icon={(muted) ? Shape.MicrophoneSlash : Shape.Microphone} />
+            <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
         </Button>
-        <Button 
-            icon 
-            appearance={deafened ? Appearance.Error : Appearance.Alt} 
+        <Button
+            icon
+            appearance={deafened ? Appearance.Error : Appearance.Alt}
             tooltip={$_("call.deafen")}
             loading={loading}
-            on:click={(_) => {
+            on:click={_ => {
                 Store.updateDeafened(!deafened)
             }}>
-            <Icon icon={(deafened) ? Shape.HeadphoneSlash : Shape.Headphones} />
+            <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
         </Button>
-        <Button 
-            text={$_('call.end')}
-            tooltip={$_('call.end')}
-            appearance={Appearance.Error} 
-            loading={loading}>
+        <Button text={$_("call.end")} tooltip={$_("call.end")} appearance={Appearance.Error} loading={loading}>
             <Icon icon={Shape.PhoneXMark} />
         </Button>
     </Controls>

@@ -2,7 +2,7 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { Text } from "$lib/elements"
     import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte";
+    import Icon from "$lib/elements/Icon.svelte"
     import { Appearance, Shape, Size } from "$lib/enums"
     import type { FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
@@ -11,7 +11,7 @@
         name: "unknown",
         size: 999999999999999,
         icon: Shape.Document,
-        type: "unknown/unknown"
+        type: "unknown/unknown",
     }
 </script>
 
@@ -24,17 +24,17 @@
                 {prettyBytes(fileInfo.size)}
             </Text>
         </div>
-            <Controls>
-                <Button icon tooltip="Download">
-                    <Icon icon={Shape.Download} />
-                </Button>
-                <Button icon appearance={Appearance.Alt} tooltip="Share">
-                    <Icon icon={Shape.Share} />
-                </Button>
-                <Button appearance={Appearance.Alt} text="Add to Files">
-                    <Icon icon={Shape.Plus} />
-                </Button>
-            </Controls>
+        <Controls>
+            <Button icon tooltip="Download">
+                <Icon icon={Shape.Download} />
+            </Button>
+            <Button icon appearance={Appearance.Alt} tooltip="Share">
+                <Icon icon={Shape.Share} />
+            </Button>
+            <Button appearance={Appearance.Alt} text="Add to Files">
+                <Icon icon={Shape.Plus} />
+            </Button>
+        </Controls>
     </div>
 </div>
 
@@ -53,13 +53,12 @@
             flex-direction: row;
             gap: var(--gap);
             flex: 1;
-            
+
             .details {
                 display: inline-flex;
                 flex-direction: column;
                 flex: 1;
             }
-
         }
     }
 </style>

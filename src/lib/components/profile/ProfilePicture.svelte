@@ -4,31 +4,29 @@
     import { createEventDispatcher } from "svelte"
     import type { Frame } from "$lib/types"
 
-    export let image: string                    = ""
-    export let notifications: number            = 0
-    export let size: Size                       = Size.Medium
-    export let highlight: Appearance            = Appearance.Default
-    export let typing: boolean                  = false
-    export let status: Status                   = Status.Offline
-    export let loading: boolean                 = false
-    export let noIndicator: boolean             = false
-    export let frame: Frame                     = { name: "", image: "" }
+    export let image: string = ""
+    export let notifications: number = 0
+    export let size: Size = Size.Medium
+    export let highlight: Appearance = Appearance.Default
+    export let typing: boolean = false
+    export let status: Status = Status.Offline
+    export let loading: boolean = false
+    export let noIndicator: boolean = false
+    export let frame: Frame = { name: "", image: "" }
 
     const dispatch = createEventDispatcher()
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div 
-    class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}"
-    on:click={(_) => dispatch("click")}>
+<div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ''} {size}" on:click={_ => dispatch("click")}>
     {#if loading}
         <Loader />
     {:else}
         {#if frame && frame.name}
             <img class="profile-image-frame" src={frame.image} alt="" />
         {/if}
-        <img class="profile-image" src={image} alt="">
+        <img class="profile-image" src={image} alt="" />
     {/if}
     {#if typing}
         <div class="typing-indicator"></div>
@@ -58,22 +56,22 @@
         .profile-image-frame {
             position: absolute;
             z-index: 2;
-            height: calc(var(--profile-picture-size) * 1.20);
-            width: calc(var(--profile-picture-size) * 1.20);
-            min-width:calc(var(--profile-picture-size) * 1.20);
+            height: calc(var(--profile-picture-size) * 1.2);
+            width: calc(var(--profile-picture-size) * 1.2);
+            min-width: calc(var(--profile-picture-size) * 1.2);
             pointer-events: none;
         }
 
         &.larger {
             height: calc(var(--profile-picture-size) * 2);
-            width:calc(var(--profile-picture-size) * 2);
+            width: calc(var(--profile-picture-size) * 2);
             min-height: calc(var(--profile-picture-size) * 2);
-            min-width:calc(var(--profile-picture-size) * 2);
+            min-width: calc(var(--profile-picture-size) * 2);
 
             .profile-image-frame {
-                height: calc(var(--profile-picture-size) * 2.20);
-                width: calc(var(--profile-picture-size) * 2.20);
-                min-width:calc(var(--profile-picture-size) * 2.20);
+                height: calc(var(--profile-picture-size) * 2.2);
+                width: calc(var(--profile-picture-size) * 2.2);
+                min-width: calc(var(--profile-picture-size) * 2.2);
             }
         }
 
@@ -102,7 +100,8 @@
             width: calc(var(--font-size) * 1.5);
             min-width: calc(var(--font-size) * 1.5);
 
-            .status-indicator, .notifications {
+            .status-indicator,
+            .notifications {
                 display: none;
             }
         }
@@ -144,9 +143,9 @@
 
         &.large {
             height: calc(var(--profile-picture-size) * 2);
-            width:calc(var(--profile-picture-size) * 2);
+            width: calc(var(--profile-picture-size) * 2);
             min-height: calc(var(--profile-picture-size) * 2);
-            min-width:calc(var(--profile-picture-size) * 2);
+            min-width: calc(var(--profile-picture-size) * 2);
 
             .status-indicator {
                 height: var(--font-size-large);
@@ -155,9 +154,9 @@
             }
 
             .profile-image-frame {
-                height: calc(var(--profile-picture-size) * 2.50);
-                width: calc(var(--profile-picture-size) * 2.50);
-                min-width: calc(var(--profile-picture-size) * 2.50);
+                height: calc(var(--profile-picture-size) * 2.5);
+                width: calc(var(--profile-picture-size) * 2.5);
+                min-width: calc(var(--profile-picture-size) * 2.5);
             }
         }
 

@@ -7,7 +7,7 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
-    import { ConversationStore } from "$lib/state/conversation";
+    import { ConversationStore } from "$lib/state/conversation"
 
     initLocale()
     let markdown = get(SettingsStore.state).messaging.markdownSupport
@@ -17,16 +17,14 @@
         let newMessage = {
             id: "",
             details: {
-                at: new Date,
+                at: new Date(),
                 origin: get(Store.state.user),
                 remote: false,
             },
-            text: [
-                text 
-            ],
+            text: [text],
             inReplyTo: null,
             reactions: [],
-            attachments: []
+            attachments: [],
         }
         ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
         message = ""
@@ -38,14 +36,11 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input alt placeholder={$_("generic.placeholder")} bind:value={message} rounded rich={markdown} on:enter={(_) => addMessage(message)} />
+    <Input alt placeholder={$_("generic.placeholder")} bind:value={message} rounded rich={markdown} on:enter={_ => addMessage(message)} />
 
     <slot></slot>
 
-    <Button 
-        icon 
-        tooltip={$_("chat.send")} 
-        on:click={(_) => addMessage(message)}>
+    <Button icon tooltip={$_("chat.send")} on:click={_ => addMessage(message)}>
         <Icon icon={Shape.ChevronRight} />
     </Button>
 </div>

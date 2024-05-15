@@ -2,7 +2,7 @@
     import { goto } from "$app/navigation"
     import { OrderedPhrase } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { Button, Icon, Text, Title } from "$lib/elements" 
+    import { Button, Icon, Text, Title } from "$lib/elements"
     import { Appearance, Route, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
@@ -16,26 +16,18 @@
 
 <div id="auth-recover">
     <div class="header">
-        <Title>{$_('pages.auth.recovery.title')}</Title>
-        <Text muted>{$_('pages.auth.recovery.save_warning')}</Text>
+        <Title>{$_("pages.auth.recovery.title")}</Title>
+        <Text muted>{$_("pages.auth.recovery.save_warning")}</Text>
     </div>
     {#each samplePhrase as word, i}
         <OrderedPhrase number={i + 1} word={word} loading={loading} />
     {/each}
     <Controls>
-        <Button
-            class="full-width"
-            text={$_('pages.auth.recovery.download')}
-            appearance={Appearance.Alt}
-            loading={loading}>
-            <Icon icon={Shape.Download} />            
+        <Button class="full-width" text={$_("pages.auth.recovery.download")} appearance={Appearance.Alt} loading={loading}>
+            <Icon icon={Shape.Download} />
         </Button>
-        <Button 
-            class="full-width"
-            text={$_('pages.auth.recovery.next_step')} 
-            loading={loading}
-            on:click={() => goto(Route.NewAccount)}>
-            <Icon icon={Shape.ArrowRight} />            
+        <Button class="full-width" text={$_("pages.auth.recovery.next_step")} loading={loading} on:click={() => goto(Route.NewAccount)}>
+            <Icon icon={Shape.ArrowRight} />
         </Button>
     </Controls>
 </div>
