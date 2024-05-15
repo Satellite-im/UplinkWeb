@@ -1,11 +1,11 @@
 <script lang="ts">
     import type { Reaction } from "$lib/types"
 
-    export let reactions: Array<Reaction>   = []
-    export let remote: boolean              = false
+    export let reactions: Array<Reaction> = []
+    export let remote: boolean = false
 </script>
 
-<div class="message-reactions {remote ? "remote" : "local"}">
+<div class="message-reactions {remote ? 'remote' : 'local'}">
     {#each reactions as reaction}
         <div class="reaction highlight-{reaction.highlight.toLowerCase()}">
             <div class="reaction-hover">

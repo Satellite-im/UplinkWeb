@@ -2,10 +2,7 @@
     export let url: string = ""
 </script>
 
-
-<div class="site-embed">
-    
-</div>
+<div class="site-embed"></div>
 
 <style lang="scss">
     .site-embed {
@@ -16,6 +13,5 @@
         padding: var(--padding);
         background-color: var(--background-alt);
         border-radius: var(--border-radius-medium);
-
     }
 </style>

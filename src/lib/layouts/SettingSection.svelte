@@ -1,13 +1,12 @@
 <script lang="ts">
     import { Label, Text } from "$lib/elements"
 
-    export let name: string         = "Setting"
-    export let description: string  = "Some setting description"
-    export let fullWidth: boolean   = false
-
+    export let name: string = "Setting"
+    export let description: string = "Some setting description"
+    export let fullWidth: boolean = false
 </script>
 
-<div class="setting-section {fullWidth ? "full-width" : ""}">
+<div class="setting-section {fullWidth ? 'full-width' : ''}">
     <div class="body">
         <div class="description">
             <Label text={name} />
@@ -47,7 +46,6 @@
                 flex-direction: row;
                 min-width: var(--min-component-width);
                 gap: var(--gap);
-                
             }
         }
 
@@ -58,6 +56,5 @@
                 }
             }
         }
-
     }
 </style>

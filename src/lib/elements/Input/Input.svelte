@@ -3,20 +3,20 @@
     import { MarkdownEditor } from "markdown-editor"
     import "./markdown.scss"
     import { createEventDispatcher, onMount } from "svelte"
-    import { EditorView } from '@codemirror/view'
-    import type { FormEventHandler } from "svelte/elements";
+    import { EditorView } from "@codemirror/view"
+    import type { FormEventHandler } from "svelte/elements"
 
     // export let loading: boolean = false;
-    export let placeholder: string          = ""
-    export let alt: boolean                 = false
-    export let rounded: boolean             = false
-    export let highlight: Appearance        = Appearance.Default
-    export let value: string                = ""
-    export let disabled: boolean            = false
-    export let tooltip: string | null       = ""
-    export let copyOnInteract: boolean      = false
-    export let centered: boolean            = false
-    export let rich: boolean                = false
+    export let placeholder: string = ""
+    export let alt: boolean = false
+    export let rounded: boolean = false
+    export let highlight: Appearance = Appearance.Default
+    export let value: string = ""
+    export let disabled: boolean = false
+    export let tooltip: string | null = ""
+    export let copyOnInteract: boolean = false
+    export let centered: boolean = false
+    export let rich: boolean = false
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -24,19 +24,19 @@
     }
 
     let clazz = ""
-    let input: HTMLElement;
-    
-    let onsend: any[] = [];
+    let input: HTMLElement
+
+    let onsend: any[] = []
     if (rich) {
         onMount(() => {
             let editor = new MarkdownEditor(input, {
                 keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
-                extensions: [EditorView.editorAttributes.of({class: input.classList.toString()})]
+                extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
             })
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
-            editor.registerListener("input", ({ value: val }: {value:string}) => {
+            editor.registerListener("input", ({ value: val }: { value: string }) => {
                 value = val
             })
             onsend.push(() => {
@@ -62,18 +62,10 @@
     }
 </script>
 
-<div class="input-group {alt ? "alt" : ""} {highlight !== null ? `highlight-${highlight}` : ""} {tooltip ? "tooltip" : ""} {clazz || ''}" data-tooltip={tooltip}>
-    <div class="input-container {rounded ? "rounded" : ""} {clazz || ''}">
+<div class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}" data-tooltip={tooltip}>
+    <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
         <slot></slot>
-        <input
-            class="input {centered ? "centered" : ""}"
-            type="text"
-            disabled={disabled}
-            bind:this={input}
-            bind:value={value}
-            placeholder="{placeholder}"
-            on:keydown={onKeyDown}
-            on:input={onInput} />
+        <input class="input {centered ? 'centered' : ''}" type="text" disabled={disabled} bind:this={input} bind:value={value} placeholder={placeholder} on:keydown={onKeyDown} on:input={onInput} />
     </div>
 </div>
 
@@ -102,7 +94,6 @@
             &.rounded {
                 border-radius: var(--border-radius-more);
             }
-
         }
 
         .input {
@@ -147,22 +138,26 @@
             box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
         }
 
-        &.highlight-error .input-container, &.highlight-error .svg-icon {
+        &.highlight-error .input-container,
+        &.highlight-error .svg-icon {
             border-color: var(--error-color);
             color: var(--error-color);
         }
-        
-        &.highlight-warning .input-container, &.highlight-warning .svg-icon {
+
+        &.highlight-warning .input-container,
+        &.highlight-warning .svg-icon {
             border-color: var(--warning-color);
             color: var(--warning-color);
         }
-        
-        &.highlight-info .input-container, &.highlight-info .svg-icon {
+
+        &.highlight-info .input-container,
+        &.highlight-info .svg-icon {
             border-color: var(--info-color);
             color: var(--info-color);
         }
-        
-        &.highlight-success .input-container, &.highlight-success .svg-icon {
+
+        &.highlight-success .input-container,
+        &.highlight-success .svg-icon {
             border-color: var(--success-color);
             color: var(--success-color);
         }
@@ -191,7 +186,6 @@
                 background-color: var(--opaque-color);
                 backdrop-filter: blur(var(--blur-radius));
                 -webkit-backdrop-filter: blur(var(--blur-radius));
-
             }
 
             &.tooltip-right:before {

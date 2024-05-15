@@ -1,17 +1,25 @@
 <script lang="ts">
+    import init, * as wasm from "../../../../warp-wasm/pkg/"
+    // import {tesseract_new } from '../../../../warp-wasm/pkg/warp_bg.wasm';
+
     import { Label } from "$lib/elements"
     import { Modal, PinInput } from "$lib/components"
-    import { goto } from '$app/navigation'
+    import { goto } from "$app/navigation"
     import { Appearance, Route, Shape } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
     import { _, t } from "svelte-i18n"
-    import { Text, Button, Icon} from "$lib/elements"
+    import { Text, Button, Icon } from "$lib/elements"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
     import { mock_users } from "$lib/mock/users"
     import Spacer from "$lib/elements/Spacer.svelte"
-    import { Tesseract } from "$lib/wasm/tesseract"
-    
+
+    init().then(_exports => {
+        console.log(wasm)
+        let tesseract = new wasm.Tesseract()
+        tesseract.load_from_storage()
+    })
+
     initLocale()
 
     let create = false
@@ -23,11 +31,11 @@
 
 <div id="auth-unlock">
     {#if showAccounts}
-        <Modal on:close={(_) => showAccounts = false} padded>
+        <Modal on:close={_ => (showAccounts = false)} padded>
             <div class="profiles">
-                <Label text={$_('generic.profiles')} />
+                <Label text={$_("generic.profiles")} />
                 <div class="user">
-                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator/>
+                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator />
                     <Text class="username">{mock_users[1].name}</Text>
                 </div>
                 <div class="user">
@@ -41,21 +49,25 @@
             </div>
         </Modal>
     {/if}
-    
+
     {#if loading}
-        <Label text={$_('generic.loading')} />
+        <Label text={$_("generic.loading")} />
     {:else}
-        <Label text={(create) ? $_('pages.auth.unlock.choose_pin') : $_('pages.auth.unlock.enter_pin')} />
+        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} />
     {/if}
 
-    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={(e) => {
-        // TODO: We need to decide if this should unlock or create tesseract
-        Tesseract.unlock(e.detail)
-        goto(Route.Pre);
-    }}/>
+    <PinInput
+        min={4}
+        max={8}
+        loading={loading}
+        scramble={scramble}
+        showSettings={false}
+        on:submit={() => {
+            goto(Route.Pre)
+        }} />
 
     <div class="switch-profile">
-        <Button tooltip="Change User" icon on:click={(_) => showAccounts = true}>b
+        <Button tooltip="Change User" icon on:click={_ => (showAccounts = true)}>
             <Icon icon={Shape.Profile} />
         </Button>
     </div>

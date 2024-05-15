@@ -1,10 +1,10 @@
 <script lang="ts">
-    export let text: string     = ""
-    export let small: boolean   = false
+    export let text: string = ""
+    export let small: boolean = false
 </script>
 
 <!-- svelte-ignore a11y-label-has-associated-control -->
-<label class="label {small ? "small" : ""}">
+<label class="label {small ? 'small' : ''}">
     {text}
 </label>
 

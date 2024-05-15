@@ -2,12 +2,12 @@
     import { Icon } from "$lib/elements"
     import { Shape, Appearance } from "$lib/enums"
     import type { SelectOption } from "$lib/types"
-    import { createEventDispatcher } from "svelte";
+    import { createEventDispatcher } from "svelte"
 
-    export let options: Array<SelectOption>     = []
-    export let highlight: Appearance            = Appearance.Default
-    export let alt: boolean                     = false
-    export let selected: string                 = options[0].value
+    export let options: Array<SelectOption> = []
+    export let highlight: Appearance = Appearance.Default
+    export let alt: boolean = false
+    export let selected: string = options[0].value
 
     const dispatch = createEventDispatcher()
 
@@ -16,7 +16,7 @@
     }
 </script>
 
-<div class="select-group {highlight !== null ? `highlight-${highlight}` : ""} {alt ? "alt" : ""}">
+<div class="select-group {highlight !== null ? `highlight-${highlight}` : ''} {alt ? 'alt' : ''}">
     <slot></slot>
     <select name="generic-select" class="select" bind:value={selected} on:change={() => onChange(selected)}>
         {#each options as option}

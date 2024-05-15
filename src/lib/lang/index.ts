@@ -1,5 +1,4 @@
-import { dictionary, locale } from 'svelte-i18n'
-
+import { dictionary, locale } from "svelte-i18n"
 
 export function initLocale() {
     dictionary.set({
@@ -43,7 +42,7 @@ export function initLocale() {
                 add_attachment: "Add attachment",
                 emoji: "Emoji",
                 send: "Send",
-                upload_files: "Upload files to chat"
+                upload_files: "Upload files to chat",
             },
             friends: {
                 copy_did: "Copy ID",
@@ -64,10 +63,10 @@ export function initLocale() {
                 file_plural: "Files",
                 new_folder: "New Folder",
                 upload: "Upload",
-                add_files: "Drop files to upload here"
+                add_files: "Drop files to upload here",
             },
             payments: {
-                send_coin: "Send Coin"
+                send_coin: "Send Coin",
             },
             controls: {
                 go_back: "Go Back",
@@ -77,22 +76,22 @@ export function initLocale() {
                     unlock: {
                         enter_pin: "Enter your pin to unlock.",
                         choose_pin: "Choose a new pin.",
-                        scramble_pin: "Scramble keypad?"
+                        scramble_pin: "Scramble keypad?",
                     },
                     recovery: {
                         title: "Backup your seed!",
                         save_warning: "Please ensure you write down this message with all words recorded in the order they appear. It can be helpful to write down the numbers along with the words.",
                         download: "Download Backup",
-                        next_step: "Saved It, Next Step"
+                        next_step: "Saved It, Next Step",
                     },
                     new_account: {
                         title: "Make It Yours",
                         subtext: "Let's setup your new account. Please choose a username below.",
                         enter_username: "Enter username . . .",
                         set_status: "Set status message . . .",
-                        create: "Create Account"
-                    }
-                }
+                        create: "Create Account",
+                    },
+                },
             },
             user: {
                 status: {
@@ -100,7 +99,7 @@ export function initLocale() {
                     online: "Online",
                     offline: "Offline",
                     idle: "Idle",
-                    do_not_disturb: "Do Not Disturb"
+                    do_not_disturb: "Do Not Disturb",
                 },
                 status_message: "Status message",
                 set_status_message: "Set a status message",
@@ -110,7 +109,7 @@ export function initLocale() {
                 profile: {
                     log_out: {
                         label: "Log Out",
-                        description: "Log out of the current account and return to the unlock page."
+                        description: "Log out of the current account and return to the unlock page.",
                     },
                     change_profile_photo: "Change profile photo",
                     reveal_phrase: {
@@ -119,7 +118,7 @@ export function initLocale() {
                         show: "Reveal Phrase",
                         hide: "Hide Phrase",
                     },
-                    should_store: "Store recovery seed on account (disable for increased security, irriversable)"
+                    should_store: "Store recovery seed on account (disable for increased security, irriversable)",
                 },
                 notifications: {
                     enabled: "Enabled",
@@ -133,17 +132,18 @@ export function initLocale() {
                 },
                 accessability: {
                     openDyslexic: "Open Dyslexic",
-                    openDyslexicDescription: "Open Dyslexic may help some users who suffer from dyslexia, it's a custom font you can enable."
+                    openDyslexicDescription: "Open Dyslexic may help some users who suffer from dyslexia, it's a custom font you can enable.",
                 },
                 keybinds: {
                     banner: "Global keybinds are disabled while on this page.",
                     recordKeybind: "Record Keybind",
-                    instructions: "Press any combination of keys while on this page, then select the action you'd like to bind to this keyboard combo. Custom shortcuts will override default shortcuts. Not all actions have default shortcuts.",
+                    instructions:
+                        "Press any combination of keys while on this page, then select the action you'd like to bind to this keyboard combo. Custom shortcuts will override default shortcuts. Not all actions have default shortcuts.",
                     pressAKey: "Press Key",
                     action: "Action",
                     revert: "Revert",
                     revert_plural: "Revert Keybinds",
-                    revertDescription: "Revert keybinds to default."
+                    revertDescription: "Revert keybinds to default.",
                 },
                 messages: {
                     convertToEmoji: "Convert to Emoji",
@@ -151,14 +151,15 @@ export function initLocale() {
                     markdownSupport: "Markdown Support",
                     markdownSupportDescription: "Enabled the rendering of Markdown within messaging.",
                     spamRejection: "Spam/Bot Detection & Rejection",
-                    spamRejectionDescription: "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots detecting they have been blocked too quickly."
+                    spamRejectionDescription:
+                        "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots detecting they have been blocked too quickly.",
                 },
                 preferences: {
                     appLanguage: "App Language",
                     appLanguageDescription: "Change language.",
                     font: "Font",
                     fontDescription: "Change the font used in the app.",
-                    fontScaling: "Font Scaling", 
+                    fontScaling: "Font Scaling",
                     fontScalingDescription: "Scale the font size up or down to your liking.",
                     theme: "Theme",
                     themeDescription: "Change the theme of the app.",
@@ -166,15 +167,15 @@ export function initLocale() {
                     primaryColorDescription: "Change the primary color of the app.",
                     pick: "Pick",
                     customCss: "Custom CSS",
-                    customCssDescription: "Add additional custom CSS to the application."
+                    customCssDescription: "Add additional custom CSS to the application.",
                 },
                 licenses: {
                     description: "Both code and icons are under the MIT license.",
-                    view: "View License"
-                }
-            }
+                    view: "View License",
+                },
+            },
         },
     })
 
-    locale.set('en')
+    locale.set("en")
 }

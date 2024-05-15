@@ -2717,8 +2717,8 @@ magic-string@^0.30.3, magic-string@^0.30.4, magic-string@^0.30.5:
 
 "markdown-editor@github:Flemmli97/markdown-editor#6522e14c1fee46211b3810b38d95059290ab05fd":
   version "1.0.0"
-  resolved "git+ssh://git@github.com/Flemmli97/markdown-editor.git#6522e14c1fee46211b3810b38d95059290ab05fd"
-  integrity sha512-YIrW4kFVKkkosLSRsKCHGaFLgC+kyepQTLBRaDaUZcel6gDqPGGISS5d7xgpoyKbg+aQOEJHtKo4wDSvsRcwIQ==
+  resolved "git+ssh://git@github.com/Flemmli97/markdown-editor.git"
+  integrity sha512-L6U5ucurwlNduGV50C68yysQYMB5ZxfKzUYZ4PoN5FTZ6HwjzR4LGHTIz1I1vXth25JRL1yewfExFBMNLpRU9w==
   dependencies:
     "@babel/preset-env" "^7.23.8"
     "@codemirror/lang-markdown" "^6.2.3"
@@ -2934,6 +2934,16 @@ portfinder@^1.0.28:
     nanoid "^3.3.7"
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
+
+prettier-plugin-svelte@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.npmjs.org/prettier-plugin-svelte/-/prettier-plugin-svelte-3.2.3.tgz"
+  integrity sha512-wJq8RunyFlWco6U0WJV5wNCM7zpBFakS76UBSbmzMGpncpK98NZABaE+s7n8/APDCEVNHXC5Mpq+MLebQtsRlg==
+
+prettier@^3.0.0, prettier@^3.2.5:
+  version "3.2.5"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-3.2.5.tgz"
+  integrity sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==
 
 pretty-bytes@^6.1.1:
   version "6.1.1"
@@ -3383,10 +3393,10 @@ svelte-preprocess@^5.1.0, svelte-preprocess@^5.1.3:
     sorcery "^0.11.0"
     strip-indent "^3.0.0"
 
-"svelte@^3 || ^4", "svelte@^3.19.0 || ^4.0.0", "svelte@^3.23.0 || ^4.0.0-next.0 || ^4.0.0 || ^5.0.0-next.0", "svelte@^3.54.0 || ^4.0.0", "svelte@^3.55.0 || ^4.0.0-next.0 || ^4.0.0 || ^5.0.0-next.0", "svelte@^3.55.1 || ^4.0.0", svelte@^4.0.0, "svelte@^4.0.0 || ^5.0.0-next.0", svelte@^4.2.7, svelte@>=3.23.0:
-  version "4.2.11"
-  resolved "https://registry.npmjs.org/svelte/-/svelte-4.2.11.tgz"
-  integrity sha512-YIQk3J4X89wOLhjsqIW8tqY3JHPuBdtdOIkASP2PZeAMcSW9RsIjQzMesCrxOF3gdWYC0mKknlKF7OqmLM+Zqg==
+"svelte@^3 || ^4", "svelte@^3.19.0 || ^4.0.0", "svelte@^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0", "svelte@^3.23.0 || ^4.0.0-next.0 || ^4.0.0 || ^5.0.0-next.0", "svelte@^3.54.0 || ^4.0.0", "svelte@^3.55.0 || ^4.0.0-next.0 || ^4.0.0 || ^5.0.0-next.0", "svelte@^3.55.1 || ^4.0.0", svelte@^4.0.0, "svelte@^4.0.0 || ^5.0.0-next.0", svelte@^4.2.17, svelte@>=3.23.0:
+  version "4.2.17"
+  resolved "https://registry.npmjs.org/svelte/-/svelte-4.2.17.tgz"
+  integrity sha512-N7m1YnoXtRf5wya5Gyx3TWuTddI4nAyayyIWFojiWV5IayDYNV5i2mRp/7qNGol4DtxEYxljmrbgp1HM6hUbmQ==
   dependencies:
     "@ampproject/remapping" "^2.2.1"
     "@jridgewell/sourcemap-codec" "^1.4.15"
@@ -3471,10 +3481,10 @@ type@^2.7.2:
   resolved "https://registry.npmjs.org/type/-/type-2.7.2.tgz"
   integrity sha512-dzlvlNlt6AXU7EBSfpAscydQ7gXB+pPGsPnfJnZpiNJBDj7IaJzQlBZYGdEi4R9HmPdBv2XmWJ6YUtoTa7lmCw==
 
-typescript@^5.0.0, typescript@^5.0.3, typescript@^5.4.2, typescript@>=3.7.0, "typescript@>=3.9.5 || ^4.0.0 || ^5.0.0":
-  version "5.4.3"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-5.4.3.tgz"
-  integrity sha512-KrPd3PKaCLr78MalgiwJnA25Nm8HAmdwN3mYUYZgG/wizIo9EainNVQI9/yDavtVFRN2h3k8uf3GLHuhDMgEHg==
+typescript@^5.0.3, typescript@^5.4.2, typescript@^5.4.5, typescript@>=3.7.0, "typescript@>=3.9.5 || ^4.0.0 || ^5.0.0":
+  version "5.4.5"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.4.5.tgz"
+  integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
 
 undici-types@~5.26.4:
   version "5.26.5"

@@ -6,30 +6,26 @@
     import type { ContextItem } from "$lib/types"
     import { createEventDispatcher } from "svelte"
 
-    export let visible: boolean             = false
-    export let coords: [number, number]     = [0, 0]
-    export let items: ContextItem[]         = []
+    export let visible: boolean = false
+    export let coords: [number, number] = [0, 0]
+    export let items: ContextItem[] = []
 
     const dispatch = createEventDispatcher()
     function onClose(event: CustomEvent<MouseEvent>) {
         visible = false
-        dispatch('close', event)
+        dispatch("close", event)
     }
 </script>
 
 {#if visible}
-    <div 
-        id="context-menu"
-        use:clickoutside
-        on:clickoutside={onClose}
-        style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
+    <div id="context-menu" use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
         <slot></slot>
         {#each items as item}
-            <Button 
-                class="item" 
-                appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance} 
-                text={item.text} 
-                on:click={(e) => {
+            <Button
+                class="item"
+                appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance}
+                text={item.text}
+                on:click={e => {
                     item.onClick()
                     onClose(e)
                 }}>
@@ -60,4 +56,3 @@
         }
     }
 </style>
-

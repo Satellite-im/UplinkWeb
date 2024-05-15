@@ -26,7 +26,9 @@
             border-radius: var(--border-radius-minimal);
             font-size: var(--label-size);
             color: var(--color);
-            box-shadow: 0px 4px 0px -2px var(--alt-color-alt), 0px 3px 0px 0px var(--color);
+            box-shadow:
+                0px 4px 0px -2px var(--alt-color-alt),
+                0px 3px 0px 0px var(--color);
         }
     }
 </style>

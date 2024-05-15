@@ -1,25 +1,25 @@
 <script lang="ts">
     import Text from "$lib/elements/Text.svelte"
-    import { Size } from "$lib/enums";
+    import { Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
     import prettyBytes from "pretty-bytes"
 
-    export let filesize: number = 0 
-    export let source: string   = ""
-    export let name: string     = ""
-    export let alt: string      = ""
-    export let big: boolean     = false
+    export let filesize: number = 0
+    export let source: string = ""
+    export let name: string = ""
+    export let alt: string = ""
+    export let big: boolean = false
 
     const dispatch = createEventDispatcher()
     function onClick(event: MouseEvent) {
-        dispatch('click', event)
+        dispatch("click", event)
     }
 </script>
 
 <div class="container">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-    <img class={big ? "image-big" : "image"} src={source} alt={alt} on:click={onClick}/>
+    <img class={big ? "image-big" : "image"} src={source} alt={alt} on:click={onClick} />
 
     {#if name}
         <div class="details">

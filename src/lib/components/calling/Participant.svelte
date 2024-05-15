@@ -8,34 +8,26 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { Icon, Button, Text } from "$lib/elements"
 
-    export let participant: User            = defaultUser
-    export let hasVideo: boolean            = false
-    export let isMuted: boolean             = false
-    export let isDeafened: boolean          = false
-    export let showDetails: boolean         = false
-    export let isTalking: boolean           = false
+    export let participant: User = defaultUser
+    export let hasVideo: boolean = false
+    export let isMuted: boolean = false
+    export let isDeafened: boolean = false
+    export let showDetails: boolean = false
+    export let isTalking: boolean = false
 
     function toggleDetails(state: boolean) {
         showDetails = state
     }
 </script>
 
-
 <div class="participant">
     {#if hasVideo}
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video 
-            class="{isMuted ? "muted" : ""} {isDeafened ? "deafened" : ""}"
-            autoplay 
-            muted 
-            src="/assets/mp4/sample.mp4" 
-            on:mouseover={() => toggleDetails(true)} 
-            on:mouseleave={() => toggleDetails(false)}>
-        </video>
+        <video class="{isMuted ? 'muted' : ''} {isDeafened ? 'deafened' : ''}" autoplay muted src="/assets/mp4/sample.mp4" on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}> </video>
         {#if showDetails}
             <div class="details" in:fade={{ duration: animationDuration }}>
                 <div class="user">
-                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator size={Size.Smallest}/>
+                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator size={Size.Smallest} />
                     <Text withShadow size={Size.Smaller}>{mock_users[1].name}</Text>
                 </div>
             </div>
@@ -55,34 +47,27 @@
             </div>
         {/if}
     {:else}
-    <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div 
-        class="simple"
-        on:mouseover={() => toggleDetails(true)} 
-        on:mouseleave={() => toggleDetails(false)}>
-        {#if showDetails}
-            <div class="state centered" in:fade={{ duration: animationDuration }}>
-                <Controls>
-                    {#if isMuted}
-                        <Button appearance={Appearance.Alt} small icon>
-                            <Icon icon={Shape.MicrophoneSlash} />
-                        </Button>
-                    {/if}
-                    {#if isDeafened}
-                        <Button appearance={Appearance.Alt} small icon>
-                            <Icon icon={Shape.HeadphoneSlash} />
-                        </Button>
-                    {/if}
-                </Controls>
-            </div>
-        {/if}
-        <ProfilePicture 
-            image={participant.profile.photo.image} 
-            size={Size.Larger}
-            noIndicator 
-            highlight={(isMuted || isDeafened) ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt}/>
-    </div>
+        <!-- svelte-ignore a11y-mouse-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="simple" on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}>
+            {#if showDetails}
+                <div class="state centered" in:fade={{ duration: animationDuration }}>
+                    <Controls>
+                        {#if isMuted}
+                            <Button appearance={Appearance.Alt} small icon>
+                                <Icon icon={Shape.MicrophoneSlash} />
+                            </Button>
+                        {/if}
+                        {#if isDeafened}
+                            <Button appearance={Appearance.Alt} small icon>
+                                <Icon icon={Shape.HeadphoneSlash} />
+                            </Button>
+                        {/if}
+                    </Controls>
+                </div>
+            {/if}
+            <ProfilePicture image={participant.profile.photo.image} size={Size.Larger} noIndicator highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
+        </div>
     {/if}
 </div>
 
@@ -102,7 +87,8 @@
                 cursor: pointer;
             }
 
-            &.muted, &.deafened {
+            &.muted,
+            &.deafened {
                 border: var(--border-width-more) solid var(--error-color);
             }
         }
@@ -131,12 +117,12 @@
 
         .simple {
             border-radius: 50%;
-            position: relative;  
+            position: relative;
             &:hover {
                 cursor: pointer;
-            }       
+            }
         }
-        
+
         .state {
             position: absolute;
             top: 0;

@@ -1,14 +1,13 @@
 import type { FileInfo } from "$lib/types"
 
-
 export let mock_files: FileInfo[] = [
-    {id: "1", type: "file", source: "", name: "ExampleFile.mp4", size: 982199999},
-    {id: "2", type: "folder", source: "", name: "Downloads", size: 9821999999999},
-    {id: "3", type: "file",  source: "", name: "Test123.7z", size: 98299},
-    {id: "4", type: "folder", source: "", name: "Temp", size: 98212999},
-    {id: "5", type: "file",  source: "", name: "Cat.tar", size: 985678999999},
-    {id: "6", type: "file",  source: "", name: "Dog.zip", size: 9821239999},
-    {id: "7", type: "image",  source: "/assets/library.avif", name: "Stock.png", size: 1341234543},
+    { id: "1", type: "file", source: "", name: "ExampleFile.mp4", size: 982199999 },
+    { id: "2", type: "folder", source: "", name: "Downloads", size: 9821999999999 },
+    { id: "3", type: "file", source: "", name: "Test123.7z", size: 98299 },
+    { id: "4", type: "folder", source: "", name: "Temp", size: 98212999 },
+    { id: "5", type: "file", source: "", name: "Cat.tar", size: 985678999999 },
+    { id: "6", type: "file", source: "", name: "Dog.zip", size: 9821239999 },
+    { id: "7", type: "image", source: "/assets/library.avif", name: "Stock.png", size: 1341234543 },
     // {id: "8", type: "file", source: "", name: "Bird.tar", size: 456123789},
     // {id: "9", type: "file", source: "", name: "Fish.zip", size: 789456123},
     // {id: "10", type: "image", source: "/assets/nature.avif", name: "Nature.png", size: 987654321},
@@ -39,4 +38,4 @@ export let mock_files: FileInfo[] = [
     // {id: "35", type: "file", source: "", name: "Gorilla.tar", size: 654987321},
     // {id: "36", type: "file", source: "", name: "Rhino.zip", size: 123456789},
     // {id: "37", type: "image", source: "/assets/desert.avif", name: "Desert.png", size: 987654321}
-];
+]

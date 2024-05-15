@@ -24,7 +24,7 @@
     </Button>
 
     <Spacer />
-    
+
     <Label text="Categories" />
     <Button text="Community Upgrades" fill appearance={Appearance.Alt}>
         <Icon icon={Shape.Beaker} />

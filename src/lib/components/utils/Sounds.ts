@@ -1,14 +1,13 @@
 export enum Sound {
-    On           = "/assets/mp3/on.mp3",
-    Off          = "/assets/mp3/off.mp3",
-    Joined       = "/assets/mp3/joined.mp3",
-    Disconnect   = "/assets/mp3/disconnect.mp3",
+    On = "/assets/mp3/on.mp3",
+    Off = "/assets/mp3/off.mp3",
+    Joined = "/assets/mp3/joined.mp3",
+    Disconnect = "/assets/mp3/disconnect.mp3",
     Notification = "/assets/mp3/notification.mp3",
     OutgoingCall = "/assets/mp3/outgoing-call.mp3",
     IncomingCall = "/assets/mp3/incoming-call.mp3",
-    Request      = "/assets/mp3/request.mp3"
+    Request = "/assets/mp3/request.mp3",
 }
-
 
 let on: HTMLAudioElement = new Audio(Sound.On)
 let off: HTMLAudioElement = new Audio(Sound.Off)
@@ -20,19 +19,33 @@ let incomingCall: HTMLAudioElement = new Audio(Sound.IncomingCall)
 let request: HTMLAudioElement = new Audio(Sound.Request)
 
 export class Sounds {
-    constructor() {
-        
-    }
+    constructor() {}
     static play(sound: Sound) {
         switch (sound) {
-            case Sound.On: this.on(); break
-            case Sound.Off: this.off(); break
-            case Sound.Joined: this.joined(); break
-            case Sound.Disconnect: this.disconnect(); break
-            case Sound.Notification: this.notification(); break
-            case Sound.OutgoingCall: this.outgoingCall(); break
-            case Sound.IncomingCall: this.incomingCall(); break
-            case Sound.Request: this.request(); break
+            case Sound.On:
+                this.on()
+                break
+            case Sound.Off:
+                this.off()
+                break
+            case Sound.Joined:
+                this.joined()
+                break
+            case Sound.Disconnect:
+                this.disconnect()
+                break
+            case Sound.Notification:
+                this.notification()
+                break
+            case Sound.OutgoingCall:
+                this.outgoingCall()
+                break
+            case Sound.IncomingCall:
+                this.incomingCall()
+                break
+            case Sound.Request:
+                this.request()
+                break
         }
     }
 

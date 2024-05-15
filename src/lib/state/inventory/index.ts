@@ -17,7 +17,7 @@ class Store {
     }
 
     loadMockData() {
-        this.state.set({ ...get(this.state), frames: defaultInventory.frames})
+        this.state.set({ ...get(this.state), frames: defaultInventory.frames })
     }
 }
 
