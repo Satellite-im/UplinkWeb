@@ -1,5 +1,4 @@
 import init, * as wasm from '../../../warp-wasm/pkg/warp_ipfs'
-import { Tesseract } from './tesseract'
 
 export class CWarpInstance {
     private warp_instance!: wasm.WarpInstance
@@ -7,7 +6,7 @@ export class CWarpInstance {
     public raygun!: wasm.RayGunBox
     public constellation!: wasm.ConstellationBox
 
-    async start_warp(tesseract: wasm.Tesseract): Promise<void> {
+    async initWarp(tesseract: wasm.Tesseract): Promise<void> {
         await init()
         this.warp_instance = await new wasm.WarpIpfs(wasm.Config.minimal_testing(), tesseract) as wasm.WarpInstance
         this.multipass = this.warp_instance.multipass
@@ -19,21 +18,21 @@ export class CWarpInstance {
         console.log('RayGun: ', this.raygun)
     }
 
-    get_multipass(): wasm.MultiPassBox {
+    getMultipass(): wasm.MultiPassBox {
         if (!this.multipass) {
             throw new Error("Multipass is not initialized")
         }
         return this.multipass
     }
 
-    get_raygun(): wasm.RayGunBox {
+    getRaygun(): wasm.RayGunBox {
         if (!this.raygun) {
             throw new Error("Raygun is not initialized")
         }
         return this.raygun
     }
 
-    get_constellation(): wasm.ConstellationBox {
+    getConstellation(): wasm.ConstellationBox {
         if (!this.constellation) {
             throw new Error("Constellation is not initialized")
         }

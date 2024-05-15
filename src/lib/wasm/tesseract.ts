@@ -3,21 +3,22 @@ import init, * as wasm from '../../../warp-wasm/pkg/warp_ipfs'
 class CTesseract {
     private tesseract: wasm.Tesseract | undefined
 
-    get_tesseract(): wasm.Tesseract {
+    getTesseract(): wasm.Tesseract {
         if (!this.tesseract) {
             throw new Error("Tesseract instance is not initialized");
         }
         return this.tesseract
     }
 
-    get_accounts() {
+    getAccounts() {
         // Your implementation here
     }
 
     async unlock(pin: string): Promise<wasm.Tesseract> {
         await init()
         this.tesseract = new wasm.Tesseract()
-        this.tesseract.load_from_storage()
+        // TODO(Lucas): It seems give some problem on web
+        // this.tesseract.load_from_storage()
 
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)

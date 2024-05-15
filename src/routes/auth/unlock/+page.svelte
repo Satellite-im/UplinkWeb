@@ -58,9 +58,10 @@
         scramble={scramble}
         showSettings={false}
         on:submit={async (e) => {
+            loading = true
             let tesseract = await Tesseract.unlock(e.detail)
-            await WarpInstance.start_warp(tesseract)
-            await Multipass.create_identity('Lucas', undefined)
+            await WarpInstance.initWarp(tesseract)
+            await Multipass.createIdentity('Satellite_user', undefined)
             goto(Route.Pre)
         }} />
 
