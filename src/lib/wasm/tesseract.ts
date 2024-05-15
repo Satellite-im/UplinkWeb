@@ -7,18 +7,15 @@ class CTesseract {
         // init().then((_: any) => {
         //     let tesseract = new wasm.Tesseract()
         //     tesseract.load_from_storage()
-
         //     const encoder = new TextEncoder();
         //     const passphrase = encoder.encode(pin);
-            
         //     tesseract.unlock(passphrase)
-
         //     if (!tesseract.autosave_enabled()) {
         //       tesseract.set_autosave()
         //     }
         // })
     }
-    
+
     lock() {}
 }
 

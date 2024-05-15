@@ -82,7 +82,7 @@
     UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe(c => (activeChat = c))
-    
+
     function unsubscribe() {
         throw new Error("Function not implemented.")
     }
@@ -101,11 +101,6 @@
         dragging_files = 0
         // upload files
         console.log("dropping files ", event.dataTransfer?.files)
-    }
-
-    function onSearchEnter() {
-        goto(Route.Chat)
-        search_component.select_first()
     }
 
     function onSearchEnter() {
@@ -150,7 +145,7 @@
     {/if}
 
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files}bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>
             <Button

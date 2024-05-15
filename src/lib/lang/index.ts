@@ -23,7 +23,7 @@ export function initLocale() {
                 openFolder: "Open Folder",
                 profiles: "Profiles",
                 users: "Users",
-                groups: "Groups"
+                groups: "Groups",
             },
             market: {
                 market: "Marketplace",

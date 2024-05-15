@@ -2,10 +2,7 @@
     import { ChatType, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { 
-        ProfilePicture, ProfilePictureMany
-
-    } from "$lib/components"
+    import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { type Chat, type User } from "$lib/types"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
@@ -18,8 +15,8 @@
     let loading = false
     let chats: Chat[] = get(UIStore.state.chats)
     let friends: User[] = get(Store.state.friends)
-    UIStore.state.chats.subscribe((c) => chats = c)
-    Store.state.friends.subscribe((f) => friends = f)
+    UIStore.state.chats.subscribe(c => (chats = c))
+    Store.state.friends.subscribe(f => (friends = f))
 
     let searched_chats: [Chat, string, User[]][] = []
     let searched_friends: [User, Chat | undefined][] = []
@@ -30,8 +27,7 @@
                 .filter(c => c.kind == ChatType.Group)
                 .map<[Chat, string, User[]]>(c => [c, get_chat_name(c), c.users.filter(u => u.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()))])
                 .filter(entry => entry[1].toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()) || entry[2].length > 0)
-            searched_friends = friends.filter(f => f.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()))
-                .map(f => [f, chats.find(c => c.kind == ChatType.DirectMessage && c.users[0].id === f.id)])
+            searched_friends = friends.filter(f => f.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase())).map(f => [f, chats.find(c => c.kind == ChatType.DirectMessage && c.users[0].id === f.id)])
         } else {
             searched_chats = []
             searched_friends = []
@@ -41,21 +37,19 @@
     export function select_first() {
         if (searched_friends.length > 0) {
             select_chat(searched_friends[0][1], searched_friends[0][0])
-        }
-        else if (searched_chats.length > 0) {
+        } else if (searched_chats.length > 0) {
             select_chat(searched_chats[0][0], undefined)
         }
     }
 
     function is_friend_typing(friend: User) {
-        let dm = chats.find(c => c.kind === ChatType.DirectMessage && c.users[0].id === friend.id);
+        let dm = chats.find(c => c.kind === ChatType.DirectMessage && c.users[0].id === friend.id)
         return dm && dm.activity
     }
 
     function get_chat_name(chat: Chat): string {
-        if (chat.name)
-            return chat.name;
-        return chat.users.map(u=>u.name).join(", ")
+        if (chat.name) return chat.name
+        return chat.users.map(u => u.name).join(", ")
     }
 
     function select_chat(chat: Chat | undefined, user: User | undefined) {
@@ -69,22 +63,16 @@
     }
 </script>
 
-{#if searched_friends.length > 0 || searched_chats.length > 0 }
+{#if searched_friends.length > 0 || searched_chats.length > 0}
     <div class="searchbar-dropdown">
-        {#if searched_friends.length > 0 }
+        {#if searched_friends.length > 0}
             <div class="searchbar-entry-label">
                 {$_("generic.users")}
             </div>
             {#each searched_friends as [friend, chat]}
-                <div class="searchbar-entry" role= "none" on:click={() => select_chat(chat, friend)}>
+                <div class="searchbar-entry" role="none" on:click={() => select_chat(chat, friend)}>
                     <div class="profile-picture-wrap">
-                        <ProfilePicture 
-                        typing={is_friend_typing(friend)} 
-                        image={friend.profile.photo.image}
-                        status={friend.profile.status} 
-                        size={Size.Medium} 
-                        loading={loading}
-                        frame={friend.profile.photo.frame} />
+                        <ProfilePicture typing={is_friend_typing(friend)} image={friend.profile.photo.image} status={friend.profile.status} size={Size.Medium} loading={loading} frame={friend.profile.photo.frame} />
                     </div>
                     <span class="entry-title">
                         <span class="highlight-search-typed-chars">
@@ -93,29 +81,23 @@
                         <span class="remaining-match-searc">
                             {friend.name.substring(filter.length)}
                         </span>
-                    </span> 
+                    </span>
                 </div>
             {/each}
-            {#if searched_chats.length > 0 }
+            {#if searched_chats.length > 0}
                 <div class="border"></div>
             {/if}
         {/if}
-        {#if searched_chats.length > 0 }
+        {#if searched_chats.length > 0}
             <div class="searchbar-entry-label">
                 {$_("generic.groups")}
             </div>
             {#each searched_chats as [chat, name, users]}
                 <div class="searchbar-entry searchbar-entry-group">
-                    <div class="group" role= "none" on:click={() => select_chat(chat, undefined)}>
+                    <div class="group" role="none" on:click={() => select_chat(chat, undefined)}>
                         <div class="profile-picture-wrap">
                             {#if chat.users.length === 1}
-                            <ProfilePicture 
-                                typing={chat.activity} 
-                                image={chat.users[0].profile.photo.image}
-                                status={chat.users[0].profile.status} 
-                                size={Size.Medium} 
-                                loading={loading}
-                                frame={chat.users[0].profile.photo.frame} />
+                                <ProfilePicture typing={chat.activity} image={chat.users[0].profile.photo.image} status={chat.users[0].profile.status} size={Size.Medium} loading={loading} frame={chat.users[0].profile.photo.frame} />
                             {:else}
                                 <ProfilePictureMany users={chat.users} />
                             {/if}
@@ -139,13 +121,7 @@
                         {#each users as user}
                             <div class="searchbar-entry-group-user">
                                 <div class="profile-picture-wrap">
-                                    <ProfilePicture 
-                                    typing={is_friend_typing(user)} 
-                                    image={user.profile.photo.image}
-                                    status={user.profile.status} 
-                                    size={Size.Medium} 
-                                    loading={loading}
-                                    frame={user.profile.photo.frame} />
+                                    <ProfilePicture typing={is_friend_typing(user)} image={user.profile.photo.image} status={user.profile.status} size={Size.Medium} loading={loading} frame={user.profile.photo.frame} />
                                 </div>
                                 <span class="entry-title">
                                     <span class="highlight-search-typed-chars">
@@ -154,7 +130,7 @@
                                     <span class="remaining-match-searc">
                                         {user.name.substring(filter.length)}
                                     </span>
-                                </span> 
+                                </span>
                             </div>
                         {/each}
                     </div>
