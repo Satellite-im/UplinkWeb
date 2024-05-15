@@ -1,24 +1,19 @@
 <script lang="ts">
-    import init, * as wasm from "../../../../warp-wasm/pkg/"
-    // import {tesseract_new } from '../../../../warp-wasm/pkg/warp_bg.wasm';
-
     import { Label } from "$lib/elements"
     import { Modal, PinInput } from "$lib/components"
     import { goto } from "$app/navigation"
     import { Appearance, Route, Shape } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
-    import { _, t } from "svelte-i18n"
+    import { _ } from "svelte-i18n"
     import { Text, Button, Icon } from "$lib/elements"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
     import { mock_users } from "$lib/mock/users"
     import Spacer from "$lib/elements/Spacer.svelte"
+    import { Tesseract } from "$lib/wasm/tesseract"
+    import { Multipass } from "$lib/wasm/multipass"
+    import { WarpInstance } from "$lib/wasm/warp"
 
-    init().then(_exports => {
-        console.log(wasm)
-        let tesseract = new wasm.Tesseract()
-        tesseract.load_from_storage()
-    })
 
     initLocale()
 
@@ -62,7 +57,11 @@
         loading={loading}
         scramble={scramble}
         showSettings={false}
-        on:submit={() => {
+        on:submit={async (e) => {
+            loading = true
+            let tesseract = await Tesseract.unlock(e.detail)
+            await WarpInstance.initWarp(tesseract)
+            await Multipass.createIdentity('Satellite_user', undefined)
             goto(Route.Pre)
         }} />
 
