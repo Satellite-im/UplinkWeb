@@ -5,7 +5,7 @@ type VoiceRTCOptions = {
     video: boolean
 }
 
-class VoiceRTC {
+export class VoiceRTC {
     localPeer = new Peer({ initiator: true, stream: undefined })
     remotePeer = new Peer()
 
@@ -14,25 +14,33 @@ class VoiceRTC {
             video: options.video,
             audio: options.audio,
         })
-        .then(this.bindStream)
-        .catch(() => {})
+            .then(this.localStream)
+            .catch(() => { })
 
         this.localPeer.on("signal", data => this.remotePeer.signal(data))
         this.localPeer.on("connect", () => this.connect())
         this.localPeer.on("error", (error: Error) => this.error(error))
 
-        this.remotePeer.on("stream", (stream: MediaStream) => this.handleRemoteStream(stream))
+        this.remotePeer.on("stream", (stream: MediaStream) => this.remoteStream(stream))
+    }
+
+    get local() {
+        return this.localPeer
+    }
+
+    get remote() {
+        return this.remotePeer
     }
 
     connect() {
         // stub
     }
 
-    handleRemoteStream(_stream: MediaStream) {
+    remoteStream(_stream: MediaStream) {
         // stub
     }
 
-    bindStream(stream: MediaStream) {
+    localStream(stream: MediaStream) {
         this.localPeer = new Peer({ initiator: true, stream })
     }
 

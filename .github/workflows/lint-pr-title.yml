@@ -1,50 +1,55 @@
 name: Lint Pull Request Title
 
 on:
-  pull_request:
-    types:
-      - opened
-      - edited
-      - reopened
+    pull_request:
+        types:
+            - opened
+            - edited
+            - reopened
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    lint:
+        runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: actions-ecosystem/action-regex-match@v2
-        id: regex-match
-        with:
-          text: ${{ github.event.pull_request.title }}
-          regex: '(?:add|update|task|chore|feat|fix|refactor)\([a-z-A-Z]+\):\s.+'
+            - uses: actions-ecosystem/action-regex-match@v2
+              id: regex-match
+              with:
+                  text: ${{ github.event.pull_request.title }}
+                  regex: '(?:add|update|task|chore|feat|fix|refactor)\([a-z-A-Z]+\):\s.+'
 
-      - uses: actions-ecosystem/action-create-comment@v1
-        if: ${{ steps.regex-match.outputs.match == '' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            :warning: The title of this PR is invalid.
-            Please make the title match the regex `(?:add|update|task|chore|feat|fix|refactor)\([a-z-A-Z]+\):\s.+`.
-            e.g.) `add(cli): enable --verbose flag`, `fix(api): avoid unexpected error in handler`
+            - uses: actions-ecosystem/action-create-comment@v1
+              if: ${{ steps.regex-match.outputs.match == '' }}
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  body: |
+                      :warning: The title of this PR is invalid.
+                      Please make the title match the regex `(?:add|update|task|chore|feat|fix|refactor)\([a-z-A-Z]+\):\s.+`.
+                      e.g.) `add(cli): enable --verbose flag`, `fix(api): avoid unexpected error in handler`
 
-      - name: Add invalid PR title label if regex is not matching
-        if: ${{ steps.regex-match.outputs.match == '' }}
-        uses: buildsville/add-remove-label@v2.0.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          labels: |
-            invalid PR title
-          type: add
+            - name: Add invalid PR title label if regex is not matching
+              if: ${{ steps.regex-match.outputs.match == '' }}
+              uses: buildsville/add-remove-label@v2.0.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  labels: |
+                      Invalid PR title
+                  type: add
 
-      - name: Remove label if regex is matching
-        if: ${{ steps.regex-match.outputs.match != '' }}
-        uses: buildsville/add-remove-label@v2.0.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          labels: |
-            invalid PR title
-          type: remove
+            - name: Remove label if regex is matching
+              if: ${{ steps.regex-match.outputs.match != '' }}
+              uses: buildsville/add-remove-label@v2.0.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  labels: |
+                      Invalid PR title
+                  type: remove
 
-      - run: exit 1
-        if: ${{ steps.regex-match.outputs.match == '' }}
+            - run: exit 1
+              if: ${{ steps.regex-match.outputs.match == '' }}

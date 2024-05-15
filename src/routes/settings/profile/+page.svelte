@@ -116,7 +116,7 @@
                                 // TODO: Toast
                                 Store.setUsername(user.name)
                             }}
-                            on:keypress={_ => {
+                            on:input={_ => {
                                 changeList.username = true
                                 unsavedChanges = changeList.username || changeList.statusMessage
                             }} />
@@ -139,7 +139,7 @@
                         // TODO: Toast
                         Store.setStatus(user.profile.status_message)
                     }}
-                    on:keypress={_ => {
+                    on:input={_ => {
                         changeList.statusMessage = true
                         unsavedChanges = changeList.username || changeList.statusMessage
                     }} />
