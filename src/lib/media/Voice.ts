@@ -1,7 +1,7 @@
 import Peer from "simple-peer"
 
 type VoiceRTCOptions = {
-    audio: boolean
+    audio: boolean,
     video: boolean
 }
 
@@ -10,30 +10,29 @@ class VoiceRTC {
     remotePeer = new Peer()
 
     constructor(options: VoiceRTCOptions) {
-        navigator.mediaDevices
-            .getUserMedia({
-                video: options.video,
-                audio: options.audio,
-            })
-            .then(this.bindStream)
-            .catch(() => {})
+        navigator.mediaDevices.getUserMedia({
+            video: options.video,
+            audio: options.audio,
+        })
+            .then(this.localStream)
+            .catch(() => { })
 
         this.localPeer.on("signal", data => this.remotePeer.signal(data))
         this.localPeer.on("connect", () => this.connect())
         this.localPeer.on("error", (error: Error) => this.error(error))
 
-        this.remotePeer.on("stream", (stream: MediaStream) => this.handleRemoteStream(stream))
+        this.remotePeer.on("stream", (stream: MediaStream) => this.remoteStream(stream))
     }
 
     connect() {
         // stub
     }
 
-    handleRemoteStream(_stream: MediaStream) {
+    remoteStream(_stream: MediaStream) {
         // stub
     }
 
-    bindStream(stream: MediaStream) {
+    localStream(stream: MediaStream) {
         this.localPeer = new Peer({ initiator: true, stream })
     }
 
