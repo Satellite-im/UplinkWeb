@@ -9,7 +9,7 @@
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
-    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu } from "$lib/components"
+    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu, ChatFilter } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
@@ -18,6 +18,7 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
+    import { goto } from "$app/navigation"
 
     initLocale()
 
@@ -37,6 +38,10 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
     let updatedFiles: FileInfo[] = []
+
+    let search_filter: string
+    let search_component: ChatFilter
+
     $: files = get(Store.state.files)
     const unsubscribeFiles = Store.state.files.subscribe(f => {
         files = f
@@ -97,6 +102,11 @@
         // upload files
         console.log("dropping files ", event.dataTransfer?.files)
     }
+
+    function onSearchEnter() {
+        goto(Route.Chat)
+        search_component.select_first()
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -135,7 +145,8 @@
     {/if}
 
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files}>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
+        <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>
             <Button
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
