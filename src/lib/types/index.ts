@@ -158,8 +158,9 @@ export type FileInfo = {
     type: string,
     size: number,
     name: string,
-    source: string
-    items?: FileInfo[]
+    source: string,
+    items?: FileInfo[],
+    parentId?: string,
 }
 
 export type Attachment = {

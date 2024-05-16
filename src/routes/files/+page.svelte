@@ -15,7 +15,7 @@
     import { onDestroy, onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
-    import { get } from "svelte/store"
+    import { derived, get, writable, type Readable } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import Breadcrumb from "$lib/elements/Breadcrumb.svelte"
@@ -51,17 +51,117 @@
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
     let updatedFiles: FileInfo[] = []
-    $: files = get(Store.state.files)
-    const unsubscribeFiles = Store.state.files.subscribe((f) => {
-        files = f
-        })
+    $: allFiles = get(Store.state.files)
+    let parentFolderIdsStore = writable<string[]>([]);
+let currentFolderIdStore = writable<string>("");
+let updateTrigger = writable<boolean>(false);
+
+let tempFilesStore = writable<FileInfo[]>([]);
+    let filteredFiles: Readable<FileInfo[]>;
+
+$: currentFolderId = currentFolderIdStore;
+$: parentFolderIds = parentFolderIdsStore;
+
+$: filteredFiles = derived([currentFolderIdStore, parentFolderIdsStore], ([$currentFolderId, $parentFolderIds], set) => {
+    // Access the value of tempFilesStore
+    
+    if (!$currentFolderIdStore) {
+        Store.state.files.subscribe(files => {
+        tempFilesStore.set(allFiles);
+    });
+    }
+    // let filesArray = get(tempFilesStore) as FileInfo[];
+    let filtered = allFiles.filter(item => {
+        if (!item) return false; 
+        if (!$parentFolderIds.length) {
+            return true;
+        } else {
+            return item.parentId === $currentFolderId;
+        }
+    });
+    // console.log(item.id, $currentFolderId)
+    function findFoldersRecursive(files: FileInfo[], parentId: string): FileInfo[] {
+    let matchingFolders: FileInfo[] = [];
+    console.log("Processing parent folder:", parentId);
+    allFiles.forEach(file => {
+        // console.log("Pwtf:",file, file.parentId === parentId)
+        if (file.type === 'folder' && file.parentId === parentId) {
+            matchingFolders.push(file);
+            console.log("Subfolders found for", file.id, ":", file.items);
+            let subFolders = findFoldersRecursive(files, file.id);
+            matchingFolders.push(...subFolders); 
+        } 
+            console.log("itemcheck", file.items, parentId, $currentFolderId);
+        if (file.items && file.type === 'folder' && parentId === $currentFolderId) {
+            file.items.forEach(item => {
+                if (file.type === 'folder' && item.parentId === parentId) {
+            matchingFolders.push(item);
+            // console.log("INSIDE ITEMS", item.id, ":", item.items);
+            let subFolders = findFoldersRecursive(files, item.id);
+            matchingFolders.push(...subFolders); 
+        } 
+            })
+        }
+    });
+    return matchingFolders;
+}
+
+function findMatchingFolders(allFiles: FileInfo[], currentFolderId: string): FileInfo[] {
+    return findFoldersRecursive(allFiles, currentFolderId);
+}
+
+let matchingParents = findMatchingFolders(allFiles, $currentFolderId);
+// console.log("Matching folders:", matchingParents);
+if (matchingParents && $currentFolderId) {
+    let matchingFiles = allFiles.filter(item => item.id === $currentFolderId);
+    // console.log("matchingParent", $currentFolderId, matchingParents);
+    filtered = matchingFiles && matchingFiles.length > 0 ? matchingFiles[0]?.items || [] : [];
+    tempFilesStore.set(filtered);
+}
+    set($tempFilesStore);
+}) as Readable<FileInfo[]>;
+
+function openFolder(folderId: string) {
+    currentFolderIdStore.set(folderId);
+    parentFolderIdsStore.update(ids => [...ids, folderId]);
+
+    Store.state.files.subscribe(files => {
+        let currentFolderFiles = files.filter(file => file.parentId === folderId);
+        tempFilesStore.set(currentFolderFiles);
+        console.log("CHECK",$tempFilesStore)
+
+        let parentFolderExists = files.some(file => file.id === folderId);
+        if (!parentFolderExists) {
+            tempFilesStore.set(files);
+        }
+    });
+}
+
+function goBack() {
+    if (!$tempFilesStore.length) {
+        Store.state.files.subscribe(files => {
+        tempFilesStore.set(allFiles);
+    });
+    }
+    parentFolderIdsStore.update(ids => {
+        ids.pop();
+        console.log($currentFolderIdStore)
+        currentFolderIdStore.set(ids[ids.length - 1]);
+        return [...ids]; 
+    });
+    
+}
+
+
     let folderClicked: FileInfo = {
       id: "",
       type: "",
       size: 0,
       name: "",
-      source: ""
+      source: "",
+      items: []
     }
+    
     onMount(() => {
     const dropzone = document.querySelector('.files') as HTMLElement
     if (dropzone) {
@@ -78,7 +178,7 @@
 
             updatedFiles = newOrderIds
                 .map(id => {
-                    const file = files.find(file => file.id === id)
+                    const file = $filteredFiles.find(file => file.id === id)
                     return file ? file : null
                 }) as FileInfo[]
 
@@ -90,7 +190,6 @@
         let lastClickTarget: HTMLElement | null = null
         function updateFilesFromFolder(folder: FileInfo): void {
             if (folder.items && folder.items.length > 0) {
-                console.log(folder)
                 Store.updateFileOrder(folder.items)
             }
         }
@@ -104,15 +203,16 @@
             if (lastClickTarget === target && currentTime - lastClickTime < 200) {
             if (lastClickTarget.classList.contains('folder-draggable')) {
                 const targetId = target.dataset.id
-                const targetFolder = files.find(item => item.id === targetId)
+                const targetFolder = $filteredFiles.find(item => item.id === targetId)
                 if (targetFolder) {
                     folderClicked = targetFolder
                 }
                 if (target) {
                 const targetId = target.dataset.id
-                const targetFolder = files.find(item => item.id === targetId)
+                const targetFolder = $filteredFiles.find(item => item.id === targetId)
                 if (targetFolder) {
                     updateFilesFromFolder(targetFolder)
+                    openFolder(targetFolder.id)
                     // Update breadcrumb or other navigation state to track current folder
                 }
             }
@@ -121,11 +221,9 @@
             lastClickTarget = target
             lastClickTime = currentTime
         })
-
     }
 })
     onDestroy(() => {
-        unsubscribeFiles()
         unsubscribeopenFolders()
     })
 
@@ -134,10 +232,13 @@
     UIStore.state.chats.subscribe((sc) => chats = sc)
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c) => activeChat = c)
-    
-  function unsubscribe() {
-    throw new Error("Function not implemented.")
-  }
+// Subscribe to changes in parentFolderIdsStore to update currentFolderId
+// const unsubscribe = parentFolderIdsStore.subscribe(value => {
+//     currentFolderId = value[value.length - 1];
+// });
+
+// Unsubscribe when component is destroyed
+// onDestroy(unsubscribe);
 
 </script>
 
@@ -211,7 +312,7 @@
         {/if}
         {#if activeTabRoute === "files"}
         <ul class="folderList">
-            {#each files as file}
+            {#each $filteredFiles as file}
                 <FolderItem
                     file={file}
                     openFolders={openFolders}
@@ -274,10 +375,12 @@
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
-
-        <Breadcrumb folder={folderClicked} folderRoot={files}></Breadcrumb>
+        <button on:click={goBack}>Go Back</button>
+        <!-- <Breadcrumb folder={folderClicked} folderRoot={files}></Breadcrumb> -->
         <div class="files">
-            {#each files as item (item.id)}
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            {#each $filteredFiles as item (item.id)}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div
                     class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}"
                     draggable="true"
@@ -285,7 +388,7 @@
                 >
                     {#if item.type === "file"}
                         <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail
+                            contextPosition = evt.detail;
                             contextData = [
                                 {
                                     id: "delete",
@@ -294,11 +397,11 @@
                                     appearance: Appearance.Default,
                                     onClick: () => {}
                                 }
-                            ]
+                            ];
                         }} />       
                     {:else if item.type === "folder"}
                         <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail
+                            contextPosition = evt.detail;
                             contextData = [
                                 {
                                     id: "delete",
@@ -307,11 +410,11 @@
                                     appearance: Appearance.Default,
                                     onClick: () => {}
                                 }
-                            ]
-                        }}/>       
+                            ];
+                        }} />
                     {:else if item.type === "image"}
                         <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
-                            previewImage = item.source
+                            previewImage = item.source;
                         }} />
                     {/if}
                 </div>

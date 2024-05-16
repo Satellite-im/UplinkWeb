@@ -17,12 +17,12 @@
     }
     $: folderOpenClosedIcon =  () => {if ( !openFolders[file.id] && file.items?.length && file.type === "folder") {
         return Shape.Folder
-    } 
+    }
     if(openFolders[file.id] && file.items?.length && file.type === "folder") { 
-        console.log(openFolders, openFolders[file.id])
         return Shape.FolderOpen}
     if(file.type === "file") {return Shape.Document}
-    if(file.type === "image") {return Shape.Image}}
+    if(file.type === "image") {return Shape.Image}
+    }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
