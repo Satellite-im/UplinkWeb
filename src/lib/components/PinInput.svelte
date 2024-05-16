@@ -98,9 +98,9 @@
 
 <div class="pin-input-group {loading ? 'loading' : ''}">
     <div class="pin-group">
-        <div class="pin-display {error ? 'error' : ''}">
+        <div class="pin-display {error ? 'error' : ''}" data-cy="pin-display{error ? '-error' : ''}">
             {#each displayDots as dot}
-                <span class="dot {dot ? 'filled' : ''}"></span>
+                <span class="dot {dot ? 'filled' : ''}" data-cy="pin-dot{dot ? '-filled' : ''}"></span>
             {/each}
         </div>
         <div class="shadow-input">
@@ -155,13 +155,13 @@
         </Button>
         <div class="pin-settings flex-column {showSettings ? 'visible' : 'hidden'}">
             <div class="flex-row setting">
-                <Switch on={scramble} on:toggle={handleToggleScramble} />
-                <Label text={$_("pages.auth.unlock.scramble_pin")} />
+                <Switch testid="switch-scramble-keypad" on={scramble} on:toggle={handleToggleScramble} />
+                <Label text={$_("pages.auth.unlock.scramble_pin")} testid="label-scramble-keypad" />
             </div>
             <hr class="divider" />
             <div class="flex-row setting">
-                <Switch />
-                <Label text="Stay unlocked?" />
+                <Switch testid="switch-stay-unlocked" />
+                <Label text="Stay unlocked?" testid="label-stay-unlocked" />
             </div>
         </div>
     </div>
