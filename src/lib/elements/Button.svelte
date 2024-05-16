@@ -5,6 +5,7 @@
     import { Loader, Text } from "./"
 
     export let tooltip: string | null = ""
+    export let testid: string | null = ""
     export let disabled: boolean = false
     export let rotateOnHover: boolean = false
     export let text: string = ""
@@ -32,6 +33,7 @@
 
 <button
     class="button {fill ? 'fill' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip ? 'tooltip' : ''} {small ? 'small' : ''} {clazz || ''}"
+    data-cy={testid}
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click={onClick}

@@ -3,6 +3,7 @@
 
     export let on: boolean = false
     export let small: boolean = false
+    export let testid: string | null = ""
 
     // Create an event dispatcher
     const dispatch = createEventDispatcher()
@@ -14,7 +15,7 @@
 </script>
 
 <label class="switch {small ? 'small' : ''}">
-    <input type="checkbox" bind:checked={on} on:change={onToggle} />
+    <input data-cy={testid} type="checkbox" bind:checked={on} on:change={onToggle} />
     <span class="slider"></span>
 </label>
 

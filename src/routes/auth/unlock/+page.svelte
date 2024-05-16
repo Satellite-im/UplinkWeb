@@ -1,44 +1,35 @@
 <script lang="ts">
-    import init, * as wasm from "../../../../warp-wasm/pkg/"; // TODO: Move this into a npm package.
-    // import {tesseract_new } from '../../../../warp-wasm/pkg/warp_bg.wasm';
+    import { Label } from "$lib/elements"
+    import { Modal, PinInput } from "$lib/components"
+    import { goto } from "$app/navigation"
+    import { Appearance, Route, Shape } from "$lib/enums"
 
-    import { Label } from "$lib/elements";
-    import { Modal, PinInput } from "$lib/components";
-    import { goto } from "$app/navigation";
-    import { Appearance, Route, Shape } from "$lib/enums";
+    import { initLocale } from "$lib/lang"
+    import { _ } from "svelte-i18n"
+    import { Text, Button, Icon } from "$lib/elements"
+    import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
+    import { mock_users } from "$lib/mock/users"
+    import Spacer from "$lib/elements/Spacer.svelte"
+    import { Tesseract } from "$lib/wasm/tesseract"
+    import { Multipass } from "$lib/wasm/multipass"
+    import { WarpInstance } from "$lib/wasm/warp"
 
-    import { initLocale } from "$lib/lang";
-    import { _, t } from "svelte-i18n";
-    import { Text, Button, Icon } from "$lib/elements";
-    import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte";
-    import { mock_users } from "$lib/mock/users";
-    import Spacer from "$lib/elements/Spacer.svelte";
+    initLocale()
 
-    init().then((_exports: any) => {
-        console.log(wasm);
-        let tesseract = new wasm.Tesseract();
-        tesseract.load_from_storage();
-    });
+    let create = false
+    let loading = false
+    let scramble = true
 
-    initLocale();
-
-    let create = false;
-    let loading = false;
-    let scramble = true;
-
-    let showAccounts = false;
+    let showAccounts = false
 </script>
 
 <div id="auth-unlock">
     {#if showAccounts}
-        <Modal on:close={(_) => (showAccounts = false)} padded>
+        <Modal on:close={_ => (showAccounts = false)} padded>
             <div class="profiles">
                 <Label text={$_("generic.profiles")} />
                 <div class="user">
-                    <ProfilePicture
-                        image={mock_users[1].profile.photo.image}
-                        noIndicator
-                    />
+                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator />
                     <Text class="username">{mock_users[1].name}</Text>
                 </div>
                 <div class="user">
@@ -56,30 +47,25 @@
     {#if loading}
         <Label text={$_("generic.loading")} />
     {:else}
-        <Label
-            text={create
-                ? $_("pages.auth.unlock.choose_pin")
-                : $_("pages.auth.unlock.enter_pin")}
-        />
+        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} testid="label-choose-enter-pin" />
     {/if}
 
     <PinInput
         min={4}
         max={8}
-        {loading}
-        {scramble}
+        loading={loading}
+        scramble={scramble}
         showSettings={false}
-        on:submit={() => {
-            goto(Route.Pre);
-        }}
-    />
+        on:submit={async e => {
+            loading = true
+            let tesseract = await Tesseract.unlock(e.detail)
+            await WarpInstance.initWarp(tesseract)
+            await Multipass.createIdentity("Satellite_user", undefined)
+            goto(Route.Pre)
+        }} />
 
     <div class="switch-profile">
-        <Button
-            tooltip="Change User"
-            icon
-            on:click={(_) => (showAccounts = true)}
-        >
+        <Button tooltip="Change User" testid="button-change-user" icon on:click={_ => (showAccounts = true)}>
             <Icon icon={Shape.Profile} />
         </Button>
     </div>
