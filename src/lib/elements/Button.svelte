@@ -5,7 +5,6 @@
     import { Loader, Text } from "./"
 
     export let tooltip: string | null = ""
-    export let testid: string | null = ""
     export let disabled: boolean = false
     export let rotateOnHover: boolean = false
     export let text: string = ""
@@ -15,6 +14,7 @@
     export let loading: boolean = false
     export let small: boolean = false
     export let fill: boolean = false
+    export let hook: string = ""
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -33,7 +33,7 @@
 
 <button
     class="button {fill ? 'fill' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip ? 'tooltip' : ''} {small ? 'small' : ''} {clazz || ''}"
-    data-cy={testid}
+    data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click={onClick}

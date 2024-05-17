@@ -1,5 +1,7 @@
 <script lang="ts">
     export let checked: boolean = false
+    export let hook: string = ""
+
 </script>
 
 <input type="checkbox" checked={checked} />
