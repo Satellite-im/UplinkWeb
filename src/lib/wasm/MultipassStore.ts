@@ -11,16 +11,30 @@ class MultipassStore {
         this.multipassWritable = multipass
     }
 
-    async createIdentity(username: string, passphrase: string | undefined): Promise<void> {
+    async createIdentity(username: string, passphrase: string | undefined): Promise<wasm.IdentityProfile> {
         console.log('Started creating identity')
         console.log('Get multipass instance')
-        this.multipassWritable.subscribe(async (value) => {
-            this.identityProfile.set(await value!.create_identity(username, passphrase))
-            this.identityProfile.subscribe((value) => {
-                console.log('Own Identity, username: ', value!.identity().username())
+
+        let identityProfile = await new Promise<wasm.IdentityProfile>((resolve, reject) => {
+            this.multipassWritable.subscribe(async (value) => {
+                try {
+                    // TODO(Lucas): get_own_identity is not working
+                    // let ownIdentity = await value!.get_own_identity()
+                    // console.log('Own Identity: ', ownIdentity)
+                    const identity = await value!.create_identity(username, passphrase)
+                    this.identityProfile.set(identity)
+                    this.identityProfile.subscribe((value) => {
+                        console.log('Create New Account. Username: ', value!.identity().username())
+                        resolve(value!)
+                    });
+                } catch (error) {
+                    console.error('Error creating identity: ', error)
+                    reject(error)
+                }
             })
-            console.log('Created identity')
         })
+        console.log('Created identity');
+        return identityProfile
     }
 
     async getOwnIdentity(): Promise<wasm.Identity> {

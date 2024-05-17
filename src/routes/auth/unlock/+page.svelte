@@ -13,6 +13,8 @@
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { WarpStore } from "$lib/wasm/WarpStore"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { Store } from "$lib/state/store"
+    import { get } from "svelte/store"
 
 
     initLocale();
@@ -69,7 +71,13 @@
             await TesseractStoreInstance.unlock(e.detail)
             let tesseract = await TesseractStoreInstance.getTesseract()
             await WarpStore.initWarpInstances(tesseract)
-            await MultipassStoreInstance.createIdentity('Satellite_user', undefined)
+            let user = get(Store.state.user)
+            if (user.name === "Unknown User") {
+                console.log(user)
+                let identityProfile = await MultipassStoreInstance.createIdentity('Satellite_user', undefined)
+                Store.setUsername(identityProfile.identity().username())
+                console.log(user)
+            }
             goto(Route.Pre)
         }} />
 
