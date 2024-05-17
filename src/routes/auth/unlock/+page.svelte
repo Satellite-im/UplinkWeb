@@ -16,26 +16,22 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
 
+    initLocale()
 
-    initLocale();
+    let create = false
+    let loading = false
+    let scramble = true
 
-    let create = false;
-    let loading = false;
-    let scramble = true;
-
-    let showAccounts = false;
+    let showAccounts = false
 </script>
 
 <div id="auth-unlock">
     {#if showAccounts}
-        <Modal on:close={(_) => (showAccounts = false)} padded>
+        <Modal on:close={_ => (showAccounts = false)} padded>
             <div class="profiles">
                 <Label text={$_("generic.profiles")} />
                 <div class="user">
-                    <ProfilePicture
-                        image={mock_users[1].profile.photo.image}
-                        noIndicator
-                    />
+                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator />
                     <Text class="username">{mock_users[1].name}</Text>
                 </div>
                 <div class="user">
@@ -53,20 +49,16 @@
     {#if loading}
         <Label text={$_("generic.loading")} />
     {:else}
-        <Label
-            text={create
-                ? $_("pages.auth.unlock.choose_pin")
-                : $_("pages.auth.unlock.enter_pin")}
-        />
+        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} hook="label-choose-enter-pin" />
     {/if}
 
     <PinInput
         min={4}
         max={8}
-        {loading}
-        {scramble}
+        loading={loading}
+        scramble={scramble}
         showSettings={false}
-        on:submit={async (e) => {
+        on:submit={async e => {
             loading = true
             await TesseractStoreInstance.unlock(e.detail)
             let tesseract = await TesseractStoreInstance.getTesseract()
@@ -82,11 +74,7 @@
         }} />
 
     <div class="switch-profile">
-        <Button
-            tooltip="Change User"
-            icon
-            on:click={(_) => (showAccounts = true)}
-        >
+        <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)}>
             <Icon icon={Shape.Profile} />
         </Button>
     </div>

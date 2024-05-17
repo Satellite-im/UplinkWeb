@@ -13,6 +13,7 @@
     export let cta: boolean = false
     export let simpleUnreads: boolean = false
     export let loading: boolean = false
+    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     const timeAgo = new TimeAgo("en-US")
 
@@ -20,9 +21,6 @@
     let name = chat.users.length > 1 ? chat.name : chat.users[0].name
 
     const dispatch = createEventDispatcher()
-    function onContext(coords: [number, number]) {
-        dispatch("context", coords)
-    }
 
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
@@ -32,10 +30,7 @@
 
 <button
     class="chat-preview {cta ? 'cta' : ''}"
-    on:contextmenu={e => {
-        e.preventDefault()
-        onContext([e.clientX, e.clientY])
-    }}
+    on:contextmenu={contextmenu}
     on:click={_ => {
         dispatch("click")
         Store.setActiveChat(chat)

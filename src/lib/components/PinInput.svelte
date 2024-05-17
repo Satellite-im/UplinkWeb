@@ -98,9 +98,9 @@
 
 <div class="pin-input-group {loading ? 'loading' : ''}">
     <div class="pin-group">
-        <div class="pin-display {error ? 'error' : ''}">
+        <div class="pin-display {error ? 'error' : ''}" data-cy="pin-display{error ? '-error' : ''}">
             {#each displayDots as dot}
-                <span class="dot {dot ? 'filled' : ''}"></span>
+                <span class="dot {dot ? 'filled' : ''}" data-cy="pin-dot{dot ? '-filled' : ''}"></span>
             {/each}
         </div>
         <div class="shadow-input">
@@ -111,7 +111,7 @@
     {#key pinDigits.join()}
         <div class="pin-keypad" data-keyorder={pinDigits.join()} data-shuffle="true" data-cy="pin-keypad">
             {#each pinDigits.slice(0, -1) as digit}
-                <Button class="pin-key" testid="button-pin-{digit}" icon disabled={error || loading} on:click={() => updatePinValue(digit)} appearance={Appearance.Alt}>
+                <Button class="pin-key" hook="button-pin-{digit}" icon disabled={error || loading} on:click={() => updatePinValue(digit)} appearance={Appearance.Alt}>
                     {#if loading}
                         <Loader />
                     {:else}
@@ -119,21 +119,21 @@
                     {/if}
                 </Button>
             {/each}
-            <Button class="pin-key" disabled={loading} testid="button-clear-input" rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
+            <Button class="pin-key" disabled={loading} hook="button-clear-input" rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
                 {#if loading}
                     <Loader alt />
                 {:else}
                     <Icon icon={Shape.Refresh} />
                 {/if}
             </Button>
-            <Button class="pin-key" disabled={error || loading} testid="button-pin-{pinDigits.slice(-1)}" icon on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>
+            <Button class="pin-key" disabled={error || loading} hook="button-pin-{pinDigits.slice(-1)}" icon on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>
                 {#if loading}
                     <Loader />
                 {:else}
                     {pinDigits.slice(-1)}
                 {/if}
             </Button>
-            <Button class="pin-key" icon on:click={submitPinValue} testid="button-confirm-pin" appearance={pinValue.length < min && !loading ? Appearance.Alt : Appearance.Success} disabled={pinValue.length < min || error || loading}>
+            <Button class="pin-key" icon on:click={submitPinValue} hook="button-confirm-pin" appearance={pinValue.length < min && !loading ? Appearance.Alt : Appearance.Success} disabled={pinValue.length < min || error || loading}>
                 {#if loading}
                     <Loader alt />
                 {:else}
@@ -146,7 +146,7 @@
     <div class="flex-column">
         <Button
             outline={!showSettings}
-            testid="button-settings"
+            hook="button-settings"
             appearance={Appearance.Alt}
             on:click={_ => {
                 showSettings = !showSettings
@@ -155,13 +155,13 @@
         </Button>
         <div class="pin-settings flex-column {showSettings ? 'visible' : 'hidden'}">
             <div class="flex-row setting">
-                <Switch on={scramble} on:toggle={handleToggleScramble} />
-                <Label text={$_("pages.auth.unlock.scramble_pin")} />
+                <Switch hook="switch-scramble-keypad" on={scramble} on:toggle={handleToggleScramble} />
+                <Label text={$_("pages.auth.unlock.scramble_pin")} hook="label-scramble-keypad" />
             </div>
             <hr class="divider" />
             <div class="flex-row setting">
-                <Switch />
-                <Label text="Stay unlocked?" />
+                <Switch hook="switch-stay-unlocked" />
+                <Label text="Stay unlocked?" hook="label-stay-unlocked" />
             </div>
         </div>
     </div>
