@@ -127,10 +127,6 @@
         }
     })
 
-    // TODO: Move to global state
-    let contextPosition: [number, number] = [0, 0]
-    let contextData: ContextItem[] = []
-
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
 
     $: {
@@ -154,7 +150,8 @@
 
 <div id="settings">
     <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
+    <!-- Unused atm -->
+    <!-- <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} /> -->
 
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>

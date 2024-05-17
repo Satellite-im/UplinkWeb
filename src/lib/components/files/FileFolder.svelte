@@ -7,6 +7,7 @@
 
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
+    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     function getIcon() {
         switch (kind) {
@@ -27,12 +28,7 @@
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div
-        class="filesitem"
-        on:contextmenu={e => {
-            e.preventDefault()
-            onContext([e.clientX, e.clientY])
-        }}>
+    <div class="filesitem" on:contextmenu={contextmenu}>
         <Icon icon={getIcon()} />
         <Spacer less />
         <input type="text" value={info?.name} />

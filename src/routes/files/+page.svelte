@@ -14,7 +14,7 @@
     import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
     import { Sortable } from "@shopify/draggable"
-    import type { Chat, ContextItem, FileInfo } from "$lib/types"
+    import type { Chat, FileInfo } from "$lib/types"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
@@ -34,9 +34,6 @@
 
     let previewImage: string | null
 
-    // TODO: Move this into a global state
-    let contextPosition: [number, number] = [0, 0]
-    let contextData: ContextItem[] = []
     let updatedFiles: FileInfo[] = []
 
     let search_filter: string
@@ -120,9 +117,6 @@
     on:drop={e => {
         dragDrop(e)
     }}>
-    <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
-
     <!-- Modals -->
     {#if previewImage}
         <Modal
@@ -167,30 +161,25 @@
         </Controls>
         {#if activeTabRoute === "chats"}
             {#each chats as chat}
-                <ChatPreview
-                    chat={chat}
-                    loading={loading}
-                    simpleUnreads
-                    cta={activeChat === chat}
-                    on:context={evt => {
-                        contextPosition = evt.detail
-                        contextData = [
-                            {
-                                id: "hide",
-                                icon: Shape.EyeSlash,
-                                text: "Hide",
-                                appearance: Appearance.Default,
-                                onClick: () => UIStore.removeSidebarChat(chat),
-                            },
-                            {
-                                id: "mark_read",
-                                icon: Shape.CheckMark,
-                                text: "Mark Read",
-                                appearance: Appearance.Default,
-                                onClick: () => {},
-                            },
-                        ]
-                    }} />
+                <ContextMenu
+                    items={[
+                        {
+                            id: "hide",
+                            icon: Shape.EyeSlash,
+                            text: "Hide",
+                            appearance: Appearance.Default,
+                            onClick: () => UIStore.removeSidebarChat(chat),
+                        },
+                        {
+                            id: "mark_read",
+                            icon: Shape.CheckMark,
+                            text: "Mark Read",
+                            appearance: Appearance.Default,
+                            onClick: () => {},
+                        },
+                    ]}>
+                    <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                </ContextMenu>
             {/each}
         {/if}
     </Sidebar>
@@ -260,37 +249,31 @@
             {#each files as item (item.id)}
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
-                        <FileFolder
-                            kind={FilesItemKind.File}
-                            info={item}
-                            on:context={evt => {
-                                contextPosition = evt.detail
-                                contextData = [
-                                    {
-                                        id: "delete",
-                                        icon: Shape.XMark,
-                                        text: "Delete",
-                                        appearance: Appearance.Default,
-                                        onClick: () => {},
-                                    },
-                                ]
-                            }} />
+                        <ContextMenu
+                            items={[
+                                {
+                                    id: "delete",
+                                    icon: Shape.XMark,
+                                    text: "Delete",
+                                    appearance: Appearance.Default,
+                                    onClick: () => {},
+                                },
+                            ]}>
+                            <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.File} info={item} />
+                        </ContextMenu>
                     {:else if item.type === "folder"}
-                        <FileFolder
-                            kind={FilesItemKind.Folder}
-                            info={item}
-                            on:context={evt => {
-                                contextPosition = evt.detail
-                                contextData = [
-                                    {
-                                        id: "delete",
-                                        icon: Shape.XMark,
-                                        text: "Delete",
-                                        appearance: Appearance.Default,
-                                        onClick: () => {},
-                                    },
-                                ]
-                            }} />
+                        <ContextMenu
+                            items={[
+                                {
+                                    id: "delete",
+                                    icon: Shape.XMark,
+                                    text: "Delete",
+                                    appearance: Appearance.Default,
+                                    onClick: () => {},
+                                },
+                            ]}>
+                            <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.Folder} info={item} />
+                        </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile
                             filesize={item.size}

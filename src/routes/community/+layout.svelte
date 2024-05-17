@@ -19,15 +19,14 @@
     }
 
     let previewImage: string | null
-    let contextPosition: [number, number] = [0, 0]
-    let contextData: ContextItem[] = []
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
 </script>
 
 <div id="page">
     <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
+    <!-- Unused atm -->
+    <!-- <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} /> -->
 
     <!-- Modals -->
     {#if previewImage}
