@@ -1,22 +1,26 @@
-import { get, writable, type Writable } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store"
 import init, * as wasm from '../../../warp-wasm/pkg/warp_ipfs'
-import { WarpStore } from "./WarpStore";
+import { WarpStore } from "./WarpStore"
 
 
 class MultipassStore {
-    private multipassWritable: Writable<wasm.MultiPassBox | null>;
+    private multipassWritable: Writable<wasm.MultiPassBox | null>
     private identityProfile: Writable<wasm.IdentityProfile | null> = writable(null)
 
     constructor(multipass: Writable<wasm.MultiPassBox | null>) {
-        this.multipassWritable = multipass;
+        this.multipassWritable = multipass
     }
 
     async createIdentity(username: string, passphrase: string | undefined): Promise<void> {
         console.log('Started creating identity')
         console.log('Get multipass instance')
-        this.multipassWritable.subscribe((value) => {value!.create_identity(username, passphrase)})
-        console.log('Created identity')
-        console.log('Own Identity, username: ', this.identityProfile)
+        this.multipassWritable.subscribe(async (value) => {
+            this.identityProfile.set(await value!.create_identity(username, passphrase))
+            this.identityProfile.subscribe((value) => {
+                console.log('Own Identity, username: ', value!.identity().username())
+            })
+            console.log('Created identity')
+        })
     }
 
     async getOwnIdentity(): Promise<wasm.Identity> {
@@ -46,4 +50,4 @@ class MultipassStore {
 
 }
 
-export const MultipassStoreInstance = new MultipassStore(WarpStore.warp.multipass);
+export const MultipassStoreInstance = new MultipassStore(WarpStore.warp.multipass)

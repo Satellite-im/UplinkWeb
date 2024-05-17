@@ -1,6 +1,6 @@
-import { createPersistentState } from "$lib/state/db/persistedState";
+import { createPersistentState } from "$lib/state/db/persistedState"
 import init, * as wasm from '../../../warp-wasm/pkg/warp_ipfs'
-import type { IWarp } from "./IWarp";
+import type { IWarp } from "./IWarp"
 
 class Store {
     warp: IWarp

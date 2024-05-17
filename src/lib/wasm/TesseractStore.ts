@@ -18,7 +18,7 @@ class TesseractStore {
         const passphrase = encoder.encode(pin)
 
         this.tesseractWritable.subscribe((value) => {
-            value?.load_from_storage()
+            value!.load_from_storage()
             value!.unlock(passphrase)
             if (!value!.autosave_enabled()) {
                 value!.set_autosave()
@@ -33,4 +33,4 @@ class TesseractStore {
 
 }
 
-export const TesseractStoreInstance = new TesseractStore();
+export const TesseractStoreInstance = new TesseractStore()
