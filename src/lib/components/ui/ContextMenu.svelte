@@ -1,3 +1,8 @@
+<script lang="ts" context="module">
+    // A close handler referencing the current open context menu
+    let close_context: any
+</script>
+
 <script lang="ts">
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
@@ -6,20 +11,35 @@
     import type { ContextItem } from "$lib/types"
     import { createEventDispatcher } from "svelte"
 
-    export let visible: boolean = false
-    export let coords: [number, number] = [0, 0]
+    let visible: boolean = false
+    let coords: [number, number] = [0, 0]
     export let items: ContextItem[] = []
 
     const dispatch = createEventDispatcher()
     function onClose(event: CustomEvent<MouseEvent>) {
         visible = false
         dispatch("close", event)
+        close_context = undefined
+    }
+
+    function openContext(evt: MouseEvent) {
+        // Close the previous context if present
+        if (close_context !== undefined) {
+            close_context()
+        }
+        close_context = () => (visible = false)
+        evt.preventDefault()
+        coords = [evt.clientX, evt.clientY]
+        visible = true
     }
 </script>
 
+<!-- Slot containing the actual elements. Assign the open props to the context event -->
+<slot name="content" open={openContext} />
 {#if visible}
+    <!-- Slot containing the actual elements -->
     <div id="context-menu" use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
-        <slot></slot>
+        <slot name="items" open={openContext}></slot>
         {#each items as item}
             <Button
                 class="item"

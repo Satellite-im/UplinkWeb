@@ -14,6 +14,7 @@
     export let loading: boolean = false
     export let small: boolean = false
     export let fill: boolean = false
+    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -24,10 +25,6 @@
     function onClick(event: MouseEvent) {
         dispatch("click", event)
     }
-
-    function onContext(coords: [number, number]) {
-        dispatch("context", coords)
-    }
 </script>
 
 <button
@@ -35,10 +32,7 @@
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click={onClick}
-    on:contextmenu={e => {
-        e.preventDefault()
-        onContext([e.clientX, e.clientY])
-    }}>
+    on:contextmenu={contextmenu}>
     {#if loading}
         <Loader />
     {:else}

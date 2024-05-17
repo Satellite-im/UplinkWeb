@@ -24,9 +24,9 @@
         ProfilePictureMany,
         STLViewer,
         ChatFilter,
+        ContextMenu,
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
-    import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import { type Chat, type ContextItem, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
@@ -68,8 +68,6 @@
     let showUsers: boolean = false
     let showMarket: boolean = false
     let groupSettings: boolean = false
-    let contextPosition: [number, number] = [0, 0]
-    let contextData: ContextItem[] = []
     let search_filter: string
     let search_component: ChatFilter
     let dragging_files = 0
@@ -120,9 +118,6 @@
     on:drop={e => {
         dragDrop(e)
     }}>
-    <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
-
     <!-- Modals -->
     {#if previewImage}
         <Modal
@@ -203,37 +198,32 @@
         </div>
 
         {#each chats as chat}
-            <ChatPreview
-                chat={chat}
-                loading={loading}
-                simpleUnreads
-                cta={activeChat === chat}
-                on:context={evt => {
-                    contextPosition = evt.detail
-                    contextData = [
-                        {
-                            id: "favorite",
-                            icon: Shape.Heart,
-                            text: "Favorite",
-                            appearance: Appearance.Default,
-                            onClick: () => Store.toggleFavorite(chat),
-                        },
-                        {
-                            id: "hide",
-                            icon: Shape.EyeSlash,
-                            text: "Hide",
-                            appearance: Appearance.Default,
-                            onClick: () => UIStore.removeSidebarChat(chat),
-                        },
-                        {
-                            id: "mark_read",
-                            icon: Shape.CheckMark,
-                            text: "Mark Read",
-                            appearance: Appearance.Default,
-                            onClick: () => {},
-                        },
-                    ]
-                }} />
+            <ContextMenu
+                items={[
+                    {
+                        id: "favorite",
+                        icon: Shape.Heart,
+                        text: "Favorite",
+                        appearance: Appearance.Default,
+                        onClick: () => Store.toggleFavorite(chat),
+                    },
+                    {
+                        id: "hide",
+                        icon: Shape.EyeSlash,
+                        text: "Hide",
+                        appearance: Appearance.Default,
+                        onClick: () => UIStore.removeSidebarChat(chat),
+                    },
+                    {
+                        id: "mark_read",
+                        icon: Shape.CheckMark,
+                        text: "Mark Read",
+                        appearance: Appearance.Default,
+                        onClick: () => {},
+                    },
+                ]}>
+                <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+            </ContextMenu>
         {/each}
     </Sidebar>
 
@@ -343,48 +333,44 @@
                                     </MessageReplyContainer>
                                 {/if}
                                 {#if message.text.length > 0 || message.attachments.length > 0}
-                                    <Message
-                                        on:context={evt => {
-                                            contextPosition = evt.detail
-                                            contextData = [
-                                                {
-                                                    id: "something_1",
-                                                    icon: Shape.Beaker,
-                                                    text: "Placeholder",
-                                                    appearance: Appearance.Default,
-                                                    onClick: () => {},
-                                                },
-                                            ]
-                                        }}
-                                        remote={group.details.remote}
-                                        position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
-                                        morePadding={message.text.length > 1 || message.attachments.length > 0}>
-                                        {#each message.text as line}
-                                            <Text markdown={line} />
-                                        {/each}
-
-                                        {#if message.attachments.length > 0}
-                                            {#each message.attachments as attachment}
-                                                {#if attachment.kind === MessageAttachmentKind.Image}
-                                                    <ImageEmbed
-                                                        source={attachment.location}
-                                                        name={attachment.name}
-                                                        filesize={attachment.size}
-                                                        on:click={_ => {
-                                                            previewImage = attachment.location
-                                                        }} />
-                                                {:else if attachment.kind === MessageAttachmentKind.File}
-                                                    <FileEmbed />
-                                                {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                    <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                                {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                                    <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                {:else if attachment.kind === MessageAttachmentKind.Video}
-                                                    <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                {/if}
+                                    <ContextMenu>
+                                        <Message
+                                            slot="content"
+                                            let:open
+                                            contextmenu={open}
+                                            remote={group.details.remote}
+                                            position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
+                                            morePadding={message.text.length > 1 || message.attachments.length > 0}>
+                                            {#each message.text as line}
+                                                <Text markdown={line} />
                                             {/each}
-                                        {/if}
-                                    </Message>
+
+                                            {#if message.attachments.length > 0}
+                                                {#each message.attachments as attachment}
+                                                    {#if attachment.kind === MessageAttachmentKind.Image}
+                                                        <ImageEmbed
+                                                            source={attachment.location}
+                                                            name={attachment.name}
+                                                            filesize={attachment.size}
+                                                            on:click={_ => {
+                                                                previewImage = attachment.location
+                                                            }} />
+                                                    {:else if attachment.kind === MessageAttachmentKind.File}
+                                                        <FileEmbed />
+                                                    {:else if attachment.kind === MessageAttachmentKind.STL}
+                                                        <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
+                                                    {:else if attachment.kind === MessageAttachmentKind.Audio}
+                                                        <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                                    {:else if attachment.kind === MessageAttachmentKind.Video}
+                                                        <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                                    {/if}
+                                                {/each}
+                                            {/if}
+                                        </Message>
+                                        <svelte:fragment slot="items">
+                                            <div class="emojis"></div>
+                                        </svelte:fragment>
+                                    </ContextMenu>
                                 {/if}
                                 {#if message.reactions.length > 0}
                                     <MessageReactions remote={group.details.remote} reactions={message.reactions} />
@@ -408,31 +394,27 @@
         {#if activeChat.users.length > 0}
             <Chatbar>
                 <svelte:fragment slot="pre-controls">
-                    <Button
-                        icon
-                        appearance={Appearance.Alt}
-                        tooltip={$_("chat.add_attachment")}
-                        on:context={evt => {
-                            contextPosition = evt.detail
-                            contextData = [
-                                {
-                                    id: "upload",
-                                    icon: Shape.ArrowUp,
-                                    text: "Upload",
-                                    appearance: Appearance.Default,
-                                    onClick: () => {},
-                                },
-                                {
-                                    id: "from_files",
-                                    icon: Shape.Eye,
-                                    text: "Browse Files",
-                                    appearance: Appearance.Default,
-                                    onClick: () => {},
-                                },
-                            ]
-                        }}>
-                        <Icon icon={Shape.Plus} />
-                    </Button>
+                    <ContextMenu
+                        items={[
+                            {
+                                id: "upload",
+                                icon: Shape.ArrowUp,
+                                text: "Upload",
+                                appearance: Appearance.Default,
+                                onClick: () => {},
+                            },
+                            {
+                                id: "from_files",
+                                icon: Shape.Eye,
+                                text: "Browse Files",
+                                appearance: Appearance.Default,
+                                onClick: () => {},
+                            },
+                        ]}>
+                        <Button slot="content" let:open contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
+                            <Icon icon={Shape.Plus} />
+                        </Button>
+                    </ContextMenu>
                 </svelte:fragment>
 
                 <PopupButton name={$_("payments.send_coin")}>
@@ -494,6 +476,13 @@
 
         .aside {
             border-left: var(--border-width) solid var(--border-color);
+        }
+
+        .message-wrap {
+            width: fit-content;
+            &.local {
+                justify-content: flex-end;
+            }
         }
 
         .upload-overlay {

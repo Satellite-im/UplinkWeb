@@ -5,7 +5,7 @@
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import type { Chat, ContextItem, User } from "$lib/types"
+    import type { Chat, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
     import { Store } from "$lib/state/store"
@@ -39,10 +39,6 @@
         })
         return groupedUsers
     }
-
-    // TODO: Move this into a global state
-    let contextPosition: [number, number] = [0, 0]
-    let contextData: ContextItem[] = []
 
     let sentRequest: boolean
     let requestString: string
@@ -80,9 +76,6 @@
 </script>
 
 <div id="page">
-    <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} />
-
     <!-- Modals -->
     {#if sentRequest}
         <Modal
@@ -121,30 +114,25 @@
         </div>
 
         {#each chats as chat}
-            <ChatPreview
-                chat={chat}
-                loading={loading}
-                simpleUnreads
-                cta={activeChat === chat}
-                on:context={evt => {
-                    contextPosition = evt.detail
-                    contextData = [
-                        {
-                            id: "hide",
-                            icon: Shape.EyeSlash,
-                            text: "Hide",
-                            appearance: Appearance.Default,
-                            onClick: () => UIStore.removeSidebarChat(chat),
-                        },
-                        {
-                            id: "mark_read",
-                            icon: Shape.CheckMark,
-                            text: "Mark Read",
-                            appearance: Appearance.Default,
-                            onClick: () => {},
-                        },
-                    ]
-                }} />
+            <ContextMenu
+                items={[
+                    {
+                        id: "hide",
+                        icon: Shape.EyeSlash,
+                        text: "Hide",
+                        appearance: Appearance.Default,
+                        onClick: () => UIStore.removeSidebarChat(chat),
+                    },
+                    {
+                        id: "mark_read",
+                        icon: Shape.CheckMark,
+                        text: "Mark Read",
+                        appearance: Appearance.Default,
+                        onClick: () => {},
+                    },
+                ]}>
+                <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+            </ContextMenu>
         {/each}
     </Sidebar>
     <div class="content">
