@@ -9,10 +9,11 @@
     import { clickoutside } from "@svelte-put/clickoutside"
     import { Appearance } from "$lib/enums"
     import type { ContextItem } from "$lib/types"
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, tick } from "svelte"
 
     let visible: boolean = false
     let coords: [number, number] = [0, 0]
+    let context: HTMLElement
     export let items: ContextItem[] = []
 
     const dispatch = createEventDispatcher()
@@ -22,15 +23,32 @@
         close_context = undefined
     }
 
-    function openContext(evt: MouseEvent) {
+    function calculatePos(evt: MouseEvent): [number, number] {
+        if (context === undefined) return [evt.clientX, evt.clientY]
+        const { width, height } = context.getBoundingClientRect()
+        let offsetX = evt.pageX
+        let offsetY = evt.pageY
+        let screenWidth = evt.view!.innerWidth
+        let screenHeight = evt.view!.innerHeight
+        let overFlowY = screenHeight < height + offsetY
+        let overFlowX = screenWidth < width + offsetX
+        let topY = Math.max(5, overFlowY ? offsetY - height : offsetY)
+        let minX = 5
+        let topX = Math.max(minX, overFlowX ? offsetX - width : offsetX)
+        return [topX, topY]
+    }
+
+    async function openContext(evt: MouseEvent) {
         // Close the previous context if present
         if (close_context !== undefined) {
             close_context()
         }
         close_context = () => (visible = false)
         evt.preventDefault()
-        coords = [evt.clientX, evt.clientY]
         visible = true
+        coords = [evt.clientX, evt.clientY]
+        await tick()
+        coords = calculatePos(evt)
     }
 </script>
 
@@ -38,7 +56,7 @@
 <slot name="content" open={openContext} />
 {#if visible}
     <!-- Slot containing the actual elements -->
-    <div id="context-menu" use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
+    <div id="context-menu" bind:this={context} use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
         <slot name="items" close={onClose}></slot>
         {#each items as item}
             <Button
