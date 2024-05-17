@@ -25,6 +25,7 @@
         STLViewer,
         ChatFilter,
         ContextMenu,
+        EmojiGroup,
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
@@ -71,6 +72,7 @@
     let search_filter: string
     let search_component: ChatFilter
     let dragging_files = 0
+    let emojis: string[] = ["👍", "👎", "❤️", "🖖", "😂"]
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
@@ -104,6 +106,10 @@
         dragging_files = 0
         // upload files
         console.log("dropping files ", event.dataTransfer?.files)
+    }
+
+    async function copy(txt: string) {
+        await navigator.clipboard.writeText(txt)
     }
 </script>
 
@@ -333,7 +339,53 @@
                                     </MessageReplyContainer>
                                 {/if}
                                 {#if message.text.length > 0 || message.attachments.length > 0}
-                                    <ContextMenu>
+                                    <ContextMenu
+                                        items={[
+                                            {
+                                                id: "pin-message",
+                                                icon: Shape.Heart,
+                                                text: "Pin Message",
+                                                appearance: Appearance.Default,
+                                                onClick: () => {}, // TODO
+                                            },
+                                            {
+                                                id: "reply",
+                                                icon: Shape.ArrowLeft,
+                                                text: "Reply",
+                                                appearance: Appearance.Default,
+                                                onClick: () => {}, // TODO
+                                            },
+                                            {
+                                                id: "react",
+                                                icon: Shape.Smile,
+                                                text: "React",
+                                                appearance: Appearance.Default,
+                                                onClick: () => {}, // TODO
+                                            },
+                                            {
+                                                id: "copy",
+                                                icon: Shape.Clipboard,
+                                                text: "Copy",
+                                                appearance: Appearance.Default,
+                                                onClick: () => {
+                                                    copy(message.text.join("\n"))
+                                                },
+                                            },
+                                            {
+                                                id: "edit",
+                                                icon: Shape.Pencil,
+                                                text: "Edit",
+                                                appearance: Appearance.Default,
+                                                onClick: () => {}, // TODO
+                                            },
+                                            {
+                                                id: "delete",
+                                                icon: Shape.Trash,
+                                                text: "Delete",
+                                                appearance: Appearance.Default,
+                                                onClick: () => {}, // TODO
+                                            },
+                                        ]}>
                                         <Message
                                             slot="content"
                                             let:open
@@ -367,8 +419,8 @@
                                                 {/each}
                                             {/if}
                                         </Message>
-                                        <svelte:fragment slot="items">
-                                            <div class="emojis"></div>
+                                        <svelte:fragment slot="items" let:close>
+                                            <EmojiGroup emojis={emojis} close={close}></EmojiGroup>
                                         </svelte:fragment>
                                     </ContextMenu>
                                 {/if}

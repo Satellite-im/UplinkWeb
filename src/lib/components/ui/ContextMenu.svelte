@@ -39,7 +39,7 @@
 {#if visible}
     <!-- Slot containing the actual elements -->
     <div id="context-menu" use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
-        <slot name="items" open={openContext}></slot>
+        <slot name="items" close={onClose}></slot>
         {#each items as item}
             <Button
                 class="item"
