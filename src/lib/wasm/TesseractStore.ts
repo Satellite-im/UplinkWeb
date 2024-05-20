@@ -1,6 +1,5 @@
-import { get, writable, type Writable } from "svelte/store";
-import init, * as wasm from '../../../warp-wasm/pkg/warp_ipfs'
-import { WarpStore } from "./WarpStore";
+import { get, writable, type Writable } from "svelte/store"
+import init, * as wasm from "warp-wasm"
 
 
 class TesseractStore {
@@ -13,7 +12,6 @@ class TesseractStore {
     async unlock(pin: string) {
         await init()
         this.tesseractWritable.set(new wasm.Tesseract())
-
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
 
