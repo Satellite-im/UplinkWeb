@@ -39,8 +39,6 @@ npm run dev
 
 All contributions are welcome! Please keep in mind we're still a relatively small team, and any work done to ensure contributions don't cause bugs or issues in the application is much appreciated.
 
-Guidelines for contributing are located in the [`contributing_process.md`](docs/contributing_process.md).
-
 # Contributors
 
 ![GitHub Contributors Image](https://contrib.rocks/image?repo=Satellite-im/UplinkWeb)
