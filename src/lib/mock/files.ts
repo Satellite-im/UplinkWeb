@@ -39,6 +39,7 @@ export let mock_files: FileInfo[] = [
                         source: "",
                         name: "ExampleFile.mp4",
                         size: 982199999,
+                        parentId: "21",
                         items: [
                             {
                                 id: "145",
@@ -50,7 +51,6 @@ export let mock_files: FileInfo[] = [
                                 parentId: "555",
                             },
                         ],
-                        parentId: "21",
                     },
                 ],
                 parentId: "2",
