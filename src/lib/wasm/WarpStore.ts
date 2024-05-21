@@ -22,8 +22,8 @@ class Store {
             let warp_instance = await new wasm.WarpIpfs(wasm.Config.minimal_testing(), tesseract) as wasm.WarpInstance
             this.warp.tesseract.set(tesseract)
             this.warp.multipass.set(warp_instance.multipass)
-            // this.warp.raygun.set(warp_instance.raygun)
-            // this.warp.constellation.set(warp_instance.constellation)
+            this.warp.raygun.set(warp_instance.raygun)
+            this.warp.constellation.set(warp_instance.constellation)
             console.log('Warp Instances: ', this.warp)
     }
 }
