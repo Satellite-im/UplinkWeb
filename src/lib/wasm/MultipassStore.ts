@@ -21,8 +21,8 @@ class MultipassStore {
                     // TODO(Lucas): get_own_identity is not working
                     // let ownIdentity = await value!.get_own_identity()
                     // console.log('Own Identity: ', ownIdentity)
-                    const identity = await value!.create_identity(username, passphrase)
-                    this.identity.set(identity.identity())
+                    const identityProfile = await value!.create_identity(username, passphrase)
+                    this.identity.set(identityProfile.identity())
                     this.identity.subscribe((value) => {
                         console.log('Create New Account. Username: ', value!.username())
                         resolve(value!)
@@ -33,7 +33,7 @@ class MultipassStore {
                 }
             })
         })
-        console.log('Created identity');
+        console.log('Created identity')
         return identity
     }
 
