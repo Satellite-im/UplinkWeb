@@ -1,5 +1,5 @@
 import { get, writable, type Writable } from "svelte/store"
-import init, * as wasm from "warp-wasm"
+import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 
 
