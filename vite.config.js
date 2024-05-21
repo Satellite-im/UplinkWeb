@@ -4,20 +4,10 @@ import { fileURLToPath, URL } from 'url';
 import path from 'path';
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
-const warpWasmPath = path.resolve(__dirname, 'warp-wasm')
-
 export default defineConfig({
   plugins: [sveltekit(), nodePolyfills()],
-  server: {
-    fs: {
-      // Allow access to the warp-wasm package directory
-      allow: [warpWasmPath]
-    }
-  },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+  optimizeDeps: {
+    exclude: ["warp-wasm"]
   },
   css: {
     preprocessorOptions: {
