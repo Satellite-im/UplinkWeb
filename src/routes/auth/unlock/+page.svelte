@@ -66,8 +66,8 @@
             let user = get(Store.state.user)
             if (user.name === "Unknown User") {
                 console.log(user)
-                let identityProfile = await MultipassStoreInstance.createIdentity('Satellite_user', undefined)
-                Store.setUsername(identityProfile.identity().username())
+                let identity = await MultipassStoreInstance.createIdentity('Satellite_user', undefined)
+                Store.setUsername(identity.username())
                 console.log(user)
             }
             goto(Route.Pre)
