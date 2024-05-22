@@ -3,7 +3,7 @@
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Button, Switch, Select } from "$lib/elements"
-    import { Meter } from "$lib/components"
+    import { Meter, VideoTest } from "$lib/components"
     import { Appearance } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import { onMount } from "svelte"
@@ -159,6 +159,10 @@
     <div class="flex-row">
         <Button small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring} />
         <Meter percent={audioOutputLevel} />
+    </div>
+
+    <div class="flex-row">
+        <VideoTest />
     </div>
     <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
         <Switch
