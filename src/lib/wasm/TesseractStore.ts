@@ -11,6 +11,7 @@ class TesseractStore {
 
     async unlock(pin: string) {
         await init()
+        console.log('Pin to unlock Tesseract: ', pin)
         this.tesseractWritable.set(new wasm.Tesseract())
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)

@@ -11,7 +11,7 @@ class MultipassStore {
         this.multipassWritable = multipass
     }
 
-    async createIdentity(username: string, passphrase: string | undefined): Promise<wasm.Identity> {
+    async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<wasm.Identity> {
         console.log('Started creating identity')
         console.log('Get multipass instance')
 
@@ -19,11 +19,12 @@ class MultipassStore {
             this.multipassWritable.subscribe(async (value) => {
                 try {
                     // TODO(Lucas): get_own_identity is not working
-                    // let ownIdentity = await value!.get_own_identity()
-                    // console.log('Own Identity: ', ownIdentity)
                     const identityProfile = await value!.create_identity(username, passphrase)
                     this.identity.set(identityProfile.identity())
-                    this.identity.subscribe((value) => {
+                    await value!.update_identity(wasm.IdentityUpdate.StatusMessage, statusMessage)
+                    let ownIdentity = await value!.get_own_identity()
+                    console.log('Own Identity: ', ownIdentity.username() + ' DID_KEY:' + ownIdentity.did_key())
+                    this.identity.subscribe(async (value) => {
                         console.log('Create New Account. Username: ', value!.username())
                         resolve(value!)
                     });
@@ -37,9 +38,17 @@ class MultipassStore {
         return identity
     }
 
-    async getOwnIdentity(): Promise<wasm.Identity> {
-        let multipass = get(this.multipassWritable)!
-        return await multipass.get_own_identity()
+    async getOwnIdentity(): Promise<wasm.Identity | undefined> {
+        try {
+            let multipass = get(this.multipassWritable)!
+            let ownIdentity = await multipass.get_own_identity()
+            console.log('Own Identity: ', ownIdentity.username() + ' DID_KEY:' + ownIdentity.did_key())
+            return ownIdentity
+        } catch (error) {
+            console.log('Error getting own identity: ', error)
+            return undefined
+        }
+    
     }
 
     async updateUsername(new_username: string) {

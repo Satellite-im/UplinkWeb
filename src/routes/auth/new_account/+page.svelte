@@ -6,8 +6,28 @@
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { Store } from "$lib/state/store"
+    import { get } from "svelte/store"
+
+    let username = ""
+    let statusMessage = ""
 
     initLocale()
+
+    async function createAccount(username: string, statusMessage: string) {
+        loading = true
+        let noUser = get(Store.state.user)
+        console.log(noUser)
+        let identity = await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
+        Store.setUsername(identity.username())
+        Store.setStatus(identity.status_message() || "")
+        let userCreated = get(Store.state.user)
+        console.log(userCreated)
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        loading = false
+        goto(Route.Chat)
+    }
 
     let loading = false
 </script>
@@ -23,10 +43,14 @@
         </div>
         <div class="right">
             <Label text={$_("generic.username")} />
-            <Input alt placeholder={$_("pages.auth.new_account.enter_username")} />
+            <Input alt placeholder={$_("pages.auth.new_account.enter_username")} on:input={async e => {
+               username = e.detail
+            }}/>
             <Spacer less />
             <Label text={$_("generic.status_message")} />
-            <Input alt placeholder={$_("pages.auth.new_account.set_status")} />
+            <Input alt placeholder={$_("pages.auth.new_account.set_status")} on:input={async e => {
+                statusMessage = e.detail
+             }} />
         </div>
     </div>
     <Controls>
@@ -37,8 +61,8 @@
             class="full-width"
             text={$_("pages.auth.new_account.create")}
             loading={loading}
-            on:click={_ => {
-                goto(Route.Chat)
+            on:click={async _ => {
+                await createAccount(username, statusMessage)
             }}>
             <Icon icon={Shape.ArrowRight} />
         </Button>

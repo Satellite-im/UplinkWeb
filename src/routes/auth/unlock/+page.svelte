@@ -23,6 +23,20 @@
     let scramble = true
 
     let showAccounts = false
+
+    async function auth(pin: string) {
+        loading = true
+        await TesseractStoreInstance.unlock(pin)
+        let tesseract = await TesseractStoreInstance.getTesseract()
+        await WarpStore.initWarpInstances(tesseract)
+        let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
+        if (ownIdentity === undefined) {
+            goto(Route.NewAccount)
+        } else {
+            goto(Route.Pre)
+        }
+    }
+
 </script>
 
 <div id="auth-unlock">
@@ -58,19 +72,9 @@
         loading={loading}
         scramble={scramble}
         showSettings={false}
-        on:submit={async e => {
+        on:submit={async (e) => {
             loading = true
-            await TesseractStoreInstance.unlock(e.detail)
-            let tesseract = await TesseractStoreInstance.getTesseract()
-            await WarpStore.initWarpInstances(tesseract)
-            let user = get(Store.state.user)
-            if (user.name === "Unknown User") {
-                console.log(user)
-                let identity = await MultipassStoreInstance.createIdentity('Satellite_user', undefined)
-                Store.setUsername(identity.username())
-                console.log(user)
-            }
-            goto(Route.Pre)
+            await auth(e.detail)
         }} />
 
     <div class="switch-profile">
