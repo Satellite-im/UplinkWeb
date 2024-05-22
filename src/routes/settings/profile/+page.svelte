@@ -11,6 +11,8 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation";
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
     initLocale()
 
@@ -20,6 +22,35 @@
     function toggleSeedPhrase() {
         showSeed = !showSeed
         if (loading) setTimeout(() => (loading = false), 200)
+    }
+
+    function logOut() {
+        TesseractStoreInstance.lock()
+        goto(Route.Unlock)
+    }
+
+    async function updateProfilePicture(picture: string) {
+        await MultipassStoreInstance.updateProfilePhoto(picture)
+        Store.setPhoto(picture)
+    }
+
+    async function updateUsername(username: string) {
+        console.log('Called updateUsername')
+        await MultipassStoreInstance.updateUsername(username)
+        Store.setUsername(username)
+    }
+
+    async function updateStatusMessage(statusMessage: string) {
+        console.log('Called updateStatusMessage')
+        await MultipassStoreInstance.updateStatusMessage(statusMessage)
+        Store.setStatus(statusMessage)
+    }
+
+    function updatePendentItemsToSave() {
+        changeList.username = false
+        changeList.statusMessage = false
+
+        unsavedChanges = changeList.username || changeList.statusMessage
     }
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
@@ -60,10 +91,7 @@
                     text={$_("generic.cancel")}
                     appearance={Appearance.Alt}
                     on:click={_ => {
-                        changeList.username = false
-                        changeList.statusMessage = false
-
-                        unsavedChanges = changeList.username || changeList.statusMessage
+                        updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
@@ -71,13 +99,10 @@
                     text={$_("generic.save")}
                     appearance={Appearance.Primary}
                     on:click={_ => {
-                        Store.setUsername(user.name)
-                        Store.setStatus(user.profile.status_message)
+                        updateUsername(user.name)
+                        updateStatusMessage(user.profile.status_message)
 
-                        changeList.username = false
-                        changeList.statusMessage = false
-
-                        unsavedChanges = changeList.username || changeList.statusMessage
+                        updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
@@ -95,8 +120,8 @@
             <FileUploadButton
                 icon
                 tooltip={$_("settings.profile.change_profile_photo")}
-                on:upload={picture => {
-                    Store.setPhoto(picture.detail)
+                on:upload={async picture => {
+                    await updateProfilePicture(picture.detail)
                 }} />
         </div>
 
@@ -111,9 +136,14 @@
                             alt
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
-                            on:enter={_ => {
+                            on:blur={async _ => {
+                                await updateUsername(user.name)
+                                updatePendentItemsToSave()
+                            }}
+                            on:enter={async _ => {
                                 // TODO: Toast
-                                Store.setUsername(user.name)
+                                await updateUsername(user.name)
+                                updatePendentItemsToSave()
                             }}
                             on:input={_ => {
                                 changeList.username = true
@@ -134,9 +164,14 @@
                     bind:value={user.profile.status_message}
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
-                    on:enter={_ => {
+                    on:blur={async _ => {
+                        await updateStatusMessage(user.profile.status_message)
+                        updatePendentItemsToSave()
+                    }}
+                    on:enter={async _ => {
                         // TODO: Toast
-                        Store.setStatus(user.profile.status_message)
+                        await updateStatusMessage(user.profile.status_message)
+                        updatePendentItemsToSave()
                     }}
                     on:input={_ => {
                         changeList.statusMessage = true
@@ -213,7 +248,7 @@
                         appearance={Appearance.Alt}
                         text={$_("settings.profile.log_out.label")}
                         on:click={(_) => {
-                            goto(Route.Unlock)
+                            logOut()
                         }}>
                         <Icon icon={Shape.Lock} />
                     </Button>
@@ -235,6 +270,7 @@
         padding-right: var(--padding);
 
         .save-controls {
+            z-index: 2;
             position: absolute;
             bottom: var(--padding);
             right: calc(var(--padding) * 2);

@@ -60,6 +60,15 @@ class MultipassStore {
         }
     }
 
+    async updateProfilePhoto(new_photo: string) {
+        const multipass = get(this.multipassWritable);
+
+        if (multipass) {
+            await multipass.update_identity(wasm.IdentityUpdate.Picture, new_photo);
+            await this._updateIdentity();
+        }
+    }
+
     private async _updateIdentity() {
         const multipass = get(this.multipassWritable);
 

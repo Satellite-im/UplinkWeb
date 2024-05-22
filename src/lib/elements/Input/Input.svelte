@@ -55,6 +55,11 @@
         dispatch("input", value)
     }
 
+    function onBlur() {
+        dispatch("blur")
+    }
+
+
     function onKeyDown(event: KeyboardEvent) {
         if (event.code === "Enter") {
             send()
@@ -65,7 +70,7 @@
 <div class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}" data-tooltip={tooltip}>
     <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
         <slot></slot>
-        <input class="input {centered ? 'centered' : ''}" type="text" disabled={disabled} bind:this={input} bind:value={value} placeholder={placeholder} on:keydown={onKeyDown} on:input={onInput} />
+        <input class="input {centered ? 'centered' : ''}" type="text" disabled={disabled} bind:this={input} bind:value={value} placeholder={placeholder} on:keydown={onKeyDown} on:input={onInput} on:blur={onBlur} />
     </div>
 </div>
 
