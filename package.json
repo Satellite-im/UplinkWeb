@@ -44,6 +44,7 @@
         "svelte-markdown": "^0.4.1",
         "three": "^0.163.0",
         "uuid": "^9.0.1",
-        "vite-plugin-node-polyfills": "^0.21.0"
+        "vite-plugin-node-polyfills": "^0.21.0",
+        "warp-wasm": "^1.1.6"
     }
 }

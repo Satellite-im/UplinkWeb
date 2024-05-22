@@ -11,7 +11,6 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation";
-    import { Tesseract } from "$lib/wasm/tesseract"
 
     initLocale()
 
@@ -214,7 +213,6 @@
                         appearance={Appearance.Alt}
                         text={$_("settings.profile.log_out.label")}
                         on:click={(_) => {
-                            Tesseract.lock()
                             goto(Route.Unlock)
                         }}>
                         <Icon icon={Shape.Lock} />

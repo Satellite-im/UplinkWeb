@@ -32,3 +32,4 @@ export { default as FileEmbed } from "$lib/components/messaging/embeds/FileEmbed
 export { default as Transaction } from "$lib/components/wallet/Transaction.svelte"
 export { default as EncryptedNotice } from "$lib/components/messaging/EncryptedNotice.svelte"
 export { default as ChatFilter } from "$lib/components/ui/ChatFilter.svelte"
+export { default as EmojiGroup } from "$lib/components/ui/EmojiGroup.svelte"

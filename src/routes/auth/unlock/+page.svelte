@@ -10,9 +10,11 @@
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
     import { mock_users } from "$lib/mock/users"
     import Spacer from "$lib/elements/Spacer.svelte"
-    import { Tesseract } from "$lib/wasm/tesseract"
-    import { Multipass } from "$lib/wasm/multipass"
-    import { WarpInstance } from "$lib/wasm/warp"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { WarpStore } from "$lib/wasm/WarpStore"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { Store } from "$lib/state/store"
+    import { get } from "svelte/store"
 
     initLocale()
 
@@ -47,7 +49,7 @@
     {#if loading}
         <Label text={$_("generic.loading")} />
     {:else}
-        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} testid="label-choose-enter-pin" />
+        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} hook="label-choose-enter-pin" />
     {/if}
 
     <PinInput
@@ -58,14 +60,21 @@
         showSettings={false}
         on:submit={async e => {
             loading = true
-            let tesseract = await Tesseract.unlock(e.detail)
-            await WarpInstance.initWarp(tesseract)
-            await Multipass.createIdentity("Satellite_user", undefined)
+            await TesseractStoreInstance.unlock(e.detail)
+            let tesseract = await TesseractStoreInstance.getTesseract()
+            await WarpStore.initWarpInstances(tesseract)
+            let user = get(Store.state.user)
+            if (user.name === "Unknown User") {
+                console.log(user)
+                let identity = await MultipassStoreInstance.createIdentity('Satellite_user', undefined)
+                Store.setUsername(identity.username())
+                console.log(user)
+            }
             goto(Route.Pre)
         }} />
 
     <div class="switch-profile">
-        <Button tooltip="Change User" testid="button-change-user" icon on:click={_ => (showAccounts = true)}>
+        <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)}>
             <Icon icon={Shape.Profile} />
         </Button>
     </div>
