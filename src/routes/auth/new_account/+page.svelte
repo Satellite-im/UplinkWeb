@@ -17,13 +17,12 @@
 
     async function createAccount(username: string, statusMessage: string) {
         loading = true
-        let noUser = get(Store.state.user)
-        console.log(noUser)
-        let identity = await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
-        Store.setUsername(identity.username())
-        Store.setStatus(identity.status_message() || "")
-        let userCreated = get(Store.state.user)
-        console.log(userCreated)
+        console.log(get(Store.state.user))
+        await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
+        let identity = await MultipassStoreInstance.getOwnIdentity()
+        Store.setUsername(identity!.username())
+        Store.setStatus(identity!.status_message() || "")
+        console.log(get(Store.state.user))
         await new Promise(resolve => setTimeout(resolve, 1000))
         loading = false
         goto(Route.Chat)
