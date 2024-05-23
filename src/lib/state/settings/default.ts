@@ -52,6 +52,7 @@ export let defaultSettings = {
     },
     audio: {
         inputDevice: "Default",
+        videoInputDevice: "Default",
         outputDevice: "Default",
         echoCancellation: true,
         interfaceSounds: false,

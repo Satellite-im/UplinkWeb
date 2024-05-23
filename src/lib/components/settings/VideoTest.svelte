@@ -2,12 +2,16 @@
     import { Button, Icon } from "$lib/elements"
     import { Shape } from "$lib/enums"
 
-    let video: HTMLVideoElement;
+    export let audioInput: string | undefined
+    export let videoInput: string | undefined
+
+
+    let video: HTMLVideoElement
 
     async function startVideoTest() {
         const constraints = {
-            audio: { deviceId: undefined },
-            video: { deviceId: undefined }
+            audio: { deviceId: audioInput },
+            video: { deviceId: videoInput }
         }
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
