@@ -22,7 +22,6 @@ To get running fast, ensure you have this project cloned, with latest dependenci
 ```
 git clone https://github.com/Satellite-im/UplinkWeb.git
 npm install
-git submodule update --init --recursive --remote
 ```
 
 **Now, run a server locally and open it in your favorite browser:**
