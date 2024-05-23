@@ -183,7 +183,6 @@ class GlobalStore {
     }
 
     addToastNotification(toast: ToastMessage) {
-        console.log("adding toast ", toast)
         let toasts = get(this.state.toasts)
         let id = uuidv4()
         let timeout = setTimeout(() => {
