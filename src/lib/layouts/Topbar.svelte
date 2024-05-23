@@ -4,7 +4,7 @@
     export let simple: boolean = false
 </script>
 
-<div class="topbar {simple ? 'simple' : ''}">
+<div data-cy="topbar" class="topbar {simple ? 'simple' : ''}">
     <slot name="before" />
     <div class="content">
         <slot name="content" />

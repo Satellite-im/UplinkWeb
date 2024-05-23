@@ -18,7 +18,14 @@
 <div class="navigation {vertical ? 'vertical' : 'horizontal'} {icons ? 'icons' : ''}">
     {#each routes as route}
         <div class="navigation-control {!icons ? 'fill' : ''}">
-            <Button fill={!icons} tooltip={route.name} icon={icons} outline={activeRoute !== route.to && !icons} appearance={activeRoute === route.to ? Appearance.Primary : Appearance.Alt} on:click={_ => handleNavigate(route)}>
+            <Button
+                hook="button-{route.name}"
+                fill={!icons}
+                tooltip={route.name}
+                icon={icons}
+                outline={activeRoute !== route.to && !icons}
+                appearance={activeRoute === route.to ? Appearance.Primary : Appearance.Alt}
+                on:click={_ => handleNavigate(route)}>
                 <Icon icon={route.icon} />
                 {#if !icons}
                     <Text>{route.name}</Text>
