@@ -13,6 +13,8 @@
     import { goto } from "$app/navigation";
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import * as wasm from "warp-wasm"
+    import { onDestroy, onMount } from "svelte"
 
     initLocale()
 
@@ -34,16 +36,17 @@
         Store.setPhoto(picture)
     }
 
-    async function updateUsername(username: string) {
-        console.log('Called updateUsername')
-        await MultipassStoreInstance.updateUsername(username)
-        Store.setUsername(username)
+    async function updateUsername(newUsername: string) {
+        userReference.name = newUsername
+        Store.setUsername(newUsername)
+        await MultipassStoreInstance.updateUsername(newUsername)
+
     }
 
-    async function updateStatusMessage(statusMessage: string) {
-        console.log('Called updateStatusMessage')
-        await MultipassStoreInstance.updateStatusMessage(statusMessage)
-        Store.setStatus(statusMessage)
+    async function updateStatusMessage(newStatusMessage: string) {
+        userReference.profile.status_message = newStatusMessage
+        Store.setStatusMessage(newStatusMessage)
+        await MultipassStoreInstance.updateStatusMessage(newStatusMessage)
     }
 
     function updatePendentItemsToSave() {
@@ -55,8 +58,22 @@
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
+    let userReference: User
+    let statusMessage: string
+
+    onMount(() => {
+        userReference =  { ...get(Store.state.user) }
+        statusMessage = userReference.profile.status_message
+    })
+
+    onDestroy(() => {
+        Store.setUsername(userReference.name)
+        Store.setStatusMessage(userReference.profile.status_message)
+    })
+
     let user: User = get(Store.state.user)
-    let activityStatus: Status = Status.Online
+    let activityStatus: Status = user.profile.status
+   
     Store.state.user.subscribe(val => {
         user = val
         activityStatus = user.profile.status
@@ -91,6 +108,9 @@
                     text={$_("generic.cancel")}
                     appearance={Appearance.Alt}
                     on:click={_ => {
+                        statusMessage = userReference.profile.status_message
+                        Store.setUsername(userReference.name)
+                        Store.setStatusMessage(userReference.profile.status_message)
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.XMark} />
@@ -98,10 +118,9 @@
                 <Button
                     text={$_("generic.save")}
                     appearance={Appearance.Primary}
-                    on:click={_ => {
-                        updateUsername(user.name)
-                        updateStatusMessage(user.profile.status_message)
-
+                    on:click={async _ => {
+                        await updateUsername(user.name)
+                        await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
@@ -136,10 +155,6 @@
                             alt
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
-                            on:blur={async _ => {
-                                await updateUsername(user.name)
-                                updatePendentItemsToSave()
-                            }}
                             on:enter={async _ => {
                                 // TODO: Toast
                                 await updateUsername(user.name)
@@ -161,16 +176,12 @@
                 <Label text={$_("user.status_message")} />
                 <Input
                     alt
-                    bind:value={user.profile.status_message}
+                    bind:value={statusMessage}
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
-                    on:blur={async _ => {
-                        await updateStatusMessage(user.profile.status_message)
-                        updatePendentItemsToSave()
-                    }}
                     on:enter={async _ => {
                         // TODO: Toast
-                        await updateStatusMessage(user.profile.status_message)
+                        await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
                     }}
                     on:input={_ => {

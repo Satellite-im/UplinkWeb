@@ -21,7 +21,7 @@
         await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
         let identity = await MultipassStoreInstance.getOwnIdentity()
         Store.setUsername(identity!.username())
-        Store.setStatus(identity!.status_message() || "")
+        Store.setStatusMessage(identity!.status_message() || "")
         console.log(get(Store.state.user))
         await new Promise(resolve => setTimeout(resolve, 1000))
         loading = false
