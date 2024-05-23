@@ -8,6 +8,8 @@ import { get, writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
+import { ToastMessage } from "./ui/toast"
+import { v4 as uuidv4 } from "uuid"
 
 class GlobalStore {
     state: IState
@@ -28,6 +30,7 @@ class GlobalStore {
             activeRequests: createPersistentState("uplink.requests", []),
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
+            toasts: createPersistentState("uplink.toasts", {}),
         }
     }
 
@@ -177,6 +180,41 @@ class GlobalStore {
         if (!currentFavorites.find(c => c.id === chat.id)) {
             this.state.favorites.set([...currentFavorites, chat])
         }
+    }
+
+    addToastNotification(toast: ToastMessage) {
+        console.log("adding toast ", toast)
+        let toasts = get(this.state.toasts)
+        let id = uuidv4()
+        let timeout = setTimeout(() => {
+            this.removeToast(id)
+        }, toast.remaining_time * 1000)
+        this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
+    }
+
+    pauseToastTimeout(id: string) {
+        let toasts = get(this.state.toasts)
+        if (id in toasts) {
+            clearTimeout(toasts[id][1])
+        }
+    }
+
+    resumeToastTimeout(id: string) {
+        let toasts = get(this.state.toasts)
+        if (id in toasts) {
+            let toast = toasts[id][0]
+            let timeout = setTimeout(() => {
+                this.removeToast(id)
+            }, toast.remaining_time * 1000)
+            this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
+        }
+    }
+
+    removeToast(id: string) {
+        this.state.toasts.update(toasts => {
+            delete toasts[id]
+            return toasts
+        })
     }
 
     removeFavorite(chat: Chat) {

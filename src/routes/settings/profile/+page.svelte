@@ -10,7 +10,8 @@
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
-    import { goto } from "$app/navigation";
+    import { goto } from "$app/navigation"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     initLocale()
 
@@ -50,6 +51,7 @@
     }
 
     let unsavedChanges: boolean
+    let profile_update_txt = $_("settings.profile.update")
 </script>
 
 <div id="page">
@@ -112,8 +114,8 @@
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
                             on:enter={_ => {
-                                // TODO: Toast
                                 Store.setUsername(user.name)
+                                Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                             }}
                             on:input={_ => {
                                 changeList.username = true
@@ -135,8 +137,8 @@
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
                     on:enter={_ => {
-                        // TODO: Toast
                         Store.setStatus(user.profile.status_message)
+                        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}
                     on:input={_ => {
                         changeList.statusMessage = true
@@ -163,6 +165,7 @@
                                 case "do-not-disturb":
                                     return Store.setActivityStatus(Status.DoNotDisturb)
                             }
+                            Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                         }}
                         bind:selected={user.profile.status}>
                         {#if activityStatus === Status.Online}
@@ -212,7 +215,7 @@
                     <Button
                         appearance={Appearance.Alt}
                         text={$_("settings.profile.log_out.label")}
-                        on:click={(_) => {
+                        on:click={_ => {
                             goto(Route.Unlock)
                         }}>
                         <Icon icon={Shape.Lock} />
