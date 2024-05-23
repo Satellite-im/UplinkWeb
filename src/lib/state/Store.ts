@@ -8,6 +8,7 @@ import { get, writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
+import * as wasm from "warp-wasm"
 
 class GlobalStore {
     state: IState
@@ -29,6 +30,22 @@ class GlobalStore {
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
         }
+    }
+
+    setUserFromIdentity(identity: wasm.Identity) {
+        console.log("Short id: ", identity.short_id())
+        let userFromIdentity: User = {
+            ...defaultUser,
+            id: {short: identity.short_id()},
+            name: identity.username(),
+            key: identity.did_key(),
+            profile: {
+                ...defaultUser.profile,
+                status: Status.Online,
+                status_message: identity.status_message() || "",
+            },
+        }
+        this.state.user.update(u => (u = userFromIdentity))
     }
 
     setUsername(name: string) {
