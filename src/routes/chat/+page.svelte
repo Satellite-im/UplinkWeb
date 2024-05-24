@@ -192,13 +192,13 @@
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={() => search_component.select_first()}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
 
-        <Button appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={_ => (showMarket = true)}>
+        <Button hook="button-marketplace" appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={_ => (showMarket = true)}>
             <Icon icon={Shape.Shop} />
         </Button>
 
         <div class="content-header">
-            <Label text={$_("chat.chat_plural")} />
-            <Button icon small tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
+            <Label hook="label-sidebar-chats" text={$_("chat.chat_plural")} />
+            <Button hook="button-create-group-chat" icon small tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>
@@ -432,11 +432,11 @@
                     {/each}
                 {/if}
             {:else}
-                <div class="add-someone">
+                <div class="add-someone" data-cy="section-add-someone">
                     <img src="/assets/mascot/better_with_friends.webp" style="max-width: 350px;" alt="Better with friends!" />
                     <Text>Let's get something started!</Text>
                     <Text muted>You don't have any active chats yet, click the button below to head to the friends page to start one.</Text>
-                    <Button appearance={Appearance.Primary} text="Add Friends" on:click={_ => goto(Route.Friends)}>
+                    <Button hook="button-add-friends" appearance={Appearance.Primary} text="Add Friends" on:click={_ => goto(Route.Friends)}>
                         <Icon icon={Shape.Users} />
                     </Button>
                 </div>
