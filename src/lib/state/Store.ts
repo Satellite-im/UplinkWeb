@@ -21,6 +21,7 @@ class GlobalStore {
             activeChat: createPersistentState("uplink.activeChat", defaultChat),
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
+                video: createPersistentState("uplink.devices.videoInput", "default"),
                 output: createPersistentState("uplink.devices.output", "default"),
                 muted: createPersistentState("uplink.devices.muted", false),
                 deafened: createPersistentState("uplink.devices.deafened", false),
@@ -41,26 +42,26 @@ class GlobalStore {
     setStatus(message: string) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status_message: message,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status_message: message,
+                },
+            })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status: status,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status: status,
+                },
+            })
         )
     }
 
@@ -111,6 +112,10 @@ class GlobalStore {
 
     setInputDevice(device: string) {
         this.state.devices.input.set(device)
+    }
+
+    setVideoInputDevice(device: string) {
+        this.state.devices.video.set(device)
     }
 
     setOutputDevice(device: string) {

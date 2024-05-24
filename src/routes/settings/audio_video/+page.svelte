@@ -3,7 +3,7 @@
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Button, Switch, Select } from "$lib/elements"
-    import { Meter } from "$lib/components"
+    import { Meter, VideoTest } from "$lib/components"
     import { Appearance } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import { onMount } from "svelte"
@@ -13,10 +13,11 @@
     initLocale()
 
     let inputDevices: MediaDeviceInfo[] = []
+    let videoInputDevices: MediaDeviceInfo[] = []
     let outputDevices: MediaDeviceInfo[] = []
 
     $: inputOptions = inputDevices.length > 0 ? inputDevices.map(d => ({ text: d.label, value: d.deviceId })) : [{ text: "Default", value: "Default" }]
-
+    $: videoInputOptions = inputDevices.length > 0 ? videoInputDevices.map(d => ({ text: d.label, value: d.deviceId })) : [{ text: "Default", value: "Default" }]
     $: outputOptions = outputDevices.length > 0 ? outputDevices.map(d => ({ text: d.label, value: d.deviceId })) : [{ text: "Default", value: "default" }]
 
     let getDevices = async () => {
@@ -24,6 +25,7 @@
             await navigator.mediaDevices.getUserMedia({ audio: true })
             let devices = await navigator.mediaDevices.enumerateDevices()
             inputDevices = devices.filter(device => device.kind === "audioinput")
+            videoInputDevices = devices.filter(device => device.kind === "videoinput")
             outputDevices = devices.filter(device => device.kind === "audiooutput")
         } catch (error) {
             console.error("Error accessing media devices:", error)
@@ -32,6 +34,8 @@
 
     let selectedInput: string = "default"
     let selectedOutput: string = "default"
+    let selectedVideoInput: string = "default"
+
     Store.state.devices.input.subscribe(d => {
         selectedInput = d
     })
@@ -144,9 +148,11 @@
                 Store.setInputDevice(v.detail)
             }} />
     </SettingSection>
+
     <div class="flex-row">
         <Meter percent={audioLevel} />
     </div>
+
     <SettingSection name="Output Device" description="Select your output device, this is usually your headphones or speakers.">
         <Select
             selected={selectedOutput}
@@ -156,10 +162,25 @@
                 Store.setOutputDevice(v.detail)
             }} />
     </SettingSection>
+
     <div class="flex-row">
         <Button small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring} />
         <Meter percent={audioOutputLevel} />
     </div>
+
+    <SettingSection name="Video Device" description="Select your video device, this is usually your webcam.">
+        <Select
+            selected={selectedVideoInput}
+            options={videoInputOptions}
+            alt
+            on:change={v => {
+                Store.setVideoInputDevice(v.detail)
+            }} />
+    </SettingSection>
+    <div class="flex-row">
+        <VideoTest audioInput={selectedInput} videoInput={undefined} />
+    </div>
+
     <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
         <Switch
             on={settings ? settings.audio.echoCancellation : true}

@@ -8,6 +8,7 @@
     import { SettingsStore, clearState } from "$lib/state"
     import { ConversationStore } from "$lib/state/conversation"
     import { InventoryStore } from "$lib/state/inventory"
+    import { goto } from "$app/navigation"
 
     initLocale()
 </script>
@@ -31,6 +32,10 @@
 
     <SettingSection name="Clear State" description="Reset the application state.">
         <Button appearance={Appearance.Alt} on:click={_ => clearState()}>Clear State</Button>
+    </SettingSection>
+
+    <SettingSection name="Test Voice" description="Dev Voice">
+        <Button appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
     </SettingSection>
 </div>
 
