@@ -14,12 +14,15 @@
     export let secondaryFont: boolean = false
     export let withShadow: boolean = false
     export let noWrap: boolean = false
+    export let hook: string = ""
 
     let clazz = ""
     export { clazz as class }
 </script>
 
-<p class="text {withShadow ? 'shadow' : ''} {noWrap ? 'no-wrap' : ''} {muted ? 'muted' : ''} {appearance} {size} {singleLine ? 'single-line' : ''} {doubleLine ? 'double-line' : ''} {secondaryFont ? 'secondary-font' : ''} {clazz}">
+<p
+    data-cy={hook}
+    class="text {withShadow ? 'shadow' : ''} {noWrap ? 'no-wrap' : ''} {muted ? 'muted' : ''} {appearance} {size} {singleLine ? 'single-line' : ''} {doubleLine ? 'double-line' : ''} {secondaryFont ? 'secondary-font' : ''} {clazz}">
     {#if loading}
         <Loader text />
     {:else if markdown}
