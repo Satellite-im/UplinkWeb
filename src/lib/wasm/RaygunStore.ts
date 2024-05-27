@@ -2,7 +2,10 @@ import { get, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { Store } from "../state/store"
+import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
+import type { Message } from "$lib/types"
+import { mul } from "three/examples/jsm/nodes/Nodes.js"
 
 class RaygunStore {
     private raygunWritable: Writable<wasm.RayGunBox | null>
@@ -50,23 +53,39 @@ class RaygunStore {
     }
 
     async send(conversation_id: string, message: string[]) {
+        let newMessage = {
+            id: "",
+            details: {
+                at: new Date(),
+                origin: get(Store.state.user),
+                remote: false,
+            },
+            text: message,
+            inReplyTo: null,
+            reactions: [],
+            attachments: [],
+        }
         let prom = this.get(r => r.send(conversation_id, message), "Error sending message")
-        await prom.then(msg => {
-            // TODO: sync with Store
+        await prom.then(_ => {
+            ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
         })
     }
 
     async edit(conversation_id: string, message_id: string, message: string[]) {
         let prom = this.get(r => r.edit(conversation_id, message_id, message), "Error editing message")
         await prom.then(msg => {
-            // TODO: sync with Store
+            ConversationStore.editMessage(get(Store.state.activeChat), message_id, message.join("\n"))
         })
     }
 
     async delete(conversation_id: string, message_id?: string) {
         let prom = this.get(r => r.delete(conversation_id, message_id), "Error deleting message")
         await prom.then(msg => {
-            // TODO: sync with Store
+            if (message_id) ConversationStore.removeMessage(conversation_id, message_id)
+            else {
+                let conversations = get(ConversationStore.conversations)
+                ConversationStore.conversations.set(conversations.filter(c => c.id !== conversation_id))
+            }
         })
     }
 
@@ -86,8 +105,21 @@ class RaygunStore {
 
     async reply(conversation_id: string, message_id: string, message: string[]) {
         let prom = this.get(r => r.reply(conversation_id, message_id, message), "Error replying to message")
-        await prom.then(msg => {
-            // TODO: sync with Store
+        await prom.then(async _ => {
+            let reply = this.convert_message(conversation_id, await this.get_message(conversation_id, message_id))
+            let newMessage = {
+                id: "",
+                details: {
+                    at: new Date(),
+                    origin: get(Store.state.user),
+                    remote: false,
+                },
+                text: message,
+                inReplyTo: reply,
+                reactions: [],
+                attachments: [],
+            }
+            ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
         })
     }
 
@@ -140,6 +172,22 @@ class RaygunStore {
                 return undefined
             })
         })
+    }
+
+    private convert_message(conversation_id: string, message: wasm.Message | undefined) {
+        if (!message) return null
+        return {
+            id: message.id(),
+            details: {
+                at: message.date(),
+                origin: get(Store.state.user),
+                remote: false,
+            },
+            text: message.lines(),
+            inReplyTo: null, // TODO get replying message from store. or do what we do for native and just wrap the wasm message
+            reactions: message.reactions(),
+            attachments: message.attachments(),
+        }
     }
 }
 

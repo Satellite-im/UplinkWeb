@@ -31,7 +31,7 @@ class Conversations {
         const conversations = get(this.conversations)
         const conversationIndex = conversations.findIndex(c => c.id === chat.id)
 
-        message.id = uuidv4()
+        if (message.id === "") message.id = uuidv4()
 
         if (conversationIndex !== -1) {
             const conversation = conversations[conversationIndex]
@@ -83,9 +83,9 @@ class Conversations {
         }
     }
 
-    async removeMessage(chat: Chat, messageId: string) {
+    async removeMessage(chat: string, messageId: string) {
         const conversations = get(this.conversations)
-        const conversation = conversations.find(c => c.id === chat.id)
+        const conversation = conversations.find(c => c.id === chat)
 
         if (conversation) {
             conversation.messages.forEach(group => {

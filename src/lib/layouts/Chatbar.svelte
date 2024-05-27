@@ -8,25 +8,14 @@
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { ConversationStore } from "$lib/state/conversation"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     initLocale()
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
 
     function addMessage(text: string) {
-        let newMessage = {
-            id: "",
-            details: {
-                at: new Date(),
-                origin: get(Store.state.user),
-                remote: false,
-            },
-            text: [text],
-            inReplyTo: null,
-            reactions: [],
-            attachments: [],
-        }
-        ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
+        RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"))
         message = ""
     }
 </script>
