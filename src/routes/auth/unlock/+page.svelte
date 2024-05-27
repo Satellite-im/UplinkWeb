@@ -27,19 +27,19 @@
 
 <div id="auth-unlock">
     {#if showAccounts}
-        <Modal on:close={_ => (showAccounts = false)} padded>
+        <Modal hook="modal-select-profile" on:close={_ => (showAccounts = false)} padded>
             <div class="profiles">
-                <Label text={$_("generic.profiles")} />
-                <div class="user">
-                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator />
-                    <Text class="username">{mock_users[1].name}</Text>
+                <Label hook="label-select-profile" text={$_("generic.profiles")} />
+                <div class="user" data-cy="select-profile-user">
+                    <ProfilePicture hook="select-profile-user-image" image={mock_users[1].profile.photo.image} noIndicator />
+                    <Text hook="select-profile-user-name" class="username">{mock_users[1].name}</Text>
                 </div>
-                <div class="user">
-                    <ProfilePicture image={mock_users[2].profile.photo.image} />
-                    <Text class="username">{mock_users[2].name}</Text>
+                <div class="user" data-cy="select-profile-user">
+                    <ProfilePicture hook="select-profile-user-image" image={mock_users[2].profile.photo.image} />
+                    <Text hook="select-profile-user-name" class="username">{mock_users[2].name}</Text>
                 </div>
                 <Spacer />
-                <Button text="Create new profile" appearance={Appearance.Alt}>
+                <Button hook="button-create-new-profile" text="Create new profile" appearance={Appearance.Alt}>
                     <Icon icon={Shape.Plus} />
                 </Button>
             </div>
@@ -66,7 +66,7 @@
             let user = get(Store.state.user)
             if (user.name === "Unknown User") {
                 console.log(user)
-                let identity = await MultipassStoreInstance.createIdentity('Satellite_user', undefined)
+                let identity = await MultipassStoreInstance.createIdentity("Satellite_user", undefined)
                 Store.setUsername(identity.username())
                 console.log(user)
             }
