@@ -10,13 +10,12 @@ class TesseractStore {
 
     async unlock(pin: string) {
         await init()
-        console.log('Pin to unlock Tesseract: ', pin)
         const tesseractInstance = new wasm.Tesseract()
         this.tesseractWritable.set(tesseractInstance)
-        
+
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
-        
+
         try {
             await tesseractInstance.load_from_storage()
             await tesseractInstance.unlock(passphrase)
@@ -24,8 +23,6 @@ class TesseractStore {
             if (!tesseractInstance.autosave_enabled()) {
                 tesseractInstance.set_autosave()
             }
-            
-            console.log('Tesseract: ', tesseractInstance)
         } catch (error) {
             console.error('Error unlocking Tesseract: ', error)
         }

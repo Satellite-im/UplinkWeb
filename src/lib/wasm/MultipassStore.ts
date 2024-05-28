@@ -12,15 +12,12 @@ class MultipassStore {
     }
 
     async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
-        console.log('Started creating identity')
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
                 await multipass.create_identity(username, passphrase)
                 await this.updateStatusMessage(statusMessage)
-                const identity = get(this.identity)
-                console.log('New account created. Username: ', identity?.username())
             } catch (error) {
                 console.error('Error creating identity: ', error)
             }
@@ -65,7 +62,7 @@ class MultipassStore {
 
         if (multipass) {
             const buffer = Buffer.from(newPictureBase64, 'base64')
-            let pictureAsBytes =  new Uint8Array(buffer)
+            let pictureAsBytes = new Uint8Array(buffer)
             await multipass.update_identity(wasm.IdentityUpdate.Picture, pictureAsBytes)
             await this._updateIdentity()
         }
@@ -76,7 +73,7 @@ class MultipassStore {
 
         if (multipass) {
             const buffer = Buffer.from(newPictureBase64, 'base64')
-            let pictureAsBytes =  new Uint8Array(buffer)
+            let pictureAsBytes = new Uint8Array(buffer)
             await multipass.update_identity(wasm.IdentityUpdate.Banner, pictureAsBytes)
             await this._updateIdentity()
         }
