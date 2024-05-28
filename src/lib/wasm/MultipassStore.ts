@@ -51,20 +51,22 @@ class MultipassStore {
         }
     }
 
-    async updateStatusMessage(new_status_message: string) {
+    async updateStatusMessage(newStatusMessage: string) {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
-            await multipass.update_identity(wasm.IdentityUpdate.StatusMessage, new_status_message)
+            await multipass.update_identity(wasm.IdentityUpdate.StatusMessage, newStatusMessage)
             await this._updateIdentity()
         }
     }
 
-    async updateProfilePhoto(new_photo: string) {
+    async updateProfilePhoto(newPictureBase64: string) {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
-            await multipass.update_identity(wasm.IdentityUpdate.Picture, new_photo)
+            const buffer = Buffer.from(newPictureBase64, 'base64')
+            let pictureAsBytes =  new Uint8Array(buffer)
+            await multipass.update_identity(wasm.IdentityUpdate.Picture, pictureAsBytes)
             await this._updateIdentity()
         }
     }
