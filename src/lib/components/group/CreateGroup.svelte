@@ -38,11 +38,11 @@
     }
 </script>
 
-<div class="new-chat">
+<div class="new-chat" data-cy="modal-create-group-chat">
     <div class="select-user">
-        <Label text="Group Name:" />
-        <Input alt bind:value={chat.name} />
-        <Label text="Group Members:" />
+        <Label hook="label-create-group-name" text="Group Name:" />
+        <Input hook="input-create-group-name" alt bind:value={chat.name} />
+        <Label hook="label-create-group-members" text="Group Members:" />
         <div class="user-list">
             {#each chat.users as recipient}
                 <div class="mini-user">
@@ -62,7 +62,7 @@
                 </div>
             {/each}
         </div>
-        <Label text="Select member(s)" />
+        <Label hook="label-create-group-select-members" text="Select member(s)" />
         <div class="user-selection-list {embedded ? 'embedded' : ''}">
             {#each friends as recipient}
                 <button class="user" on:click={() => update_recipients(recipient)}>
@@ -81,6 +81,7 @@
         </div>
         <Controls>
             <Button
+                hook="button-create-group"
                 text="Create Group"
                 on:click={_ => {
                     chat.id = hashChat(chat)
