@@ -71,6 +71,17 @@ class MultipassStore {
         }
     }
 
+    async updateBannerPicture(newPictureBase64: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            const buffer = Buffer.from(newPictureBase64, 'base64')
+            let pictureAsBytes =  new Uint8Array(buffer)
+            await multipass.update_identity(wasm.IdentityUpdate.Banner, pictureAsBytes)
+            await this._updateIdentity()
+        }
+    }
+
     private async _updateIdentity() {
         const multipass = get(this.multipassWritable)
 
