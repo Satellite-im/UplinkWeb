@@ -13,13 +13,14 @@
     export let loading: boolean = false
     export let noIndicator: boolean = false
     export let frame: Frame = { name: "", image: "" }
+    export let hook: string = ""
 
     const dispatch = createEventDispatcher()
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="profile-picture {highlight !== null ? `highlight-${highlight}` : ''} {size}" on:click={_ => dispatch("click")}>
+<div data-cy={hook} class="profile-picture {highlight !== null ? `highlight-${highlight}` : ''} {size}" on:click={_ => dispatch("click")}>
     {#if loading}
         <Loader />
     {:else}
