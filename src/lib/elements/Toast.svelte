@@ -35,9 +35,9 @@
         z-index: 1000;
         display: inline-flex;
         flex-direction: row;
-        background-color: rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background-color: var(--opaque-color);
+        backdrop-filter: blur(var(--blur-radius));
+        -webkit-backdrop-filter: blur(var(--blur-radius));
         padding: var(--gap);
         align-items: center;
         gap: var(--gap);
