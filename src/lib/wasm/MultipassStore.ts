@@ -3,7 +3,6 @@ import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { ULog } from "../../ulog"
 
-
 class MultipassStore {
     private multipassWritable: Writable<wasm.MultiPassBox | null>
     private identity: Writable<wasm.Identity | null> = writable(null)
@@ -105,11 +104,13 @@ class MultipassStore {
         }
     }
 
-    async updateProfilePhoto(new_photo: string) {
+    async updateProfilePhoto(newPictureBase64: string) {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
-            await multipass.update_identity(wasm.IdentityUpdate.Picture, new_photo)
+            const buffer = Buffer.from(newPictureBase64, 'base64')
+            let pictureAsBytes =  new Uint8Array(buffer)
+            await multipass.update_identity(wasm.IdentityUpdate.Picture, pictureAsBytes)
             await this._updateIdentity()
         }
     }

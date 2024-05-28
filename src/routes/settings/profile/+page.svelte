@@ -32,8 +32,7 @@
     }
 
     async function updateProfilePicture(picture: string) {
-        // TODO(Lucas): Not well implemented yet
-        // await MultipassStoreInstance.updateProfilePhoto(picture)
+        await MultipassStoreInstance.updateProfilePhoto(picture)
         Store.setPhoto(picture)
     }
 
