@@ -12,6 +12,9 @@
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { ULog } from "../../ulog"
+    import { onMount } from "svelte"
 
     // Initialize locale
     initLocale()
@@ -42,9 +45,15 @@
 
     let sentRequest: boolean
     let requestString: string
-    let submitRequest = function () {
+    let submitRequest = async function () {
+        ULog.info("Sending friend request to " + requestString)
+        await MultipassStoreInstance.sendFriendRequest(requestString)
         sentRequest = true
     }
+
+    onMount(async () => {
+        let friends = await MultipassStoreInstance.listIncomingFriendRequests()
+    })
 
     let searchString: string = ""
 

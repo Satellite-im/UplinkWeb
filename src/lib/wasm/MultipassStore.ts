@@ -1,6 +1,7 @@
 import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
+import { ULog } from "../../ulog"
 
 
 class MultipassStore {
@@ -12,7 +13,7 @@ class MultipassStore {
     }
 
     async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
-        console.log('Started creating identity')
+        ULog.debug('Started creating identity')
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
@@ -20,9 +21,53 @@ class MultipassStore {
                 await multipass.create_identity(username, passphrase)
                 await this.updateStatusMessage(statusMessage)
                 const identity = get(this.identity)
-                console.log('New account created. Username: ', identity?.username())
+                ULog.info(`New account created. \n
+                Username: ${identity?.username()} \n 
+                StatusMessage: ${identity?.status_message()} \n
+                Did Key: ${identity?.did_key()} \n`)
             } catch (error) {
-                console.error('Error creating identity: ', error)
+                ULog.error('Error creating identity: ', error)
+            }
+        }
+    }
+
+    async sendFriendRequest(did: string): Promise<void> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                await multipass.send_request(did)
+                ULog.info('Friend request sent: ', did)
+            } catch (error) {
+                ULog.error('Error adding friend: ', error)
+            }
+        }
+    }
+
+    async acceptFriendRequest(did: string): Promise<void> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                await multipass.accept_request(did)
+                ULog.info('Friend request accepted: ', did)
+            } catch (error) {
+                ULog.error('Error accepting friend request: ', error)
+            }
+        }
+    }
+
+
+    async listIncomingFriendRequests(): Promise<any> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let friends = await multipass.list_incoming_request()
+
+                ULog.info(`Listed incoming friend requests: ${friends}`)
+            } catch (error) {
+                ULog.error('Error list incoming friend requests: ', error)
             }
         }
     }
@@ -35,7 +80,7 @@ class MultipassStore {
                 const identity = await multipass.get_own_identity()
                 return identity
             } catch (error) {
-                console.error('Error getting own identity: ', error)
+                ULog.error('Error getting own identity: ', error)
                 return undefined
             }
         }
@@ -76,8 +121,11 @@ class MultipassStore {
             try {
                 const updated_identity = await multipass.get_own_identity()
                 this.identity.update(() => updated_identity)
+                ULog.info(`Identity updated\n 
+                  Username: ${updated_identity.username()} \n
+                  StatusMessage: ${updated_identity.status_message()} \n`)
             } catch (error) {
-                console.error('Error updating identity: ', error)
+                ULog.error('Error updating identity: ', error)
             }
         }
     }
