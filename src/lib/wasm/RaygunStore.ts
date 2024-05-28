@@ -2,10 +2,12 @@ import { get, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { Store } from "../state/store"
+import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
-import type { Message } from "$lib/types"
-import { mul } from "three/examples/jsm/nodes/Nodes.js"
+import { ChatType } from "$lib/enums"
+import { MultipassStoreInstance } from "./MultipassStore"
+import type { User } from "$lib/types"
 
 class RaygunStore {
     private raygunWritable: Writable<wasm.RayGunBox | null>
@@ -16,15 +18,75 @@ class RaygunStore {
 
     async create_conversation(did: string) {
         let conversation = this.get(r => r.create_conversation(did), "Error creating new conversation")
-        await conversation.then(conv => {
-            // TODO: sync with Store
+        await conversation.then(async conv => {
+            if (conv) {
+                let users = (
+                    await Promise.all(
+                        conv.recipients().flatMap(r => {
+                            return MultipassStoreInstance.identity_from_did(r)
+                        })
+                    )
+                ).filter((r): r is User => r !== undefined)
+                let chat = {
+                    id: conv.id(),
+                    name: conv.name() ? conv.name()! : conv.recipients()[0],
+                    motd: "",
+                    kind: ChatType.DirectMessage,
+                    settings: {
+                        displayOwnerBadge: true,
+                        readReciepts: true,
+                        permissions: {
+                            allowAnyoneToAddUsers: false,
+                            allowAnyoneToModifyPhoto: false,
+                            allowAnyoneToModifyName: false,
+                        },
+                    },
+                    creator: get(Store.state.user),
+                    notifications: 0,
+                    activity: false,
+                    users: [get(Store.state.user), ...users],
+                    last_message_at: new Date(),
+                    last_message_preview: "",
+                }
+                UIStore.addSidebarChat(chat)
+            }
         })
     }
 
     async create_group_conversation(name: string | undefined, recipients: string[]) {
         let conversation = this.get(r => r.create_group_conversation(name, recipients, new wasm.GroupSettings()), "Error creating new group conversation")
-        await conversation.then(conv => {
-            // TODO: sync with Store
+        await conversation.then(async conv => {
+            if (conv) {
+                let users = (
+                    await Promise.all(
+                        conv.recipients().flatMap(r => {
+                            return MultipassStoreInstance.identity_from_did(r)
+                        })
+                    )
+                ).filter((r): r is User => r !== undefined)
+                let chat = {
+                    id: conv.id(),
+                    name: conv.name() ? conv.name()! : conv.recipients()[0],
+                    motd: "",
+                    kind: ChatType.Group,
+                    settings: {
+                        displayOwnerBadge: true,
+                        readReciepts: true,
+                        permissions: {
+                            allowAnyoneToAddUsers: false,
+                            allowAnyoneToModifyPhoto: false,
+                            allowAnyoneToModifyName: false,
+                        },
+                    },
+                    creator: get(Store.state.user),
+                    notifications: 0,
+                    activity: false,
+                    users: [get(Store.state.user), ...users],
+                    last_message_at: new Date(),
+                    last_message_preview: "",
+                }
+                UIStore.addSidebarChat(chat)
+            }
         })
     }
 
@@ -73,14 +135,14 @@ class RaygunStore {
 
     async edit(conversation_id: string, message_id: string, message: string[]) {
         let prom = this.get(r => r.edit(conversation_id, message_id, message), "Error editing message")
-        await prom.then(msg => {
+        await prom.then(_ => {
             ConversationStore.editMessage(get(Store.state.activeChat), message_id, message.join("\n"))
         })
     }
 
     async delete(conversation_id: string, message_id?: string) {
         let prom = this.get(r => r.delete(conversation_id, message_id), "Error deleting message")
-        await prom.then(msg => {
+        await prom.then(_ => {
             if (message_id) ConversationStore.removeMessage(conversation_id, message_id)
             else {
                 let conversations = get(ConversationStore.conversations)
@@ -91,8 +153,9 @@ class RaygunStore {
 
     async react(conversation_id: string, message_id: string, state: wasm.ReactionState, emoji: string) {
         let prom = this.get(r => r.react(conversation_id, message_id, state, emoji), "Error reacting to message")
-        await prom.then(msg => {
-            // TODO: sync with Store
+        await prom.then(async msg => {
+            //TODO save reactors in message and then determine if user is reacting or removing a reaction
+            ConversationStore.editReaction(get(Store.state.activeChat), message_id, emoji, true)
         })
     }
 
@@ -150,7 +213,7 @@ class RaygunStore {
             try {
                 return await handler(raygun)
             } catch (error) {
-                console.log(`${error}: ${err}`)
+                console.log(`${err}: ${error}`)
             }
         }
         return undefined
@@ -166,7 +229,7 @@ class RaygunStore {
                     try {
                         return resolve(handler(raygun))
                     } catch (error) {
-                        console.log(`${error}: ${err}`)
+                        console.log(`${err}: ${error}`)
                     }
                 }
                 return undefined

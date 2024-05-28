@@ -3,6 +3,7 @@ import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
 import { mock_messages } from "$lib/mock/messages"
+import { Appearance } from "$lib/enums"
 
 export type ConversationMessages = {
     id: string
@@ -74,6 +75,55 @@ class Conversations {
                     group.messages[messageIndex] = {
                         ...group.messages[messageIndex],
                         text: [editedContent],
+                    }
+                }
+            })
+
+            this.conversations.set(conversations)
+            await setStateToDB("conversations", conversations)
+        }
+    }
+
+    async editReaction(chat: Chat, messageId: string, reaction: string, add: boolean) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat.id)
+
+        if (conversation) {
+            conversation.messages.forEach(group => {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    const reactions = group.messages[messageIndex].reactions
+                    const reactionIndex = reactions.findIndex(r => r.emoji === reaction)
+                    if (add) {
+                        if (reactionIndex !== -1) {
+                            reactions[reactionIndex] = {
+                                count: reactions[reactionIndex].count + 1,
+                                emoji: reaction,
+                                highlight: reactions[reactionIndex].highlight,
+                                description: reactions[reactionIndex].description,
+                            }
+                        } else {
+                            reactions[reactionIndex] = {
+                                count: 1,
+                                emoji: reaction,
+                                highlight: Appearance.Default, //TODO
+                                description: "", //TODO
+                            }
+                        }
+                    } else if (reactionIndex !== -1) {
+                        reactions[reactionIndex] = {
+                            count: reactions[reactionIndex].count - 1,
+                            emoji: reaction,
+                            highlight: reactions[reactionIndex].highlight,
+                            description: reactions[reactionIndex].description,
+                        }
+                        if (reactions[reactionIndex].count <= 0) {
+                            delete reactions[reactionIndex]
+                        }
+                    }
+                    group.messages[messageIndex] = {
+                        ...group.messages[messageIndex],
+                        reactions: reactions,
                     }
                 }
             })
