@@ -8,6 +8,7 @@
 
     // export let loading: boolean = false;
     export let placeholder: string = ""
+    export let hook: string = ""
     export let alt: boolean = false
     export let rounded: boolean = false
     export let highlight: Appearance = Appearance.Default
