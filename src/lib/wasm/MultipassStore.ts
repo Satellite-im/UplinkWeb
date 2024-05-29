@@ -95,11 +95,11 @@ class MultipassStore {
         }
     }
 
-    async updateStatusMessage(new_status_message: string) {
+    async updateStatusMessage(newStatusMessage: string) {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
-            await multipass.update_identity(wasm.IdentityUpdate.StatusMessage, new_status_message)
+            await multipass.update_identity(wasm.IdentityUpdate.StatusMessage, newStatusMessage)
             await this._updateIdentity()
         }
     }
@@ -109,8 +109,19 @@ class MultipassStore {
 
         if (multipass) {
             const buffer = Buffer.from(newPictureBase64, 'base64')
-            let pictureAsBytes =  new Uint8Array(buffer)
+            let pictureAsBytes = new Uint8Array(buffer)
             await multipass.update_identity(wasm.IdentityUpdate.Picture, pictureAsBytes)
+            await this._updateIdentity()
+        }
+    }
+
+    async updateBannerPicture(newPictureBase64: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            const buffer = Buffer.from(newPictureBase64, 'base64')
+            let pictureAsBytes = new Uint8Array(buffer)
+            await multipass.update_identity(wasm.IdentityUpdate.Banner, pictureAsBytes)
             await this._updateIdentity()
         }
     }

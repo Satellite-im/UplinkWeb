@@ -39,13 +39,13 @@
 </script>
 
 {#if open}
-    <div class="sidebar" transition:slide={{ duration: animationDuration, axis: "x" }}>
+    <div class="sidebar" data-cy="sidebar" transition:slide={{ duration: animationDuration, axis: "x" }}>
         <div class="sidebar-pre">
-            <Input alt placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
+            <Input hook="input-sidebar-search" alt placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
                 <Icon icon={Shape.Search} />
             </Input>
 
-            <Button icon appearance={Appearance.Alt} on:click={handleToggle} loading={loading}>
+            <Button hook="button-hide-sidebar" icon appearance={Appearance.Alt} on:click={handleToggle} loading={loading}>
                 <Icon icon={Shape.Sidebar} />
             </Button>
         </div>

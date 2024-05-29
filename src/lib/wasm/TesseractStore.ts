@@ -14,10 +14,10 @@ class TesseractStore {
         ULog.debug('TesseractStore: Warp WASM initialized')
         const tesseractInstance = new wasm.Tesseract()
         this.tesseractWritable.set(tesseractInstance)
-        
+
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
-        
+
         try {
             await tesseractInstance.load_from_storage()
             await tesseractInstance.unlock(passphrase)

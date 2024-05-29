@@ -17,7 +17,6 @@
 
     async function createAccount(username: string, statusMessage: string) {
         loading = true
-        console.log(get(Store.state.user))
         await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
         let identity = await MultipassStoreInstance.getOwnIdentity()
         Store.setUserFromIdentity(identity!)
@@ -41,14 +40,20 @@
         </div>
         <div class="right">
             <Label text={$_("generic.username")} />
-            <Input alt placeholder={$_("pages.auth.new_account.enter_username")} on:input={async e => {
-               username = e.detail
-            }}/>
+            <Input
+                alt
+                placeholder={$_("pages.auth.new_account.enter_username")}
+                on:input={async e => {
+                    username = e.detail
+                }} />
             <Spacer less />
             <Label text={$_("generic.status_message")} />
-            <Input alt placeholder={$_("pages.auth.new_account.set_status")} on:input={async e => {
-                statusMessage = e.detail
-             }} />
+            <Input
+                alt
+                placeholder={$_("pages.auth.new_account.set_status")}
+                on:input={async e => {
+                    statusMessage = e.detail
+                }} />
         </div>
     </div>
     <Controls>

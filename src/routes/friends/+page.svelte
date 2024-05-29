@@ -111,13 +111,13 @@
     {/if}
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends}>
-        <Button outline appearance={Appearance.Alt} text={$_("market.market")}>
+        <Button hook="button-marketplace" outline appearance={Appearance.Alt} text={$_("market.market")}>
             <Icon icon={Shape.Shop} />
         </Button>
 
         <div class="content-header">
             <Label text={$_("chat.chat_plural")} />
-            <Button icon small tooltip={$_("chat.create")}>
+            <Button hook="button-create-group-chat" icon small tooltip={$_("chat.create")}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>

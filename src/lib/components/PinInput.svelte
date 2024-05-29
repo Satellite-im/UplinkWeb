@@ -119,7 +119,7 @@
                     {/if}
                 </Button>
             {/each}
-            <Button class="pin-key" disabled={loading} hook="button-clear-input" rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
+            <Button class="pin-key" icon disabled={loading} hook="button-clear-input" rotateOnHover on:click={clearPinValue} appearance={Appearance.Error}>
                 {#if loading}
                     <Loader alt />
                 {:else}

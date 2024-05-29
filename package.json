@@ -12,6 +12,7 @@
         "format": "prettier --write 'src/**/*.{css,html,js,svelte,ts}'"
     },
     "devDependencies": {
+        "@castlenine/vite-remove-attribute": "^1.0.2",
         "@sveltejs/adapter-auto": "^3.0.0",
         "@sveltejs/adapter-static": "^3.0.1",
         "@sveltejs/kit": "^2.0.0",
@@ -45,6 +46,6 @@
         "three": "^0.163.0",
         "uuid": "^9.0.1",
         "vite-plugin-node-polyfills": "^0.21.0",
-        "warp-wasm": "^1.1.6"
+        "warp-wasm": "^1.1.7"
     }
 }

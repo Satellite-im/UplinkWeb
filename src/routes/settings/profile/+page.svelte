@@ -11,9 +11,7 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation";
-    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import * as wasm from "warp-wasm"
     import { onDestroy, onMount } from "svelte"
 
     initLocale()
@@ -27,7 +25,6 @@
     }
 
     function logOut() {
-        TesseractStoreInstance.lock()
         goto(Route.Unlock)
     }
 
@@ -82,12 +79,13 @@
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
     let fileinput: HTMLElement
 
-    const onFileSelected = (e: any) => {
+     const onFileSelected =  (e: any) => {
         let image = e.target.files[0]
         let reader = new FileReader()
         reader.readAsDataURL(image)
-        reader.onload = e => {
+        reader.onload = async e => {
             let imageString = e.target?.result?.toString()
+            await MultipassStoreInstance.updateBannerPicture(imageString || "")
             Store.setBanner(imageString || "")
         }
     }
@@ -132,7 +130,9 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={_ => fileinput.click()}></div>
+        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={_ => {
+            fileinput.click()
+        }}></div>
 
         <div class="profile-picture-container">
             <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />

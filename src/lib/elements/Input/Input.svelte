@@ -8,6 +8,7 @@
 
     // export let loading: boolean = false;
     export let placeholder: string = ""
+    export let hook: string = ""
     export let alt: boolean = false
     export let rounded: boolean = false
     export let highlight: Appearance = Appearance.Default
@@ -59,7 +60,6 @@
         dispatch("blur")
     }
 
-
     function onKeyDown(event: KeyboardEvent) {
         if (event.code === "Enter") {
             send()
@@ -70,7 +70,7 @@
 <div class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}" data-tooltip={tooltip}>
     <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
         <slot></slot>
-        <input class="input {centered ? 'centered' : ''}" type="text" disabled={disabled} bind:this={input} bind:value={value} placeholder={placeholder} on:keydown={onKeyDown} on:input={onInput} on:blur={onBlur} />
+        <input data-cy={hook} class="input {centered ? 'centered' : ''}" type="text" disabled={disabled} bind:this={input} bind:value={value} placeholder={placeholder} on:keydown={onKeyDown} on:input={onInput} on:blur={onBlur} />
     </div>
 </div>
 

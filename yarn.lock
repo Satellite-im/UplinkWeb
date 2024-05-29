@@ -951,6 +951,11 @@
     "@babel/helper-validator-identifier" "^7.24.5"
     to-fast-properties "^2.0.0"
 
+"@castlenine/vite-remove-attribute@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@castlenine/vite-remove-attribute/-/vite-remove-attribute-1.0.2.tgz"
+  integrity sha512-VlfhuOlduCCRyhP7fvVen/nOwETTISOsMhhCeiGMTs2OnHrFyw/hHgq9qby4YDo946RQdEW6TrGABtOYg7+Y7g==
+
 "@codemirror/autocomplete@^6.0.0", "@codemirror/autocomplete@^6.3.2", "@codemirror/autocomplete@^6.7.1":
   version "6.16.0"
   resolved "https://registry.npmjs.org/@codemirror/autocomplete/-/autocomplete-6.16.0.tgz"
@@ -4641,7 +4646,7 @@ vite-plugin-node-polyfills@^0.21.0:
     "@rollup/plugin-inject" "^5.0.5"
     node-stdlib-browser "^1.2.0"
 
-"vite@^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0", "vite@^3.0.0 || ^4.0.0 || ^5.0.0", vite@^5.0.0, vite@^5.0.3:
+"vite@^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0", "vite@^3.0.0 || ^4.0.0 || ^5.0.0", vite@^5.0.0, vite@^5.0.3, vite@>=2.0.0:
   version "5.2.11"
   resolved "https://registry.npmjs.org/vite/-/vite-5.2.11.tgz"
   integrity sha512-HndV31LWW05i1BLPMUCE1B9E9GFbOu1MbenhS58FuK6owSO5qHm7GiCotrNY1YE5rMeQSFBGmT5ZaLEjFizgiQ==
@@ -4667,10 +4672,10 @@ w3c-keyname@^2.2.4:
   resolved "https://registry.npmjs.org/w3c-keyname/-/w3c-keyname-2.2.8.tgz"
   integrity sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==
 
-warp-wasm@^1.1.6:
-  version "1.1.6"
-  resolved "https://registry.npmjs.org/warp-wasm/-/warp-wasm-1.1.6.tgz"
-  integrity sha512-we23jEj0uk84EW7UmWHgZPNBjuJYKGS2kMJODLle+DtleE14xjrvK+PhzvR31ujGRuM2VU62sYCYo7y2Hqs+Og==
+warp-wasm@^1.1.7:
+  version "1.1.7"
+  resolved "https://registry.npmjs.org/warp-wasm/-/warp-wasm-1.1.7.tgz"
+  integrity sha512-ygR5evGSenArwcphMkVuZ8dyr1U91syIWRtWvhM9d3uT8xaHHGkPjMwqIPz9ogOYluj2yX5+GqLU7ivpv63JWA==
 
 whatwg-encoding@^2.0.0:
   version "2.0.0"

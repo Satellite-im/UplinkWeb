@@ -28,10 +28,10 @@
     })
 </script>
 
-<div class="slimbar">
+<div class="slimbar" data-cy="slimbar">
     {#if !sidebarOpen}
         <div transition:slide={{ duration: animationDuration, axis: "y" }}>
-            <Button icon appearance={Appearance.Alt} on:click={handleToggle}>
+            <Button hook="button-show-sidebar" icon appearance={Appearance.Alt} on:click={handleToggle}>
                 <Icon icon={Shape.Sidebar} />
             </Button>
         </div>
