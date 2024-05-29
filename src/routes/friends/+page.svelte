@@ -52,11 +52,13 @@
         sentRequest = true
     }
 
-    onMount(async () => {
-        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
-        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
-        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
-    })
+    $: async () => {
+        if (tab === "active") {
+            let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
+            let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
+            Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+        }
+    }
 
     let searchString: string = ""
 
