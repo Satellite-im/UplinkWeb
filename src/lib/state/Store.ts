@@ -175,6 +175,20 @@ class GlobalStore {
         this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
     }
 
+    setFriendRequests(requests: Array<FriendRequest>) {
+        const currentRequests = get(this.state.activeRequests);
+
+        const uniqueRequestsMap = new Map(currentRequests.map(req => [req.from.id, req]));
+
+        requests.forEach(req => {
+            if (!uniqueRequestsMap.has(req.from.id)) {
+                uniqueRequestsMap.set(req.from.id, req);
+            }
+        });
+
+        this.state.activeRequests.set(Array.from(uniqueRequestsMap.values()));
+    }
+
     cancelRequest(user: User) {
         this.denyRequest(user)
     }

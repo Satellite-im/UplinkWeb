@@ -2,7 +2,7 @@
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
     import { ChatPreview, ContextMenu, Modal } from "$lib/components"
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
-    import { Appearance, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, MessageDirection, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import type { Chat, User } from "$lib/types"
@@ -13,6 +13,7 @@
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
     import { ULog } from "../../ulog"
     import { onMount } from "svelte"
 
@@ -52,7 +53,44 @@
     }
 
     onMount(async () => {
-        let friends = await MultipassStoreInstance.listIncomingFriendRequests()
+        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
+        let user: User = get(Store.state.user)
+        let incomingFriendRequestsArray: Array<FriendRequest> = []
+        for (let friendDid of incomingFriendRequests) {
+            let friendUser: User = {
+                ...defaultUser,
+                name: friendDid,
+                id: friendDid,
+            }
+            incomingFriendRequestsArray.push(
+                {
+                    at: new Date(),
+                    from: friendUser,
+                    to: user,
+                    direction: MessageDirection.Inbound,
+                }
+            )
+        }
+        Store.setFriendRequests(incomingFriendRequestsArray)
+
+        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
+        let outgoingFriendRequestsArray: Array<FriendRequest> = []
+        for (let friendDid of outgoingFriendRequests) {
+            let friendUser: User = {
+                ...defaultUser,
+                name: friendDid,
+                id: friendDid,
+            }
+            outgoingFriendRequestsArray.push(
+                {
+                    at: new Date(),
+                    from: user,
+                    to: friendUser,
+                    direction: MessageDirection.Outbound,
+                }
+            )
+        }
+        Store.setFriendRequests(outgoingFriendRequestsArray)
     })
 
     let searchString: string = ""

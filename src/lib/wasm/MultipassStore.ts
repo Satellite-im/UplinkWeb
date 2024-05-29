@@ -63,10 +63,26 @@ class MultipassStore {
         if (multipass) {
             try {
                 let friends = await multipass.list_incoming_request()
-
                 ULog.info(`Listed incoming friend requests: ${friends}`)
+                return friends
             } catch (error) {
                 ULog.error('Error list incoming friend requests: ', error)
+                return []
+            }
+        }
+    }
+
+    async listOutgoingFriendRequests(): Promise<any> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let friends = await multipass.list_outgoing_request()
+                ULog.info(`Listed outgoing friend requests: ${friends}`)
+                return friends
+            } catch (error) {
+                ULog.error('Error list outgoing friend requests: ', error)
+                return []
             }
         }
     }
