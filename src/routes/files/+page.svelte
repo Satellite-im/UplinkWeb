@@ -52,109 +52,32 @@
     let contextData: ContextItem[] = []
     let updatedFiles: FileInfo[] = []
     let allFiles: FileInfo[] = get(Store.state.files)
-    let parentFolderIdsStore = writable<string[]>([])
     let currentFolderIdStore = writable<string>("")
-    let tempFileArray: FileInfo[] = []
-    let tempFilesStore = writable<FileInfo[]>([])
     let filteredFiles: Readable<FileInfo[]>
-    $: matchingFolders = writable<FileInfo[]>([])
-    $: filteredFiles = derived(
-        [currentFolderIdStore, parentFolderIdsStore],
-        ([$currentFolderIdStore, $parentFolderIds], set) => {
-        if (!$currentFolderIdStore) {
-            Store.state.files.subscribe(files => {
-            tempFilesStore.set(files)
-            });
-        }
+    $: currentFiles = allFiles;
 
-        let filtered = allFiles.filter(item => {
-            if (!item) return false
-            if ($parentFolderIds.length === 0) {
-            return true;
-            } else {
-            return item.parentId === $currentFolderIdStore
-            }
-        });
+    const folderStackStore = writable<FileInfo[][]>([allFiles]);
 
-        function findFoldersRecursive(files: FileInfo[], parentId: string): FileInfo[] {
-            files.forEach(file => {
-                // console.log("firstif", $matchingFolders, files, file.id === $currentFolderIdStore)
-                if (file.items && file.type === 'folder') {
-    // console.log("insideif", $matchingFolders, file.id, parentId);
-    
-    return file.items.forEach(item => {
-        if (item.items && item.parentId === file.id) {
-            // if (item.id === $parentFolderIdsStore[$parentFolderIdsStore.length - 1]) {
-                console.log("secondIFDFDFD", item.parentId, !tempFileArray.includes(item), $tempFilesStore, item.items);
-                if (!tempFileArray.includes(item) && $currentFolderIdStore === item.parentId) {
-                    tempFileArray.push(item);
-                    console.log("inside second", $matchingFolders);
-                    // tempFilesStore.set(tempFileArray);
-                    matchingFolders.set(tempFileArray);
-                    return matchingFolders
-                } 
-                // if ( ){
-
-                // }
-        }
+    folderStackStore.subscribe(folderStack => {
+        currentFiles = folderStack[folderStack.length - 1];
     });
-}
-                    
-            // if (file.items && file.type === 'folder' && file.parentId === $currentFolderIdStore) {
-            //             console.log("WTFELKHGDKL",$tempFilesStore, file.items)
-            //     file.items.forEach(item => {
-            //         if (item.items && $currentFolderIdStore === item.parentId) {
-            //             tempFilesStore.set(item.items)
-            //             matchingFolders.update(items => [...items, item])
-            //             // findFoldersRecursive(item.items, item.parentId)
-            //             console.log("findfoleers",$tempFilesStore, matchingFolders)
-            //         }
-            //         // if (item.items && $currentFolderIdStore !== file.parentId) {
-            //         //     console.log("secondloop",$currentFolderIdStore, item.items)
-            //         //     // tempFilesStore.set(item.items)
-            //         //     findFoldersRecursive(item.items, $currentFolderIdStore)
-            //         // }
-            //     });
-            // }
-            });
-            return $matchingFolders
-        }
 
-        function findMatchingFolders(files: FileInfo[], currentFolderId: string): FileInfo[] {
-            console.log("YOOOOO",findFoldersRecursive(files, currentFolderId))
-            return findFoldersRecursive(files, $parentFolderIdsStore[$parentFolderIdsStore.length])
-        }
-
-        let matchingParents = findMatchingFolders(allFiles, $currentFolderIdStore)
-        console.log("matching parents",matchingParents, $currentFolderIdStore)
-        if (matchingParents.length && $currentFolderIdStore) {
-            // let matchingFiles = matchingParents.filter(item => item.parentId === $currentFolderIdStore)
-            
-            tempFilesStore.set(matchingParents)
-            console.log("tempfilesstore",$tempFilesStore, matchingParents)
-        } else if (!matchingParents.length && !$currentFolderIdStore) {
-                tempFilesStore.set(allFiles)
-            }
-
-        set(get(tempFilesStore))
-        }
-    );
-
-    function openFolder(folderId: string) {
-        currentFolderIdStore.set(folderId)
-        // $matchingFolders = []
-        parentFolderIdsStore.update(ids => [...ids, folderId])
+    function openFolder(folder: FileInfo) {
+        currentFolderIdStore.set(folder.id);
+        folderStackStore.update(stack => {
+        const newStack = [...stack, folder.items || []];
+        return newStack;
+        });
     }
 
     function goBack() {
-        currentFolderIdStore.set($parentFolderIdsStore[$parentFolderIdsStore.length - 1])
-        parentFolderIdsStore.update(ids => {
-        ids.pop()
-        return [...ids]
+        folderStackStore.update(stack => {
+        if (stack.length > 1) {
+            stack.pop();
+        }
+        return stack;
         });
-        console.log("idsssss", $parentFolderIdsStore, $currentFolderIdStore)
     }
-
 
     let folderClicked: FileInfo = {
       id: "",
@@ -206,16 +129,16 @@
             if (lastClickTarget === target && currentTime - lastClickTime < 200) {
             if (lastClickTarget.classList.contains('folder-draggable')) {
                 const targetId = target.dataset.id
-                const targetFolder = $filteredFiles.find(item => item.id === targetId)
+                const targetFolder = currentFiles.find(item => item.id === targetId)
                 if (targetFolder) {
                     folderClicked = targetFolder
                 }
                 if (target) {
                 const targetId = target.dataset.id
-                const targetFolder = $filteredFiles.find(item => item.id === targetId)
+                const targetFolder = currentFiles.find(item => item.id === targetId)
                 if (targetFolder) {
                     updateFilesFromFolder(targetFolder)
-                    openFolder(targetFolder.id)
+                    openFolder(targetFolder)
                     // Update breadcrumb or other navigation state to track current folder
                 }
             }
@@ -308,7 +231,7 @@
         {/if}
         {#if activeTabRoute === "files"}
         <ul class="folderList">
-            {#each $filteredFiles as file}
+            {#each currentFiles as file}
                 <FolderItem
                     file={file}
                     openFolders={openFolders}
@@ -375,7 +298,7 @@
         <!-- <Breadcrumb folder={folderClicked} folderRoot={files}></Breadcrumb> -->
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            {#each $filteredFiles as item (item.id)}
+            {#each currentFiles as item (item.id)}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div
                     class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}"
