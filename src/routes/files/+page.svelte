@@ -15,10 +15,9 @@
     import { onDestroy, onMount } from 'svelte'
     import {Sortable} from '@shopify/draggable'
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
-    import { derived, get, writable, type Readable } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
-    import Breadcrumb from "$lib/elements/Breadcrumb.svelte"
     import FolderItem from "./FolderItem.svelte"
 
     initLocale()
@@ -52,29 +51,29 @@
     let contextData: ContextItem[] = []
     let allFiles: FileInfo[] = get(Store.state.files)
     let currentFolderIdStore = writable<string>("")
-    $: currentFiles = allFiles;
+    $: currentFiles = allFiles
 
-    const folderStackStore = writable<FileInfo[][]>([allFiles]);
+    const folderStackStore = writable<FileInfo[][]>([allFiles])
 
     folderStackStore.subscribe(folderStack => {
-        currentFiles = folderStack[folderStack.length - 1];
+        currentFiles = folderStack[folderStack.length - 1]
     });
 
     function openFolder(folder: FileInfo) {
-        currentFolderIdStore.set(folder.id);
+        currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-        const newStack = [...stack, folder.items || []];
-        return newStack;
+        const newStack = [...stack, folder.items || []]
+        return newStack
         });
     }
 
     function goBack() {
         folderStackStore.update(stack => {
         if (stack.length > 1) {
-            stack.pop();
+            stack.pop()
         }
-        return stack;
-        });
+        return stack
+        })
     }
 
     let folderClicked: FileInfo = {
@@ -136,7 +135,6 @@
                 if (targetFolder) {
                     updateFilesFromFolder(targetFolder)
                     openFolder(targetFolder)
-                    // Update breadcrumb or other navigation state to track current folder
                 }
             }
             }
