@@ -124,8 +124,9 @@ class RaygunStore {
             },
             text: message,
             inReplyTo: null,
-            reactions: [],
+            reactions: {},
             attachments: [],
+            pinned: false,
         }
         let prom = this.get(r => r.send(conversation_id, message), "Error sending message")
         await prom.then(_ => {
@@ -153,16 +154,15 @@ class RaygunStore {
 
     async react(conversation_id: string, message_id: string, state: wasm.ReactionState, emoji: string) {
         let prom = this.get(r => r.react(conversation_id, message_id, state, emoji), "Error reacting to message")
-        await prom.then(async msg => {
-            //TODO save reactors in message and then determine if user is reacting or removing a reaction
-            ConversationStore.editReaction(get(Store.state.activeChat), message_id, emoji, true)
+        await prom.then(async _ => {
+            ConversationStore.editReaction(get(Store.state.activeChat), message_id, emoji)
         })
     }
 
     async pin(conversation_id: string, message_id: string, pin: boolean) {
         let prom = this.get(r => r.pin(conversation_id, message_id, pin ? wasm.PinState.Pin : wasm.PinState.Unpin), "Error pinning message")
-        await prom.then(msg => {
-            // TODO: sync with Store
+        await prom.then(_ => {
+            ConversationStore.pinMessage(get(Store.state.activeChat), message_id, pin)
         })
     }
 
@@ -179,8 +179,9 @@ class RaygunStore {
                 },
                 text: message,
                 inReplyTo: reply,
-                reactions: [],
+                reactions: {},
                 attachments: [],
+                pinned: false,
             }
             ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
         })
@@ -250,6 +251,7 @@ class RaygunStore {
             inReplyTo: null, // TODO get replying message from store. or do what we do for native and just wrap the wasm message
             reactions: message.reactions(),
             attachments: message.attachments(),
+            pinned: message.pinned(),
         }
     }
 }

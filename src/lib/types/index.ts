@@ -24,7 +24,7 @@ export type SelectOption = {
 }
 
 export type Reaction = {
-    count: number
+    reactors: Set<string>
     emoji: string
     highlight: Appearance
     description: string
@@ -214,9 +214,10 @@ export type Message = {
     id: string
     details: MessageDetails
     inReplyTo: Message | null
-    reactions: Reaction[]
+    reactions: { [key: string]: Reaction }
     attachments: Attachment[]
     text: string[]
+    pinned: boolean
 }
 
 export type MessageGroup = {

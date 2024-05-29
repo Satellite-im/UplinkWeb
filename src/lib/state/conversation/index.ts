@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
 import { mock_messages } from "$lib/mock/messages"
 import { Appearance } from "$lib/enums"
+import { Store } from "../store"
 
 export type ConversationMessages = {
     id: string
@@ -67,7 +68,6 @@ class Conversations {
     async editMessage(chat: Chat, messageId: string, editedContent: string) {
         const conversations = get(this.conversations)
         const conversation = conversations.find(c => c.id === chat.id)
-
         if (conversation) {
             conversation.messages.forEach(group => {
                 const messageIndex = group.messages.findIndex(m => m.id === messageId)
@@ -84,41 +84,45 @@ class Conversations {
         }
     }
 
-    async editReaction(chat: Chat, messageId: string, reaction: string, add: boolean) {
+    async editReaction(chat: Chat, messageId: string, emoji: string) {
         const conversations = get(this.conversations)
         const conversation = conversations.find(c => c.id === chat.id)
+        const user = get(Store.state.user).key
 
         if (conversation) {
             conversation.messages.forEach(group => {
                 const messageIndex = group.messages.findIndex(m => m.id === messageId)
                 if (messageIndex !== -1) {
                     const reactions = group.messages[messageIndex].reactions
-                    const reactionIndex = reactions.findIndex(r => r.emoji === reaction)
-                    if (add) {
-                        if (reactionIndex !== -1) {
-                            reactions[reactionIndex] = {
-                                count: reactions[reactionIndex].count + 1,
-                                emoji: reaction,
-                                highlight: reactions[reactionIndex].highlight,
-                                description: reactions[reactionIndex].description,
+                    const reaction = reactions[emoji]
+                    if (reaction !== undefined && reaction.reactors.has(user)) {
+                        let reactors = reaction.reactors
+                        reactors.delete(user)
+                        if (reactors.size === 0) {
+                            delete reactions[emoji]
+                        } else {
+                            reactions[emoji] = {
+                                reactors,
+                                emoji: emoji,
+                                highlight: reaction.highlight,
+                                description: reaction.description,
+                            }
+                        }
+                    } else {
+                        if (reaction !== undefined) {
+                            reactions[emoji] = {
+                                reactors: reaction.reactors.add(user),
+                                emoji: emoji,
+                                highlight: reaction.highlight,
+                                description: reaction.description,
                             }
                         } else {
-                            reactions[reactionIndex] = {
-                                count: 1,
-                                emoji: reaction,
+                            reactions[reaction] = {
+                                reactors: new Set(user),
+                                emoji: emoji,
                                 highlight: Appearance.Default, //TODO
                                 description: "", //TODO
                             }
-                        }
-                    } else if (reactionIndex !== -1) {
-                        reactions[reactionIndex] = {
-                            count: reactions[reactionIndex].count - 1,
-                            emoji: reaction,
-                            highlight: reactions[reactionIndex].highlight,
-                            description: reactions[reactionIndex].description,
-                        }
-                        if (reactions[reactionIndex].count <= 0) {
-                            delete reactions[reactionIndex]
                         }
                     }
                     group.messages[messageIndex] = {
@@ -145,6 +149,25 @@ class Conversations {
                 }
             })
             conversation.messages = conversation.messages.filter(group => group.messages.length > 0)
+            this.conversations.set(conversations)
+            await setStateToDB("conversations", conversations)
+        }
+    }
+
+    async pinMessage(chat: Chat, messageId: string, pin: boolean) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat.id)
+        if (conversation) {
+            conversation.messages.forEach(group => {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    group.messages[messageIndex] = {
+                        ...group.messages[messageIndex],
+                        pinned: pin,
+                    }
+                }
+            })
+
             this.conversations.set(conversations)
             await setStateToDB("conversations", conversations)
         }
