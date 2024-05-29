@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Toasts } from "$lib/components"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Font, KeybindAction } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
@@ -91,6 +92,7 @@
     {@html `<style>${cssOverride}</style>`}
     <!-- <Titlebar /> -->
     <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} />
+    <Toasts />
     <slot></slot>
 </div>
 

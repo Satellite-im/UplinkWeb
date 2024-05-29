@@ -20,12 +20,6 @@
     // Allow parent to override / add classes
     let clazz = ""
     export { clazz as class }
-
-    const dispatch = createEventDispatcher()
-
-    function onClick(event: MouseEvent) {
-        dispatch("click", event)
-    }
 </script>
 
 <button
@@ -33,7 +27,7 @@
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
-    on:click={onClick}
+    on:click
     on:contextmenu={contextmenu}>
     {#if loading}
         <Loader />
