@@ -50,10 +50,8 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-    let updatedFiles: FileInfo[] = []
     let allFiles: FileInfo[] = get(Store.state.files)
     let currentFolderIdStore = writable<string>("")
-    let filteredFiles: Readable<FileInfo[]>
     $: currentFiles = allFiles;
 
     const folderStackStore = writable<FileInfo[][]>([allFiles]);
@@ -102,13 +100,12 @@
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'))
 
-            updatedFiles = newOrderIds
+            currentFiles = newOrderIds
                 .map(id => {
-                    const file = $filteredFiles.find(file => file.id === id)
+                    const file = currentFiles.find(file => file.id === id)
                     return file ? file : null
                 }) as FileInfo[]
-
-            Store.updateFileOrder(updatedFiles)
+            Store.updateFileOrder(currentFiles)
 
         })
 
