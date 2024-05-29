@@ -2,6 +2,8 @@ import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { ULog } from "../../ulog"
+import { WarpError, handleErrors } from "./handle_errors"
+import { type Result, success, failure } from "./Result"
 
 class MultipassStore {
     private multipassWritable: Writable<wasm.MultiPassBox | null>
@@ -30,16 +32,20 @@ class MultipassStore {
         }
     }
 
-    async sendFriendRequest(did: string): Promise<void> {
+    async sendFriendRequest(did: string): Promise<Result<WarpError, boolean>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
                 await multipass.send_request(did)
                 ULog.info('Friend request sent: ', did)
+                return success(true)
             } catch (error) {
-                ULog.error('Error adding friend: ', error)
+                let warpError = handleErrors(error)
+                return failure(warpError)
             }
+        } else {
+            return failure(WarpError.MULTIPASS_NOT_FOUND)
         }
     }
 

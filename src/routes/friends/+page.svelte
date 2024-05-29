@@ -2,7 +2,7 @@
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
     import { ChatPreview, ContextMenu, Modal } from "$lib/components"
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
-    import { Appearance, MessageDirection, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import type { Chat, User } from "$lib/types"
@@ -16,6 +16,8 @@
     import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
     import { ULog } from "../../ulog"
     import { onMount } from "svelte"
+    import type { WarpError } from "$lib/wasm/handle_errors"
+    import { fold } from "$lib/wasm/Result"
 
     // Initialize locale
     initLocale()
@@ -45,20 +47,29 @@
     }
 
     let sentRequest: boolean
+    let sentRequestError: WarpError | undefined
     let requestString: string
     let submitRequest = async function () {
         ULog.info("Sending friend request to " + requestString)
-        await MultipassStoreInstance.sendFriendRequest(requestString)
-        sentRequest = true
+        let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
+        fold(
+            requestSent,
+            (e: WarpError) => {
+                sentRequestError = e
+                sentRequest = true
+            },
+            (_) => {
+                sentRequest = true
+                sentRequestError = undefined
+            },
+        )
     }
 
-    $: async () => {
-        if (tab === "active") {
-            let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
-            let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
-            Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
-        }
-    }
+    onMount(async () => {
+        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
+        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
+        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+    })
 
     let searchString: string = ""
 
@@ -108,9 +119,15 @@
                 </Button>
             </svelte:fragment>
             <div class="request-sent">
-                <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
-                <Text size={Size.Large}>Request Dispatched!</Text>
-                <Text muted>Your request is making it's way to {requestString}.</Text>
+                {#if sentRequestError != undefined}
+                    <Icon size={Size.Largest} icon={Shape.XMark} highlight={Appearance.Error} />
+                    <Text size={Size.Large}>Error!</Text>
+                    <Text muted>{sentRequestError} </Text>
+                {:else}
+                    <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
+                    <Text size={Size.Large}>Request Dispatched!</Text>
+                    <Text muted>Your request is making it's way to {requestString}.</Text>
+                {/if}
             </div>
         </Modal>
     {/if}
