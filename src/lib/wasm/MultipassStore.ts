@@ -11,90 +11,85 @@ class MultipassStore {
         this.multipassWritable = multipass
     }
 
-    async createIdentity(username: string, passphrase: string | undefined): Promise<wasm.Identity> {
-        console.log("Started creating identity")
-        console.log("Get multipass instance")
+    async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
+        const multipass = get(this.multipassWritable)
 
-        let identity = await new Promise<wasm.Identity>((resolve, reject) => {
-            this.multipassWritable.subscribe(async value => {
-                try {
-                    // TODO(Lucas): get_own_identity is not working
-                    // let ownIdentity = await value!.get_own_identity()
-                    // console.log('Own Identity: ', ownIdentity)
-                    const identityProfile = await value!.create_identity(username, passphrase)
-                    this.identity.set(identityProfile.identity())
-                    this.identity.subscribe(value => {
-                        console.log("Create New Account. Username: ", value!.username())
-                        resolve(value!)
-                    })
-                } catch (error) {
-                    console.error("Error creating identity: ", error)
-                    reject(error)
-                }
-            })
-        })
-        console.log("Created identity")
-        return identity
-    }
-
-    async getOwnIdentity(): Promise<wasm.Identity> {
-        let multipass = get(this.multipassWritable)!
-        return await multipass.get_own_identity()
-    }
-
-    async updateUsername(new_username: string) {
-        this.multipassWritable.subscribe(value => {
-            value!.update_identity(wasm.IdentityUpdate.Username, new_username)
-        })
-        await this._updateIdentity()
-    }
-
-    async updateStatusMessage(new_status_message: string) {
-        this.multipassWritable.subscribe(value => {
-            value!.update_identity(wasm.IdentityUpdate.StatusMessage, new_status_message)
-        })
-        await this._updateIdentity()
-    }
-
-    async _updateIdentity() {
-        let multipass = get(this.multipassWritable)!
-        this.multipassWritable.subscribe(async value => {
-            let updated_identity = await multipass.get_own_identity()
-            this.identity.subscribe(value => {
-                value! = updated_identity
-            })
-        })
-    }
-
-    async identity_from_did(id: string): Promise<User | undefined> {
-        let multipass = get(this.multipassWritable)
         if (multipass) {
             try {
-                let identity = await multipass.get_identity(wasm.Identifier.DID, id)
-                let profile = {
-                    ...defaultProfileData,
-                }
-                // TODO profile and banner etc. missing from wasm?
-                return {
-                    id: {
-                        short: identity.short_id,
-                    },
-                    key: identity.did_key,
-                    name: identity.username,
-                    profile: profile,
-                    media: {
-                        is_playing_audio: false,
-                        is_streaming_video: false,
-                        is_muted: false,
-                        is_deafened: false,
-                        is_unknown_status: false,
-                    },
-                }
+                await multipass.create_identity(username, passphrase)
+                await this.updateStatusMessage(statusMessage)
             } catch (error) {
-                console.log(`Coultn't fetch identity ${id}: ${error}`)
+                console.error("Error creating identity: ", error)
+            }
+        }
+    }
+
+    async getOwnIdentity(): Promise<wasm.Identity | undefined> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                const identity = await multipass.get_own_identity()
+                return identity
+            } catch (error) {
+                console.error("Error getting own identity: ", error)
+                return undefined
             }
         }
         return undefined
+    }
+
+    async updateUsername(new_username: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            await multipass.update_identity(wasm.IdentityUpdate.Username, new_username)
+            await this._updateIdentity()
+        }
+    }
+
+    async updateStatusMessage(newStatusMessage: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            await multipass.update_identity(wasm.IdentityUpdate.StatusMessage, newStatusMessage)
+            await this._updateIdentity()
+        }
+    }
+
+    async updateProfilePhoto(newPictureBase64: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            const buffer = Buffer.from(newPictureBase64, "base64")
+            let pictureAsBytes = new Uint8Array(buffer)
+            await multipass.update_identity(wasm.IdentityUpdate.Picture, pictureAsBytes)
+            await this._updateIdentity()
+        }
+    }
+
+    async updateBannerPicture(newPictureBase64: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            const buffer = Buffer.from(newPictureBase64, "base64")
+            let pictureAsBytes = new Uint8Array(buffer)
+            await multipass.update_identity(wasm.IdentityUpdate.Banner, pictureAsBytes)
+            await this._updateIdentity()
+        }
+    }
+
+    private async _updateIdentity() {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                const updated_identity = await multipass.get_own_identity()
+                this.identity.update(() => updated_identity)
+            } catch (error) {
+                console.error("Error updating identity: ", error)
+            }
+        }
     }
 }
 
