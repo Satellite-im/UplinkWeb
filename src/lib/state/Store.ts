@@ -175,12 +175,35 @@ class GlobalStore {
         this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
     }
 
-    setFriendRequests(requests: Array<FriendRequest>) {
+    setFriendRequests(incomingFriendRequests: Array<any>, outgoingFriendRequests: Array<any>) {
         const currentRequests = get(this.state.activeRequests);
 
         const uniqueRequestsMap = new Map(currentRequests.map(req => [req.from.id, req]));
 
-        requests.forEach(req => {
+        let user = get(this.state.user)
+
+        const createFriendRequests = (friendRequests: Array<any>, direction: MessageDirection): FriendRequest[] => {
+            return friendRequests.map(friendDid => {
+                let friendUser: User = {
+                    ...defaultUser,
+                    name: friendDid,
+                    id: friendDid
+                };
+                return {
+                    at: new Date(),
+                    from: friendUser,
+                    to: user,
+                    direction: direction
+                };
+            });
+        };
+    
+        let incomingRequests = createFriendRequests(incomingFriendRequests, MessageDirection.Inbound);
+        let outgoingRequests = createFriendRequests(outgoingFriendRequests, MessageDirection.Outbound);
+    
+        let allFriendRequests = [...incomingRequests, ...outgoingRequests];
+    
+        allFriendRequests.forEach(req => {
             if (!uniqueRequestsMap.has(req.from.id)) {
                 uniqueRequestsMap.set(req.from.id, req);
             }

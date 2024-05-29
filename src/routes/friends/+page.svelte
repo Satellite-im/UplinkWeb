@@ -54,43 +54,8 @@
 
     onMount(async () => {
         let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
-        let user: User = get(Store.state.user)
-        let incomingFriendRequestsArray: Array<FriendRequest> = []
-        for (let friendDid of incomingFriendRequests) {
-            let friendUser: User = {
-                ...defaultUser,
-                name: friendDid,
-                id: friendDid,
-            }
-            incomingFriendRequestsArray.push(
-                {
-                    at: new Date(),
-                    from: friendUser,
-                    to: user,
-                    direction: MessageDirection.Inbound,
-                }
-            )
-        }
-        Store.setFriendRequests(incomingFriendRequestsArray)
-
         let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
-        let outgoingFriendRequestsArray: Array<FriendRequest> = []
-        for (let friendDid of outgoingFriendRequests) {
-            let friendUser: User = {
-                ...defaultUser,
-                name: friendDid,
-                id: friendDid,
-            }
-            outgoingFriendRequestsArray.push(
-                {
-                    at: new Date(),
-                    from: user,
-                    to: friendUser,
-                    direction: MessageDirection.Outbound,
-                }
-            )
-        }
-        Store.setFriendRequests(outgoingFriendRequestsArray)
+        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
     })
 
     let searchString: string = ""
