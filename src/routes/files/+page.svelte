@@ -54,15 +54,10 @@
     let allFiles: FileInfo[] = get(Store.state.files)
     let parentFolderIdsStore = writable<string[]>([])
     let currentFolderIdStore = writable<string>("")
-
+    let tempFileArray: FileInfo[] = []
     let tempFilesStore = writable<FileInfo[]>([])
     let filteredFiles: Readable<FileInfo[]>
-
-    // Reactively update variables
-    $: currentFolderId = $currentFolderIdStore
-    $: parentFolderIds = $parentFolderIdsStore
-
-    // Derived store to filter files based on current folder ID and parent folder IDs
+    $: matchingFolders = writable<FileInfo[]>([])
     $: filteredFiles = derived(
         [currentFolderIdStore, parentFolderIdsStore],
         ([$currentFolderIdStore, $parentFolderIds], set) => {
@@ -82,31 +77,61 @@
         });
 
         function findFoldersRecursive(files: FileInfo[], parentId: string): FileInfo[] {
-            let matchingFolders: FileInfo[] = []
             files.forEach(file => {
-            if (file.items && file.type === 'folder' && file.id === $currentFolderIdStore) {
-                if (file.type === 'folder' && parentId === $currentFolderIdStore) {
-                file.items.forEach(item => {
-                    if (item.items && $currentFolderIdStore === item.parentId) {
-                    matchingFolders.push(item)
-                    }
-                });
-                }
-            }
+                // console.log("firstif", $matchingFolders, files, file.id === $currentFolderIdStore)
+                if (file.items && file.type === 'folder') {
+    // console.log("insideif", $matchingFolders, file.id, parentId);
+    
+    return file.items.forEach(item => {
+        if (item.items && item.parentId === file.id) {
+            // if (item.id === $parentFolderIdsStore[$parentFolderIdsStore.length - 1]) {
+                console.log("secondIFDFDFD", item.parentId, !tempFileArray.includes(item), $tempFilesStore, item.items);
+                if (!tempFileArray.includes(item) && $currentFolderIdStore === item.parentId) {
+                    tempFileArray.push(item);
+                    console.log("inside second", $matchingFolders);
+                    // tempFilesStore.set(tempFileArray);
+                    matchingFolders.set(tempFileArray);
+                    return matchingFolders
+                } 
+                // if ( ){
+
+                // }
+        }
+    });
+}
+                    
+            // if (file.items && file.type === 'folder' && file.parentId === $currentFolderIdStore) {
+            //             console.log("WTFELKHGDKL",$tempFilesStore, file.items)
+            //     file.items.forEach(item => {
+            //         if (item.items && $currentFolderIdStore === item.parentId) {
+            //             tempFilesStore.set(item.items)
+            //             matchingFolders.update(items => [...items, item])
+            //             // findFoldersRecursive(item.items, item.parentId)
+            //             console.log("findfoleers",$tempFilesStore, matchingFolders)
+            //         }
+            //         // if (item.items && $currentFolderIdStore !== file.parentId) {
+            //         //     console.log("secondloop",$currentFolderIdStore, item.items)
+            //         //     // tempFilesStore.set(item.items)
+            //         //     findFoldersRecursive(item.items, $currentFolderIdStore)
+            //         // }
+            //     });
+            // }
             });
-            return matchingFolders
+            return $matchingFolders
         }
 
         function findMatchingFolders(files: FileInfo[], currentFolderId: string): FileInfo[] {
-            return findFoldersRecursive(files, currentFolderId)
+            console.log("YOOOOO",findFoldersRecursive(files, currentFolderId))
+            return findFoldersRecursive(files, $parentFolderIdsStore[$parentFolderIdsStore.length])
         }
 
         let matchingParents = findMatchingFolders(allFiles, $currentFolderIdStore)
         console.log("matching parents",matchingParents, $currentFolderIdStore)
         if (matchingParents.length && $currentFolderIdStore) {
-            let matchingFiles = matchingParents.filter(item => item.parentId === $currentFolderIdStore)
-            tempFilesStore.set(matchingFiles)
-            console.log("tempfilesstore",$tempFilesStore, matchingFiles)
+            // let matchingFiles = matchingParents.filter(item => item.parentId === $currentFolderIdStore)
+            
+            tempFilesStore.set(matchingParents)
+            console.log("tempfilesstore",$tempFilesStore, matchingParents)
         } else if (!matchingParents.length && !$currentFolderIdStore) {
                 tempFilesStore.set(allFiles)
             }
@@ -116,16 +141,18 @@
     );
 
     function openFolder(folderId: string) {
-        currentFolderIdStore.update(id => {return folderId})
+        currentFolderIdStore.set(folderId)
+        // $matchingFolders = []
         parentFolderIdsStore.update(ids => [...ids, folderId])
     }
 
     function goBack() {
+        currentFolderIdStore.set($parentFolderIdsStore[$parentFolderIdsStore.length - 1])
         parentFolderIdsStore.update(ids => {
         ids.pop()
-        currentFolderIdStore.set(ids[ids.length - 1] || "")
         return [...ids]
         });
+        console.log("idsssss", $parentFolderIdsStore, $currentFolderIdStore)
     }
 
 
