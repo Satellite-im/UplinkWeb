@@ -79,6 +79,37 @@ class MultipassStore {
         }
     }
 
+    async identity_from_did(id: string): Promise<User | undefined> {
+        let multipass = get(this.multipassWritable)
+        if (multipass) {
+            try {
+                let identity = await multipass.get_identity(wasm.Identifier.DID, id)
+                let profile = {
+                    ...defaultProfileData,
+                }
+                // TODO profile and banner etc. missing from wasm?
+                return {
+                    id: {
+                        short: identity.short_id,
+                    },
+                    key: identity.did_key,
+                    name: identity.username,
+                    profile: profile,
+                    media: {
+                        is_playing_audio: false,
+                        is_streaming_video: false,
+                        is_muted: false,
+                        is_deafened: false,
+                        is_unknown_status: false,
+                    },
+                }
+            } catch (error) {
+                console.log(`Coultn't fetch identity ${id}: ${error}`)
+            }
+        }
+        return undefined
+    }
+
     private async _updateIdentity() {
         const multipass = get(this.multipassWritable)
 

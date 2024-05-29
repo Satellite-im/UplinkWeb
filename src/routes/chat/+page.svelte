@@ -42,6 +42,7 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     initLocale()
 
@@ -106,6 +107,14 @@
         dragging_files = 0
         // upload files
         console.log("dropping files ", event.dataTransfer?.files)
+    }
+
+    async function pin_message(message: string) {
+        await RaygunStoreInstance.pin(conversation!.id, message, true)
+    }
+
+    async function delete_message(message: string) {
+        await RaygunStoreInstance.delete(conversation!.id, message)
     }
 
     async function copy(txt: string) {
@@ -346,7 +355,9 @@
                                                 icon: Shape.Heart,
                                                 text: "Pin Message",
                                                 appearance: Appearance.Default,
-                                                onClick: () => {}, // TODO
+                                                onClick: async () => {
+                                                    await pin_message(message.id)
+                                                },
                                             },
                                             {
                                                 id: "reply",
@@ -383,7 +394,9 @@
                                                 icon: Shape.Trash,
                                                 text: "Delete",
                                                 appearance: Appearance.Default,
-                                                onClick: () => {}, // TODO
+                                                onClick: async () => {
+                                                    await delete_message(message.id)
+                                                },
                                             },
                                         ]}>
                                         <Message
@@ -424,8 +437,8 @@
                                         </svelte:fragment>
                                     </ContextMenu>
                                 {/if}
-                                {#if message.reactions.length > 0}
-                                    <MessageReactions remote={group.details.remote} reactions={message.reactions} />
+                                {#if Object.keys(message.reactions).length > 0}
+                                    <MessageReactions remote={group.details.remote} reactions={Object.values(message.reactions)} />
                                 {/if}
                             {/each}
                         </MessageGroup>

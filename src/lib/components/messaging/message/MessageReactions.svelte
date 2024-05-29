@@ -12,7 +12,7 @@
                 {reaction.emoji} <span class="description">{reaction.description}</span>
             </div>
             <span class="emoji">{reaction.emoji}</span>
-            <span class="count">{reaction.count}</span>
+            <span class="count">{reaction.reactors.size}</span>
         </div>
     {/each}
 </div>
