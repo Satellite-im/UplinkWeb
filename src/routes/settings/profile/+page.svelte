@@ -10,9 +10,9 @@
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
-    import { goto } from "$app/navigation";
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onDestroy, onMount } from "svelte"
 
     initLocale()
@@ -36,16 +36,16 @@
 
     async function updateUsername(newUsername: string) {
         userReference.name = newUsername
-        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
         Store.setUsername(newUsername)
         await MultipassStoreInstance.updateUsername(newUsername)
+        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
     }
 
     async function updateStatusMessage(newStatusMessage: string) {
         userReference.profile.status_message = newStatusMessage
-        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
         Store.setStatusMessage(newStatusMessage)
         await MultipassStoreInstance.updateStatusMessage(newStatusMessage)
+        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
     }
 
     function updatePendentItemsToSave() {
@@ -61,7 +61,7 @@
     let statusMessage: string
 
     onMount(() => {
-        userReference =  { ...get(Store.state.user) }
+        userReference = { ...get(Store.state.user) }
         statusMessage = userReference.profile.status_message
     })
 
@@ -72,7 +72,7 @@
 
     let user: User = get(Store.state.user)
     let activityStatus: Status = user.profile.status
-   
+
     Store.state.user.subscribe(val => {
         user = val
         activityStatus = user.profile.status
@@ -81,7 +81,7 @@
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
     let fileinput: HTMLElement
 
-     const onFileSelected =  (e: any) => {
+    const onFileSelected = (e: any) => {
         let image = e.target.files[0]
         let reader = new FileReader()
         reader.readAsDataURL(image)
@@ -123,6 +123,7 @@
                         await updateUsername(user.name)
                         await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
+                        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
@@ -133,9 +134,13 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={_ => {
-            fileinput.click()
-        }}></div>
+        <div
+            class="profile-header"
+            style="background-image: url('{user.profile.banner.image}')"
+            on:click={_ => {
+                fileinput.click()
+            }}>
+        </div>
 
         <div class="profile-picture-container">
             <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
@@ -159,7 +164,6 @@
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
                             on:enter={async _ => {
-                                // TODO: Toast
                                 await updateUsername(user.name)
                                 updatePendentItemsToSave()
                             }}
@@ -183,7 +187,6 @@
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
                     on:enter={async _ => {
-                        // TODO: Toast
                         await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
                     }}
