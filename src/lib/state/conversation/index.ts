@@ -102,19 +102,15 @@ class Conversations {
                             delete reactions[emoji]
                         } else {
                             reactions[emoji] = {
+                                ...reaction,
                                 reactors,
-                                emoji: emoji,
-                                highlight: reaction.highlight,
-                                description: reaction.description,
                             }
                         }
                     } else {
                         if (reaction !== undefined) {
                             reactions[emoji] = {
+                                ...reaction,
                                 reactors: reaction.reactors.add(user),
-                                emoji: emoji,
-                                highlight: reaction.highlight,
-                                description: reaction.description,
                             }
                         } else {
                             reactions[reaction] = {
@@ -171,6 +167,20 @@ class Conversations {
             this.conversations.set(conversations)
             await setStateToDB("conversations", conversations)
         }
+    }
+
+    getMessage(chat: string, messageId: string): Message | null {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat)
+        if (conversation) {
+            conversation.messages.forEach(group => {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    return group.messages[messageIndex]
+                }
+            })
+        }
+        return null
     }
 
     async loadMockData() {

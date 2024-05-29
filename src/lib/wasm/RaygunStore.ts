@@ -248,7 +248,7 @@ class RaygunStore {
                 remote: false,
             },
             text: message.lines(),
-            inReplyTo: null, // TODO get replying message from store. or do what we do for native and just wrap the wasm message
+            inReplyTo: message.replied() ? ConversationStore.getMessage(conversation_id, message.replied()!) : null,
             reactions: message.reactions(),
             attachments: message.attachments(),
             pinned: message.pinned(),
