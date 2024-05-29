@@ -39,7 +39,7 @@ class GlobalStore {
         this.state.user.update(u => (u = { ...u, name }))
     }
 
-    setStatus(message: string) {
+    setStatusMessage(message: string) {
         this.state.user.update(
             u =>
             (u = {

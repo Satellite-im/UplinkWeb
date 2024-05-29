@@ -12,6 +12,8 @@
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { onDestroy, onMount } from "svelte"
 
     initLocale()
 
@@ -23,10 +25,52 @@
         if (loading) setTimeout(() => (loading = false), 200)
     }
 
+    function logOut() {
+        goto(Route.Unlock)
+    }
+
+    async function updateProfilePicture(picture: string) {
+        await MultipassStoreInstance.updateProfilePhoto(picture)
+        Store.setPhoto(picture)
+    }
+
+    async function updateUsername(newUsername: string) {
+        userReference.name = newUsername
+        Store.setUsername(newUsername)
+        await MultipassStoreInstance.updateUsername(newUsername)
+    }
+
+    async function updateStatusMessage(newStatusMessage: string) {
+        userReference.profile.status_message = newStatusMessage
+        Store.setStatusMessage(newStatusMessage)
+        await MultipassStoreInstance.updateStatusMessage(newStatusMessage)
+    }
+
+    function updatePendentItemsToSave() {
+        changeList.username = false
+        changeList.statusMessage = false
+
+        unsavedChanges = changeList.username || changeList.statusMessage
+    }
+
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
+    let userReference: User
+    let statusMessage: string
+
+    onMount(() => {
+        userReference = { ...get(Store.state.user) }
+        statusMessage = userReference.profile.status_message
+    })
+
+    onDestroy(() => {
+        Store.setUsername(userReference.name)
+        Store.setStatusMessage(userReference.profile.status_message)
+    })
+
     let user: User = get(Store.state.user)
-    let activityStatus: Status = Status.Online
+    let activityStatus: Status = user.profile.status
+
     Store.state.user.subscribe(val => {
         user = val
         activityStatus = user.profile.status
@@ -39,8 +83,9 @@
         let image = e.target.files[0]
         let reader = new FileReader()
         reader.readAsDataURL(image)
-        reader.onload = e => {
+        reader.onload = async e => {
             let imageString = e.target?.result?.toString()
+            await MultipassStoreInstance.updateBannerPicture(imageString || "")
             Store.setBanner(imageString || "")
         }
     }
@@ -62,24 +107,21 @@
                     text={$_("generic.cancel")}
                     appearance={Appearance.Alt}
                     on:click={_ => {
-                        changeList.username = false
-                        changeList.statusMessage = false
-
-                        unsavedChanges = changeList.username || changeList.statusMessage
+                        statusMessage = userReference.profile.status_message
+                        Store.setUsername(userReference.name)
+                        Store.setStatusMessage(userReference.profile.status_message)
+                        updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
                 <Button
                     text={$_("generic.save")}
                     appearance={Appearance.Primary}
-                    on:click={_ => {
-                        Store.setUsername(user.name)
-                        Store.setStatus(user.profile.status_message)
-
-                        changeList.username = false
-                        changeList.statusMessage = false
-
-                        unsavedChanges = changeList.username || changeList.statusMessage
+                    on:click={async _ => {
+                        await updateUsername(user.name)
+                        await updateStatusMessage(statusMessage)
+                        updatePendentItemsToSave()
+                        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
@@ -90,15 +132,21 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={_ => fileinput.click()}></div>
+        <div
+            class="profile-header"
+            style="background-image: url('{user.profile.banner.image}')"
+            on:click={_ => {
+                fileinput.click()
+            }}>
+        </div>
 
         <div class="profile-picture-container">
             <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
             <FileUploadButton
                 icon
                 tooltip={$_("settings.profile.change_profile_photo")}
-                on:upload={picture => {
-                    Store.setPhoto(picture.detail)
+                on:upload={async picture => {
+                    await updateProfilePicture(picture.detail)
                 }} />
         </div>
 
@@ -113,8 +161,9 @@
                             alt
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
-                            on:enter={_ => {
-                                Store.setUsername(user.name)
+                            on:enter={async _ => {
+                                await updateUsername(user.name)
+                                updatePendentItemsToSave()
                                 Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                             }}
                             on:input={_ => {
@@ -133,11 +182,12 @@
                 <Label text={$_("user.status_message")} />
                 <Input
                     alt
-                    bind:value={user.profile.status_message}
+                    bind:value={statusMessage}
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
-                    on:enter={_ => {
-                        Store.setStatus(user.profile.status_message)
+                    on:enter={async _ => {
+                        await updateStatusMessage(statusMessage)
+                        updatePendentItemsToSave()
                         Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}
                     on:input={_ => {
@@ -216,7 +266,7 @@
                         appearance={Appearance.Alt}
                         text={$_("settings.profile.log_out.label")}
                         on:click={_ => {
-                            goto(Route.Unlock)
+                            logOut()
                         }}>
                         <Icon icon={Shape.Lock} />
                     </Button>
@@ -238,6 +288,7 @@
         padding-right: var(--padding);
 
         .save-controls {
+            z-index: 2;
             position: absolute;
             bottom: var(--padding);
             right: calc(var(--padding) * 2);
