@@ -1,4 +1,5 @@
 import type { Call, Chat, FileInfo, FriendRequest, User } from "$lib/types"
+import type { Logger } from "$lib/utils/Logger"
 import type { Writable } from "svelte/store"
 
 export interface IState {
@@ -16,4 +17,5 @@ export interface IState {
     }
     activeChat: Writable<Chat>
     activeCall: Writable<Call | null>
+    logger: Writable<Logger>
 }
