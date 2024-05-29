@@ -8,6 +8,7 @@ import { get, writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
+import { Logger } from "$lib/utils/Logger"
 
 class GlobalStore {
     state: IState
@@ -29,6 +30,10 @@ class GlobalStore {
             activeRequests: createPersistentState("uplink.requests", []),
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
+            logger: createPersistentState(
+                "uplink.log",
+                new Logger({ relay_to_js_console: true })
+            )
         }
     }
 

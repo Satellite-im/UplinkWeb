@@ -42,6 +42,7 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
+    import { Logger } from "$lib/utils/Logger"
 
     initLocale()
 
@@ -105,7 +106,7 @@
         event.preventDefault()
         dragging_files = 0
         // upload files
-        console.log("dropping files ", event.dataTransfer?.files)
+        get(Store.state.logger).debug(`dropping files ${event.dataTransfer?.files}`)
     }
 
     async function copy(txt: string) {
