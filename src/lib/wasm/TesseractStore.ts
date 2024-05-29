@@ -1,7 +1,6 @@
 import { get, writable, type Writable } from "svelte/store"
 import init, * as wasm from "warp-wasm"
 
-
 class TesseractStore {
     private tesseractWritable: Writable<wasm.Tesseract | null> = writable(null)
 
@@ -11,24 +10,30 @@ class TesseractStore {
 
     async unlock(pin: string) {
         await init()
-        this.tesseractWritable.set(new wasm.Tesseract())
+        const tesseractInstance = new wasm.Tesseract()
+        this.tesseractWritable.set(tesseractInstance)
+
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
 
-        this.tesseractWritable.subscribe((value) => {
-            value!.load_from_storage()
-            value!.unlock(passphrase)
-            if (!value!.autosave_enabled()) {
-                value!.set_autosave()
-            }   
-            console.log('Tesseract: ', value)
-        })
+        try {
+            await tesseractInstance.load_from_storage()
+            await tesseractInstance.unlock(passphrase)
+
+            if (!tesseractInstance.autosave_enabled()) {
+                tesseractInstance.set_autosave()
+            }
+        } catch (error) {
+            console.error('Error unlocking Tesseract: ', error)
+        }
     }
 
     lock() {
-        this.tesseractWritable.subscribe((value) => {value?.lock()})
+        const tesseractInstance = get(this.tesseractWritable)
+        if (tesseractInstance) {
+            tesseractInstance.lock()
+        }
     }
-
 }
 
 export const TesseractStoreInstance = new TesseractStore()
