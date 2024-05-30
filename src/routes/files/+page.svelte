@@ -71,9 +71,18 @@
 
     function goBack() {
         folderStackStore.update(stack => {
+            console.log("stack.length", stack)
         if (stack.length > 1) {
             stack.pop()
         }
+        stack.forEach(sta => {
+            sta.forEach(files => {
+                if (files.parentId === ""){
+                    currentFolderIdStore.set("")
+                }
+                console.log("stack.length", files)
+            })
+        })
         return stack
         })
     }
@@ -86,17 +95,40 @@
             name: "",
             source: "",
             items: [],
-            parentId: ""
+            parentId: $currentFolderIdStore
         }
-        folderStackStore.update(folders => {
-        const newFolders = folders.map(folderStack => {
-            if (Array.isArray(folderStack)) {
-                return [...folderStack, createNewFolder]
+
+    function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
+            if (parentId === "") {
+                return [...folders, createNewFolder];
             }
-            return folderStack
+        return folders.map(folder => {
+            if (folder.id === parentId && folder.type === 'folder' && folder.items) {
+                console.log("parentId", parentId)
+                return {
+                    ...folder,
+                    items: [...folder.items, createNewFolder]
+                };
+            }
+            if (folder.items && folder.items.length > 0) {
+                return {
+                    ...folder,
+                    items: insertIntoFolder(folder.items, parentId)
+                };
+            }
+            return folder;
         });
-        return newFolders
-    });
+    }
+
+        folderStackStore.update(folders => {
+            const newFolders = folders.map(folderStack => {
+                if (Array.isArray(folderStack)) {
+                    return insertIntoFolder(folderStack, $currentFolderIdStore);
+                }
+                return folderStack;
+            });
+            return newFolders;
+        });
     }
 
     let folderClicked: FileInfo = {
