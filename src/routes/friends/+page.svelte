@@ -16,7 +16,7 @@
     import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
     import { ULog } from "../../ulog"
     import { onMount } from "svelte"
-    import type { WarpError } from "$lib/wasm/handle_errors"
+    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
 
     // Initialize locale
     initLocale()

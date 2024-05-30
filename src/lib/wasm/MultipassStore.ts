@@ -2,8 +2,8 @@ import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { ULog } from "../../ulog"
-import { WarpError, handleErrors } from "./handle_errors"
-import { type Result, success, failure } from "./Result"
+import { WarpError, handleErrors } from "./HandleWarpErrors"
+import { type Result, success, failure } from "../utils/Result"
 
 class MultipassStore {
     private multipassWritable: Writable<wasm.MultiPassBox | null>
