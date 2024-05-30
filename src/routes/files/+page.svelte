@@ -50,7 +50,6 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
-    // const uuidv4 = require("uuid/v4")
     let allFiles: FileInfo[] = get(Store.state.files)
     let currentFolderIdStore = writable<string>("")
     $: currentFiles = allFiles
@@ -59,14 +58,14 @@
 
     folderStackStore.subscribe(folderStack => {
         currentFiles = folderStack[folderStack.length - 1]
-    });
+    })
 
     function openFolder(folder: FileInfo) {
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
         const newStack = [...stack, folder.items || []]
         return newStack
-        });
+        })
     }
 
     function goBack() {
@@ -94,9 +93,9 @@
                 return [...folderStack, createNewFolder]
             }
             return folderStack
-        });
+        })
         return newFolders
-    });
+    })
     }
 
     let folderClicked: FileInfo = {
@@ -324,7 +323,7 @@
                 >
                     {#if item.type === "file"}
                         <FileFolder kind={FilesItemKind.File} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail;
+                            contextPosition = evt.detail
                             contextData = [
                                 {
                                     id: "delete",
@@ -333,11 +332,11 @@
                                     appearance: Appearance.Default,
                                     onClick: () => {}
                                 }
-                            ];
+                            ]
                         }} />       
                     {:else if item.type === "folder"}
                         <FileFolder kind={FilesItemKind.Folder} info={item} on:context={(evt) => {
-                            contextPosition = evt.detail;
+                            contextPosition = evt.detail
                             contextData = [
                                 {
                                     id: "delete",
@@ -346,11 +345,11 @@
                                     appearance: Appearance.Default,
                                     onClick: () => {}
                                 }
-                            ];
+                            ]
                         }} />
                     {:else if item.type === "image"}
                         <ImageFile filesize={item.size} name={item.name} on:click={(_) => {
-                            previewImage = item.source;
+                            previewImage = item.source
                         }} />
                     {/if}
                 </div>
