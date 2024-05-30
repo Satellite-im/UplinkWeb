@@ -25,7 +25,7 @@
     }
 </script>
 
-<Button appearance={appearance} small={small} icon={icon} tooltip={tooltip} on:click={() => fileinput.click()}>
+<Button hook="button-file-upload" appearance={appearance} small={small} icon={icon} tooltip={tooltip} on:click={() => fileinput.click()}>
     <Icon icon={Shape.Plus} />
 </Button>
 <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />

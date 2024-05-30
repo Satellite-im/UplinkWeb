@@ -1,9 +1,9 @@
 <script lang="ts">
     export let checked: boolean = false
-    export const hook: string = ""
+    export let hook: string = ""
 </script>
 
-<input type="checkbox" checked={checked} />
+<input data-cy={hook} type="checkbox" checked={checked} />
 <slot></slot>
 
 <style lang="scss">

@@ -13,7 +13,7 @@
         {#if loading}
             <Loader />
         {:else}
-            <div in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
+            <div data-cy="ordered-phrase-number-{number}" in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
                 {number}
             </div>
         {/if}
@@ -22,7 +22,7 @@
         {#if loading}
             <Loader text />
         {:else}
-            <div in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
+            <div data-cy="ordered-phrase-word-{number}" in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
                 <Text>{word}</Text>
             </div>
         {/if}
