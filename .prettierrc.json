@@ -1,0 +1,12 @@
+{
+    "arrowParens": "avoid",
+    "bracketSameLine": true,
+    "bracketSpacing": true,
+    "printWidth": 240,
+    "semi": false,
+    "singleQuote": false,
+    "svelteAllowShorthand": false,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "plugins": ["prettier-plugin-svelte"]
+}

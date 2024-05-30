@@ -1,27 +1,41 @@
 <script lang="ts">
     import { initLocale } from "$lib/lang"
-    import { _ } from 'svelte-i18n'
-    import { Switch } from "$lib/elements"
+    import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
-    import { Appearance, Font } from "$lib/enums"
-    import { get } from "svelte/store"
+    import { Appearance } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import Button from "$lib/elements/Button.svelte"
-    import { UIStore } from "$lib/state/ui";
+    import { SettingsStore, clearState } from "$lib/state"
+    import { ConversationStore } from "$lib/state/conversation"
+    import { InventoryStore } from "$lib/state/inventory"
+    import { goto } from "$app/navigation"
 
     initLocale()
-
-    let font: Font = get(UIStore.state.font)
 </script>
 
 <div id="page">
+    <SettingSection name="Devmode" description="Disable devmode.">
+        <Button appearance={Appearance.Alt} on:click={_ => SettingsStore.toggleDevmode(false)}>Exit Devmode</Button>
+    </SettingSection>
+
     <SettingSection name="Load Mock" description="Loads mock data into state.">
         <Button
             appearance={Appearance.Alt}
-            on:click={(_) => Store.load_mock_data()}
-            >
+            on:click={_ => {
+                Store.loadMockData()
+                ConversationStore.loadMockData()
+                InventoryStore.loadMockData()
+            }}>
             Load Mock Data
         </Button>
+    </SettingSection>
+
+    <SettingSection name="Clear State" description="Reset the application state.">
+        <Button appearance={Appearance.Alt} on:click={_ => clearState()}>Clear State</Button>
+    </SettingSection>
+
+    <SettingSection name="Test Voice" description="Dev Voice">
+        <Button appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
     </SettingSection>
 </div>
 

@@ -4,13 +4,12 @@ import { createPersistentState } from ".."
 import { Font } from "$lib/enums"
 
 export interface IUIState {
-    color: Writable<string>,
-    fontSize: Writable<number>,
-    cssOverride: Writable<string>,
-    font: Writable<Font>,
-    sidebarOpen: Writable<boolean>,
-    chats: Writable<Chat[]>,
-    
+    color: Writable<string>
+    fontSize: Writable<number>
+    cssOverride: Writable<string>
+    font: Writable<Font>
+    sidebarOpen: Writable<boolean>
+    chats: Writable<Chat[]>
 }
 
 class Store {
@@ -40,11 +39,11 @@ class Store {
     }
 
     increaseFontSize(amount: number = 0.025) {
-        this.state.fontSize.update((s) => (s + amount <= 1.5) ? s += amount : s)
+        this.state.fontSize.update(s => (s + amount <= 1.5 ? (s += amount) : s))
     }
 
     decreaseFontSize(amount: number = 0.025) {
-        this.state.fontSize.update((s) => (s - amount >= 0.8) ? s -= amount : s)
+        this.state.fontSize.update(s => (s - amount >= 0.8 ? (s -= amount) : s))
     }
 
     openSidebar() {
@@ -68,11 +67,8 @@ class Store {
     }
 
     removeSidebarChat(chat: Chat) {
-        this.state.chats.set(
-            get(this.state.chats).filter(c => c.id !== chat.id)
-        )
+        this.state.chats.set(get(this.state.chats).filter(c => c.id !== chat.id))
     }
-
 }
 
 export const UIStore = new Store()

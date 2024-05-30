@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition'
-    import { animationDelay, animationDuration } from '$lib/globals/animations'
-    import { Text, Loader } from '$lib/elements'
+    import { fade } from "svelte/transition"
+    import { animationDelay, animationDuration } from "$lib/globals/animations"
+    import { Text, Loader } from "$lib/elements"
 
-    export let number: number       = 0
-    export let word: string         = "UNKNOWN"
-    export let loading: boolean     = false
+    export let number: number = 0
+    export let word: string = "UNKNOWN"
+    export let loading: boolean = false
 </script>
 
 <div class="ordered-phrase">
@@ -13,7 +13,7 @@
         {#if loading}
             <Loader />
         {:else}
-            <div in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
+            <div data-cy="ordered-phrase-number-{number}" in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
                 {number}
             </div>
         {/if}
@@ -22,7 +22,7 @@
         {#if loading}
             <Loader text />
         {:else}
-            <div in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
+            <div data-cy="ordered-phrase-word-{number}" in:fade={{ duration: animationDuration, delay: number * animationDelay }}>
                 <Text>{word}</Text>
             </div>
         {/if}

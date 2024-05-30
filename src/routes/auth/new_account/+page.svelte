@@ -1,51 +1,76 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
-    import { ProfilePicture}  from "$lib/components"
+    import { ProfilePicture } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { Store } from "$lib/state/store"
+    import { get } from "svelte/store"
+
+    let username = ""
+    let statusMessage = ""
 
     initLocale()
+
+    async function createAccount(username: string, statusMessage: string) {
+        loading = true
+        await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
+        let identity = await MultipassStoreInstance.getOwnIdentity()
+        Store.setUsername(identity!.username())
+        Store.setStatusMessage(identity!.status_message() || "")
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        loading = false
+        goto(Route.Chat)
+    }
 
     let loading = false
 </script>
 
 <div id="auth-recover">
     <div class="header">
-        <Title>{$_('pages.auth.new_account.title')}</Title>
-        <Text muted>{$_('pages.auth.new_account.subtext')}</Text>
+        <Title hook="title-new-account">{$_("pages.auth.new_account.title")}</Title>
+        <Text hook="text-new-account-secondary" muted>{$_("pages.auth.new_account.subtext")}</Text>
     </div>
     <div class="main">
         <div class="left">
-            <ProfilePicture size={Size.Large} image="/assets/moon.png" />
+            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image="/assets/moon.png" />
         </div>
         <div class="right">
-            <Label text={$_('generic.username')} />
-            <Input alt placeholder={$_('pages.auth.new_account.enter_username')} />
+            <Label hook="label-new-account-username" text={$_("generic.username")} />
+            <Input
+                hook="input-new-account-username"
+                alt
+                placeholder={$_("pages.auth.new_account.enter_username")}
+                on:input={async e => {
+                    username = e.detail
+                }} />
             <Spacer less />
-            <Label text={$_('generic.status_message')} />
-            <Input alt placeholder={$_('pages.auth.new_account.set_status')} />
+            <Label hook="label-new-account-status" text={$_("generic.status_message")} />
+            <Input
+                hook="input-new-account-status"
+                alt
+                placeholder={$_("pages.auth.new_account.set_status")}
+                on:input={async e => {
+                    statusMessage = e.detail
+                }} />
         </div>
     </div>
     <Controls>
-        <Button 
-            class="full-width"
-            text={$_('controls.go_back')} 
-            appearance={Appearance.Alt} 
-            loading={loading}
-            on:click={() => goto(Route.RecoverySeed)} >
-            <Icon icon={Shape.ArrowLeft} />            
+        <Button hook="button-new-account-go-back" class="full-width" text={$_("controls.go_back")} appearance={Appearance.Alt} loading={loading} on:click={() => goto(Route.RecoverySeed)}>
+            <Icon icon={Shape.ArrowLeft} />
         </Button>
-        <Button 
-            class="full-width" 
-            text={$_('pages.auth.new_account.create')} 
+        <Button
+            hook="button-new-account-create"
+            class="full-width"
+            text={$_("pages.auth.new_account.create")}
             loading={loading}
-            on:click={(_) => {
-                goto(Route.Chat);
-            }} >
-            <Icon icon={Shape.ArrowRight} />            
+            on:click={async _ => {
+                await createAccount(username, statusMessage)
+            }}>
+            <Icon icon={Shape.ArrowRight} />
         </Button>
     </Controls>
 </div>
@@ -73,14 +98,14 @@
             border: var(--border-width) solid var(--border-color);
             border-radius: var(--border-radius);
             flex-wrap: wrap;
-            
+
             .left {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
             }
 
-            .right { 
+            .right {
                 flex: 1;
                 display: inline-flex;
                 flex-direction: column;

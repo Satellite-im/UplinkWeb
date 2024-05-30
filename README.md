@@ -1,38 +1,43 @@
-# create-svelte
+<h1 align="center">
+  <img src="docs/images/logo.png" width=200 height=200/><br>
+  Uplink Web
+</h1>
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+<h4 align="center">Privacy First, Modular, P2P messaging client built atop Warp.</h4>
 
-## Creating a project
+<br/>
 
-If you're seeing this, you've probably already done this step. Congrats!
+Uplink is written in TS with [Svelte](https://svelte.dev/). It is developed as a new foundation for implementing Warp features in a universal application.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+The goal should be to build a hyper-customizable application that can run anywhere and support extensions.
 
-# create a new project in my-app
-npm create svelte@latest my-app
+---
+
+## Quickstart for Developing
+
+To get running fast, ensure you have this project cloned, with latest dependencies and submodules installed.
+
+**Standard Steps:**
+
+```
+git clone https://github.com/Satellite-im/UplinkWeb.git
+npm install
 ```
 
-## Developing
+**Now, run a server locally and open it in your favorite browser:**
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Usually, the URL served will be [this](http://localhost:5173/)
 
-```bash
+```
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+---
 
-To create a production version of your app:
+## Contributing
 
-```bash
-npm run build
-```
+All contributions are welcome! Please keep in mind we're still a relatively small team, and any work done to ensure contributions don't cause bugs or issues in the application is much appreciated.
 
-You can preview the production build with `npm run preview`.
+# Contributors
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+![GitHub Contributors Image](https://contrib.rocks/image?repo=Satellite-im/UplinkWeb)

@@ -10,12 +10,31 @@
     export let info: FileInfo
     export let name = info.name
     
+    export let contextmenu: (evt: MouseEvent) => void = _ => {}
+
     function getIcon() {
         switch (kind) {
-            case FilesItemKind.File: return Shape.Document
-            case FilesItemKind.Folder: return Shape.Folder
-            case FilesItemKind.Image: return Shape.Beaker
+            case FilesItemKind.File:
+                return Shape.Document
+            case FilesItemKind.Folder:
+                return Shape.Folder
+            case FilesItemKind.Image:
+                return Shape.Beaker
         }
+    }
+    let storeFiles = Store.state.files
+    function updateName(event) {
+        const input = event.target as HTMLInputElement;
+        name = input.value
+        storeFiles.update(items => {
+        const updatedItems = items.map(item => {
+            if (item.id === info.id) {
+            return { ...item, name: name }
+            }
+            return item
+        })
+        return updatedItems
+        })
     }
     let storeFiles = Store.state.files
     function updateName(event) {
@@ -34,16 +53,13 @@
 
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
-        dispatch('context', coords)
+        dispatch("context", coords)
     }
 </script>
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="filesitem" on:contextmenu={(e) => {
-        e.preventDefault()
-        onContext([e.clientX, e.clientY])
-    }}>
+    <div class="filesitem" on:contextmenu={contextmenu}>
         <Icon icon={getIcon()} />
         <Spacer less />
         <input type="text" bind:value={name} on:input={updateName} />

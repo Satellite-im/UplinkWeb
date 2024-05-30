@@ -1,0 +1,20 @@
+name: Add Conflicts Label
+on:
+    push:
+        branches:
+            - dev
+jobs:
+    triage:
+        runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
+        steps:
+            - uses: mschilde/auto-label-merge-conflicts@master
+              with:
+                  CONFLICT_LABEL_NAME: "Missing fixing conflict"
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  MAX_RETRIES: 5
+                  WAIT_MS: 5000

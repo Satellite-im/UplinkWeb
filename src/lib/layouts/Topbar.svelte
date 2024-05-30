@@ -4,7 +4,7 @@
     export let simple: boolean = false
 </script>
 
-<div class="topbar {simple ? "simple" : ""}">
+<div data-cy="topbar" class="topbar {simple ? 'simple' : ''}">
     <slot name="before" />
     <div class="content">
         <slot name="content" />
@@ -31,11 +31,11 @@
         :global(.before) {
             display: inline-flex;
             flex-direction: row;
-            gap: var(--gap)
+            gap: var(--gap);
         }
 
         .content {
-            flex:1;
+            flex: 1;
             height: 100%;
             min-width: 0;
             justify-self: flex-start;

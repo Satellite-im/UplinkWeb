@@ -10,61 +10,44 @@
     import { goto } from "$app/navigation"
 
     export let chat: Chat
-    export let cta: boolean             = false
-    export let simpleUnreads: boolean   = false
-    export let loading: boolean         = false
+    export let cta: boolean = false
+    export let simpleUnreads: boolean = false
+    export let loading: boolean = false
+    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
-    const timeAgo = new TimeAgo('en-US')
+    const timeAgo = new TimeAgo("en-US")
 
-    let photo = (chat.users.length > 1) ?  
-        "todo" : chat.users[0].profile.photo.image
-    let name = (chat.users.length > 1) ? 
-        chat.name : chat.users[0].name
+    let photo = chat.users.length > 1 ? "todo" : chat.users[0].profile.photo.image
+    let name = chat.users.length > 1 ? chat.name : chat.users[0].name
 
     const dispatch = createEventDispatcher()
-    function onContext(coords: [number, number]) {
-        dispatch('context', coords)
-    }
 
     function getTimeAgo(dateInput: string | Date) {
-        const date: Date = (typeof dateInput === 'string') ? new Date(dateInput) : dateInput;
+        const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
 </script>
 
-<button class="chat-preview {cta ? "cta" : ""}" on:contextmenu={(e) => {
-    e.preventDefault()
-    onContext([e.clientX, e.clientY])
-}}
-    on:click={(_) => {
-        dispatch('click')
+<button
+    class="chat-preview {cta ? 'cta' : ''}"
+    on:contextmenu={contextmenu}
+    on:click={_ => {
+        dispatch("click")
         Store.setActiveChat(chat)
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 1}
-        <ProfilePicture 
-            typing={chat.activity} 
-            image={photo}
-            status={chat.users[0].profile.status} 
-            size={Size.Medium} 
-            loading={loading} />
+        <ProfilePicture typing={chat.activity} image={photo} status={chat.users[0].profile.status} size={Size.Medium} loading={loading} frame={chat.users[0].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={chat.users} />
     {/if}
     <div class="content">
         <div class="heading">
-            <Text 
-                class="chat-user" 
-                singleLine 
-                loading={loading}>
+            <Text class="chat-user" singleLine loading={loading}>
                 {name}
             </Text>
             <div class="right">
-                <Text 
-                    class="timestamp" 
-                    loading={loading} 
-                    size={Size.Smallest} 
-                    muted>
+                <Text class="timestamp" loading={loading} size={Size.Smallest} muted>
                     {getTimeAgo(chat.last_message_at)}
                 </Text>
                 {#if !loading}
@@ -83,9 +66,7 @@
                 <Loader text small />
                 <Loader text small />
             {:else}
-                <Text 
-                    size={Size.Small} 
-                    loading={loading}>
+                <Text size={Size.Small} loading={loading}>
                     {chat.last_message_preview || "No messages sent yet."}
                 </Text>
             {/if}
@@ -178,7 +159,7 @@
             .last-message {
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
-                        line-clamp: 2;
+                line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 font-size: var(--font-size-smaller);

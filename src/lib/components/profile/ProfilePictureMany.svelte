@@ -3,17 +3,19 @@
     import Text from "$lib/elements/Text.svelte"
     import { Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types"
+    import { createEventDispatcher } from "svelte"
     import ProfilePicture from "./ProfilePicture.svelte"
 
     export let users: User[]
+    const dispatch = createEventDispatcher()
 
     function getSize(index: number) {
         switch (index) {
-            case 0: 
+            case 0:
                 return Size.Small
-            case 1: 
+            case 1:
                 return Size.Smaller
-            case 2: 
+            case 2:
                 return Size.Smallest
             default:
                 return Size.Smallest
@@ -21,14 +23,12 @@
     }
 </script>
 
-<div class="profile-picture-many">
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div class="profile-picture-many" on:click={_ => dispatch("click")}>
     {#each users as user, i}
         {#if i < 3}
-            <ProfilePicture
-                size={getSize(i)}
-                image={user.profile.photo.image} 
-                status={user.profile.status}
-                noIndicator />
+            <ProfilePicture size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
         {/if}
     {/each}
     <div class="count">
@@ -50,7 +50,7 @@
             right: 0;
             bottom: 0;
             background-color: var(--primary-color);
-            padding: 0 var(--padding-minimal);
+            padding: 1px var(--padding-minimal);
             border-radius: var(--border-radius);
             display: inline-flex;
             justify-content: center;
@@ -58,7 +58,7 @@
             gap: var(--gap-less);
             z-index: 2;
         }
-        
+
         :global(.profile-picture) {
             position: absolute;
             border: var(--border-width) solid var(--background);
