@@ -19,6 +19,7 @@
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
+    import { v4 as uuidv4 } from "uuid"
 
     initLocale()
 
@@ -49,6 +50,7 @@
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
+    // const uuidv4 = require("uuid/v4")
     let allFiles: FileInfo[] = get(Store.state.files)
     let currentFolderIdStore = writable<string>("")
     $: currentFiles = allFiles
@@ -76,6 +78,27 @@
         })
     }
 
+    function newFolder() {
+        let createNewFolder: FileInfo = {
+            id: uuidv4(),
+            type: "folder",
+            size: 0,
+            name: "",
+            source: "",
+            items: [],
+            parentId: ""
+        }
+        folderStackStore.update(folders => {
+        const newFolders = folders.map(folderStack => {
+            if (Array.isArray(folderStack)) {
+                return [...folderStack, createNewFolder]
+            }
+            return folderStack
+        });
+        return newFolders
+    });
+    }
+
     let folderClicked: FileInfo = {
       id: "",
       type: "",
@@ -98,7 +121,6 @@
             const newOrderIds = Array.from(items)
                 .filter(child => child.getAttribute('data-id'))
                 .map(child => child.getAttribute('data-id'))
-
             currentFiles = newOrderIds
                 .map(id => {
                     const file = currentFiles.find(file => file.id === id)
@@ -280,7 +302,7 @@
                 </button>
             </div>
             <svelte:fragment slot="controls">
-                <Button appearance={Appearance.Alt} icon tooltip={$_("files.new_folder")}>
+                <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
                 <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")}>
