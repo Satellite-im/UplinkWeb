@@ -9,7 +9,7 @@ class Success<E, T> implements Result<E, T> {
     constructor(private value: T) {}
 
     fold<R>(
-        onFailure: (failure: E) => R,
+        _: (failure: E) => R,
         onSuccess: (value: T) => R
     ): R {
         return onSuccess(this.value);
@@ -21,7 +21,7 @@ class Failure<E, T> implements Result<E, T> {
 
     fold<R>(
         onFailure: (failure: E) => R,
-        onSuccess: (value: T) => R
+        _: (value: T) => R
     ): R {
         return onFailure(this.failure);
     }
