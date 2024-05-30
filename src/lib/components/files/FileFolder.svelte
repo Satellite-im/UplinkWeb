@@ -36,20 +36,6 @@
         return updatedItems
         })
     }
-    let storeFiles = Store.state.files
-    function updateName(event) {
-        const input = event.target as HTMLInputElement;
-        name = input.value
-        storeFiles.update(items => {
-        const updatedItems = items.map(item => {
-            if (item.id === info.id) {
-            return { ...item, name: name }
-            }
-            return item
-        })
-        return updatedItems
-        })
-    }
 
     const dispatch = createEventDispatcher()
     function onContext(coords: [number, number]) {
