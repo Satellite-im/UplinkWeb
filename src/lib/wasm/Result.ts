@@ -1,23 +1,36 @@
-export type Result<E, T> = 
-    | { kind: 'failure'; failure: E }
-    | { kind: 'success'; value: T };
+export type Result<E, T> = {
+    fold<R>(
+        onFailure: (failure: E) => R,
+        onSuccess: (value: T) => R
+    ): R;
+};
+
+class Success<E, T> implements Result<E, T> {
+    constructor(private value: T) {}
+
+    fold<R>(
+        onFailure: (failure: E) => R,
+        onSuccess: (value: T) => R
+    ): R {
+        return onSuccess(this.value);
+    }
+}
+
+class Failure<E, T> implements Result<E, T> {
+    constructor(private failure: E) {}
+
+    fold<R>(
+        onFailure: (failure: E) => R,
+        onSuccess: (value: T) => R
+    ): R {
+        return onFailure(this.failure);
+    }
+}
 
 export function success<E, T>(value: T): Result<E, T> {
-    return { kind: 'success', value };
+    return new Success(value);
 }
 
 export function failure<E, T>(failure: E): Result<E, T> {
-    return { kind: 'failure', failure };
-}
-
-export function fold<E, T, R>(
-    result: Result<E, T>,
-    onFailure: (failure: E) => R,
-    onSuccess: (value: T) => R
-): R {
-    if (result.kind === 'success') {
-        return onSuccess(result.value);
-    } else {
-        return onFailure(result.failure);
-    }
+    return new Failure(failure);
 }

@@ -17,7 +17,6 @@
     import { ULog } from "../../ulog"
     import { onMount } from "svelte"
     import type { WarpError } from "$lib/wasm/handle_errors"
-    import { fold } from "$lib/wasm/Result"
 
     // Initialize locale
     initLocale()
@@ -52,8 +51,7 @@
     let submitRequest = async function () {
         ULog.info("Sending friend request to " + requestString)
         let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
-        fold(
-            requestSent,
+        requestSent.fold(
             (e: WarpError) => {
                 sentRequestError = e
                 sentRequest = true
