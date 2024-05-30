@@ -188,11 +188,6 @@ export type FileInfo = {
     size: number
     name: string
     source: string
-    id: string
-    type: string
-    size: number
-    name: string
-    source: string
     items?: FileInfo[]
     parentId?: string
 }
