@@ -50,15 +50,11 @@
     let previewImage: string | null
     let search_filter: string
     let search_component: ChatFilter
-    // TODO: Move this into a global state
-    let contextPosition: [number, number] = [0, 0]
-    let contextData: ContextItem[] = []
     let allFiles: FileInfo[] = get(Store.state.files)
     let currentFolderIdStore = writable<string>("")
     $: currentFiles = allFiles
 
     const folderStackStore = writable<FileInfo[][]>([allFiles])
-
     folderStackStore.subscribe(folderStack => {
         currentFiles = folderStack[folderStack.length - 1]
     })
