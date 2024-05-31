@@ -202,8 +202,8 @@ class GlobalStore {
                 }
                 return {
                     at: new Date(),
-                    from: friendUser,
-                    to: user,
+                    from: direction === MessageDirection.Inbound ? friendUser : user,
+                    to: direction === MessageDirection.Inbound ? user : friendUser,
                     direction: direction
                 }
             })
