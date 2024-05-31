@@ -178,7 +178,7 @@
                             onClick: () => {},
                         },
                     ]}>
-                    <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                    <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
                 </ContextMenu>
             {/each}
         {/if}
@@ -259,7 +259,7 @@
                                     onClick: () => {},
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.File} info={item} />
+                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
@@ -272,7 +272,7 @@
                                     onClick: () => {},
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.Folder} info={item} />
+                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.Folder} info={item} />
                         </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile

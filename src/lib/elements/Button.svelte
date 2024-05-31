@@ -15,17 +15,10 @@
     export let small: boolean = false
     export let fill: boolean = false
     export let hook: string = ""
-    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     // Allow parent to override / add classes
     let clazz = ""
     export { clazz as class }
-
-    const dispatch = createEventDispatcher()
-
-    function onClick(event: MouseEvent) {
-        dispatch("click", event)
-    }
 </script>
 
 <button
@@ -33,8 +26,8 @@
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
-    on:click={onClick}
-    on:contextmenu={contextmenu}>
+    on:click
+    on:contextmenu>
     {#if loading}
         <Loader />
     {:else}

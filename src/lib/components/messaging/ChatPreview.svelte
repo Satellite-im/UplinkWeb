@@ -13,7 +13,6 @@
     export let cta: boolean = false
     export let simpleUnreads: boolean = false
     export let loading: boolean = false
-    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     const timeAgo = new TimeAgo("en-US")
 
@@ -30,7 +29,7 @@
 
 <button
     class="chat-preview {cta ? 'cta' : ''}"
-    on:contextmenu={contextmenu}
+    on:contextmenu
     on:click={_ => {
         dispatch("click")
         Store.setActiveChat(chat)
