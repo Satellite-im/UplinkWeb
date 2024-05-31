@@ -75,6 +75,20 @@ class MultipassStore {
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    async cancelFriendRequest(did: string): Promise<Result<WarpError, void>> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                return success(await multipass.close_request(did))
+            } catch (error) {
+                ULog.error('Error cancelling friend request: ', error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
+    }
+
 
     async listIncomingFriendRequests(): Promise<any> {
         const multipass = get(this.multipassWritable)
@@ -104,6 +118,78 @@ class MultipassStore {
                 return []
             }
         }
+    }
+
+    async listBlockedFriends(): Promise<any> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let blockedFriends = await multipass.block_list()
+                ULog.info(`Listed blocked friends: ${blockedFriends}`)
+                return blockedFriends
+            } catch (error) {
+                ULog.error('Error list blocked Friends: ', error)
+                return []
+            }
+        }
+    }
+
+    async listFriends(): Promise<any> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let friends = await multipass.list_friends()
+                ULog.info(`Listed friends: ${friends}`)
+                return friends
+            } catch (error) {
+                ULog.error('Error outgoing friends: ', error)
+                return []
+            }
+        }
+    }
+
+    async removeFriend(did: string): Promise<Result<WarpError, void>> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                return success(await multipass.remove_friend(did))
+            } catch (error) {
+                ULog.error('Error removing friend request: ', error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
+    } 
+
+    async blockUser(did: string): Promise<Result<WarpError, void>> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                return success(await multipass.block(did))
+            } catch (error) {
+                ULog.error('Error blocking friend request: ', error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
+    } 
+
+    async unblockUser(did: string): Promise<Result<WarpError, void>> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                return success(await multipass.unblock(did))
+            } catch (error) {
+                ULog.error('Error unblocking friend request: ', error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
     async getOwnIdentity(): Promise<Result<WarpError, wasm.Identity>> {
