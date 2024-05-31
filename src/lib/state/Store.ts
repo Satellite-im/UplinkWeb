@@ -11,6 +11,7 @@ import { UIStore } from "./ui"
 import * as wasm from "warp-wasm"
 import { ToastMessage } from "./ui/toast"
 import { v4 as uuidv4 } from "uuid"
+import { Logger } from "$lib/utils/Logger"
 
 class GlobalStore {
     state: IState
@@ -33,6 +34,10 @@ class GlobalStore {
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
             toasts: createPersistentState("uplink.toasts", {}),
+            logger: createPersistentState(
+                "uplink.log",
+                new Logger({ relay_to_js_console: true })
+            )
         }
     }
 

@@ -32,24 +32,26 @@
 
 <div id="auth-recover">
     <div class="header">
-        <Title>{$_("pages.auth.new_account.title")}</Title>
-        <Text muted>{$_("pages.auth.new_account.subtext")}</Text>
+        <Title hook="title-new-account">{$_("pages.auth.new_account.title")}</Title>
+        <Text hook="text-new-account-secondary" muted>{$_("pages.auth.new_account.subtext")}</Text>
     </div>
     <div class="main">
         <div class="left">
-            <ProfilePicture size={Size.Large} image="/assets/moon.png" />
+            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image="/assets/moon.png" />
         </div>
         <div class="right">
-            <Label text={$_("generic.username")} />
+            <Label hook="label-new-account-username" text={$_("generic.username")} />
             <Input
+                hook="input-new-account-username"
                 alt
                 placeholder={$_("pages.auth.new_account.enter_username")}
                 on:input={async e => {
                     username = e.detail
                 }} />
             <Spacer less />
-            <Label text={$_("generic.status_message")} />
+            <Label hook="label-new-account-status" text={$_("generic.status_message")} />
             <Input
+                hook="input-new-account-status"
                 alt
                 placeholder={$_("pages.auth.new_account.set_status")}
                 on:input={async e => {
@@ -58,10 +60,11 @@
         </div>
     </div>
     <Controls>
-        <Button class="full-width" text={$_("controls.go_back")} appearance={Appearance.Alt} loading={loading} on:click={() => goto(Route.RecoverySeed)}>
+        <Button hook="button-new-account-go-back" class="full-width" text={$_("controls.go_back")} appearance={Appearance.Alt} loading={loading} on:click={() => goto(Route.RecoverySeed)}>
             <Icon icon={Shape.ArrowLeft} />
         </Button>
         <Button
+            hook="button-new-account-create"
             class="full-width"
             text={$_("pages.auth.new_account.create")}
             loading={loading}

@@ -1,4 +1,5 @@
 import type { Call, Chat, FileInfo, FriendRequest, User } from "$lib/types"
+import type { Logger } from "$lib/utils/Logger"
 import type { Writable } from "svelte/store"
 import type { ToastMessage } from "./ui/toast"
 
@@ -18,4 +19,5 @@ export interface IState {
     activeChat: Writable<Chat>
     activeCall: Writable<Call | null>
     toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
+    logger: Writable<Logger>
 }

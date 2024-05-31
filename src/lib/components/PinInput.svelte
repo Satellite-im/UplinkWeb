@@ -126,7 +126,7 @@
                     <Icon icon={Shape.Refresh} />
                 {/if}
             </Button>
-            <Button class="pin-key" disabled={error || loading} hook="button-pin-{pinDigits.slice(-1)}" icon on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>
+            <Button class="pin-key" icon disabled={error || loading} hook="button-pin-{pinDigits.slice(-1)}" on:click={() => updatePinValue(pinDigits.slice(-1).toString())} appearance={Appearance.Alt}>
                 {#if loading}
                     <Loader />
                 {:else}
