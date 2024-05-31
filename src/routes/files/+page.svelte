@@ -338,8 +338,9 @@
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
-        <button on:click={goBack}>Go Back</button>
-        <!-- <Breadcrumb folder={folderClicked} folderRoot={files}></Breadcrumb> -->
+        <div class="folder-back">
+        <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+        </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             {#each currentFiles as item (item.id)}
@@ -410,7 +411,10 @@
                 user-select: none;
             }
         }
-        
+        .folder-back {
+            width: fit-content;
+            margin: 10px;
+        }
         .folderList {
             list-style-type: none;
             width: fit-content;
