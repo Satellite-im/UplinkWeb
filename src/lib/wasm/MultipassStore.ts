@@ -3,7 +3,7 @@ import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { ULog } from "../../ulog"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
-import { type Result, success, failure } from "../utils/Result"
+import { failure, success, type Result } from "$lib/utils/Result"
 
 class MultipassStore {
     private multipassWritable: Writable<wasm.MultiPassBox | null>
@@ -32,17 +32,15 @@ class MultipassStore {
         }
     }
 
-    async sendFriendRequest(did: string): Promise<Result<WarpError, boolean>> {
+    async sendFriendRequest(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                await multipass.send_request(did)
-                ULog.info('Friend request sent: ', did)
-                return success(true)
+                ULog.debug('Sending friend request to: ', did)
+                return success(await multipass.send_request(did))
             } catch (error) {
-                let warpError = handleErrors(error)
-                return failure(warpError)
+                return failure(handleErrors(error))
             }
         } else {
             return failure(WarpError.MULTIPASS_NOT_FOUND)

@@ -56,7 +56,7 @@
                 sentRequestError = e
                 sentRequest = true
             },
-            (_) => {
+            () => {
                 sentRequest = true
                 sentRequestError = undefined
             },

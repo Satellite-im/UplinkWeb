@@ -3,6 +3,8 @@ export type Result<E, T> = {
         onFailure: (failure: E) => R,
         onSuccess: (value: T) => R
     ): R;
+    onSuccess(callback: (value: T) => void): void;
+    onFailure(callback: (failure: E) => void): void;
 };
 
 class Success<E, T> implements Result<E, T> {
@@ -14,6 +16,14 @@ class Success<E, T> implements Result<E, T> {
     ): R {
         return onSuccess(this.value);
     }
+
+    onSuccess(callback: (value: T) => void): void {
+        callback(this.value);
+    }
+
+    onFailure(_: (failure: E) => void): void {
+        // do nothing
+    }
 }
 
 class Failure<E, T> implements Result<E, T> {
@@ -24,6 +34,14 @@ class Failure<E, T> implements Result<E, T> {
         _: (value: T) => R
     ): R {
         return onFailure(this.failure);
+    }
+
+    onSuccess(_: (value: T) => void): void {
+        // do nothing
+    }
+
+    onFailure(callback: (failure: E) => void): void {
+        callback(this.failure);
     }
 }
 
