@@ -17,7 +17,7 @@
         return friends.some(friend => friend.id.short === targetUser.id.short)
     }
 
-    let note = user ? new Notes().get(user?.name) : ""
+    let note: string = user ? new Notes().get(user?.name) : ""
 </script>
 
 <div class="profile">
