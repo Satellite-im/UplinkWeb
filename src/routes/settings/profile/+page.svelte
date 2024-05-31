@@ -3,7 +3,7 @@
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
-    import { ProfilePicture, OrderedPhrase } from "$lib/components"
+    import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/store"
     import type { User } from "$lib/types"
@@ -99,6 +99,14 @@
 
     let unsavedChanges: boolean
     let profile_update_txt = $_("settings.profile.update")
+
+    async function copy_did(short: boolean) {
+        if (short) {
+            await navigator.clipboard.writeText(`${userReference.name}#${userReference.id.short}`)
+        } else {
+            await navigator.clipboard.writeText(`${userReference.key}`)
+        }
+    }
 </script>
 
 <div id="page">
@@ -172,11 +180,29 @@
                                 unsavedChanges = changeList.username || changeList.statusMessage
                             }} />
                     </div>
-                    <div class="short-id">
-                        <Input alt value={user.id.short} disabled copyOnInteract>
-                            <Icon icon={Shape.Hashtag} alt muted />
-                        </Input>
-                    </div>
+                    <ContextMenu
+                        items={[
+                            {
+                                id: "copy-id",
+                                icon: Shape.Users,
+                                text: $_("settings.profile.copy_id"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(true),
+                            },
+                            {
+                                id: "copy-did",
+                                icon: Shape.Clipboard,
+                                text: $_("settings.profile.copy_did"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(false),
+                            },
+                        ]}>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                            <Input alt value={user.id.short} disabled copyOnInteract>
+                                <Icon icon={Shape.Hashtag} alt muted />
+                            </Input>
+                        </div>
+                    </ContextMenu>
                 </div>
             </div>
             <div class="section">
@@ -265,7 +291,7 @@
                     <Button
                         appearance={Appearance.Alt}
                         text={$_("settings.profile.log_out.label")}
-                        on:click={(_) => {
+                        on:click={_ => {
                             logOut()
                         }}>
                         <Icon icon={Shape.Lock} />
