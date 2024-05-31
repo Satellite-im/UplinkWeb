@@ -9,7 +9,7 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
-    import { defaultProfileData, defaultUser } from "$lib/types"
+    import { ULog } from "../../../ulog"
 
     let username = ""
     let statusMessage = ""
@@ -20,11 +20,18 @@
         loading = true
         await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
         let identity = await MultipassStoreInstance.getOwnIdentity()
-        Store.setUserFromIdentity(identity!)
-        console.log(get(Store.state.user))
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        loading = false
-        goto(Route.Chat)
+        identity.fold(
+            e => {
+                ULog.error("Error creating identity: " + e)
+            },
+            async identity => {
+                Store.setUserFromIdentity(identity!)
+                console.log(get(Store.state.user))
+                await new Promise(resolve => setTimeout(resolve, 1000))
+                loading = false
+                goto(Route.Chat)
+            }
+        )
     }
 
     let loading = false
