@@ -14,7 +14,7 @@
     import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
     import { Sortable } from "@shopify/draggable"
-    import type { Chat, FileInfo } from "$lib/types"
+    import type { Chat, ContextItem, FileInfo } from "$lib/types"
     import { get, writable } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
@@ -46,8 +46,10 @@
     const unsubscribeopenFolders = Store.state.openFolders.subscribe((f) => {
         openFolders = f
         })
+    let dragging_files = 0
     let previewImage: string | null
-
+    let search_filter: string
+    let search_component: ChatFilter
     // TODO: Move this into a global state
     let contextPosition: [number, number] = [0, 0]
     let contextData: ContextItem[] = []
@@ -169,6 +171,27 @@
     onDestroy(() => {
         unsubscribeopenFolders()
     })
+
+    function dragEnter(event: DragEvent) {
+        event.preventDefault()
+        dragging_files++
+    }
+
+    function dragLeave() {
+        dragging_files--
+    }
+
+    function dragDrop(event: DragEvent) {
+        event.preventDefault()
+        dragging_files = 0
+        // upload files
+        console.log("dropping files ", event.dataTransfer?.files)
+    }
+
+    function onSearchEnter() {
+        goto(Route.Chat)
+        search_component.select_first()
+    }
 
     UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
     let chats: Chat[] = get(UIStore.state.chats)
@@ -354,7 +377,9 @@
                                     onClick: () => {}
                                 }
                             ]
-                        }} />
+                        } >
+                        <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.Folder} info={item} />
+                        </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile
                             filesize={item.size}
