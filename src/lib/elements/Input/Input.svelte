@@ -121,6 +121,8 @@
 
             &.disabled {
                 cursor: initial;
+                user-select: none;
+                pointer-events: none;
             }
 
             &.centered {
