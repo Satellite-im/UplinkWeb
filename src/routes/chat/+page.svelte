@@ -228,7 +228,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
@@ -389,7 +389,7 @@
                                         <Message
                                             slot="content"
                                             let:open
-                                            contextmenu={open}
+                                            on:contextmenu={open}
                                             remote={group.details.remote}
                                             position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                             morePadding={message.text.length > 1 || message.attachments.length > 0}>
@@ -463,7 +463,7 @@
                                 onClick: () => {},
                             },
                         ]}>
-                        <Button slot="content" let:open contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
+                        <Button slot="content" let:open on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
                             <Icon icon={Shape.Plus} />
                         </Button>
                     </ContextMenu>
