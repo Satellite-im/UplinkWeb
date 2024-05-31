@@ -9,6 +9,7 @@ export interface IState {
     friends: Writable<User[]>
     favorites: Writable<Chat[]>
     files: Writable<FileInfo[]>
+    openFolders: Writable<Record<string, boolean>>
     devices: {
         muted: Writable<boolean>
         deafened: Writable<boolean>

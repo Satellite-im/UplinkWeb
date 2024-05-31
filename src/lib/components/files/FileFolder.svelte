@@ -1,12 +1,15 @@
 <script lang="ts">
     import { Icon, Text, Spacer } from "$lib/elements"
     import { FilesItemKind, Shape, Size } from "$lib/enums"
+    import { Store } from "$lib/state/store"
     import type { FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher } from "svelte"
 
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
+    export let name = info.name
+    
     export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     function getIcon() {
@@ -18,6 +21,20 @@
             case FilesItemKind.Image:
                 return Shape.Beaker
         }
+    }
+    let storeFiles = Store.state.files
+    function updateName(event) {
+        const input = event.target as HTMLInputElement;
+        name = input.value
+        storeFiles.update(items => {
+        const updatedItems = items.map(item => {
+            if (item.id === info.id) {
+            return { ...item, name: name }
+            }
+            return item
+        })
+        return updatedItems
+        })
     }
 
     const dispatch = createEventDispatcher()
@@ -31,7 +48,7 @@
     <div class="filesitem" on:contextmenu={contextmenu}>
         <Icon icon={getIcon()} />
         <Spacer less />
-        <input type="text" value={info?.name} />
+        <input type="text" bind:value={name} on:input={updateName} />
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
     </div>
 </section>

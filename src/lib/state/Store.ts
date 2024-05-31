@@ -30,10 +30,8 @@ class GlobalStore {
             activeRequests: createPersistentState("uplink.requests", []),
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
-            logger: createPersistentState(
-                "uplink.log",
-                new Logger({ relay_to_js_console: true })
-            )
+            openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
+            logger: createPersistentState("uplink.log", new Logger({ relay_to_js_console: true })),
         }
     }
 
@@ -44,26 +42,26 @@ class GlobalStore {
     setStatusMessage(message: string) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status_message: message,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status_message: message,
+                    },
+                })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status: status,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status: status,
+                    },
+                })
         )
     }
 
@@ -137,7 +135,9 @@ class GlobalStore {
     updateFileOrder(newOrder: FileInfo[]) {
         this.state.files.set(newOrder)
     }
-
+    updateFolderTree(newFolderTree: Record<string, boolean>) {
+        this.state.openFolders.set(newFolderTree)
+    }
     addFriend(user: User) {
         const currentFriends = get(this.state.friends)
         const currentRequests = get(this.state.activeRequests)
