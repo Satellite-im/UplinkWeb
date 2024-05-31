@@ -91,19 +91,19 @@ class MultipassStore {
         }
     }
 
-    async getOwnIdentity(): Promise<wasm.Identity | undefined> {
+    async getOwnIdentity(): Promise<Result<WarpError, wasm.Identity>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
                 const identity = await multipass.get_own_identity()
-                return identity
+                return success(identity)
             } catch (error) {
                 ULog.error('Error getting own identity: ', error)
-                return undefined
+                return failure(handleErrors(error))
             }
         }
-        return undefined;
+        return failure(WarpError.MULTIPASS_NOT_FOUND);
     }
 
     async updateUsername(new_username: string) {
