@@ -47,17 +47,32 @@ class MultipassStore {
         }
     }
 
-    async acceptFriendRequest(did: string): Promise<void> {
+    async acceptFriendRequest(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                await multipass.accept_request(did)
-                ULog.info('Friend request accepted: ', did)
+                return success(await multipass.accept_request(did))
             } catch (error) {
                 ULog.error('Error accepting friend request: ', error)
+                return failure(handleErrors(error))
             }
         }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
+    }
+
+    async denyFriendRequest(did: string): Promise<Result<WarpError, void>> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                return success(await multipass.deny_request(did))
+            } catch (error) {
+                ULog.error('Error denying friend request: ', error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
 

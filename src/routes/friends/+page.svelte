@@ -17,6 +17,7 @@
     import { ULog } from "../../ulog"
     import { onMount } from "svelte"
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import Key from "$lib/components/settings/Key.svelte"
 
     // Initialize locale
     initLocale()
@@ -61,6 +62,22 @@
                 sentRequestError = undefined
             },
         )
+    }
+
+   let acceptRequest = async function (friendUser: User) {
+        let friendRequestAccepted = await MultipassStoreInstance.acceptFriendRequest(friendUser.key)
+        friendRequestAccepted.onSuccess(() => {
+            Store.acceptRequest(friendUser)
+            Store.setFriendRequests(Store.inboundRequests.filter(r => r.from.key !== friendUser.key), Store.outboundRequests)
+        })
+    }
+
+    let denyRequest = async function (friendUser: User) {
+        let friendRequestDenied = await MultipassStoreInstance.denyFriendRequest(friendUser.key)
+        friendRequestDenied.onSuccess(() => {
+            Store.denyRequest(friendUser)
+            Store.setFriendRequests(Store.inboundRequests.filter(r => r.from.key !== friendUser.key), Store.outboundRequests)
+        })
     }
 
     onMount(async () => {
@@ -315,10 +332,10 @@
                     {#each Store.inboundRequests as request}
                         <Friend friend={request.from}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Success} text={$_("generic.accept")} on:click={_ => Store.acceptRequest(request.from)}>
+                                <Button appearance={Appearance.Success} text={$_("generic.accept")} on:click={_ => acceptRequest(request.from)}>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
-                                <Button appearance={Appearance.Alt} text={$_("generic.deny")} on:click={_ => Store.denyRequest(request.from)}>
+                                <Button appearance={Appearance.Alt} text={$_("generic.deny")} on:click={_ => denyRequest(request.from)}>
                                     <Icon icon={Shape.XMark} />
                                 </Button>
                             </svelte:fragment>

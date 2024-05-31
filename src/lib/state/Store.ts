@@ -193,8 +193,8 @@ class GlobalStore {
             return friendRequests.map(friendDid => {
                 let friendUser: User = {
                     ...defaultUser,
-                    name: friendDid,
-                    id: friendDid
+                    name: friendDid,               
+                    key: friendDid,
                 }
                 return {
                     at: new Date(),
