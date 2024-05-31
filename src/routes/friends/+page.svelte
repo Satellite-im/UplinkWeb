@@ -73,6 +73,15 @@
     UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe(c => (activeChat = c))
+
+    async function copy_did(short: boolean) {
+        let user = get(Store.state.user)
+        if (short) {
+            await navigator.clipboard.writeText(`${user.name}#${user.id.short}`)
+        } else {
+            await navigator.clipboard.writeText(`${user.key}`)
+        }
+    }
 </script>
 
 <div id="page">
@@ -131,7 +140,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
@@ -160,9 +169,27 @@
                     <Button appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
                         <Icon icon={Shape.Plus} />
                     </Button>
-                    <Button appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")}>
-                        <Icon icon={Shape.Clipboard} />
-                    </Button>
+                    <ContextMenu
+                        items={[
+                            {
+                                id: "copy-id",
+                                icon: Shape.Users,
+                                text: $_("settings.profile.copy_id"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(true),
+                            },
+                            {
+                                id: "copy-did",
+                                icon: Shape.Clipboard,
+                                text: $_("settings.profile.copy_did"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(false),
+                            },
+                        ]}>
+                        <Button slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                            <Icon icon={Shape.Clipboard} />
+                        </Button>
+                    </ContextMenu>
                 </div>
 
                 <Label text={$_("friends.search_friends_placeholder")} />

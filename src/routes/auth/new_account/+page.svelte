@@ -3,12 +3,13 @@
     import { ProfilePicture } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
-    import { Appearance, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
+    import { defaultProfileData, defaultUser } from "$lib/types"
 
     let username = ""
     let statusMessage = ""
@@ -19,8 +20,17 @@
         loading = true
         await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
         let identity = await MultipassStoreInstance.getOwnIdentity()
-        Store.setUsername(identity!.username())
-        Store.setStatusMessage(identity!.status_message() || "")
+        let user = {
+            ...defaultUser,
+            id: { short: identity!.short_id() },
+            key: identity!.did_key(),
+            name: identity!.username(),
+            profile: {
+                ...defaultProfileData,
+                status: Status.Online,
+            },
+        }
+        Store.updateOwnIdentity(user)
         await new Promise(resolve => setTimeout(resolve, 1000))
         loading = false
         goto(Route.Chat)

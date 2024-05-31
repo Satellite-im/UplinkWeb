@@ -15,7 +15,6 @@
     export let small: boolean = false
     export let fill: boolean = false
     export let hook: string = ""
-    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -28,7 +27,7 @@
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click
-    on:contextmenu={contextmenu}>
+    on:contextmenu>
     {#if loading}
         <Loader />
     {:else}

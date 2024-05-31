@@ -70,7 +70,17 @@
 <div class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}" data-tooltip={tooltip}>
     <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
         <slot></slot>
-        <input data-cy={hook} class="input {centered ? 'centered' : ''}" type="text" disabled={disabled} bind:this={input} bind:value={value} placeholder={placeholder} on:keydown={onKeyDown} on:input={onInput} on:blur={onBlur} />
+        <input
+            data-cy={hook}
+            class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
+            type="text"
+            disabled={disabled}
+            bind:this={input}
+            bind:value={value}
+            placeholder={placeholder}
+            on:keydown={onKeyDown}
+            on:input={onInput}
+            on:blur={onBlur} />
     </div>
 </div>
 
@@ -108,6 +118,10 @@
             width: 100%;
             color: var(--color);
             cursor: text;
+
+            &.disabled {
+                cursor: initial;
+            }
 
             &.centered {
                 text-align: center;
