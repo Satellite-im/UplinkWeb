@@ -59,7 +59,7 @@
             () => {
                 sentRequest = true
                 sentRequestError = undefined
-            },
+            }
         )
     }
 
@@ -129,7 +129,7 @@
                 {#if sentRequestError != undefined}
                     <Icon size={Size.Largest} icon={Shape.XMark} highlight={Appearance.Error} />
                     <Text size={Size.Large}>Error!</Text>
-                    <Text muted>{sentRequestError} </Text>
+                    <Text muted>{sentRequestError}</Text>
                 {:else}
                     <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
                     <Text size={Size.Large}>Request Dispatched!</Text>
@@ -195,10 +195,11 @@
                     <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} bind:value={requestString}>
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Button appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
+                    <Button hook="button-add-friend" appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
                         <Icon icon={Shape.Plus} />
                     </Button>
                     <ContextMenu
+                        hook="context-menu-copy-id"
                         items={[
                             {
                                 id: "copy-id",
@@ -215,7 +216,7 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <Button slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
                             <Icon icon={Shape.Clipboard} />
                         </Button>
                     </ContextMenu>
