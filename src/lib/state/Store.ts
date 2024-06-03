@@ -33,9 +33,9 @@ class GlobalStore {
             activeRequests: createPersistentState("uplink.requests", []),
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
-            toasts: createPersistentState("uplink.toasts", {}),
             openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
             logger: createPersistentState("uplink.log", new Logger({ relay_to_js_console: true })),
+            toasts: createPersistentState("uplink.toasts", {}),
         }
     }
 

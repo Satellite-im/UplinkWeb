@@ -145,7 +145,6 @@
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div
-            data-cy="profile-banner"
             class="profile-header"
             style="background-image: url('{user.profile.banner.image}')"
             on:click={_ => {
@@ -202,7 +201,7 @@
                             },
                         ]}>
                         <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
-                            <Input alt value={user.id.short} disabled copyOnInteract>
+                            <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
                         </div>
