@@ -1,5 +1,5 @@
-import { ChatType, Status } from "$lib/enums";
-import { defaultUser, type Chat, type User, hashChat, defaultChat } from "$lib/types";
+import { ChatType, Status } from "$lib/enums"
+import { defaultUser, type Chat, type User, hashChat, defaultChat } from "$lib/types"
 
 export const mock_users: Array<User> = [
     {
@@ -12,18 +12,20 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/moon.png"
+                image: "/assets/moon.png",
+                frame: { name: "Water", image: "/assets/frames/water.png" },
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: "",
             },
             status: Status.Online,
-            status_message: "There is no cheese on this moon."
+            status_message: "There is no cheese on this moon.",
         },
         media: {
             ...defaultUser.media,
             is_playing_audio: true,
-        }
+        },
     },
     {
         ...defaultUser,
@@ -35,20 +37,22 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/blue_marble.png"
+                image: "/assets/blue_marble.png",
+                frame: { name: "", image: "" },
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: "",
             },
             status: Status.Online,
-            status_message: "Space Kev is doing Space Kev things!"
+            status_message: "Space Kev is doing Space Kev things!",
         },
         media: {
             ...defaultUser.media,
             is_streaming_video: true,
             is_muted: true,
             is_deafened: true,
-        }
+        },
     },
     {
         ...defaultUser,
@@ -60,14 +64,16 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/saturn.png"
+                image: "/assets/saturn.png",
+                frame: { name: "Fire", image: "/assets/frames/fire.png" },
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: "",
             },
             status: Status.Online,
-            status_message: "Testing all of the things, all of the time."
-        }
+            status_message: "Testing all of the things, all of the time.",
+        },
     },
     {
         ...defaultUser,
@@ -79,15 +85,16 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/pluto.png"
+                image: "/assets/pluto.png",
+                frame: { name: "Gold Ring", image: "/assets/frames/gold.png" },
             },
             status: Status.Offline,
-            status_message: "I am also testing a bunch of things a bunch of the time!"
+            status_message: "I am also testing a bunch of things a bunch of the time!",
         },
         media: {
             ...defaultUser.media,
             is_deafened: true,
-        }
+        },
     },
     {
         ...defaultUser,
@@ -99,16 +106,18 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/neptune.png"
+                image: "/assets/neptune.png",
+                frame: { name: "Mustache", image: "/assets/frames/mustache.png" },
             },
             banner: {
-                image: "/assets/space.jpg"
+                image: "/assets/space.jpg",
+                overlay: "",
             },
             status: Status.DoNotDisturb,
-            status_message: "This is a status message that you are reading."
-        }
-    }
-];
+            status_message: "This is a status message that you are reading.",
+        },
+    },
+]
 
 export const blocked_users: Array<User> = [
     {
@@ -121,13 +130,14 @@ export const blocked_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/uranis.png"
+                image: "/assets/uranis.png",
+                frame: { name: "", image: "" },
             },
             status: Status.DoNotDisturb,
-            status_message: "Something hostile and aggressive."
-        }
+            status_message: "Something hostile and aggressive.",
+        },
     },
-];
+]
 
 export const fake_user_array: Array<User> = [
     {
@@ -139,19 +149,21 @@ export const fake_user_array: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/assets/neptune.png"
+                image: "/assets/neptune.png",
+                frame: { name: "", image: "" },
             },
             banner: {
-                image: ""
+                image: "",
+                overlay: "",
             },
             status: Status.Offline,
-            status_message: "This user is not real."
-        }
+            status_message: "This user is not real.",
+        },
     },
-];
+]
 
 let mock_chats: Chat[] = [
-    {   
+    {
         ...defaultChat,
         id: "p41",
         name: "RC Group Chat",
@@ -159,11 +171,7 @@ let mock_chats: Chat[] = [
         kind: ChatType.Group,
         notifications: 0,
         activity: false,
-        users: [
-            mock_users[0],
-            mock_users[1],
-            mock_users[3],
-        ],
+        users: [mock_users[0], mock_users[1], mock_users[3]],
         last_message_at: new Date(),
         last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
     },
@@ -221,7 +229,7 @@ let mock_chats: Chat[] = [
         users: [mock_users[4]],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    }
+    },
 ]
 
 mock_chats[0].id = hashChat(mock_chats[0])
@@ -230,6 +238,5 @@ mock_chats[2].id = hashChat(mock_chats[2])
 mock_chats[3].id = hashChat(mock_chats[3])
 mock_chats[4].id = hashChat(mock_chats[4])
 mock_chats[5].id = hashChat(mock_chats[5])
-
 
 export let mchats = mock_chats

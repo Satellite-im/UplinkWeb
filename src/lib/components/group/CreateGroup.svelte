@@ -14,7 +14,7 @@
 
     chat.kind = ChatType.Group
 
-    let update_recipients = function(recipient: User) {
+    let update_recipients = function (recipient: User) {
         let new_recipient_list = chat.users
 
         if (chat.users.includes(recipient)) {
@@ -34,22 +34,19 @@
     const dispatch = createEventDispatcher()
     function onCreate() {
         chat = defaultChat
-        dispatch('create')
+        dispatch("create")
     }
 </script>
 
-<div class="new-chat">
+<div class="new-chat" data-cy="modal-create-group-chat">
     <div class="select-user">
-        <Label text="Group Name:" />
-        <Input alt bind:value={chat.name} />
-        <Label text="Group Members:" />
+        <Label hook="label-create-group-name" text="Group Name:" />
+        <Input hook="input-create-group-name" alt bind:value={chat.name} />
+        <Label hook="label-create-group-members" text="Group Members:" />
         <div class="user-list">
             {#each chat.users as recipient}
                 <div class="mini-user">
-                    <ProfilePicture 
-                        size={Size.Smaller}
-                        noIndicator
-                        image={recipient.profile.photo.image} />
+                    <ProfilePicture size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
@@ -57,28 +54,19 @@
                         small
                         outline
                         icon
-                        on:click={(_) => {
+                        on:click={_ => {
                             update_recipients(recipient)
                         }}>
-                        <Icon
-                            icon={Shape.XMark}
-                            alt
-                            class="control" />
+                        <Icon icon={Shape.XMark} alt class="control" />
                     </Button>
-                    
                 </div>
             {/each}
         </div>
-        <Label text="Select member(s)" />
-        <div class="user-selection-list {embedded ? "embedded" : ""}">
+        <Label hook="label-create-group-select-members" text="Select member(s)" />
+        <div class="user-selection-list {embedded ? 'embedded' : ''}">
             {#each friends as recipient}
-                <button
-                    class="user" 
-                    on:click={() => update_recipients(recipient)}>
-                    <ProfilePicture 
-                        size={Size.Small}
-                        image={recipient.profile.photo.image}
-                        status={recipient.profile.status} />
+                <button class="user" on:click={() => update_recipients(recipient)}>
+                    <ProfilePicture size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
                     <div class="info">
                         <Text singleLine size={Size.Medium}>
                             {recipient.name}
@@ -92,9 +80,10 @@
             {/each}
         </div>
         <Controls>
-            <Button 
+            <Button
+                hook="button-create-group"
                 text="Create Group"
-                on:click={(_) => {
+                on:click={_ => {
                     chat.id = hashChat(chat)
                     Store.setActiveChat(chat)
                     onCreate()
@@ -185,7 +174,7 @@
                 text-align: left;
                 cursor: pointer;
 
-                :global(input[type=checkbox]:checked::after) {
+                :global(input[type="checkbox"]:checked::after) {
                     content: "";
                     width: 100%;
                     height: 100%;

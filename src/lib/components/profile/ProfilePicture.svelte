@@ -2,28 +2,32 @@
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from "$lib/elements"
     import { createEventDispatcher } from "svelte"
+    import type { Frame } from "$lib/types"
 
-    export let image: string                    = ""
-    export let notifications: number            = 0
-    export let size: Size                       = Size.Medium
-    export let highlight: Appearance            = Appearance.Default
-    export let typing: boolean                  = false
-    export let status: Status                   = Status.Offline
-    export let loading: boolean                 = false
-    export let noIndicator: boolean             = false
+    export let image: string = ""
+    export let notifications: number = 0
+    export let size: Size = Size.Medium
+    export let highlight: Appearance = Appearance.Default
+    export let typing: boolean = false
+    export let status: Status = Status.Offline
+    export let loading: boolean = false
+    export let noIndicator: boolean = false
+    export let frame: Frame = { name: "", image: "" }
+    export let hook: string = ""
 
     const dispatch = createEventDispatcher()
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div 
-    class="profile-picture {highlight !== null ? `highlight-${highlight}` : ""} {size}"
-    on:click={(_) => dispatch("click")}>
+<div data-cy={hook} class="profile-picture {highlight !== null ? `highlight-${highlight}` : ''} {size}" on:click={_ => dispatch("click")}>
     {#if loading}
         <Loader />
     {:else}
-        <img class="profile-image" src={image} alt="">
+        {#if frame && frame.name}
+            <img class="profile-image-frame" src={frame.image} alt="" />
+        {/if}
+        <img class="profile-image" src={image} alt="" />
     {/if}
     {#if typing}
         <div class="typing-indicator"></div>
@@ -50,11 +54,26 @@
         align-items: center;
         justify-content: center;
 
+        .profile-image-frame {
+            position: absolute;
+            z-index: 2;
+            height: calc(var(--profile-picture-size) * 1.2);
+            width: calc(var(--profile-picture-size) * 1.2);
+            min-width: calc(var(--profile-picture-size) * 1.2);
+            pointer-events: none;
+        }
+
         &.larger {
             height: calc(var(--profile-picture-size) * 2);
-            width:calc(var(--profile-picture-size) * 2);
+            width: calc(var(--profile-picture-size) * 2);
             min-height: calc(var(--profile-picture-size) * 2);
-            min-width:calc(var(--profile-picture-size) * 2);
+            min-width: calc(var(--profile-picture-size) * 2);
+
+            .profile-image-frame {
+                height: calc(var(--profile-picture-size) * 2.2);
+                width: calc(var(--profile-picture-size) * 2.2);
+                min-width: calc(var(--profile-picture-size) * 2.2);
+            }
         }
 
         &.small {
@@ -62,6 +81,11 @@
             width: var(--input-height);
             min-height: var(--input-height);
             min-width: var(--input-height);
+            .profile-image-frame {
+                height: var(--profile-picture-size);
+                width: var(--profile-picture-size);
+                min-width: var(--profile-picture-size);
+            }
         }
 
         &.smaller {
@@ -77,7 +101,8 @@
             width: calc(var(--font-size) * 1.5);
             min-width: calc(var(--font-size) * 1.5);
 
-            .status-indicator, .notifications {
+            .status-indicator,
+            .notifications {
                 display: none;
             }
         }
@@ -97,7 +122,7 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            z-index: 1;
+            z-index: 3;
             box-shadow: 0 0 0 var(--border-width-more) var(--background);
 
             &.online {
@@ -119,14 +144,20 @@
 
         &.large {
             height: calc(var(--profile-picture-size) * 2);
-            width:calc(var(--profile-picture-size) * 2);
+            width: calc(var(--profile-picture-size) * 2);
             min-height: calc(var(--profile-picture-size) * 2);
-            min-width:calc(var(--profile-picture-size) * 2);
+            min-width: calc(var(--profile-picture-size) * 2);
 
             .status-indicator {
                 height: var(--font-size-large);
                 width: var(--font-size-large);
                 border-radius: calc(var(--font-size-large) / 2);
+            }
+
+            .profile-image-frame {
+                height: calc(var(--profile-picture-size) * 2.5);
+                width: calc(var(--profile-picture-size) * 2.5);
+                min-width: calc(var(--profile-picture-size) * 2.5);
             }
         }
 

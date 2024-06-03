@@ -2,8 +2,8 @@
     import { Button, Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
 
-    export let icon: Shape              = Shape.Beaker
-    export let appearance: Appearance   = Appearance.Default
+    export let icon: Shape = Shape.Beaker
+    export let appearance: Appearance = Appearance.Default
 </script>
 
 <div class="progress-button">

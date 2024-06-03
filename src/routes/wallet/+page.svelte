@@ -17,7 +17,7 @@
     import NewPayment from "$lib/components/wallet/payments/NewPayment.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
-    import { UIStore } from "$lib/state/ui";
+    import { UIStore } from "$lib/state/ui"
 
     // Initialize locale
     initLocale()
@@ -30,12 +30,12 @@
         UIStore.toggleSidebar()
     }
 
-    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
 </script>
 
 <div id="page">
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Wallet} />
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet} >
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet}>
         <Label text="New Payment" />
         <NewPayment recipients={mock_users} embedded />
     </Sidebar>
@@ -55,7 +55,7 @@
             <div id="current-balance">
                 <Label text="Balance"></Label>
                 <Text size={Size.Large}>{balance}</Text>
-            </div>    
+            </div>
         </div>
 
         <div id="recent-transactions">
@@ -115,8 +115,7 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
-        
-        
+
         .content {
             display: flex;
             min-height: 0;
@@ -133,7 +132,6 @@
                 min-height: 0;
                 overflow-y: scroll;
             }
-            
 
             .header {
                 display: inline-flex;
@@ -186,7 +184,6 @@
                 background: var(--background-alt);
                 border-radius: var(--border-radius);
             }
-
         }
     }
 </style>

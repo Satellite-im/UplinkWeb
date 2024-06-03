@@ -4,29 +4,31 @@
     import { Appearance, Size } from "$lib/enums"
     import { Loader } from "./"
 
-    export let appearance: Appearance   = Appearance.Default
-    export let muted: boolean           = false
-    export let loading: boolean         = false
-    export let size: Size               = Size.Medium
-    export let singleLine: boolean      = false
-    export let doubleLine: boolean      = false
-    export let markdown: string         =  ""
-    export let secondaryFont: boolean   = false
-    export let withShadow: boolean      = false
+    export let appearance: Appearance = Appearance.Default
+    export let muted: boolean = false
+    export let loading: boolean = false
+    export let size: Size = Size.Medium
+    export let singleLine: boolean = false
+    export let doubleLine: boolean = false
+    export let markdown: string = ""
+    export let secondaryFont: boolean = false
+    export let withShadow: boolean = false
+    export let noWrap: boolean = false
+    export let hook: string = ""
 
     let clazz = ""
-	export { clazz as class }
+    export { clazz as class }
 </script>
 
-<p class="text {withShadow ? "shadow" : ""} {muted ? "muted" : ""} {appearance} {size} {singleLine ? "single-line" : ""} {doubleLine ? "double-line" : ""} {secondaryFont ? "secondary-font" : ""} {clazz}">
+<p
+    data-cy={hook}
+    class="text {withShadow ? 'shadow' : ''} {noWrap ? 'no-wrap' : ''} {muted ? 'muted' : ''} {appearance} {size} {singleLine ? 'single-line' : ''} {doubleLine ? 'double-line' : ''} {secondaryFont ? 'secondary-font' : ''} {clazz}">
     {#if loading}
         <Loader text />
+    {:else if markdown}
+        <SvelteMarkdown source={markdown} />
     {:else}
-        {#if markdown}
-            <SvelteMarkdown source={markdown} />
-        {:else}
-            <slot></slot>
-        {/if}
+        <slot></slot>
     {/if}
 </p>
 
@@ -39,10 +41,14 @@
         text-align: left;
         max-width: fit-content;
 
+        &.no-wrap {
+            text-wrap: nowrap;
+        }
+
         &.single-line {
             display: -webkit-box;
             -webkit-line-clamp: 1;
-                    line-clamp: 1;
+            line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
             font-size: var(--font-size-smaller);
@@ -52,21 +58,28 @@
         &.double-line {
             display: -webkit-box;
             -webkit-line-clamp: 2;
-                    line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             flex: 1;
         }
 
-        &.small, &.smaller, &.smallest, &.large, &.larger {
+        &.small,
+        &.smaller,
+        &.smallest,
+        &.large,
+        &.larger {
             @each $size in small, smaller, smallest, large, larger {
                 &.#{$size} {
                     font-size: var(--font-size-#{$size});
                 }
             }
         }
-    
-        &.success, &.info, &.error, &.warning {
+
+        &.success,
+        &.info,
+        &.error,
+        &.warning {
             @each $type in success, info, error, warning {
                 &.#{$type} {
                     color: var(--#{$type}-color);
@@ -83,7 +96,7 @@
         }
 
         &.shadow {
-            text-shadow: 0 0  5px var(--background);
+            text-shadow: 0 0 5px var(--background);
         }
     }
 </style>

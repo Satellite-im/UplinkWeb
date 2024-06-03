@@ -15,6 +15,7 @@
     --color-muted: #a2b2ee;
     --color-alt: #000;
     --placeholder-color: #97a7e4;
+    --link-color: #8d8dfc;
 
     --focus-color: var(--primary-color);
     --highlight-color: #4d4dff;
@@ -84,7 +85,7 @@
     --font-size: 1rem;
     --font-size-smaller: calc(var(--font-size) - 0.15rem);
     --font-size-smallest: calc(var(--font-size) - 0.25rem);
-    --icon-size: 1rem;
+    --icon-size: 1.15rem;
     --icon-size-large: 1.7rem;
     --icon-size-larger: 3rem;
     --icon-size-largest: 4rem;

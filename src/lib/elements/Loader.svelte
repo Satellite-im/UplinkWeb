@@ -1,13 +1,13 @@
 <script lang="ts">
-    export let small: boolean   = false
-    export let alt: boolean     = false
-    export let text: boolean    = false
+    export let small: boolean = false
+    export let alt: boolean = false
+    export let text: boolean = false
 </script>
 
 {#if text}
-    <div class="loading-text {small? "small" : ""} {alt ? "alt" : ""}"></div>
+    <div class="loading-text {small ? 'small' : ''} {alt ? 'alt' : ''}"></div>
 {:else}
-    <div class="pulse-loader {alt ? "alt" : ""}">
+    <div class="pulse-loader {alt ? 'alt' : ''}">
         <div></div>
         <div></div>
         <div></div>
@@ -42,7 +42,7 @@
         position: relative;
         width: var(--icon-size);
         height: var(--icon-size);
-        
+
         div {
             position: absolute;
             border: var(--border-width) solid var(--color);
@@ -66,7 +66,8 @@
     }
 
     @keyframes pulse {
-        0%, 4.9% {
+        0%,
+        4.9% {
             width: 0;
             height: 0;
             opacity: 0;
@@ -84,7 +85,8 @@
     }
 
     @keyframes flash {
-        0%, 4.9% {
+        0%,
+        4.9% {
             width: 0;
             height: 0;
             opacity: 0;
@@ -98,5 +100,4 @@
             opacity: 0;
         }
     }
-
 </style>

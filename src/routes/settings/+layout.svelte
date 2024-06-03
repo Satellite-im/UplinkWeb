@@ -1,83 +1,81 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { page } from "$app/stores";
-    import { ContextMenu } from "$lib/components";
+    import { goto } from "$app/navigation"
+    import { page } from "$app/stores"
     import { Route, SettingsRoute, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Slimbar from "$lib/layouts/Slimbar.svelte"
-    import { Store } from "$lib/state/store"
-    import { UIStore } from "$lib/state/ui";
+    import { SettingsStore } from "$lib/state"
+    import { UIStore } from "$lib/state/ui"
     import type { ContextItem, NavRoute } from "$lib/types"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
-    import { get } from "svelte/store"
+    import { get, writable, type Writable } from "svelte/store"
 
-
-    export let settingsRoutes: NavRoute[] = [
+    let settingsRoutes: Writable<NavRoute[]> = writable([
         {
             to: SettingsRoute.Profile,
             icon: Shape.Profile,
-            name: "Profile"
+            name: "Profile",
+        },
+        {
+            to: SettingsRoute.Inventory,
+            icon: Shape.Inventory,
+            name: "Inventory",
         },
         {
             to: SettingsRoute.Preferences,
             icon: Shape.Brush,
-            name: "Customization"
+            name: "Customization",
         },
         {
             to: SettingsRoute.Messages,
             icon: Shape.ChatBubble,
-            name: "Messages"
+            name: "Messages",
         },
         {
             to: SettingsRoute.AudioVideo,
             icon: Shape.Speaker,
-            name: "Audio & Video"
+            name: "Audio & Video",
         },
         {
             to: SettingsRoute.Extensions,
             icon: Shape.Beaker,
-            name: "Extensions"
+            name: "Extensions",
         },
         {
             to: SettingsRoute.Keybinds,
             icon: Shape.Keybind,
-            name: "Keybinds"
+            name: "Keybinds",
         },
         {
             to: SettingsRoute.Accessability,
             icon: Shape.Eye,
-            name: "Accessability"
+            name: "Accessability",
         },
         {
             to: SettingsRoute.Notifications,
             icon: Shape.BellAlert,
-            name: "Notifications"
+            name: "Notifications",
         },
         {
             to: SettingsRoute.About,
             icon: Shape.Info,
-            name: "About"
+            name: "About",
         },
         {
             to: SettingsRoute.Licenses,
             icon: Shape.Document,
-            name: "Licenses"
+            name: "Licenses",
         },
-        {
-            to: SettingsRoute.Developer,
-            icon: Shape.Code,
-            name: "Developer"
-        },
-    ]
+    ])
 
     initLocale()
 
     let loading = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
-    let activeRoute = SettingsRoute.Profile;
+    let activeRoute = SettingsRoute.Profile
 
     function toggleSidebar() {
         UIStore.toggleSidebar()
@@ -87,6 +85,10 @@
         switch ($page.url.pathname) {
             case "/settings/preferences": {
                 activeRoute = SettingsRoute.Preferences
+                break
+            }
+            case "/settings/inventory": {
+                activeRoute = SettingsRoute.Inventory
                 break
             }
             case "/settings/message": {
@@ -123,28 +125,43 @@
             }
         }
     })
-    
-    // TODO: Move to global state
-    let contextPosition: [number, number] = [0, 0]
-    let contextData: ContextItem[] = []
 
-    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
+
+    $: {
+        let devmode = get(SettingsStore.state).devmode
+        if (devmode) {
+            if (!get(settingsRoutes).find(route => route.to === SettingsRoute.Developer)) {
+                settingsRoutes.set([
+                    ...get(settingsRoutes),
+                    {
+                        to: SettingsRoute.Developer,
+                        icon: Shape.Code,
+                        name: "Developer",
+                    },
+                ])
+            }
+        } else {
+            settingsRoutes.set(get(settingsRoutes).filter(route => route.to !== SettingsRoute.Developer))
+        }
+    }
 </script>
 
 <div id="settings">
     <!-- Context Menu-->
-    <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={(_) => contextData = []} />
+    <!-- Unused atm -->
+    <!-- <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} /> -->
 
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
-        <Navigation 
-            routes={settingsRoutes} 
+        <Navigation
+            routes={get(settingsRoutes)}
             vertical
-            on:navigate={(e) => {
+            on:navigate={e => {
                 goto(e.detail)
                 activeRoute = e.detail
-            }} 
-            activeRoute={activeRoute}/>
+            }}
+            activeRoute={activeRoute} />
     </Sidebar>
 
     <div class="content">

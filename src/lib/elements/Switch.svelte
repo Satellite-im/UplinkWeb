@@ -1,20 +1,21 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
 
-    export let on: boolean      = false
-    export let small: boolean   = false
+    export let on: boolean = false
+    export let small: boolean = false
+    export let hook: string = ""
 
     // Create an event dispatcher
     const dispatch = createEventDispatcher()
 
     // Function to dispatch a 'click' event
     function onToggle(_: Event) {
-        dispatch('toggle', on)
+        dispatch("toggle", on)
     }
 </script>
 
-<label class="switch {small ? "small" : ""}">
-    <input type="checkbox" bind:checked={on} on:change={onToggle} />
+<label class="switch {small ? 'small' : ''}">
+    <input data-cy={hook} type="checkbox" bind:checked={on} on:change={onToggle} />
     <span class="slider"></span>
 </label>
 
@@ -43,7 +44,8 @@
                 }
             }
 
-            &:focus + .slider { // Accessibility support
+            &:focus + .slider {
+                // Accessibility support
                 box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color);
             }
         }
@@ -77,7 +79,7 @@
         &.small {
             width: calc((var(--switch-size) * 2) / 1.25);
             height: calc(var(--switch-size) / 1.25);
-            
+
             .slider {
                 &:before {
                     top: calc(var(--border-width) * -1);

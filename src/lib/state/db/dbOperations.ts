@@ -3,20 +3,27 @@ const storeName = "stateStore"
 export async function initDB() {
     return new Promise<IDBDatabase>((resolve, _) => {
         const request = indexedDB.open("UplinkAppState", 1)
-        request.onupgradeneeded = (_) => {
+        request.onupgradeneeded = _ => {
             const db = request.result
             if (!db.objectStoreNames.contains(storeName)) {
-                db.createObjectStore(storeName, { keyPath: 'key' })
+                db.createObjectStore(storeName, { keyPath: "key" })
             }
         }
-        request.onsuccess = (_) => resolve(request.result)
+        request.onsuccess = _ => resolve(request.result)
+    })
+}
+
+export async function clearState() {
+    return new Promise((resolve, _) => {
+        const request = indexedDB.deleteDatabase("UplinkAppState")
+        request.onsuccess = () => resolve("")
     })
 }
 
 export async function getStateFromDB<T>(key: string, defaultState: T): Promise<T> {
     const db = await initDB()
-    return new Promise<T>((resolve) => {
-        const transaction = db.transaction([storeName], 'readonly')
+    return new Promise<T>(resolve => {
+        const transaction = db.transaction([storeName], "readonly")
         const objectStore = transaction.objectStore(storeName)
         const request = objectStore.get(key)
         request.onsuccess = () => resolve(request.result?.value ?? defaultState)
@@ -26,10 +33,10 @@ export async function getStateFromDB<T>(key: string, defaultState: T): Promise<T
 export async function setStateToDB<T>(key: string, state: T): Promise<void> {
     const db = await initDB()
     return new Promise<void>((resolve, reject) => {
-        const transaction = db.transaction([storeName], 'readwrite')
+        const transaction = db.transaction([storeName], "readwrite")
         const objectStore = transaction.objectStore(storeName)
         const request = objectStore.put({ key, value: state })
         request.onsuccess = () => resolve()
-        request.onerror = () => reject('Error writing to DB')
+        request.onerror = () => reject("Error writing to DB")
     })
 }

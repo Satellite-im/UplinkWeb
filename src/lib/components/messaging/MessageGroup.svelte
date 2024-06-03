@@ -4,8 +4,8 @@
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
 
-    export let remote: boolean          = false
-    export let subtext: string | null   = ""
+    export let remote: boolean = false
+    export let subtext: string | null = ""
     export let profilePictureRequirements: ProfilePictureRequirements | null = null
     const dispatch = createEventDispatcher()
 </script>
@@ -19,7 +19,7 @@
                 status={profilePictureRequirements.status}
                 highlight={profilePictureRequirements.highlight}
                 notifications={profilePictureRequirements.notifications}
-                on:click={(_) => dispatch("profileClick")} />
+                on:click={_ => dispatch("profileClick")} />
         </div>
     {/if}
     <div class="flex">
@@ -33,12 +33,13 @@
                 status={profilePictureRequirements.status}
                 highlight={profilePictureRequirements.highlight}
                 notifications={profilePictureRequirements.notifications}
-                on:click={(_) => dispatch("profileClick")} />
+                frame={profilePictureRequirements.frame}
+                on:click={_ => dispatch("profileClick")} />
         </div>
     {/if}
 
     {#if subtext}
-        <span class="subtext {remote ? "remote" : "local"}">{subtext}</span>
+        <span class="subtext {remote ? 'remote' : 'local'}">{subtext}</span>
     {/if}
 </div>
 
@@ -70,7 +71,7 @@
             color: var(--color-muted);
             top: calc(100% + var(--gap-less));
             margin-left: var(--profile-picture-size);
-            
+
             &.local {
                 right: 0;
                 margin-left: 0;

@@ -3,7 +3,7 @@
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Button, Switch, Select } from "$lib/elements"
-    import { Meter } from "$lib/components"
+    import { Meter, VideoTest } from "$lib/components"
     import { Appearance } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import { onMount } from "svelte"
@@ -13,21 +13,19 @@
     initLocale()
 
     let inputDevices: MediaDeviceInfo[] = []
+    let videoInputDevices: MediaDeviceInfo[] = []
     let outputDevices: MediaDeviceInfo[] = []
 
-    $: inputOptions = inputDevices.length > 0
-        ? inputDevices.map(d => ({ text: d.label, value: d.deviceId }))
-        : [{ text: "Default", value: "Default" }]
-
-    $: outputOptions = outputDevices.length > 0
-        ? outputDevices.map(d => ({ text: d.label, value: d.deviceId }))
-        : [{ text: "Default", value: "default" }]
+    $: inputOptions = inputDevices.length > 0 ? inputDevices.map(d => ({ text: d.label, value: d.deviceId })) : [{ text: "Default", value: "Default" }]
+    $: videoInputOptions = inputDevices.length > 0 ? videoInputDevices.map(d => ({ text: d.label, value: d.deviceId })) : [{ text: "Default", value: "Default" }]
+    $: outputOptions = outputDevices.length > 0 ? outputDevices.map(d => ({ text: d.label, value: d.deviceId })) : [{ text: "Default", value: "default" }]
 
     let getDevices = async () => {
         try {
             await navigator.mediaDevices.getUserMedia({ audio: true })
             let devices = await navigator.mediaDevices.enumerateDevices()
             inputDevices = devices.filter(device => device.kind === "audioinput")
+            videoInputDevices = devices.filter(device => device.kind === "videoinput")
             outputDevices = devices.filter(device => device.kind === "audiooutput")
         } catch (error) {
             console.error("Error accessing media devices:", error)
@@ -36,10 +34,12 @@
 
     let selectedInput: string = "default"
     let selectedOutput: string = "default"
-    Store.state.devices.input.subscribe((d) => {
+    let selectedVideoInput: string = "default"
+
+    Store.state.devices.input.subscribe(d => {
         selectedInput = d
     })
-    Store.state.devices.input.subscribe((d) => {
+    Store.state.devices.input.subscribe(d => {
         selectedInput = d
     })
 
@@ -136,51 +136,85 @@
     onMount(() => {
         startAudioMonitoring()
     })
-
 </script>
 
 <div id="page">
     <SettingSection name="Input Device" description="Select your input device, this is usually your microphone.">
-        <Select selected={selectedInput} options={inputOptions} alt on:change={(v) => {
-            Store.setInputDevice(v.detail)
-        }} />
+        <Select
+            selected={selectedInput}
+            options={inputOptions}
+            alt
+            on:change={v => {
+                Store.setInputDevice(v.detail)
+            }} />
     </SettingSection>
+
     <div class="flex-row">
         <Meter percent={audioLevel} />
     </div>
+
     <SettingSection name="Output Device" description="Select your output device, this is usually your headphones or speakers.">
-        <Select selected={selectedOutput} options={outputOptions} alt on:change={(v) => {
-            Store.setOutputDevice(v.detail)
-        }} />
+        <Select
+            selected={selectedOutput}
+            options={outputOptions}
+            alt
+            on:change={v => {
+                Store.setOutputDevice(v.detail)
+            }} />
     </SettingSection>
+
     <div class="flex-row">
-        <Button small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring}/>
+        <Button small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring} />
         <Meter percent={audioOutputLevel} />
     </div>
+
+    <SettingSection name="Video Device" description="Select your video device, this is usually your webcam.">
+        <Select
+            selected={selectedVideoInput}
+            options={videoInputOptions}
+            alt
+            on:change={v => {
+                Store.setVideoInputDevice(v.detail)
+            }} />
+    </SettingSection>
+    <div class="flex-row">
+        <VideoTest audioInput={selectedInput} videoInput={undefined} />
+    </div>
+
     <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
-        <Switch on={(settings) ? settings.audio.echoCancellation : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, audio: {...settings.audio, echoCancellation: on.detail }})
-        }} />
+        <Switch
+            on={settings ? settings.audio.echoCancellation : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, audio: { ...settings.audio, echoCancellation: on.detail } })
+            }} />
     </SettingSection>
     <SettingSection name="Interface Sounds" description="Play sounds when interacting with UI elements.">
-        <Switch on={(settings) ? settings.audio.interfaceSounds : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, audio: {...settings.audio, interfaceSounds: on.detail }})
-        }} />
+        <Switch
+            on={settings ? settings.audio.interfaceSounds : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, audio: { ...settings.audio, interfaceSounds: on.detail } })
+            }} />
     </SettingSection>
     <SettingSection name="Control Sounds" description="When enabled you will hear a sound when turning controls on or off, such as muting and unmuting.">
-        <Switch on={(settings) ? settings.audio.controlSounds : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, audio: {...settings.audio, controlSounds: on.detail }})
-        }} />
+        <Switch
+            on={settings ? settings.audio.controlSounds : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, audio: { ...settings.audio, controlSounds: on.detail } })
+            }} />
     </SettingSection>
     <SettingSection name="Message Sounds" description="Play a notification sound when a new message is received.">
-        <Switch on={(settings) ? settings.audio.messageSounds : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, audio: {...settings.audio, messageSounds: on.detail }})
-        }} />
+        <Switch
+            on={settings ? settings.audio.messageSounds : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, audio: { ...settings.audio, messageSounds: on.detail } })
+            }} />
     </SettingSection>
     <SettingSection name="Call Timer" description="Show the duration of an active call in the UI.">
-        <Switch on={(settings) ? settings.audio.callTimer : true} on:toggle={(on) => {
-            SettingsStore.update({...settings, audio: {...settings.audio, callTimer: on.detail }})
-        }} />
+        <Switch
+            on={settings ? settings.audio.callTimer : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, audio: { ...settings.audio, callTimer: on.detail } })
+            }} />
     </SettingSection>
 </div>
 
@@ -195,6 +229,5 @@
         overflow-y: scroll;
         overflow-x: hidden;
         padding-right: var(--padding);
-        
     }
 </style>

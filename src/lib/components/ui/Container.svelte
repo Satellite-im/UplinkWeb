@@ -3,7 +3,7 @@
     export let row: Boolean = false
 </script>
 
-<div class="container bordered {row ? "flex-column" : ""}">
+<div class="container bordered {row ? 'flex-column' : ''}">
     {#if title.length > 0}
         <h2 class="title">{title}</h2>
     {/if}

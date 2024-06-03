@@ -1,20 +1,21 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
     import Controls from "../../layouts/Controls.svelte"
-    
+
     const dispatch = createEventDispatcher()
     function onClose(event: MouseEvent) {
-        dispatch('close', event)
+        dispatch("close", event)
     }
 
     export let padded: boolean = false
     export let withControls: boolean = false
+    export let hook: string = ""
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="modal" on:click={onClose}>
-    <div class="body {padded ? "padded" : ""}" on:click|stopPropagation>
+<div class="modal" data-cy={hook} on:click={onClose}>
+    <div class="body {padded ? 'padded' : ''}" on:click|stopPropagation>
         {#if withControls}
             <Controls>
                 <slot name="controls"></slot>
@@ -34,7 +35,7 @@
         align-items: center;
         gap: var(--gap);
         position: fixed;
-        z-index: 3;
+        z-index: 4;
         top: 0;
         left: 0;
         bottom: 0;
@@ -66,6 +67,7 @@
                 border-radius: var(--border-radius);
                 overflow: hidden;
                 padding-top: 0;
+                width: 100%;
             }
 
             :global(.controls) {

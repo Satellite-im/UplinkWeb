@@ -1,15 +1,19 @@
 <script lang="ts">
-    import { Appearance, Shape, Size, Status } from "$lib/enums"
+    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
-    import { ProfilePicture, OrderedPhrase } from "$lib/components"
+    import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/store"
     import type { User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
+    import { goto } from "$app/navigation"
+    import { ToastMessage } from "$lib/state/ui/toast"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { onDestroy, onMount } from "svelte"
 
     initLocale()
 
@@ -18,27 +22,72 @@
 
     function toggleSeedPhrase() {
         showSeed = !showSeed
-        if (loading) setTimeout(() => loading = false, 200)
+        if (loading) setTimeout(() => (loading = false), 200)
+    }
+
+    function logOut() {
+        goto(Route.Unlock)
+    }
+
+    async function updateProfilePicture(picture: string) {
+        await MultipassStoreInstance.updateProfilePhoto(picture)
+        Store.setPhoto(picture)
+    }
+
+    async function updateUsername(newUsername: string) {
+        userReference.name = newUsername
+        Store.setUsername(newUsername)
+        await MultipassStoreInstance.updateUsername(newUsername)
+        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
+    }
+
+    async function updateStatusMessage(newStatusMessage: string) {
+        userReference.profile.status_message = newStatusMessage
+        Store.setStatusMessage(newStatusMessage)
+        await MultipassStoreInstance.updateStatusMessage(newStatusMessage)
+        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
+    }
+
+    function updatePendentItemsToSave() {
+        changeList.username = false
+        changeList.statusMessage = false
+
+        unsavedChanges = changeList.username || changeList.statusMessage
     }
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
+    let userReference: User
+    let statusMessage: string
+
+    onMount(() => {
+        userReference = { ...get(Store.state.user) }
+        statusMessage = userReference.profile.status_message
+    })
+
+    onDestroy(() => {
+        Store.setUsername(userReference.name)
+        Store.setStatusMessage(userReference.profile.status_message)
+    })
+
     let user: User = get(Store.state.user)
-    let activityStatus: Status = Status.Online
+    let activityStatus: Status = user.profile.status
+
     Store.state.user.subscribe(val => {
         user = val
         activityStatus = user.profile.status
     })
 
-    let acceptableFiles: string  = ".jpg, .jpeg, .png, .avif"
-	let fileinput: HTMLElement
+    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
+    let fileinput: HTMLElement
 
-	const onFileSelected = (e: any) => {
+    const onFileSelected = (e: any) => {
         let image = e.target.files[0]
         let reader = new FileReader()
         reader.readAsDataURL(image)
-        reader.onload = e => {
+        reader.onload = async e => {
             let imageString = e.target?.result?.toString()
+            await MultipassStoreInstance.updateBannerPicture(imageString || "")
             Store.setBanner(imageString || "")
         }
     }
@@ -49,29 +98,43 @@
     }
 
     let unsavedChanges: boolean
+    let profile_update_txt = $_("settings.profile.update")
+
+    async function copy_did(short: boolean) {
+        if (short) {
+            await navigator.clipboard.writeText(`${userReference.name}#${userReference.id.short}`)
+        } else {
+            await navigator.clipboard.writeText(`${userReference.key}`)
+        }
+    }
 </script>
 
 <div id="page">
     {#if unsavedChanges}
-        <div class="save-controls">
+        <div class="save-controls" data-cy="save-controls">
             <Controls>
-                <Button text={$_("generic.cancel")} appearance={Appearance.Alt} on:click={(_) => {
-                    changeList.username = false
-                    changeList.statusMessage = false
-
-                    unsavedChanges = changeList.username || changeList.statusMessage
-                }}>
+                <Button
+                    hook="button-cancel"
+                    text={$_("generic.cancel")}
+                    appearance={Appearance.Alt}
+                    on:click={_ => {
+                        statusMessage = userReference.profile.status_message
+                        Store.setUsername(userReference.name)
+                        Store.setStatusMessage(userReference.profile.status_message)
+                        updatePendentItemsToSave()
+                    }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-                <Button text={$_("generic.save")} appearance={Appearance.Primary} on:click={(_) => {
-                    Store.setUsername(user.name)
-                    Store.setStatus(user.profile.status_message)
-
-                    changeList.username = false
-                    changeList.statusMessage = false
-
-                    unsavedChanges = changeList.username || changeList.statusMessage
-                }}>
+                <Button
+                    hook="button-save"
+                    text={$_("generic.save")}
+                    appearance={Appearance.Primary}
+                    on:click={async _ => {
+                        await updateUsername(user.name)
+                        await updateStatusMessage(statusMessage)
+                        updatePendentItemsToSave()
+                        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
+                    }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
             </Controls>
@@ -81,71 +144,111 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="profile-header" style="background-image: url('{user.profile.banner.image}')" on:click={(_) => fileinput.click()}></div>
-
-        <div class="profile-picture-container">
-            <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} />
-            <FileUploadButton icon tooltip={$_("settings.profile.change_profile_photo")} on:upload={(picture) => {
-                Store.setPhoto(picture.detail)
-            }} />
+        <div
+            class="profile-header"
+            style="background-image: url('{user.profile.banner.image}')"
+            on:click={_ => {
+                fileinput.click()
+            }}>
         </div>
 
-        <input style="display:none" type="file" accept={acceptableFiles} on:change={(e) => onFileSelected(e)} bind:this={fileinput} />
-        
+        <div class="profile-picture-container">
+            <ProfilePicture hook="profile-picture" image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+            <FileUploadButton
+                icon
+                tooltip={$_("settings.profile.change_profile_photo")}
+                on:upload={async picture => {
+                    await updateProfilePicture(picture.detail)
+                }} />
+        </div>
+
+        <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
+
         <div class="content">
             <div class="section">
-                <Label text={$_("generic.username")} />
+                <Label hook="label-settings-profile-username" text={$_("generic.username")} />
                 <div class="username-section">
                     <div class="username">
-                        <Input 
-                            alt 
-                            bind:value={user.name} 
-                            highlight={(changeList.username) ? Appearance.Warning : Appearance.Default}
-                            on:enter={(_) => {
-                            // TODO: Toast
-                            Store.setUsername(user.name)
-                        }} on:keypress={(_) => {
-                            changeList.username = true
-                            unsavedChanges = changeList.username || changeList.statusMessage
-                        }} />
+                        <Input
+                            hook="input-settings-profile-username"
+                            alt
+                            bind:value={user.name}
+                            highlight={changeList.username ? Appearance.Warning : Appearance.Default}
+                            on:enter={async _ => {
+                                await updateUsername(user.name)
+                                updatePendentItemsToSave()
+                            }}
+                            on:input={_ => {
+                                changeList.username = true
+                                unsavedChanges = changeList.username || changeList.statusMessage
+                            }} />
                     </div>
-                    <div class="short-id">
-                        <Input alt value={user.id.short} disabled copyOnInteract>
-                            <Icon icon={Shape.Hashtag} alt muted />
-                        </Input>
-                    </div>
+                    <ContextMenu
+                        items={[
+                            {
+                                id: "copy-id",
+                                icon: Shape.Users,
+                                text: $_("settings.profile.copy_id"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(true),
+                            },
+                            {
+                                id: "copy-did",
+                                icon: Shape.Clipboard,
+                                text: $_("settings.profile.copy_did"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(false),
+                            },
+                        ]}>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                            <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
+                                <Icon icon={Shape.Hashtag} alt muted />
+                            </Input>
+                        </div>
+                    </ContextMenu>
                 </div>
             </div>
             <div class="section">
-                <Label text={$_("user.status_message")} />
+                <Label hook="label-settings-profile-status-message" text={$_("user.status_message")} />
                 <Input
+                    hook="input-settings-profile-status-message"
                     alt
-                    bind:value={user.profile.status_message}
+                    bind:value={statusMessage}
                     placeholder={$_("user.set_status_message")}
-                    highlight={(changeList.statusMessage) ? Appearance.Warning : Appearance.Default}
-                    on:enter={(_) => {
-                        // TODO: Toast
-                        Store.setStatus(user.profile.status_message)
-                    }} on:keypress={(_) => {
+                    highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
+                    on:enter={async _ => {
+                        await updateStatusMessage(statusMessage)
+                        updatePendentItemsToSave()
+                    }}
+                    on:input={_ => {
                         changeList.statusMessage = true
                         unsavedChanges = changeList.username || changeList.statusMessage
                     }} />
             </div>
             <div class="section">
-                <SettingSection name={$_("user.status.label")} description={$_("user.set_status")}>
-                    <Select options={[
-                        { text: $_("user.status.online"), value: "online" },
-                        { text: $_("user.status.offline"), value: "offline" },
-                        { text: $_("user.status.idle"), value: "idle" },
-                        { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
-                    ]} on:change={(v) => {
-                        switch (v.detail) {
-                            case "online": return Store.setActivityStatus(Status.Online)
-                            case "offline": return Store.setActivityStatus(Status.Offline)
-                            case "idle": return Store.setActivityStatus(Status.Idle)
-                            case "do-not-disturb": return Store.setActivityStatus(Status.DoNotDisturb)
-                        }
-                    }} bind:selected={user.profile.status}>
+                <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
+                    <Select
+                        hook="settings-profile-status-select"
+                        options={[
+                            { text: $_("user.status.online"), value: "online" },
+                            { text: $_("user.status.offline"), value: "offline" },
+                            { text: $_("user.status.idle"), value: "idle" },
+                            { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
+                        ]}
+                        on:change={v => {
+                            switch (v.detail) {
+                                case "online":
+                                    return Store.setActivityStatus(Status.Online)
+                                case "offline":
+                                    return Store.setActivityStatus(Status.Offline)
+                                case "idle":
+                                    return Store.setActivityStatus(Status.Idle)
+                                case "do-not-disturb":
+                                    return Store.setActivityStatus(Status.DoNotDisturb)
+                            }
+                            Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
+                        }}
+                        bind:selected={user.profile.status}>
                         {#if activityStatus === Status.Online}
                             <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
                         {:else if activityStatus === Status.Idle}
@@ -160,11 +263,12 @@
             </div>
 
             <div class="section">
-                <SettingSection name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
-                    <Button 
+                <SettingSection hook="section-reveal-phrase" name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
+                    <Button
+                        hook={!showSeed ? "button-reveal-phrase" : "button-hide-phrase"}
                         appearance={!showSeed ? Appearance.Error : Appearance.Alt}
                         text={!showSeed ? $_("settings.profile.reveal_phrase.show") : $_("settings.profile.reveal_phrase.hide")}
-                        on:click={(_) => {
+                        on:click={_ => {
                             toggleSeedPhrase()
                         }}>
                         <Icon icon={showSeed ? Shape.EyeSlash : Shape.Eye} />
@@ -175,17 +279,31 @@
                         <OrderedPhrase number={i + 1} word={word} loading={loading} />
                     {/each}
                     <div class="full-width flex-end">
-                        <Button appearance={Appearance.Alt} text={$_("generic.copy")}>
-                            <Icon icon={Shape.Clipboard}/>
+                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")}>
+                            <Icon icon={Shape.Clipboard} />
                         </Button>
                     </div>
                 {/if}
             </div>
 
-            <div class="section">
-                <Checkbox checked>
-                    <Text muted>{$_("settings.profile.should_store")}</Text>
+            <div class="section" data-cy="section-store-recovery-seed">
+                <Checkbox hook="checkbox-store-recovery-seed" checked>
+                    <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
                 </Checkbox>
+            </div>
+
+            <div class="section">
+                <SettingSection hook="section-log-out" name={$_("settings.profile.log_out.label")} description={$_("settings.profile.log_out.description")}>
+                    <Button
+                        hook="button-log-out"
+                        appearance={Appearance.Alt}
+                        text={$_("settings.profile.log_out.label")}
+                        on:click={_ => {
+                            logOut()
+                        }}>
+                        <Icon icon={Shape.Lock} />
+                    </Button>
+                </SettingSection>
             </div>
         </div>
     </div>
@@ -203,6 +321,7 @@
         padding-right: var(--padding);
 
         .save-controls {
+            z-index: 2;
             position: absolute;
             bottom: var(--padding);
             right: calc(var(--padding) * 2);
@@ -261,8 +380,8 @@
                 pointer-events: none;
                 position: absolute;
                 z-index: 2;
-                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size)* 2 / 2));
-                height: calc(var(--profile-picture-size)* 2);
+                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 2 / 2));
+                height: calc(var(--profile-picture-size) * 2);
                 margin-bottom: calc((var(--profile-picture-size) * 2) * -0.5);
                 :global(.button) {
                     position: absolute;

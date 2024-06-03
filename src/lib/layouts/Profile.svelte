@@ -4,8 +4,9 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import type { User } from "$lib/types"
+    import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
-    
+
     export let user: User | null = null
 
     let friends: User[] = get(Store.state.friends)
@@ -15,17 +16,16 @@
     function isFriended(targetUser: User) {
         return friends.some(friend => friend.id.short === targetUser.id.short)
     }
+
+    let note: string = user ? new Notes().get(user?.name) : ""
 </script>
 
 <div class="profile">
     <div class="profile-header" style="background-image: url('{user?.profile.banner.image}')">
-        <ProfilePicture image={user?.profile.photo.image} size={Size.Large} status={user?.profile.status} />
+        <ProfilePicture image={user?.profile.photo.image} size={Size.Large} status={user?.profile.status} frame={user?.profile.photo.frame} />
     </div>
     {#if user && user.id.short !== currentUserShortId}
-        <Button 
-            outline 
-            appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} 
-            text={isFriended(user) ? "You're friends" : "Add Friend"}>
+        <Button outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? "You're friends" : "Add Friend"}>
             <Icon icon={isFriended(user) ? Shape.CheckMark : Shape.Plus} />
         </Button>
     {/if}
@@ -39,7 +39,13 @@
     </div>
     <div class="section">
         <Label text="Note" />
-        <Input alt placeholder="Set a note . . ."/>
+        <Input
+            alt
+            placeholder="Set a note . . ."
+            value={note}
+            on:input={e => {
+                if (user) new Notes().set(user?.name, e.detail)
+            }} />
     </div>
 </div>
 

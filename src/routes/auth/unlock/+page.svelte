@@ -1,27 +1,87 @@
 <script lang="ts">
     import { Label } from "$lib/elements"
-    import { PinInput } from "$lib/components"
-    import { goto } from '$app/navigation'
-    import { Route } from "$lib/enums"
+    import { Modal, PinInput } from "$lib/components"
+    import { goto } from "$app/navigation"
+    import { Appearance, Route, Shape } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
+    import { Text, Button, Icon } from "$lib/elements"
+    import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
+    import { mock_users } from "$lib/mock/users"
+    import Spacer from "$lib/elements/Spacer.svelte"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { WarpStore } from "$lib/wasm/WarpStore"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { Store } from "$lib/state/store"
+    import { get } from "svelte/store"
+
     initLocale()
 
     let create = false
     let loading = false
     let scramble = true
+
+    let showAccounts = false
+
+    async function auth(pin: string) {
+        loading = true
+        await TesseractStoreInstance.unlock(pin)
+        let tesseract = await TesseractStoreInstance.getTesseract()
+        await WarpStore.initWarpInstances(tesseract)
+        let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
+        if (ownIdentity === undefined) {
+            goto(Route.NewAccount)
+        } else {
+            goto(Route.Pre)
+        }
+    }
+
 </script>
 
 <div id="auth-unlock">
-    {#if loading}
-        <Label text={$_('generic.loading')} />
-    {:else}
-        <Label text={(create) ? $_('pages.auth.unlock.choose_pin') : $_('pages.auth.unlock.enter_pin')} />
+    {#if showAccounts}
+        <Modal hook="modal-select-profile" on:close={_ => (showAccounts = false)} padded>
+            <div class="profiles">
+                <Label hook="label-select-profile" text={$_("generic.profiles")} />
+                <div class="user" data-cy="select-profile-user">
+                    <ProfilePicture hook="select-profile-user-image" image={mock_users[1].profile.photo.image} noIndicator />
+                    <Text hook="select-profile-user-name" class="username">{mock_users[1].name}</Text>
+                </div>
+                <div class="user" data-cy="select-profile-user">
+                    <ProfilePicture hook="select-profile-user-image" image={mock_users[2].profile.photo.image} />
+                    <Text hook="select-profile-user-name" class="username">{mock_users[2].name}</Text>
+                </div>
+                <Spacer />
+                <Button hook="button-create-new-profile" text="Create new profile" appearance={Appearance.Alt}>
+                    <Icon icon={Shape.Plus} />
+                </Button>
+            </div>
+        </Modal>
     {/if}
-    <PinInput min={4} max={8} loading={loading} scramble={scramble} showSettings={false} on:submit={() => {
-        goto(Route.RecoverySeed);
-    }}/>
+
+    {#if loading}
+        <Label text={$_("generic.loading")} />
+    {:else}
+        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} hook="label-choose-enter-pin" />
+    {/if}
+
+    <PinInput
+        min={4}
+        max={8}
+        loading={loading}
+        scramble={scramble}
+        showSettings={false}
+        on:submit={async (e) => {
+            loading = true
+            await auth(e.detail)
+        }} />
+
+    <div class="switch-profile">
+        <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)}>
+            <Icon icon={Shape.Profile} />
+        </Button>
+    </div>
 </div>
 
 <style lang="scss">
@@ -34,5 +94,38 @@
         padding: var(--padding);
         width: 100%;
         height: 100%;
+
+        .switch-profile {
+            position: absolute;
+            right: var(--padding);
+            bottom: var(--padding);
+        }
+
+        .profiles {
+            display: inline-flex;
+            flex-direction: column;
+            gap: var(--gap);
+            width: 100%;
+            min-width: var(--min-component-width);
+            .user {
+                display: inline-flex;
+                gap: var(--gap);
+                width: 100%;
+                justify-content: flex-start;
+                align-items: center;
+                border: var(--border-width) solid transparent;
+                padding: var(--padding-minimal);
+                border-radius: var(--border-radius);
+                cursor: pointer;
+
+                &:hover {
+                    background-color: var(--alt-color);
+                }
+
+                :global(.username) {
+                    flex: 1;
+                }
+            }
+        }
     }
 </style>

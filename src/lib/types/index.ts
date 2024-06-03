@@ -1,60 +1,84 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType } from "$lib/enums"
 
+export type Frame = {
+    image: string
+    name: string
+}
+
+export type ProfileOverlay = {
+    image: string
+    name: string
+}
+
+export type Bundle = {
+    name: string
+    frames: Frame[]
+    profileOverlays: ProfileOverlay[]
+    // themes: []
+    // fonts: []
+}
 
 export type SelectOption = {
-    value: string,
+    value: string
     text: string
 }
 
 export type Reaction = {
-    count: number,
-    emoji: string,
+    count: number
+    emoji: string
     highlight: Appearance
-    description: string,
+    description: string
 }
 
 export type ProfilePictureRequirements = {
-    image: string,
-    status: Status, // TODO: Remove this
-    notifications: number,
-    highlight: Appearance,
+    image: string
+    status: Status // TODO: Remove this
+    notifications: number
+    highlight: Appearance
+    frame: Frame
 }
 
 export type ProfilePicture = {
-    image: string,
+    image: string
+    frame: Frame
+}
+
+export type BannerPicture = {
+    image: string
+    overlay: string
 }
 
 export type ProfileData = {
-    photo: ProfilePicture,
-    banner: ProfilePicture,
-    status: Status,
+    photo: ProfilePicture
+    banner: BannerPicture
+    status: Status
     status_message: string
 }
 
 export let defaultProfileData = {
-    photo: { image: "" },
-    banner: { image: "" },
+    photo: { image: "", frame: { name: "", image: "" } },
+    banner: { image: "", overlay: "" },
     status: Status.Offline,
-    status_message: "Unknown status message."
+    status_message: "Unknown status message.",
 }
 
 export type Id = {
-    short: string,
+    short: string
 }
 
 export type MediaMeta = {
-    is_playing_audio: boolean,
-    is_streaming_video: boolean,
-    is_muted: boolean,
-    is_deafened: boolean,
+    is_playing_audio: boolean
+    is_streaming_video: boolean
+    is_muted: boolean
+    is_deafened: boolean
     is_unknown_status: boolean
 }
 
 export type User = {
-    id: Id;
-    key: string,
-    name: string,
-    profile: ProfileData,
+    id: Id
+    key: string
+    name: string
+    profile: ProfileData
     media: MediaMeta
 }
 
@@ -68,50 +92,55 @@ export let defaultUser: User = {
         is_muted: false,
         is_unknown_status: true,
         is_streaming_video: false,
-        is_playing_audio: false
-    }
+        is_playing_audio: false,
+    },
 }
 
-
-
 export type ChatSettings = {
-    displayOwnerBadge: boolean,
-    readReciepts: boolean,
+    displayOwnerBadge: boolean
+    readReciepts: boolean
     permissions: {
-        allowAnyoneToAddUsers: boolean,
-        allowAnyoneToModifyPhoto: boolean,
+        allowAnyoneToAddUsers: boolean
+        allowAnyoneToModifyPhoto: boolean
         allowAnyoneToModifyName: boolean
     }
 }
 
 export type NavRoute = {
-    name: string,
-    icon: Shape,
-    to: Route | SettingsRoute,
+    name: string
+    icon: Shape
+    to: Route | SettingsRoute
 }
 
 export type Chat = {
-    id: string,
-    name: string,
-    motd: string,
-    kind: ChatType,
-    settings: ChatSettings,
-    creator: User,
-    notifications: number,
-    activity: boolean,
-    users: User[],
-    last_message_at: Date,
-    last_message_preview: string,
+    id: string
+    name: string
+    motd: string
+    kind: ChatType
+    settings: ChatSettings
+    creator: User
+    notifications: number
+    activity: boolean
+    users: User[]
+    last_message_at: Date
+    last_message_preview: string
 }
 
 export function hashChat(chat: Chat): string {
-    const dataString = chat.name + chat.users.map(user => user.name).sort().join('')
+    const dataString =
+        chat.name +
+        chat.users
+            .map(user => user.name)
+            .sort()
+            .join("")
 
-    let hash = 0, i, chr
+    let hash = 0,
+        i,
+        chr
     if (dataString.length === 0) return hash.toString()
     for (i = 0; i < dataString.length; i++) {
-        chr   = dataString.charCodeAt(i);
-        hash  = ((hash << 5) - hash) + chr
+        chr = dataString.charCodeAt(i)
+        hash = (hash << 5) - hash + chr
         hash |= 0
     }
     return hash.toString()
@@ -140,73 +169,73 @@ export let defaultChat = {
 }
 
 export type Call = {
-    startedAt: Date,
-    chat: Chat,
+    startedAt: Date
+    chat: Chat
     inCall: boolean
 }
 
 export type ContextItem = {
-    id: string,
-    icon: Shape,
-    text: string,
-    appearance: Appearance,
-    onClick: () => void,
+    id: string
+    icon: Shape
+    text: string
+    appearance: Appearance
+    onClick: () => void
 }
 
 export type FileInfo = {
-    id: string,
-    type: string,
-    size: number,
-    name: string,
-    source: string,
-    items?: FileInfo[],
-    parentId?: string,
+    id: string
+    type: string
+    size: number
+    name: string
+    source: string
+    items?: FileInfo[]
+    parentId?: string
 }
 
 export type Attachment = {
-    kind: MessageAttachmentKind,
-    name: string,
-    size: number,
-    location: string,
+    kind: MessageAttachmentKind
+    name: string
+    size: number
+    location: string
 }
 
 export type FriendRequest = {
-    at: Date,
-    direction: MessageDirection,
-    to: User,
+    at: Date
+    direction: MessageDirection
+    to: User
     from: User
 }
 
 export type MessageDetails = {
-    at: Date,
-    origin: User,
-    remote: boolean,
+    at: Date
+    origin: User
+    remote: boolean
 }
 
 export type Message = {
-    id: string,
-    details: MessageDetails,
-    inReplyTo: Message | null,
-    reactions: Reaction[],
-    attachments: Attachment[],
+    id: string
+    details: MessageDetails
+    inReplyTo: Message | null
+    reactions: Reaction[]
+    attachments: Attachment[]
     text: string[]
 }
 
 export type MessageGroup = {
-    details: MessageDetails,
-    messages: Message[],    
+    details: MessageDetails
+    messages: Message[]
 }
 
 export type Transaction = {
-    at: Date,
-    to: User,
-    from: User,
-    amount: number,
+    at: Date
+    to: User
+    from: User
+    amount: number
     note: string
 }
 
 export type Keybind = {
-    action: KeybindAction,
-    key: string,
+    action: KeybindAction
+    key: string
     modifiers: string[]
 }

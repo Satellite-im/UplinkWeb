@@ -4,49 +4,38 @@
 
     import { Loader, Text } from "./"
 
-    export let tooltip: string | null       = ""
-    export let disabled: boolean            = false
-    export let rotateOnHover: boolean       = false
-    export let text: string                 = ""
-    export let outline: boolean             = false
-    export let icon: boolean                = false
-    export let appearance: Appearance       = Appearance.Default
-    export let loading: boolean             = false
-    export let small: boolean               = false
-    export let fill: boolean                = false
+    export let tooltip: string | null = ""
+    export let disabled: boolean = false
+    export let rotateOnHover: boolean = false
+    export let text: string = ""
+    export let outline: boolean = false
+    export let icon: boolean = false
+    export let appearance: Appearance = Appearance.Default
+    export let loading: boolean = false
+    export let small: boolean = false
+    export let fill: boolean = false
+    export let hook: string = ""
 
     // Allow parent to override / add classes
     let clazz = ""
-	export { clazz as class }
-
-    const dispatch = createEventDispatcher()
-
-    function onClick(event: MouseEvent) {
-        dispatch('click', event)
-    }
-    
-    function onContext(coords: [number, number]) {
-        dispatch('context', coords)
-    }
+    export { clazz as class }
 </script>
 
 <button
-    class="button {fill ? "fill" : ""} {appearance} {rotateOnHover ? "rotate_on_hover" : "" } {outline ? "outlined" : ""} {icon ? "icon" : ""} {tooltip ? "tooltip" : ""} {small ? "small" : ""} {clazz || ''}"
+    class="button {fill ? 'fill' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip ? 'tooltip' : ''} {small ? 'small' : ''} {clazz || ''}"
+    data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
-    on:click={onClick}
-    on:contextmenu={(e) => {
-        e.preventDefault()
-        onContext([e.clientX, e.clientY])
-    }}>
-        {#if loading}
-            <Loader />
-        {:else}
-            <slot></slot>
-        {/if}
-        {#if text.length > 0}
-            <Text loading={loading} appearance={outline ? appearance : Appearance.Alt}>{text}</Text>
-        {/if}
+    on:click
+    on:contextmenu>
+    {#if loading}
+        <Loader />
+    {:else}
+        <slot></slot>
+    {/if}
+    {#if text.length > 0}
+        <Text loading={loading} appearance={outline ? appearance : Appearance.Alt}>{text}</Text>
+    {/if}
 </button>
 
 <style lang="scss">
@@ -64,16 +53,16 @@
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        transition: background-color var(--animation-speed) var(--animation-style),
-                    color var(--animation-speed) var(--animation-style),
-                    border-color var(--animation-speed) var(--animation-style),
-                    all var(--animation-speed);
+        transition:
+            background-color var(--animation-speed) var(--animation-style),
+            color var(--animation-speed) var(--animation-style),
+            border-color var(--animation-speed) var(--animation-style),
+            all var(--animation-speed);
 
         &.fill {
             flex: 1;
             width: 100%;
             justify-content: flex-start;
-            
         }
 
         &.icon.rotate_on_hover:hover {
@@ -82,11 +71,12 @@
 
         &:disabled {
             opacity: var(--disabled-opacity);
-            pointer-events: none; 
+            pointer-events: none;
         }
 
         // Modifier classes for icon and round buttons
-        &.icon, &.round {
+        &.icon,
+        &.round {
             min-width: unset;
             padding: unset;
             min-width: var(--input-height);
@@ -129,7 +119,6 @@
                 background-color: var(--opaque-color);
                 backdrop-filter: blur(var(--blur-radius));
                 -webkit-backdrop-filter: blur(var(--blur-radius));
-
             }
 
             &.tooltip-right:before {
@@ -164,7 +153,13 @@
         }
 
         // Style variations for button states and themes
-        &.alt, &.success, &.info, &.error, &.warning, &.outlined, &.transparent {
+        &.alt,
+        &.success,
+        &.info,
+        &.error,
+        &.warning,
+        &.outlined,
+        &.transparent {
             @each $type in success, info, error, warning {
                 &.#{$type} {
                     border-color: var(--#{$type}-color);
@@ -175,7 +170,7 @@
                     }
                 }
             }
-            
+
             &.alt {
                 background-color: var(--alt-color);
                 color: var(--color);
@@ -195,7 +190,11 @@
                     color: var(--color-alt);
                 }
 
-                &.alt, &.success, &.info, &.error, &.warning {
+                &.alt,
+                &.success,
+                &.info,
+                &.error,
+                &.warning {
                     @each $type in alt, success, info, error, warning {
                         &.#{$type} {
                             border-color: var(--#{$type}-color);
@@ -238,11 +237,11 @@
         }
 
         // Accessibility support
-        &:focus, &:active {
+        &:focus,
+        &:active {
             box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color) inset;
             outline: none;
             border: var(--border-width) solid var(--focus-color);
         }
     }
 </style>
-  
