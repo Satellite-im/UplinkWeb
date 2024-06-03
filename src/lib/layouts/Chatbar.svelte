@@ -25,7 +25,7 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input alt placeholder={$_("generic.placeholder")} bind:value={message} rounded rich={markdown} on:enter={_ => addMessage(message)} />
+    <Input alt placeholder={$_("generic.placeholder")} auto_focus bind:value={message} rounded rich={markdown} on:enter={_ => addMessage(message)} />
 
     <slot></slot>
 

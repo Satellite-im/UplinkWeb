@@ -43,7 +43,8 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import { Logger } from "$lib/utils/Logger"
+    import type { Message as MessageType } from "$lib/types"
+    import Input from "$lib/elements/Input/Input.svelte"
 
     initLocale()
 
@@ -74,8 +75,12 @@
     let search_filter: string
     let search_component: ChatFilter
     let dragging_files = 0
+    let editing_message: string | undefined = undefined
+    let editing_text: string | undefined = undefined
     let emojis: string[] = ["👍", "👎", "❤️", "🖖", "😂"]
+    let own_user: User
 
+    Store.state.user.subscribe(u => (own_user = u))
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
     let friends: User[] = get(Store.state.friends)
@@ -110,8 +115,74 @@
         get(Store.state.logger).debug(`dropping files ${event.dataTransfer?.files}`)
     }
 
+    function build_context_items(message: MessageType) {
+        return [
+            {
+                id: "pin-message",
+                icon: Shape.Heart,
+                text: "Pin Message",
+                appearance: Appearance.Default,
+                onClick: async () => {
+                    await pin_message(message.id)
+                },
+            },
+            {
+                id: "reply",
+                icon: Shape.ArrowLeft,
+                text: "Reply",
+                appearance: Appearance.Default,
+                onClick: () => {}, // TODO
+            },
+            {
+                id: "react",
+                icon: Shape.Smile,
+                text: "React",
+                appearance: Appearance.Default,
+                onClick: () => {}, // TODO
+            },
+            {
+                id: "copy",
+                icon: Shape.Clipboard,
+                text: "Copy",
+                appearance: Appearance.Default,
+                onClick: () => {
+                    copy(message.text.join("\n"))
+                },
+            },
+            ...(message.details.origin.id === own_user.id
+                ? [
+                      {
+                          id: "edit",
+                          icon: Shape.Pencil,
+                          text: "Edit",
+                          appearance: Appearance.Default,
+                          onClick: () => {
+                              editing_message = message.id
+                              editing_text = message.text.join("\n")
+                          },
+                      },
+                      {
+                          id: "delete",
+                          icon: Shape.Trash,
+                          text: "Delete",
+                          appearance: Appearance.Default,
+                          onClick: async () => {
+                              await delete_message(message.id)
+                          },
+                      },
+                  ]
+                : []),
+        ]
+    }
+
     async function pin_message(message: string) {
         await RaygunStoreInstance.pin(conversation!.id, message, true)
+    }
+
+    async function edit_message(message: string, text: string) {
+        editing_message = undefined
+        editing_text = undefined
+        await RaygunStoreInstance.edit(conversation!.id, message, text.split("\n"))
     }
 
     async function delete_message(message: string) {
@@ -349,57 +420,7 @@
                                     </MessageReplyContainer>
                                 {/if}
                                 {#if message.text.length > 0 || message.attachments.length > 0}
-                                    <ContextMenu
-                                        items={[
-                                            {
-                                                id: "pin-message",
-                                                icon: Shape.Heart,
-                                                text: "Pin Message",
-                                                appearance: Appearance.Default,
-                                                onClick: async () => {
-                                                    await pin_message(message.id)
-                                                },
-                                            },
-                                            {
-                                                id: "reply",
-                                                icon: Shape.ArrowLeft,
-                                                text: "Reply",
-                                                appearance: Appearance.Default,
-                                                onClick: () => {}, // TODO
-                                            },
-                                            {
-                                                id: "react",
-                                                icon: Shape.Smile,
-                                                text: "React",
-                                                appearance: Appearance.Default,
-                                                onClick: () => {}, // TODO
-                                            },
-                                            {
-                                                id: "copy",
-                                                icon: Shape.Clipboard,
-                                                text: "Copy",
-                                                appearance: Appearance.Default,
-                                                onClick: () => {
-                                                    copy(message.text.join("\n"))
-                                                },
-                                            },
-                                            {
-                                                id: "edit",
-                                                icon: Shape.Pencil,
-                                                text: "Edit",
-                                                appearance: Appearance.Default,
-                                                onClick: () => {}, // TODO
-                                            },
-                                            {
-                                                id: "delete",
-                                                icon: Shape.Trash,
-                                                text: "Delete",
-                                                appearance: Appearance.Default,
-                                                onClick: async () => {
-                                                    await delete_message(message.id)
-                                                },
-                                            },
-                                        ]}>
+                                    <ContextMenu items={build_context_items(message)}>
                                         <Message
                                             slot="content"
                                             let:open
@@ -407,30 +428,34 @@
                                             remote={group.details.remote}
                                             position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                             morePadding={message.text.length > 1 || message.attachments.length > 0}>
-                                            {#each message.text as line}
-                                                <Text markdown={line} />
-                                            {/each}
-
-                                            {#if message.attachments.length > 0}
-                                                {#each message.attachments as attachment}
-                                                    {#if attachment.kind === MessageAttachmentKind.Image}
-                                                        <ImageEmbed
-                                                            source={attachment.location}
-                                                            name={attachment.name}
-                                                            filesize={attachment.size}
-                                                            on:click={_ => {
-                                                                previewImage = attachment.location
-                                                            }} />
-                                                    {:else if attachment.kind === MessageAttachmentKind.File}
-                                                        <FileEmbed />
-                                                    {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                        <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                                    {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                                        <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                    {:else if attachment.kind === MessageAttachmentKind.Video}
-                                                        <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                    {/if}
+                                            {#if editing_message === message.id}
+                                                <Input alt bind:value={editing_text} auto_focus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
+                                            {:else}
+                                                {#each message.text as line}
+                                                    <Text markdown={line} />
                                                 {/each}
+
+                                                {#if message.attachments.length > 0}
+                                                    {#each message.attachments as attachment}
+                                                        {#if attachment.kind === MessageAttachmentKind.Image}
+                                                            <ImageEmbed
+                                                                source={attachment.location}
+                                                                name={attachment.name}
+                                                                filesize={attachment.size}
+                                                                on:click={_ => {
+                                                                    previewImage = attachment.location
+                                                                }} />
+                                                        {:else if attachment.kind === MessageAttachmentKind.File}
+                                                            <FileEmbed />
+                                                        {:else if attachment.kind === MessageAttachmentKind.STL}
+                                                            <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
+                                                        {:else if attachment.kind === MessageAttachmentKind.Audio}
+                                                            <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                                        {:else if attachment.kind === MessageAttachmentKind.Video}
+                                                            <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                                        {/if}
+                                                    {/each}
+                                                {/if}
                                             {/if}
                                         </Message>
                                         <svelte:fragment slot="items" let:close>
