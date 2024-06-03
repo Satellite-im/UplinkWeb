@@ -84,7 +84,25 @@ class Conversations {
         }
     }
 
-    async editReaction(chat: Chat, messageId: string, emoji: string) {
+    hasReaction(chat: Chat, messageId: string, emoji: string) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat.id)
+        const user = get(Store.state.user).key
+
+        if (conversation) {
+            for (let group of conversation.messages) {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    const reactions = group.messages[messageIndex].reactions
+                    const reaction = reactions[emoji]
+                    return reaction && reaction.reactors.has(user)
+                }
+            }
+        }
+        return false
+    }
+
+    async editReaction(chat: Chat, messageId: string, emoji: string, add: boolean) {
         const conversations = get(this.conversations)
         const conversation = conversations.find(c => c.id === chat.id)
         const user = get(Store.state.user).key
@@ -95,17 +113,20 @@ class Conversations {
                 if (messageIndex !== -1) {
                     const reactions = group.messages[messageIndex].reactions
                     const reaction = reactions[emoji]
-                    if (reaction !== undefined && reaction.reactors.has(user)) {
-                        let reactors = reaction.reactors
-                        reactors.delete(user)
-                        if (reactors.size === 0) {
-                            delete reactions[emoji]
-                        } else {
-                            reactions[emoji] = {
-                                ...reaction,
-                                reactors,
+                    if (!add) {
+                        if (reaction !== undefined) {
+                            let reactors = reaction.reactors
+                            reactors.delete(user)
+                            if (reactors.size === 0) {
+                                delete reactions[emoji]
+                            } else {
+                                reactions[emoji] = {
+                                    ...reaction,
+                                    reactors,
+                                }
                             }
                         }
+                        console.log("removing ", reactions)
                     } else {
                         if (reaction !== undefined) {
                             reactions[emoji] = {
@@ -113,13 +134,14 @@ class Conversations {
                                 reactors: reaction.reactors.add(user),
                             }
                         } else {
-                            reactions[reaction] = {
-                                reactors: new Set(user),
+                            reactions[emoji] = {
+                                reactors: new Set([user]),
                                 emoji: emoji,
                                 highlight: Appearance.Default, //TODO
                                 description: "", //TODO
                             }
                         }
+                        console.log("adding ", reactions)
                     }
                     group.messages[messageIndex] = {
                         ...group.messages[messageIndex],

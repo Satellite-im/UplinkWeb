@@ -17,7 +17,7 @@
     export let items: ContextItem[] = []
 
     const dispatch = createEventDispatcher()
-    function onClose(event: CustomEvent<MouseEvent>) {
+    function onClose(event: CustomEvent<MouseEvent> | MouseEvent) {
         visible = false
         dispatch("close", event)
         close_context = undefined

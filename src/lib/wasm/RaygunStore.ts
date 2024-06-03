@@ -154,8 +154,8 @@ class RaygunStore {
 
     async react(conversation_id: string, message_id: string, state: wasm.ReactionState, emoji: string) {
         let prom = this.get(r => r.react(conversation_id, message_id, state, emoji), "Error reacting to message")
-        await prom.then(async _ => {
-            ConversationStore.editReaction(get(Store.state.activeChat), message_id, emoji)
+        await prom.then(_ => {
+            ConversationStore.editReaction(get(Store.state.activeChat), message_id, emoji, state == wasm.ReactionState.Add)
         })
     }
 

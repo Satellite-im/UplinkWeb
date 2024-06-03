@@ -3,11 +3,12 @@
 
     export let reactions: Array<Reaction> = []
     export let remote: boolean = false
+    export let onClick: (emoji: string) => void
 </script>
 
 <div class="message-reactions {remote ? 'remote' : 'local'}">
     {#each reactions as reaction}
-        <div class="reaction highlight-{reaction.highlight.toLowerCase()}">
+        <div role="none" class="reaction highlight-{reaction.highlight.toLowerCase()}" on:click={_ => onClick(reaction.emoji)}>
             <div class="reaction-hover">
                 {reaction.emoji} <span class="description">{reaction.description}</span>
             </div>

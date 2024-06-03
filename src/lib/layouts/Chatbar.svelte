@@ -9,14 +9,21 @@
     import { SettingsStore } from "$lib/state"
     import { ConversationStore } from "$lib/state/conversation"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import type { Message } from "$lib/types"
 
     initLocale()
+    export let replyTo: Message | undefined = undefined
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
 
-    function addMessage(text: string) {
-        RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"))
+    function sendMessage(text: string) {
+        if (replyTo) {
+            RaygunStoreInstance.reply(get(Store.state.activeChat).id, replyTo.id, text.split("\n"))
+        } else {
+            RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"))
+        }
         message = ""
+        replyTo = undefined
     }
 </script>
 
@@ -25,11 +32,11 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input alt placeholder={$_("generic.placeholder")} auto_focus bind:value={message} rounded rich={markdown} on:enter={_ => addMessage(message)} />
+    <Input alt placeholder={$_("generic.placeholder")} auto_focus bind:value={message} rounded rich={markdown} on:enter={_ => sendMessage(message)} />
 
     <slot></slot>
 
-    <Button icon tooltip={$_("chat.send")} on:click={_ => addMessage(message)}>
+    <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage(message)}>
         <Icon icon={Shape.ChevronRight} />
     </Button>
 </div>

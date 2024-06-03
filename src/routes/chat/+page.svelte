@@ -79,6 +79,7 @@
     let editing_text: string | undefined = undefined
     let emojis: string[] = ["👍", "👎", "❤️", "🖖", "😂"]
     let own_user: User
+    let replyTo: MessageType | undefined = undefined
 
     Store.state.user.subscribe(u => (own_user = u))
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
@@ -131,14 +132,9 @@
                 icon: Shape.ArrowLeft,
                 text: "Reply",
                 appearance: Appearance.Default,
-                onClick: () => {}, // TODO
-            },
-            {
-                id: "react",
-                icon: Shape.Smile,
-                text: "React",
-                appearance: Appearance.Default,
-                onClick: () => {}, // TODO
+                onClick: () => {
+                    replyTo = message
+                },
             },
             {
                 id: "copy",
@@ -175,10 +171,6 @@
         ]
     }
 
-    async function pin_message(message: string) {
-        await RaygunStoreInstance.pin(conversation!.id, message, true)
-    }
-
     async function edit_message(message: string, text: string) {
         editing_message = undefined
         editing_text = undefined
@@ -187,6 +179,15 @@
 
     async function delete_message(message: string) {
         await RaygunStoreInstance.delete(conversation!.id, message)
+    }
+
+    async function reactTo(message: string, emoji: string, toggle: boolean) {
+        let add = toggle ? !ConversationStore.hasReaction(activeChat, message, emoji) : true
+        await RaygunStoreInstance.react(conversation!.id, message, add ? 0 : 1, emoji)
+    }
+
+    async function pin_message(message: string) {
+        await RaygunStoreInstance.pin(conversation!.id, message, true)
     }
 
     async function copy(txt: string) {
@@ -459,12 +460,12 @@
                                             {/if}
                                         </Message>
                                         <svelte:fragment slot="items" let:close>
-                                            <EmojiGroup emojis={emojis} close={close}></EmojiGroup>
+                                            <EmojiGroup emojis={emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close}></EmojiGroup>
                                         </svelte:fragment>
                                     </ContextMenu>
                                 {/if}
                                 {#if Object.keys(message.reactions).length > 0}
-                                    <MessageReactions remote={group.details.remote} reactions={Object.values(message.reactions)} />
+                                    <MessageReactions remote={group.details.remote} reactions={Object.values(message.reactions)} onClick={emoji => reactTo(message.id, emoji, true)} />
                                 {/if}
                             {/each}
                         </MessageGroup>
@@ -483,7 +484,7 @@
         </Conversation>
 
         {#if activeChat.users.length > 0}
-            <Chatbar>
+            <Chatbar replyTo={replyTo}>
                 <svelte:fragment slot="pre-controls">
                     <ContextMenu
                         items={[
