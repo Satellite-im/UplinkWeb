@@ -146,6 +146,7 @@
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div
             class="profile-header"
+            data-cy="profile-banner"
             style="background-image: url('{user.profile.banner.image}')"
             on:click={_ => {
                 fileinput.click()
