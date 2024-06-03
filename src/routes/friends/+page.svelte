@@ -12,6 +12,11 @@
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
+    import { ULog } from "../../ulog"
+    import { onMount } from "svelte"
+    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
 
     // Initialize locale
     initLocale()
@@ -41,10 +46,28 @@
     }
 
     let sentRequest: boolean
+    let sentRequestError: WarpError | undefined
     let requestString: string
-    let submitRequest = function () {
-        sentRequest = true
+    let submitRequest = async function () {
+        ULog.info("Sending friend request to " + requestString)
+        let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
+        requestSent.fold(
+            (e: WarpError) => {
+                sentRequestError = e
+                sentRequest = true
+            },
+            () => {
+                sentRequest = true
+                sentRequestError = undefined
+            },
+        )
     }
+
+    onMount(async () => {
+        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
+        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
+        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+    })
 
     let searchString: string = ""
 
@@ -103,9 +126,15 @@
                 </Button>
             </svelte:fragment>
             <div class="request-sent">
-                <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
-                <Text size={Size.Large}>Request Dispatched!</Text>
-                <Text muted>Your request is making it's way to {requestString}.</Text>
+                {#if sentRequestError != undefined}
+                    <Icon size={Size.Largest} icon={Shape.XMark} highlight={Appearance.Error} />
+                    <Text size={Size.Large}>Error!</Text>
+                    <Text muted>{sentRequestError} </Text>
+                {:else}
+                    <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
+                    <Text size={Size.Large}>Request Dispatched!</Text>
+                    <Text muted>Your request is making it's way to {requestString}.</Text>
+                {/if}
             </div>
         </Modal>
     {/if}

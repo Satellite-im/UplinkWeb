@@ -30,11 +30,14 @@
         let tesseract = await TesseractStoreInstance.getTesseract()
         await WarpStore.initWarpInstances(tesseract)
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
-        if (ownIdentity === undefined) {
-            goto(Route.NewAccount)
-        } else {
-            goto(Route.Pre)
-        }
+        ownIdentity.fold(
+             (_) => {
+                goto(Route.NewAccount)
+            },
+            (_) => {
+                goto(Route.Pre)
+            }
+        )
     }
 
 </script>
