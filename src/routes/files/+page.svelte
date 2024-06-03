@@ -34,18 +34,18 @@
     let tabRoutes: string[] = ["chats", "files"]
     let activeTabRoute: string = tabRoutes[0]
     $: openFolders = get(Store.state.openFolders)
-    
+
     function toggleFolder(folderId: string | number) {
-    const currentOpenFolders = openFolders
-    const updatedOpenFolders = {
-        ...currentOpenFolders,
-        [folderId]: !currentOpenFolders[folderId]
-    }
+        const currentOpenFolders = openFolders
+        const updatedOpenFolders = {
+            ...currentOpenFolders,
+            [folderId]: !currentOpenFolders[folderId],
+        }
         Store.updateFolderTree(updatedOpenFolders)
     }
-    const unsubscribeopenFolders = Store.state.openFolders.subscribe((f) => {
+    const unsubscribeopenFolders = Store.state.openFolders.subscribe(f => {
         openFolders = f
-        })
+    })
     let dragging_files = 0
     let previewImage: string | null
     let search_filter: string
@@ -62,17 +62,17 @@
     function openFolder(folder: FileInfo) {
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-        const newStack = [...stack, folder.items || []]
-        return newStack
+            const newStack = [...stack, folder.items || []]
+            return newStack
         })
     }
 
     function goBack() {
         folderStackStore.update(stack => {
-        if (stack.length > 1) {
-            stack.pop()
-        }
-        return stack
+            if (stack.length > 1) {
+                stack.pop()
+            }
+            return stack
         })
     }
 
@@ -84,86 +84,84 @@
             name: "",
             source: "",
             items: [],
-            parentId: ""
+            parentId: "",
         }
         folderStackStore.update(folders => {
-        const newFolders = folders.map(folderStack => {
-            if (Array.isArray(folderStack)) {
-                return [...folderStack, createNewFolder]
-            }
-            return folderStack
+            const newFolders = folders.map(folderStack => {
+                if (Array.isArray(folderStack)) {
+                    return [...folderStack, createNewFolder]
+                }
+                return folderStack
+            })
+            return newFolders
         })
-        return newFolders
-    })
     }
 
     let folderClicked: FileInfo = {
-      id: "",
-      type: "",
-      size: 0,
-      name: "",
-      source: "",
-      items: []
+        id: "",
+        type: "",
+        size: 0,
+        name: "",
+        source: "",
+        items: [],
     }
-    
-    onMount(() => {
-    const dropzone = document.querySelector('.files') as HTMLElement
-    if (dropzone) {
-        const sortable = new Sortable(dropzone, {
-            draggable: ".draggable-item",
-            plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-        })
 
-        sortable.on('sortable:stop', (event) => {
-            const items = sortable.getDraggableElementsForContainer(dropzone)
-            const newOrderIds = Array.from(items)
-                .filter(child => child.getAttribute('data-id'))
-                .map(child => child.getAttribute('data-id'))
-            currentFiles = newOrderIds
-                .map(id => {
+    onMount(() => {
+        const dropzone = document.querySelector(".files") as HTMLElement
+        if (dropzone) {
+            const sortable = new Sortable(dropzone, {
+                draggable: ".draggable-item",
+                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
+            })
+
+            sortable.on("sortable:stop", event => {
+                const items = sortable.getDraggableElementsForContainer(dropzone)
+                const newOrderIds = Array.from(items)
+                    .filter(child => child.getAttribute("data-id"))
+                    .map(child => child.getAttribute("data-id"))
+                currentFiles = newOrderIds.map(id => {
                     const file = currentFiles.find(file => file.id === id)
                     return file ? file : null
                 }) as FileInfo[]
-            Store.updateFileOrder(currentFiles)
+                Store.updateFileOrder(currentFiles)
+            })
 
-        })
-
-        let lastClickTime = 0
-        let lastClickTarget: HTMLElement | null = null
-        function updateFilesFromFolder(folder: FileInfo): void {
-            if (folder.items && folder.items.length > 0) {
-                Store.updateFileOrder(folder.items)
-            }
-        }
-        dropzone.addEventListener('mousedown', (event) => {
-            let target = event.target as HTMLElement
-            while (target && !target.classList.contains('draggable-item')) {
-                target = target.parentElement as HTMLElement
-            }
-
-            const currentTime = Date.now()
-            if (lastClickTarget === target && currentTime - lastClickTime < 200) {
-            if (lastClickTarget.classList.contains('folder-draggable')) {
-                const targetId = target.dataset.id
-                const targetFolder = currentFiles.find(item => item.id === targetId)
-                if (targetFolder) {
-                    folderClicked = targetFolder
-                }
-                if (target) {
-                const targetId = target.dataset.id
-                const targetFolder = currentFiles.find(item => item.id === targetId)
-                if (targetFolder) {
-                    updateFilesFromFolder(targetFolder)
-                    openFolder(targetFolder)
+            let lastClickTime = 0
+            let lastClickTarget: HTMLElement | null = null
+            function updateFilesFromFolder(folder: FileInfo): void {
+                if (folder.items && folder.items.length > 0) {
+                    Store.updateFileOrder(folder.items)
                 }
             }
-            }
+            dropzone.addEventListener("mousedown", event => {
+                let target = event.target as HTMLElement
+                while (target && !target.classList.contains("draggable-item")) {
+                    target = target.parentElement as HTMLElement
+                }
+
+                const currentTime = Date.now()
+                if (lastClickTarget === target && currentTime - lastClickTime < 200) {
+                    if (lastClickTarget.classList.contains("folder-draggable")) {
+                        const targetId = target.dataset.id
+                        const targetFolder = currentFiles.find(item => item.id === targetId)
+                        if (targetFolder) {
+                            folderClicked = targetFolder
+                        }
+                        if (target) {
+                            const targetId = target.dataset.id
+                            const targetFolder = currentFiles.find(item => item.id === targetId)
+                            if (targetFolder) {
+                                updateFilesFromFolder(targetFolder)
+                                openFolder(targetFolder)
+                            }
+                        }
+                    }
+                }
+                lastClickTarget = target
+                lastClickTime = currentTime
+            })
         }
-            lastClickTarget = target
-            lastClickTime = currentTime
-        })
-    }
-})
+    })
     onDestroy(() => {
         unsubscribeopenFolders()
     })
@@ -189,12 +187,11 @@
         search_component.select_first()
     }
 
-    UIStore.state.sidebarOpen.subscribe((s) => sidebarOpen = s)
+    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
-    Store.state.activeChat.subscribe((c) => activeChat = c)
-
+    Store.state.activeChat.subscribe(c => (activeChat = c))
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -269,21 +266,17 @@
                             onClick: () => {},
                         },
                     ]}>
-                    <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                    <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
                 </ContextMenu>
             {/each}
         {/if}
         {#if activeTabRoute === "files"}
-        <ul class="folderList">
-            {#each currentFiles as file}
-                <FolderItem
-                    file={file}
-                    openFolders={openFolders}
-                    toggleFolder={toggleFolder}
-                />
-            {/each}
-        </ul>
-    {/if}
+            <ul class="folderList">
+                {#each currentFiles as file}
+                    <FolderItem file={file} openFolders={openFolders} toggleFolder={toggleFolder} />
+                {/each}
+            </ul>
+        {/if}
     </Sidebar>
     <div class="content">
         <Topbar>
@@ -339,17 +332,13 @@
             </svelte:fragment>
         </Topbar>
         <div class="folder-back">
-        <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+            <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             {#each currentFiles as item (item.id)}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <div
-                    class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}"
-                    draggable="true"
-                    data-id={item.id}
-                >
+                <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
                         <ContextMenu
                             items={[
@@ -361,7 +350,7 @@
                                     onClick: () => {},
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.File} info={item} />
+                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
@@ -371,11 +360,10 @@
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {}
-                                }
-                            ]
-                        } >
-                        <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.Folder} info={item} />
+                                    onClick: () => {},
+                                },
+                            ]}>
+                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.Folder} info={item} />
                         </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile
@@ -420,7 +408,7 @@
             width: fit-content;
             margin-left: -40px;
         }
-        
+
         .content {
             display: flex;
             min-height: 0;

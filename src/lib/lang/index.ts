@@ -119,6 +119,9 @@ export function initLocale() {
                         hide: "Hide Phrase",
                     },
                     should_store: "Store recovery seed on account (disable for increased security, irriversable)",
+                    update: "Profile Updated!",
+                    copy_id: "Copy id",
+                    copy_did: "Copy DID",
                 },
                 notifications: {
                     enabled: "Enabled",

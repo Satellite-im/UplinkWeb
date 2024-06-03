@@ -1,7 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { page } from "$app/stores"
-    import { ContextMenu } from "$lib/components"
     import { Route, SettingsRoute, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"

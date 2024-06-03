@@ -5,12 +5,11 @@
     import type { FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher } from "svelte"
+    import type { FormEventHandler } from "svelte/elements"
 
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
     export let name = info.name
-    
-    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 
     function getIcon() {
         switch (kind) {
@@ -23,29 +22,28 @@
         }
     }
     let storeFiles = Store.state.files
-    function updateName(event) {
-        const input = event.target as HTMLInputElement;
+    function updateName(
+        event: Event & {
+            currentTarget: EventTarget & HTMLInputElement
+        }
+    ) {
+        const input = event.target as HTMLInputElement
         name = input.value
         storeFiles.update(items => {
-        const updatedItems = items.map(item => {
-            if (item.id === info.id) {
-            return { ...item, name: name }
-            }
-            return item
+            const updatedItems = items.map(item => {
+                if (item.id === info.id) {
+                    return { ...item, name: name }
+                }
+                return item
+            })
+            return updatedItems
         })
-        return updatedItems
-        })
-    }
-
-    const dispatch = createEventDispatcher()
-    function onContext(coords: [number, number]) {
-        dispatch("context", coords)
     }
 </script>
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="filesitem" on:contextmenu={contextmenu}>
+    <div class="filesitem" on:contextmenu>
         <Icon icon={getIcon()} />
         <Spacer less />
         <input type="text" bind:value={name} on:input={updateName} />
