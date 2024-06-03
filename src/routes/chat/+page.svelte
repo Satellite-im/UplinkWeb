@@ -43,6 +43,7 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { Logger } from "$lib/utils/Logger"
 
     initLocale()
 
@@ -106,7 +107,7 @@
         event.preventDefault()
         dragging_files = 0
         // upload files
-        console.log("dropping files ", event.dataTransfer?.files)
+        get(Store.state.logger).debug(`dropping files ${event.dataTransfer?.files}`)
     }
 
     async function pin_message(message: string) {

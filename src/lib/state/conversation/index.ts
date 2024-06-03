@@ -184,7 +184,6 @@ class Conversations {
     }
 
     async loadMockData() {
-        console.log("conversations", get(this.conversations))
         const firstChatId = get(this.conversations)[0].id
         const initialData: ConversationMessages = {
             id: firstChatId,
@@ -200,7 +199,6 @@ class Conversations {
             return currentConversations
         })
         await setStateToDB("conversations", get(this.conversations))
-        console.log("adding mock data")
     }
 }
 

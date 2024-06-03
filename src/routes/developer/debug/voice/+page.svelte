@@ -3,12 +3,10 @@
     import { Route } from "$lib/enums"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
-
-    import { VoiceRTC } from "$lib/media/Voice"
-
     import { Input, Label, Button } from "$lib/elements"
     import Stream from "$lib/elements/Stream.svelte"
     import { onMount } from "svelte"
+    import SimplePeer from "simple-peer"
 
     let loading: boolean = false
     let channel: string = "SHFDKLSDF"
@@ -16,17 +14,9 @@
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
 
-    let RTC = new VoiceRTC(channel, {
-        audio: true,
-        video: {
-            enabled: false,
-            selfie: false,
-        },
-    })
-
-    console.log(RTC.local)
-
     let localStream: MediaStream
+    let remoteStream: MediaStream
+    let peer: SimplePeer
 
     export let audioInput: string | undefined
     export let videoInput: string | undefined
@@ -42,11 +32,41 @@
             return
         }
         try {
-            const stream = await navigator.mediaDevices.getUserMedia(constraints)
-            localStream = stream
+            localStream = await navigator.mediaDevices.getUserMedia(constraints)
+            initPeer()
         } catch (err) {
             console.error("Accessing the microphone failed:", err)
         }
+    }
+
+    function initPeer(): void {
+        peer = new SimplePeer({
+            initiator: location.hash === "#init",
+            trickle: false,
+            stream: localStream,
+        })
+
+        peer.on("signal", (data: any) => {
+            console.log("SIGNAL", JSON.stringify(data))
+            // Send this data to the remote peer via signaling server
+        })
+
+        peer.on("connect", () => {
+            console.log("CONNECT")
+            peer?.send("whatever" + Math.random())
+        })
+
+        peer.on("data", (data: any) => {
+            console.log("data: " + data)
+        })
+
+        peer.on("stream", (stream: MediaStream) => {
+            remoteStream = stream
+        })
+    }
+
+    function connectToPeer(signalData: any): void {
+        peer?.signal(signalData)
     }
 
     onMount(() => {
@@ -60,7 +80,11 @@
     <div class="content">
         <Label text="Channel" />
         <div class="row">
-            <Input bind:value={channel} on:input={_ => RTC.setChannel(channel)} />
+            <Input
+                bind:value={channel}
+                on:input={_ => {
+                    /* Add logic if needed */
+                }} />
             <Button text="Set Channel"></Button>
         </div>
 
@@ -71,7 +95,7 @@
             </div>
             <div class="remote">
                 <Label text="Remote Stream" />
-                <Stream stream={null} />
+                <Stream stream={remoteStream} />
             </div>
         </div>
     </div>

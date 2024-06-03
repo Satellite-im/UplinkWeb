@@ -4,6 +4,7 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import type { User } from "$lib/types"
+    import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
 
     export let user: User | null = null
@@ -15,6 +16,8 @@
     function isFriended(targetUser: User) {
         return friends.some(friend => friend.id.short === targetUser.id.short)
     }
+
+    let note: string = user ? new Notes().get(user?.name) : ""
 </script>
 
 <div class="profile">
@@ -36,7 +39,13 @@
     </div>
     <div class="section">
         <Label text="Note" />
-        <Input alt placeholder="Set a note . . ." />
+        <Input
+            alt
+            placeholder="Set a note . . ."
+            value={note}
+            on:input={e => {
+                if (user) new Notes().set(user?.name, e.detail)
+            }} />
     </div>
 </div>
 

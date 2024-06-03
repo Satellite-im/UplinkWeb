@@ -188,6 +188,8 @@ export type FileInfo = {
     size: number
     name: string
     source: string
+    items?: FileInfo[]
+    parentId?: string
 }
 
 export type Attachment = {

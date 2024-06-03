@@ -111,9 +111,10 @@
 
 <div id="page">
     {#if unsavedChanges}
-        <div class="save-controls">
+        <div class="save-controls" data-cy="save-controls">
             <Controls>
                 <Button
+                    hook="button-cancel"
                     text={$_("generic.cancel")}
                     appearance={Appearance.Alt}
                     on:click={_ => {
@@ -125,6 +126,7 @@
                     <Icon icon={Shape.XMark} />
                 </Button>
                 <Button
+                    hook="button-save"
                     text={$_("generic.save")}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
@@ -151,7 +153,7 @@
         </div>
 
         <div class="profile-picture-container">
-            <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+            <ProfilePicture hook="profile-picture" image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
             <FileUploadButton
                 icon
                 tooltip={$_("settings.profile.change_profile_photo")}
@@ -164,10 +166,11 @@
 
         <div class="content">
             <div class="section">
-                <Label text={$_("generic.username")} />
+                <Label hook="label-settings-profile-username" text={$_("generic.username")} />
                 <div class="username-section">
                     <div class="username">
                         <Input
+                            hook="input-settings-profile-username"
                             alt
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
@@ -198,7 +201,7 @@
                             },
                         ]}>
                         <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
-                            <Input alt value={user.id.short} disabled copyOnInteract>
+                            <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
                         </div>
@@ -206,8 +209,9 @@
                 </div>
             </div>
             <div class="section">
-                <Label text={$_("user.status_message")} />
+                <Label hook="label-settings-profile-status-message" text={$_("user.status_message")} />
                 <Input
+                    hook="input-settings-profile-status-message"
                     alt
                     bind:value={statusMessage}
                     placeholder={$_("user.set_status_message")}
@@ -222,8 +226,9 @@
                     }} />
             </div>
             <div class="section">
-                <SettingSection name={$_("user.status.label")} description={$_("user.set_status")}>
+                <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
                     <Select
+                        hook="settings-profile-status-select"
                         options={[
                             { text: $_("user.status.online"), value: "online" },
                             { text: $_("user.status.offline"), value: "offline" },
@@ -258,8 +263,9 @@
             </div>
 
             <div class="section">
-                <SettingSection name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
+                <SettingSection hook="section-reveal-phrase" name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
                     <Button
+                        hook={!showSeed ? "button-reveal-phrase" : "button-hide-phrase"}
                         appearance={!showSeed ? Appearance.Error : Appearance.Alt}
                         text={!showSeed ? $_("settings.profile.reveal_phrase.show") : $_("settings.profile.reveal_phrase.hide")}
                         on:click={_ => {
@@ -273,22 +279,23 @@
                         <OrderedPhrase number={i + 1} word={word} loading={loading} />
                     {/each}
                     <div class="full-width flex-end">
-                        <Button appearance={Appearance.Alt} text={$_("generic.copy")}>
+                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")}>
                             <Icon icon={Shape.Clipboard} />
                         </Button>
                     </div>
                 {/if}
             </div>
 
-            <div class="section">
-                <Checkbox checked>
-                    <Text muted>{$_("settings.profile.should_store")}</Text>
+            <div class="section" data-cy="section-store-recovery-seed">
+                <Checkbox hook="checkbox-store-recovery-seed" checked>
+                    <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
                 </Checkbox>
             </div>
 
             <div class="section">
-                <SettingSection name={$_("settings.profile.log_out.label")} description={$_("settings.profile.log_out.description")}>
+                <SettingSection hook="section-log-out" name={$_("settings.profile.log_out.label")} description={$_("settings.profile.log_out.description")}>
                     <Button
+                        hook="button-log-out"
                         appearance={Appearance.Alt}
                         text={$_("settings.profile.log_out.label")}
                         on:click={_ => {
