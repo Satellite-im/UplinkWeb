@@ -35,6 +35,12 @@
                 only_autolink: true,
                 extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
             })
+            // Init editor with initial value
+            editor.value(value)
+            var line = editor.codemirror.state.doc.line(editor.codemirror.state.doc.lines)
+            editor.codemirror.dispatch({
+                selection: { head: line.to, anchor: line.to },
+            })
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
