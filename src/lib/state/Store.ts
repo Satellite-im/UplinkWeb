@@ -33,11 +33,9 @@ class GlobalStore {
             activeRequests: createPersistentState("uplink.requests", []),
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
+            openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
+            logger: createPersistentState("uplink.log", new Logger({ relay_to_js_console: true })),
             toasts: createPersistentState("uplink.toasts", {}),
-            logger: createPersistentState(
-                "uplink.log",
-                new Logger({ relay_to_js_console: true })
-            )
         }
     }
 
@@ -160,7 +158,9 @@ class GlobalStore {
     updateFileOrder(newOrder: FileInfo[]) {
         this.state.files.set(newOrder)
     }
-
+    updateFolderTree(newFolderTree: Record<string, boolean>) {
+        this.state.openFolders.set(newFolderTree)
+    }
     addFriend(user: User) {
         const currentFriends = get(this.state.friends)
         const currentRequests = get(this.state.activeRequests)

@@ -10,6 +10,7 @@ export interface IState {
     friends: Writable<User[]>
     favorites: Writable<Chat[]>
     files: Writable<FileInfo[]>
+    openFolders: Writable<Record<string, boolean>>
     devices: {
         muted: Writable<boolean>
         deafened: Writable<boolean>
@@ -18,6 +19,6 @@ export interface IState {
     }
     activeChat: Writable<Chat>
     activeCall: Writable<Call | null>
-    toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
     logger: Writable<Logger>
+    toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
 }
