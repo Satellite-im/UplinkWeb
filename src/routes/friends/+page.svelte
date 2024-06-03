@@ -14,7 +14,6 @@
     import { UIStore } from "$lib/state/ui"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
-    import { ULog } from "../../ulog"
     import { onMount } from "svelte"
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
     import Key from "$lib/components/settings/Key.svelte"
@@ -53,7 +52,7 @@
     let sentRequestError: WarpError | undefined
     let requestString: string
     let submitRequest = async function () {
-        ULog.info("Sending friend request to " + requestString)
+        get(Store.state.logger).info("Sending friend request to " + requestString)
         let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
         requestSent.fold(
             (e: WarpError) => {

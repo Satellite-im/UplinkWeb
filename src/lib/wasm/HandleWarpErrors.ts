@@ -1,4 +1,5 @@
-import { ULog } from "../../ulog"
+import { Store } from "$lib/state/store";
+import { get } from "svelte/store";
 
 export enum WarpError {
     SELF_REQUEST = 'You cannot send yourself a friend request',
@@ -17,7 +18,7 @@ const errorMessages = {
 };
 
 export function handleErrors(error: any): WarpError{
-    ULog.error('Error: ', error)
+    get(Store.state.logger).error('Error: ' + error)
     if (error instanceof Error) {
         const message = error.message
         switch (true) {

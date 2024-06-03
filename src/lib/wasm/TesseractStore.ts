@@ -1,6 +1,6 @@
+import { Store } from "$lib/state/store"
 import { get, writable, type Writable } from "svelte/store"
 import init, * as wasm from "warp-wasm"
-import { ULog } from "../../ulog"
 
 class TesseractStore {
     private tesseractWritable: Writable<wasm.Tesseract | null> = writable(null)
@@ -11,7 +11,7 @@ class TesseractStore {
 
     async unlock(pin: string) {
         await init()
-        ULog.debug('TesseractStore: Warp WASM initialized')
+        get(Store.state.logger).debug('TesseractStore: Warp WASM initialized')
         const tesseractInstance = new wasm.Tesseract()
         this.tesseractWritable.set(tesseractInstance)
 
@@ -26,9 +26,9 @@ class TesseractStore {
                 tesseractInstance.set_autosave()
             }
             
-            ULog.info('Tesseract: ',  tesseractInstance)
+            get(Store.state.logger).info('Tesseract: ' + tesseractInstance)
         } catch (error) {
-            ULog.error('Error unlocking Tesseract: ', error)
+            get(Store.state.logger).error('Error unlocking Tesseract: ' + error)
         }
     }
 
