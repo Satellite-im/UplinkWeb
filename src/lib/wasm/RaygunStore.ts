@@ -215,9 +215,10 @@ class RaygunStore {
                 return await handler(raygun)
             } catch (error) {
                 console.log(`${err}: ${error}`)
+                return Promise.reject(`${err}: ${error}`)
             }
         }
-        return undefined
+        return Promise.reject("Missing raygun")
     }
 
     /**
@@ -231,9 +232,10 @@ class RaygunStore {
                         return resolve(handler(raygun))
                     } catch (error) {
                         console.log(`${err}: ${error}`)
+                        return Promise.reject(`${err}: ${error}`)
                     }
                 }
-                return undefined
+                return Promise.reject("Missing raygun")
             })
         })
     }
