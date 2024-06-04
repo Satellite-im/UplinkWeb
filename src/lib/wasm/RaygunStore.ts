@@ -48,7 +48,7 @@ class RaygunStore {
             let chat: Chat = {
                 ...defaultChat,
                 id: conv.id(),
-                name: conv.name() ? conv.name()! : conv.recipients()[0],
+                name: conv.name() ? conv.name()! : conv.recipients().slice(0, 3).join(", "),
                 kind: ChatType.Group,
                 creator: get(Store.state.user),
                 users: [get(Store.state.user), ...recipients],
