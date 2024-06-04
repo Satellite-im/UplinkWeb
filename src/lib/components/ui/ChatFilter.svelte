@@ -7,6 +7,7 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     initLocale()
 
@@ -52,13 +53,20 @@
         return chat.users.map(u => u.name).join(", ")
     }
 
-    function select_chat(chat: Chat | undefined, user: User | undefined) {
+    async function select_chat(chat: Chat | undefined, user: User | undefined) {
         filter = ""
         filter_chat()
         if (chat !== undefined) {
             Store.setActiveChat(chat!)
         } else if (user !== undefined) {
-            Store.setActiveDM(user!)
+            let chat = Store.getChatForUser(user.key)
+            if (chat) {
+                Store.setActiveChat(chat)
+            } else {
+                await RaygunStoreInstance.create_conversation(user.key).then(chat => {
+                    Store.setActiveChat(chat)
+                })
+            }
         }
     }
 </script>

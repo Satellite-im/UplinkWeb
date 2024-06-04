@@ -8,22 +8,22 @@
     import { Store } from "$lib/state/store"
     import Controls from "$lib/layouts/Controls.svelte"
     import { createEventDispatcher } from "svelte"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     export let embedded: boolean = false
-    let chat: Chat = defaultChat
+    let name = ""
+    let recipients: User[] = []
 
-    chat.kind = ChatType.Group
+    function update_recipients(recipient: User) {
+        let new_recipient_list = recipients
 
-    let update_recipients = function (recipient: User) {
-        let new_recipient_list = chat.users
-
-        if (chat.users.includes(recipient)) {
+        if (recipients.includes(recipient)) {
             new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1)
         } else {
             new_recipient_list.push(recipient)
         }
 
-        chat.users = new_recipient_list
+        recipients = new_recipient_list
     }
 
     function contains_recipient(list: User[], recipient: User): boolean {
@@ -33,7 +33,8 @@
     let friends: User[] = get(Store.state.friends)
     const dispatch = createEventDispatcher()
     function onCreate() {
-        chat = defaultChat
+        name = ""
+        recipients = []
         dispatch("create")
     }
 </script>
@@ -41,10 +42,10 @@
 <div class="new-chat" data-cy="modal-create-group-chat">
     <div class="select-user">
         <Label hook="label-create-group-name" text="Group Name:" />
-        <Input hook="input-create-group-name" alt bind:value={chat.name} />
+        <Input hook="input-create-group-name" alt bind:value={name} />
         <Label hook="label-create-group-members" text="Group Members:" />
         <div class="user-list">
-            {#each chat.users as recipient}
+            {#each recipients as recipient}
                 <div class="mini-user">
                     <ProfilePicture size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
@@ -75,7 +76,7 @@
                             {recipient.key}
                         </Text>
                     </div>
-                    <Checkbox checked={contains_recipient(chat.users, recipient)} />
+                    <Checkbox checked={contains_recipient(recipients, recipient)} />
                 </button>
             {/each}
         </div>
@@ -84,8 +85,9 @@
                 hook="button-create-group"
                 text="Create Group"
                 on:click={_ => {
-                    chat.id = hashChat(chat)
-                    Store.setActiveChat(chat)
+                    RaygunStoreInstance.create_group_conversation(name, recipients).then(chat => {
+                        Store.setActiveChat(chat)
+                    })
                     onCreate()
                 }}>
                 <Icon icon={Shape.ChatPlus} />
