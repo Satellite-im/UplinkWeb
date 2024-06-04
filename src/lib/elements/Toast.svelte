@@ -7,7 +7,7 @@
     export let toast: ToastMessage
 </script>
 
-<div class="toast" role="none" on:mouseleave on:mouseenter>
+<div class="toast" data-cy="toast-notification" role="none" on:mouseleave on:mouseenter>
     {#if toast.icon}
         <div class="toast-icon">
             <Icon icon={toast.icon} />
@@ -15,11 +15,11 @@
     {/if}
     <div class="toast-content">
         <Label text={toast.title}></Label>
-        <p>
+        <p data-cy="toast-notification-text">
             {toast.content}
         </p>
     </div>
-    <Button small icon appearance={Appearance.Alt} on:click>
+    <Button hook="toast-notification-button" small icon appearance={Appearance.Alt} on:click>
         <Icon icon={Shape.XMark} />
     </Button>
 </div>
