@@ -32,7 +32,7 @@ class Failure<E, T> implements Result<E, T> {
         return onFailure(this.failure)
     }
 
-    map<R>(callback: (value: T) => R): Result<E, R> {
+    map<R>(_: (value: T) => R): Result<E, R> {
         return failure(this.failure)
     }
 
