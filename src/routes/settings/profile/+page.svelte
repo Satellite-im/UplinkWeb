@@ -229,7 +229,7 @@
             <div class="section">
                 <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
                     <Select
-                        hook="settings-profile-status-select"
+                        hook="selector-current-status-{user.profile.status}"
                         options={[
                             { text: $_("user.status.online"), value: "online" },
                             { text: $_("user.status.offline"), value: "offline" },
