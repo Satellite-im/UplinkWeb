@@ -2,6 +2,9 @@ import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { defaultProfileData, type User } from "$lib/types"
+import { ULog } from "../../ulog"
+import { WarpError, handleErrors } from "./HandleWarpErrors"
+import { failure, success, type Result } from "$lib/utils/Result"
 
 class MultipassStore {
     private multipassWritable: Writable<wasm.MultiPassBox | null>
@@ -12,31 +15,95 @@ class MultipassStore {
     }
 
     async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
+        ULog.debug("Started creating identity")
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
                 await multipass.create_identity(username, passphrase)
                 await this.updateStatusMessage(statusMessage)
+                const identity = get(this.identity)
+                ULog.info(`New account created. \n
+                Username: ${identity?.username()} \n 
+                StatusMessage: ${identity?.status_message()} \n
+                Did Key: ${identity?.did_key()} \n`)
             } catch (error) {
-                console.error("Error creating identity: ", error)
+                ULog.error("Error creating identity: ", error)
             }
         }
     }
 
-    async getOwnIdentity(): Promise<wasm.Identity | undefined> {
+    async sendFriendRequest(did: string): Promise<Result<WarpError, void>> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                ULog.debug("Sending friend request to: ", did)
+                return success(await multipass.send_request(did))
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        } else {
+            return failure(WarpError.MULTIPASS_NOT_FOUND)
+        }
+    }
+
+    async acceptFriendRequest(did: string): Promise<void> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                await multipass.accept_request(did)
+                ULog.info("Friend request accepted: ", did)
+            } catch (error) {
+                ULog.error("Error accepting friend request: ", error)
+            }
+        }
+    }
+
+    async listIncomingFriendRequests(): Promise<any> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let friends = await multipass.list_incoming_request()
+                ULog.info(`Listed incoming friend requests: ${friends}`)
+                return friends
+            } catch (error) {
+                ULog.error("Error list incoming friend requests: ", error)
+                return []
+            }
+        }
+    }
+
+    async listOutgoingFriendRequests(): Promise<any> {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let friends = await multipass.list_outgoing_request()
+                ULog.info(`Listed outgoing friend requests: ${friends}`)
+                return friends
+            } catch (error) {
+                ULog.error("Error list outgoing friend requests: ", error)
+                return []
+            }
+        }
+    }
+
+    async getOwnIdentity(): Promise<Result<WarpError, wasm.Identity>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
                 const identity = await multipass.get_own_identity()
-                return identity
+                return success(identity)
             } catch (error) {
-                console.error("Error getting own identity: ", error)
-                return undefined
+                ULog.error("Error getting own identity: ", error)
+                return failure(handleErrors(error))
             }
         }
-        return undefined
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
     async updateUsername(new_username: string) {
@@ -117,8 +184,11 @@ class MultipassStore {
             try {
                 const updated_identity = await multipass.get_own_identity()
                 this.identity.update(() => updated_identity)
+                ULog.info(`Identity updated\n 
+                  Username: ${updated_identity.username()} \n
+                  StatusMessage: ${updated_identity.status_message()} \n`)
             } catch (error) {
-                console.error("Error updating identity: ", error)
+                ULog.error("Error updating identity: ", error)
             }
         }
     }

@@ -12,6 +12,11 @@
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
+    import { ULog } from "../../ulog"
+    import { onMount } from "svelte"
+    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
 
     // Initialize locale
     initLocale()
@@ -41,10 +46,28 @@
     }
 
     let sentRequest: boolean
+    let sentRequestError: WarpError | undefined
     let requestString: string
-    let submitRequest = function () {
-        sentRequest = true
+    let submitRequest = async function () {
+        ULog.info("Sending friend request to " + requestString)
+        let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
+        requestSent.fold(
+            (e: WarpError) => {
+                sentRequestError = e
+                sentRequest = true
+            },
+            () => {
+                sentRequest = true
+                sentRequestError = undefined
+            }
+        )
     }
+
+    onMount(async () => {
+        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
+        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
+        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+    })
 
     let searchString: string = ""
 
@@ -103,9 +126,15 @@
                 </Button>
             </svelte:fragment>
             <div class="request-sent">
-                <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
-                <Text size={Size.Large}>Request Dispatched!</Text>
-                <Text muted>Your request is making it's way to {requestString}.</Text>
+                {#if sentRequestError != undefined}
+                    <Icon size={Size.Largest} icon={Shape.XMark} highlight={Appearance.Error} />
+                    <Text size={Size.Large}>Error!</Text>
+                    <Text muted>{sentRequestError}</Text>
+                {:else}
+                    <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
+                    <Text size={Size.Large}>Request Dispatched!</Text>
+                    <Text muted>Your request is making it's way to {requestString}.</Text>
+                {/if}
             </div>
         </Modal>
     {/if}
@@ -166,10 +195,11 @@
                     <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} bind:value={requestString}>
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Button appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
+                    <Button hook="button-add-friend" appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
                         <Icon icon={Shape.Plus} />
                     </Button>
                     <ContextMenu
+                        hook="context-menu-copy-id"
                         items={[
                             {
                                 id: "copy-id",
@@ -186,7 +216,7 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <Button slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
                             <Icon icon={Shape.Clipboard} />
                         </Button>
                     </ContextMenu>

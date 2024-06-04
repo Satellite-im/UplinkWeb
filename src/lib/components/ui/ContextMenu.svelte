@@ -15,6 +15,7 @@
     let coords: [number, number] = [0, 0]
     let context: HTMLElement
     export let items: ContextItem[] = []
+    export let hook: string = ""
 
     const dispatch = createEventDispatcher()
     function onClose(event: CustomEvent<MouseEvent> | MouseEvent) {
@@ -56,10 +57,11 @@
 <slot name="content" open={openContext} />
 {#if visible}
     <!-- Slot containing the actual elements -->
-    <div id="context-menu" bind:this={context} use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
+    <div id="context-menu" data-cy={hook} bind:this={context} use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
         <slot name="items" close={onClose}></slot>
         {#each items as item}
             <Button
+                hook={item.text.toLowerCase().replace(/\s+/g, "-")}
                 class="item"
                 appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance}
                 text={item.text}
