@@ -63,7 +63,8 @@
             if (chat) {
                 Store.setActiveChat(chat)
             } else {
-                await RaygunStoreInstance.create_conversation(user.key).then(chat => {
+                let result = await RaygunStoreInstance.create_conversation(user)
+                result.onSuccess(chat => {
                     Store.setActiveChat(chat)
                 })
             }

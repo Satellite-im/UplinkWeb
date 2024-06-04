@@ -244,7 +244,8 @@
                                                 if (chat) {
                                                     Store.setActiveChat(chat)
                                                 } else {
-                                                    await RaygunStoreInstance.create_conversation(result.item.key).then(chat => {
+                                                    let conversation = await RaygunStoreInstance.create_conversation(result.item)
+                                                    conversation.onSuccess(chat => {
                                                         Store.setActiveChat(chat)
                                                     })
                                                 }
@@ -292,7 +293,8 @@
                                                 if (chat) {
                                                     Store.setActiveChat(chat)
                                                 } else {
-                                                    await RaygunStoreInstance.create_conversation(friend.key).then(chat => {
+                                                    let conversation = await RaygunStoreInstance.create_conversation(friend)
+                                                    conversation.onSuccess(chat => {
                                                         Store.setActiveChat(chat)
                                                     })
                                                 }
