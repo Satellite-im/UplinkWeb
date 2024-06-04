@@ -6,6 +6,7 @@ export enum WarpError {
     IDENTITY_NOT_CREATED = 'Identity has not been created',
     GENERAL_ERROR = 'An unknown error occurred',
     MULTIPASS_NOT_FOUND = 'Multipass instance not found',
+    CONSTELLATION_NOT_FOUND = 'Constellation instance not found'
 }
 
 const errorMessages = {
