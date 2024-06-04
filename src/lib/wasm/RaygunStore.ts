@@ -59,26 +59,32 @@ class RaygunStore {
         })
     }
 
+    // TODO wireup
     async get_conversation(conversation_id: string) {
         return this.get(r => r.get_conversation(conversation_id), `Error fetching conversation with id ${conversation_id}`)
     }
 
+    // TODO wireup
     async list_conversations() {
         return this.get(r => r.list_conversations(), `Error fetching conversations`)
     }
 
+    // TODO wireup
     async get_message(conversation_id: string, message_id: string) {
         return this.get(r => r.get_message(conversation_id, message_id), `Error fetching message for conversation ${conversation_id}`)
     }
 
+    // TODO wireup
     async get_message_count(conversation_id: string) {
         return this.get(r => r.get_message_count(conversation_id), `Error fetching message count for conversation ${conversation_id}`)
     }
 
+    // TODO wireup
     async message_status(conversation_id: string, message_id: string) {
         return this.get(r => r.message_status(conversation_id, message_id), `Error fetching message status for conversation ${conversation_id}`)
     }
 
+    // TODO wireup
     async get_messages(conversation_id: string, options: MessageOptions) {
         return this.get(r => r.get_messages(conversation_id, options), `Error fetching messages for conversation ${conversation_id}`)
     }
@@ -98,9 +104,43 @@ class RaygunStore {
             pinned: false,
         }
         let result = await this.get(r => r.send(conversation_id, message), "Error sending message")
-        return result.map(_ => {
+        result.onSuccess(_ => {
             ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
         })
+        return result
+    }
+
+    async sendMultiple(conversation_ids: string[], message: string[]) {
+        let newMessage = {
+            id: "",
+            details: {
+                at: new Date(),
+                origin: get(Store.state.user),
+                remote: false,
+            },
+            text: message,
+            inReplyTo: null,
+            reactions: {},
+            attachments: [],
+            pinned: false,
+        }
+        let result = await this.get(async r => {
+            let sent: [string, string][] = []
+            for (let conversation_id of conversation_ids) {
+                sent.push([conversation_id, await r.send(conversation_id, message)])
+            }
+            return sent
+        }, "Error sending message")
+        result.onSuccess(r => {
+            let chats = get(UIStore.state.chats)
+            for (let conversation_id of r) {
+                let chat = chats.find(c => c.id === conversation_id[0])
+                if (chat) {
+                    ConversationStore.addMessage(chat, newMessage)
+                }
+            }
+        })
+        return result
     }
 
     async edit(conversation_id: string, message_id: string, message: string[]) {
@@ -161,7 +201,7 @@ class RaygunStore {
 
     async update_conversation_settings(conversation_id: string, direct: boolean) {
         let result = await this.get(r => r.update_conversation_settings(conversation_id, direct ? 1 : 0), "Error deleting message")
-        return result.map(msg => {
+        return result.map(_ => {
             // TODO: sync with Store
         })
         return result
@@ -173,7 +213,7 @@ class RaygunStore {
 
     async send_event(conversation_id: string, event: wasm.MessageEvent) {
         let result = await this.get(r => r.send_event(conversation_id, event), `Error sending event ${event}`)
-        return result.map(msg => {
+        return result.map(_ => {
             // TODO: sync with Store
         })
     }
@@ -181,7 +221,7 @@ class RaygunStore {
     /**
      * Convenient helper method to get data from raygun
      */
-    private async get<T>(handler: (raygun: wasm.RayGunBox) => Promise<T>, err: string): Promise<Result<WarpError, T>> {
+    private async get<T>(handler: (raygun: wasm.RayGunBox) => Promise<T> | T, err: string): Promise<Result<WarpError, T>> {
         let raygun = get(this.raygunWritable)
         if (raygun) {
             try {
@@ -213,6 +253,9 @@ class RaygunStore {
     //     return res
     // }
 
+    /**
+     * Converts warp message to ui message
+     */
     private convert_message(conversation_id: string, message: wasm.Message | undefined) {
         if (!message) return null
         return {
