@@ -178,6 +178,19 @@ class GlobalStore {
         this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
     }
 
+    setFriends(friends: Array<any>) {
+        let friendsList: Array<User> = []
+        friends.forEach(friend => {
+            friendsList.push({
+                ...defaultUser,
+                name: friend,
+                key: friend,
+            })
+        })
+
+        this.state.friends.set(friendsList)
+    }
+
     setFriendRequests(incomingFriendRequests: Array<any>, outgoingFriendRequests: Array<any>) {
         let user = get(this.state.user)
 
@@ -186,7 +199,7 @@ class GlobalStore {
                 let friendUser: User = {
                     ...defaultUser,
                     name: friendDid,
-                    id: friendDid,
+                    key: friendDid,
                 }
                 return {
                     at: new Date(),
@@ -203,6 +216,18 @@ class GlobalStore {
         let allFriendRequests = new Set([...incomingRequests, ...outgoingRequests])
 
         this.state.activeRequests.set(Array.from(allFriendRequests.values()))
+    }
+
+    setBlockedUsers(blockedUsers: Array<any>) {
+        let blockedUsersList: Array<User> = []
+        blockedUsers.forEach(blockedUser => {
+            blockedUsersList.push({
+                ...defaultUser,
+                name: blockedUser,
+                key: blockedUser,
+            })
+        })
+        this.state.blocked.set(blockedUsersList)
     }
 
     cancelRequest(user: User) {

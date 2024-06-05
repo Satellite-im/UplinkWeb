@@ -9,7 +9,6 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
-    import { ULog } from "../../../ulog"
 
     let username = ""
     let statusMessage = ""
@@ -22,7 +21,7 @@
         let identity = await MultipassStoreInstance.getOwnIdentity()
         identity.fold(
             e => {
-                ULog.error("Error creating identity: " + e)
+                get(Store.state.logger).error("Error creating identity: " + e)
             },
             async identity => {
                 Store.setUserFromIdentity(identity!)
