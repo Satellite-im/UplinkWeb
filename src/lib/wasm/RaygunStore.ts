@@ -65,7 +65,7 @@ class RaygunStore {
     }
 
     // TODO wireup
-    async list_conversations() {
+    async list_conversations(): Promise<Result<WarpError, wasm.Conversation[]>> {
         return this.get(r => r.list_conversations(), `Error fetching conversations`)
     }
 
@@ -150,6 +150,9 @@ class RaygunStore {
         })
     }
 
+    /**
+     * Deletes a message for the given chat. If no message id provided will delete the chat
+     */
     async delete(conversation_id: string, message_id?: string) {
         let result = await this.get(r => r.delete(conversation_id, message_id), "Error deleting message")
         return result.map(_ => {
@@ -158,6 +161,24 @@ class RaygunStore {
                 let conversations = get(ConversationStore.conversations)
                 ConversationStore.conversations.set(conversations.filter(c => c.id !== conversation_id))
             }
+        })
+    }
+
+    /**
+     * Deletes direct messages with the given recipient
+     */
+    async deleteAllConversationsFor(recipient: string) {
+        let convs_res = await this.list_conversations()
+        convs_res.onSuccess(async convs => {
+            convs
+                .filter(c => c.settings() === "Direct" && recipient in c.recipients()) // TODO verify settings check corresponding truly to direct message
+                .forEach(async conv => {
+                    let result = await this.get(r => r.delete(conv.id(), undefined), "Error deleting message")
+                    result.onSuccess(_ => {
+                        let conversations = get(ConversationStore.conversations)
+                        ConversationStore.conversations.set(conversations.filter(c => c.id !== conv.id()))
+                    })
+                })
         })
     }
 

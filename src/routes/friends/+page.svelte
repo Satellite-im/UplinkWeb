@@ -292,13 +292,14 @@
                                                 let chat = Store.getChatForUser(friend.key)
                                                 if (chat) {
                                                     Store.setActiveChat(chat)
+                                                    goto(Route.Chat)
                                                 } else {
                                                     let conversation = await RaygunStoreInstance.create_conversation(friend)
                                                     conversation.onSuccess(chat => {
                                                         Store.setActiveChat(chat)
+                                                        goto(Route.Chat)
                                                     })
                                                 }
-                                                goto(Route.Chat)
                                             }}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>

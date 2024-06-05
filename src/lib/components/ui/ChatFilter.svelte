@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ChatType, Size } from "$lib/enums"
+    import { ChatType, Route, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
@@ -8,6 +8,7 @@
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { goto } from "$app/navigation"
 
     initLocale()
 
@@ -62,10 +63,12 @@
             let chat = Store.getChatForUser(user.key)
             if (chat) {
                 Store.setActiveChat(chat)
+                goto(Route.Chat)
             } else {
                 let result = await RaygunStoreInstance.create_conversation(user)
                 result.onSuccess(chat => {
                     Store.setActiveChat(chat)
+                    goto(Route.Chat)
                 })
             }
         }
