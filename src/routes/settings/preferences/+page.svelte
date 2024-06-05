@@ -56,43 +56,44 @@
 </script>
 
 <div id="page">
-    <SettingSection name={$_("settings.preferences.appLanguage")} description={$_("settings.preferences.appLanguageDescription")}>
-        <Select alt options={[{ text: "English (USA)", value: "english" }]} />
+    <SettingSection hook="section-app-language" name={$_("settings.preferences.appLanguage")} description={$_("settings.preferences.appLanguageDescription")}>
+        <Select hook="selector-app-language" alt options={[{ text: "English (USA)", value: "english" }]} />
     </SettingSection>
-    <SettingSection name={$_("settings.preferences.font")} description={$_("settings.preferences.fontDescription")}>
+    <SettingSection hook="section-font" name={$_("settings.preferences.font")} description={$_("settings.preferences.fontDescription")}>
         <Select
+            hook="selector-current-font-{font.toLowerCase()}"
             selected={font}
             options={availableFonts}
             alt
             on:change={v => {
                 UIStore.setFont(v.detail)
             }} />
-        <Button icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+        <Button hook="button-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>
-    <SettingSection name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
-        <Button icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
+    <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
+        <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
-            <Input alt value={fontSize.toFixed(2).toString()} centered />
+            <Input hook="input-font-scaling" alt value={fontSize.toFixed(2).toString()} centered />
         </div>
-        <Button icon appearance={Appearance.Alt} on:click={_ => UIStore.increaseFontSize()}>
+        <Button hook="button-font-scaling-increase" icon appearance={Appearance.Alt} on:click={_ => UIStore.increaseFontSize()}>
             <Icon icon={Shape.Plus} />
         </Button>
     </SettingSection>
-    <SettingSection name={$_("settings.preferences.theme")} description={$_("settings.preferences.themeDescription")}>
-        <Button icon appearance={Appearance.Alt}>
+    <SettingSection hook="section-theme" name={$_("settings.preferences.theme")} description={$_("settings.preferences.themeDescription")}>
+        <Button hook="button-theme-moon" icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Moon} />
         </Button>
-        <Select alt options={[{ text: "Default", value: "default" }]} />
-        <Button icon appearance={Appearance.Alt}>
+        <Select hook="selector-theme" alt options={[{ text: "Default", value: "default" }]} />
+        <Button hook="button-theme-open-folder" icon appearance={Appearance.Alt}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>
-    <SettingSection name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")}>
-        <PopupButton name={$_("settings.preferences.pick")}>
+    <SettingSection hook="section-primary-colour" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")}>
+        <PopupButton hook="primary-colour-popup-button" name={$_("settings.preferences.pick")}>
             <ColorPicker textInputModes={["hex"]} isDialog={false} isAlpha={false} bind:hex={hex} />
             <div slot="icon" class="control">
                 <Icon icon={Shape.Eyedropper} />
@@ -110,8 +111,9 @@
         <ColorSwatch name="Apple Valley" color="#0a8560" />
         <ColorSwatch name="Pencil Lead" color="#3c424d" />
     </SettingSection>
-    <SettingSection name={$_("settings.preferences.customCss")} description={$_("settings.preferences.customCssDescription")} fullWidth>
+    <SettingSection hook="section-custom-css" name={$_("settings.preferences.customCss")} description={$_("settings.preferences.customCssDescription")} fullWidth>
         <textarea
+            data-cy="text-area-custom-css"
             bind:value={cssOverride}
             on:change={_ => {
                 UIStore.setCssOverride(cssOverride)
