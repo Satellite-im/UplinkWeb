@@ -57,6 +57,7 @@
     const folderStackStore = writable<FileInfo[][]>([allFiles])
     folderStackStore.subscribe(folderStack => {
         currentFiles = folderStack[folderStack.length - 1]
+        console.log("currentFiles", currentFiles)
     })
 
     function openFolder(folder: FileInfo) {
@@ -76,6 +77,44 @@
         })
     }
 
+    function renameFolder(folder: FileInfo) {
+        if (folder.name === "") {
+            folderStackStore.update(folders => {
+                const newFolders = folders.map(folderStack => {
+                    if (Array.isArray(folderStack)) {
+                        return folderStack.filter(file => file.id !== folder.id)
+                    }
+                    return folderStack
+                })
+                return newFolders
+            })
+            return
+        }
+        folderStackStore.update(folders => {
+            const newFolders = folders.map(folderStack => {
+                if (Array.isArray(folderStack)) {
+                    return folderStack.map(file => {
+                        if (file.id === folder.id) {
+                            console.log("rename folder", folder)
+                            Store.state.files.update(files => {
+                                const exists = files.some(file => file.id === folder.id);
+                                if (!exists) {
+                                    return [...files, folder];
+                                }
+                                return files;
+                            });
+                            return folder
+                        }
+                        return file
+                    })
+                }
+                return folderStack
+            })
+            console.log("newFolders: ", newFolders)
+            return newFolders
+        })
+    }
+
     function newFolder() {
         let createNewFolder: FileInfo = {
             id: uuidv4(),
@@ -83,6 +122,7 @@
             size: 0,
             name: "",
             source: "",
+            isRename: true,
             items: [],
             parentId: "",
         }
@@ -103,6 +143,7 @@
         size: 0,
         name: "",
         source: "",
+        isRename: false,
         items: [],
     }
 
@@ -362,8 +403,30 @@
                                     appearance: Appearance.Default,
                                     onClick: () => {},
                                 },
+                                {
+                                    id: "rename",
+                                    icon: Shape.Pencil,
+                                    text: "Rename",
+                                    appearance: Appearance.Default,
+                                    onClick: () => {
+                                        console.log("rename")
+                                        item.isRename = true
+                                    },
+                                },
                             ]}>
-                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.Folder} info={item} />
+                            <FileFolder slot="content" 
+                                let:open 
+                                on:contextmenu={open} 
+                                kind={FilesItemKind.Folder} 
+                                info={item}
+                                on:rename={e => {
+                                    const newName = e.detail
+                                    item.name = newName
+                                    item.isRename = false
+                                    renameFolder(item)
+                                }}
+                                isEditing={item.isRename}
+                            />
                         </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile

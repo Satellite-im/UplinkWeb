@@ -188,6 +188,7 @@ export type FileInfo = {
     size: number
     name: string
     source: string
+    isRename: boolean
     items?: FileInfo[]
     parentId?: string
 }
