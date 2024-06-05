@@ -10,16 +10,18 @@
     export let noButton: boolean = false
     export let unequip: boolean = false
     export let empty: boolean = false
+    export let hook: string = ""
 
     const dispatch = createEventDispatcher()
 </script>
 
-<div class="inventory-item {equipped ? 'equipped' : ''}">
+<div data-cy={hook} class="inventory-item {equipped ? 'equipped' : ''}">
     <img src={preview} alt="" />
-    <Text>{name}</Text>
-    <Text muted>{kind}</Text>
+    <Text hook="inventory-item-name">{name}</Text>
+    <Text hook="inventory-item-type" muted>{kind}</Text>
     {#if !noButton}
         <Button
+            hook="inventory-item-button"
             text={equipped ? "Equipped" : "Equip"}
             fill
             on:click={() => {
@@ -35,6 +37,7 @@
     {/if}
     {#if unequip}
         <Button
+            hook="button-unequip-inventory"
             text={empty ? "No Frame" : "Unequip"}
             fill
             on:click={() => {
