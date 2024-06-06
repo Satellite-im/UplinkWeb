@@ -8,6 +8,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
+    data-cy="color-swatch"
     class="color-swatch tooltip"
     data-tooltip={name}
     on:click={() => {

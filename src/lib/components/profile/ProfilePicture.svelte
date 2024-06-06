@@ -25,9 +25,9 @@
         <Loader />
     {:else}
         {#if frame && frame.name}
-            <img class="profile-image-frame" src={frame.image} alt="" />
+            <img data-cy="profile-image-frame" class="profile-image-frame" src={frame.image} alt="" />
         {/if}
-        <img class="profile-image" src={image} alt="" />
+        <img data-cy="profile-image" class="profile-image" src={image} alt="" />
     {/if}
     {#if typing}
         <div class="typing-indicator"></div>
