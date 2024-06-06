@@ -15,7 +15,7 @@
     import { onDestroy, onMount } from "svelte"
     import { Sortable } from "@shopify/draggable"
     import type { Chat, ContextItem, FileInfo } from "$lib/types"
-    import { get, writable } from "svelte/store"
+    import { get, writable, type Writable } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
@@ -79,7 +79,7 @@
         })
     }
 
-    async function renameFolder(folder: FileInfo) {
+    async function createNewDirectory(folder: FileInfo) {
         if (folder.name === "") {
             removeFolderFromStak(folder)
             return
@@ -92,7 +92,7 @@
                 // TODO: Add UI feedback
                 console.error("Error creating directory", err)
             },
-            dir => {
+            _ => {
                 folderStackStore.update(folders => {
                     const newFolders = folders.map(folderStack => {
                         if (Array.isArray(folderStack)) {
@@ -414,7 +414,7 @@
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            {#each currentFiles as item (item.id)}
+            {#each currentFiles as item, index (item.id)}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
@@ -453,7 +453,6 @@
                                     text: "Rename",
                                     appearance: Appearance.Default,
                                     onClick: async () => {
-                                        console.log("rename")
                                         item.isRename = true
                                     },
                                 },
@@ -472,7 +471,7 @@
                                     const newName = e.detail
                                     item.name = newName
                                     item.isRename = false
-                                    await renameFolder(item)
+                                    await createNewDirectory(item)
                                 }}
                                 isEditing={item.isRename}
                             />
