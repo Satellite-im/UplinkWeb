@@ -13,6 +13,7 @@
    export let isEditing = false
     let inputRef: HTMLInputElement
     const dispatch = createEventDispatcher()
+    let isEnterKeyPressed: boolean = false
 
     function getIcon() {
         switch (kind) {
@@ -66,12 +67,19 @@
                 type="text" 
                 bind:value={name} 
                 on:input={updateName} 
-                on:blur={onRename} 
+                on:blur={() => {
+                    if (!isEnterKeyPressed)
+                        {onRename()}
+                    isEnterKeyPressed = false
+                }} 
                 on:keydown={(e) => {
                     if (e.key === 'Escape')
                         {name = ""}
                     if (e.key === 'Enter' || e.key === 'Escape')
-                        {onRename()}
+                        {
+                            isEnterKeyPressed = true
+                            onRename()
+                        }
                     }}
                 bind:this={inputRef}
             />
