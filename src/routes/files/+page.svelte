@@ -69,7 +69,6 @@
 
     function goBack() {
         folderStackStore.update(stack => {
-            console.log("stack.length", stack)
         if (stack.length > 1) {
             stack.pop()
         }
@@ -78,7 +77,6 @@
                 if (files.parentId === ""){
                     currentFolderIdStore.set("")
                 }
-                console.log("stack.length", files)
             })
         })
         return stack
@@ -98,11 +96,13 @@
 
     function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
             if (parentId === "") {
-                return [...folders, createNewFolder];
+                return [...folders, createNewFolder]
             }
         return folders.map(folder => {
             if (folder.id === parentId && folder.type === 'folder' && folder.items) {
-                console.log("parentId", parentId)
+                // console.log(folder.items, $folderStackStore, "succss")
+                // const newset = folder.items.push(createNewFolder)
+                console.log("FOLDERCHECK,", folder, parentId)
                 return {
                     ...folder,
                     items: [...folder.items, createNewFolder]
@@ -115,16 +115,37 @@
                 };
             }
             return folder;
-        });
+        })
     }
 
         folderStackStore.update(folders => {
-            const newFolders = folders.map(folderStack => {
+            let newFolders = folders.map(folderStack => {
                 if (Array.isArray(folderStack)) {
-                    return insertIntoFolder(folderStack, $currentFolderIdStore);
+                    return insertIntoFolder(folderStack, $currentFolderIdStore)
                 }
-                return folderStack;
-            });
+                return folderStack
+            })
+            for (let i = 1; i < newFolders.length; i++) {
+                let prevArray = newFolders[i - 1];
+                let currArray = newFolders[i];
+                const parentItem = prevArray.find(item => {
+                    // if (!newFolders[i].length && currArray[0].parentId) {
+                        // newFolders[i + 1] = [...currArray[i].items];
+                        
+                        // console.log("no idea man",newFolders[i], prevArray, currArray[0])
+                    // }
+                    console.log("check in newfolders", newFolders, currArray[0])
+                    return item.id === currArray[0].parentId;
+                });
+                // console.log("no idea man",newFolders[i], parentItem, currArray[0])
+                if (newFolders[i].length === 0 ) {
+                    console.log("taser check",newFolders[i], currArray[0])
+                            newFolders[i] = [...parentItem.items];
+                        }
+                if (parentItem && parentItem.items) {
+                    newFolders[i] = [...parentItem.items];
+                }
+            }
             return newFolders;
         });
     }
@@ -379,7 +400,7 @@
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {},
+                                    onClick: () => {console.log("delete everything")},
                                 },
                             ]}>
                             <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
