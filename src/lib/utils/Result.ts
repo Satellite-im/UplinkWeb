@@ -12,6 +12,10 @@ class Success<E, T> implements Result<E, T> {
         return onSuccess(this.value)
     }
 
+    map<R>(callback: (value: T) => R): Result<E, R> {
+        return new Success(callback(this.value))
+    }
+
     onSuccess(callback: (value: T) => void): void {
         callback(this.value)
     }
@@ -26,6 +30,10 @@ class Failure<E, T> implements Result<E, T> {
 
     fold<R>(onFailure: (failure: E) => R, _: (value: T) => R): R {
         return onFailure(this.failure)
+    }
+
+    map<R>(_: (value: T) => R): Result<E, R> {
+        return new Failure(this.failure)
     }
 
     onSuccess(_: (value: T) => void): void {
