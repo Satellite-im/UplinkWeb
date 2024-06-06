@@ -1,7 +1,6 @@
 import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
-import { ULog } from "../../ulog"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { Store } from "$lib/state/store"
@@ -17,7 +16,9 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                return success(await constellation.create_directory(directory_name, true))
+                console.log('Creating new directory: ' + directory_name)
+                await constellation.create_directory(directory_name, false)
+                return success(undefined)
             } catch (error) {
                 get(Store.state.logger).error('Error creating new directory: ' + error)
                 return failure(handleErrors(error))

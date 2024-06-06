@@ -5,7 +5,6 @@
     import type { FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
-    import type { FormEventHandler } from "svelte/elements"
 
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
@@ -69,7 +68,9 @@
                 on:input={updateName} 
                 on:blur={onRename} 
                 on:keydown={(e) => {
-                    if (e.key === 'Enter') 
+                    if (e.key === 'Escape')
+                        {name = ""}
+                    if (e.key === 'Enter' || e.key === 'Escape')
                         {onRename()}
                     }}
                 bind:this={inputRef}

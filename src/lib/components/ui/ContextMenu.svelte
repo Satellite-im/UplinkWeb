@@ -51,6 +51,13 @@
         await tick()
         coords = calculatePos(evt)
     }
+
+    function handleItemClick(e: MouseEvent, item: ContextItem) {
+        e.stopPropagation()  // Prevent clickoutside from closing the menu
+        console.log("Clicked", item.text)
+        item.onClick()
+        onClose(e)
+    }
 </script>
 
 <!-- Slot containing the actual elements. Assign the open props to the context event -->
@@ -61,14 +68,11 @@
         <slot name="items" close={onClose}></slot>
         {#each items as item}
             <Button
-                hook={item.text.toLowerCase().replace(/\s+/g, "-")}
+                hook={item.text.toLowerCase().replace(/\s+/g, "-") + item.id}
                 class="item"
                 appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance}
                 text={item.text}
-                on:click={e => {
-                    item.onClick()
-                    onClose(e)
-                }}>
+                on:click={e => handleItemClick(e, item)}>
                 <Icon icon={item.icon} />
             </Button>
         {/each}

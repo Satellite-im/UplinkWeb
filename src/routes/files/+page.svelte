@@ -21,11 +21,13 @@
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
     import { goto } from "$app/navigation"
+    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
 
     initLocale()
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
+    let isContextMenuOpen: boolean = false
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
@@ -77,41 +79,56 @@
         })
     }
 
-    function renameFolder(folder: FileInfo) {
+    async function renameFolder(folder: FileInfo) {
         if (folder.name === "") {
-            folderStackStore.update(folders => {
-                const newFolders = folders.map(folderStack => {
-                    if (Array.isArray(folderStack)) {
-                        return folderStack.filter(file => file.id !== folder.id)
-                    }
+            removeFolderFromStak(folder)
+            return
+        }
+        let newDirCreated = await ConstellationStoreInstance.createDirectory(folder.name)
+
+        newDirCreated.fold(
+            err => {
+                removeFolderFromStak(folder)
+                // TODO: Add UI feedback
+                console.error("Error creating directory", err)
+            },
+            dir => {
+                folderStackStore.update(folders => {
+                    const newFolders = folders.map(folderStack => {
+                        if (Array.isArray(folderStack)) {
+                            return folderStack.map(file => {
+                                if (file.id === folder.id) {
+                                    console.log("rename folder", folder)
+                                    Store.state.files.update(files => {
+                                        const exists = files.some(file => file.id === folder.id);
+                                        if (!exists) {
+                                            return [...files, folder];
+                                        }
+                                        return files;
+                                    });
+                                    return folder
+                                }
+                                return file
+                            })
+                        }
+                        return folderStack
+                    })
+                    console.log("newFolders: ", newFolders)
+                    return newFolders
+                })
+            }
+        )
+    }
+
+    function removeFolderFromStak(folder: FileInfo) {
+        folderStackStore.update(folders => {
+            const newFolders=folders.map(folderStack => {
+                if(Array.isArray(folderStack)) {
+                    return folderStack.filter(file => file.id!==folder.id)
+                }
                     return folderStack
                 })
                 return newFolders
-            })
-            return
-        }
-        folderStackStore.update(folders => {
-            const newFolders = folders.map(folderStack => {
-                if (Array.isArray(folderStack)) {
-                    return folderStack.map(file => {
-                        if (file.id === folder.id) {
-                            console.log("rename folder", folder)
-                            Store.state.files.update(files => {
-                                const exists = files.some(file => file.id === folder.id);
-                                if (!exists) {
-                                    return [...files, folder];
-                                }
-                                return files;
-                            });
-                            return folder
-                        }
-                        return file
-                    })
-                }
-                return folderStack
-            })
-            console.log("newFolders: ", newFolders)
-            return newFolders
         })
     }
 
@@ -137,6 +154,22 @@
         })
     }
 
+    let sortable: Sortable | undefined
+
+    function recreateSortable() {
+        if (sortable !== undefined) {
+            sortable.destroy()
+            sortable = undefined
+        } else {
+            initializeSortable()
+        }
+    }
+
+    $: if (isContextMenuOpen || !isContextMenuOpen) {
+        console.log("isContextMenuOpen: ", isContextMenuOpen)
+        recreateSortable()
+    }
+
     let folderClicked: FileInfo = {
         id: "",
         type: "",
@@ -146,17 +179,17 @@
         isRename: false,
         items: [],
     }
-
-    onMount(() => {
+    
+    function initializeSortable() {
         const dropzone = document.querySelector(".files") as HTMLElement
         if (dropzone) {
-            const sortable = new Sortable(dropzone, {
-                draggable: ".draggable-item",
+            sortable = new Sortable(dropzone, {
+                draggable: isContextMenuOpen ? "" : ".draggable-item",
                 plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
             })
 
             sortable.on("sortable:stop", event => {
-                const items = sortable.getDraggableElementsForContainer(dropzone)
+                const items = sortable!.getDraggableElementsForContainer(dropzone)
                 const newOrderIds = Array.from(items)
                     .filter(child => child.getAttribute("data-id"))
                     .map(child => child.getAttribute("data-id"))
@@ -202,6 +235,10 @@
                 lastClickTime = currentTime
             })
         }
+    }
+
+    onMount(() => {
+        initializeSortable()
     })
     onDestroy(() => {
         unsubscribeopenFolders()
@@ -381,7 +418,7 @@
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
-                        <ContextMenu
+                        <!-- <ContextMenu
                             items={[
                                 {
                                     id: "delete",
@@ -392,38 +429,50 @@
                                 },
                             ]}>
                             <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
-                        </ContextMenu>
+                        </ContextMenu> -->
                     {:else if item.type === "folder"}
                         <ContextMenu
+                            hook="context-menu-folder-{item.id}"
+                            on:close={_ => {
+                                isContextMenuOpen = false
+                            }}
                             items={[
                                 {
-                                    id: "delete",
+                                    id: "delete-" + item.id,
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {},
+                                    onClick: () => {
+                                        console.log("rename 2")
+
+                                    },
                                 },
                                 {
-                                    id: "rename",
+                                    id: "rename-" + item.id,
                                     icon: Shape.Pencil,
                                     text: "Rename",
                                     appearance: Appearance.Default,
-                                    onClick: () => {
+                                    onClick: async () => {
                                         console.log("rename")
                                         item.isRename = true
                                     },
                                 },
                             ]}>
-                            <FileFolder slot="content" 
+                            <FileFolder 
+                                slot="content" 
                                 let:open 
-                                on:contextmenu={open} 
+                                on:contextmenu={e => {
+                                        isContextMenuOpen = true
+                                        open(e)
+                                    }
+                                } 
                                 kind={FilesItemKind.Folder} 
                                 info={item}
-                                on:rename={e => {
+                                on:rename={async e => {
                                     const newName = e.detail
                                     item.name = newName
                                     item.isRename = false
-                                    renameFolder(item)
+                                    await renameFolder(item)
                                 }}
                                 isEditing={item.isRename}
                             />
