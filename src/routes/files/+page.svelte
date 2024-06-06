@@ -22,6 +22,7 @@
     import { v4 as uuidv4 } from "uuid"
     import { goto } from "$app/navigation"
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     initLocale()
 
@@ -91,6 +92,7 @@
                 removeFolderFromStak(folder)
                 // TODO: Add UI feedback
                 console.error("Error creating directory", err)
+                Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
                 folderStackStore.update(folders => {
