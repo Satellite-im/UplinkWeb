@@ -186,9 +186,12 @@ class RaygunStore {
         })
     }
 
+    async getConversation(conversation_id: string) {
+        return this.get(r => r.get_conversation(conversation_id), `Error fetching conversation with id ${conversation_id}`)
+    }
+
     async fetchMessages(conversation_id: string, config: FetchMessagesConfig & { [type: string]: any }): Promise<Result<WarpError, FetchMessageResponse>> {
         return this.get(async r => {
-            let total_messages = await r.get_message_count(conversation_id)
             let message_options = new MessageOptions()
             // TODO fetching option. Specifically how to define range
             switch (config.type) {
@@ -196,6 +199,7 @@ class RaygunStore {
                     //message_options.set_date_range()
                 }
                 case "MostRecent": {
+                    let total_messages = await r.get_message_count(conversation_id)
                     // message_options.set_range((total_messages - (config as any).limit) ...total_messages)
                 }
                 case "Earlier": {
@@ -385,10 +389,6 @@ class RaygunStore {
             }
         )
         return handler
-    }
-
-    async getConversation(conversation_id: string) {
-        return this.get(r => r.get_conversation(conversation_id), `Error fetching conversation with id ${conversation_id}`)
     }
 
     private async listConversations(): Promise<Result<WarpError, wasm.Conversation[]>> {
