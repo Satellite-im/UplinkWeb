@@ -122,6 +122,7 @@ export type Chat = {
     notifications: number
     activity: boolean
     users: User[]
+    typing_indicator: { [key: string]: Date }
     last_message_at: Date
     last_message_preview: string
 }
@@ -146,7 +147,7 @@ export function hashChat(chat: Chat): string {
     return hash.toString()
 }
 
-export let defaultChat = {
+export let defaultChat: Chat = {
     id: "",
     name: "",
     motd: "",
@@ -164,6 +165,7 @@ export let defaultChat = {
     },
     activity: false,
     users: [],
+    typing_indicator: {},
     last_message_at: new Date(),
     last_message_preview: "",
 }

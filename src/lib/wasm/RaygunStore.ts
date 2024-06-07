@@ -9,10 +9,11 @@ import { ChatType } from "$lib/enums"
 import { type User, type Chat, defaultChat } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
-import type { Cancellable } from "$lib/utils/CancellableAsyncIterator"
+import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 
 class RaygunStore {
     private raygunWritable: Writable<wasm.RayGunBox | null>
+    // A map of message listeners
     private messageListeners: Writable<{ [key: string]: Cancellable }>
 
     constructor(multipass: Writable<wasm.RayGunBox | null>) {
@@ -20,11 +21,15 @@ class RaygunStore {
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(r => {
             if (r) {
+                this.handleRaygunEvent(r)
                 let listeners = get(this.messageListeners)
                 if (Object.keys(listeners).length > 0) {
-                    // TODO cancel all message listeners
+                    // Cancels current message event listeners
+                    for (let handler of Object.values(listeners)) {
+                        handler.cancel()
+                    }
                 }
-                this.handleRaygunEvent(r)
+                this.init_conversation_handlers(r)
             }
         })
     }
@@ -235,46 +240,58 @@ class RaygunStore {
     async update_conversation_settings(conversation_id: string, direct: boolean) {
         let result = await this.get(r => r.update_conversation_settings(conversation_id, direct ? 1 : 0), "Error deleting message")
         return result.map(_ => {
-            // TODO: sync with Store
+            let chats = get(UIStore.state.chats)
+            let chat = chats.find(c => conversation_id === c.id)
+            if (chat) {
+                chat.kind = direct ? ChatType.DirectMessage : ChatType.Group
+            }
+            UIStore.state.chats.update(() => chats)
         })
     }
 
     async send_event(conversation_id: string, event: wasm.MessageEvent) {
         let result = await this.get(r => r.send_event(conversation_id, event), `Error sending event ${event}`)
-        return result.map(_ => {
-            // TODO: sync with Store
-        })
+        return result
     }
 
-    private async init_conversation_stream_handler(raygun: wasm.RayGunBox) {
-        let conversations: wasm.Conversation[] = await raygun.list_conversations()
-        for (let conversation of conversations) {
-            this.create_conversation_stream_handler(conversation.id())
+    private async handleRaygunEvent(raygun: wasm.RayGunBox) {
+        let events = await raygun.raygun_subscribe()
+        let evt: Promise<any>
+        while ((evt = await events.next())) {
+            console.log("raygun event ", evt)
+            //TODO handle conversation create and deletion. Add/Remove conversation stream for the chats
         }
     }
 
-    private async create_conversation_stream_handler(conversation_id: string) {
+    private async init_conversation_handlers(raygun: wasm.RayGunBox) {
+        let conversations: wasm.Conversation[] = await raygun.list_conversations()
+        let handlers: { [key: string]: Cancellable } = {}
+        for (let conversation of conversations) {
+            let handler = await this.create_conversation_event_handler(conversation.id())
+            if (handler) {
+                handlers[conversation.id()] = handler
+            }
+        }
+        this.messageListeners.set(handlers)
+    }
+
+    private async create_conversation_event_handler(conversation_id: string) {
         let stream = await this.get(r => r.get_conversation_stream(conversation_id), `Error getting conversation stream for ${conversation_id}`)
+        let handler: Cancellable | undefined
         stream.fold(
             e => {
                 console.log(`Couldn't create message event listener: ${e}`)
             },
             async stream => {
-                let evt
-                while ((evt = await stream.next())) {
-                    console.log("message event ", evt)
-                }
+                handler = create_cancellable_handler(async () => {
+                    let evt: Promise<any>
+                    while ((evt = await stream.next())) {
+                        console.log("message event ", evt)
+                    }
+                })
             }
         )
-    }
-
-    private async handleRaygunEvent(raygun: wasm.RayGunBox) {
-        let events = await raygun.raygun_subscribe()
-        let evt
-        while ((evt = await events.next())) {
-            console.log("raygun event ", evt)
-            //TODO handle conversation create and deletion. Add/Remove conversation stream for the chats
-        }
+        return handler
     }
 
     /**
