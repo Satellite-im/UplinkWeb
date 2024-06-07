@@ -12,7 +12,7 @@ export function create_cancellable_handler(handler: () => Promise<any>): Cancell
     ])
     return {
         cancel: () => {
-            state.cancel("Cancelled")
+            state.cancel("Canceled")
         },
     }
 }
