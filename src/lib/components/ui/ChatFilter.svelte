@@ -65,7 +65,7 @@
                 Store.setActiveChat(chat)
                 goto(Route.Chat)
             } else {
-                let result = await RaygunStoreInstance.create_conversation(user)
+                let result = await RaygunStoreInstance.createConversation(user)
                 result.onSuccess(chat => {
                     Store.setActiveChat(chat)
                     goto(Route.Chat)

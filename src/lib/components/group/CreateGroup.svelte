@@ -85,7 +85,7 @@
                 hook="button-create-group"
                 text="Create Group"
                 on:click={async _ => {
-                    let conversation = await RaygunStoreInstance.create_group_conversation(name, recipients)
+                    let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
                     conversation.onSuccess(chat => {
                         Store.setActiveChat(chat)
                     })

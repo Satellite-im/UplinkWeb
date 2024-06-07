@@ -307,7 +307,7 @@
                                                 if (chat) {
                                                     Store.setActiveChat(chat)
                                                 } else {
-                                                    let conversation = await RaygunStoreInstance.create_conversation(result.item)
+                                                    let conversation = await RaygunStoreInstance.createConversation(result.item)
                                                     conversation.onSuccess(chat => {
                                                         Store.setActiveChat(chat)
                                                     })
@@ -357,7 +357,7 @@
                                                     Store.setActiveChat(chat)
                                                     goto(Route.Chat)
                                                 } else {
-                                                    let conversation = await RaygunStoreInstance.create_conversation(friend)
+                                                    let conversation = await RaygunStoreInstance.createConversation(friend)
                                                     conversation.onSuccess(chat => {
                                                         Store.setActiveChat(chat)
                                                         goto(Route.Chat)
