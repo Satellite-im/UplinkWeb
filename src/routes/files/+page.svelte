@@ -39,6 +39,7 @@
     $: openFolders = get(Store.state.openFolders)
 
     function toggleFolder(folderId: string | number) {
+        console.log(folderId)
         const currentOpenFolders = openFolders
         const updatedOpenFolders = {
             ...currentOpenFolders,
@@ -60,13 +61,13 @@
     const folderStackStore = writable<FileInfo[][]>([allFiles])
     folderStackStore.subscribe(folderStack => {
         currentFiles = folderStack[folderStack.length - 1]
-        console.log("currentFiles", currentFiles)
     })
 
     function openFolder(folder: FileInfo) {
         currentFolderIdStore.set(folder.id)
+        console.log(folder)
         folderStackStore.update(stack => {
-            const newStack = [...stack, folder.items || []]
+            const newStack = [...stack, folder.items]
             return newStack
         })
     }
@@ -108,13 +109,14 @@
                             return folderStack.map(file => {
                                 if (file.id === folder.id) {
                                     console.log("rename folder", folder)
+                                    toggleFolder(folder.id)
                                     Store.state.files.update(files => {
-                                        const exists = files.some(file => file.id === folder.id);
+                                        const exists = files.some(file => file.id === folder.id)
                                         if (!exists) {
-                                            return [...files, folder];
+                                            return [...files, folder]
                                         }
-                                        return files;
-                                    });
+                                        return files
+                                    })
                                     return folder
                                 }
                                 return file
@@ -122,7 +124,6 @@
                         }
                         return folderStack
                     })
-                    console.log("newFolders: ", newFolders)
                     return newFolders
                 })
             }
@@ -159,21 +160,19 @@
             }
         return folders.map(folder => {
             if (folder.id === parentId && folder.type === 'folder' && folder.items) {
-                // console.log(folder.items, $folderStackStore, "succss")
-                // const newset = folder.items.push(createNewFolder)
-                console.log("FOLDERCHECK,", folder, parentId)
+                toggleFolder(createNewFolder.id)
                 return {
                     ...folder,
                     items: [...folder.items, createNewFolder]
-                };
+                }
             }
             if (folder.items && folder.items.length > 0) {
                 return {
                     ...folder,
                     items: insertIntoFolder(folder.items, parentId)
-                };
+                }
             }
-            return folder;
+            return folder
         })
     }
 
@@ -185,28 +184,24 @@
                 return folderStack
             })
             for (let i = 1; i < newFolders.length; i++) {
-                let prevArray = newFolders[i - 1];
-                let currArray = newFolders[i];
+                let prevArray = newFolders[i - 1]
+                let currArray = newFolders[i]
                 const parentItem = prevArray.find(item => {
-                    // if (!newFolders[i].length && currArray[0].parentId) {
-                        // newFolders[i + 1] = [...currArray[i].items];
-                        
-                        // console.log("no idea man",newFolders[i], prevArray, currArray[0])
-                    // }
-                    console.log("check in newfolders", newFolders, currArray[0])
-                    return item.id === currArray[0].parentId;
-                });
-                // console.log("no idea man",newFolders[i], parentItem, currArray[0])
+                    if (currArray.length === 0) {
+                        newFolders[i].push(createNewFolder)
+                    }
+                    return item.id === currArray[0].parentId
+                })
                 if (newFolders[i].length === 0 ) {
-                    console.log("taser check",newFolders[i], currArray[0])
-                            newFolders[i] = [...parentItem.items];
+                            currArray = [...parentItem.items]
                         }
                 if (parentItem && parentItem.items) {
-                    newFolders[i] = [...parentItem.items];
+                    newFolders[i] = [...parentItem.items]
                 }
+                Store.updateFolderTree(newFolders)
             }
-            return newFolders;
-        });
+            return newFolders
+        })
     }
 
     let sortable: Sortable | undefined
@@ -473,7 +468,7 @@
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
-                        <!-- <ContextMenu
+                        <ContextMenu
                             items={[
                                 {
                                     id: "delete",
@@ -484,7 +479,7 @@
                                 },
                             ]}>
                             <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
-                        </ContextMenu> -->
+                        </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
                             hook="context-menu-folder-{item.id}"
