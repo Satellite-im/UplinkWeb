@@ -17,6 +17,7 @@
     import { get } from "svelte/store"
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { RelayStore } from "$lib/state/wasm/relays"
+    import { Controls } from "$lib/layouts"
 
     initLocale()
 
@@ -91,13 +92,15 @@
             await auth(e.detail)
         }} />
 
-    <div class="switch-profile">
-        <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)} appearance={Appearance.Alt}>
-            <Icon icon={Shape.Profile} />
-        </Button>
-        <Button tooltip="Configure Relay" hook="button-configure-relay" icon on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt}>
-            <Icon icon={Shape.Relay} />
-        </Button>
+    <div class="unlock-controls">
+        <Controls>
+            <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)} appearance={Appearance.Alt}>
+                <Icon icon={Shape.Profile} />
+            </Button>
+            <Button tooltip="Configure Relay" hook="button-configure-relay" icon on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt}>
+                <Icon icon={Shape.Relay} />
+            </Button>
+        </Controls>
     </div>
 </div>
 
@@ -112,7 +115,7 @@
         width: 100%;
         height: 100%;
 
-        .switch-profile {
+        .unlock-controls {
             position: absolute;
             right: var(--padding);
             bottom: var(--padding);
