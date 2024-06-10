@@ -84,7 +84,9 @@
                 bind:this={inputRef}
             />
         {:else}
-            <div>{name}</div>
+            <div class="ellipsis">
+                {name}
+            </div>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
@@ -124,10 +126,19 @@
             }
         }
 
+
         :global(.svg-icon) {
             color: var(--warning-color);
             width: var(--icon-size-largest);
             height: var(--icon-size-largest);
         }
+    }
+
+
+    .ellipsis {
+            white-space: nowrap; 
+            overflow: hidden;   
+            text-overflow: ellipsis; 
+            width: 120px;        
     }
 </style>

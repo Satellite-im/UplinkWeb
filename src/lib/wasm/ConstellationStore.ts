@@ -48,22 +48,21 @@ class ConstellationStore {
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 
-    // async getCurrentDirectoryFiles(): Promise<Result<WarpError, wasm.Item[]>> {
-    //     const constellation = get(this.constellationWritable)
-    //     if (constellation) {
-    //         try {
-    //             console.log('Getting current directory files')
-    //             let files =  constellation.root_directory().
-    //             get(Store.state.logger).info('Current directory files: ' + files)
-    //             return success(files)
-    //         } catch (error) {
-    //             get(Store.state.logger).error('Error getting current directory files: ' + error)
-    //             return failure(handleErrors(error))
-    //         }
-    //     }
-    //     return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    async getCurrentDirectoryFiles(): Promise<Result<WarpError, wasm.Item[]>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                let files =  constellation.current_directory().get_items()
+                get(Store.state.logger).info('Current directory files: ' + files)
+                return success(files)
+            } catch (error) {
+                get(Store.state.logger).error('Error getting current directory files: ' + error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
     
-    // }
+    }
 }
 
 export const ConstellationStoreInstance = new ConstellationStore(WarpStore.warp.constellation);

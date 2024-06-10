@@ -61,7 +61,6 @@
     const folderStackStore = writable<FileInfo[][]>([allFiles])
     folderStackStore.subscribe(folderStack => {
         currentFiles = folderStack[folderStack.length - 1]
-        get(Store.state.logger).info("currentFiles: " + currentFiles)
     })
 
     function openFolder(folder: FileInfo) {
@@ -117,6 +116,7 @@
                 })
             }
         )
+        getCurrentDirectoryFiles()
     }
 
     function removeFolderFromStak(folder: FileInfo) {
@@ -235,9 +235,49 @@
         }
     }
 
+    async function getCurrentDirectoryFiles() {
+       let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
+       let filesInfo: FileInfo[] = []
+       let filesSet: Set<FileInfo>
+       files.onSuccess(items => {
+            items.forEach(item => {
+                if (item.file() != null) {
+                    let fileItem = item.file()
+                    let file: FileInfo = {
+                        id: fileItem!.id(),
+                        type: 'file',
+                        name: fileItem!.name(),
+                        size: fileItem!.size(),
+                        isRename: false,
+                        source: ""
+                    }
+                    filesInfo = [...filesInfo, file]
+                } else {
+                    let fileItem = item.directory()
+                    let file: FileInfo = {
+                        id: fileItem!.id(),
+                        type: 'folder',
+                        name: fileItem!.name(),
+                        size: fileItem!.size(),
+                        isRename: false,
+                        source: ""
+                    }
+                    filesInfo = [...filesInfo, file]
+                }
+            })
+        filesSet = new Set(filesInfo)
+        console.log(filesSet)
+        Store.state.files.set(Array.from(filesSet))
+        currentFiles = Array.from(filesSet)
+       })
+    }
+
     onMount( () => {
         initializeSortable()
+        getCurrentDirectoryFiles()
     })
+
+
     onDestroy(() => {
         unsubscribeopenFolders()
     })
@@ -272,6 +312,7 @@
                 await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
             }
         }
+        getCurrentDirectoryFiles()
     };
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
@@ -432,7 +473,7 @@
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
-                        <!-- <ContextMenu
+                        <ContextMenu
                             items={[
                                 {
                                     id: "delete",
@@ -443,7 +484,7 @@
                                 },
                             ]}>
                             <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
-                        </ContextMenu> -->
+                        </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
                             hook="context-menu-folder-{item.id}"
