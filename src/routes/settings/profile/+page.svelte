@@ -146,6 +146,7 @@
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div
             class="profile-header"
+            data-cy="profile-banner"
             style="background-image: url('{user.profile.banner.image}')"
             on:click={_ => {
                 fileinput.click()
@@ -228,7 +229,7 @@
             <div class="section">
                 <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
                     <Select
-                        hook="settings-profile-status-select"
+                        hook="selector-current-status-{user.profile.status}"
                         options={[
                             { text: $_("user.status.online"), value: "online" },
                             { text: $_("user.status.offline"), value: "offline" },

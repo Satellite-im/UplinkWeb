@@ -4338,10 +4338,10 @@ w3c-keyname@^2.2.4:
   resolved "https://registry.npmjs.org/w3c-keyname/-/w3c-keyname-2.2.8.tgz"
   integrity sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==
 
-warp-wasm@^1.1.7:
-  version "1.1.7"
-  resolved "https://registry.npmjs.org/warp-wasm/-/warp-wasm-1.1.7.tgz"
-  integrity sha512-ygR5evGSenArwcphMkVuZ8dyr1U91syIWRtWvhM9d3uT8xaHHGkPjMwqIPz9ogOYluj2yX5+GqLU7ivpv63JWA==
+warp-wasm@^1.1.8:
+  version "1.1.8"
+  resolved "https://registry.npmjs.org/warp-wasm/-/warp-wasm-1.1.8.tgz"
+  integrity sha512-lAQiwPHazL9SJoSdV9D3yT9rPGX4CaNTb6ljGBvAXVK5YumPazZeR693OEeyKWAD3Cf1q0z1kboIC5/TWHu+UA==
 
 whatwg-encoding@^2.0.0:
   version "2.0.0"

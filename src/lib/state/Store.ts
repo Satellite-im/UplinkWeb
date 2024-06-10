@@ -8,9 +8,10 @@ import { get, writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
-import { Logger } from "$lib/utils/Logger"
+import * as wasm from "warp-wasm"
 import { ToastMessage } from "./ui/toast"
 import { v4 as uuidv4 } from "uuid"
+import { Logger } from "$lib/utils/Logger"
 
 class GlobalStore {
     state: IState
@@ -36,6 +37,21 @@ class GlobalStore {
             logger: createPersistentState("uplink.log", new Logger({ relay_to_js_console: true })),
             toasts: createPersistentState("uplink.toasts", {}),
         }
+    }
+
+    setUserFromIdentity(identity: wasm.Identity) {
+        let userFromIdentity: User = {
+            ...defaultUser,
+            id: {short: identity.short_id()},
+            name: identity.username(),
+            key: identity.did_key(),
+            profile: {
+                ...defaultUser.profile,
+                status: Status.Online,
+                status_message: identity.status_message() || "",
+            },
+        }
+        this.state.user.update(u => (u = userFromIdentity))
     }
 
     updateOwnIdentity(identity: User) {
@@ -168,6 +184,58 @@ class GlobalStore {
     denyRequest(user: User) {
         const currentRequests = get(this.state.activeRequests)
         this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
+    }
+
+    setFriends(friends: Array<any>) {
+        let friendsList: Array<User> = []
+        friends.forEach(friend => {
+            friendsList.push({
+                ...defaultUser,
+                name: friend,
+                key: friend,
+            })
+        })
+        
+        this.state.friends.set(friendsList)
+    }
+
+    setFriendRequests(incomingFriendRequests: Array<any>, outgoingFriendRequests: Array<any>) {
+        let user = get(this.state.user)
+
+        const createFriendRequests = (friendRequests: Array<any>, direction: MessageDirection): FriendRequest[] => {
+            return friendRequests.map(friendDid => {
+                let friendUser: User = {
+                    ...defaultUser,
+                    name: friendDid,               
+                    key: friendDid,
+                }
+                return {
+                    at: new Date(),
+                    from: direction === MessageDirection.Inbound ? friendUser : user,
+                    to: direction === MessageDirection.Inbound ? user : friendUser,
+                    direction: direction
+                }
+            })
+        }
+    
+        let incomingRequests = createFriendRequests(incomingFriendRequests, MessageDirection.Inbound)
+        let outgoingRequests = createFriendRequests(outgoingFriendRequests, MessageDirection.Outbound)
+    
+        let allFriendRequests = new Set([...incomingRequests, ...outgoingRequests])
+
+        this.state.activeRequests.set(Array.from(allFriendRequests.values()))
+    }
+
+    setBlockedUsers(blockedUsers: Array<any>) {
+        let blockedUsersList: Array<User> = []
+        blockedUsers.forEach(blockedUser => {
+            blockedUsersList.push({
+                ...defaultUser,
+                name: blockedUser,
+                key: blockedUser,
+            })
+        })
+        this.state.blocked.set(blockedUsersList)
     }
 
     cancelRequest(user: User) {

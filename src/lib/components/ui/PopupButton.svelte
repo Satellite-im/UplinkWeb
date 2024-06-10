@@ -5,13 +5,14 @@
 
     export let open: boolean = false
     export let name: string = "name"
+    export let hook: string = ""
 
     function toggle() {
         open = !open
     }
 </script>
 
-<div class="popup">
+<div class="popup" data-cy={hook}>
     {#if open}
         <Modal on:close={toggle} padded>
             <slot></slot>

@@ -4,12 +4,16 @@
     import { Store } from "$lib/state/store"
     import type { FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
-    import { createEventDispatcher } from "svelte"
-    import type { FormEventHandler } from "svelte/elements"
+    import { createEventDispatcher, onMount } from "svelte"
 
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
     export let name = info.name
+
+   export let isEditing = false
+    let inputRef: HTMLInputElement
+    const dispatch = createEventDispatcher()
+    let isEnterKeyPressed: boolean = false
 
     function getIcon() {
         switch (kind) {
@@ -39,6 +43,18 @@
             return updatedItems
         })
     }
+
+    function onRename() {
+        dispatch("rename", name)
+        isEditing = false
+    }
+
+    onMount(() => {
+        if (inputRef) {
+            inputRef.focus()
+        }
+    })
+
 </script>
 
 <section>
@@ -46,7 +62,31 @@
     <div class="filesitem" on:contextmenu>
         <Icon icon={getIcon()} />
         <Spacer less />
-        <input type="text" bind:value={name} on:input={updateName} />
+        {#if isEditing}
+            <input 
+                type="text" 
+                bind:value={name} 
+                on:input={updateName} 
+                on:blur={() => {
+                    if (!isEnterKeyPressed)
+                        {onRename()}
+                    isEnterKeyPressed = false
+                }} 
+                on:keydown={(e) => {
+                    if (e.key === 'Escape')
+                        {name = ""}
+                    if (e.key === 'Enter' || e.key === 'Escape')
+                        {
+                            isEnterKeyPressed = true
+                            onRename()
+                        }
+                    }}
+                bind:this={inputRef}
+            />
+        {:else}
+            <div>{name}</div>
+        {/if}
+        <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
     </div>
 </section>
