@@ -64,7 +64,6 @@
 
     function openFolder(folder: FileInfo) {
         currentFolderIdStore.set(folder.id)
-        console.log(folder)
         folderStackStore.update(stack => {
             const newStack = [...stack, folder.items]
             return newStack
@@ -98,7 +97,6 @@
             err => {
                 removeFolderFromStak(folder)
                 // TODO: Add UI feedback
-                console.error("Error creating directory", err)
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
@@ -107,7 +105,6 @@
                         if (Array.isArray(folderStack)) {
                             return folderStack.map(file => {
                                 if (file.id === folder.id) {
-                                    console.log("rename folder", folder)
                                     toggleFolder(folder.id)
                                     Store.state.files.update(files => {
                                         const exists = files.some(file => file.id === folder.id)
@@ -215,7 +212,6 @@
     }
 
     $: if (isContextMenuOpen || !isContextMenuOpen) {
-        console.log("isContextMenuOpen: ", isContextMenuOpen)
         recreateSortable()
     }
 
