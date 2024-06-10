@@ -53,6 +53,7 @@
     let previewImage: string | null
     let search_filter: string
     let search_component: ChatFilter
+    let filesToUpload: HTMLInputElement
     let allFiles: FileInfo[] = get(Store.state.files)
     let currentFolderIdStore = writable<string>("")
     $: currentFiles = allFiles
@@ -60,7 +61,7 @@
     const folderStackStore = writable<FileInfo[][]>([allFiles])
     folderStackStore.subscribe(folderStack => {
         currentFiles = folderStack[folderStack.length - 1]
-        console.log("currentFiles", currentFiles)
+        get(Store.state.logger).info("currentFiles: " + currentFiles)
     })
 
     function openFolder(folder: FileInfo) {
@@ -90,8 +91,6 @@
         newDirCreated.fold(
             err => {
                 removeFolderFromStak(folder)
-                // TODO: Add UI feedback
-                console.error("Error creating directory", err)
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
@@ -100,7 +99,6 @@
                         if (Array.isArray(folderStack)) {
                             return folderStack.map(file => {
                                 if (file.id === folder.id) {
-                                    console.log("rename folder", folder)
                                     Store.state.files.update(files => {
                                         const exists = files.some(file => file.id === folder.id);
                                         if (!exists) {
@@ -115,7 +113,6 @@
                         }
                         return folderStack
                     })
-                    console.log("newFolders: ", newFolders)
                     return newFolders
                 })
             }
@@ -168,7 +165,6 @@
     }
 
     $: if (isContextMenuOpen || !isContextMenuOpen) {
-        console.log("isContextMenuOpen: ", isContextMenuOpen)
         recreateSortable()
     }
 
@@ -239,7 +235,7 @@
         }
     }
 
-    onMount(() => {
+    onMount( () => {
         initializeSortable()
     })
     onDestroy(() => {
@@ -266,6 +262,17 @@
         goto(Route.Chat)
         search_component.select_first()
     }
+
+    const onFileSelected = async (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        if (target && target.files) {
+            for (let i = 0; i < target.files.length; i++) {
+                const file = target.files[i];
+                const stream = file.stream();
+                await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
+            }
+        }
+    };
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
@@ -405,9 +412,14 @@
                 <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
-                <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")}>
-                    <Icon icon={Shape.Plus} />
+                <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")} on:click={() => {
+                    console.log("upload")
+                    filesToUpload?.click()
+                }}>
+                    <Icon icon={Shape.Plus}
+                />
                 </Button>
+                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload}/>
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
@@ -444,10 +456,7 @@
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {
-                                        console.log("rename 2")
-
-                                    },
+                                    onClick: () => {},
                                 },
                                 {
                                     id: "rename-" + item.id,

@@ -24,10 +24,10 @@ class Store {
         // cargo run --bin relay-server --release -- --listen-addr /ip4/127.0.0.1/tcp/4444/ws --keyfile /tmp/key.bin
         // Uncomment code below to use your local relay server
         // And comment line 30
-        let warp_instance = await new wasm.WarpIpfs(wasm.Config.minimal_with_relay([
-            '/ip4/127.0.0.1/tcp/4444/ws/p2p/12D3KooWPYK5aNLqdyXh9RiCsv1Gm8vpsJnNjp6DzBhe5Z7wT6gx'
-        ]), tesseract) as wasm.WarpInstance
-        // let warp_instance = await new wasm.WarpIpfs(wasm.Config.minimal_testing(), tesseract) as wasm.WarpInstance
+        // let warp_instance = await new wasm.WarpIpfs(wasm.Config.minimal_with_relay([
+        //     '/ip4/127.0.0.1/tcp/4444/ws/p2p/12D3KooWPYK5aNLqdyXh9RiCsv1Gm8vpsJnNjp6DzBhe5Z7wT6gx'
+        // ]), tesseract) as wasm.WarpInstance
+        let warp_instance = await new wasm.WarpIpfs(wasm.Config.minimal_testing(), tesseract) as wasm.WarpInstance
         this.warp.tesseract.set(tesseract)
         this.warp.multipass.set(warp_instance.multipass)
         this.warp.raygun.set(warp_instance.raygun)

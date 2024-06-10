@@ -26,6 +26,44 @@ class ConstellationStore {
         }
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
+
+    async uploadFilesFromStream(file_name: string, stream: ReadableStream<any>, total_size: number | undefined): Promise<Result<WarpError, void>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                let async_iterator = await constellation.put_stream(file_name, total_size, stream)
+                let put_stream_status = { [Symbol.asyncIterator]() { return async_iterator } }
+                for await (const value of put_stream_status) {
+                    if (value.ProgressComplete != null ) {
+                        console.log(value)
+                        break
+                    }
+                }
+                return success(undefined)
+            } catch (error) {
+                get(Store.state.logger).error('Error creating new directory: ' + error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
+
+    // async getCurrentDirectoryFiles(): Promise<Result<WarpError, wasm.Item[]>> {
+    //     const constellation = get(this.constellationWritable)
+    //     if (constellation) {
+    //         try {
+    //             console.log('Getting current directory files')
+    //             let files =  constellation.root_directory().
+    //             get(Store.state.logger).info('Current directory files: ' + files)
+    //             return success(files)
+    //         } catch (error) {
+    //             get(Store.state.logger).error('Error getting current directory files: ' + error)
+    //             return failure(handleErrors(error))
+    //         }
+    //     }
+    //     return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    
+    // }
 }
 
 export const ConstellationStoreInstance = new ConstellationStore(WarpStore.warp.constellation);
