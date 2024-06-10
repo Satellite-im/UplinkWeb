@@ -9,6 +9,7 @@
     import { ConversationStore } from "$lib/state/conversation"
     import { InventoryStore } from "$lib/state/inventory"
     import { goto } from "$app/navigation"
+    import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
 
     initLocale()
 </script>
@@ -37,6 +38,7 @@
     <SettingSection name="Test Voice" description="Dev Voice">
         <Button appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
     </SettingSection>
+    <RelaySelector />
 </div>
 
 <style lang="scss">
@@ -46,5 +48,9 @@
         margin: 0;
         flex: 1;
         gap: var(--gap);
+        :global(.relay-selector > .relay-content) {
+            background-color: var(--alt-color);
+            padding: var(--padding);
+        }
     }
 </style>

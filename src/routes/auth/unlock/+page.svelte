@@ -15,6 +15,8 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
+    import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
+    import { RelayStore } from "$lib/state/wasm/relays"
 
     initLocale()
 
@@ -28,18 +30,20 @@
         loading = true
         await TesseractStoreInstance.unlock(pin)
         let tesseract = await TesseractStoreInstance.getTesseract()
-        await WarpStore.initWarpInstances(tesseract)
+        let addressed = Object.values(get(RelayStore.state))
+            .filter(r => r.active)
+            .map(r => r.address)
+        await WarpStore.initWarpInstances(tesseract, addressed)
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
         ownIdentity.fold(
-             (_) => {
+            _ => {
                 goto(Route.NewAccount)
             },
-            (_) => {
+            _ => {
                 goto(Route.Pre)
             }
         )
     }
-
 </script>
 
 <div id="auth-unlock">
@@ -75,11 +79,14 @@
         loading={loading}
         scramble={scramble}
         showSettings={false}
-        on:submit={async (e) => {
+        on:submit={async e => {
             loading = true
             await auth(e.detail)
         }} />
 
+    <div class="relay-selector-wrap">
+        <RelaySelector />
+    </div>
     <div class="switch-profile">
         <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)}>
             <Icon icon={Shape.Profile} />
@@ -129,6 +136,13 @@
                     flex: 1;
                 }
             }
+        }
+
+        .relay-selector-wrap {
+            width: 400px;
+            padding: var(--padding);
+            background-color: var(--alt-color);
+            border-radius: var(--border-radius);
         }
     }
 </style>
