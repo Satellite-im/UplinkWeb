@@ -309,11 +309,28 @@
             for (let i = 0; i < target.files.length; i++) {
                 const file = target.files[i];
                 const stream = file.stream();
-                await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
+                let result = await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
+                result.onFailure(err => {
+                    Store.addToastNotification(new ToastMessage("", err, 2))
+                })
             }
         }
+        target.value = '';
         getCurrentDirectoryFiles()
-    };
+    }
+
+    async function deleteItem(file_name: string) {
+        let result = await ConstellationStoreInstance.deleteItem(file_name)
+        result.fold(
+            err => {
+                // TODO(Lucas): Error not mapped yet
+                Store.addToastNotification(new ToastMessage("", err, 2))
+            },
+            _ => {
+                getCurrentDirectoryFiles()
+            }
+        )
+    }
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
@@ -474,16 +491,27 @@
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
                         <ContextMenu
+                            on:close={_ => {
+                                isContextMenuOpen = false
+                            }}
                             items={[
                                 {
                                     id: "delete",
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {},
+                                    onClick: () => {
+                                        deleteItem(item.name)
+                                    },
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
+                            <FileFolder slot="content" 
+                                let:open 
+                                on:contextmenu={e => {
+                                isContextMenuOpen = true
+                                open(e)
+                            }
+                            }  kind={FilesItemKind.File} info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
@@ -497,7 +525,10 @@
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {},
+                                    onClick: () => {
+                                        // TODO(Lucas): Delete item not working for folders yet
+                                        // deleteItem(item.name)
+                                    },
                                 },
                                 {
                                     id: "rename-" + item.id,
@@ -520,6 +551,7 @@
                                 kind={FilesItemKind.Folder} 
                                 info={item}
                                 on:rename={async e => {
+                                    // TODO(Lucas): Working just for creating new folder for now
                                     const newName = e.detail
                                     item.name = newName
                                     item.isRename = false

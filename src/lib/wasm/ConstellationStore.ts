@@ -53,7 +53,6 @@ class ConstellationStore {
         if (constellation) {
             try {
                 let files =  constellation.current_directory().get_items()
-                get(Store.state.logger).info('Current directory files: ' + files)
                 return success(files)
             } catch (error) {
                 get(Store.state.logger).error('Error getting current directory files: ' + error)
@@ -61,7 +60,19 @@ class ConstellationStore {
             }
         }
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
-    
+    }
+
+    async deleteItem(file_name: string): Promise<Result<WarpError, void>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                await constellation.remove(file_name, true)
+                return success(undefined)
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 }
 

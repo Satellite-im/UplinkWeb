@@ -139,6 +139,7 @@
             white-space: nowrap; 
             overflow: hidden;   
             text-overflow: ellipsis; 
-            width: 120px;        
+            width: 120px;
+            text-align: center;
     }
 </style>
