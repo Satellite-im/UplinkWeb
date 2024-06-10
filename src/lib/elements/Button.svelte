@@ -100,7 +100,6 @@
             position: relative;
 
             &:before {
-                display: none;
                 content: attr(data-tooltip);
                 position: absolute;
                 bottom: calc(100% + var(--gap));
