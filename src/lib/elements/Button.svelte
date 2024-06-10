@@ -233,13 +233,13 @@
         }
 
         &.small {
-            min-height: calc(var(--input-height) / 1.5);
-            max-height: calc(var(--input-height) / 1.5);
+            min-height: calc(var(--input-height) / 2);
+            max-height: calc(var(--input-height) / 2);
             &.icon {
-                min-width: calc(var(--input-height) / 1.5);
-                max-width: calc(var(--input-height) / 1.5);
-                max-height: calc(var(--input-height) / 1.5);
-                min-height: calc(var(--input-height) / 1.5);
+                min-width: calc(var(--input-height) / 1.75);
+                max-width: calc(var(--input-height) / 1.75);
+                max-height: calc(var(--input-height) / 1.75);
+                min-height: calc(var(--input-height) / 1.75);
             }
         }
 

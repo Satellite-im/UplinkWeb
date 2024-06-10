@@ -136,3 +136,11 @@ export enum InventoryKind {
     Theme = "Application Theme",
     Item = "Item",
 }
+
+export enum CommunityChannelKind {
+    Text,
+    Voice,
+    Photo,
+    Files,
+    Bot,
+}

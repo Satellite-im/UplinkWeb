@@ -79,6 +79,7 @@
     <!-- Modals -->
     {#if sentRequest}
         <Modal
+            padded
             on:close={_ => {
                 sentRequest = false
             }}>
