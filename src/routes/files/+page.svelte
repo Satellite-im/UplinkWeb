@@ -14,16 +14,21 @@
     import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
     import { Sortable } from "@shopify/draggable"
-    import type { Chat, FileInfo } from "$lib/types"
-    import { get } from "svelte/store"
+    import type { Chat, ContextItem, FileInfo } from "$lib/types"
+    import { get, writable, type Writable } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
+    import FolderItem from "./FolderItem.svelte"
+    import { v4 as uuidv4 } from "uuid"
     import { goto } from "$app/navigation"
+    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     initLocale()
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
+    let isContextMenuOpen: boolean = false
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
@@ -31,58 +36,215 @@
 
     let tabRoutes: string[] = ["chats", "files"]
     let activeTabRoute: string = tabRoutes[0]
+    $: openFolders = get(Store.state.openFolders)
 
+    function toggleFolder(folderId: string | number) {
+        const currentOpenFolders = openFolders
+        const updatedOpenFolders = {
+            ...currentOpenFolders,
+            [folderId]: !currentOpenFolders[folderId],
+        }
+        Store.updateFolderTree(updatedOpenFolders)
+    }
+    const unsubscribeopenFolders = Store.state.openFolders.subscribe(f => {
+        openFolders = f
+    })
+    let dragging_files = 0
     let previewImage: string | null
-
-    let updatedFiles: FileInfo[] = []
-
     let search_filter: string
     let search_component: ChatFilter
+    let allFiles: FileInfo[] = get(Store.state.files)
+    let currentFolderIdStore = writable<string>("")
+    $: currentFiles = allFiles
 
-    $: files = get(Store.state.files)
-    const unsubscribeFiles = Store.state.files.subscribe(f => {
-        files = f
+    const folderStackStore = writable<FileInfo[][]>([allFiles])
+    folderStackStore.subscribe(folderStack => {
+        currentFiles = folderStack[folderStack.length - 1]
+        console.log("currentFiles", currentFiles)
     })
 
-    let dragging_files = 0
+    function openFolder(folder: FileInfo) {
+        currentFolderIdStore.set(folder.id)
+        folderStackStore.update(stack => {
+            const newStack = [...stack, folder.items || []]
+            return newStack
+        })
+    }
 
-    onMount(() => {
+    function goBack() {
+        folderStackStore.update(stack => {
+            if (stack.length > 1) {
+                stack.pop()
+            }
+            return stack
+        })
+    }
+
+    async function createNewDirectory(folder: FileInfo) {
+        if (folder.name === "") {
+            removeFolderFromStak(folder)
+            return
+        }
+        let newDirCreated = await ConstellationStoreInstance.createDirectory(folder.name)
+
+        newDirCreated.fold(
+            err => {
+                removeFolderFromStak(folder)
+                // TODO: Add UI feedback
+                console.error("Error creating directory", err)
+                Store.addToastNotification(new ToastMessage("", err, 2))
+            },
+            _ => {
+                folderStackStore.update(folders => {
+                    const newFolders = folders.map(folderStack => {
+                        if (Array.isArray(folderStack)) {
+                            return folderStack.map(file => {
+                                if (file.id === folder.id) {
+                                    console.log("rename folder", folder)
+                                    Store.state.files.update(files => {
+                                        const exists = files.some(file => file.id === folder.id);
+                                        if (!exists) {
+                                            return [...files, folder];
+                                        }
+                                        return files;
+                                    });
+                                    return folder
+                                }
+                                return file
+                            })
+                        }
+                        return folderStack
+                    })
+                    console.log("newFolders: ", newFolders)
+                    return newFolders
+                })
+            }
+        )
+    }
+
+    function removeFolderFromStak(folder: FileInfo) {
+        folderStackStore.update(folders => {
+            const newFolders=folders.map(folderStack => {
+                if(Array.isArray(folderStack)) {
+                    return folderStack.filter(file => file.id!==folder.id)
+                }
+                    return folderStack
+                })
+                return newFolders
+        })
+    }
+
+    function newFolder() {
+        let createNewFolder: FileInfo = {
+            id: uuidv4(),
+            type: "folder",
+            size: 0,
+            name: "",
+            source: "",
+            isRename: true,
+            items: [],
+            parentId: "",
+        }
+        folderStackStore.update(folders => {
+            const newFolders = folders.map(folderStack => {
+                if (Array.isArray(folderStack)) {
+                    return [...folderStack, createNewFolder]
+                }
+                return folderStack
+            })
+            return newFolders
+        })
+    }
+
+    let sortable: Sortable | undefined
+
+    function recreateSortable() {
+        if (sortable !== undefined) {
+            sortable.destroy()
+            sortable = undefined
+        } else {
+            initializeSortable()
+        }
+    }
+
+    $: if (isContextMenuOpen || !isContextMenuOpen) {
+        console.log("isContextMenuOpen: ", isContextMenuOpen)
+        recreateSortable()
+    }
+
+    let folderClicked: FileInfo = {
+        id: "",
+        type: "",
+        size: 0,
+        name: "",
+        source: "",
+        isRename: false,
+        items: [],
+    }
+    
+    function initializeSortable() {
         const dropzone = document.querySelector(".files") as HTMLElement
-
         if (dropzone) {
-            const sortable = new Sortable(dropzone, {
-                draggable: ".draggable-item",
+            sortable = new Sortable(dropzone, {
+                draggable: isContextMenuOpen ? "" : ".draggable-item",
                 plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
             })
 
             sortable.on("sortable:stop", event => {
-                const items = sortable.getDraggableElementsForContainer(dropzone)
+                const items = sortable!.getDraggableElementsForContainer(dropzone)
                 const newOrderIds = Array.from(items)
                     .filter(child => child.getAttribute("data-id"))
                     .map(child => child.getAttribute("data-id"))
-
-                updatedFiles = newOrderIds.map(id => {
-                    const file = files.find(file => file.id === id)
+                currentFiles = newOrderIds.map(id => {
+                    const file = currentFiles.find(file => file.id === id)
                     return file ? file : null
                 }) as FileInfo[]
+                Store.updateFileOrder(currentFiles)
+            })
 
-                Store.updateFileOrder(updatedFiles)
+            let lastClickTime = 0
+            let lastClickTarget: HTMLElement | null = null
+            function updateFilesFromFolder(folder: FileInfo): void {
+                if (folder.items && folder.items.length > 0) {
+                    Store.updateFileOrder(folder.items)
+                }
+            }
+            dropzone.addEventListener("mousedown", event => {
+                let target = event.target as HTMLElement
+                while (target && !target.classList.contains("draggable-item")) {
+                    target = target.parentElement as HTMLElement
+                }
+
+                const currentTime = Date.now()
+                if (lastClickTarget === target && currentTime - lastClickTime < 200) {
+                    if (lastClickTarget.classList.contains("folder-draggable")) {
+                        const targetId = target.dataset.id
+                        const targetFolder = currentFiles.find(item => item.id === targetId)
+                        if (targetFolder) {
+                            folderClicked = targetFolder
+                        }
+                        if (target) {
+                            const targetId = target.dataset.id
+                            const targetFolder = currentFiles.find(item => item.id === targetId)
+                            if (targetFolder) {
+                                updateFilesFromFolder(targetFolder)
+                                openFolder(targetFolder)
+                            }
+                        }
+                    }
+                }
+                lastClickTarget = target
+                lastClickTime = currentTime
             })
         }
+    }
+
+    onMount(() => {
+        initializeSortable()
     })
     onDestroy(() => {
-        unsubscribeFiles()
+        unsubscribeopenFolders()
     })
-
-    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
-    let chats: Chat[] = get(UIStore.state.chats)
-    UIStore.state.chats.subscribe(sc => (chats = sc))
-    let activeChat: Chat = get(Store.state.activeChat)
-    Store.state.activeChat.subscribe(c => (activeChat = c))
-
-    function unsubscribe() {
-        throw new Error("Function not implemented.")
-    }
 
     function dragEnter(event: DragEvent) {
         event.preventDefault()
@@ -104,6 +266,12 @@
         goto(Route.Chat)
         search_component.select_first()
     }
+
+    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
+    let chats: Chat[] = get(UIStore.state.chats)
+    UIStore.state.chats.subscribe(sc => (chats = sc))
+    let activeChat: Chat = get(Store.state.activeChat)
+    Store.state.activeChat.subscribe(c => (activeChat = c))
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -178,9 +346,16 @@
                             onClick: () => {},
                         },
                     ]}>
-                    <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                    <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
                 </ContextMenu>
             {/each}
+        {/if}
+        {#if activeTabRoute === "files"}
+            <ul class="folderList">
+                {#each currentFiles as file}
+                    <FolderItem file={file} openFolders={openFolders} toggleFolder={toggleFolder} />
+                {/each}
+            </ul>
         {/if}
     </Sidebar>
     <div class="content">
@@ -227,7 +402,7 @@
                 </button>
             </div>
             <svelte:fragment slot="controls">
-                <Button appearance={Appearance.Alt} icon tooltip={$_("files.new_folder")}>
+                <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
                 <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")}>
@@ -236,20 +411,16 @@
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
-
-        {#if dragging_files > 0}
-            <div class="upload-file-count-container">
-                <p class="upload-file-count">
-                    {$_("files.add_files")}
-                </p>
-            </div>
-        {/if}
-
+        <div class="folder-back">
+            <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+        </div>
         <div class="files">
-            {#each files as item (item.id)}
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            {#each currentFiles as item, index (item.id)}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
-                        <ContextMenu
+                        <!-- <ContextMenu
                             items={[
                                 {
                                     id: "delete",
@@ -259,20 +430,53 @@
                                     onClick: () => {},
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.File} info={item} />
-                        </ContextMenu>
+                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
+                        </ContextMenu> -->
                     {:else if item.type === "folder"}
                         <ContextMenu
+                            hook="context-menu-folder-{item.id}"
+                            on:close={_ => {
+                                isContextMenuOpen = false
+                            }}
                             items={[
                                 {
-                                    id: "delete",
+                                    id: "delete-" + item.id,
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {},
+                                    onClick: () => {
+                                        console.log("rename 2")
+
+                                    },
+                                },
+                                {
+                                    id: "rename-" + item.id,
+                                    icon: Shape.Pencil,
+                                    text: "Rename",
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        item.isRename = true
+                                    },
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open contextmenu={open} kind={FilesItemKind.Folder} info={item} />
+                            <FileFolder 
+                                slot="content" 
+                                let:open 
+                                on:contextmenu={e => {
+                                        isContextMenuOpen = true
+                                        open(e)
+                                    }
+                                } 
+                                kind={FilesItemKind.Folder} 
+                                info={item}
+                                on:rename={async e => {
+                                    const newName = e.detail
+                                    item.name = newName
+                                    item.isRename = false
+                                    await createNewDirectory(item)
+                                }}
+                                isEditing={item.isRename}
+                            />
                         </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile
@@ -307,6 +511,15 @@
                 border: var(--border-width) solid var(--primary-color);
                 user-select: none;
             }
+        }
+        .folder-back {
+            width: fit-content;
+            margin: 10px;
+        }
+        .folderList {
+            list-style-type: none;
+            width: fit-content;
+            margin-left: -40px;
         }
 
         .content {

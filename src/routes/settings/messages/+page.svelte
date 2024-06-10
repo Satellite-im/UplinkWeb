@@ -15,22 +15,25 @@
 </script>
 
 <div id="page">
-    <SettingSection name={$_("settings.messages.convertToEmoji")} description={$_("settings.messages.convertToEmojiDescription")}>
+    <SettingSection hook="section-convert-to-emoji" name={$_("settings.messages.convertToEmoji")} description={$_("settings.messages.convertToEmojiDescription")}>
         <Switch
+            hook="checkbox-convert-to-emoji"
             on={settings ? settings.messaging.convertEmoji : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, convertEmoji: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name={$_("settings.messages.markdownSupport")} description={$_("settings.messages.markdownSupportDescription")}>
+    <SettingSection hook="section-markdown-support" name={$_("settings.messages.markdownSupport")} description={$_("settings.messages.markdownSupportDescription")}>
         <Switch
+            hook="checkbox-markdown-support"
             on={settings ? settings.messaging.markdownSupport : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, markdownSupport: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name={$_("settings.messages.spamRejection")} description={$_("settings.messages.spamRejectionDescription")}>
+    <SettingSection hook="section-spam-bot-detection" name={$_("settings.messages.spamRejection")} description={$_("settings.messages.spamRejectionDescription")}>
         <Switch
+            hook="checkbox-spam-bot-detection"
             on={settings ? settings.messaging.spamRejection : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, spamRejection: on.detail } })

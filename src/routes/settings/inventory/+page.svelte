@@ -16,11 +16,12 @@
 
 <div id="page">
     <div class="equipped">
-        <Label text="Equipped Items" />
+        <Label hook="label-inventory-equipped-items" text="Equipped Items" />
         <div class="items">
             <div class="item">
-                <Label text="Frame" />
+                <Label hook="label-inventory-frame" text="Frame" />
                 <InventoryItem
+                    hook="inventory-profile-picture-frame"
                     equipped={true}
                     kind={InventoryKind.Frame}
                     name={user.profile.photo.frame.name}
@@ -35,10 +36,11 @@
             </div>
         </div>
     </div>
-    <Label text="Frames" />
+    <Label hook="label-inventory-frames" text="Frames" />
     <div class="frames">
         {#each mock_frames as frame}
             <InventoryItem
+                hook="inventory-frame"
                 equipped={user.profile.photo.frame.image === frame.image}
                 kind={InventoryKind.Frame}
                 name={frame.name}
@@ -49,7 +51,7 @@
                 }} />
         {/each}
     </div>
-    <Label text="Profile Overlays" />
+    <Label hook="label-profile-overlays" text="Profile Overlays" />
 </div>
 
 <style lang="scss">

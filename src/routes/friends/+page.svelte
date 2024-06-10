@@ -2,7 +2,7 @@
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
     import { ChatPreview, ContextMenu, Modal } from "$lib/components"
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
-    import { Appearance, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, MessageDirection, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import type { Chat, User } from "$lib/types"
@@ -12,6 +12,12 @@
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
+    import { onMount } from "svelte"
+    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import Key from "$lib/components/settings/Key.svelte"
+    import Toast from "$lib/elements/Toast.svelte"
 
     // Initialize locale
     initLocale()
@@ -20,6 +26,8 @@
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let friends: User[] = get(Store.state.friends)
     let blocked: User[] = get(Store.state.blocked)
+    let incomingRequests: FriendRequest[] = Store.inboundRequests
+    let outgoingRequests: FriendRequest[] = Store.outboundRequests
 
     let tab: string = "all"
 
@@ -41,10 +49,85 @@
     }
 
     let sentRequest: boolean
+    let sentRequestError: WarpError | undefined
     let requestString: string
-    let submitRequest = function () {
-        sentRequest = true
+    let submitRequest = async function () {
+        get(Store.state.logger).info("Sending friend request to " + requestString)
+        let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
+        requestSent.fold(
+            (e: WarpError) => {
+                sentRequestError = e
+                sentRequest = true
+            },
+            () => {
+                sentRequest = true
+                sentRequestError = undefined
+            }
+        )
     }
+
+   let acceptRequest = async function (friendUser: User) {
+        let friendRequestAccepted = await MultipassStoreInstance.acceptFriendRequest(friendUser.key)
+        friendRequestAccepted.onSuccess(() => {
+            Store.acceptRequest(friendUser)
+        })
+    }
+
+    let denyRequest = async function (friendUser: User) {
+        let friendRequestDenied = await MultipassStoreInstance.denyFriendRequest(friendUser.key)
+        friendRequestDenied.onSuccess(() => {
+            Store.denyRequest(friendUser)
+        })
+    }
+
+    let cancelRequest = async function (friendUser: User) {
+        let friendRequestCancelled = await MultipassStoreInstance.cancelFriendRequest(friendUser.key)
+        friendRequestCancelled.onSuccess(() => {
+            Store.cancelRequest(friendUser)
+        })
+    }
+
+    let removeFriend = async function (friendUser: User) {
+        let friendRemoved = await MultipassStoreInstance.removeFriend(friendUser.key)
+        friendRemoved.onSuccess(() => {
+            Store.removeFriend(friendUser)
+        })
+    }
+
+    let blockUser = async function (friendUser: User) {
+        let userBlocked = await MultipassStoreInstance.blockUser(friendUser.key)
+        userBlocked.onSuccess(() => {
+            Store.blockUser(friendUser)
+        })
+    }
+
+    let unblockUser = async function (friendUser: User) {
+        let userUnblocked = await MultipassStoreInstance.unblockUser(friendUser.key)
+        userUnblocked.onSuccess(() => {
+            Store.unblockUser(friendUser)
+        })
+    }
+
+    async function fetchFriendsAndRequests() {
+        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
+        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
+        let blockedUsers: Array<any> = await MultipassStoreInstance.listBlockedFriends()
+        let friends = await MultipassStoreInstance.listFriends()
+        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+        Store.setFriends(friends)
+        Store.setBlockedUsers(blockedUsers)
+    }
+
+
+    onMount(() => {
+        let intervalId = setInterval(() => {
+            fetchFriendsAndRequests();
+        }, 2000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    });
 
     let searchString: string = ""
 
@@ -66,6 +149,10 @@
         searchResult = fuse.search(searchString)
     }
 
+    Store.state.activeRequests.subscribe(r => {
+        incomingRequests = r.filter(r => r.direction === MessageDirection.Inbound)
+        outgoingRequests = r.filter(r => r.direction === MessageDirection.Outbound)
+    })
     Store.state.friends.subscribe(f => (friends = f))
     Store.state.blocked.subscribe(u => (blocked = u))
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
@@ -73,6 +160,15 @@
     UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe(c => (activeChat = c))
+
+    async function copy_did(short: boolean) {
+        let user = get(Store.state.user)
+        if (short) {
+            await navigator.clipboard.writeText(`${user.name}#${user.id.short}`)
+        } else {
+            await navigator.clipboard.writeText(`${user.key}`)
+        }
+    }
 </script>
 
 <div id="page">
@@ -95,9 +191,15 @@
                 </Button>
             </svelte:fragment>
             <div class="request-sent">
-                <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
-                <Text size={Size.Large}>Request Dispatched!</Text>
-                <Text muted>Your request is making it's way to {requestString}.</Text>
+                {#if sentRequestError != undefined}
+                    <Icon size={Size.Largest} icon={Shape.XMark} highlight={Appearance.Error} />
+                    <Text size={Size.Large}>Error!</Text>
+                    <Text muted>{sentRequestError}</Text>
+                {:else}
+                    <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
+                    <Text size={Size.Large}>Request Dispatched!</Text>
+                    <Text muted>Your request is making it's way to {requestString}.</Text>
+                {/if}
             </div>
         </Modal>
     {/if}
@@ -132,7 +234,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
@@ -158,12 +260,31 @@
                     <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} bind:value={requestString}>
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Button appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
+                    <Button hook="button-add-friend" appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
                         <Icon icon={Shape.Plus} />
                     </Button>
-                    <Button appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")}>
-                        <Icon icon={Shape.Clipboard} />
-                    </Button>
+                    <ContextMenu
+                        hook="context-menu-copy-id"
+                        items={[
+                            {
+                                id: "copy-id",
+                                icon: Shape.Users,
+                                text: $_("settings.profile.copy_id"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(true),
+                            },
+                            {
+                                id: "copy-did",
+                                icon: Shape.Clipboard,
+                                text: $_("settings.profile.copy_did"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(false),
+                            },
+                        ]}>
+                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                            <Icon icon={Shape.Clipboard} />
+                        </Button>
+                    </ContextMenu>
                 </div>
 
                 <Label text={$_("friends.search_friends_placeholder")} />
@@ -193,7 +314,7 @@
                                             appearance={Appearance.Alt}
                                             tooltip={$_("generic.remove")}
                                             on:click={_ => {
-                                                Store.removeFriend(result.item)
+                                                removeFriend(result.item)
                                             }}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
@@ -202,7 +323,7 @@
                                             appearance={Appearance.Alt}
                                             tooltip={$_("friends.block")}
                                             on:click={_ => {
-                                                Store.blockUser(result.item)
+                                                blockUser(result.item)
                                             }}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
@@ -229,10 +350,10 @@
                                             }}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>
-                                        <Button icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => Store.removeFriend(friend)}>
+                                        <Button icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => removeFriend(friend)}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
-                                        <Button icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => Store.blockUser(friend)}>
+                                        <Button icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => blockUser(friend)}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
                                     </svelte:fragment>
@@ -244,32 +365,32 @@
             {:else if tab === "active"}
                 <div class="section column">
                     <Label text={$_("friends.outgoing_requests")} />
-                    {#each Store.outboundRequests as request}
+                    {#each outgoingRequests as request}
                         <Friend friend={request.to}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Alt} text={$_("generic.cancel")} on:click={_ => Store.cancelRequest(request.to)}>
+                                <Button appearance={Appearance.Alt} text={$_("generic.cancel")} on:click={_ => cancelRequest(request.to)}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
-                    {#if Store.outboundRequests.length === 0}
+                    {#if outgoingRequests.length === 0}
                         <Text>No outbound requests.</Text>
                     {/if}
                     <Label text={$_("friends.incoming_requests")} />
-                    {#each Store.inboundRequests as request}
+                    {#each incomingRequests as request}
                         <Friend friend={request.from}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Success} text={$_("generic.accept")} on:click={_ => Store.acceptRequest(request.from)}>
+                                <Button appearance={Appearance.Success} text={$_("generic.accept")} on:click={_ => acceptRequest(request.from)}>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
-                                <Button appearance={Appearance.Alt} text={$_("generic.deny")} on:click={_ => Store.denyRequest(request.from)}>
+                                <Button appearance={Appearance.Alt} text={$_("generic.deny")} on:click={_ => denyRequest(request.from)}>
                                     <Icon icon={Shape.XMark} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
-                    {#if Store.inboundRequests.length === 0}
+                    {#if incomingRequests.length === 0}
                         <Text>No inbound requests.</Text>
                     {/if}
                 </div>
@@ -279,13 +400,13 @@
                     {#each blocked as user}
                         <Friend friend={user}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Alt} text={$_("friends.unblock")} on:click={_ => Store.unblockUser(user)}>
+                                <Button appearance={Appearance.Alt} text={$_("friends.unblock")} on:click={_ => unblockUser(user)}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
-                    {#if Store.blockedUsers.length === 0}
+                    {#if blocked.length === 0}
                         <Text>No users blocked.</Text>
                     {/if}
                 </div>

@@ -3,7 +3,7 @@
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
-    import { ProfilePicture, OrderedPhrase } from "$lib/components"
+    import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/store"
     import type { User } from "$lib/types"
@@ -11,6 +11,7 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
+    import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onDestroy, onMount } from "svelte"
 
@@ -37,12 +38,14 @@
         userReference.name = newUsername
         Store.setUsername(newUsername)
         await MultipassStoreInstance.updateUsername(newUsername)
+        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
     }
 
     async function updateStatusMessage(newStatusMessage: string) {
         userReference.profile.status_message = newStatusMessage
         Store.setStatusMessage(newStatusMessage)
         await MultipassStoreInstance.updateStatusMessage(newStatusMessage)
+        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
     }
 
     function updatePendentItemsToSave() {
@@ -95,6 +98,15 @@
     }
 
     let unsavedChanges: boolean
+    let profile_update_txt = $_("settings.profile.update")
+
+    async function copy_did(short: boolean) {
+        if (short) {
+            await navigator.clipboard.writeText(`${userReference.name}#${userReference.id.short}`)
+        } else {
+            await navigator.clipboard.writeText(`${userReference.key}`)
+        }
+    }
 </script>
 
 <div id="page">
@@ -121,6 +133,7 @@
                         await updateUsername(user.name)
                         await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
+                        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
@@ -132,8 +145,8 @@
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div
-            data-cy="profile-banner"
             class="profile-header"
+            data-cy="profile-banner"
             style="background-image: url('{user.profile.banner.image}')"
             on:click={_ => {
                 fileinput.click()
@@ -163,7 +176,6 @@
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
                             on:enter={async _ => {
-                                // TODO: Toast
                                 await updateUsername(user.name)
                                 updatePendentItemsToSave()
                             }}
@@ -172,11 +184,29 @@
                                 unsavedChanges = changeList.username || changeList.statusMessage
                             }} />
                     </div>
-                    <div class="short-id">
-                        <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
-                            <Icon icon={Shape.Hashtag} alt muted />
-                        </Input>
-                    </div>
+                    <ContextMenu
+                        items={[
+                            {
+                                id: "copy-id",
+                                icon: Shape.Users,
+                                text: $_("settings.profile.copy_id"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(true),
+                            },
+                            {
+                                id: "copy-did",
+                                icon: Shape.Clipboard,
+                                text: $_("settings.profile.copy_did"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(false),
+                            },
+                        ]}>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                            <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
+                                <Icon icon={Shape.Hashtag} alt muted />
+                            </Input>
+                        </div>
+                    </ContextMenu>
                 </div>
             </div>
             <div class="section">
@@ -188,7 +218,6 @@
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
                     on:enter={async _ => {
-                        // TODO: Toast
                         await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
                     }}
@@ -200,7 +229,7 @@
             <div class="section">
                 <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
                     <Select
-                        hook="settings-profile-status-select"
+                        hook="selector-current-status-{user.profile.status}"
                         options={[
                             { text: $_("user.status.online"), value: "online" },
                             { text: $_("user.status.offline"), value: "offline" },
@@ -218,6 +247,7 @@
                                 case "do-not-disturb":
                                     return Store.setActivityStatus(Status.DoNotDisturb)
                             }
+                            Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                         }}
                         bind:selected={user.profile.status}>
                         {#if activityStatus === Status.Online}

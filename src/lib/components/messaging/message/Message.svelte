@@ -7,12 +7,10 @@
     export let morePadding: boolean = false
 
     export let position: MessagePosition = MessagePosition.Middle
-
-    export let contextmenu: (evt: MouseEvent) => void = _ => {}
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div on:contextmenu={contextmenu} class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''}">
+<div on:contextmenu class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''}">
     <div class="content">
         <slot></slot>
     </div>

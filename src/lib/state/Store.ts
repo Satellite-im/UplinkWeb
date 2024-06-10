@@ -8,6 +8,9 @@ import { get, writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
+import * as wasm from "warp-wasm"
+import { ToastMessage } from "./ui/toast"
+import { v4 as uuidv4 } from "uuid"
 import { Logger } from "$lib/utils/Logger"
 
 class GlobalStore {
@@ -30,11 +33,29 @@ class GlobalStore {
             activeRequests: createPersistentState("uplink.requests", []),
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
-            logger: createPersistentState(
-                "uplink.log",
-                new Logger({ relay_to_js_console: true })
-            )
+            openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
+            logger: createPersistentState("uplink.log", new Logger({ relay_to_js_console: true })),
+            toasts: createPersistentState("uplink.toasts", {}),
         }
+    }
+
+    setUserFromIdentity(identity: wasm.Identity) {
+        let userFromIdentity: User = {
+            ...defaultUser,
+            id: {short: identity.short_id()},
+            name: identity.username(),
+            key: identity.did_key(),
+            profile: {
+                ...defaultUser.profile,
+                status: Status.Online,
+                status_message: identity.status_message() || "",
+            },
+        }
+        this.state.user.update(u => (u = userFromIdentity))
+    }
+
+    updateOwnIdentity(identity: User) {
+        this.state.user.set(identity)
     }
 
     setUsername(name: string) {
@@ -44,26 +65,26 @@ class GlobalStore {
     setStatusMessage(message: string) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status_message: message,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status_message: message,
+                    },
+                })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status: status,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status: status,
+                    },
+                })
         )
     }
 
@@ -137,7 +158,9 @@ class GlobalStore {
     updateFileOrder(newOrder: FileInfo[]) {
         this.state.files.set(newOrder)
     }
-
+    updateFolderTree(newFolderTree: Record<string, boolean>) {
+        this.state.openFolders.set(newFolderTree)
+    }
     addFriend(user: User) {
         const currentFriends = get(this.state.friends)
         const currentRequests = get(this.state.activeRequests)
@@ -161,6 +184,58 @@ class GlobalStore {
     denyRequest(user: User) {
         const currentRequests = get(this.state.activeRequests)
         this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
+    }
+
+    setFriends(friends: Array<any>) {
+        let friendsList: Array<User> = []
+        friends.forEach(friend => {
+            friendsList.push({
+                ...defaultUser,
+                name: friend,
+                key: friend,
+            })
+        })
+        
+        this.state.friends.set(friendsList)
+    }
+
+    setFriendRequests(incomingFriendRequests: Array<any>, outgoingFriendRequests: Array<any>) {
+        let user = get(this.state.user)
+
+        const createFriendRequests = (friendRequests: Array<any>, direction: MessageDirection): FriendRequest[] => {
+            return friendRequests.map(friendDid => {
+                let friendUser: User = {
+                    ...defaultUser,
+                    name: friendDid,               
+                    key: friendDid,
+                }
+                return {
+                    at: new Date(),
+                    from: direction === MessageDirection.Inbound ? friendUser : user,
+                    to: direction === MessageDirection.Inbound ? user : friendUser,
+                    direction: direction
+                }
+            })
+        }
+    
+        let incomingRequests = createFriendRequests(incomingFriendRequests, MessageDirection.Inbound)
+        let outgoingRequests = createFriendRequests(outgoingFriendRequests, MessageDirection.Outbound)
+    
+        let allFriendRequests = new Set([...incomingRequests, ...outgoingRequests])
+
+        this.state.activeRequests.set(Array.from(allFriendRequests.values()))
+    }
+
+    setBlockedUsers(blockedUsers: Array<any>) {
+        let blockedUsersList: Array<User> = []
+        blockedUsers.forEach(blockedUser => {
+            blockedUsersList.push({
+                ...defaultUser,
+                name: blockedUser,
+                key: blockedUser,
+            })
+        })
+        this.state.blocked.set(blockedUsersList)
     }
 
     cancelRequest(user: User) {
@@ -187,6 +262,40 @@ class GlobalStore {
         if (!currentFavorites.find(c => c.id === chat.id)) {
             this.state.favorites.set([...currentFavorites, chat])
         }
+    }
+
+    addToastNotification(toast: ToastMessage) {
+        let toasts = get(this.state.toasts)
+        let id = uuidv4()
+        let timeout = setTimeout(() => {
+            this.removeToast(id)
+        }, toast.remaining_time * 1000)
+        this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
+    }
+
+    pauseToastTimeout(id: string) {
+        let toasts = get(this.state.toasts)
+        if (id in toasts) {
+            clearTimeout(toasts[id][1])
+        }
+    }
+
+    resumeToastTimeout(id: string) {
+        let toasts = get(this.state.toasts)
+        if (id in toasts) {
+            let toast = toasts[id][0]
+            let timeout = setTimeout(() => {
+                this.removeToast(id)
+            }, toast.remaining_time * 1000)
+            this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
+        }
+    }
+
+    removeToast(id: string) {
+        this.state.toasts.update(toasts => {
+            delete toasts[id]
+            return toasts
+        })
     }
 
     removeFavorite(chat: Chat) {
