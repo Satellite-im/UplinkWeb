@@ -6,6 +6,7 @@
     import { WarpStore } from "$lib/wasm/WarpStore"
     import { get } from "svelte/store"
     import { _ } from "svelte-i18n"
+    import Controls from "$lib/layouts/Controls.svelte"
 
     type onClose = () => {}
     export let close: onClose | undefined = undefined
@@ -97,21 +98,23 @@
                     {#if relayToAdd !== "" && !verifyAddress(relayToAdd)}
                         <div class="error">{$_("settings.relay.invalid_address")}</div>
                     {/if}
-                    <Button
-                        icon
-                        class="cancel"
-                        appearance={Appearance.Alt}
-                        on:click={_ => {
-                            nameToAdd = ""
-                            relayToAdd = ""
-                            adding = false
-                            editing = undefined
-                        }}>
-                        <Icon icon={Shape.UTurn} />
-                    </Button>
-                    <Button icon class="save" appearance={Appearance.Alt} on:click={add}>
-                        <Icon icon={Shape.CheckMark} />
-                    </Button>
+                    <Controls>
+                        <Button
+                            text={$_("generic.cancel")}
+                            class="cancel"
+                            appearance={Appearance.Alt}
+                            on:click={_ => {
+                                nameToAdd = ""
+                                relayToAdd = ""
+                                adding = false
+                                editing = undefined
+                            }}>
+                            <Icon icon={Shape.XMark} />
+                        </Button>
+                        <Button class="save" appearance={Appearance.Primary} on:click={add} text={$_("generic.add")}>
+                            <Icon icon={Shape.CheckMark} />
+                        </Button>
+                    </Controls>
                 </div>
             </Modal>
         {/if}
