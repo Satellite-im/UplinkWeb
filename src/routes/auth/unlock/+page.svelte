@@ -25,6 +25,7 @@
     let scramble = true
 
     let showAccounts = false
+    let showConfigureRelay = false
 
     async function auth(pin: string) {
         loading = true
@@ -67,6 +68,12 @@
         </Modal>
     {/if}
 
+    {#if showConfigureRelay}
+        <Modal hook="modal-select-relay" on:close={_ => (showConfigureRelay = false)} padded>
+            <RelaySelector />
+        </Modal>
+    {/if}
+
     {#if loading}
         <Label text={$_("generic.loading")} />
     {:else}
@@ -84,12 +91,12 @@
             await auth(e.detail)
         }} />
 
-    <div class="relay-selector-wrap">
-        <RelaySelector />
-    </div>
     <div class="switch-profile">
-        <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)}>
+        <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)} appearance={Appearance.Alt}>
             <Icon icon={Shape.Profile} />
+        </Button>
+        <Button tooltip="Configure Relay" hook="button-configure-relay" icon on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt}>
+            <Icon icon={Shape.Relay} />
         </Button>
     </div>
 </div>

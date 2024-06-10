@@ -98,6 +98,7 @@
                         <div class="error">{$_("settings.relay.invalid_address")}</div>
                     {/if}
                     <Button
+                        icon
                         class="cancel"
                         appearance={Appearance.Alt}
                         on:click={_ => {
@@ -108,7 +109,7 @@
                         }}>
                         <Icon icon={Shape.UTurn} />
                     </Button>
-                    <Button class="save" appearance={Appearance.Alt} on:click={add}>
+                    <Button icon class="save" appearance={Appearance.Alt} on:click={add}>
                         <Icon icon={Shape.CheckMark} />
                     </Button>
                 </div>
@@ -119,7 +120,7 @@
                 <div class="relay-name" data-tooltip={relay.address}>
                     <Text>{name}</Text>
                 </div>
-                <Button class="relay-toggle" small appearance={!relay.active ? Appearance.Alt : Appearance.Success} on:click={_ => toggleRelay(name)}>
+                <Button icon class="relay-toggle" small appearance={!relay.active ? Appearance.Alt : Appearance.Success} on:click={_ => toggleRelay(name)}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
                 <Button
@@ -133,7 +134,7 @@
                     }}>
                     <Icon icon={Shape.Preferences} />
                 </Button>
-                <Button class="relay-delete" small appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
+                <Button icon class="relay-delete" small appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
                     <Icon icon={Shape.Trash} />
                 </Button>
             </div>
@@ -151,16 +152,18 @@
             <Button
                 class="relay-add"
                 appearance={Appearance.Alt}
+                text={$_("generic.add")}
                 on:click={_ => {
                     adding = true
                 }}>
                 <Icon icon={Shape.Plus} />
             </Button>
             <div class="filling"></div>
-            <Button class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
+            <Button icon class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
                 <Icon icon={Shape.UTurn} />
             </Button>
             <Button
+                icon
                 class="relay-save"
                 appearance={Appearance.Alt}
                 tooltip={$_("generic.save")}
@@ -173,6 +176,7 @@
             </Button>
             {#if close}
                 <Button
+                    icon
                     class="cancel"
                     appearance={Appearance.Alt}
                     tooltip={$_("generic.cancel")}
@@ -203,6 +207,7 @@
             width: 100%;
             height: 0;
         }
+
         .relay-entry {
             display: flex;
             gap: var(--gap);
@@ -250,7 +255,6 @@
         }
 
         .relay-add-modal {
-            background-color: var(--alt-color);
             display: flex;
             flex-direction: column;
             gap: var(--gap-less);
