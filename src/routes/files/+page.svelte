@@ -39,7 +39,6 @@
     $: openFolders = get(Store.state.openFolders)
 
     function toggleFolder(folderId: string | number) {
-        console.log(folderId)
         const currentOpenFolders = openFolders
         const updatedOpenFolders = {
             ...currentOpenFolders,
