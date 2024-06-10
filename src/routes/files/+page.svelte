@@ -145,7 +145,8 @@
         folderStackStore.update(folders => {
             const newFolders = folders.map(folderStack => {
                 if (Array.isArray(folderStack)) {
-                    return [...folderStack, createNewFolder]
+                    let files = get(Store.state.files)
+                    return [createNewFolder, ...files]
                 }
                 return folderStack
             })
