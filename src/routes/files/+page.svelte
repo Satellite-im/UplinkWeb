@@ -295,7 +295,6 @@
         event.preventDefault()
         dragging_files = 0
         // upload files
-        console.log("dropping files ", event.dataTransfer?.files)
     }
 
     function onSearchEnter() {
