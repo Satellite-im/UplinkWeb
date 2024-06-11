@@ -60,23 +60,29 @@
     const folderStackStore = writable<FileInfo[][]>([allFiles])
     folderStackStore.subscribe(folderStack => {
         currentFiles = folderStack[folderStack.length - 1]
-        console.log("currentFiles", currentFiles)
     })
 
     function openFolder(folder: FileInfo) {
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-            const newStack = [...stack, folder.items || []]
+            const newStack = [...stack, folder.items]
             return newStack
         })
     }
 
     function goBack() {
         folderStackStore.update(stack => {
-            if (stack.length > 1) {
-                stack.pop()
-            }
-            return stack
+        if (stack.length > 1) {
+            stack.pop()
+        }
+        stack.forEach(sta => {
+            sta.forEach(files => {
+                if (files.parentId === ""){
+                    currentFolderIdStore.set("")
+                }
+            })
+        })
+        return stack
         })
     }
 
@@ -91,7 +97,6 @@
             err => {
                 removeFolderFromStak(folder)
                 // TODO: Add UI feedback
-                console.error("Error creating directory", err)
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
@@ -100,14 +105,14 @@
                         if (Array.isArray(folderStack)) {
                             return folderStack.map(file => {
                                 if (file.id === folder.id) {
-                                    console.log("rename folder", folder)
+                                    toggleFolder(folder.id)
                                     Store.state.files.update(files => {
-                                        const exists = files.some(file => file.id === folder.id);
+                                        const exists = files.some(file => file.id === folder.id)
                                         if (!exists) {
-                                            return [...files, folder];
+                                            return [...files, folder]
                                         }
-                                        return files;
-                                    });
+                                        return files
+                                    })
                                     return folder
                                 }
                                 return file
@@ -115,7 +120,6 @@
                         }
                         return folderStack
                     })
-                    console.log("newFolders: ", newFolders)
                     return newFolders
                 })
             }
@@ -143,15 +147,55 @@
             source: "",
             isRename: true,
             items: [],
-            parentId: "",
+            parentId: $currentFolderIdStore
         }
+
+    function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
+            if (parentId === "") {
+                return [...folders, createNewFolder]
+            }
+        return folders.map(folder => {
+            if (folder.id === parentId && folder.type === 'folder' && folder.items) {
+                toggleFolder(createNewFolder.id)
+                return {
+                    ...folder,
+                    items: [...folder.items, createNewFolder]
+                }
+            }
+            if (folder.items && folder.items.length > 0) {
+                return {
+                    ...folder,
+                    items: insertIntoFolder(folder.items, parentId)
+                }
+            }
+            return folder
+        })
+    }
+
         folderStackStore.update(folders => {
-            const newFolders = folders.map(folderStack => {
+            let newFolders = folders.map(folderStack => {
                 if (Array.isArray(folderStack)) {
-                    return [...folderStack, createNewFolder]
+                    return insertIntoFolder(folderStack, $currentFolderIdStore)
                 }
                 return folderStack
             })
+            for (let i = 1; i < newFolders.length; i++) {
+                let prevArray = newFolders[i - 1]
+                let currArray = newFolders[i]
+                const parentItem = prevArray.find(item => {
+                    if (currArray.length === 0) {
+                        newFolders[i].push(createNewFolder)
+                    }
+                    return item.id === currArray[0].parentId
+                })
+                if (newFolders[i].length === 0 ) {
+                            currArray = [...parentItem.items]
+                        }
+                if (parentItem && parentItem.items) {
+                    newFolders[i] = [...parentItem.items]
+                }
+                Store.updateFolderTree(newFolders)
+            }
             return newFolders
         })
     }
@@ -168,7 +212,6 @@
     }
 
     $: if (isContextMenuOpen || !isContextMenuOpen) {
-        console.log("isContextMenuOpen: ", isContextMenuOpen)
         recreateSortable()
     }
 
@@ -420,18 +463,18 @@
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
-                        <!-- <ContextMenu
+                        <ContextMenu
                             items={[
                                 {
                                     id: "delete",
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {},
+                                    onClick: () => {console.log("delete everything")},
                                 },
                             ]}>
                             <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
-                        </ContextMenu> -->
+                        </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
                             hook="context-menu-folder-{item.id}"
