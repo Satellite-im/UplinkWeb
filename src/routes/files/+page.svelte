@@ -99,11 +99,11 @@
                             return folderStack.map(file => {
                                 if (file.id === folder.id) {
                                     Store.state.files.update(files => {
-                                        const exists = files.some(file => file.id === folder.id);
+                                        const exists = files.some(file => file.id === folder.id)
                                         if (!exists) {
-                                            return [...files, folder];
+                                            return [...files, folder]
                                         }
-                                        return files;
+                                        return files
                                     });
                                     return folder
                                 }
@@ -267,7 +267,6 @@
                 }
             })
         filesSet = new Set(filesInfo)
-        console.log(filesSet)
         Store.state.files.set(Array.from(filesSet))
         currentFiles = Array.from(filesSet)
        })
@@ -472,7 +471,6 @@
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
                 <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")} on:click={() => {
-                    console.log("upload")
                     filesToUpload?.click()
                 }}>
                     <Icon icon={Shape.Plus}
