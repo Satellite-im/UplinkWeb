@@ -92,6 +92,12 @@ export const enum Size {
     Largest = "largest",
 }
 
+export const enum TooltipPosition {
+    LEFT,
+    MIDDLE,
+    RIGHT,
+}
+
 export const enum MessagePosition {
     First = "first",
     Middle = "middle",

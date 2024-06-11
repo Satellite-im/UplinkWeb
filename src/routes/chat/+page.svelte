@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
     import { mock_users } from "$lib/mock/users"
@@ -199,7 +199,7 @@
 
         <div class="content-header">
             <Label hook="label-sidebar-chats" text={$_("chat.chat_plural")} />
-            <Button hook="button-create-group-chat" icon small tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
+            <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>
