@@ -267,7 +267,6 @@
                 }
             })
         filesSet = new Set(filesInfo)
-        console.log(filesSet)
         Store.state.files.set(Array.from(filesSet))
         currentFiles = Array.from(filesSet)
        })
@@ -296,7 +295,6 @@
         event.preventDefault()
         dragging_files = 0
         // upload files
-        console.log("dropping files ", event.dataTransfer?.files)
     }
 
     function onSearchEnter() {
@@ -472,7 +470,6 @@
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
                 <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")} on:click={() => {
-                    console.log("upload")
                     filesToUpload?.click()
                 }}>
                     <Icon icon={Shape.Plus}
