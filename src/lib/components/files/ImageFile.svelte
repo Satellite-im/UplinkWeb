@@ -8,15 +8,15 @@
     function onClick(event: MouseEvent) {
         dispatch("click", event)
     }
-
+    export let ImgSource: string = ""
     export let name: string = "UNKNOWN"
-    export let filesize: number = 9821239999999999999999 // Intentionally alarming to signify error
+    export let filesize: number = 9821239
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="image-file" on:click={onClick}>
-    <img class="preview" src="/assets/library.avif" alt="preview" />
+    <img class="preview" src={ImgSource} alt="preview" />
     <input type="text" value={name} />
     <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
 </div>

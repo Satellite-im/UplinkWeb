@@ -194,7 +194,7 @@
                 if (parentItem && parentItem.items) {
                     newFolders[i] = [...parentItem.items]
                 }
-                Store.updateFolderTree(newFolders)
+                // Store.updateFolderTree(newFolders)
             }
             return newFolders
         })
@@ -525,6 +525,7 @@
                         <ImageFile
                             filesize={item.size}
                             name={item.name}
+                            ImgSource={item.source}
                             on:click={_ => {
                                 previewImage = item.source
                             }} />

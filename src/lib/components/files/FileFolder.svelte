@@ -84,7 +84,7 @@
                 bind:this={inputRef}
             />
         {:else}
-            <div>{name}</div>
+            <div class="file_text">{name}</div>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
@@ -122,6 +122,13 @@
                 background-color: var(--alt-color);
                 outline: none;
             }
+        }
+        .file_text {
+            width: 100%;
+            align-self: center;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         :global(.svg-icon) {
