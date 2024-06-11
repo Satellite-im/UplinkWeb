@@ -74,6 +74,19 @@ class ConstellationStore {
         }
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
+
+    async renameItem(old_name: string, new_name: string): Promise<Result<WarpError, void>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                await constellation.rename(old_name, new_name)
+                return success(undefined)
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
 }
 
 export const ConstellationStoreInstance = new ConstellationStore(WarpStore.warp.constellation);

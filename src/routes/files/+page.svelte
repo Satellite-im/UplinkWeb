@@ -294,11 +294,13 @@
                         name: item!.name(),
                         size: item!.size(),
                         isRename: false,
+                        extension: item.is_file() ? item.get_file().file_type() : "",
                         source: "",
                         items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
                     }
                     filesInfo = [...filesInfo, newItem]
             })
+        console.log(filesInfo)
         return filesInfo
     }
 
@@ -367,6 +369,29 @@
             },
             _ => {
                 getCurrentDirectoryFiles()
+            }
+        )
+    }
+
+    async function renameItem(old_name: string, new_name: string) {
+        if (new_name === "") {
+            Store.addToastNotification(new ToastMessage("", "Invalid name provided", 2))
+            return
+        }
+        let result = await ConstellationStoreInstance.renameItem(old_name, new_name)
+        result.fold(
+            err => {
+                // TODO(Lucas): Error not mapped yet
+                Store.addToastNotification(new ToastMessage("", err, 2))
+            },
+            _ => {
+                currentFiles = currentFiles.map(file => {
+                    if (file.name === old_name) {
+                        file.name = new_name
+                        file.isRename = false
+                    }
+                    return file
+                })
             }
         )
     }
@@ -542,14 +567,38 @@
                                         deleteItem(item.name)
                                     },
                                 },
+                                {
+                                    id: "rename-" + item.id,
+                                    icon: Shape.Pencil,
+                                    text: "Rename",
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        currentFiles = currentFiles.map(file => {
+                                            if (file.id === item.id) {
+                                                file.isRename = true
+                                            } else {
+                                                file.isRename = false
+                                            }
+                                            return file
+                                        })
+                                    },
+                                },
                             ]}>
-                            <FileFolder slot="content" 
+                            <FileFolder 
+                                itemId={item.id}
+                                slot="content" 
                                 let:open 
                                 on:contextmenu={e => {
-                                isContextMenuOpen = true
-                                open(e)
-                            }
-                            }  kind={FilesItemKind.File} info={item} />
+                                        isContextMenuOpen = true
+                                        open(e)
+                                    }
+                                }
+                                on:rename={async e => {
+                                    renameItem(item.name, e.detail)
+                                }}
+                                isEditing={item.isRename}
+                                kind={FilesItemKind.File} 
+                                info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
@@ -574,11 +623,19 @@
                                     text: "Rename",
                                     appearance: Appearance.Default,
                                     onClick: async () => {
-                                        item.isRename = true
+                                        currentFiles = currentFiles.map(file => {
+                                            if (file.id === item.id) {
+                                                file.isRename = true
+                                            } else {
+                                                file.isRename = false
+                                            }
+                                            return file
+                                        })
                                     },
                                 },
                             ]}>
                             <FileFolder 
+                                itemId={item.id}
                                 slot="content" 
                                 let:open 
                                 on:contextmenu={e => {
@@ -588,12 +645,15 @@
                                 } 
                                 kind={FilesItemKind.Folder} 
                                 info={item}
-                                on:rename={async e => {
-                                    // TODO(Lucas): Working just for creating new folder for now
-                                    const newName = e.detail
-                                    item.name = newName
-                                    item.isRename = false
-                                    await createNewDirectory(item)
+                                on:rename={async e => { 
+                                    if (item.name === "" && e.detail !== "") {
+                                        const newName = e.detail
+                                        item.name = newName
+                                        item.isRename = false
+                                        await createNewDirectory(item)
+                                    } else if (e.detail !== "") {
+                                        renameItem(item.name, e.detail)
+                                    }
                                 }}
                                 isEditing={item.isRename}
                             />

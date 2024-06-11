@@ -6,6 +6,7 @@
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
 
+    export let itemId: string
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
     export let name = info.name
@@ -14,6 +15,13 @@
     let inputRef: HTMLInputElement
     const dispatch = createEventDispatcher()
     let isEnterKeyPressed: boolean = false
+
+    $: if (isEditing) {
+        if (inputRef) {
+            inputRef.focus()
+            inputRef.setSelectionRange(0, inputRef.value.length);
+        }
+    }
 
     function getIcon() {
         switch (kind) {
@@ -64,6 +72,7 @@
         <Spacer less />
         {#if isEditing}
             <input 
+                id="input-{itemId}"
                 type="text" 
                 bind:value={name} 
                 on:input={updateName} 
