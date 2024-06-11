@@ -190,10 +190,11 @@
                     }
                     return item.id === currArray[0].parentId
                 })
-                if (newFolders[i].length === 0 ) {
-                            currArray = [...parentItem.items]
-                        }
+
                 if (parentItem && parentItem.items) {
+                    if (newFolders[i].length === 0 ) {
+                            currArray = [...parentItem.items]
+                    }
                     newFolders[i] = [...parentItem.items]
                 }
                 Store.updateFolderTree(newFolders)
