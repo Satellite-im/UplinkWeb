@@ -598,6 +598,7 @@
                 flex-wrap: wrap;
                 align-content: flex-start;
                 overflow-y: scroll;
+                padding: 1rem;
 
                 .draggable-item {
                     position: relative;
