@@ -68,6 +68,7 @@ export const enum SettingsRoute {
     Licenses = "/settings/licenses",
     Developer = "/settings/developer",
     Inventory = "/settings/inventory",
+    Network = "/settings/network",
 }
 
 export const enum Appearance {
@@ -89,6 +90,12 @@ export const enum Size {
     Large = "large",
     Larger = "larger",
     Largest = "largest",
+}
+
+export const enum TooltipPosition {
+    LEFT,
+    MIDDLE,
+    RIGHT,
 }
 
 export const enum MessagePosition {
@@ -135,4 +142,12 @@ export enum InventoryKind {
     Overlay = "Profile Overlay",
     Theme = "Application Theme",
     Item = "Item",
+}
+
+export enum CommunityChannelKind {
+    Text,
+    Voice,
+    Photo,
+    Files,
+    Bot,
 }

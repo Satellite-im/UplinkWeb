@@ -46,5 +46,9 @@
         margin: 0;
         flex: 1;
         gap: var(--gap);
+        :global(.relay-selector > .relay-content) {
+            background-color: var(--alt-color);
+            padding: var(--padding);
+        }
     }
 </style>

@@ -33,6 +33,13 @@
             color: var(--color-muted);
         }
 
+        &.small {
+            width: calc(var(--icon-size) / 1.5);
+            height: calc(var(--icon-size) / 1.5);
+            min-width: calc(var(--icon-size) / 1.5);
+            min-height: calc(var(--icon-size) / 1.5);
+        }
+
         &.large {
             width: var(--icon-size-large);
             height: var(--icon-size-large);

@@ -23,6 +23,7 @@
     import { goto } from "$app/navigation"
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
+    import type { Item } from "warp-wasm"
 
     initLocale()
 
@@ -66,17 +67,24 @@
     function openFolder(folder: FileInfo) {
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-            const newStack = [...stack, folder.items || []]
+            const newStack = [...stack, folder.items]
             return newStack
         })
     }
 
     function goBack() {
         folderStackStore.update(stack => {
-            if (stack.length > 1) {
-                stack.pop()
-            }
-            return stack
+        if (stack.length > 1) {
+            stack.pop()
+        }
+        stack.forEach(sta => {
+            sta.forEach(files => {
+                if (files.parentId === ""){
+                    currentFolderIdStore.set("")
+                }
+            })
+        })
+        return stack
         })
     }
 
@@ -98,13 +106,14 @@
                         if (Array.isArray(folderStack)) {
                             return folderStack.map(file => {
                                 if (file.id === folder.id) {
+                                    toggleFolder(folder.id)
                                     Store.state.files.update(files => {
                                         const exists = files.some(file => file.id === folder.id)
                                         if (!exists) {
                                             return [...files, folder]
                                         }
                                         return files
-                                    });
+                                    })
                                     return folder
                                 }
                                 return file
@@ -140,16 +149,55 @@
             source: "",
             isRename: true,
             items: [],
-            parentId: "",
+            parentId: $currentFolderIdStore
         }
+
+    function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
+            if (parentId === "") {
+                return [...folders, createNewFolder]
+            }
+        return folders.map(folder => {
+            if (folder.id === parentId && folder.type === 'folder' && folder.items) {
+                toggleFolder(createNewFolder.id)
+                return {
+                    ...folder,
+                    items: [...folder.items, createNewFolder]
+                }
+            }
+            if (folder.items && folder.items.length > 0) {
+                return {
+                    ...folder,
+                    items: insertIntoFolder(folder.items, parentId)
+                }
+            }
+            return folder
+        })
+    }
+
         folderStackStore.update(folders => {
-            const newFolders = folders.map(folderStack => {
+            let newFolders = folders.map(folderStack => {
                 if (Array.isArray(folderStack)) {
-                    let files = get(Store.state.files)
-                    return [createNewFolder, ...files]
+                    return insertIntoFolder(folderStack, $currentFolderIdStore)
                 }
                 return folderStack
             })
+            for (let i = 1; i < newFolders.length; i++) {
+                let prevArray = newFolders[i - 1]
+                let currArray = newFolders[i]
+                const parentItem = prevArray.find(item => {
+                    if (currArray.length === 0) {
+                        newFolders[i].push(createNewFolder)
+                    }
+                    return item.id === currArray[0].parentId
+                })
+                if (newFolders[i].length === 0 ) {
+                            currArray = [...parentItem.items]
+                        }
+                if (parentItem && parentItem.items) {
+                    newFolders[i] = [...parentItem.items]
+                }
+                Store.updateFolderTree(newFolders)
+            }
             return newFolders
         })
     }
@@ -236,39 +284,30 @@
         }
     }
 
+    function itemsToFileInfo(items: Item[]): FileInfo[] {
+       let filesInfo: FileInfo[] = []
+        items.forEach(item => {
+                let newItem: FileInfo = {
+                        id: item!.id(),
+                        type: item.is_file() ? 'file' : 'folder',
+                        name: item!.name(),
+                        size: item!.size(),
+                        isRename: false,
+                        source: "",
+                        items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
+                    }
+                    filesInfo = [...filesInfo, newItem]
+            })
+        return filesInfo
+    }
+
     async function getCurrentDirectoryFiles() {
        let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
-       let filesInfo: FileInfo[] = []
-       let filesSet: Set<FileInfo>
        files.onSuccess(items => {
-            items.forEach(item => {
-                if (item.file() != null) {
-                    let fileItem = item.file()
-                    let file: FileInfo = {
-                        id: fileItem!.id(),
-                        type: 'file',
-                        name: fileItem!.name(),
-                        size: fileItem!.size(),
-                        isRename: false,
-                        source: ""
-                    }
-                    filesInfo = [...filesInfo, file]
-                } else {
-                    let fileItem = item.directory()
-                    let file: FileInfo = {
-                        id: fileItem!.id(),
-                        type: 'folder',
-                        name: fileItem!.name(),
-                        size: fileItem!.size(),
-                        isRename: false,
-                        source: ""
-                    }
-                    filesInfo = [...filesInfo, file]
-                }
-            })
-        filesSet = new Set(filesInfo)
-        Store.state.files.set(Array.from(filesSet))
-        currentFiles = Array.from(filesSet)
+            let newFilesInfo = itemsToFileInfo(items)
+            let filesSet = new Set(newFilesInfo)
+            Store.state.files.set(Array.from(filesSet))
+            currentFiles = Array.from(filesSet)
        })
     }
 

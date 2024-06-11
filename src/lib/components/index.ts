@@ -33,4 +33,5 @@ export { default as Transaction } from "$lib/components/wallet/Transaction.svelt
 export { default as EncryptedNotice } from "$lib/components/messaging/EncryptedNotice.svelte"
 export { default as ChatFilter } from "$lib/components/ui/ChatFilter.svelte"
 export { default as EmojiGroup } from "$lib/components/ui/EmojiGroup.svelte"
+export { default as Channel } from "$lib/components/community/channel/Channel.svelte"
 export { default as Toasts } from "$lib/components/ui/Toasts.svelte"
