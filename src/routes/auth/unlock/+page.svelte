@@ -13,7 +13,6 @@
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { WarpStore } from "$lib/wasm/WarpStore"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { RelayStore } from "$lib/state/wasm/relays"
@@ -38,10 +37,10 @@
         await WarpStore.initWarpInstances(tesseract, addressed)
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
         ownIdentity.fold(
-            _ => {
+            (_: any) => {
                 goto(Route.NewAccount)
             },
-            _ => {
+            (_: any) => {
                 goto(Route.Pre)
             }
         )
