@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind } from "$lib/enums"
 
 export type Frame = {
     image: string
@@ -125,6 +125,17 @@ export type Chat = {
     typing_indicator: { [key: string]: Date }
     last_message_at: Date
     last_message_preview: string
+}
+
+export type CommunityChannel = {
+    icon: Shape
+    name: string
+    kind: CommunityChannelKind
+}
+
+export type CommunityChannelGroup = {
+    name: string,
+    channels: CommunityChannel[]
 }
 
 export function hashChat(chat: Chat): string {

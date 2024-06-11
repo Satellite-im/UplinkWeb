@@ -11,6 +11,7 @@ export function initLocale() {
                 remove: "Remove",
                 save: "Save",
                 cancel: "Cancel",
+                undo: "Undo",
                 copy: "Copy",
                 loading: "Loading",
                 username: "Username",
@@ -24,6 +25,7 @@ export function initLocale() {
                 profiles: "Profiles",
                 users: "Users",
                 groups: "Groups",
+                pending_changes: "Unsaved changes",
             },
             market: {
                 market: "Marketplace",
@@ -175,6 +177,13 @@ export function initLocale() {
                 licenses: {
                     description: "Both code and icons are under the MIT license.",
                     view: "View License",
+                },
+                relay: {
+                    title: "Relay config",
+                    name: "Relay name",
+                    address: "Address",
+                    name_exist: "Name already exist",
+                    invalid_address: "Invalid address",
                 },
             },
         },

@@ -1,10 +1,11 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
-    import { Appearance } from "../enums/index"
+    import { Appearance, TooltipPosition } from "../enums/index"
 
     import { Loader, Text } from "./"
 
     export let tooltip: string | null = ""
+    export let tooltipPosition: TooltipPosition = TooltipPosition.MIDDLE
     export let disabled: boolean = false
     export let rotateOnHover: boolean = false
     export let text: string = ""
@@ -19,10 +20,21 @@
     // Allow parent to override / add classes
     let clazz = ""
     export { clazz as class }
+
+    function tooltipPositionClass() {
+        switch (tooltipPosition) {
+            case TooltipPosition.LEFT:
+                return "tooltip-left"
+            case TooltipPosition.RIGHT:
+                return "tooltip-right"
+            default:
+                return ""
+        }
+    }
 </script>
 
 <button
-    class="button {fill ? 'fill' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip ? 'tooltip' : ''} {small ? 'small' : ''} {clazz || ''}"
+    class="button {fill ? 'fill' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip ? 'tooltip ' + tooltipPositionClass() : ''} {small ? 'small' : ''} {clazz || ''}"
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
@@ -100,7 +112,6 @@
             position: relative;
 
             &:before {
-                display: none;
                 content: attr(data-tooltip);
                 position: absolute;
                 bottom: calc(100% + var(--gap));
@@ -226,13 +237,13 @@
         }
 
         &.small {
-            min-height: calc(var(--input-height) / 1.5);
-            max-height: calc(var(--input-height) / 1.5);
+            min-height: calc(var(--input-height) / 2);
+            max-height: calc(var(--input-height) / 2);
             &.icon {
-                min-width: calc(var(--input-height) / 1.5);
-                max-width: calc(var(--input-height) / 1.5);
-                max-height: calc(var(--input-height) / 1.5);
-                min-height: calc(var(--input-height) / 1.5);
+                min-width: calc(var(--input-height) / 1.75);
+                max-width: calc(var(--input-height) / 1.75);
+                max-height: calc(var(--input-height) / 1.75);
+                min-height: calc(var(--input-height) / 1.75);
             }
         }
 

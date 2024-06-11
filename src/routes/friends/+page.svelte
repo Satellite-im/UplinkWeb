@@ -2,7 +2,7 @@
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
     import { ChatPreview, ContextMenu, Modal } from "$lib/components"
     import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
-    import { Appearance, MessageDirection, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, MessageDirection, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import type { Chat, User } from "$lib/types"
@@ -175,6 +175,7 @@
     <!-- Modals -->
     {#if sentRequest}
         <Modal
+            padded
             on:close={_ => {
                 sentRequest = false
             }}>
@@ -210,7 +211,7 @@
 
         <div class="content-header">
             <Label text={$_("chat.chat_plural")} />
-            <Button hook="button-create-group-chat" icon small tooltip={$_("chat.create")}>
+            <Button hook="button-create-group-chat" icon small tooltip={$_("chat.create")} tooltipPosition={TooltipPosition.LEFT}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>
