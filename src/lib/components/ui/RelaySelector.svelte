@@ -123,35 +123,32 @@
                 <div class="relay-name" data-tooltip={relay.address}>
                     <Text>{name}</Text>
                 </div>
-                <Button icon class="relay-toggle" small appearance={!relay.active ? Appearance.Alt : Appearance.Success} on:click={_ => toggleRelay(name)}>
+                <Button icon class="relay-toggle" appearance={!relay.active ? Appearance.Alt : Appearance.Primary} on:click={_ => toggleRelay(name)}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
                 <Button
                     class="relay-edit"
-                    small
+                    icon
                     appearance={Appearance.Alt}
                     on:click={_ => {
                         editing = name
                         nameToAdd = name
                         relayToAdd = relay.address
                     }}>
-                    <Icon icon={Shape.Preferences} />
+                    <Icon icon={Shape.Pencil} />
                 </Button>
-                <Button icon class="relay-delete" small appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
+                <Button icon class="relay-delete" appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
                     <Icon icon={Shape.Trash} />
                 </Button>
             </div>
         {/each}
-        {#if Object.entries(relays).length > 0}
-            <hr />
-        {/if}
         {#if changed}
             <div>
                 <Text size={Size.Smaller}>{$_("generic.pending_changes")}</Text>
             </div>
         {/if}
 
-        <div class="controls">
+        <Controls>
             <Button
                 class="relay-add"
                 appearance={Appearance.Alt}
@@ -189,7 +186,7 @@
                     <Icon icon={Shape.NoSymbol} />
                 </Button>
             {/if}
-        </div>
+        </Controls>
     </div>
 </div>
 
@@ -214,8 +211,13 @@
         .relay-entry {
             display: flex;
             gap: var(--gap);
+            align-items: center;
+            padding: var(--padding-less);
+            margin-bottom: var(--padding);
+
             .relay-name {
                 width: 100%;
+                min-width: var(--min-component-width);
                 position: relative;
                 &:before {
                     content: attr(data-tooltip);
@@ -241,11 +243,6 @@
                     opacity: 1;
                 }
             }
-        }
-
-        .controls {
-            display: flex;
-            gap: var(--gap-less);
         }
 
         .filling {

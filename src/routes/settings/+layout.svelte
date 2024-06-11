@@ -60,6 +60,12 @@
             name: "Notifications",
         },
         {
+            to: SettingsRoute.Network,
+            icon: Shape.Relay,
+            name: "Network",
+        },
+
+        {
             to: SettingsRoute.About,
             icon: Shape.Info,
             name: "About",
@@ -101,6 +107,10 @@
             }
             case "/settings/keybinds": {
                 activeRoute = SettingsRoute.Keybinds
+                break
+            }
+            case "/settings/network": {
+                activeRoute = SettingsRoute.Network
                 break
             }
             case "/settings/extensions": {

@@ -68,6 +68,7 @@ export const enum SettingsRoute {
     Licenses = "/settings/licenses",
     Developer = "/settings/developer",
     Inventory = "/settings/inventory",
+    Network = "/settings/network",
 }
 
 export const enum Appearance {
