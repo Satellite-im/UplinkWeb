@@ -189,7 +189,9 @@
                     return item.id === currArray[0].parentId
                 })
                 if (newFolders[i].length === 0 ) {
+                    if (parentItem && parentItem.items) {
                             currArray = [...parentItem.items]
+                    }
                         }
                 if (parentItem && parentItem.items) {
                     newFolders[i] = [...parentItem.items]

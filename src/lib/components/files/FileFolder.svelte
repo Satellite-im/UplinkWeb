@@ -87,7 +87,7 @@
             <div class="file_text">{name}</div>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
-        <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
+        <Text class="file_text" size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
     </div>
 </section>
 
@@ -125,10 +125,12 @@
         }
         .file_text {
             width: 100%;
+            max-height: 21.36px;
             align-self: center;
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space:nowrap;
         }
 
         :global(.svg-icon) {

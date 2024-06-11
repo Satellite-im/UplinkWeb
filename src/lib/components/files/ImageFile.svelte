@@ -18,7 +18,7 @@
 <div class="image-file" on:click={onClick}>
     <img class="preview" src={ImgSource} alt="preview" />
     <input type="text" value={name} />
-    <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
+    <Text class="img_text" size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
 </div>
 
 <style lang="scss">
@@ -59,6 +59,14 @@
                 background-color: var(--alt-color);
                 outline: none;
             }
+        }
+        .img_text {
+            width: 100%;
+            align-self: center;
+            text-align: center;
+            overflow: hidden;
+            overflow-y: hidden;
+            text-overflow: ellipsis;
         }
 
         :global(.svg-icon) {
