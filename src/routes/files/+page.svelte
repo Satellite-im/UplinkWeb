@@ -23,6 +23,7 @@
     import { goto } from "$app/navigation"
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
+    import type { Item } from "warp-wasm"
 
     initLocale()
 
@@ -53,6 +54,7 @@
     let previewImage: string | null
     let search_filter: string
     let search_component: ChatFilter
+    let filesToUpload: HTMLInputElement
     let allFiles: FileInfo[] = get(Store.state.files)
     let currentFolderIdStore = writable<string>("")
     $: currentFiles = allFiles
@@ -96,7 +98,6 @@
         newDirCreated.fold(
             err => {
                 removeFolderFromStak(folder)
-                // TODO: Add UI feedback
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
@@ -124,6 +125,7 @@
                 })
             }
         )
+        getCurrentDirectoryFiles()
     }
 
     function removeFolderFromStak(folder: FileInfo) {
@@ -188,10 +190,11 @@
                     }
                     return item.id === currArray[0].parentId
                 })
-                if (newFolders[i].length === 0 ) {
-                            currArray = [...parentItem.items]
-                        }
+
                 if (parentItem && parentItem.items) {
+                    if (newFolders[i].length === 0 ) {
+                            currArray = [...parentItem.items]
+                    }
                     newFolders[i] = [...parentItem.items]
                 }
                 Store.updateFolderTree(newFolders)
@@ -282,9 +285,39 @@
         }
     }
 
-    onMount(() => {
+    function itemsToFileInfo(items: Item[]): FileInfo[] {
+       let filesInfo: FileInfo[] = []
+        items.forEach(item => {
+                let newItem: FileInfo = {
+                        id: item!.id(),
+                        type: item.is_file() ? 'file' : 'folder',
+                        name: item!.name(),
+                        size: item!.size(),
+                        isRename: false,
+                        source: "",
+                        items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
+                    }
+                    filesInfo = [...filesInfo, newItem]
+            })
+        return filesInfo
+    }
+
+    async function getCurrentDirectoryFiles() {
+       let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
+       files.onSuccess(items => {
+            let newFilesInfo = itemsToFileInfo(items)
+            let filesSet = new Set(newFilesInfo)
+            Store.state.files.set(Array.from(filesSet))
+            currentFiles = Array.from(filesSet)
+       })
+    }
+
+    onMount( () => {
         initializeSortable()
+        getCurrentDirectoryFiles()
     })
+
+
     onDestroy(() => {
         unsubscribeopenFolders()
     })
@@ -302,12 +335,40 @@
         event.preventDefault()
         dragging_files = 0
         // upload files
-        console.log("dropping files ", event.dataTransfer?.files)
     }
 
     function onSearchEnter() {
         goto(Route.Chat)
         search_component.select_first()
+    }
+
+    const onFileSelected = async (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        if (target && target.files) {
+            for (let i = 0; i < target.files.length; i++) {
+                const file = target.files[i];
+                const stream = file.stream();
+                let result = await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
+                result.onFailure(err => {
+                    Store.addToastNotification(new ToastMessage("", err, 2))
+                })
+            }
+        }
+        target.value = '';
+        getCurrentDirectoryFiles()
+    }
+
+    async function deleteItem(file_name: string) {
+        let result = await ConstellationStoreInstance.deleteItem(file_name)
+        result.fold(
+            err => {
+                // TODO(Lucas): Error not mapped yet
+                Store.addToastNotification(new ToastMessage("", err, 2))
+            },
+            _ => {
+                getCurrentDirectoryFiles()
+            }
+        )
     }
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
@@ -448,9 +509,13 @@
                 <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
-                <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")}>
-                    <Icon icon={Shape.Plus} />
+                <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")} on:click={() => {
+                    filesToUpload?.click()
+                }}>
+                    <Icon icon={Shape.Plus}
+                />
                 </Button>
+                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload}/>
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
@@ -464,16 +529,27 @@
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
                         <ContextMenu
+                            on:close={_ => {
+                                isContextMenuOpen = false
+                            }}
                             items={[
                                 {
                                     id: "delete",
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {console.log("delete everything")},
+                                    onClick: () => {
+                                        deleteItem(item.name)
+                                    },
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
+                            <FileFolder slot="content" 
+                                let:open 
+                                on:contextmenu={e => {
+                                isContextMenuOpen = true
+                                open(e)
+                            }
+                            }  kind={FilesItemKind.File} info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
@@ -488,8 +564,8 @@
                                     text: "Delete",
                                     appearance: Appearance.Default,
                                     onClick: () => {
-                                        console.log("rename 2")
-
+                                        // TODO(Lucas): Delete item not working for folders yet
+                                        // deleteItem(item.name)
                                     },
                                 },
                                 {
@@ -513,6 +589,7 @@
                                 kind={FilesItemKind.Folder} 
                                 info={item}
                                 on:rename={async e => {
+                                    // TODO(Lucas): Working just for creating new folder for now
                                     const newName = e.detail
                                     item.name = newName
                                     item.isRename = false

@@ -84,7 +84,9 @@
                 bind:this={inputRef}
             />
         {:else}
-            <div>{name}</div>
+            <Text singleLine>
+                {name}
+            </Text>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
@@ -123,6 +125,7 @@
                 outline: none;
             }
         }
+
 
         :global(.svg-icon) {
             color: var(--warning-color);
