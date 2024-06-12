@@ -1,5 +1,12 @@
-import type { State } from "$lib/components/files/state"
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind } from "$lib/enums"
+
+
+export enum OperationState {
+    Initial = 'Initial',
+    Loading = 'Loading',
+    Success = 'Success',
+    Error = 'Error'
+}
 
 export type Frame = {
     image: string

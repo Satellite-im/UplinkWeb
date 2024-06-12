@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { doubleLine } from './../../../../.svelte-kit/output/server/chunks/UnderConstruction.svelte_svelte_type_style_lang.js';
     import { Icon, Text, Spacer } from "$lib/elements"
     import { FilesItemKind, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import type { FileInfo } from "$lib/types"
+    import { OperationState } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
-    import { State } from './state';
 
 
 
@@ -14,15 +13,15 @@
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
     export let name = info.name
-    export let isRenaming: State = State.Initial
+    export let isRenaming: OperationState = OperationState.Initial
     let hasFocus = false
     let oldName = name
 
-    $: if (isRenaming !== State.Loading) {
+    $: if (isRenaming !== OperationState.Loading) {
         hasFocus = false
     }
 
-    $: if (isRenaming === State.Success) {
+    $: if (isRenaming === OperationState.Success) {
         oldName = name
         storeFiles.update(items => {
             const updatedItems = items.map(item => {
@@ -33,11 +32,11 @@
             })
             return updatedItems
         })
-        isRenaming = State.Initial
-    } else if (isRenaming === State.Error) {
+        isRenaming = OperationState.Initial
+    } else if (isRenaming === OperationState.Error) {
         name = oldName
-        isRenaming = State.Initial
-    } else if (isRenaming === State.Loading && !hasFocus) {
+        isRenaming = OperationState.Initial
+    } else if (isRenaming === OperationState.Loading && !hasFocus) {
         if (inputRef) {
             inputRef.focus()
             hasFocus = true
@@ -71,7 +70,7 @@
 
     function onRename() {
         dispatch("rename", name)
-        isRenaming = State.Initial
+        isRenaming = OperationState.Initial
     }
 
     onMount(() => {
@@ -84,7 +83,7 @@
         if (event.key === 'Escape')
             {
                 isEnterOrEscapeKeyPressed = true
-                isRenaming = State.Initial
+                isRenaming = OperationState.Initial
                 name = oldName
                 return}
         if (event.key === 'Enter')
@@ -93,7 +92,7 @@
                 if (name === "" || name === oldName)
                 {
                     name = oldName
-                    isRenaming = State.Initial
+                    isRenaming = OperationState.Initial
                     return
                 }
                 onRename()
@@ -104,7 +103,7 @@
         if (name === "" || name === oldName)
             {
                 name = oldName
-                isRenaming = State.Initial
+                isRenaming = OperationState.Initial
             }
         else if (!isEnterOrEscapeKeyPressed)
             {onRename()}
@@ -118,7 +117,7 @@
     <div class="filesitem" on:contextmenu>
         <Icon icon={getIcon()} />
         <Spacer less />
-        {#if isRenaming === State.Loading}
+        {#if isRenaming === OperationState.Loading}
             <input 
                 id="input-{itemId}"
                 type="text" 

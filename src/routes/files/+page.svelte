@@ -25,7 +25,7 @@
     import { ToastMessage } from "$lib/state/ui/toast"
     import type { Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
-    import { State } from "$lib/components/files/state"
+    import { OperationState } from "$lib/types"
 
     initLocale()
 
@@ -149,7 +149,7 @@
             size: 0,
             name: "",
             source: "",
-            isRenaming: State.Loading,
+            isRenaming: OperationState.Loading,
             items: [],
             parentId: $currentFolderIdStore
         }
@@ -226,7 +226,7 @@
         size: 0,
         name: "",
         source: "",
-        isRenaming: State.Initial,
+        isRenaming: OperationState.Initial,
         items: [],
     }
     
@@ -296,7 +296,7 @@
                         type: item.is_file() ? 'file' : 'folder',
                         name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                         size: item!.size(),
-                        isRenaming: State.Initial,
+                        isRenaming: OperationState.Initial,
                         extension: item.is_file() ? splitFileName(item.name()).extension : "",
                         source: "",
                         items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
@@ -397,7 +397,7 @@
                     currentFiles = currentFiles.map(file => {
                         if (file.name === old_name) {
                             file.name = old_name
-                            file.isRenaming = State.Error
+                            file.isRenaming = OperationState.Error
                         }
                         return file
                     })
@@ -409,7 +409,7 @@
                 currentFiles = currentFiles.map(file => {
                     if (file.name === old_name) {
                         file.name = new_name
-                        file.isRenaming = State.Success
+                        file.isRenaming = OperationState.Success
                     }
                     return file
                 })
@@ -590,16 +590,16 @@
                                     },
                                 },
                                 {
-                                    id: "rename-" + item.id,
+                                    id: `rename-${item.id}`,
                                     icon: Shape.Pencil,
                                     text: "Rename",
                                     appearance: Appearance.Default,
                                     onClick: async () => {
                                         currentFiles = currentFiles.map(file => {
                                             if (file.id === item.id) {
-                                                file.isRenaming = State.Loading
+                                                file.isRenaming = OperationState.Loading
                                             } else {
-                                                file.isRenaming = State.Initial
+                                                file.isRenaming = OperationState.Initial
                                             }
                                             return file
                                         })
@@ -647,9 +647,9 @@
                                     onClick: async () => {
                                         currentFiles = currentFiles.map(file => {
                                             if (file.id === item.id) {
-                                                file.isRenaming = State.Loading
+                                                file.isRenaming = OperationState.Loading
                                             } else {
-                                                file.isRenaming = State.Initial
+                                                file.isRenaming = OperationState.Initial
                                             }
                                             return file
                                         })
@@ -672,7 +672,7 @@
                                         const newName = e.detail
                                         item.name = newName
                                         await createNewDirectory(item)
-                                        item.isRenaming = State.Success
+                                        item.isRenaming = OperationState.Success
                                     } else if (e.detail !== "") {
                                         renameItem(item.name, e.detail)
                                     }
