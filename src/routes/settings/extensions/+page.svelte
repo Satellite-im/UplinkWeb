@@ -11,20 +11,20 @@
 
 <div id="page">
     <Controls>
-        <Button text="Installed" appearance={Appearance.Alt}>
+        <Button hook="button-installed" text="Installed" appearance={Appearance.Alt}>
             <Icon icon={Shape.CheckMark} />
         </Button>
-        <Button text="Explore" appearance={Appearance.Alt} outline>
+        <Button hook="button-explore" text="Explore" appearance={Appearance.Alt} outline>
             <Icon icon={Shape.Beaker} />
         </Button>
-        <Button text="Settings" appearance={Appearance.Alt} outline>
+        <Button hook="button-settings" text="Settings" appearance={Appearance.Alt} outline>
             <Icon icon={Shape.Cog} />
         </Button>
     </Controls>
 
     <div class="content">
         <UnderConstruction />
-        <Label text="No extensions installed." />
+        <Label hook="label-no-extensions-installed" text="No extensions installed." />
     </div>
 </div>
 
