@@ -84,12 +84,10 @@
                 bind:this={inputRef}
             />
         {:else}
-            <Text singleLine>
-                {name}
-            </Text>
+        <div class="file_text">{name}</div>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
-        <Text class="file_text" size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
+        <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
     </div>
 </section>
 
@@ -125,14 +123,15 @@
                 outline: none;
             }
         }
+
         .file_text {
             width: 100%;
-            max-height: 21.36px;
+            height: 21.36px;
             align-self: center;
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space:nowrap;
+            white-space: nowrap;
         }
 
         :global(.svg-icon) {

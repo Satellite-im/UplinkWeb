@@ -56,10 +56,13 @@
     .tree > * {
     display: inline;
     }
-    ul, li {
-        list-style-type: none
+    ul {
+        width: 100%;
     }
     li {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space:nowrap;
         margin-left: 10px;
     }
 </style>

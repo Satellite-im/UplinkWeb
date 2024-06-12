@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Text } from "$lib/elements"
+    import { Spacer, Text } from "$lib/elements"
     import prettyBytes from "pretty-bytes"
     import { Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
@@ -17,8 +17,9 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="image-file" on:click={onClick}>
     <img class="preview" src={ImgSource} alt="preview" />
-    <input type="text" value={name} />
-    <Text class="img_text" size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
+    <Spacer less/>
+    <input class="img_text" value={name} />
+    <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
 </div>
 
 <style lang="scss">
@@ -35,7 +36,7 @@
         padding: var(--padding-less);
 
         .preview {
-            max-height: var(--icon-size-largest);
+            max-height: 58.52px;
             max-width: 100%;
             border-radius: var(--border-radius-minimal);
         }
@@ -61,12 +62,11 @@
             }
         }
         .img_text {
-            width: 100%;
-            align-self: center;
-            text-align: center;
+            // width: 100%;
+            height: 21px;
             overflow: hidden;
-            overflow-y: hidden;
             text-overflow: ellipsis;
+            white-space:nowrap;
         }
 
         :global(.svg-icon) {
