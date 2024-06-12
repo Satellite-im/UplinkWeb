@@ -9,6 +9,7 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
+    import type { Identity } from "warp-wasm"
 
     let username = ""
     let statusMessage = ""
@@ -23,7 +24,7 @@
             e => {
                 get(Store.state.logger).error("Error creating identity: " + e)
             },
-            async identity => {
+            async (identity: Identity) => {
                 Store.setUserFromIdentity(identity!)
                 console.log(get(Store.state.user))
                 await new Promise(resolve => setTimeout(resolve, 1000))
