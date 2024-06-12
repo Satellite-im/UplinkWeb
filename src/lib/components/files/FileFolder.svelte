@@ -84,7 +84,9 @@
                 bind:this={inputRef}
             />
         {:else}
-            <div class="file_text">{name}</div>
+            <Text singleLine>
+                {name}
+            </Text>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text class="file_text" size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
