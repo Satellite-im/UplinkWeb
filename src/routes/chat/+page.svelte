@@ -531,13 +531,6 @@
             border-left: var(--border-width) solid var(--border-color);
         }
 
-        .message-wrap {
-            width: fit-content;
-            &.local {
-                justify-content: flex-end;
-            }
-        }
-
         .upload-overlay {
             position: absolute;
             top: 0;
