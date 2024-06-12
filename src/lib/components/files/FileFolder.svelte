@@ -22,7 +22,6 @@
     }
 
     $: if (isRenaming === State.Success) {
-        console.log('1 - isRenaming: ', isRenaming)
         oldName = name
         storeFiles.update(items => {
             const updatedItems = items.map(item => {
@@ -35,11 +34,9 @@
         })
         isRenaming = State.Initial
     } else if (isRenaming === State.Error) {
-        console.log('2 - isRenaming: ', isRenaming)
         name = oldName
         isRenaming = State.Initial
     } else if (isRenaming === State.Loading && !hasFocus) {
-        console.log('3 - isRenaming: ', isRenaming)
         if (inputRef) {
             inputRef.focus()
             hasFocus = true
@@ -72,7 +69,6 @@
     }
 
     function onRename() {
-        console.log('onRename')
         dispatch("rename", name)
         isRenaming = State.Initial
     }
@@ -134,7 +130,7 @@
             />
         {:else}
             <div class="ellipsis">
-                {name}
+                {name}{info?.extension && `.${info.extension}`}
             </div>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->

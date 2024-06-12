@@ -290,13 +290,14 @@
     function itemsToFileInfo(items: Item[]): FileInfo[] {
        let filesInfo: FileInfo[] = []
         items.forEach(item => {
+
                 let newItem: FileInfo = {
                         id: item!.id(),
                         type: item.is_file() ? 'file' : 'folder',
-                        name: item!.name(),
+                        name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                         size: item!.size(),
                         isRenaming: State.Initial,
-                        extension: item.is_file() ? item.get_file().file_type() : "",
+                        extension: item.is_file() ? splitFileName(item.name()).extension : "",
                         source: "",
                         items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
                     }
@@ -304,6 +305,16 @@
             })
         console.log(filesInfo)
         return filesInfo
+    }
+
+    function splitFileName(fileName: string): { name: string; extension: string } {
+        const lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex === -1) {
+            return { name: fileName, extension: '' };
+        }
+        const name = fileName.substring(0, lastDotIndex);
+        const extension = fileName.substring(lastDotIndex + 1);
+        return { name, extension };
     }
 
     async function getCurrentDirectoryFiles() {
