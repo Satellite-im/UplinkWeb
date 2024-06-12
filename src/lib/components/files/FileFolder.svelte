@@ -169,7 +169,6 @@
             }
         }
 
-
         :global(.svg-icon) {
             color: var(--warning-color);
             width: var(--icon-size-largest);

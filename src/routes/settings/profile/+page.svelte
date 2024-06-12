@@ -78,7 +78,7 @@
         activityStatus = user.profile.status
     })
 
-    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
+    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
     let fileinput: HTMLElement
 
     const onFileSelected = (e: any) => {

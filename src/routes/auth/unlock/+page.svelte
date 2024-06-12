@@ -146,12 +146,5 @@
                 }
             }
         }
-
-        .relay-selector-wrap {
-            width: 400px;
-            padding: var(--padding);
-            background-color: var(--alt-color);
-            border-radius: var(--border-radius);
-        }
     }
 </style>

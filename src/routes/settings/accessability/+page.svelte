@@ -14,7 +14,7 @@
 </script>
 
 <div id="page">
-    <SettingSection name={$_("settings.accessability.openDyslexic")} description={$_("settings.accessability.openDyslexicDescription")}>
+    <SettingSection name={$_("settings.accessibility.openDyslexic")} description={$_("settings.accessibility.openDyslexicDescription")}>
         <Switch
             on={font === Font.OpenDyslexic}
             on:toggle={e => {
