@@ -21,7 +21,7 @@
         await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
         let identity = await MultipassStoreInstance.getOwnIdentity()
         identity.fold(
-            e => {
+            (e: Error) => {
                 get(Store.state.logger).error("Error creating identity: " + e)
             },
             async (identity: Identity) => {
