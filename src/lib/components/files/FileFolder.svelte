@@ -5,23 +5,51 @@
     import type { FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
+    import { State } from './state';
+
+
 
     export let itemId: string
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
     export let name = info.name
+    export let isRenaming: State = State.Initial
+    let hasFocus = false
+    let oldName = name
 
-   export let isEditing = false
-    let inputRef: HTMLInputElement
-    const dispatch = createEventDispatcher()
-    let isEnterKeyPressed: boolean = false
+    $: if (isRenaming !== State.Loading) {
+        hasFocus = false
+    }
 
-    $: if (isEditing) {
+    $: if (isRenaming === State.Success) {
+        console.log('1 - isRenaming: ', isRenaming)
+        oldName = name
+        storeFiles.update(items => {
+            const updatedItems = items.map(item => {
+                if (item.id === info.id) {
+                    return { ...item, name: name }
+                }
+                return item
+            })
+            return updatedItems
+        })
+        isRenaming = State.Initial
+    } else if (isRenaming === State.Error) {
+        console.log('2 - isRenaming: ', isRenaming)
+        name = oldName
+        isRenaming = State.Initial
+    } else if (isRenaming === State.Loading && !hasFocus) {
+        console.log('3 - isRenaming: ', isRenaming)
         if (inputRef) {
             inputRef.focus()
+            hasFocus = true
             inputRef.setSelectionRange(0, inputRef.value.length);
         }
     }
+
+    let inputRef: HTMLInputElement
+    const dispatch = createEventDispatcher()
+    let isEnterOrEscapeKeyPressed: boolean = false
 
     function getIcon() {
         switch (kind) {
@@ -41,20 +69,12 @@
     ) {
         const input = event.target as HTMLInputElement
         name = input.value
-        storeFiles.update(items => {
-            const updatedItems = items.map(item => {
-                if (item.id === info.id) {
-                    return { ...item, name: name }
-                }
-                return item
-            })
-            return updatedItems
-        })
     }
 
     function onRename() {
+        console.log('onRename')
         dispatch("rename", name)
-        isEditing = false
+        isRenaming = State.Initial
     }
 
     onMount(() => {
@@ -63,6 +83,38 @@
         }
     })
 
+    function onKeydown(event: KeyboardEvent) {
+        if (event.key === 'Escape')
+            {
+                console.log('Escape: ', )
+                isEnterOrEscapeKeyPressed = true
+                isRenaming = State.Initial
+                name = oldName
+                return}
+        if (event.key === 'Enter')
+            {
+                isEnterOrEscapeKeyPressed = true
+                if (name === "" || name === oldName)
+                {
+                    name = oldName
+                    isRenaming = State.Initial
+                    return
+                }
+                onRename()
+            }
+    }
+
+    function onBlur() {
+        if (name === "" || name === oldName)
+            {
+                name = oldName
+                isRenaming = State.Initial
+            }
+        else if (!isEnterOrEscapeKeyPressed)
+            {onRename()}
+        isEnterOrEscapeKeyPressed = false
+    }
+
 </script>
 
 <section>
@@ -70,26 +122,14 @@
     <div class="filesitem" on:contextmenu>
         <Icon icon={getIcon()} />
         <Spacer less />
-        {#if isEditing}
+        {#if isRenaming === State.Loading}
             <input 
                 id="input-{itemId}"
                 type="text" 
                 bind:value={name} 
                 on:input={updateName} 
-                on:blur={() => {
-                    if (!isEnterKeyPressed)
-                        {onRename()}
-                    isEnterKeyPressed = false
-                }} 
-                on:keydown={(e) => {
-                    if (e.key === 'Escape')
-                        {name = ""}
-                    if (e.key === 'Enter' || e.key === 'Escape')
-                        {
-                            isEnterKeyPressed = true
-                            onRename()
-                        }
-                    }}
+                on:blur={onBlur} 
+                on:keydown={onKeydown}
                 bind:this={inputRef}
             />
         {:else}

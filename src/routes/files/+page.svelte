@@ -24,6 +24,8 @@
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
     import type { Item } from "warp-wasm"
+    import { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import { State } from "$lib/components/files/state"
 
     initLocale()
 
@@ -147,7 +149,7 @@
             size: 0,
             name: "",
             source: "",
-            isRename: true,
+            isRenaming: State.Loading,
             items: [],
             parentId: $currentFolderIdStore
         }
@@ -224,7 +226,7 @@
         size: 0,
         name: "",
         source: "",
-        isRename: false,
+        isRenaming: State.Initial,
         items: [],
     }
     
@@ -293,7 +295,7 @@
                         type: item.is_file() ? 'file' : 'folder',
                         name: item!.name(),
                         size: item!.size(),
-                        isRename: false,
+                        isRenaming: State.Initial,
                         extension: item.is_file() ? item.get_file().file_type() : "",
                         source: "",
                         items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
@@ -381,20 +383,30 @@
         let result = await ConstellationStoreInstance.renameItem(old_name, new_name)
         result.fold(
             err => {
-                // TODO(Lucas): Error not mapped yet
+                if (err === WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME) {
+                    currentFiles = currentFiles.map(file => {
+                        if (file.name === old_name) {
+                            file.name = old_name
+                            file.isRenaming = State.Error
+                        }
+                        return file
+                    })
+                    return
+                }
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
                 currentFiles = currentFiles.map(file => {
                     if (file.name === old_name) {
                         file.name = new_name
-                        file.isRename = false
+                        file.isRenaming = State.Success
                     }
                     return file
                 })
             }
         )
     }
+
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
@@ -575,9 +587,9 @@
                                     onClick: async () => {
                                         currentFiles = currentFiles.map(file => {
                                             if (file.id === item.id) {
-                                                file.isRename = true
+                                                file.isRenaming = State.Loading
                                             } else {
-                                                file.isRename = false
+                                                file.isRenaming = State.Initial
                                             }
                                             return file
                                         })
@@ -596,7 +608,7 @@
                                 on:rename={async e => {
                                     renameItem(item.name, e.detail)
                                 }}
-                                isEditing={item.isRename}
+                                isRenaming={item.isRenaming}
                                 kind={FilesItemKind.File} 
                                 info={item} />
                         </ContextMenu>
@@ -625,9 +637,9 @@
                                     onClick: async () => {
                                         currentFiles = currentFiles.map(file => {
                                             if (file.id === item.id) {
-                                                file.isRename = true
+                                                file.isRenaming = State.Loading
                                             } else {
-                                                file.isRename = false
+                                                file.isRenaming = State.Initial
                                             }
                                             return file
                                         })
@@ -649,13 +661,13 @@
                                     if (item.name === "" && e.detail !== "") {
                                         const newName = e.detail
                                         item.name = newName
-                                        item.isRename = false
                                         await createNewDirectory(item)
+                                        item.isRenaming = State.Success
                                     } else if (e.detail !== "") {
                                         renameItem(item.name, e.detail)
                                     }
                                 }}
-                                isEditing={item.isRename}
+                                isRenaming={item.isRenaming}
                             />
                         </ContextMenu>
                     {:else if item.type === "image"}

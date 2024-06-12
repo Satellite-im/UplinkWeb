@@ -1,3 +1,4 @@
+import type { State } from "$lib/components/files/state"
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind } from "$lib/enums"
 
 export type Frame = {
@@ -199,7 +200,7 @@ export type FileInfo = {
     size: number
     name: string
     source: string
-    isRename: boolean
+    isRenaming: State
     extension?: string
     items?: FileInfo[]
     parentId?: string
