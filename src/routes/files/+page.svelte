@@ -24,6 +24,8 @@
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
     import type { Item } from "warp-wasm"
+    import { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import { OperationState } from "$lib/types"
 
     initLocale()
 
@@ -147,7 +149,7 @@
             size: 0,
             name: "",
             source: "",
-            isRename: true,
+            isRenaming: OperationState.Loading,
             items: [],
             parentId: $currentFolderIdStore,
         }
@@ -224,7 +226,7 @@
         size: 0,
         name: "",
         source: "",
-        isRename: false,
+        isRenaming: OperationState.Initial,
         items: [],
     }
 
@@ -288,18 +290,29 @@
     function itemsToFileInfo(items: Item[]): FileInfo[] {
         let filesInfo: FileInfo[] = []
         items.forEach(item => {
-            let newItem: FileInfo = {
-                id: item!.id(),
-                type: item.is_file() ? "file" : "folder",
-                name: item!.name(),
-                size: item!.size(),
-                isRename: false,
-                source: "",
-                items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
-            }
-            filesInfo = [...filesInfo, newItem]
-        })
+                let newItem: FileInfo = {
+                        id: item!.id(),
+                        type: item.is_file() ? 'file' : 'folder',
+                        name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
+                        size: item!.size(),
+                        isRenaming: OperationState.Initial,
+                        extension: item.is_file() ? splitFileName(item.name()).extension : "",
+                        source: "",
+                        items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
+                    }
+                    filesInfo = [...filesInfo, newItem]
+            })
         return filesInfo
+    }
+
+    function splitFileName(fileName: string): { name: string; extension: string } {
+        const lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex === -1) {
+            return { name: fileName, extension: '' };
+        }
+        const name = fileName.substring(0, lastDotIndex);
+        const extension = fileName.substring(lastDotIndex + 1);
+        return { name, extension };
     }
 
     async function getCurrentDirectoryFiles() {
@@ -369,6 +382,39 @@
             }
         )
     }
+
+    async function renameItem(old_name: string, new_name: string) {
+        if (new_name === "") {
+            Store.addToastNotification(new ToastMessage("", "Invalid name provided", 2))
+            return
+        }
+        let result = await ConstellationStoreInstance.renameItem(old_name, new_name)
+        result.fold(
+            err => {
+                if (err === WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME) {
+                    currentFiles = currentFiles.map(file => {
+                        if (file.name === old_name) {
+                            file.name = old_name
+                            file.isRenaming = OperationState.Error
+                        }
+                        return file
+                    })
+                    return
+                }
+                Store.addToastNotification(new ToastMessage("", err, 2))
+            },
+            _ => {
+                currentFiles = currentFiles.map(file => {
+                    if (file.name === old_name) {
+                        file.name = new_name
+                        file.isRenaming = OperationState.Success
+                    }
+                    return file
+                })
+            }
+        )
+    }
+
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
@@ -544,15 +590,37 @@
                                         deleteItem(item.name)
                                     },
                                 },
+                                {
+                                    id: `rename-${item.id}`,
+                                    icon: Shape.Pencil,
+                                    text: "Rename",
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        currentFiles = currentFiles.map(file => {
+                                            if (file.id === item.id) {
+                                                file.isRenaming = OperationState.Loading
+                                            } else {
+                                                file.isRenaming = OperationState.Initial
+                                            }
+                                            return file
+                                        })
+                                    },
+                                },
                             ]}>
-                            <FileFolder
-                                slot="content"
-                                let:open
+                            <FileFolder 
+                                itemId={item.id}
+                                slot="content" 
+                                let:open 
                                 on:contextmenu={e => {
-                                    isContextMenuOpen = true
-                                    open(e)
+                                        isContextMenuOpen = true
+                                        open(e)
+                                    }
+                                }
+                                on:rename={async e => {
+                                    renameItem(item.name, e.detail)
                                 }}
-                                kind={FilesItemKind.File}
+                                isRenaming={item.isRenaming}
+                                kind={FilesItemKind.File} 
                                 info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
@@ -578,27 +646,39 @@
                                     text: "Rename",
                                     appearance: Appearance.Default,
                                     onClick: async () => {
-                                        item.isRename = true
+                                        currentFiles = currentFiles.map(file => {
+                                            if (file.id === item.id) {
+                                                file.isRenaming = OperationState.Loading
+                                            } else {
+                                                file.isRenaming = OperationState.Initial
+                                            }
+                                            return file
+                                        })
                                     },
                                 },
                             ]}>
-                            <FileFolder
-                                slot="content"
-                                let:open
+                            <FileFolder 
+                                itemId={item.id}
+                                slot="content" 
+                                let:open 
                                 on:contextmenu={e => {
                                     isContextMenuOpen = true
                                     open(e)
                                 }}
                                 kind={FilesItemKind.Folder}
                                 info={item}
-                                on:rename={async e => {
-                                    // TODO(Lucas): Working just for creating new folder for now
-                                    const newName = e.detail
-                                    item.name = newName
-                                    item.isRename = false
-                                    await createNewDirectory(item)
+                                on:rename={async e => { 
+                                    if (item.name === "" && e.detail !== "") {
+                                        const newName = e.detail
+                                        item.name = newName
+                                        await createNewDirectory(item)
+                                        item.isRenaming = OperationState.Success
+                                    } else if (e.detail !== "") {
+                                        renameItem(item.name, e.detail)
+                                    }
                                 }}
-                                isEditing={item.isRename} />
+                                isRenaming={item.isRenaming}
+                            />
                         </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile
