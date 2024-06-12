@@ -24,7 +24,7 @@
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
-    let balace: number = balance
+    let balance: number = balance
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
