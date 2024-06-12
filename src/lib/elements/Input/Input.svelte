@@ -4,7 +4,6 @@
     import "./markdown.scss"
     import { createEventDispatcher, onMount } from "svelte"
     import { EditorView } from "@codemirror/view"
-    import type { FormEventHandler } from "svelte/elements"
 
     // export let loading: boolean = false;
     export let placeholder: string = ""

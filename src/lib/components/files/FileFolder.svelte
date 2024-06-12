@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { doubleLine } from './../../../../.svelte-kit/output/server/chunks/UnderConstruction.svelte_svelte_type_style_lang.js';
     import { Icon, Text, Spacer } from "$lib/elements"
     import { FilesItemKind, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/store"
@@ -82,7 +83,6 @@
     function onKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape')
             {
-                console.log('Escape: ', )
                 isEnterOrEscapeKeyPressed = true
                 isRenaming = State.Initial
                 name = oldName
@@ -129,11 +129,10 @@
                 bind:this={inputRef}
             />
         {:else}
-            <div class="ellipsis">
+            <Text>
                 {name}{info?.extension && `.${info.extension}`}
-            </div>
+            </Text>
         {/if}
-        <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
     </div>
 </section>
@@ -177,14 +176,5 @@
             width: var(--icon-size-largest);
             height: var(--icon-size-largest);
         }
-    }
-
-
-    .ellipsis {
-            white-space: nowrap; 
-            overflow: hidden;   
-            text-overflow: ellipsis; 
-            width: 120px;
-            text-align: center;
     }
 </style>

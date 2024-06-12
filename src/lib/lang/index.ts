@@ -26,6 +26,8 @@ export function initLocale() {
                 users: "Users",
                 groups: "Groups",
                 pending_changes: "Unsaved changes",
+                enable: "Enable",
+                enabled: "Enabled"
             },
             market: {
                 market: "Marketplace",

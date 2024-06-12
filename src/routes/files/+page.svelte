@@ -303,7 +303,6 @@
                     }
                     filesInfo = [...filesInfo, newItem]
             })
-        console.log(filesInfo)
         return filesInfo
     }
 

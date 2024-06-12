@@ -79,6 +79,7 @@
             flex: 1;
             width: 100%;
             overflow-y: scroll;
+            overflow-x: hidden;
             gap: var(--gap);
         }
 
