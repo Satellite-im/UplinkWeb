@@ -202,6 +202,7 @@ export type ContextItem = {
 }
 
 export type FileInfo = {
+    icon: Shape
     id: string
     type: string
     size: number
