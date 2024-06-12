@@ -5,6 +5,7 @@
     import { Button, Icon } from "$lib/elements"
     import { SettingSection } from "$lib/layouts"
     import { SettingsStore } from "$lib/state"
+    import { goto } from "$app/navigation"
 
     initLocale()
 
@@ -15,6 +16,7 @@
             clicked++
         } else if (clicked >= 10) {
             SettingsStore.toggleDevmode(true)
+            goto("/settings/developer")
         }
     }
 </script>

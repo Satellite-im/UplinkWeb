@@ -29,7 +29,7 @@
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { type Chat, type ContextItem, type User } from "$lib/types"
+    import { type Chat, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
@@ -42,7 +42,6 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
-    import { Logger } from "$lib/utils/Logger"
 
     initLocale()
 
@@ -524,6 +523,7 @@
                 justify-content: center;
                 align-items: center;
                 border: var(--border-width) solid var(--primary-color);
+                margin-top: var(--gap);
             }
         }
 
