@@ -468,14 +468,44 @@
                         <ContextMenu
                             items={[
                                 {
-                                    id: "delete",
+                                    id: "delete-" + item.id,
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
-                                    onClick: () => {console.log("delete everything")},
+                                    onClick: () => {
+                                        console.log("rename 2")
+
+                                    },
+                                },
+                                {
+                                    id: "rename-" + item.id,
+                                    icon: Shape.Pencil,
+                                    text: "Rename",
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        item.isRename = true
+                                    },
                                 },
                             ]}>
-                            <FileFolder slot="content" let:open on:contextmenu={open} kind={FilesItemKind.File} info={item} />
+                            <FileFolder 
+                                slot="content" 
+                                let:open 
+                                on:contextmenu={e => {
+                                    isContextMenuOpen = true
+                                    open(e)
+                                    }
+                                } 
+                                on:contextmenu={open} 
+                                kind={FilesItemKind.File} 
+                                info={item} 
+                                on:rename={async e => {
+                                    const newName = e.detail
+                                    item.name = newName
+                                    item.isRename = false
+                                    console.log("rename", newName)
+                                    await createNewDirectory(item)
+                                }}
+                                isEditing={item.isRename}/>
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
@@ -518,6 +548,7 @@
                                     const newName = e.detail
                                     item.name = newName
                                     item.isRename = false
+                                    console.log("rename", newName)
                                     await createNewDirectory(item)
                                 }}
                                 isEditing={item.isRename}
