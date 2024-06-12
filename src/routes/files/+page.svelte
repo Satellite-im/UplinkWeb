@@ -14,8 +14,8 @@
     import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
     import { Sortable } from "@shopify/draggable"
-    import type { Chat, ContextItem, FileInfo } from "$lib/types"
-    import { get, writable, type Writable } from "svelte/store"
+    import type { Chat, FileInfo } from "$lib/types"
+    import { get, writable } from "svelte/store"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
@@ -74,17 +74,17 @@
 
     function goBack() {
         folderStackStore.update(stack => {
-        if (stack.length > 1) {
-            stack.pop()
-        }
-        stack.forEach(sta => {
-            sta.forEach(files => {
-                if (files.parentId === ""){
-                    currentFolderIdStore.set("")
-                }
+            if (stack.length > 1) {
+                stack.pop()
+            }
+            stack.forEach(sta => {
+                sta.forEach(files => {
+                    if (files.parentId === "") {
+                        currentFolderIdStore.set("")
+                    }
+                })
             })
-        })
-        return stack
+            return stack
         })
     }
 
@@ -130,13 +130,13 @@
 
     function removeFolderFromStak(folder: FileInfo) {
         folderStackStore.update(folders => {
-            const newFolders=folders.map(folderStack => {
-                if(Array.isArray(folderStack)) {
-                    return folderStack.filter(file => file.id!==folder.id)
+            const newFolders = folders.map(folderStack => {
+                if (Array.isArray(folderStack)) {
+                    return folderStack.filter(file => file.id !== folder.id)
                 }
-                    return folderStack
-                })
-                return newFolders
+                return folderStack
+            })
+            return newFolders
         })
     }
 
@@ -149,30 +149,30 @@
             source: "",
             isRename: true,
             items: [],
-            parentId: $currentFolderIdStore
+            parentId: $currentFolderIdStore,
         }
 
-    function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
+        function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
             if (parentId === "") {
                 return [...folders, createNewFolder]
             }
-        return folders.map(folder => {
-            if (folder.id === parentId && folder.type === 'folder' && folder.items) {
-                toggleFolder(createNewFolder.id)
-                return {
-                    ...folder,
-                    items: [...folder.items, createNewFolder]
+            return folders.map(folder => {
+                if (folder.id === parentId && folder.type === "folder" && folder.items) {
+                    toggleFolder(createNewFolder.id)
+                    return {
+                        ...folder,
+                        items: [...folder.items, createNewFolder],
+                    }
                 }
-            }
-            if (folder.items && folder.items.length > 0) {
-                return {
-                    ...folder,
-                    items: insertIntoFolder(folder.items, parentId)
+                if (folder.items && folder.items.length > 0) {
+                    return {
+                        ...folder,
+                        items: insertIntoFolder(folder.items, parentId),
+                    }
                 }
-            }
-            return folder
-        })
-    }
+                return folder
+            })
+        }
 
         folderStackStore.update(folders => {
             let newFolders = folders.map(folderStack => {
@@ -192,8 +192,8 @@
                 })
 
                 if (parentItem && parentItem.items) {
-                    if (newFolders[i].length === 0 ) {
-                            currArray = [...parentItem.items]
+                    if (newFolders[i].length === 0) {
+                        currArray = [...parentItem.items]
                     }
                     newFolders[i] = [...parentItem.items]
                 }
@@ -227,7 +227,7 @@
         isRename: false,
         items: [],
     }
-    
+
     function initializeSortable() {
         const dropzone = document.querySelector(".files") as HTMLElement
         if (dropzone) {
@@ -286,37 +286,36 @@
     }
 
     function itemsToFileInfo(items: Item[]): FileInfo[] {
-       let filesInfo: FileInfo[] = []
+        let filesInfo: FileInfo[] = []
         items.forEach(item => {
-                let newItem: FileInfo = {
-                        id: item!.id(),
-                        type: item.is_file() ? 'file' : 'folder',
-                        name: item!.name(),
-                        size: item!.size(),
-                        isRename: false,
-                        source: "",
-                        items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
-                    }
-                    filesInfo = [...filesInfo, newItem]
-            })
+            let newItem: FileInfo = {
+                id: item!.id(),
+                type: item.is_file() ? "file" : "folder",
+                name: item!.name(),
+                size: item!.size(),
+                isRename: false,
+                source: "",
+                items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
+            }
+            filesInfo = [...filesInfo, newItem]
+        })
         return filesInfo
     }
 
     async function getCurrentDirectoryFiles() {
-       let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
-       files.onSuccess(items => {
+        let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
+        files.onSuccess(items => {
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
             Store.state.files.set(Array.from(filesSet))
             currentFiles = Array.from(filesSet)
-       })
+        })
     }
 
-    onMount( () => {
+    onMount(() => {
         initializeSortable()
         getCurrentDirectoryFiles()
     })
-
 
     onDestroy(() => {
         unsubscribeopenFolders()
@@ -343,18 +342,18 @@
     }
 
     const onFileSelected = async (e: Event) => {
-        const target = e.target as HTMLInputElement;
+        const target = e.target as HTMLInputElement
         if (target && target.files) {
             for (let i = 0; i < target.files.length; i++) {
-                const file = target.files[i];
-                const stream = file.stream();
+                const file = target.files[i]
+                const stream = file.stream()
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 2))
                 })
             }
         }
-        target.value = '';
+        target.value = ""
         getCurrentDirectoryFiles()
     }
 
@@ -509,13 +508,16 @@
                 <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
-                <Button appearance={Appearance.Alt} icon tooltip={$_("files.upload")} on:click={() => {
-                    filesToUpload?.click()
-                }}>
-                    <Icon icon={Shape.Plus}
-                />
+                <Button
+                    appearance={Appearance.Alt}
+                    icon
+                    tooltip={$_("files.upload")}
+                    on:click={() => {
+                        filesToUpload?.click()
+                    }}>
+                    <Icon icon={Shape.Plus} />
                 </Button>
-                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload}/>
+                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
@@ -543,13 +545,15 @@
                                     },
                                 },
                             ]}>
-                            <FileFolder slot="content" 
-                                let:open 
+                            <FileFolder
+                                slot="content"
+                                let:open
                                 on:contextmenu={e => {
-                                isContextMenuOpen = true
-                                open(e)
-                            }
-                            }  kind={FilesItemKind.File} info={item} />
+                                    isContextMenuOpen = true
+                                    open(e)
+                                }}
+                                kind={FilesItemKind.File}
+                                info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
@@ -578,15 +582,14 @@
                                     },
                                 },
                             ]}>
-                            <FileFolder 
-                                slot="content" 
-                                let:open 
+                            <FileFolder
+                                slot="content"
+                                let:open
                                 on:contextmenu={e => {
-                                        isContextMenuOpen = true
-                                        open(e)
-                                    }
-                                } 
-                                kind={FilesItemKind.Folder} 
+                                    isContextMenuOpen = true
+                                    open(e)
+                                }}
+                                kind={FilesItemKind.Folder}
                                 info={item}
                                 on:rename={async e => {
                                     // TODO(Lucas): Working just for creating new folder for now
@@ -595,8 +598,7 @@
                                     item.isRename = false
                                     await createNewDirectory(item)
                                 }}
-                                isEditing={item.isRename}
-                            />
+                                isEditing={item.isRename} />
                         </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile

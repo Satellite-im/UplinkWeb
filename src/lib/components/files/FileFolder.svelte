@@ -10,7 +10,7 @@
     export let info: FileInfo
     export let name = info.name
 
-   export let isEditing = false
+    export let isEditing = false
     let inputRef: HTMLInputElement
     const dispatch = createEventDispatcher()
     let isEnterKeyPressed: boolean = false
@@ -54,35 +54,33 @@
             inputRef.focus()
         }
     })
-
 </script>
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="filesitem" on:contextmenu>
         <Icon icon={getIcon()} />
-        <Spacer less />
         {#if isEditing}
-            <input 
-                type="text" 
-                bind:value={name} 
-                on:input={updateName} 
+            <input
+                type="text"
+                bind:value={name}
+                on:input={updateName}
                 on:blur={() => {
-                    if (!isEnterKeyPressed)
-                        {onRename()}
+                    if (!isEnterKeyPressed) {
+                        onRename()
+                    }
                     isEnterKeyPressed = false
-                }} 
-                on:keydown={(e) => {
-                    if (e.key === 'Escape')
-                        {name = ""}
-                    if (e.key === 'Enter' || e.key === 'Escape')
-                        {
-                            isEnterKeyPressed = true
-                            onRename()
-                        }
-                    }}
-                bind:this={inputRef}
-            />
+                }}
+                on:keydown={e => {
+                    if (e.key === "Escape") {
+                        name = ""
+                    }
+                    if (e.key === "Enter" || e.key === "Escape") {
+                        isEnterKeyPressed = true
+                        onRename()
+                    }
+                }}
+                bind:this={inputRef} />
         {:else}
             <Text singleLine>
                 {name}
@@ -125,7 +123,6 @@
                 outline: none;
             }
         }
-
 
         :global(.svg-icon) {
             color: var(--warning-color);
