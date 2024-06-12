@@ -137,7 +137,7 @@ export function initLocale() {
                     messagesDescription: "Enable notifications for incoming messages.",
                     settingsDescription: "Enable notifications for updates and important alerts.",
                 },
-                accessability: {
+                accessibility: {
                     openDyslexic: "Open Dyslexic",
                     openDyslexicDescription: "Open Dyslexic may help some users who suffer from dyslexia, it's a custom font you can enable.",
                 },
