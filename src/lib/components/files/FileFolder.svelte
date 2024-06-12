@@ -84,9 +84,9 @@
                 bind:this={inputRef}
             />
         {:else}
-            <div class="ellipsis">
+            <Text singleLine>
                 {name}
-            </div>
+            </Text>
         {/if}
         <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
@@ -132,14 +132,5 @@
             width: var(--icon-size-largest);
             height: var(--icon-size-largest);
         }
-    }
-
-
-    .ellipsis {
-            white-space: nowrap; 
-            overflow: hidden;   
-            text-overflow: ellipsis; 
-            width: 120px;
-            text-align: center;
     }
 </style>
