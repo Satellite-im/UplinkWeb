@@ -9,8 +9,8 @@
 </script>
 
 <div id="page">
-    <SettingSection name={$_("generic.uplink")} description={$_("settings.licenses.description")}>
-        <Button text={$_("settings.licenses.view")} appearance={Appearance.Alt}>
+    <SettingSection hook="section-licenses-uplink" name={$_("generic.uplink")} description={$_("settings.licenses.description")}>
+        <Button hook="button-view-license" text={$_("settings.licenses.view")} appearance={Appearance.Alt}>
             <Icon icon={Shape.Document} />
         </Button>
     </SettingSection>

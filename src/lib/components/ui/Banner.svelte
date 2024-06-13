@@ -6,7 +6,7 @@
 
 <div class="banner">
     <slot></slot>
-    <Text>{text}</Text>
+    <Text hook="banner-text">{text}</Text>
 </div>
 
 <style lang="scss">

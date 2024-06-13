@@ -79,11 +79,11 @@
     </Banner>
 
     <Spacer />
-    <Label text={$_("settings.keybinds.recordKeybind")} />
-    <Text>{$_("settings.keybinds.instructions")}</Text>
-    <div class="new-keybind">
+    <Label hook="label-record-keybind" text={$_("settings.keybinds.recordKeybind")} />
+    <Text hook="text-keybind-instructions">{$_("settings.keybinds.instructions")}</Text>
+    <div data-cy="section-new-keybind" class="new-keybind">
         <div class="recorded-keys">
-            <Label text="Recorded Keys"></Label>
+            <Label hook="label-keybind-recorded-keys" text="Recorded Keys"></Label>
             <div class="binding">
                 {#if keyboardRecording.key}
                     <Key character={keyboardRecording.key} />
@@ -96,8 +96,9 @@
             </div>
         </div>
         <div class="action">
-            <Label text={$_("settings.keybinds.action")}></Label>
+            <Label hook="label-keybind-action" text={$_("settings.keybinds.action")}></Label>
             <Select
+                hook="selector-keybind-action"
                 alt
                 bind:selected={recordedAction}
                 options={keybinds.map(keybind => {
@@ -105,8 +106,9 @@
                 })}></Select>
         </div>
         <div>
-            <Button text={$_("generic.save")} disabled={keyboardRecording.key === ""} appearance={keyboardRecording.key !== "" ? Appearance.Success : Appearance.Alt} on:click={handleNewKeybind}></Button>
+            <Button hook="button-keybind-save" text={$_("generic.save")} disabled={keyboardRecording.key === ""} appearance={keyboardRecording.key !== "" ? Appearance.Success : Appearance.Alt} on:click={handleNewKeybind}></Button>
             <Button
+                hook="button-keybind-cancel"
                 text={$_("generic.cancel")}
                 appearance={Appearance.Alt}
                 on:click={_ => {
@@ -116,8 +118,9 @@
     </div>
     <Spacer />
 
-    <SettingSection name={$_("settings.keybinds.revert")} description={$_("settings.keybinds.revertDescription")}>
+    <SettingSection hook="section-keybind-revert" name={$_("settings.keybinds.revert")} description={$_("settings.keybinds.revertDescription")}>
         <Button
+            hook="button-keybind-revert-all"
             appearance={Appearance.Alt}
             text={$_("settings.keybinds.revert_plural")}
             on:click={_ => {
@@ -129,8 +132,8 @@
 
     {#if keybinds}
         {#each keybinds as keybind}
-            <div class="keybind {isKeybindMatching(keyboardRecording, keybind) ? 'highlight' : ''}">
-                <Text>{keybind.action}</Text>
+            <div data-cy="keybind" class="keybind {isKeybindMatching(keyboardRecording, keybind) ? 'highlight' : ''}">
+                <Text hook="text-keybind-action">{keybind.action}</Text>
                 <div class="controls">
                     <div class="binding">
                         <Key character={keybind.key} />
@@ -140,6 +143,7 @@
                     </div>
 
                     <Button
+                        hook="button-keybind-revert-single"
                         icon
                         appearance={Appearance.Alt}
                         on:click={_ => {

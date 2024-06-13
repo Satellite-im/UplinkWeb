@@ -5,13 +5,12 @@
     export let audioInput: string | undefined
     export let videoInput: string | undefined
 
-
     let video: HTMLVideoElement
 
     async function startVideoTest() {
         const constraints = {
             audio: { deviceId: audioInput },
-            video: { deviceId: videoInput }
+            video: { deviceId: videoInput },
         }
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -30,10 +29,8 @@
 
 <div class="video-preview">
     <!-- svelte-ignore a11y-media-has-caption -->
-    <video autoplay id="test" bind:this={video} >
-
-    </video>
-    <Button text="Test Video" on:click={(_) => startVideoTest()}>
+    <video data-cy="test-video-preview" autoplay id="test" bind:this={video}> </video>
+    <Button hook="button-test-video" text="Test Video" on:click={_ => startVideoTest()}>
         <Icon icon={Shape.Beaker}></Icon>
     </Button>
 </div>
