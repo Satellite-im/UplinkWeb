@@ -52,6 +52,8 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
+                let currentDir = constellation.current_directory()
+                console.log('Getting current directory: ' + currentDir.name())
                 let files =  constellation.current_directory().get_items()
                 return success(files)
             } catch (error) {
@@ -92,7 +94,8 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                await constellation.open_directory(directory_name)
+                let currentPath = constellation.current_directory().path()
+                await constellation.set_path(`${currentPath}/${directory_name}`)
                 return success(undefined)
             } catch (error) {
                 return failure(handleErrors(error))
@@ -105,7 +108,12 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                await constellation.go_back()
+                let currentPath1 = constellation.current_directory().path()
+                if (this.isValidFormat(currentPath1)) {
+                    await constellation.set_path('')
+                } else {
+                    await constellation.go_back()
+                }
                 return success(undefined)
             } catch (error) {
                 return failure(handleErrors(error))
@@ -113,6 +121,11 @@ class ConstellationStore {
         }
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     
+    }
+
+    private isValidFormat(path: string): boolean {
+        const regex = /^\/[a-zA-Z0-9]+\/$/;
+        return regex.test(path);
     }
 }
 

@@ -77,7 +77,8 @@
         getCurrentDirectoryFiles()
     }
 
-    function goBack() {
+    async function goBack() {
+        await ConstellationStoreInstance.goBack()
         folderStackStore.update(stack => {
             if (stack.length > 1) {
                 stack.pop()
@@ -91,6 +92,7 @@
             })
             return stack
         })
+        getCurrentDirectoryFiles()
     }
 
     async function createNewDirectory(folder: FileInfo) {
@@ -237,7 +239,7 @@
         const dropzone = document.querySelector(".files") as HTMLElement
         if (dropzone) {
             sortable = new Sortable(dropzone, {
-                draggable: isContextMenuOpen ? "" : ".draggable-item",
+                // draggable: isContextMenuOpen ? "" : ".draggable-item",
                 plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
             })
 
@@ -320,6 +322,7 @@
 
     async function getCurrentDirectoryFiles() {
         let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
+        console.log('files:', files)
         files.onSuccess(items => {
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
