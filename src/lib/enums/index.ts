@@ -62,7 +62,7 @@ export const enum SettingsRoute {
     AudioVideo = "/settings/audio_video",
     Extensions = "/settings/extensions",
     Keybinds = "/settings/keybinds",
-    Accessability = "/settings/accessability",
+    Accessibility = "/settings/accessibility",
     Notifications = "/settings/notifications",
     About = "/settings/about",
     Licenses = "/settings/licenses",

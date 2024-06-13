@@ -50,9 +50,9 @@
             name: "Keybinds",
         },
         {
-            to: SettingsRoute.Accessability,
+            to: SettingsRoute.Accessibility,
             icon: Shape.Eye,
-            name: "Accessability",
+            name: "Accessibility",
         },
         {
             to: SettingsRoute.Notifications,

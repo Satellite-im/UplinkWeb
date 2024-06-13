@@ -139,8 +139,9 @@
 </script>
 
 <div id="page">
-    <SettingSection name="Input Device" description="Select your input device, this is usually your microphone.">
+    <SettingSection hook="section-input-device" name="Input Device" description="Select your input device, this is usually your microphone.">
         <Select
+            hook="selector-input-device"
             selected={selectedInput}
             options={inputOptions}
             alt
@@ -153,8 +154,9 @@
         <Meter percent={audioLevel} />
     </div>
 
-    <SettingSection name="Output Device" description="Select your output device, this is usually your headphones or speakers.">
+    <SettingSection hook="section-output-device" name="Output Device" description="Select your output device, this is usually your headphones or speakers.">
         <Select
+            hook="selector-output-device"
             selected={selectedOutput}
             options={outputOptions}
             alt
@@ -164,12 +166,13 @@
     </SettingSection>
 
     <div class="flex-row">
-        <Button small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring} />
+        <Button hook="button-output-device-test" small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring} />
         <Meter percent={audioOutputLevel} />
     </div>
 
-    <SettingSection name="Video Device" description="Select your video device, this is usually your webcam.">
+    <SettingSection hook="section-video-device" name="Video Device" description="Select your video device, this is usually your webcam.">
         <Select
+            hook="selector-video-device"
             selected={selectedVideoInput}
             options={videoInputOptions}
             alt
@@ -181,36 +184,41 @@
         <VideoTest audioInput={selectedInput} videoInput={undefined} />
     </div>
 
-    <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
+    <SettingSection hook="section-echo-cancellation" name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
         <Switch
+            hook="switch-echo-cancellation"
             on={settings ? settings.audio.echoCancellation : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, echoCancellation: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Interface Sounds" description="Play sounds when interacting with UI elements.">
+    <SettingSection hook="section-interface-sounds" name="Interface Sounds" description="Play sounds when interacting with UI elements.">
         <Switch
+            hook="switch-interface-sounds"
             on={settings ? settings.audio.interfaceSounds : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, interfaceSounds: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Control Sounds" description="When enabled you will hear a sound when turning controls on or off, such as muting and unmuting.">
+    <SettingSection hook="section-control-sounds" name="Control Sounds" description="When enabled you will hear a sound when turning controls on or off, such as muting and unmuting.">
         <Switch
+            hook="switch-control-sounds"
             on={settings ? settings.audio.controlSounds : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, controlSounds: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Message Sounds" description="Play a notification sound when a new message is received.">
+    <SettingSection hook="section-message-sounds" name="Message Sounds" description="Play a notification sound when a new message is received.">
         <Switch
+            hook="switch-message-sounds"
             on={settings ? settings.audio.messageSounds : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, messageSounds: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Call Timer" description="Show the duration of an active call in the UI.">
+    <SettingSection hook="section-call-timer" name="Call Timer" description="Show the duration of an active call in the UI.">
         <Switch
+            hook="switch-call-timer"
             on={settings ? settings.audio.callTimer : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, callTimer: on.detail } })
