@@ -62,7 +62,7 @@ export let defaultSettings = {
     },
     extensions: {},
     keybinds: defaultKeybinds,
-    accessability: {
+    accessibility: {
         openDyslexic: true,
     },
     notifications: {

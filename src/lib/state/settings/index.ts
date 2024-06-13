@@ -21,7 +21,7 @@ export interface ISettingsState {
     }
     extensions: {}
     keybinds: Keybind[]
-    accessability: {
+    accessibility: {
         openDyslexic: boolean
     }
     notifications: {

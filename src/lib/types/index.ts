@@ -1,5 +1,13 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind } from "$lib/enums"
 
+
+export enum OperationState {
+    Initial = 'Initial',
+    Loading = 'Loading',
+    Success = 'Success',
+    Error = 'Error'
+}
+
 export type Frame = {
     image: string
     name: string
@@ -201,7 +209,8 @@ export type FileInfo = {
     size: number
     name: string
     source: string
-    isRename: boolean
+    isRenaming: State
+    extension?: string
     items?: FileInfo[]
     parentId?: string
 }

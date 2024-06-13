@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Icon, Text, Label, Button, Input } from "$lib/elements"
+    import { Icon, Text, Label, Button, Input, Spacer } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
     import { RelayStore, type RelayState } from "$lib/state/wasm/relays"
     import Modal from "$lib/components/ui/Modal.svelte"
@@ -82,24 +82,25 @@
 </script>
 
 <div class="relay-selector">
-    <Label text={$_("settings.relay.title")} />
+    <Label hook="label-relay" text={$_("settings.relay.title")} />
     <div class="relay-content">
         {#if adding || editing}
-            <Modal>
+            <Modal hook="modal-relay-add">
                 <div class="relay-add-modal">
-                    <Label text={$_("settings.relay.name")} />
-                    <Input bind:value={nameToAdd}></Input>
+                    <Label hook="label-relay-name" text={$_("settings.relay.name")} />
+                    <Input hook="input-relay-name" bind:value={nameToAdd}></Input>
                     {#if nameToAdd !== "" && !verifyName(nameToAdd)}
                         <div class="error">{$_("settings.relay.name_exist")}</div>
                     {/if}
-                    <Label text={$_("settings.relay.address")} />
+                    <Label hook="label-relay-address" text={$_("settings.relay.address")} />
 
-                    <Input bind:value={relayToAdd} on:enter={add}></Input>
+                    <Input hook="input-relay-address" bind:value={relayToAdd} on:enter={add}></Input>
                     {#if relayToAdd !== "" && !verifyAddress(relayToAdd)}
                         <div class="error">{$_("settings.relay.invalid_address")}</div>
                     {/if}
                     <Controls>
                         <Button
+                            hook="button-relay-modal-cancel"
                             text={$_("generic.cancel")}
                             class="cancel"
                             appearance={Appearance.Alt}
@@ -111,7 +112,7 @@
                             }}>
                             <Icon icon={Shape.XMark} />
                         </Button>
-                        <Button class="save" appearance={Appearance.Primary} on:click={add} text={$_("generic.add")}>
+                        <Button hook="button-relay-modal-save" class="save" appearance={Appearance.Primary} on:click={add} text={$_("generic.add")}>
                             <Icon icon={Shape.CheckMark} />
                         </Button>
                     </Controls>
@@ -120,26 +121,47 @@
         {/if}
         {#each Object.entries(relays) as [name, relay]}
             <div class="relay-entry">
-                <div class="relay-name" data-tooltip={relay.address}>
-                    <Text>{name}</Text>
+                <div class="relay-info">
+                    <div>
+                        <Label hook="label-relay-name" text="Name" />
+                        <Input hook="input-relay-name" value={name} disabled copyOnInteract />
+                    </div>
+                    <div>
+                        <Label hook="label-relay-address" text="Address" />
+                        <Input hook="input-relay-address" value={relay.address} disabled copyOnInteract />
+                    </div>
                 </div>
-                <Button icon class="relay-toggle" appearance={!relay.active ? Appearance.Alt : Appearance.Primary} on:click={_ => toggleRelay(name)}>
-                    <Icon icon={Shape.CheckMark} />
-                </Button>
-                <Button
-                    class="relay-edit"
-                    icon
-                    appearance={Appearance.Alt}
-                    on:click={_ => {
-                        editing = name
-                        nameToAdd = name
-                        relayToAdd = relay.address
-                    }}>
-                    <Icon icon={Shape.Pencil} />
-                </Button>
-                <Button icon class="relay-delete" appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
-                    <Icon icon={Shape.Trash} />
-                </Button>
+                <div>
+                    <!-- note: This empty Label is for UI Alignment -->
+                    <Label text="" />
+                    <Controls>
+                        <Button
+                            hook="button-relay-toggle"
+                            class="relay-toggle"
+                            appearance={!relay.active ? Appearance.Alt : Appearance.Primary}
+                            on:click={_ => toggleRelay(name)}
+                            text={relay.active ? $_("generic.enabled") : $_("generic.enable")}>
+                            {#if relay.active}
+                                <Icon icon={Shape.CheckMark} />
+                            {/if}
+                        </Button>
+                        <Button
+                            hook="button-relay-edit"
+                            class="relay-edit"
+                            icon
+                            appearance={Appearance.Alt}
+                            on:click={_ => {
+                                editing = name
+                                nameToAdd = name
+                                relayToAdd = relay.address
+                            }}>
+                            <Icon icon={Shape.Pencil} />
+                        </Button>
+                        <Button hook="button-relay-delete" icon class="relay-delete" appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
+                            <Icon icon={Shape.Trash} />
+                        </Button>
+                    </Controls>
+                </div>
             </div>
         {/each}
         {#if changed}
@@ -148,8 +170,11 @@
             </div>
         {/if}
 
+        <Spacer />
+
         <Controls>
             <Button
+                hook="button-relay-add"
                 class="relay-add"
                 appearance={Appearance.Alt}
                 text={$_("generic.add")}
@@ -159,21 +184,24 @@
                 <Icon icon={Shape.Plus} />
             </Button>
             <div class="filling"></div>
-            <Button icon class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
-                <Icon icon={Shape.UTurn} />
-            </Button>
-            <Button
-                icon
-                class="relay-save"
-                appearance={Appearance.Alt}
-                tooltip={$_("generic.save")}
-                on:click={_ => {
-                    if (changed) {
-                        saveAndUpdate()
-                    }
-                }}>
-                <Icon icon={Shape.CheckMark} />
-            </Button>
+            {#if changed}
+                <Button hook="button-relay-revert" icon class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
+                    <Icon icon={Shape.UTurn} />
+                </Button>
+                <Button
+                    hook="button-relay-save"
+                    icon
+                    class="relay-save"
+                    appearance={Appearance.Alt}
+                    tooltip={$_("generic.save")}
+                    on:click={_ => {
+                        if (changed) {
+                            saveAndUpdate()
+                        }
+                    }}>
+                    <Icon icon={Shape.CheckMark} />
+                </Button>
+            {/if}
             {#if close}
                 <Button
                     icon
@@ -212,33 +240,15 @@
             display: flex;
             gap: var(--gap);
             align-items: center;
-            padding: var(--padding-less);
             margin-bottom: var(--padding);
 
-            .relay-name {
+            .relay-info {
                 width: 100%;
                 min-width: var(--min-component-width);
                 position: relative;
-                &:before {
-                    content: attr(data-tooltip);
-                    position: absolute;
-                    bottom: calc(100% + var(--gap));
-                    white-space: nowrap;
-                    width: fit-content;
-                    padding: var(--padding-minimal) var(--padding-less);
-                    border-radius: var(--border-radius-minimal);
-                    border: var(--border-width) solid var(--border-color);
-                    color: var(--color);
-                    font-size: var(--font-size-smaller);
-                    text-align: center;
-                    opacity: 0;
-                    pointer-events: none;
-                    z-index: 2;
-                    transition: all var(--animation-speed);
-                    background-color: var(--opaque-color);
-                    backdrop-filter: blur(var(--blur-radius));
-                    -webkit-backdrop-filter: blur(var(--blur-radius));
-                }
+                display: inline-flex;
+                gap: var(--gap);
+                align-items: center;
                 &:hover:before {
                     opacity: 1;
                 }

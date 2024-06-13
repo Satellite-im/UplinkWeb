@@ -26,6 +26,8 @@ export function initLocale() {
                 users: "Users",
                 groups: "Groups",
                 pending_changes: "Unsaved changes",
+                enable: "Enable",
+                enabled: "Enabled"
             },
             market: {
                 market: "Marketplace",
@@ -88,8 +90,8 @@ export function initLocale() {
                     },
                     new_account: {
                         title: "Make It Yours",
-                        subtext: "Let's setup your new account. Please choose a username below.",
-                        enter_username: "Enter username . . .",
+                        subtext: "Let's set up your new account. Please choose a username below.",
+                        enter_username: "Enter a username . . .",
                         set_status: "Set status message . . .",
                         create: "Create Account",
                     },
@@ -120,7 +122,7 @@ export function initLocale() {
                         show: "Reveal Phrase",
                         hide: "Hide Phrase",
                     },
-                    should_store: "Store recovery seed on account (disable for increased security, irriversable)",
+                    should_store: "Store recovery seed on account (disable for increased security, irreversible)",
                     update: "Profile Updated!",
                     copy_id: "Copy id",
                     copy_did: "Copy DID",
@@ -135,7 +137,7 @@ export function initLocale() {
                     messagesDescription: "Enable notifications for incoming messages.",
                     settingsDescription: "Enable notifications for updates and important alerts.",
                 },
-                accessability: {
+                accessibility: {
                     openDyslexic: "Open Dyslexic",
                     openDyslexicDescription: "Open Dyslexic may help some users who suffer from dyslexia, it's a custom font you can enable.",
                 },
@@ -157,7 +159,7 @@ export function initLocale() {
                     markdownSupportDescription: "Enabled the rendering of Markdown within messaging.",
                     spamRejection: "Spam/Bot Detection & Rejection",
                     spamRejectionDescription:
-                        "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots detecting they have been blocked too quickly.",
+                        "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots from detecting they have been blocked too quickly.",
                 },
                 preferences: {
                     appLanguage: "App Language",
@@ -182,7 +184,7 @@ export function initLocale() {
                     title: "Relay config",
                     name: "Relay name",
                     address: "Address",
-                    name_exist: "Name already exist",
+                    name_exist: "Name already exists",
                     invalid_address: "Invalid address",
                 },
             },

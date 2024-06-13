@@ -29,7 +29,7 @@
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { type Chat, type ContextItem, type User } from "$lib/types"
+    import { type Chat, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
@@ -42,6 +42,7 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
+    import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
@@ -84,9 +85,7 @@
     Store.state.user.subscribe(u => (own_user = u))
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
-    let friends: User[] = get(Store.state.friends)
     UIStore.state.chats.subscribe(c => (chats = c))
-    Store.state.friends.subscribe(f => (friends = f))
     Store.state.activeChat.subscribe(c => {
         activeChat = c
         conversation = ConversationStore.getConversation(c)
@@ -563,18 +562,12 @@
                 justify-content: center;
                 align-items: center;
                 border: var(--border-width) solid var(--primary-color);
+                margin-top: var(--gap);
             }
         }
 
         .aside {
             border-left: var(--border-width) solid var(--border-color);
-        }
-
-        .message-wrap {
-            width: fit-content;
-            &.local {
-                justify-content: flex-end;
-            }
         }
 
         .upload-overlay {
