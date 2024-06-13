@@ -42,6 +42,7 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
+    import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
 
     initLocale()
 
@@ -76,9 +77,7 @@
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
-    let friends: User[] = get(Store.state.friends)
     UIStore.state.chats.subscribe(c => (chats = c))
-    Store.state.friends.subscribe(f => (friends = f))
     Store.state.activeChat.subscribe(c => {
         activeChat = c
         conversation = ConversationStore.getConversation(c)

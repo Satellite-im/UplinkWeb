@@ -3,7 +3,7 @@
     import { ProfilePicture } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
-    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
+    import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -26,7 +26,6 @@
             },
             async (identity: Identity) => {
                 Store.setUserFromIdentity(identity!)
-                console.log(get(Store.state.user))
                 await new Promise(resolve => setTimeout(resolve, 1000))
                 loading = false
                 goto(Route.Chat)

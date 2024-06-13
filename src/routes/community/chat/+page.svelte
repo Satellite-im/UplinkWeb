@@ -2,6 +2,7 @@
     import { Button, Icon, Text } from "$lib/elements"
     import Label from "$lib/elements/Label.svelte"
     import { Appearance, Shape } from "$lib/enums"
+    import Chatbar from "$lib/layouts/Chatbar.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
 </script>
 
@@ -25,15 +26,24 @@
             </Button>
         </svelte:fragment>
     </Topbar>
+    <div class="content">asdf</div>
+    <Chatbar />
 </div>
 
 <style lang="scss">
     #community {
+        height: 100%;
         width: 100%;
+        display: inline-flex;
+        flex-direction: column;
         .topbar-details {
             display: column;
             align-items: center;
             gap: var(--gap);
+        }
+
+        .content {
+            flex: 1;
         }
     }
 </style>
