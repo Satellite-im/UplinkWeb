@@ -14,8 +14,9 @@
 </script>
 
 <div id="page">
-    <SettingSection name={$_("settings.accessibility.openDyslexic")} description={$_("settings.accessibility.openDyslexicDescription")}>
+    <SettingSection hook="section-accessibility" name={$_("settings.accessibility.openDyslexic")} description={$_("settings.accessibility.openDyslexicDescription")}>
         <Switch
+            hook="switch-accessibility-open-dyslexic"
             on={font === Font.OpenDyslexic}
             on:toggle={e => {
                 if (e.detail) {
