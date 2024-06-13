@@ -128,7 +128,10 @@
                 bind:this={inputRef}
             />
         {:else}
-            <Text>
+            <Text
+                ellipsis={true}
+                textWidth={120}
+            >
                 {name}{info?.extension && `.${info.extension}`}
             </Text>
         {/if}
