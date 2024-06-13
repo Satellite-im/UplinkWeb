@@ -53,7 +53,6 @@ class ConstellationStore {
         if (constellation) {
             try {
                 let currentDir = constellation.current_directory()
-                console.log('Getting current directory: ' + currentDir.name())
                 let files =  constellation.current_directory().get_items()
                 return success(files)
             } catch (error) {

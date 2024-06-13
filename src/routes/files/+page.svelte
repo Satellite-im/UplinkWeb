@@ -67,7 +67,6 @@
     })
 
     async function openFolder(folder: FileInfo) {
-        console.log('openFolder')
         await ConstellationStoreInstance.openDirectory(folder.name)
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
@@ -322,7 +321,6 @@
 
     async function getCurrentDirectoryFiles() {
         let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
-        console.log('files:', files)
         files.onSuccess(items => {
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
