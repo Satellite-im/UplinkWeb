@@ -2,8 +2,8 @@
     export let character: string = "A"
 </script>
 
-<div class="key">
-    <span>
+<div data-cy="key-button" class="key">
+    <span data-cy="key-button-text">
         {character}
     </span>
 </div>
