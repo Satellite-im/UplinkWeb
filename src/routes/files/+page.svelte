@@ -66,12 +66,15 @@
         currentFiles = folderStack[folderStack.length - 1]
     })
 
-    function openFolder(folder: FileInfo) {
+    async function openFolder(folder: FileInfo) {
+        console.log('openFolder')
+        await ConstellationStoreInstance.openDirectory(folder.name)
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-            const newStack = [...stack, folder.items]
+            const newStack = [...stack, folder.items!]
             return newStack
         })
+        getCurrentDirectoryFiles()
     }
 
     function goBack() {
