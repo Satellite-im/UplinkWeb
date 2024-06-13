@@ -52,7 +52,6 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let currentDir = constellation.current_directory()
                 let files =  constellation.current_directory().get_items()
                 return success(files)
             } catch (error) {
