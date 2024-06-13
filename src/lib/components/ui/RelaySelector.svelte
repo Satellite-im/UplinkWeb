@@ -82,24 +82,25 @@
 </script>
 
 <div class="relay-selector">
-    <Label text={$_("settings.relay.title")} />
+    <Label hook="label-relay" text={$_("settings.relay.title")} />
     <div class="relay-content">
         {#if adding || editing}
-            <Modal>
+            <Modal hook="modal-relay-add">
                 <div class="relay-add-modal">
-                    <Label text={$_("settings.relay.name")} />
-                    <Input bind:value={nameToAdd}></Input>
+                    <Label hook="label-relay-name" text={$_("settings.relay.name")} />
+                    <Input hook="input-relay-name" bind:value={nameToAdd}></Input>
                     {#if nameToAdd !== "" && !verifyName(nameToAdd)}
                         <div class="error">{$_("settings.relay.name_exist")}</div>
                     {/if}
-                    <Label text={$_("settings.relay.address")} />
+                    <Label hook="label-relay-address" text={$_("settings.relay.address")} />
 
-                    <Input bind:value={relayToAdd} on:enter={add}></Input>
+                    <Input hook="input-relay-address" bind:value={relayToAdd} on:enter={add}></Input>
                     {#if relayToAdd !== "" && !verifyAddress(relayToAdd)}
                         <div class="error">{$_("settings.relay.invalid_address")}</div>
                     {/if}
                     <Controls>
                         <Button
+                            hook="button-relay-modal-cancel"
                             text={$_("generic.cancel")}
                             class="cancel"
                             appearance={Appearance.Alt}
@@ -111,7 +112,7 @@
                             }}>
                             <Icon icon={Shape.XMark} />
                         </Button>
-                        <Button class="save" appearance={Appearance.Primary} on:click={add} text={$_("generic.add")}>
+                        <Button hook="button-relay-modal-save" class="save" appearance={Appearance.Primary} on:click={add} text={$_("generic.add")}>
                             <Icon icon={Shape.CheckMark} />
                         </Button>
                     </Controls>
@@ -122,24 +123,30 @@
             <div class="relay-entry">
                 <div class="relay-info">
                     <div>
-                        <Label text="Name" />
-                        <Input value={name} disabled copyOnInteract />
+                        <Label hook="label-relay-name" text="Name" />
+                        <Input hook="input-relay-name" value={name} disabled copyOnInteract />
                     </div>
                     <div>
-                        <Label text="Address" />
-                        <Input value={relay.address} disabled copyOnInteract />
+                        <Label hook="label-relay-address" text="Address" />
+                        <Input hook="input-relay-address" value={relay.address} disabled copyOnInteract />
                     </div>
                 </div>
                 <div>
                     <!-- note: This empty Label is for UI Alignment -->
                     <Label text="" />
                     <Controls>
-                        <Button class="relay-toggle" appearance={!relay.active ? Appearance.Alt : Appearance.Primary} on:click={_ => toggleRelay(name)} text={relay.active ? $_("generic.enabled") : $_("generic.enable")}>
+                        <Button
+                            hook="button-relay-toggle"
+                            class="relay-toggle"
+                            appearance={!relay.active ? Appearance.Alt : Appearance.Primary}
+                            on:click={_ => toggleRelay(name)}
+                            text={relay.active ? $_("generic.enabled") : $_("generic.enable")}>
                             {#if relay.active}
                                 <Icon icon={Shape.CheckMark} />
                             {/if}
                         </Button>
                         <Button
+                            hook="button-relay-edit"
                             class="relay-edit"
                             icon
                             appearance={Appearance.Alt}
@@ -150,7 +157,7 @@
                             }}>
                             <Icon icon={Shape.Pencil} />
                         </Button>
-                        <Button icon class="relay-delete" appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
+                        <Button hook="button-relay-delete" icon class="relay-delete" appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
                             <Icon icon={Shape.Trash} />
                         </Button>
                     </Controls>
@@ -167,6 +174,7 @@
 
         <Controls>
             <Button
+                hook="button-relay-add"
                 class="relay-add"
                 appearance={Appearance.Alt}
                 text={$_("generic.add")}
@@ -177,10 +185,11 @@
             </Button>
             <div class="filling"></div>
             {#if changed}
-                <Button icon class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
+                <Button hook="button-relay-revert" icon class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
                     <Icon icon={Shape.UTurn} />
                 </Button>
                 <Button
+                    hook="button-relay-save"
                     icon
                     class="relay-save"
                     appearance={Appearance.Alt}

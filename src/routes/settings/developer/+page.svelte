@@ -14,12 +14,13 @@
 </script>
 
 <div id="page">
-    <SettingSection name="Devmode" description="Disable devmode.">
-        <Button appearance={Appearance.Alt} on:click={_ => SettingsStore.toggleDevmode(false)}>Exit Devmode</Button>
+    <SettingSection hook="section-devmode" name="Devmode" description="Disable devmode.">
+        <Button hook="button-exit-devmode" appearance={Appearance.Alt} on:click={_ => SettingsStore.toggleDevmode(false)}>Exit Devmode</Button>
     </SettingSection>
 
-    <SettingSection name="Load Mock" description="Loads mock data into state.">
+    <SettingSection hook="section-load-mock" name="Load Mock" description="Loads mock data into state.">
         <Button
+            hook="button-load-mock"
             appearance={Appearance.Alt}
             on:click={_ => {
                 Store.loadMockData()
@@ -30,12 +31,12 @@
         </Button>
     </SettingSection>
 
-    <SettingSection name="Clear State" description="Reset the application state.">
-        <Button appearance={Appearance.Alt} on:click={_ => clearState()}>Clear State</Button>
+    <SettingSection hook="section-clear-state" name="Clear State" description="Reset the application state.">
+        <Button hook="button-clear-state" appearance={Appearance.Alt} on:click={_ => clearState()}>Clear State</Button>
     </SettingSection>
 
-    <SettingSection name="Test Voice" description="Dev Voice">
-        <Button appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
+    <SettingSection hook="section-test-voice" name="Test Voice" description="Dev Voice">
+        <Button hook="button-test-voice" appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
     </SettingSection>
 </div>
 
