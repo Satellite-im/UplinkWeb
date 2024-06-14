@@ -5,10 +5,12 @@
     import { createEventDispatcher } from "svelte"
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
+    import Text from "$lib/elements/Text.svelte"
 
     export let remote: boolean = false
     export let subtext: string | null = ""
     export let profilePictureRequirements: ProfilePictureRequirements | null = null
+    export let username: string = ""
     const dispatch = createEventDispatcher()
 
     const compact: boolean = get(SettingsStore.state).messaging.compact
@@ -27,6 +29,9 @@
         </div>
     {/if}
     <div class="flex">
+        {#if username.length}
+            <Text muted class="username-{remote ? 'remote' : 'local'}">{username}</Text>
+        {/if}
         <slot></slot>
     </div>
     {#if profilePictureRequirements && !remote}
@@ -82,6 +87,10 @@
                 margin-left: 0;
                 margin-right: var(--profile-picture-size);
             }
+        }
+
+        :global(.username-local) {
+            align-self: end;
         }
     }
 </style>

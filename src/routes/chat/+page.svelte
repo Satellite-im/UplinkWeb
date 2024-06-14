@@ -326,6 +326,7 @@
                                 previewProfile = group.details.origin
                             }}
                             remote={group.details.remote}
+                            username={group.details.origin.name}
                             subtext={getTimeAgo(group.messages[0].details.at)}>
                             {#each group.messages as message, idx}
                                 {#if message.inReplyTo}
