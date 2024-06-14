@@ -63,7 +63,6 @@
         {/if}
 
         <slot></slot>
-
         <CommunityIcon name="Satellite.im" image="/assets/logo/satellite.png" />
     </div>
 

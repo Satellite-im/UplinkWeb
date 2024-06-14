@@ -4,6 +4,8 @@
     import { Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { fade } from "svelte/transition"
+    import { SettingsStore } from "$lib/state"
+    import { get } from "svelte/store"
 
     let scrollContainer: Element
 
@@ -18,6 +20,8 @@
         showScrollToBottom = isScrolledUp
     }
 
+    const compact: boolean = get(SettingsStore.state).messaging.compact
+
     afterUpdate(() => {
         if (!showScrollToBottom) scrollToBottom(scrollContainer)
     })
@@ -29,7 +33,7 @@
     })
 </script>
 
-<div class="conversation">
+<div class={`conversation ${compact ? "compact" : ""}`}>
     <div bind:this={scrollContainer} class="scroll" on:scroll={handleScroll}>
         <div class="spacer"></div>
         <slot></slot>
@@ -54,6 +58,10 @@
         padding: var(--padding-less);
         position: relative;
         gap: var(--gap);
+
+        &.compact {
+            gap: var(--gap-less);
+        }
 
         .scroll-to-bottom {
             display: inline-flex;

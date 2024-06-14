@@ -49,6 +49,7 @@ export let defaultSettings = {
         convertEmoji: true,
         markdownSupport: true,
         spamRejection: true,
+        compact: false,
     },
     audio: {
         inputDevice: "Default",

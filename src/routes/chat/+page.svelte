@@ -44,6 +44,7 @@
     import Market from "$lib/components/market/Market.svelte"
     import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
 
+
     initLocale()
 
     let loading = false
@@ -190,11 +191,11 @@
 
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={() => search_component.select_first()}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
-
-        <Button hook="button-marketplace" appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={_ => (showMarket = true)}>
-            <Icon icon={Shape.Shop} />
-        </Button>
-
+        <!--
+            <Button hook="button-marketplace" appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={_ => (showMarket = true)}>
+                <Icon icon={Shape.Shop} />
+            </Button>
+        -->
         <div class="content-header">
             <Label hook="label-sidebar-chats" text={$_("chat.chat_plural")} />
             <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
@@ -326,6 +327,7 @@
                                 previewProfile = group.details.origin
                             }}
                             remote={group.details.remote}
+                            username={group.details.origin.name}
                             subtext={getTimeAgo(group.messages[0].details.at)}>
                             {#each group.messages as message, idx}
                                 {#if message.inReplyTo}
