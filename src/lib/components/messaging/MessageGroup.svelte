@@ -3,14 +3,21 @@
     import type { ProfilePictureRequirements } from "$lib/types"
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
+    import { get } from "svelte/store"
+    import { SettingsStore } from "$lib/state"
+    import Text from "$lib/elements/Text.svelte"
+    import { Label } from "$lib/elements"
 
     export let remote: boolean = false
     export let subtext: string | null = ""
     export let profilePictureRequirements: ProfilePictureRequirements | null = null
+    export let username: string = ""
     const dispatch = createEventDispatcher()
+
+    const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
-<div class="message-group">
+<div class={`message-group ${compact ? "compact" : ""}`}>
     {#if profilePictureRequirements && remote}
         <div class="aside">
             <ProfilePicture
@@ -23,6 +30,9 @@
         </div>
     {/if}
     <div class="flex">
+        {#if username.length}
+            <Label class="username-{remote ? 'remote' : 'local'}" text={username} />
+        {/if}
         <slot></slot>
     </div>
     {#if profilePictureRequirements && !remote}
@@ -59,6 +69,7 @@
             display: inline-flex;
             flex-direction: column;
         }
+
         .aside {
             width: fit-content;
             height: 100%;
@@ -77,6 +88,10 @@
                 margin-left: 0;
                 margin-right: var(--profile-picture-size);
             }
+        }
+
+        :global(.username-local) {
+            align-self: end;
         }
     }
 </style>

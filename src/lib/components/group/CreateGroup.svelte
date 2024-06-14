@@ -84,6 +84,7 @@
             <Button
                 hook="button-create-group"
                 text="Create Group"
+                fill
                 on:click={async _ => {
                     let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
                     conversation.onSuccess(chat => {
@@ -150,7 +151,8 @@
                 display: inline-flex;
                 flex-direction: column;
                 gap: var(--gap);
-                height: var(--min-scrollable-height);
+                min-height: var(--input-height);
+                max-height: var(--min-scrollable-height);
                 overflow-y: auto;
                 overflow-x: hidden;
                 padding-right: var(--padding-less);

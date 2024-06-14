@@ -1,7 +1,5 @@
 <script lang="ts">
     import { MessagePosition } from "$lib/enums"
-    import { SettingsStore } from "$lib/state"
-    import { get } from "svelte/store"
 
     export let remote: boolean = false
     export let reply: boolean = false
@@ -9,12 +7,10 @@
     export let morePadding: boolean = false
 
     export let position: MessagePosition = MessagePosition.Middle
-
-    const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div on:contextmenu class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''} {compact ? 'compact' : ''}">
+<div on:contextmenu class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''}">
     <div class="content">
         <slot></slot>
     </div>
@@ -110,15 +106,6 @@
 
             &.position-local {
                 align-self: flex-end;
-            }
-        }
-
-        &.compact {
-            padding: 0;
-            background-color: transparent;
-
-            &.reply {
-                padding: 0;
             }
         }
     }

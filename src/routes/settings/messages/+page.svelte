@@ -39,6 +39,14 @@
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, spamRejection: on.detail } })
             }} />
     </SettingSection>
+    <SettingSection hook="section-spam-bot-detection" name={$_("settings.messages.compactMessaging")} description={$_("settings.messages.compactMessagingDescription")}>
+        <Switch
+            hook="checkbox-compact-messaging"
+            on={settings.messaging.compact}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, compact: on.detail } })
+            }} />
+    </SettingSection>
 </div>
 
 <style lang="scss">

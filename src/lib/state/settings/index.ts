@@ -9,6 +9,7 @@ export interface ISettingsState {
         convertEmoji: boolean
         markdownSupport: boolean
         spamRejection: boolean
+        compact: boolean
     }
     audio: {
         inputDevice: string

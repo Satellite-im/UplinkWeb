@@ -7,8 +7,6 @@
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
 
-
-
     export let itemId: string
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
@@ -40,7 +38,7 @@
         if (inputRef) {
             inputRef.focus()
             hasFocus = true
-            inputRef.setSelectionRange(0, inputRef.value.length);
+            inputRef.setSelectionRange(0, inputRef.value.length)
         }
     }
 
@@ -80,36 +78,32 @@
     })
 
     function onKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape')
-            {
-                isEnterOrEscapeKeyPressed = true
-                isRenaming = OperationState.Initial
+        if (event.key === "Escape") {
+            isEnterOrEscapeKeyPressed = true
+            isRenaming = OperationState.Initial
+            name = oldName
+            return
+        }
+        if (event.key === "Enter") {
+            isEnterOrEscapeKeyPressed = true
+            if (name === "" || name === oldName) {
                 name = oldName
-                return}
-        if (event.key === 'Enter')
-            {
-                isEnterOrEscapeKeyPressed = true
-                if (name === "" || name === oldName)
-                {
-                    name = oldName
-                    isRenaming = OperationState.Initial
-                    return
-                }
-                onRename()
+                isRenaming = OperationState.Initial
+                return
             }
+            onRename()
+        }
     }
 
     function onBlur() {
-        if (name === "" || name === oldName)
-            {
-                name = oldName
-                isRenaming = OperationState.Initial
-            }
-        else if (!isEnterOrEscapeKeyPressed)
-            {onRename()}
+        if (name === "" || name === oldName) {
+            name = oldName
+            isRenaming = OperationState.Initial
+        } else if (!isEnterOrEscapeKeyPressed) {
+            onRename()
+        }
         isEnterOrEscapeKeyPressed = false
     }
-
 </script>
 
 <section>
@@ -118,17 +112,9 @@
         <Icon icon={getIcon()} />
         <Spacer less />
         {#if isRenaming === OperationState.Loading}
-            <input 
-                id="input-{itemId}"
-                type="text" 
-                bind:value={name} 
-                on:input={updateName} 
-                on:blur={onBlur} 
-                on:keydown={onKeydown}
-                bind:this={inputRef}
-            />
+            <input id="input-{itemId}" type="text" bind:value={name} on:input={updateName} on:blur={onBlur} on:keydown={onKeydown} bind:this={inputRef} />
         {:else}
-            <Text>
+            <Text class="name">
                 {name}{info?.extension && `.${info.extension}`}
             </Text>
         {/if}
@@ -173,6 +159,13 @@
             color: var(--warning-color);
             width: var(--icon-size-largest);
             height: var(--icon-size-largest);
+        }
+
+        :global(.name) {
+            overflow: hidden;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            line-clamp: 1;
         }
     }
 </style>

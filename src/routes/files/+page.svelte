@@ -38,7 +38,7 @@
     }
 
     let tabRoutes: string[] = ["chats", "files"]
-    let activeTabRoute: string = tabRoutes[0]
+    let activeTabRoute: string = tabRoutes[1]
     $: openFolders = get(Store.state.openFolders)
 
     function toggleFolder(folderId: string | number) {
@@ -66,15 +66,18 @@
         currentFiles = folderStack[folderStack.length - 1]
     })
 
-    function openFolder(folder: FileInfo) {
+    async function openFolder(folder: FileInfo) {
+        await ConstellationStoreInstance.openDirectory(folder.name)
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-            const newStack = [...stack, folder.items]
+            const newStack = [...stack, folder.items!]
             return newStack
         })
+        getCurrentDirectoryFiles()
     }
 
-    function goBack() {
+    async function goBack() {
+        await ConstellationStoreInstance.goBack()
         folderStackStore.update(stack => {
             if (stack.length > 1) {
                 stack.pop()
@@ -88,6 +91,7 @@
             })
             return stack
         })
+        getCurrentDirectoryFiles()
     }
 
     async function createNewDirectory(folder: FileInfo) {
@@ -248,6 +252,7 @@
                     return file ? file : null
                 }) as FileInfo[]
                 Store.updateFileOrder(currentFiles)
+                ConstellationStoreInstance.setItemsOrders(currentFiles)
             })
 
             let lastClickTime = 0
@@ -290,29 +295,29 @@
     function itemsToFileInfo(items: Item[]): FileInfo[] {
         let filesInfo: FileInfo[] = []
         items.forEach(item => {
-                let newItem: FileInfo = {
-                        id: item!.id(),
-                        type: item.is_file() ? 'file' : 'folder',
-                        name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
-                        size: item!.size(),
-                        isRenaming: OperationState.Initial,
-                        extension: item.is_file() ? splitFileName(item.name()).extension : "",
-                        source: "",
-                        items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items())
-                    }
-                    filesInfo = [...filesInfo, newItem]
-            })
+            let newItem: FileInfo = {
+                id: item!.id(),
+                type: item.is_file() ? "file" : "folder",
+                name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
+                size: item!.size(),
+                isRenaming: OperationState.Initial,
+                extension: item.is_file() ? splitFileName(item.name()).extension : "",
+                source: "",
+                items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
+            }
+            filesInfo = [...filesInfo, newItem]
+        })
         return filesInfo
     }
 
     function splitFileName(fileName: string): { name: string; extension: string } {
-        const lastDotIndex = fileName.lastIndexOf('.');
+        const lastDotIndex = fileName.lastIndexOf(".")
         if (lastDotIndex === -1) {
-            return { name: fileName, extension: '' };
+            return { name: fileName, extension: "" }
         }
-        const name = fileName.substring(0, lastDotIndex);
-        const extension = fileName.substring(lastDotIndex + 1);
-        return { name, extension };
+        const name = fileName.substring(0, lastDotIndex)
+        const extension = fileName.substring(lastDotIndex + 1)
+        return { name, extension }
     }
 
     async function getCurrentDirectoryFiles() {
@@ -414,7 +419,6 @@
             }
         )
     }
-
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
@@ -558,7 +562,8 @@
                     appearance={Appearance.Alt}
                     icon
                     tooltip={$_("files.upload")}
-                    on:click={() => {
+                    on:click={async () => {
+                        await ConstellationStoreInstance.setItemsOrders()
                         filesToUpload?.click()
                     }}>
                     <Icon icon={Shape.Plus} />
@@ -607,20 +612,19 @@
                                     },
                                 },
                             ]}>
-                            <FileFolder 
+                            <FileFolder
                                 itemId={item.id}
-                                slot="content" 
-                                let:open 
+                                slot="content"
+                                let:open
                                 on:contextmenu={e => {
-                                        isContextMenuOpen = true
-                                        open(e)
-                                    }
-                                }
+                                    isContextMenuOpen = true
+                                    open(e)
+                                }}
                                 on:rename={async e => {
                                     renameItem(item.name, e.detail)
                                 }}
                                 isRenaming={item.isRenaming}
-                                kind={FilesItemKind.File} 
+                                kind={FilesItemKind.File}
                                 info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
@@ -657,17 +661,17 @@
                                     },
                                 },
                             ]}>
-                            <FileFolder 
+                            <FileFolder
                                 itemId={item.id}
-                                slot="content" 
-                                let:open 
+                                slot="content"
+                                let:open
                                 on:contextmenu={e => {
                                     isContextMenuOpen = true
                                     open(e)
                                 }}
                                 kind={FilesItemKind.Folder}
                                 info={item}
-                                on:rename={async e => { 
+                                on:rename={async e => {
                                     if (item.name === "" && e.detail !== "") {
                                         const newName = e.detail
                                         item.name = newName
@@ -677,8 +681,7 @@
                                         renameItem(item.name, e.detail)
                                     }
                                 }}
-                                isRenaming={item.isRenaming}
-                            />
+                                isRenaming={item.isRenaming} />
                         </ContextMenu>
                     {:else if item.type === "image"}
                         <ImageFile
