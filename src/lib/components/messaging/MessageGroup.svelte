@@ -3,14 +3,18 @@
     import type { ProfilePictureRequirements } from "$lib/types"
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
+    import { get } from "svelte/store"
+    import { SettingsStore } from "$lib/state"
 
     export let remote: boolean = false
     export let subtext: string | null = ""
     export let profilePictureRequirements: ProfilePictureRequirements | null = null
     const dispatch = createEventDispatcher()
+
+    const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
-<div class="message-group">
+<div class={`message-group ${compact ? "compact" : ""}`}>
     {#if profilePictureRequirements && remote}
         <div class="aside">
             <ProfilePicture
@@ -59,6 +63,7 @@
             display: inline-flex;
             flex-direction: column;
         }
+
         .aside {
             width: fit-content;
             height: 100%;
