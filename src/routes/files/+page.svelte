@@ -156,6 +156,7 @@
             isRenaming: OperationState.Loading,
             items: [],
             parentId: $currentFolderIdStore,
+            icon: Shape.Folder,
         }
 
         function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
@@ -222,16 +223,6 @@
 
     $: if (isContextMenuOpen || !isContextMenuOpen) {
         recreateSortable()
-    }
-
-    let folderClicked: FileInfo = {
-        id: "",
-        type: "",
-        size: 0,
-        name: "",
-        source: "",
-        isRenaming: OperationState.Initial,
-        items: [],
     }
 
     function initializeSortable() {
@@ -304,6 +295,7 @@
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
                 source: "",
                 items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
+                icon: Shape.Document,
             }
             filesInfo = [...filesInfo, newItem]
         })
