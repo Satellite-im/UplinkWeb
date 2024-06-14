@@ -66,15 +66,18 @@
         currentFiles = folderStack[folderStack.length - 1]
     })
 
-    function openFolder(folder: FileInfo) {
+    async function openFolder(folder: FileInfo) {
+        await ConstellationStoreInstance.openDirectory(folder.name)
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-            const newStack = [...stack, folder.items]
+            const newStack = [...stack, folder.items!]
             return newStack
         })
+        getCurrentDirectoryFiles()
     }
 
-    function goBack() {
+    async function goBack() {
+        await ConstellationStoreInstance.goBack()
         folderStackStore.update(stack => {
             if (stack.length > 1) {
                 stack.pop()
@@ -88,6 +91,7 @@
             })
             return stack
         })
+        getCurrentDirectoryFiles()
     }
 
     async function createNewDirectory(folder: FileInfo) {
@@ -248,6 +252,7 @@
                     return file ? file : null
                 }) as FileInfo[]
                 Store.updateFileOrder(currentFiles)
+                ConstellationStoreInstance.setItemsOrders(currentFiles)
             })
 
             let lastClickTime = 0
@@ -557,7 +562,8 @@
                     appearance={Appearance.Alt}
                     icon
                     tooltip={$_("files.upload")}
-                    on:click={() => {
+                    on:click={async () => {
+                        await ConstellationStoreInstance.setItemsOrders()
                         filesToUpload?.click()
                     }}>
                     <Icon icon={Shape.Plus} />
