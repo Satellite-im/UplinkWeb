@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { clearState } from '$lib/state';
     import { Label } from "$lib/elements"
     import { Modal, PinInput } from "$lib/components"
     import { goto } from "$app/navigation"
@@ -17,6 +18,20 @@
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { RelayStore } from "$lib/state/wasm/relays"
     import { Controls } from "$lib/layouts"
+    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import { WarpInstance, type Identity } from "warp-wasm"
+    import { Store } from "$lib/state/store"
+    import { onMount } from "svelte"
+
+    onMount(async () => {
+        localStorage.removeItem('warp.tesseract.keypair')
+        TesseractStoreInstance.clear()
+        WarpStore.clear()
+        if (localStorage.getItem('is_user_logged') === 'true') {
+            await doAutoLoginIfUserExist()
+            return
+        }
+    })
 
     initLocale()
 
@@ -38,6 +53,8 @@
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
         ownIdentity.fold(
             (_: any) => {
+                localStorage.setItem('pin', pin.toString())
+                localStorage.setItem('is_user_logged', 'true')
                 goto(Route.NewAccount)
             },
             (_: any) => {
@@ -45,6 +62,33 @@
             }
         )
     }
+
+    async function doAutoLoginIfUserExist() {
+            // HACK(Lucas): Temp Solution to avoid clearing cache all time
+            let username = localStorage.getItem('user_name')
+            let statusMessage = localStorage.getItem('status_message')
+            let pin = localStorage.getItem('pin')
+            await TesseractStoreInstance.unlock(pin!)
+            let tesseract = await TesseractStoreInstance.getTesseract()
+            let addressed = Object.values(get(RelayStore.state))
+                .filter(r => r.active)
+                .map(r => r.address)
+            await WarpStore.initWarpInstances(tesseract, addressed)
+            await MultipassStoreInstance.createIdentity(username!, statusMessage!, undefined)
+            let identity = await MultipassStoreInstance.getOwnIdentity()
+            identity.fold(
+                (e: WarpError) => {
+                    get(Store.state.logger).error("Error creating identity: " + e)
+                },
+                async (identity: Identity) => {
+                    Store.setUserFromIdentity(identity!)
+                    await new Promise(resolve => setTimeout(resolve, 1000))
+                    loading = false
+                    goto(Route.Chat)
+                }
+            )
+    }
+
 </script>
 
 <div id="auth-unlock">

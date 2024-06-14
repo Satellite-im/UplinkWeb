@@ -14,6 +14,13 @@ class Store {
         }
     }
 
+    async clear() {
+        this.warp.tesseract.set(null)
+        this.warp.multipass.set(null)
+        this.warp.raygun.set(null)
+        this.warp.constellation.set(null)
+    }
+
     async initWarpInstances(tesseract: wasm.Tesseract, addresses?: string[]) {
         await init()
         let warp_instance = await this.createIpfs(tesseract, addresses)

@@ -9,6 +9,14 @@ class TesseractStore {
         return get(this.tesseractWritable)!
     }
 
+    async clear() {
+        const tesseractInstance = get(this.tesseractWritable)
+        if (tesseractInstance) {
+            tesseractInstance.clear()
+            this.tesseractWritable.set(null)
+        }
+    }
+
     async unlock(pin: string) {
         await init()
         get(Store.state.logger).debug('TesseractStore: Warp WASM initialized')
