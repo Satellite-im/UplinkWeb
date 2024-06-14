@@ -66,15 +66,18 @@
         currentFiles = folderStack[folderStack.length - 1]
     })
 
-    function openFolder(folder: FileInfo) {
+    async function openFolder(folder: FileInfo) {
+        await ConstellationStoreInstance.openDirectory(folder.name)
         currentFolderIdStore.set(folder.id)
         folderStackStore.update(stack => {
-            const newStack = [...stack, folder.items]
+            const newStack = [...stack, folder.items!]
             return newStack
         })
+        getCurrentDirectoryFiles()
     }
 
-    function goBack() {
+    async function goBack() {
+        await ConstellationStoreInstance.goBack()
         folderStackStore.update(stack => {
             if (stack.length > 1) {
                 stack.pop()
@@ -88,6 +91,7 @@
             })
             return stack
         })
+        getCurrentDirectoryFiles()
     }
 
     async function createNewDirectory(folder: FileInfo) {
@@ -152,6 +156,7 @@
             isRenaming: OperationState.Loading,
             items: [],
             parentId: $currentFolderIdStore,
+            icon: Shape.Folder,
         }
 
         function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
@@ -220,16 +225,6 @@
         recreateSortable()
     }
 
-    let folderClicked: FileInfo = {
-        id: "",
-        type: "",
-        size: 0,
-        name: "",
-        source: "",
-        isRenaming: OperationState.Initial,
-        items: [],
-    }
-
     function initializeSortable() {
         const dropzone = document.querySelector(".files") as HTMLElement
         if (dropzone) {
@@ -248,6 +243,7 @@
                     return file ? file : null
                 }) as FileInfo[]
                 Store.updateFileOrder(currentFiles)
+                ConstellationStoreInstance.setItemsOrders(currentFiles)
             })
 
             let lastClickTime = 0
@@ -299,6 +295,7 @@
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
                 source: "",
                 items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
+                icon: Shape.Document,
             }
             filesInfo = [...filesInfo, newItem]
         })
@@ -557,7 +554,8 @@
                     appearance={Appearance.Alt}
                     icon
                     tooltip={$_("files.upload")}
-                    on:click={() => {
+                    on:click={async () => {
+                        await ConstellationStoreInstance.setItemsOrders()
                         filesToUpload?.click()
                     }}>
                     <Icon icon={Shape.Plus} />
