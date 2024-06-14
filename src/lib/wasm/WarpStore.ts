@@ -24,9 +24,10 @@ class Store {
     }
 
     private async createIpfs(tesseract: wasm.Tesseract, addresses?: string[]) {
-        if (addresses && addresses.length > 0) {
-            return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(addresses), tesseract)) as wasm.WarpInstance
-        }
+        return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(["/ip4/127.0.0.1/tcp/4444/ws/p2p/12D3KooW9yxFohzTRbFPCtqZo9UVzz6EgKqEAP1CdgMQvNCCWqh1"]), tesseract)) as wasm.WarpInstance
+        // if (addresses && addresses.length > 0) {
+        //     return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(addresses), tesseract)) as wasm.WarpInstance
+        // }
         // HACK: Replace 'your-relay-address-here' with your relay address
         // This is a temporary solution
         // Run this command on Warp repo to start a relay server:

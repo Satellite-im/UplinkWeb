@@ -1,11 +1,10 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind } from "$lib/enums"
 
-
 export enum OperationState {
-    Initial = 'Initial',
-    Loading = 'Loading',
-    Success = 'Success',
-    Error = 'Error'
+    Initial = "Initial",
+    Loading = "Loading",
+    Success = "Success",
+    Error = "Error",
 }
 
 export type Frame = {
@@ -126,7 +125,7 @@ export type Chat = {
     motd: string
     kind: ChatType
     settings: ChatSettings
-    creator: User
+    creator?: User
     notifications: number
     activity: boolean
     users: User[]
@@ -142,7 +141,7 @@ export type CommunityChannel = {
 }
 
 export type CommunityChannelGroup = {
-    name: string,
+    name: string
     channels: CommunityChannel[]
 }
 
@@ -172,7 +171,7 @@ export let defaultChat: Chat = {
     motd: "",
     notifications: 0,
     kind: ChatType.DirectMessage,
-    creator: defaultUser,
+    creator: undefined,
     settings: {
         displayOwnerBadge: true,
         readReciepts: true,
@@ -243,6 +242,11 @@ export type Message = {
     attachments: Attachment[]
     text: string[]
     pinned: boolean
+}
+
+export function mentions_user(message: Message, user: string): boolean {
+    // TODO
+    return false
 }
 
 export type MessageGroup = {

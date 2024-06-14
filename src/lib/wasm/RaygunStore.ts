@@ -6,10 +6,12 @@ import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
 import { ChatType } from "$lib/enums"
-import { type User, type Chat, defaultChat, type Message } from "$lib/types"
+import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
+import { parseJSValue } from "./EnumParser"
+import { MultipassStoreInstance } from "./MultipassStore"
 
 const MAX_PINNED_MESSAGES = 100
 
@@ -49,6 +51,32 @@ export type FetchMessageResponse = {
     most_recent: string | undefined
 }
 
+export type SendMessageResult = {
+    message: string
+    progress?: wasm.AsyncIterator
+}
+
+export type MultiSendMessageResult = {
+    chat: string
+    result: SendMessageResult
+}
+
+export type ConversationSettings =
+    | {
+          direct: {}
+      }
+    | {
+          group: {
+              members_can_add_participants: boolean
+              members_can_change_name: boolean
+          }
+      }
+
+type Range = {
+    start: any
+    end: any
+}
+
 class RaygunStore {
     private raygunWritable: Writable<wasm.RayGunBox | null>
     // A map of message listeners
@@ -73,45 +101,22 @@ class RaygunStore {
     }
 
     async createConversation(recipient: User) {
-        let conversation = await this.get(r => r.create_conversation(recipient.key), "Error creating new conversation")
-        return conversation.map(conv => {
-            let chat: Chat = {
-                ...defaultChat,
-                id: conv.id(),
-                name: conv.name() ? conv.name()! : conv.recipients()[0],
-                kind: ChatType.DirectMessage,
-                creator: get(Store.state.user),
-                users: [get(Store.state.user), recipient],
-                last_message_at: new Date(),
-            }
-            UIStore.addSidebarChat(chat)
-            return chat
-        })
+        return await this.get(async r => this.convertWarpConversation(await r.create_conversation(recipient.key), r), "Error creating new conversation")
     }
 
     async createGroupConversation(name: string | undefined, recipients: User[]) {
-        let conversation = await this.get(
-            r =>
-                r.create_group_conversation(
-                    name,
-                    recipients.map(r => r.key),
-                    new wasm.GroupSettings()
+        return await this.get(
+            async r =>
+                this.convertWarpConversation(
+                    await r.create_group_conversation(
+                        name,
+                        recipients.map(r => r.key),
+                        new wasm.GroupSettings()
+                    ),
+                    r
                 ),
             "Error creating new group conversation"
         )
-        return conversation.map(conv => {
-            let chat: Chat = {
-                ...defaultChat,
-                id: conv.id(),
-                name: conv.name() ? conv.name()! : conv.recipients().slice(0, 3).join(", "),
-                kind: ChatType.Group,
-                creator: get(Store.state.user),
-                users: [get(Store.state.user), ...recipients],
-                last_message_at: new Date(),
-            }
-            UIStore.addSidebarChat(chat)
-            return chat
-        })
     }
 
     async addGroupParticipants(conversation_id: string, recipients: string[]) {
@@ -139,76 +144,76 @@ class RaygunStore {
         }, "Error updating conversation name")
     }
 
-    //TODO. Conversation settings not exported in wasm
-    async updateConversationSettings(conversation_id: string, direct: boolean) {
-        let result = await this.get(r => r.update_conversation_settings(conversation_id, direct ? 1 : 0), "Error deleting message")
-        return result.map(_ => {
-            let chats = get(UIStore.state.chats)
-            let chat = chats.find(c => conversation_id === c.id)
-            if (chat) {
-                chat.kind = direct ? ChatType.DirectMessage : ChatType.Group
-            }
-            UIStore.state.chats.update(() => chats)
-            return conversation_id
-        })
+    async updateConversationSettings(conversation_id: string, settings: ConversationSettings) {
+        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error deleting message")
     }
 
     /**
      * Deletes a message for the given chat. If no message id provided will delete the chat
      */
     async delete(conversation_id: string, message_id?: string) {
-        let result = await this.get(r => r.delete(conversation_id, message_id), "Error deleting message")
-        return result.map(_ => {
-            if (message_id) ConversationStore.removeMessage(conversation_id, message_id)
-            else {
-                let conversations = get(ConversationStore.conversations)
-                ConversationStore.conversations.set(conversations.filter(c => c.id !== conversation_id))
-            }
-            return conversation_id
-        })
+        return await this.get(r => r.delete(conversation_id, message_id), "Error deleting message")
     }
 
     /**
      * Deletes direct messages with the given recipient. E.g. when blocking a user
      */
     async deleteAllConversationsFor(recipient: string) {
-        let convs_res = await this.listConversations()
-        convs_res.onSuccess(async convs => {
+        return this.get(async r => {
+            let convs = (await r.list_conversations()) as wasm.Conversation[]
             convs
-                .filter(c => c.settings() === "Direct" && recipient in c.recipients()) // TODO verify settings check corresponding truly to direct message
+                .filter(c => parseJSValue(c.settings()).type === "direct" && recipient in c.recipients())
                 .forEach(async conv => {
-                    let result = await this.get(r => r.delete(conv.id(), undefined), "Error deleting message")
-                    result.onSuccess(_ => {
-                        let conversations = get(ConversationStore.conversations)
-                        ConversationStore.conversations.set(conversations.filter(c => c.id !== conv.id()))
-                    })
+                    await this.get(r => r.delete(conv.id(), undefined), "Error deleting message")
                 })
-        })
+        }, "Error deleting conversations for " + recipient)
     }
 
     async getConversation(conversation_id: string) {
-        return this.get(r => r.get_conversation(conversation_id), `Error fetching conversation with id ${conversation_id}`)
+        return this.get(async r => this.convertWarpConversation(await r.get_conversation(conversation_id), r), `Error fetching conversation with id ${conversation_id}`)
+    }
+
+    async listConversations(): Promise<Result<WarpError, Chat[]>> {
+        return this.get(async r => {
+            let convs = (await r.list_conversations()) as wasm.Conversation[]
+            return await Promise.all(convs.map(c => this.convertWarpConversation(c, r)))
+        }, `Error fetching conversations`)
     }
 
     async fetchMessages(conversation_id: string, config: FetchMessagesConfig & { [type: string]: any }): Promise<Result<WarpError, FetchMessageResponse>> {
         return this.get(async r => {
             let message_options = new MessageOptions()
-            // TODO fetching option. Specifically how to define range
             switch (config.type) {
                 case "Between": {
-                    //message_options.set_date_range()
+                    let range: Range = {
+                        start: config.from,
+                        end: config.to,
+                    }
+                    message_options.set_date_range(range) //TODO verify that js Date can be parsed to rust DateTime::<Utc>
                 }
                 case "MostRecent": {
                     let total_messages = await r.get_message_count(conversation_id)
-                    // message_options.set_range((total_messages - (config as any).limit) ...total_messages)
+                    let range: Range = {
+                        start: Math.min(0, total_messages - config.amount),
+                        end: total_messages,
+                    }
+                    message_options.set_range(range)
                 }
                 case "Earlier": {
-                    message_options.set_date_range(config.start_date)
+                    let range: Range = {
+                        start: new Date(),
+                        end: config.start_date,
+                    }
+                    message_options.set_date_range(range)
                     message_options.set_reverse()
                     message_options.set_limit(config.limit)
                 }
                 case "Later": {
-                    //message_options.set_date_range(start_date..chrono::offset::Utc::now())
+                    let range: Range = {
+                        start: config.start_date,
+                        end: new Date(),
+                    }
+                    message_options.set_date_range(range)
                     message_options.set_limit(config.limit)
                 }
             }
@@ -243,66 +248,28 @@ class RaygunStore {
     }
 
     // TODO wasm only supports plain message without attachments atm
-    async send(conversation_id: string, message: string[]) {
-        let newMessage = {
-            id: "",
-            details: {
-                at: new Date(),
-                origin: get(Store.state.user),
-                remote: false,
-            },
-            text: message,
-            inReplyTo: null,
-            reactions: {},
-            attachments: [],
-            pinned: false,
-        }
-        let result = await this.get(r => r.send(conversation_id, message), "Error sending message")
-        result.onSuccess(_ => {
-            ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
-        })
-        return result
+    async send(conversation_id: string, message: string[]): Promise<Result<WarpError, SendMessageResult>> {
+        return await this.get(async r => {
+            return {
+                message: await r.send(conversation_id, message),
+            }
+        }, "Error sending message")
     }
 
     // TODO wasm only supports plain message without attachments atm
-    async sendMultiple(conversation_ids: string[], message: string[]) {
-        let newMessage = {
-            id: "",
-            details: {
-                at: new Date(),
-                origin: get(Store.state.user),
-                remote: false,
-            },
-            text: message,
-            inReplyTo: null,
-            reactions: {},
-            attachments: [],
-            pinned: false,
-        }
-        let result = await this.get(async r => {
-            let sent: [string, string][] = []
+    async sendMultiple(conversation_ids: string[], message: string[]): Promise<Result<WarpError, MultiSendMessageResult[]>> {
+        return await this.get(async r => {
+            let sent = []
             for (let conversation_id of conversation_ids) {
-                sent.push([conversation_id, await r.send(conversation_id, message)])
+                let res: MultiSendMessageResult = { chat: conversation_id, result: { message: await r.send(conversation_id, message) } }
+                sent.push(res)
             }
             return sent
         }, "Error sending message")
-        result.onSuccess(r => {
-            let chats = get(UIStore.state.chats)
-            for (let conversation_id of r) {
-                let chat = chats.find(c => c.id === conversation_id[0])
-                if (chat) {
-                    ConversationStore.addMessage(chat, newMessage)
-                }
-            }
-        })
-        return result
     }
 
     async edit(conversation_id: string, message_id: string, message: string[]) {
-        let result = await this.get(r => r.edit(conversation_id, message_id, message), "Error editing message")
-        return result.map(_ => {
-            ConversationStore.editMessage(get(Store.state.activeChat), message_id, message.join("\n"))
-        })
+        return await this.get(r => r.edit(conversation_id, message_id, message), "Error editing message")
     }
 
     // TODO wasm only supports plain message without attachments atm
@@ -311,52 +278,69 @@ class RaygunStore {
     async react(conversation_id: string, message_id: string, state: wasm.ReactionState, emoji: string) {
         let result = await this.get(r => r.react(conversation_id, message_id, state, emoji), "Error reacting to message")
         return result.map(_ => {
-            ConversationStore.editReaction(get(Store.state.activeChat), message_id, emoji, state == wasm.ReactionState.Add)
+            ConversationStore.editReaction(get(Store.state.activeChat).id, message_id, emoji, state == wasm.ReactionState.Add)
         })
     }
 
     async pin(conversation_id: string, message_id: string, pin: boolean) {
-        let result = await this.get(r => r.pin(conversation_id, message_id, pin ? wasm.PinState.Pin : wasm.PinState.Unpin), "Error pinning message")
-        return result.map(_ => {
-            ConversationStore.pinMessage(get(Store.state.activeChat), message_id, pin)
-        })
+        return await this.get(r => r.pin(conversation_id, message_id, pin ? wasm.PinState.Pin : wasm.PinState.Unpin), "Error pinning message")
     }
 
-    async reply(conversation_id: string, message_id: string, message: string[]) {
-        let result = await this.get(r => r.reply(conversation_id, message_id, message), "Error replying to message")
-        return result.map(async _ => {
-            let r = await this.getMessage(conversation_id, message_id)
-            r.onSuccess(msg => {
-                let reply = this.convertWarpMessage(conversation_id, msg)
-                let newMessage = {
-                    id: "",
-                    details: {
-                        at: new Date(),
-                        origin: get(Store.state.user),
-                        remote: false,
-                    },
-                    text: message,
-                    inReplyTo: reply,
-                    reactions: {},
-                    attachments: [],
-                    pinned: false,
-                }
-                ConversationStore.addMessage(get(Store.state.activeChat), newMessage)
-            })
-        })
+    async reply(conversation_id: string, message_id: string, message: string[]): Promise<Result<WarpError, SendMessageResult>> {
+        return await this.get(async r => {
+            return {
+                message: await r.reply(conversation_id, message_id, message),
+            }
+        }, "Error replying to message")
     }
 
     async sendEvent(conversation_id: string, event: wasm.MessageEvent) {
-        let result = await this.get(r => r.send_event(conversation_id, event), `Error sending event ${event}`)
-        return result
+        return await this.get(r => r.send_event(conversation_id, event), `Error sending event ${event}`)
     }
 
     private async handleRaygunEvent(raygun: wasm.RayGunBox) {
         let events = await raygun.raygun_subscribe()
-        let evt: Promise<any>
-        while ((evt = await events.next())) {
-            console.log("raygun event ", evt)
-            //TODO handle conversation create and deletion. Add/Remove conversation stream for the chats
+        let listener = {
+            [Symbol.asyncIterator]() {
+                return events
+            },
+        }
+        for await (const value of listener) {
+            let event = parseJSValue(value)
+            get(Store.state.logger).info(`Handling conversation event: ${JSON.stringify(event)}`)
+            switch (event.type) {
+                case "conversation_created": {
+                    let conversationId: string = event.values["conversation_id"]
+                    let conv = await raygun.get_conversation(conversationId)
+                    let chat = await this.convertWarpConversation(conv, raygun)
+                    let listeners = get(this.messageListeners)
+                    let handler = await this.createConversationEventHandler(raygun, conversationId)
+                    listeners[conversationId] = handler
+                    this.messageListeners.set(listeners)
+
+                    UIStore.addSidebarChat(chat)
+                    break
+                }
+                case "conversation_deleted": {
+                    let conversationId: string = event.values["conversation_id"]
+                    // Stop message listeners
+                    let listeners = get(this.messageListeners)
+                    if (conversationId in listeners) {
+                        listeners[conversationId].cancel()
+                        delete listeners[conversationId]
+                        this.messageListeners.set(listeners)
+                    }
+
+                    // Update stores
+                    UIStore.removeSidebarChat(conversationId)
+                    let conversations = get(ConversationStore.conversations)
+                    ConversationStore.conversations.set(conversations.filter(c => c.id !== conversationId))
+                    if (get(Store.state.activeChat).id === conversationId) {
+                        Store.clearActiveChat()
+                    }
+                    break
+                }
+            }
         }
     }
 
@@ -364,39 +348,145 @@ class RaygunStore {
         let conversations: wasm.Conversation[] = await raygun.list_conversations()
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations) {
-            let handler = await this.createConversationEventHandler(conversation.id())
-            if (handler) {
-                handlers[conversation.id()] = handler
-            }
+            let handler = await this.createConversationEventHandler(raygun, conversation.id())
+            handlers[conversation.id()] = handler
         }
         this.messageListeners.set(handlers)
     }
 
-    private async createConversationEventHandler(conversation_id: string) {
-        let stream = await this.get(r => r.get_conversation_stream(conversation_id), `Error getting conversation stream for ${conversation_id}`)
-        let handler: Cancellable | undefined
-        stream.fold(
-            e => {
-                console.log(`Couldn't create message event listener: ${e}`)
-            },
-            async stream => {
-                handler = create_cancellable_handler(async () => {
-                    let evt: Promise<any>
-                    while ((evt = await stream.next())) {
-                        console.log("message event ", evt)
-                    }
-                })
+    private async createConversationEventHandler(raygun: wasm.RayGunBox, conversation_id: string) {
+        let stream = await raygun.get_conversation_stream(conversation_id)
+        return create_cancellable_handler(async () => {
+            let listener = {
+                [Symbol.asyncIterator]() {
+                    return stream
+                },
             }
-        )
-        return handler
-    }
-
-    private async listConversations(): Promise<Result<WarpError, wasm.Conversation[]>> {
-        return this.get(r => r.list_conversations(), `Error fetching conversations`)
-    }
-
-    private async getMessage(conversation_id: string, message_id: string) {
-        return this.get(r => r.get_message(conversation_id, message_id), `Error fetching message for conversation ${conversation_id}`)
+            for await (const value of listener) {
+                let event = parseJSValue(value)
+                get(Store.state.logger).info(`Handling messarge event: ${JSON.stringify(event)}`)
+                switch (event.type) {
+                    case "message_sent": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let message_id: string = event.values["message_id"]
+                        // Needs a delay because raygun does not contain the sent message yet
+                        await new Promise(f => setTimeout(f, 10))
+                        let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
+                        if (message) {
+                            ConversationStore.addMessage(conversation_id, message)
+                            // TODO move chat to top
+                        }
+                        break
+                    }
+                    case "message_received": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let message_id: string = event.values["message_id"]
+                        let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
+                        if (message) {
+                            let ping = mentions_user(message, get(Store.state.user).key)
+                            ConversationStore.addMessage(conversation_id, message)
+                            //TODO move chat to top
+                            //TODO handle ping and notification
+                        }
+                        break
+                    }
+                    case "message_edited": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let message_id: string = event.values["message_id"]
+                        let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
+                        if (message) {
+                            ConversationStore.editMessage(conversation_id, message_id, message.text.join("\n"))
+                        }
+                        break
+                    }
+                    case "message_deleted": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let message_id: string = event.values["message_id"]
+                        ConversationStore.removeMessage(conversation_id, message_id)
+                        break
+                    }
+                    case "message_pinned": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        ConversationStore.pinMessage(conversation_id, event.values["message_id"], true)
+                        break
+                    }
+                    case "message_unpinned": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        ConversationStore.pinMessage(conversation_id, event.values["message_id"], false)
+                        break
+                    }
+                    case "message_reaction_added": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        ConversationStore.editReaction(conversation_id, event.values["message_id"], event.values["reaction"], true, event.values["did_key"])
+                        break
+                    }
+                    case "message_reaction_removed": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        ConversationStore.editReaction(conversation_id, event.values["message_id"], event.values["reaction"], false, event.values["did_key"])
+                        break
+                    }
+                    case "conversation_name_updated": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let name = event.values["name"]
+                        UIStore.mutateChat(conversation_id, c => {
+                            c.name = name
+                        })
+                        break
+                    }
+                    case "recipient_added": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let recipient = await MultipassStoreInstance.identity_from_did(event.values["recipient"])
+                        if (recipient) {
+                            UIStore.mutateChat(conversation_id, c => {
+                                c.users = [...c.users, recipient]
+                            })
+                        }
+                        break
+                    }
+                    case "recipient_removed": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let recipient = event.values["recipient"]
+                        UIStore.mutateChat(conversation_id, c => {
+                            c.users = c.users.filter(u => u.key !== recipient)
+                        })
+                        break
+                    }
+                    case "event_received": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let did_key = event.values["did_key"]
+                        let msg_event = parseJSValue(event.values["event"])
+                        if (msg_event.type === "typing") {
+                            UIStore.mutateChat(conversation_id, c => {
+                                c.typing_indicator[did_key] = new Date()
+                            })
+                        }
+                        break
+                    }
+                    case "event_cancelled": {
+                        // Handle EventCancelled. Not needed atm
+                        break
+                    }
+                    case "conversation_settings_updated": {
+                        let conversation_id: string = event.values["conversation_id"]
+                        let settings = event.values["settings"] as ConversationSettings
+                        UIStore.mutateChat(conversation_id, c => {
+                            c.kind = "direct" in settings ? ChatType.DirectMessage : ChatType.Group
+                            if (c.kind === ChatType.Group) {
+                                let groupSettings = settings as any
+                                let group = groupSettings["group"]
+                                c.settings.permissions.allowAnyoneToAddUsers = group["members_can_add_participants"] as boolean
+                                c.settings.permissions.allowAnyoneToModifyName = group["members_can_change_name"] as boolean
+                            }
+                        })
+                        break
+                    }
+                    default: {
+                        get(Store.state.logger).error(`Unhandled message event: ${JSON.stringify(event)}`)
+                        break
+                    }
+                }
+            }
+        })
     }
 
     private async getMessages(raygun: wasm.RayGunBox, conversation_id: string, options: MessageOptions) {
@@ -404,7 +494,7 @@ class RaygunStore {
         let messages: Message[] = []
         if (msgs.variant() === wasm.MessagesEnum.List) {
             let warpMsgs = msgs.value() as wasm.Message[]
-            messages = warpMsgs.map(msg => this.convertWarpMessage(conversation_id, msg)).filter((m: Message | null): m is Message => m !== null)
+            messages = (await Promise.all(warpMsgs.map(async msg => await this.convertWarpMessage(conversation_id, msg)))).filter((m: Message | null): m is Message => m !== null)
         }
         return messages
     }
@@ -428,20 +518,58 @@ class RaygunStore {
     /**
      * Converts warp message to ui message
      */
-    private convertWarpMessage(conversation_id: string, message: wasm.Message | undefined): Message | null {
+    private async convertWarpMessage(conversation_id: string, message: wasm.Message | undefined): Promise<Message | null> {
         if (!message) return null
+        let user = get(Store.state.user)
+        let remote = message.sender() !== user.key
+        let sender = remote ? (await MultipassStoreInstance.identity_from_did(message.sender()))! : user
         return {
             id: message.id(),
             details: {
                 at: message.date(),
-                origin: get(Store.state.user),
-                remote: false,
+                origin: sender,
+                remote: remote,
             },
             text: message.lines(),
             inReplyTo: message.replied() ? ConversationStore.getMessage(conversation_id, message.replied()!) : null,
             reactions: message.reactions(),
             attachments: message.attachments(),
             pinned: message.pinned(),
+        }
+    }
+
+    /**
+     * Converts warp message to ui message
+     */
+    private async convertWarpConversation(chat: wasm.Conversation, raygun: wasm.RayGunBox): Promise<Chat> {
+        let setting = parseJSValue(chat.settings())
+        let direct = setting.type === "direct"
+        let msg = await this.getMessages(raygun, chat.id(), new MessageOptions())
+        let creator = chat.creator() ? await MultipassStoreInstance.identity_from_did(chat.creator()!) : undefined
+        let users = await Promise.all(
+            chat.recipients().map(async r => {
+                let rec = await MultipassStoreInstance.identity_from_did(r)
+                return rec ? rec : defaultUser
+            })
+        )
+        return {
+            ...defaultChat,
+            id: chat.id(),
+            name: chat.name() ? chat.name()! : "",
+            kind: direct ? ChatType.DirectMessage : ChatType.Group,
+            settings: {
+                displayOwnerBadge: true,
+                readReciepts: true,
+                permissions: {
+                    allowAnyoneToAddUsers: !direct && (setting.values["members_can_add_participants"] as boolean),
+                    allowAnyoneToModifyPhoto: false,
+                    allowAnyoneToModifyName: !direct && (setting.values["members_can_change_name"] as boolean),
+                },
+            },
+            creator: creator,
+            users: users,
+            last_message_at: msg.length > 0 ? msg[msg.length - 1].details.at : new Date(),
+            last_message_preview: msg.length > 0 ? msg[msg.length - 1].text.join("\n") : "",
         }
     }
 }

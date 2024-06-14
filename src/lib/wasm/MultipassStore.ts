@@ -4,6 +4,7 @@ import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { Store } from "$lib/state/store"
+import { defaultProfileData, type User } from "$lib/types"
 
 class MultipassStore {
     private multipassWritable: Writable<wasm.MultiPassBox | null>

@@ -125,6 +125,10 @@ class GlobalStore {
         UIStore.addSidebarChat(chat)
     }
 
+    clearActiveChat() {
+        this.state.activeChat.set(defaultChat)
+    }
+
     setInputDevice(device: string) {
         this.state.devices.input.set(device)
     }
