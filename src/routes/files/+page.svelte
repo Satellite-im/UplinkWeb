@@ -238,7 +238,7 @@
         const dropzone = document.querySelector(".files") as HTMLElement
         if (dropzone) {
             sortable = new Sortable(dropzone, {
-                // draggable: isContextMenuOpen ? "" : ".draggable-item",
+                draggable: isContextMenuOpen ? "" : ".draggable-item",
                 plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
             })
 
@@ -252,6 +252,7 @@
                     return file ? file : null
                 }) as FileInfo[]
                 Store.updateFileOrder(currentFiles)
+                ConstellationStoreInstance.setItemsOrders(currentFiles)
             })
 
             let lastClickTime = 0
@@ -562,7 +563,8 @@
                     appearance={Appearance.Alt}
                     icon
                     tooltip={$_("files.upload")}
-                    on:click={() => {
+                    on:click={async () => {
+                        await ConstellationStoreInstance.setItemsOrders()
                         filesToUpload?.click()
                     }}>
                     <Icon icon={Shape.Plus} />

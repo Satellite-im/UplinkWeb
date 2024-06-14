@@ -4,6 +4,7 @@ import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { Store } from "$lib/state/store"
+import type { FileInfo } from "$lib/types"
 
 class ConstellationStore {
     private constellationWritable: Writable<wasm.ConstellationBox | null>
@@ -81,6 +82,24 @@ class ConstellationStore {
             try {
                 await constellation.rename(old_name, new_name)
                 return success(undefined)
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
+
+    async setItemsOrders(currentFiles: FileInfo[]): Promise<Result<WarpError, void>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                let currentDir = await constellation.current_directory()
+                let dirItems = currentDir.get_items()
+                const idToItemMap = new Map<string, wasm.Item>()
+                dirItems.forEach(item => idToItemMap.set(item.id(), item))
+                const reorderedItems = currentFiles.map(fileInfo => idToItemMap.get(fileInfo.id)).filter(item => item !== undefined) as wasm.Item[]
+                currentDir.set_items(reorderedItems)
+                return success(undefined) 
             } catch (error) {
                 return failure(handleErrors(error))
             }
