@@ -53,7 +53,6 @@
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
         ownIdentity.fold(
             (_: any) => {
-                localStorage.setItem('pin', pin.toString())
                 localStorage.setItem('is_user_logged', 'true')
                 goto(Route.NewAccount)
             },
@@ -67,8 +66,11 @@
             // HACK(Lucas): Temp Solution to avoid clearing cache all time
             let username = localStorage.getItem('user_name')
             let statusMessage = localStorage.getItem('status_message')
-            let pin = localStorage.getItem('pin')
-            await TesseractStoreInstance.unlock(pin!)
+            let pin = 0
+            for (let i = 0; i < 5; i++) {
+                pin += Math.floor(Math.random() * 10);
+            }
+            await TesseractStoreInstance.unlock(pin.toString())
             let tesseract = await TesseractStoreInstance.getTesseract()
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
