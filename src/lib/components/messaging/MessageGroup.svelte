@@ -6,6 +6,7 @@
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import Text from "$lib/elements/Text.svelte"
+    import { Label } from "$lib/elements"
 
     export let remote: boolean = false
     export let subtext: string | null = ""
@@ -30,7 +31,7 @@
     {/if}
     <div class="flex">
         {#if username.length}
-            <Text muted class="username-{remote ? 'remote' : 'local'}">{username}</Text>
+            <Label class="username-{remote ? 'remote' : 'local'}" text={username} />
         {/if}
         <slot></slot>
     </div>
