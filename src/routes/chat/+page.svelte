@@ -42,7 +42,9 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
-    import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
+    // TODO(Matt): It is broken
+    // import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
+
 
     initLocale()
 
