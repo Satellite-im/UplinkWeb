@@ -18,7 +18,7 @@
 <div class="image-file" on:click={onClick}>
     <img class="preview" src="/assets/library.avif" alt="preview" />
     <input type="text" value={name} />
-    <Text size={Size.Smallest} muted>{prettyBytes(filesize)}</Text>
+    <Text size={Size.Smallest} muted class="name">{prettyBytes(filesize)}</Text>
 </div>
 
 <style lang="scss">
@@ -65,6 +65,13 @@
             color: var(--warning-color);
             width: var(--icon-size-largest);
             height: var(--icon-size-largest);
+        }
+
+        :global(.name) {
+            overflow: hidden;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            line-clamp: 1;
         }
     }
 </style>
