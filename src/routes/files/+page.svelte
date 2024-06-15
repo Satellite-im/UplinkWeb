@@ -151,12 +151,12 @@
             id: uuidv4(),
             type: "folder",
             size: 0,
+            icon: Shape.Folder,
             name: "",
             source: "",
             isRenaming: OperationState.Loading,
             items: [],
             parentId: $currentFolderIdStore,
-            icon: Shape.Folder,
         }
 
         function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
@@ -204,7 +204,13 @@
                     }
                     newFolders[i] = [...parentItem.items]
                 }
-                Store.updateFolderTree(newFolders)
+
+                const currentOpenFolders = openFolders
+                const updatedOpenFolders = {
+                    ...currentOpenFolders,
+                    [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
+                }
+                Store.updateFolderTree(updatedOpenFolders)
             }
             return newFolders
         })
@@ -223,6 +229,17 @@
 
     $: if (isContextMenuOpen || !isContextMenuOpen) {
         recreateSortable()
+    }
+
+    let folderClicked: FileInfo = {
+        id: "",
+        type: "",
+        size: 0,
+        icon: Shape.Folder,
+        name: "",
+        source: "",
+        isRenaming: OperationState.Initial,
+        items: [],
     }
 
     function initializeSortable() {
@@ -289,13 +306,13 @@
             let newItem: FileInfo = {
                 id: item!.id(),
                 type: item.is_file() ? "file" : "folder",
+                icon: item.is_file() ? Shape.Document : Shape.Folder,
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
                 isRenaming: OperationState.Initial,
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
                 source: "",
                 items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
-                icon: Shape.Document,
             }
             filesInfo = [...filesInfo, newItem]
         })
@@ -555,7 +572,6 @@
                     icon
                     tooltip={$_("files.upload")}
                     on:click={async () => {
-                        await ConstellationStoreInstance.setItemsOrders()
                         filesToUpload?.click()
                     }}>
                     <Icon icon={Shape.Plus} />
