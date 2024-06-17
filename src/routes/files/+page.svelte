@@ -735,9 +735,6 @@
             margin: 10px;
         }
         .folderList {
-            // list-style-type: none;
-            // width: 100%;
-            // overflow: hidden;
             margin-left: -40px;
         }
 
