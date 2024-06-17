@@ -31,15 +31,15 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                await multipass.create_identity(username, passphrase);
+                await multipass.create_identity(username, passphrase)
                 if (statusMessage.length > 0) {
                     if (statusMessage.length > 512) {
                         get(Store.state.logger).warn(`Status message len is ${statusMessage.length}. Max is 512. Truncating to fit.`)
                         statusMessage = statusMessage.substring(0, 512)
                     }
-                    await this.updateStatusMessage(statusMessage);
+                    await this.updateStatusMessage(statusMessage)
                 }
-                const identity = get(this.identity);
+                const identity = get(this.identity)
                 get(Store.state.logger).info(`New account created. \n
                 Username: ${identity?.username()} \n 
                 StatusMessage: ${identity?.status_message()} \n
