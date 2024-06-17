@@ -155,6 +155,7 @@
             name: "",
             source: "",
             isRenaming: OperationState.Loading,
+            isRename: false,
             items: [],
             parentId: $currentFolderIdStore,
         }
@@ -240,6 +241,7 @@
         name: "",
         source: "",
         isRenaming: OperationState.Initial,
+        isRename: false,
         items: [],
     }
 
@@ -311,6 +313,7 @@
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
                 isRenaming: OperationState.Initial,
+                isRename: false,
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
                 source: "",
                 items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
