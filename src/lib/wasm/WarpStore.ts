@@ -1,6 +1,7 @@
 import { createPersistentState } from "$lib/state/db/persistedState";
 import init, * as wasm from "warp-wasm";
 import type { IWarp } from "./IWarp";
+import { get } from "svelte/store";
 
 /**
  * Class representing the Store, which manages the state and interactions with Warp instances.
@@ -26,6 +27,13 @@ class Store {
      * @param addresses - Optional addresses for IPFS configuration.
      */
     async initWarpInstances(addresses?: string[]) {
+        const multipassInstance = get(this.warp.multipass);
+        const tesseractInstance = get(this.warp.tesseract);
+
+        if (multipassInstance !== null && tesseractInstance !== null) {
+            return;
+        }
+
         await init();
         let warp_instance = await this.createIpfs(addresses);
         let tesseract = warp_instance.multipass.tesseract();
@@ -33,7 +41,6 @@ class Store {
         this.warp.raygun.set(warp_instance.raygun);
         this.warp.constellation.set(warp_instance.constellation);
         this.warp.tesseract.set(tesseract);
-
     }
 
     /**

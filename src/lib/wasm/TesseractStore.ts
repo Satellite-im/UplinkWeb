@@ -1,6 +1,6 @@
 import { Store } from "$lib/state/store";
 import { get, writable, type Writable } from "svelte/store";
-import init, * as wasm from "warp-wasm";
+import * as wasm from "warp-wasm";
 import { WarpStore } from "./WarpStore";
 
 /**
@@ -50,9 +50,9 @@ class TesseractStore {
      * Locks the Tesseract instance.
      */
     lock() {
-        const tesseractInstance = get(this.tesseractWritable);
-        if (tesseractInstance) {
-            tesseractInstance.lock();
+        const tesseract = get(this.tesseractWritable);
+        if (tesseract) {
+            tesseract.lock();
         }
     }
 }
