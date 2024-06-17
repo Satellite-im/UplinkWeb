@@ -29,12 +29,11 @@
 
     async function auth(pin: string) {
         loading = true
-        await TesseractStoreInstance.unlock(pin)
-        let tesseract = await TesseractStoreInstance.getTesseract()
         let addressed = Object.values(get(RelayStore.state))
             .filter(r => r.active)
             .map(r => r.address)
-        await WarpStore.initWarpInstances(tesseract, addressed)
+        await WarpStore.initWarpInstances(addressed)
+        await TesseractStoreInstance.unlock(pin)
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
         ownIdentity.fold(
             (_: any) => {

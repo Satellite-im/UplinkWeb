@@ -259,7 +259,8 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                const identity = await multipass.get_own_identity();
+                const identity = await multipass.identity();
+                console.log(identity);
                 return success(identity);
             } catch (error) {
                 get(Store.state.logger).error('Error getting own identity: ' + error);
@@ -334,7 +335,7 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                const updated_identity = await multipass.get_own_identity();
+                const updated_identity = await multipass.identity();
                 this.identity.update(() => updated_identity);
                 get(Store.state.logger).info(`Identity updated\n 
                   Username: ${updated_identity.username()} \n
