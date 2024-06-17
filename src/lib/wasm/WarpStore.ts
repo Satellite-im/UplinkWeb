@@ -1,5 +1,5 @@
 import { createPersistentState } from "$lib/state/db/persistedState"
-import init, * as wasm from "warp-wasm"
+import * as wasm from "warp-wasm"
 import type { IWarp } from "./IWarp"
 
 /**
@@ -26,7 +26,6 @@ class Store {
      * @param addresses - Optional addresses for IPFS configuration.
      */
     async initWarpInstances(tesseract: wasm.Tesseract, addresses?: string[]) {
-        await init()
         let warp_instance = await this.createIpfs(tesseract, addresses)
         this.warp.tesseract.set(tesseract)
         this.warp.multipass.set(warp_instance.multipass)
