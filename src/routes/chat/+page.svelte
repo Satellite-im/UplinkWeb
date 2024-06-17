@@ -44,7 +44,6 @@
     import Market from "$lib/components/market/Market.svelte"
     import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
 
-
     initLocale()
 
     let loading = false

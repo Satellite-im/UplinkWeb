@@ -4,13 +4,7 @@
     import Logo from "$lib/elements/Logo.svelte"
     import { goto } from "$app/navigation"
 
-    let stepLabels: string[] = [
-        "Fetching your friends from space.",
-        "Aligning multiple satellites.",
-        "Spinning up warp drives.",
-        "Initializing forward shields for maximum safety.",
-        "Almost ready, finalizing."
-    ]
+    let stepLabels: string[] = ["Fetching your friends from space.", "Aligning multiple satellites.", "Spinning up warp drives.", "Initializing forward shields for maximum safety.", "Almost ready, finalizing."]
     let step: number = 0
     let loadingTime: number = 1000
 
