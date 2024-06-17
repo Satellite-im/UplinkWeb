@@ -1,5 +1,5 @@
-import { CommunityChannelKind, Shape } from "$lib/enums";
-import type { CommunityChannelGroup } from "$lib/types";
+import { CommunityChannelKind, Shape } from "$lib/enums"
+import type { CommunityChannelGroup } from "$lib/types"
 
 export let communityChannelGroups: CommunityChannelGroup[] = [
     {
