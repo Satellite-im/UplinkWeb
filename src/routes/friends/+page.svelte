@@ -18,6 +18,7 @@
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
     import Key from "$lib/components/settings/Key.svelte"
     import Toast from "$lib/elements/Toast.svelte"
+    import { log } from "$lib/utils/Logger"
 
     // Initialize locale
     initLocale()
@@ -52,7 +53,7 @@
     let sentRequestError: WarpError | undefined
     let requestString: string
     let submitRequest = async function () {
-        get(Store.state.logger).info("Sending friend request to " + requestString)
+        log.info("Sending friend request to " + requestString)
         let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
         requestSent.fold(
             (e: WarpError) => {
