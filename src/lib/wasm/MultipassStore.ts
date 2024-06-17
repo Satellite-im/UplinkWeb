@@ -114,7 +114,7 @@ class MultipassStore {
             try {
                 return success(await multipass.close_request(did))
             } catch (error) {
-                get(Store.state.logger).error("Error cancelling friend request: " + error)
+                get(Store.state.logger).error("Error canceling friend request: " + error)
                 return failure(handleErrors(error))
             }
         }
