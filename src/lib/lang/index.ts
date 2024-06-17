@@ -27,7 +27,7 @@ export function initLocale() {
                 groups: "Groups",
                 pending_changes: "Unsaved changes",
                 enable: "Enable",
-                enabled: "Enabled"
+                enabled: "Enabled",
             },
             market: {
                 market: "Marketplace",
@@ -161,7 +161,7 @@ export function initLocale() {
                     spamRejectionDescription:
                         "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots from detecting they have been blocked too quickly.",
                     compactMessaging: "Compact Messages",
-                    compactMessagingDescription: "Compact messages to group messages closer together and display more on screen."
+                    compactMessagingDescription: "Compact messages to group messages closer together and display more on screen.",
                 },
                 preferences: {
                     appLanguage: "App Language",

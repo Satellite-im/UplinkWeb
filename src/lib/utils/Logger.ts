@@ -3,17 +3,17 @@ export enum LogLevel {
     Developer = "DEV",
     Debug = "DEBUG",
     Warning = "WARN",
-    Error = "ERROR"
+    Error = "ERROR",
 }
 
 export type LogItem = {
-    timestamp: number,
-    level: LogLevel,
+    timestamp: number
+    level: LogLevel
     message: string
 }
 
 export type LoggerSettings = {
-    relay_to_js_console: boolean,
+    relay_to_js_console: boolean
 }
 
 export class Logger {
@@ -29,7 +29,7 @@ export class Logger {
         this.log.push({
             timestamp: Date.now(),
             level,
-            message
+            message,
         })
 
         if (this.settings.relay_to_js_console) {

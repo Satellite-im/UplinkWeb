@@ -56,9 +56,9 @@
         e.stopPropagation() // Prevent clickoutside from closing the menu
         console.log("Clicked", item.text)
         item.onClick()
-        const customEvent = new CustomEvent('customMouseEvent', {
+        const customEvent = new CustomEvent("customMouseEvent", {
             detail: e,
-        });
+        })
         onClose(customEvent)
     }
 </script>
