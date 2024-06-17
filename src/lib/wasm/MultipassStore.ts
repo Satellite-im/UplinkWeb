@@ -4,7 +4,7 @@ import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { Store } from "$lib/state/store"
-import { MAX_STATUS_LENGTH } from "$lib/globals/constLimits"
+import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -34,9 +34,9 @@ class MultipassStore {
             try {
                 await multipass.create_identity(username, passphrase)
                 if (statusMessage.length > 0) {
-                    if (statusMessage.length > MAX_STATUS_LENGTH) {
-                        get(Store.state.logger).warn(`Status message len is ${statusMessage.length}. Max is ${MAX_STATUS_LENGTH}. Truncating to fit.`)
-                        statusMessage = statusMessage.substring(0, MAX_STATUS_LENGTH)
+                    if (statusMessage.length > MAX_STATUS_MESSAGE_LENGTH) {
+                        get(Store.state.logger).warn(`Status message len is ${statusMessage.length}. Max is ${MAX_STATUS_MESSAGE_LENGTH}. Truncating to fit.`)
+                        statusMessage = statusMessage.substring(0, MAX_STATUS_MESSAGE_LENGTH)
                     }
                     await this.updateStatusMessage(statusMessage)
                 }
