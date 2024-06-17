@@ -17,32 +17,42 @@
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { RelayStore } from "$lib/state/wasm/relays"
     import { Controls } from "$lib/layouts"
+    import { AuthStore } from "$lib/state/auth"
+    import { ToastMessage } from "$lib/state/ui/toast"
+    import { Store } from "$lib/state/store"
 
     initLocale()
 
     let create = false
     let loading = false
-    let scramble = true
+    let scramble = get(AuthStore.state).scramblePin
 
     let showAccounts = false
     let showConfigureRelay = false
 
     async function auth(pin: string) {
         loading = true
-        let addressed = Object.values(get(RelayStore.state))
-            .filter(r => r.active)
-            .map(r => r.address)
-        await WarpStore.initWarpInstances(addressed)
-        await TesseractStoreInstance.unlock(pin)
-        let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
-        ownIdentity.fold(
-            (_: any) => {
-                goto(Route.NewAccount)
-            },
-            (_: any) => {
-                goto(Route.Pre)
-            }
-        )
+        if (get(AuthStore.state).pin === pin || get(AuthStore.state).pin === "") {
+            let addressed = Object.values(get(RelayStore.state))
+                .filter(r => r.active)
+                .map(r => r.address)
+            await WarpStore.initWarpInstances(addressed)
+            await TesseractStoreInstance.unlock(pin)
+            let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
+            ownIdentity.fold(
+                (_: any) => {
+                    AuthStore.setStoredPin(pin)
+                    goto(Route.NewAccount)
+                },
+                (_: any) => {
+                    goto(Route.Pre)
+                }
+            )
+        } else {
+            Store.addToastNotification(new ToastMessage("", "Pin is wrong!", 2))
+            loading = false
+        }
+
     }
 </script>
 
