@@ -13,6 +13,7 @@
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { Label } from "$lib/elements"
     import { goto } from "$app/navigation"
+    import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
 
     export let sidebarOpen: boolean = true
     export let activeRoute: Route = Route.Chat
@@ -60,7 +61,9 @@
                 </div>
             {/each}
         {/if}
+
         <slot></slot>
+        <CommunityIcon name="Satellite.im" image="/assets/logo/satellite.png" />
     </div>
 
     {#if !sidebarOpen}

@@ -4066,10 +4066,10 @@ svelte-awesome-slider@^1.1.0:
   resolved "https://registry.npmjs.org/svelte-awesome-slider/-/svelte-awesome-slider-1.1.0.tgz"
   integrity sha512-MgY6ZdBON42HVZqNWNjq2HOgyDlC35q0TNbV/YO1l1/bcb5yhM8EE97h1AJ/7F6t6sLzXhQ3qPf5nGyCdDSnCg==
 
-svelte-check@^3.6.0:
-  version "3.7.1"
-  resolved "https://registry.npmjs.org/svelte-check/-/svelte-check-3.7.1.tgz"
-  integrity sha512-U4uJoLCzmz2o2U33c7mPDJNhRYX/DNFV11XTUDlFxaKLsO7P+40gvJHMPpoRfa24jqZfST4/G9fGNcUGMO8NAQ==
+svelte-check@^3.8.0:
+  version "3.8.0"
+  resolved "https://registry.npmjs.org/svelte-check/-/svelte-check-3.8.0.tgz"
+  integrity sha512-7Nxn+3X97oIvMzYJ7t27w00qUf1Y52irE2RU2dQAd5PyvfGp4E7NLhFKVhb6PV2fx7dCRMpNKDIuazmGthjpSQ==
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.17"
     chokidar "^3.4.1"

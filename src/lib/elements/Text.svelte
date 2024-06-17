@@ -10,9 +10,11 @@
     export let size: Size = Size.Medium
     export let singleLine: boolean = false
     export let doubleLine: boolean = false
+    export let ellipsis: boolean = false
     export let markdown: string = ""
     export let secondaryFont: boolean = false
     export let withShadow: boolean = false
+    export let textWidth: number = 0
     export let noWrap: boolean = false
     export let hook: string = ""
 
@@ -22,7 +24,10 @@
 
 <p
     data-cy={hook}
-    class="text {withShadow ? 'shadow' : ''} {noWrap ? 'no-wrap' : ''} {muted ? 'muted' : ''} {appearance} {size} {singleLine ? 'single-line' : ''} {doubleLine ? 'double-line' : ''} {secondaryFont ? 'secondary-font' : ''} {clazz}">
+    style={textWidth === 0 ? "" : `width: ${textWidth}px`}
+    class="text {withShadow ? 'shadow' : ''} {noWrap ? 'no-wrap' : ''} {muted ? 'muted' : ''}
+        {appearance} {size} {singleLine ? 'single-line' : ''} {doubleLine ? 'double-line' : ''} 
+        {secondaryFont ? 'secondary-font' : ''} {ellipsis ? 'ellipsis' : ''} {clazz}">
     {#if loading}
         <Loader text />
     {:else if markdown}
@@ -40,6 +45,12 @@
         font-size: var(--font-size);
         text-align: left;
         max-width: fit-content;
+
+        &.ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         &.no-wrap {
             text-wrap: nowrap;

@@ -9,6 +9,8 @@ export enum WarpError {
     USER_HAS_BLOCKED_YOU = 'User has blocked you from being able to interact with them',
     USER_ALREADY_EXIST_AS_FRIEND = 'User already exist as a friend',
     FILE_ALREADY_EXIST = 'File already exist',
+    ITEM_ALREADY_EXIST_WITH_SAME_NAME = 'Item with name already exists in current directory',
+    ITEM_DOES_NOT_EXIST = 'Item cannot be found or is invalid',
     GENERAL_ERROR = 'An unknown error occurred',
     MULTIPASS_NOT_FOUND = 'Multipass instance not found',
     CONSTELLATION_NOT_FOUND = 'Constellation instance not found'
@@ -33,6 +35,10 @@ export function handleErrors(error: any): WarpError{
                 return WarpError.USER_ALREADY_EXIST_AS_FRIEND
             case message.includes(WarpError.FILE_ALREADY_EXIST):
                 return WarpError.FILE_ALREADY_EXIST
+            case message.includes(WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME):
+                return WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME
+            case message.includes(WarpError.ITEM_DOES_NOT_EXIST):
+                return WarpError.ITEM_DOES_NOT_EXIST
             default:
                 return WarpError.GENERAL_ERROR
         }

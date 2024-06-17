@@ -4,7 +4,7 @@
     import Text from "./Text.svelte"
 </script>
 
-<div class="under-construction">
+<div data-cy="under-construction" class="under-construction">
     <div class="container">
         <Icon icon={Shape.Construction} highlight={Appearance.Warning} size={Size.Large} />
         <Text appearance={Appearance.Warning}>Under Construction</Text>

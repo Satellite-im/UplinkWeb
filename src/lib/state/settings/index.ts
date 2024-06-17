@@ -9,6 +9,7 @@ export interface ISettingsState {
         convertEmoji: boolean
         markdownSupport: boolean
         spamRejection: boolean
+        compact: boolean
     }
     audio: {
         inputDevice: string
@@ -21,7 +22,7 @@ export interface ISettingsState {
     }
     extensions: {}
     keybinds: Keybind[]
-    accessability: {
+    accessibility: {
         openDyslexic: boolean
     }
     notifications: {

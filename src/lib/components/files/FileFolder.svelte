@@ -3,17 +3,48 @@
     import { FilesItemKind, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import type { FileInfo } from "$lib/types"
+    import { OperationState } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
 
+    export let itemId: string
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
     export let name = info.name
+    export let isRenaming: OperationState = OperationState.Initial
+    let hasFocus = false
+    let oldName = name
 
-   export let isEditing = false
+    $: if (isRenaming !== OperationState.Loading) {
+        hasFocus = false
+    }
+
+    $: if (isRenaming === OperationState.Success) {
+        oldName = name
+        storeFiles.update(items => {
+            const updatedItems = items.map(item => {
+                if (item.id === info.id) {
+                    return { ...item, name: name }
+                }
+                return item
+            })
+            return updatedItems
+        })
+        isRenaming = OperationState.Initial
+    } else if (isRenaming === OperationState.Error) {
+        name = oldName
+        isRenaming = OperationState.Initial
+    } else if (isRenaming === OperationState.Loading && !hasFocus) {
+        if (inputRef) {
+            inputRef.focus()
+            hasFocus = true
+            inputRef.setSelectionRange(0, inputRef.value.length)
+        }
+    }
+
     let inputRef: HTMLInputElement
     const dispatch = createEventDispatcher()
-    let isEnterKeyPressed: boolean = false
+    let isEnterOrEscapeKeyPressed: boolean = false
 
     function getIcon() {
         switch (kind) {
@@ -33,20 +64,11 @@
     ) {
         const input = event.target as HTMLInputElement
         name = input.value
-        storeFiles.update(items => {
-            const updatedItems = items.map(item => {
-                if (item.id === info.id) {
-                    return { ...item, name: name }
-                }
-                return item
-            })
-            return updatedItems
-        })
     }
 
     function onRename() {
         dispatch("rename", name)
-        isEditing = false
+        isRenaming = OperationState.Initial
     }
 
     onMount(() => {
@@ -55,6 +77,33 @@
         }
     })
 
+    function onKeydown(event: KeyboardEvent) {
+        if (event.key === "Escape") {
+            isEnterOrEscapeKeyPressed = true
+            isRenaming = OperationState.Initial
+            name = oldName
+            return
+        }
+        if (event.key === "Enter") {
+            isEnterOrEscapeKeyPressed = true
+            if (name === "" || name === oldName) {
+                name = oldName
+                isRenaming = OperationState.Initial
+                return
+            }
+            onRename()
+        }
+    }
+
+    function onBlur() {
+        if (name === "" || name === oldName) {
+            name = oldName
+            isRenaming = OperationState.Initial
+        } else if (!isEnterOrEscapeKeyPressed) {
+            onRename()
+        }
+        isEnterOrEscapeKeyPressed = false
+    }
 </script>
 
 <section>
@@ -62,31 +111,13 @@
     <div class="filesitem" on:contextmenu>
         <Icon icon={getIcon()} />
         <Spacer less />
-        {#if isEditing}
-            <input 
-                type="text" 
-                bind:value={name} 
-                on:input={updateName} 
-                on:blur={() => {
-                    if (!isEnterKeyPressed)
-                        {onRename()}
-                    isEnterKeyPressed = false
-                }} 
-                on:keydown={(e) => {
-                    if (e.key === 'Escape')
-                        {name = ""}
-                    if (e.key === 'Enter' || e.key === 'Escape')
-                        {
-                            isEnterKeyPressed = true
-                            onRename()
-                        }
-                    }}
-                bind:this={inputRef}
-            />
+        {#if isRenaming === OperationState.Loading}
+            <input id="input-{itemId}" type="text" bind:value={name} on:input={updateName} on:blur={onBlur} on:keydown={onKeydown} bind:this={inputRef} />
         {:else}
-        <div class="file_text">{name}</div>
+            <Text class="name">
+                {name}{info?.extension && `.${info.extension}`}
+            </Text>
         {/if}
-        <!-- <input type="text" bind:value={name} on:input={updateName} /> -->
         <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
     </div>
 </section>
@@ -124,7 +155,7 @@
             }
         }
 
-        .file_text {
+        .name {
             width: 100%;
             height: 21.36px;
             align-self: center;
@@ -138,6 +169,13 @@
             color: var(--warning-color);
             width: var(--icon-size-largest);
             height: var(--icon-size-largest);
+        }
+
+        :global(.name) {
+            overflow: hidden;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            line-clamp: 1;
         }
     }
 </style>

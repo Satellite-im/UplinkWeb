@@ -16,29 +16,33 @@
 </script>
 
 <div id="page">
-    <SettingSection name={$_("settings.notifications.enabled")} description={$_("settings.notifications.enabledDescription")}>
+    <SettingSection hook="section-notifications-enabled" name={$_("settings.notifications.enabled")} description={$_("settings.notifications.enabledDescription")}>
         <Switch
+            hook="switch-notifications-enabled"
             on={settings ? settings.notifications.enabled : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, notifications: { ...settings.notifications, enabled: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name={$_("settings.notifications.friends")} description={$_("settings.notifications.friendsDescription")}>
+    <SettingSection hook="section-notifications-friends" name={$_("settings.notifications.friends")} description={$_("settings.notifications.friendsDescription")}>
         <Switch
+            hook="switch-notifications-friends"
             on={settings ? settings.notifications.friends : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, notifications: { ...settings.notifications, friends: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name={$_("settings.notifications.messages")} description={$_("settings.notifications.messagesDescription")}>
+    <SettingSection hook="section-notifications-messages" name={$_("settings.notifications.messages")} description={$_("settings.notifications.messagesDescription")}>
         <Switch
+            hook="switch-notifications-messages"
             on={settings ? settings.notifications.messages : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, notifications: { ...settings.notifications, messages: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name={$_("settings.notifications.settings")} description={$_("settings.notifications.settingsDescription")}>
+    <SettingSection hook="section-notifications-settings" name={$_("settings.notifications.settings")} description={$_("settings.notifications.settingsDescription")}>
         <Switch
+            hook="switch-notifications-settings"
             on={settings ? settings.notifications.settings : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, notifications: { ...settings.notifications, settings: on.detail } })

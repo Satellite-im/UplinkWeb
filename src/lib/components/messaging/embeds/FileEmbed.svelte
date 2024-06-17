@@ -4,10 +4,13 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import { Appearance, Shape, Size } from "$lib/enums"
-    import type { FileInfo } from "$lib/types"
+    import { OperationState, type FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
 
     export let fileInfo: FileInfo = {
+        id: "1",
+        isRenaming: OperationState.Initial,
+        source: "unknown",
         name: "unknown",
         size: 999999999999999,
         icon: Shape.Document,

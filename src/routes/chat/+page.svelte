@@ -29,7 +29,7 @@
     } from "$lib/components"
     import { Button, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { type Chat, type ContextItem, type User } from "$lib/types"
+    import { type Chat, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
@@ -42,7 +42,8 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
-    import { Logger } from "$lib/utils/Logger"
+    import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
+
 
     initLocale()
 
@@ -77,9 +78,7 @@
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
-    let friends: User[] = get(Store.state.friends)
     UIStore.state.chats.subscribe(c => (chats = c))
-    Store.state.friends.subscribe(f => (friends = f))
     Store.state.activeChat.subscribe(c => {
         activeChat = c
         conversation = ConversationStore.getConversation(c)
@@ -192,11 +191,11 @@
 
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={() => search_component.select_first()}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
-
-        <Button hook="button-marketplace" appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={_ => (showMarket = true)}>
-            <Icon icon={Shape.Shop} />
-        </Button>
-
+        <!--
+            <Button hook="button-marketplace" appearance={showMarket ? Appearance.Primary : Appearance.Alt} text={$_("market.market")} on:click={_ => (showMarket = true)}>
+                <Icon icon={Shape.Shop} />
+            </Button>
+        -->
         <div class="content-header">
             <Label hook="label-sidebar-chats" text={$_("chat.chat_plural")} />
             <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
@@ -328,6 +327,7 @@
                                 previewProfile = group.details.origin
                             }}
                             remote={group.details.remote}
+                            username={group.details.origin.name}
                             subtext={getTimeAgo(group.messages[0].details.at)}>
                             {#each group.messages as message, idx}
                                 {#if message.inReplyTo}
@@ -524,18 +524,12 @@
                 justify-content: center;
                 align-items: center;
                 border: var(--border-width) solid var(--primary-color);
+                margin-top: var(--gap);
             }
         }
 
         .aside {
             border-left: var(--border-width) solid var(--border-color);
-        }
-
-        .message-wrap {
-            width: fit-content;
-            &.local {
-                justify-content: flex-end;
-            }
         }
 
         .upload-overlay {
