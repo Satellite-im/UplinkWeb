@@ -24,15 +24,14 @@
 
 <p
     data-cy={hook}
-    style={textWidth === 0 ? '' : `width: ${textWidth}px`}
+    style={textWidth === 0 ? "" : `width: ${textWidth}px`}
     class="text {withShadow ? 'shadow' : ''} {noWrap ? 'no-wrap' : ''} {muted ? 'muted' : ''}
         {appearance} {size} {singleLine ? 'single-line' : ''} {doubleLine ? 'double-line' : ''} 
         {secondaryFont ? 'secondary-font' : ''} {ellipsis ? 'ellipsis' : ''} {clazz}">
     {#if loading}
         <Loader text />
     {:else if markdown}
-        <SvelteMarkdown 
-            source={markdown} />
+        <SvelteMarkdown source={markdown} />
     {:else}
         <slot></slot>
     {/if}
@@ -51,7 +50,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }   
+        }
 
         &.no-wrap {
             text-wrap: nowrap;
@@ -73,7 +72,6 @@
             line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            max-width: 120px; 
             flex: 1;
         }
 

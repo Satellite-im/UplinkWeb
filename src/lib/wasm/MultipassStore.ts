@@ -6,14 +6,27 @@ import { failure, success, type Result } from "$lib/utils/Result"
 import { Store } from "$lib/state/store"
 import { defaultProfileData, type User } from "$lib/types"
 
+/**
+ * A class that provides various methods to interact with a MultiPassBox.
+ */
 class MultipassStore {
     private multipassWritable: Writable<wasm.MultiPassBox | null>
     private identity: Writable<wasm.Identity | null> = writable(null)
 
+    /**
+     * Creates an instance of MultipassStore.
+     * @param multipass - A writable store containing a MultiPassBox or null.
+     */
     constructor(multipass: Writable<wasm.MultiPassBox | null>) {
         this.multipassWritable = multipass
     }
 
+    /**
+     * Creates a new identity.
+     * @param username - The username for the new identity.
+     * @param statusMessage - The status message for the new identity.
+     * @param passphrase - The passphrase for the new identity (optional).
+     */
     async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
         const multipass = get(this.multipassWritable)
 
@@ -32,6 +45,11 @@ class MultipassStore {
         }
     }
 
+    /**
+     * Sends a friend request.
+     * @param did - The DID of the user to send a friend request to.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
     async sendFriendRequest(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
@@ -47,6 +65,11 @@ class MultipassStore {
         }
     }
 
+    /**
+     * Accepts a friend request.
+     * @param did - The DID of the user whose friend request is to be accepted.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
     async acceptFriendRequest(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
@@ -61,6 +84,11 @@ class MultipassStore {
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    /**
+     * Denies a friend request.
+     * @param did - The DID of the user whose friend request is to be denied.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
     async denyFriendRequest(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
@@ -75,6 +103,11 @@ class MultipassStore {
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    /**
+     * Cancels a friend request.
+     * @param did - The DID of the user whose friend request is to be canceled.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
     async cancelFriendRequest(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
@@ -89,6 +122,10 @@ class MultipassStore {
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    /**
+     * Lists incoming friend requests.
+     * @returns A list of incoming friend requests or an empty array in case of error.
+     */
     async listIncomingFriendRequests(): Promise<any> {
         const multipass = get(this.multipassWritable)
 
@@ -97,12 +134,16 @@ class MultipassStore {
                 let friends = await multipass.list_incoming_request()
                 return friends
             } catch (error) {
-                get(Store.state.logger).error("Error list incoming friend requests: " + error)
+                get(Store.state.logger).error("Error listing incoming friend requests: " + error)
                 return []
             }
         }
     }
 
+    /**
+     * Lists outgoing friend requests.
+     * @returns A list of outgoing friend requests or an empty array in case of error.
+     */
     async listOutgoingFriendRequests(): Promise<any> {
         const multipass = get(this.multipassWritable)
 
@@ -111,12 +152,16 @@ class MultipassStore {
                 let friends = await multipass.list_outgoing_request()
                 return friends
             } catch (error) {
-                get(Store.state.logger).error("Error list outgoing friend requests: " + error)
+                get(Store.state.logger).error("Error listing outgoing friend requests: " + error)
                 return []
             }
         }
     }
 
+    /**
+     * Lists blocked friends.
+     * @returns A list of blocked friends or an empty array in case of error.
+     */
     async listBlockedFriends(): Promise<any> {
         const multipass = get(this.multipassWritable)
 
@@ -125,12 +170,16 @@ class MultipassStore {
                 let blockedFriends = await multipass.block_list()
                 return blockedFriends
             } catch (error) {
-                get(Store.state.logger).error("Error list blocked Friends: " + error)
+                get(Store.state.logger).error("Error listing blocked friends: " + error)
                 return []
             }
         }
     }
 
+    /**
+     * Lists friends.
+     * @returns A list of friends or an empty array in case of error.
+     */
     async listFriends(): Promise<any> {
         const multipass = get(this.multipassWritable)
 
@@ -139,12 +188,17 @@ class MultipassStore {
                 let friends = await multipass.list_friends()
                 return friends
             } catch (error) {
-                get(Store.state.logger).error("Error outgoing friends: " + error)
+                get(Store.state.logger).error("Error listing friends: " + error)
                 return []
             }
         }
     }
 
+    /**
+     * Removes a friend.
+     * @param did - The DID of the friend to be removed.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
     async removeFriend(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
@@ -152,13 +206,18 @@ class MultipassStore {
             try {
                 return success(await multipass.remove_friend(did))
             } catch (error) {
-                get(Store.state.logger).error("Error removing friend request: " + error)
+                get(Store.state.logger).error("Error removing friend: " + error)
                 return failure(handleErrors(error))
             }
         }
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    /**
+     * Blocks a user.
+     * @param did - The DID of the user to be blocked.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
     async blockUser(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
@@ -166,13 +225,18 @@ class MultipassStore {
             try {
                 return success(await multipass.block(did))
             } catch (error) {
-                get(Store.state.logger).error("Error blocking friend request: " + error)
+                get(Store.state.logger).error("Error blocking user: " + error)
                 return failure(handleErrors(error))
             }
         }
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    /**
+     * Unblocks a user.
+     * @param did - The DID of the user to be unblocked.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
     async unblockUser(did: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
@@ -180,13 +244,17 @@ class MultipassStore {
             try {
                 return success(await multipass.unblock(did))
             } catch (error) {
-                get(Store.state.logger).error("Error unblocking friend request: " + error)
+                get(Store.state.logger).error("Error unblocking user: " + error)
                 return failure(handleErrors(error))
             }
         }
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    /**
+     * Retrieves the own identity of the user.
+     * @returns A Result containing either the own identity or a WarpError.
+     */
     async getOwnIdentity(): Promise<Result<WarpError, wasm.Identity>> {
         const multipass = get(this.multipassWritable)
 
@@ -202,6 +270,10 @@ class MultipassStore {
         return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
+    /**
+     * Updates the username.
+     * @param new_username - The new username to be set.
+     */
     async updateUsername(new_username: string) {
         const multipass = get(this.multipassWritable)
 
@@ -211,6 +283,10 @@ class MultipassStore {
         }
     }
 
+    /**
+     * Updates the status message.
+     * @param newStatusMessage - The new status message to be set.
+     */
     async updateStatusMessage(newStatusMessage: string) {
         const multipass = get(this.multipassWritable)
 
@@ -220,6 +296,10 @@ class MultipassStore {
         }
     }
 
+    /**
+     * Updates the profile photo.
+     * @param newPictureBase64 - The new profile photo in base64 format.
+     */
     async updateProfilePhoto(newPictureBase64: string) {
         const multipass = get(this.multipassWritable)
 
@@ -231,6 +311,10 @@ class MultipassStore {
         }
     }
 
+    /**
+     * Updates the banner picture.
+     * @param newPictureBase64 - The new banner picture in base64 format.
+     */
     async updateBannerPicture(newPictureBase64: string) {
         const multipass = get(this.multipassWritable)
 
@@ -273,6 +357,10 @@ class MultipassStore {
         return undefined
     }
 
+    /**
+     * Updates the identity state.
+     * @private
+     */
     private async _updateIdentity() {
         const multipass = get(this.multipassWritable)
 

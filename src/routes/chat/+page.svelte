@@ -47,7 +47,6 @@
     import type { Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
 
-
     initLocale()
 
     let loading = false

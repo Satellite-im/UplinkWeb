@@ -16,6 +16,7 @@ export interface IState {
         deafened: Writable<boolean>
         input: Writable<string>
         output: Writable<string>
+        video: Writable<string>
     }
     activeChat: Writable<Chat>
     activeCall: Writable<Call | null>
