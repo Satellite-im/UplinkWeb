@@ -32,7 +32,9 @@ class MultipassStore {
         if (multipass) {
             try {
                 await multipass.create_identity(username, passphrase);
-                await this.updateStatusMessage(statusMessage);
+                if (statusMessage.length > 0) {
+                    await this.updateStatusMessage(statusMessage);
+                }
                 const identity = get(this.identity);
                 get(Store.state.logger).info(`New account created. \n
                 Username: ${identity?.username()} \n 
