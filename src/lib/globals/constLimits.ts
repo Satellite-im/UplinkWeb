@@ -10,3 +10,5 @@ export const MIN_ATTACHMENT: number = 1;
 export const MAX_CONVERSATIONS: number = 1_000;
 export const MAX_FRIENDS: number = 1_000;
 export const MAX_REQUEST: number = 1_000;
+export const MIN_PIN_LENGTH = 4;
+export const MAX_PIN_LENGTH = 8;
