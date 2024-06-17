@@ -15,9 +15,9 @@
             text={emoji}
             on:click={e => {
                 // TODO add reaction
-                const customEvent = new CustomEvent('customMouseEvent', {
+                const customEvent = new CustomEvent("customMouseEvent", {
                     detail: e,
-                    });
+                })
                 close(customEvent)
             }} />
     {/each}
@@ -26,9 +26,9 @@
         appearance={Appearance.Alt}
         on:click={e => {
             // Open emoji picker
-            const customEvent = new CustomEvent('customMouseEvent', {
-                    detail: e,
-            });
+            const customEvent = new CustomEvent("customMouseEvent", {
+                detail: e,
+            })
             close(customEvent)
         }}><Icon icon={Shape.Plus} /></Button>
 </div>

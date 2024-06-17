@@ -42,7 +42,7 @@ class GlobalStore {
     setUserFromIdentity(identity: wasm.Identity) {
         let userFromIdentity: User = {
             ...defaultUser,
-            id: {short: identity.short_id()},
+            id: { short: identity.short_id() },
             name: identity.username(),
             key: identity.did_key(),
             profile: {
@@ -195,7 +195,7 @@ class GlobalStore {
                 key: friend,
             })
         })
-        
+
         this.state.friends.set(friendsList)
     }
 
@@ -206,21 +206,21 @@ class GlobalStore {
             return friendRequests.map(friendDid => {
                 let friendUser: User = {
                     ...defaultUser,
-                    name: friendDid,               
+                    name: friendDid,
                     key: friendDid,
                 }
                 return {
                     at: new Date(),
                     from: direction === MessageDirection.Inbound ? friendUser : user,
                     to: direction === MessageDirection.Inbound ? user : friendUser,
-                    direction: direction
+                    direction: direction,
                 }
             })
         }
-    
+
         let incomingRequests = createFriendRequests(incomingFriendRequests, MessageDirection.Inbound)
         let outgoingRequests = createFriendRequests(outgoingFriendRequests, MessageDirection.Outbound)
-    
+
         let allFriendRequests = new Set([...incomingRequests, ...outgoingRequests])
 
         this.state.activeRequests.set(Array.from(allFriendRequests.values()))
