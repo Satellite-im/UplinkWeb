@@ -1,6 +1,7 @@
-import { createPersistentState } from "$lib/state/db/persistedState"
-import * as wasm from "warp-wasm"
-import type { IWarp } from "./IWarp"
+import { createPersistentState } from "$lib/state/db/persistedState";
+import init, * as wasm from "warp-wasm";
+import type { IWarp } from "./IWarp";
+import { get } from "svelte/store";
 
 /**
  * Class representing the Store, which manages the state and interactions with Warp instances.
@@ -25,12 +26,21 @@ class Store {
      * @param tesseract - The Tesseract instance to use.
      * @param addresses - Optional addresses for IPFS configuration.
      */
-    async initWarpInstances(tesseract: wasm.Tesseract, addresses?: string[]) {
-        let warp_instance = await this.createIpfs(tesseract, addresses)
-        this.warp.tesseract.set(tesseract)
-        this.warp.multipass.set(warp_instance.multipass)
-        this.warp.raygun.set(warp_instance.raygun)
-        this.warp.constellation.set(warp_instance.constellation)
+    async initWarpInstances(addresses?: string[]) {
+        const multipassInstance = get(this.warp.multipass);
+        const tesseractInstance = get(this.warp.tesseract);
+
+        if (multipassInstance !== null && tesseractInstance !== null) {
+            return;
+        }
+
+        await init();
+        let warp_instance = await this.createIpfs(addresses);
+        let tesseract = warp_instance.multipass.tesseract();
+        this.warp.multipass.set(warp_instance.multipass);
+        this.warp.raygun.set(warp_instance.raygun);
+        this.warp.constellation.set(warp_instance.constellation);
+        this.warp.tesseract.set(tesseract);
     }
 
     /**
@@ -40,9 +50,9 @@ class Store {
      * @returns {Promise<wasm.WarpInstance>} A promise that resolves to a WarpInstance.
      * @private
      */
-    private async createIpfs(tesseract: wasm.Tesseract, addresses?: string[]): Promise<wasm.WarpInstance> {
+    private async createIpfs(addresses?: string[]): Promise<wasm.WarpInstance> {
         if (addresses && addresses.length > 0) {
-            return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(addresses), tesseract)) as wasm.WarpInstance
+            return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(addresses))) as wasm.WarpInstance;
         }
         // HACK: Replace 'your-relay-address-here' with your relay address
         // This is a temporary solution
@@ -51,7 +61,7 @@ class Store {
         // Uncomment code below to use your local relay server
         // And comment line 52
         // return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(["your-relay-address"]), tesseract)) as wasm.WarpInstance;
-        return (await new wasm.WarpIpfs(wasm.Config.minimal_testing(), tesseract)) as wasm.WarpInstance
+        return (await new wasm.WarpIpfs(wasm.Config.minimal_testing())) as wasm.WarpInstance;
     }
 }
 

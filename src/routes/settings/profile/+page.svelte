@@ -14,6 +14,7 @@
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onDestroy, onMount } from "svelte"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
 
     initLocale()
 
@@ -25,7 +26,8 @@
         if (loading) setTimeout(() => (loading = false), 200)
     }
 
-    function logOut() {
+    async function logOut() {
+        await TesseractStoreInstance.lock()
         goto(Route.Unlock)
     }
 

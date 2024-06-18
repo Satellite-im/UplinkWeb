@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
+    import { Route } from "$lib/enums"
 
-    goto("/auth/unlock")
+    goto(Route.Unlock)
 </script>

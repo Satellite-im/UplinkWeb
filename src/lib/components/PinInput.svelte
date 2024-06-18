@@ -5,6 +5,7 @@
     import { Button, Icon, Spacer, Loader, Switch, Label } from "$lib/elements"
 
     import { _ } from "svelte-i18n"
+    import { AuthStore } from "$lib/state/auth"
 
     export let error: boolean = false
     export let loading: boolean = false
@@ -81,6 +82,7 @@
     })
 
     function handleToggleScramble(value: any) {
+        AuthStore.setScrambleValue(value.detail)
         scramble = value.detail
         pinDigits = scramble ? shuffleArray(pinDigits) : [...pinDigitsOriginal]
     }
