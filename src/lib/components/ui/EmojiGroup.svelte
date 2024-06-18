@@ -4,7 +4,8 @@
     import { Appearance, Shape } from "$lib/enums"
 
     export let emojis: string[]
-    export let close: (event: CustomEvent<MouseEvent>) => void
+    export let close: (event: MouseEvent) => void
+    export let emojiPick: (emoji: string) => void
 </script>
 
 <div class="emoji-group">
@@ -14,11 +15,8 @@
             appearance={Appearance.Alt}
             text={emoji}
             on:click={e => {
-                // TODO add reaction
-                const customEvent = new CustomEvent("customMouseEvent", {
-                    detail: e,
-                })
-                close(customEvent)
+                emojiPick(emoji)
+                close(e)
             }} />
     {/each}
     <Button
@@ -26,10 +24,7 @@
         appearance={Appearance.Alt}
         on:click={e => {
             // Open emoji picker
-            const customEvent = new CustomEvent("customMouseEvent", {
-                detail: e,
-            })
-            close(customEvent)
+            close(e)
         }}><Icon icon={Shape.Plus} /></Button>
 </div>
 

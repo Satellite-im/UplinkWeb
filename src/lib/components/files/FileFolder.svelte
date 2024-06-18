@@ -155,6 +155,16 @@
             }
         }
 
+        .name {
+            width: 100%;
+            height: 21.36px;
+            align-self: center;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         :global(.svg-icon) {
             color: var(--warning-color);
             width: var(--icon-size-largest);

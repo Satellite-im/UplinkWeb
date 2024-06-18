@@ -137,24 +137,33 @@
     })
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
-
-    $: {
-        let devmode = get(SettingsStore.state).devmode
-        if (devmode) {
+    $: setRoutes = get(settingsRoutes)
+    SettingsStore.state.subscribe(value => {
+        if (value.devmode) {
             if (!get(settingsRoutes).find(route => route.to === SettingsRoute.Developer)) {
-                settingsRoutes.set([
-                    ...get(settingsRoutes),
+                settingsRoutes.update(routes => [
+                    ...routes,
                     {
                         to: SettingsRoute.Developer,
                         icon: Shape.Code,
                         name: "Developer",
                     },
-                ])
+                ]);
             }
         } else {
-            settingsRoutes.set(get(settingsRoutes).filter(route => route.to !== SettingsRoute.Developer))
+            settingsRoutes.update(routes =>
+                routes.filter(route => route.to !== SettingsRoute.Developer)
+            );
         }
-    }
+    });
+
+    onMount(() => {
+        // Ensure settingsRoutes is reactive
+        const unsubscribe = settingsRoutes.subscribe(routes => {
+            setRoutes = routes
+        });
+        return () => unsubscribe();
+    });
 </script>
 
 <div id="settings">
@@ -165,7 +174,7 @@
     <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
         <Navigation
-            routes={get(settingsRoutes)}
+            routes={setRoutes}
             vertical
             on:navigate={e => {
                 goto(e.detail)

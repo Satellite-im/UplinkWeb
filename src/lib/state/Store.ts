@@ -1,5 +1,5 @@
 import { Sound, Sounds } from "$lib/components/utils/Sounds"
-import { MessageDirection, Status } from "$lib/enums"
+import { ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
@@ -103,6 +103,11 @@ class GlobalStore {
         this.state.user.update(u => (u = { ...u, profile: { ...u.profile, banner: { ...u.profile.banner, image: photo } } }))
     }
 
+    getChatForUser(userID: string) {
+        const chats = get(UIStore.state.chats)
+        return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u.key === userID))
+    }
+
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
 
@@ -119,17 +124,8 @@ class GlobalStore {
         UIStore.addSidebarChat(chat)
     }
 
-    setActiveDM(user: User) {
-        let chat = {
-            ...defaultChat,
-            id: "",
-            users: [user],
-            name: user.name,
-            last_message_at: new Date(),
-            motd: user.profile.status_message,
-        }
-        chat.id = hashChat(chat)
-        this.setActiveChat(chat)
+    clearActiveChat() {
+        this.state.activeChat.set(defaultChat)
     }
 
     setInputDevice(device: string) {

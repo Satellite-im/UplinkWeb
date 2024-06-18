@@ -19,6 +19,7 @@
     import Key from "$lib/components/settings/Key.svelte"
     import Toast from "$lib/elements/Toast.svelte"
     import { log } from "$lib/utils/Logger"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     // Initialize locale
     initLocale()
@@ -304,8 +305,16 @@
                                     <svelte:fragment slot="controls">
                                         <Button
                                             text={$_("chat.chat")}
-                                            on:click={_ => {
-                                                Store.setActiveDM(result.item)
+                                            on:click={async _ => {
+                                                let chat = Store.getChatForUser(result.item.key)
+                                                if (chat) {
+                                                    Store.setActiveChat(chat)
+                                                } else {
+                                                    let conversation = await RaygunStoreInstance.createConversation(result.item)
+                                                    conversation.onSuccess(chat => {
+                                                        Store.setActiveChat(chat)
+                                                    })
+                                                }
                                                 goto(Route.Chat)
                                             }}>
                                             <Icon icon={Shape.ChatBubble} />
@@ -345,9 +354,18 @@
                                     <svelte:fragment slot="controls">
                                         <Button
                                             text={$_("chat.chat")}
-                                            on:click={_ => {
-                                                Store.setActiveDM(friend)
-                                                goto(Route.Chat)
+                                            on:click={async _ => {
+                                                let chat = Store.getChatForUser(friend.key)
+                                                if (chat) {
+                                                    Store.setActiveChat(chat)
+                                                    goto(Route.Chat)
+                                                } else {
+                                                    let conversation = await RaygunStoreInstance.createConversation(friend)
+                                                    conversation.onSuccess(chat => {
+                                                        Store.setActiveChat(chat)
+                                                        goto(Route.Chat)
+                                                    })
+                                                }
                                             }}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>

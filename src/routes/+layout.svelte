@@ -1,14 +1,19 @@
 <script lang="ts">
+    import { goto } from "$app/navigation"
     import { Toasts } from "$lib/components"
     import Key from "$lib/components/settings/Key.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Sound, Sounds } from "$lib/components/utils/Sounds"
-    import { Font, KeybindAction, KeybindState } from "$lib/enums"
+    import { Font, KeybindAction, KeybindState, Route } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
+    import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
+    import { RelayStore } from "$lib/state/wasm/relays"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { WarpStore } from "$lib/wasm/WarpStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
@@ -118,6 +123,21 @@
     SettingsStore.state.subscribe(settings => (keybinds = settings.keybinds))
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
+
+    async function checkIfUserIsLogged() {
+        let pinToLog = await AuthStore.getStoredPin()
+        if (pinToLog === "") {
+            goto(Route.Unlock)
+        } else {
+            let addressed = Object.values(get(RelayStore.state))
+                .filter(r => r.active)
+                .map(r => r.address)
+            await WarpStore.initWarpInstances(addressed)
+            await TesseractStoreInstance.unlock(pinToLog)
+        }
+    }
+
+    checkIfUserIsLogged()
 </script>
 
 <div id="app">

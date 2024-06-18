@@ -1,12 +1,17 @@
-import { log } from "$lib/utils/Logger"
 import { get, writable, type Writable } from "svelte/store"
-import init, * as wasm from "warp-wasm"
+import * as wasm from "warp-wasm"
+import { WarpStore } from "./WarpStore"
+import { log } from "$lib/utils/Logger"
 
 /**
  * Class representing the TesseractStore, which manages the state and interactions with a Tesseract instance.
  */
 class TesseractStore {
     private tesseractWritable: Writable<wasm.Tesseract | null> = writable(null)
+
+    constructor(tesseract: Writable<wasm.Tesseract | null>) {
+        this.tesseractWritable = tesseract
+    }
 
     /**
      * Retrieves the Tesseract instance.
@@ -21,23 +26,17 @@ class TesseractStore {
      * @param {string} pin - The pin to unlock the Tesseract.
      */
     async unlock(pin: string) {
-        await init()
-        log.debug("TesseractStore: Warp WASM initialized")
-        const tesseractInstance = new wasm.Tesseract()
-        this.tesseractWritable.set(tesseractInstance)
+        const tesseract = get(this.tesseractWritable);
 
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
 
         try {
-            await tesseractInstance.load_from_storage()
-            await tesseractInstance.unlock(passphrase)
-
-            if (!tesseractInstance.autosave_enabled()) {
-                tesseractInstance.set_autosave()
+            if (tesseract) {
+                await tesseract.unlock(passphrase)
+    
+                log.info('Tesseract: ' + tesseract)
             }
-
-            log.info("Tesseract: " + tesseractInstance)
         } catch (error) {
             log.error("Error unlocking Tesseract: " + error)
         }
@@ -47,11 +46,11 @@ class TesseractStore {
      * Locks the Tesseract instance.
      */
     lock() {
-        const tesseractInstance = get(this.tesseractWritable)
-        if (tesseractInstance) {
-            tesseractInstance.lock()
+        const tesseract = get(this.tesseractWritable)
+        if (tesseract) {
+            tesseract.lock()
         }
     }
 }
 
-export const TesseractStoreInstance = new TesseractStore()
+export const TesseractStoreInstance = new TesseractStore(WarpStore.warp.tesseract)
