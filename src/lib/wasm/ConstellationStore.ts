@@ -3,8 +3,8 @@ import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
-import { Store } from "$lib/state/store"
 import type { FileInfo } from "$lib/types"
+import { log } from "$lib/utils/Logger"
 
 /**
  * A class that provides various methods to interact with a ConstellationBox.
@@ -29,11 +29,11 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                console.log("Creating new directory: " + directory_name)
+                log.info("Creating new directory: " + directory_name)
                 await constellation.create_directory(directory_name, false)
                 return success(undefined)
             } catch (error) {
-                get(Store.state.logger).error("Error creating new directory: " + error)
+                log.error("Error creating new directory: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -59,13 +59,13 @@ class ConstellationStore {
                 }
                 for await (const value of put_stream_status) {
                     if (value.ProgressComplete != null) {
-                        console.log(value)
+                        log.info(value)
                         break
                     }
                 }
                 return success(undefined)
             } catch (error) {
-                get(Store.state.logger).error("Error uploading files from stream: " + error)
+                log.error("Error uploading files from stream: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -83,7 +83,7 @@ class ConstellationStore {
                 let files = constellation.current_directory().get_items()
                 return success(files)
             } catch (error) {
-                get(Store.state.logger).error("Error getting current directory files: " + error)
+                log.error("Error getting current directory files: " + error)
                 return failure(handleErrors(error))
             }
         }

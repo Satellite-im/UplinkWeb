@@ -7,6 +7,7 @@
     import Stream from "$lib/elements/Stream.svelte"
     import { onMount } from "svelte"
     import SimplePeer from "simple-peer"
+    import { log } from "$lib/utils/Logger"
 
     let loading: boolean = false
     let channel: string = "SHFDKLSDF"
@@ -47,17 +48,17 @@
         })
 
         peer.on("signal", (data: any) => {
-            console.log("SIGNAL", JSON.stringify(data))
+            log.info("SIGNAL", JSON.stringify(data))
             // Send this data to the remote peer via signaling server
         })
 
         peer.on("connect", () => {
-            console.log("CONNECT")
+            log.info("CONNECT")
             peer?.send("whatever" + Math.random())
         })
 
         peer.on("data", (data: any) => {
-            console.log("data: " + data)
+            log.info("data: " + data)
         })
 
         peer.on("stream", (stream: MediaStream) => {

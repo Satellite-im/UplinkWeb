@@ -11,6 +11,7 @@
     import { get } from "svelte/store"
     import type { Identity } from "warp-wasm"
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import { log } from "$lib/utils/Logger"
 
     let username = ""
     let statusMessage = ""
@@ -23,7 +24,7 @@
         let identity = await MultipassStoreInstance.getOwnIdentity()
         identity.fold(
             (e: WarpError) => {
-                get(Store.state.logger).error("Error creating identity: " + e)
+                log.error("Error creating identity: " + e)
             },
             async (identity: Identity) => {
                 Store.setUserFromIdentity(identity!)

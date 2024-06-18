@@ -1,4 +1,4 @@
-import { Store } from "$lib/state/store"
+import { log } from "$lib/utils/Logger"
 import { get } from "svelte/store"
 
 export enum WarpError {
@@ -17,7 +17,7 @@ export enum WarpError {
 }
 
 export function handleErrors(error: any): WarpError {
-    get(Store.state.logger).error("Error: " + error)
+    log.error("Error: " + error)
     if (error instanceof Error) {
         const message = error.message
         switch (true) {
