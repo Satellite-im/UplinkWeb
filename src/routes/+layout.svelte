@@ -93,15 +93,15 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     async function checkIfUserIsLogged() {
-        let authPin = await AuthStore.getStoredPin()
-        if (authPin === "") {
+        let pinToLog = await AuthStore.getStoredPin()
+        if (pinToLog === "") {
             goto(Route.Unlock)
         } else {
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
                 .map(r => r.address)
             await WarpStore.initWarpInstances(addressed)
-            await TesseractStoreInstance.unlock(authPin)
+            await TesseractStoreInstance.unlock(pinToLog)
         }
     }
 
