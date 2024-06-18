@@ -60,6 +60,9 @@
         list-style-type: none;
     }
     li {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space:nowrap;
         margin-left: 10px;
     }
 </style>

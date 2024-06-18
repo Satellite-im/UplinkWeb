@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Text } from "$lib/elements"
+    import { Spacer, Text } from "$lib/elements"
     import prettyBytes from "pretty-bytes"
     import { Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
@@ -8,16 +8,17 @@
     function onClick(event: MouseEvent) {
         dispatch("click", event)
     }
-
+    export let ImgSource: string = ""
     export let name: string = "UNKNOWN"
-    export let filesize: number = 9821239999999999999999 // Intentionally alarming to signify error
+    export let filesize: number = 9821239
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="image-file" on:click={onClick}>
-    <img class="preview" src="/assets/library.avif" alt="preview" />
-    <input type="text" value={name} />
+    <img class="preview" src={ImgSource} alt="preview" />
+    <Spacer less/>
+    <input class="img_text" value={name} />
     <Text size={Size.Smallest} muted class="name">{prettyBytes(filesize)}</Text>
 </div>
 
@@ -35,7 +36,7 @@
         padding: var(--padding-less);
 
         .preview {
-            max-height: var(--icon-size-largest);
+            max-height: 58.52px;
             max-width: 100%;
             border-radius: var(--border-radius-minimal);
         }
@@ -59,6 +60,13 @@
                 background-color: var(--alt-color);
                 outline: none;
             }
+        }
+        .img_text {
+            // width: 100%;
+            height: 21px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space:nowrap;
         }
 
         :global(.svg-icon) {

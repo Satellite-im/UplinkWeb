@@ -210,6 +210,7 @@ export type FileInfo = {
     name: string
     source: string
     isRenaming: OperationState
+    isRename: boolean
     extension?: string
     items?: FileInfo[]
     parentId?: string

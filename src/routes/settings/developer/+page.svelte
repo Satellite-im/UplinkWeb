@@ -1,21 +1,20 @@
 <script lang="ts">
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { SettingSection } from "$lib/layouts"
-    import { Appearance } from "$lib/enums"
+    import { Navigation, SettingSection } from "$lib/layouts"
+    import { Appearance, Route, SettingsRoute, Shape } from "$lib/enums"
     import { Store } from "$lib/state/store"
     import Button from "$lib/elements/Button.svelte"
     import { SettingsStore, clearState } from "$lib/state"
     import { ConversationStore } from "$lib/state/conversation"
     import { InventoryStore } from "$lib/state/inventory"
     import { goto } from "$app/navigation"
-
     initLocale()
 </script>
 
 <div id="page">
     <SettingSection hook="section-devmode" name="Devmode" description="Disable devmode.">
-        <Button hook="button-exit-devmode" appearance={Appearance.Alt} on:click={_ => SettingsStore.toggleDevmode(false)}>Exit Devmode</Button>
+        <Button hook="button-exit-devmode" appearance={Appearance.Alt} on:click={_ => {goto("/settings/about"); SettingsStore.toggleDevmode(false)}}>Exit Devmode</Button>
     </SettingSection>
 
     <SettingSection hook="section-load-mock" name="Load Mock" description="Loads mock data into state.">

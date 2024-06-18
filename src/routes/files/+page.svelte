@@ -155,6 +155,7 @@
             name: "",
             source: "",
             isRenaming: OperationState.Loading,
+            isRename: false,
             items: [],
             parentId: $currentFolderIdStore,
         }
@@ -197,11 +198,12 @@
                     }
                     return item.id === currArray[0].parentId
                 })
-
-                if (parentItem && parentItem.items) {
-                    if (newFolders[i].length === 0) {
-                        currArray = [...parentItem.items]
+                if (newFolders[i].length === 0 ) {
+                    if (parentItem && parentItem.items) {
+                            currArray = [...parentItem.items]
                     }
+                        }
+                if (parentItem && parentItem.items) {
                     newFolders[i] = [...parentItem.items]
                 }
 
@@ -239,6 +241,7 @@
         name: "",
         source: "",
         isRenaming: OperationState.Initial,
+        isRename: false,
         items: [],
     }
 
@@ -310,6 +313,7 @@
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
                 isRenaming: OperationState.Initial,
+                isRename: false,
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
                 source: "",
                 items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
@@ -595,7 +599,7 @@
                             }}
                             items={[
                                 {
-                                    id: "delete",
+                                    id: "delete-" + item.id,
                                     icon: Shape.XMark,
                                     text: "Delete",
                                     appearance: Appearance.Default,
@@ -695,6 +699,7 @@
                         <ImageFile
                             filesize={item.size}
                             name={item.name}
+                            ImgSource={item.source}
                             on:click={_ => {
                                 previewImage = item.source
                             }} />
@@ -730,8 +735,6 @@
             margin: 10px;
         }
         .folderList {
-            list-style-type: none;
-            width: fit-content;
             margin-left: -40px;
         }
 
@@ -767,6 +770,7 @@
                 flex-wrap: wrap;
                 align-content: flex-start;
                 overflow-y: scroll;
+                padding: 1rem;
 
                 .draggable-item {
                     position: relative;
