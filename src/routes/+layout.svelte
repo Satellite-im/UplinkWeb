@@ -1,7 +1,8 @@
 <script lang="ts">
     import { Toasts } from "$lib/components"
+    import Key from "$lib/components/settings/Key.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
-    import { Font, KeybindAction } from "$lib/enums"
+    import { Font, KeybindAction, KeybindState } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
@@ -23,6 +24,8 @@
 
     function handleKeybindMatch(event: CustomEvent<any>) {
         let keybind: Keybind = event.detail
+        let state: KeybindState = keybind.state
+
         switch (keybind.action) {
             case KeybindAction.IncreaseFontSize:
                 UIStore.increaseFontSize()
@@ -43,6 +46,27 @@
                 console.log("todo")
                 break
             case KeybindAction.FocusUplink:
+                console.log("todo")
+                break
+            case KeybindAction.PushToTalk:
+                if (state === KeybindState.Pressed) {
+                    console.log("todo")
+                    break
+                }
+                console.log("todo")
+                break
+            case KeybindAction.PushToMute:
+                if (state === KeybindState.Pressed) {
+                    console.log("todo")
+                    break
+                }
+                console.log("todo")
+                break
+            case KeybindAction.PushToDeafen:
+                if (state === KeybindState.Pressed) {
+                    console.log("todo")
+                    break
+                }
                 console.log("todo")
                 break
             default:

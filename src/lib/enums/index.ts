@@ -126,9 +126,17 @@ export const enum KeybindAction {
     DecreaseFontSize = "Decrease font size within Uplink.",
     ToggleMute = "Mute & un-mute your microphone.",
     ToggleDeafen = "Toggle turning off all sounds including your microphone and headphones.",
-    OpenInspector = "Open/Close Web Inspector",
-    ToggleDevmode = "Toggle Developer Mode",
-    FocusUplink = "Hide/Focus Uplink",
+    OpenInspector = "Open/Close Web Inspector.",
+    ToggleDevmode = "Toggle Developer Mode.",
+    FocusUplink = "Hide/Focus Uplink.",
+    PushToTalk = "Push to talk.",
+    PushToMute = "Hold to momentairly mute your microphone.",
+    PushToDeafen = "Push to silence incoming audio."
+}
+
+export const enum KeybindState {
+    Pressed,
+    Released
 }
 
 export enum MessageDirection {

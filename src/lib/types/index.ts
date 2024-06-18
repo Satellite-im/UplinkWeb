@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState } from "$lib/enums"
 
 export enum OperationState {
     Initial = "Initial",
@@ -258,5 +258,6 @@ export type Transaction = {
 export type Keybind = {
     action: KeybindAction
     key: string
-    modifiers: string[]
+    modifiers: string[],
+    state: KeybindState
 }
