@@ -25,7 +25,6 @@ class Auth {
     }
 
     setStoredPin(pin: string) {
-        console.log("Setting pin: " + pin)
         this.state.set({ pin: pin, scramblePin: true })
     }
 
@@ -34,7 +33,6 @@ class Auth {
             pin: "",
             scramblePin: false
         })
-        console.log("Getting pin: " + state.pin)
         return state.pin
     }
 }
