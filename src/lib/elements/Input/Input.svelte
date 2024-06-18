@@ -17,7 +17,7 @@
     export let copyOnInteract: boolean = false
     export let centered: boolean = false
     export let rich: boolean = false
-    export let auto_focus: boolean = false
+    export let autoFocus: boolean = false
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -30,7 +30,7 @@
     let onsend: any[] = []
     if (rich) {
         onMount(() => {
-            if (auto_focus) input.focus()
+            if (autoFocus) input.focus()
             let editor = new MarkdownEditor(input, {
                 keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
@@ -42,7 +42,7 @@
             editor.codemirror.dispatch({
                 selection: { head: line.to, anchor: line.to },
             })
-            if (auto_focus) editor.codemirror.focus()
+            if (autoFocus) editor.codemirror.focus()
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {

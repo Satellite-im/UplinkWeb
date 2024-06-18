@@ -430,7 +430,7 @@
                                             position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                             morePadding={message.text.length > 1 || message.attachments.length > 0}>
                                             {#if editing_message === message.id}
-                                                <Input alt bind:value={editing_text} auto_focus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
+                                                <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                             {:else}
                                                 {#each message.text as line}
                                                     <Text markdown={line} />
