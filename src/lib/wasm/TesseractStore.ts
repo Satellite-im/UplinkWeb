@@ -7,10 +7,10 @@ import { WarpStore } from "./WarpStore";
  * Class representing the TesseractStore, which manages the state and interactions with a Tesseract instance.
  */
 class TesseractStore {
-    private tesseractWritable: Writable<wasm.Tesseract | null> = writable(null);
+    private tesseractWritable: Writable<wasm.Tesseract | null> = writable(null)
 
     constructor(tesseract: Writable<wasm.Tesseract | null>) {
-        this.tesseractWritable = tesseract;
+        this.tesseractWritable = tesseract
     }
 
     /**
@@ -18,7 +18,7 @@ class TesseractStore {
      * @returns {Promise<wasm.Tesseract>} A promise that resolves to the Tesseract instance.
      */
     async getTesseract(): Promise<wasm.Tesseract> {
-        return get(this.tesseractWritable)!;
+        return get(this.tesseractWritable)!
     }
 
     /**
@@ -33,16 +33,12 @@ class TesseractStore {
 
         try {
             if (tesseract) {
-                await tesseract.unlock(passphrase);
+                await tesseract.unlock(passphrase)
     
-                if (!tesseract.autosave_enabled()) {
-                    tesseract.set_autosave();
-                }
-    
-                get(Store.state.logger).info('Tesseract: ' + tesseract);
+                get(Store.state.logger).info('Tesseract: ' + tesseract)
             }
         } catch (error) {
-            get(Store.state.logger).error('Error unlocking Tesseract: ' + error);
+            get(Store.state.logger).error('Error unlocking Tesseract: ' + error)
         }
     }
 
@@ -50,11 +46,11 @@ class TesseractStore {
      * Locks the Tesseract instance.
      */
     lock() {
-        const tesseract = get(this.tesseractWritable);
+        const tesseract = get(this.tesseractWritable)
         if (tesseract) {
-            tesseract.lock();
+            tesseract.lock()
         }
     }
 }
 
-export const TesseractStoreInstance = new TesseractStore(WarpStore.warp.tesseract);
+export const TesseractStoreInstance = new TesseractStore(WarpStore.warp.tesseract)

@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { goto } from "$app/navigation"
     import { Toasts } from "$lib/components"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
-    import { Font, KeybindAction } from "$lib/enums"
+    import { Font, KeybindAction, Route } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
+    import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
@@ -85,6 +87,12 @@
     SettingsStore.state.subscribe(settings => (keybinds = settings.keybinds))
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
+
+    if (get(AuthStore.state).pin === "") {
+        console.log("Redirecting to /auth/unlock")
+        goto(Route.Unlock)
+    } 
+
 </script>
 
 <div id="app">
