@@ -267,7 +267,7 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                const identity = await multipass.get_own_identity()
+                const identity = await multipass.identity()
                 return success(identity)
             } catch (error) {
                 log.error("Error getting own identity: " + error)
@@ -373,7 +373,7 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                const updated_identity = await multipass.get_own_identity()
+                const updated_identity = await multipass.identity()
                 this.identity.update(() => updated_identity)
                 log.info(`Identity updated\n 
                   Username: ${updated_identity.username()} \n
