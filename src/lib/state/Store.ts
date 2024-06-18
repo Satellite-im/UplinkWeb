@@ -34,7 +34,6 @@ class GlobalStore {
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
             openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
-            logger: createPersistentState("uplink.log", new Logger({ relay_to_js_console: true })),
             toasts: createPersistentState("uplink.toasts", {}),
         }
     }
@@ -65,26 +64,26 @@ class GlobalStore {
     setStatusMessage(message: string) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status_message: message,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status_message: message,
+                },
+            })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status: status,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status: status,
+                },
+            })
         )
     }
 

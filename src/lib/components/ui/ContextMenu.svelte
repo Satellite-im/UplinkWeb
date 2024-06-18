@@ -10,6 +10,7 @@
     import { Appearance } from "$lib/enums"
     import type { ContextItem } from "$lib/types"
     import { createEventDispatcher, tick } from "svelte"
+    import { log } from "$lib/utils/Logger"
 
     let visible: boolean = false
     let coords: [number, number] = [0, 0]
@@ -54,7 +55,7 @@
 
     function handleItemClick(e: MouseEvent, item: ContextItem) {
         e.stopPropagation() // Prevent clickoutside from closing the menu
-        console.log("Clicked", item.text)
+        log.info(`Clicked ${item.text}`)
         item.onClick()
         const customEvent = new CustomEvent("customMouseEvent", {
             detail: e,
