@@ -1,5 +1,4 @@
-import { Store } from "$lib/state/store"
-import { Logger } from "$lib/utils/Logger"
+import { log } from "$lib/utils/Logger"
 import { get, writable, type Writable } from "svelte/store"
 import init, * as wasm from "warp-wasm"
 
@@ -23,13 +22,7 @@ class TesseractStore {
      */
     async unlock(pin: string) {
         await init()
-        let store = get(Store.state.logger)
-        if (store.debug == null) {
-            Store.state.logger.set(new Logger({ relay_to_js_console: true }))
-            store = get(Store.state.logger)
-            store.warn(`Logger was not initialized properly. Initialized Logger. (This only seems to happen when we don't clear the data)`)
-        }
-        store.debug("TesseractStore: Warp WASM initialized")
+        log.debug("TesseractStore: Warp WASM initialized")
         const tesseractInstance = new wasm.Tesseract()
         this.tesseractWritable.set(tesseractInstance)
 
@@ -44,9 +37,9 @@ class TesseractStore {
                 tesseractInstance.set_autosave()
             }
 
-            get(Store.state.logger).info("Tesseract: " + tesseractInstance)
+            log.info("Tesseract: " + tesseractInstance)
         } catch (error) {
-            get(Store.state.logger).error("Error unlocking Tesseract: " + error)
+            log.error("Error unlocking Tesseract: " + error)
         }
     }
 

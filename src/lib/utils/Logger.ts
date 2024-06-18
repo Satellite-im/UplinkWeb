@@ -57,3 +57,5 @@ export class Logger {
         this.write(LogLevel.Error, message)
     }
 }
+
+export let log = new Logger({ relay_to_js_console: true })

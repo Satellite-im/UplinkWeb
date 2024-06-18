@@ -8,6 +8,7 @@
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
+    import { log } from "$lib/utils/Logger"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
@@ -41,13 +42,13 @@
                 Store.updateDeafened(!deafened)
                 break
             case KeybindAction.OpenInspector:
-                console.log("todo")
+                log.info("todo")
                 break
             case KeybindAction.ToggleDevmode:
-                console.log("todo")
+                log.info("todo")
                 break
             case KeybindAction.FocusUplink:
-                console.log("todo")
+                log.info("todo")
                 break
             case KeybindAction.PushToTalk:
                 Sounds.play(Sound.Press)
@@ -78,7 +79,7 @@
                 Sounds.play(Sound.Release)
                 break
             default:
-                console.warn("unhandled keybind", keybind)
+                log.warn(`unhandled keybind ${keybind}`)
         }
     }
 
