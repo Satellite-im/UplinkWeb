@@ -27,7 +27,6 @@
     }
 
     function handleKeyUp(event: KeyboardEvent) {
-        console.log("keyup")
         let key = event.key
         let modifiers: string[] = []
 
