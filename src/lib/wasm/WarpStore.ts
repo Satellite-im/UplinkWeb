@@ -7,7 +7,7 @@ import { get } from "svelte/store";
  * Class representing the Store, which manages the state and interactions with Warp instances.
  */
 class Store {
-    warp: IWarp;
+    warp: IWarp
 
     /**
      * Creates an instance of Store and initializes persistent states for Warp components.
@@ -18,7 +18,7 @@ class Store {
             multipass: createPersistentState("warp.multipass", null),
             raygun: createPersistentState("warp.raygun", null),
             constellation: createPersistentState("warp.constellation", null),
-        };
+        }
     }
 
     /**
@@ -65,4 +65,4 @@ class Store {
     }
 }
 
-export const WarpStore = new Store();
+export const WarpStore = new Store()

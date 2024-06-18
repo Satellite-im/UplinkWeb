@@ -20,6 +20,5 @@ export interface IState {
     }
     activeChat: Writable<Chat>
     activeCall: Writable<Call | null>
-    logger: Writable<Logger>
     toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
 }

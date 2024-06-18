@@ -1,7 +1,7 @@
-import { Store } from "$lib/state/store";
-import { get, writable, type Writable } from "svelte/store";
-import * as wasm from "warp-wasm";
-import { WarpStore } from "./WarpStore";
+import { get, writable, type Writable } from "svelte/store"
+import * as wasm from "warp-wasm"
+import { WarpStore } from "./WarpStore"
+import { log } from "$lib/utils/Logger"
 
 /**
  * Class representing the TesseractStore, which manages the state and interactions with a Tesseract instance.
@@ -28,17 +28,17 @@ class TesseractStore {
     async unlock(pin: string) {
         const tesseract = get(this.tesseractWritable);
 
-        const encoder = new TextEncoder();
-        const passphrase = encoder.encode(pin);
+        const encoder = new TextEncoder()
+        const passphrase = encoder.encode(pin)
 
         try {
             if (tesseract) {
                 await tesseract.unlock(passphrase)
     
-                get(Store.state.logger).info('Tesseract: ' + tesseract)
+                log.info('Tesseract: ' + tesseract)
             }
         } catch (error) {
-            get(Store.state.logger).error('Error unlocking Tesseract: ' + error)
+            log.error("Error unlocking Tesseract: " + error)
         }
     }
 
