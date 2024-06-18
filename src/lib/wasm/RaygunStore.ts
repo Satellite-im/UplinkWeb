@@ -12,6 +12,7 @@ import { failure, success, type Result } from "$lib/utils/Result"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 import { parseJSValue } from "./EnumParser"
 import { MultipassStoreInstance } from "./MultipassStore"
+import { log } from "$lib/utils/Logger"
 
 const MAX_PINNED_MESSAGES = 100
 
@@ -307,7 +308,7 @@ class RaygunStore {
         }
         for await (const value of listener) {
             let event = parseJSValue(value)
-            get(Store.state.logger).info(`Handling conversation event: ${JSON.stringify(event)}`)
+            log.info(`Handling conversation event: ${JSON.stringify(event)}`)
             switch (event.type) {
                 case "conversation_created": {
                     let conversationId: string = event.values["conversation_id"]
@@ -364,7 +365,7 @@ class RaygunStore {
             }
             for await (const value of listener) {
                 let event = parseJSValue(value)
-                get(Store.state.logger).info(`Handling messarge event: ${JSON.stringify(event)}`)
+                log.info(`Handling messarge event: ${JSON.stringify(event)}`)
                 switch (event.type) {
                     case "message_sent": {
                         let conversation_id: string = event.values["conversation_id"]
@@ -481,7 +482,7 @@ class RaygunStore {
                         break
                     }
                     default: {
-                        get(Store.state.logger).error(`Unhandled message event: ${JSON.stringify(event)}`)
+                        log.error(`Unhandled message event: ${JSON.stringify(event)}`)
                         break
                     }
                 }
