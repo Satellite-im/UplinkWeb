@@ -5,6 +5,7 @@ import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
+import { defaultProfileData, type User } from "$lib/types"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -266,7 +267,7 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                const identity = await multipass.get_own_identity()
+                const identity = await multipass.identity()
                 return success(identity)
             } catch (error) {
                 log.error("Error getting own identity: " + error)
@@ -332,6 +333,37 @@ class MultipassStore {
         }
     }
 
+    async identity_from_did(id: string): Promise<User | undefined> {
+        let multipass = get(this.multipassWritable)
+        if (multipass) {
+            try {
+                let identity = await multipass.get_identity(wasm.Identifier.DID, id)
+                let profile = {
+                    ...defaultProfileData,
+                }
+                // TODO profile and banner etc. missing from wasm?
+                return {
+                    id: {
+                        short: identity.short_id,
+                    },
+                    key: identity.did_key,
+                    name: identity.username,
+                    profile: profile,
+                    media: {
+                        is_playing_audio: false,
+                        is_streaming_video: false,
+                        is_muted: false,
+                        is_deafened: false,
+                        is_unknown_status: false,
+                    },
+                }
+            } catch (error) {
+                log.error(`Coultn't fetch identity ${id}: ${error}`)
+            }
+        }
+        return undefined
+    }
+
     /**
      * Updates the identity state.
      * @private
@@ -341,7 +373,7 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                const updated_identity = await multipass.get_own_identity()
+                const updated_identity = await multipass.identity()
                 this.identity.update(() => updated_identity)
                 log.info(`Identity updated\n 
                   Username: ${updated_identity.username()} \n

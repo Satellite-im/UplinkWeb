@@ -3,6 +3,9 @@ import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
 import { mock_messages } from "$lib/mock/messages"
+import { Appearance } from "$lib/enums"
+import { Store } from "../store"
+import { UIStore } from "../ui"
 
 export type ConversationMessages = {
     id: string
@@ -23,16 +26,19 @@ class Conversations {
         this.conversations.set(dbConversations)
     }
 
-    getConversation(chat: Chat) {
-        return get(this.conversations).find(c => c.id === chat.id)
+    getConversation(chat: Chat | string) {
+        let chatId = typeof chat === "string" ? chat : chat.id
+        return get(this.conversations).find(c => c.id === chatId)
     }
 
-    async addMessage(chat: Chat, message: Message) {
+    async addMessage(chat: Chat | string, message: Message) {
+        let chatId = typeof chat === "string" ? chat : chat.id
         const conversations = get(this.conversations)
-        const conversationIndex = conversations.findIndex(c => c.id === chat.id)
+        const conversationIndex = conversations.findIndex(c => c.id === chatId)
 
-        message.id = uuidv4()
+        if (message.id === "") message.id = uuidv4()
 
+        console.log("adding msg ", conversationIndex)
         if (conversationIndex !== -1) {
             const conversation = conversations[conversationIndex]
             const lastGroup = conversation.messages[conversation.messages.length - 1]
@@ -49,7 +55,7 @@ class Conversations {
             }
         } else {
             const newConversation: ConversationMessages = {
-                id: chat.id,
+                id: chatId,
                 messages: [
                     {
                         details: message.details,
@@ -60,13 +66,16 @@ class Conversations {
             conversations.push(newConversation)
         }
         this.conversations.set(conversations)
+        UIStore.mutateChat(chatId, c => {
+            c.last_message_preview = message.text.join("\n")
+        })
         await setStateToDB("conversations", conversations)
     }
 
-    async editMessage(chat: Chat, messageId: string, editedContent: string) {
+    async editMessage(chat: Chat | string, messageId: string, editedContent: string) {
+        let chatId = typeof chat === "string" ? chat : chat.id
         const conversations = get(this.conversations)
-        const conversation = conversations.find(c => c.id === chat.id)
-
+        const conversation = conversations.find(c => c.id === chatId)
         if (conversation) {
             conversation.messages.forEach(group => {
                 const messageIndex = group.messages.findIndex(m => m.id === messageId)
@@ -83,9 +92,79 @@ class Conversations {
         }
     }
 
-    async removeMessage(chat: Chat, messageId: string) {
+    hasReaction(chat: Chat | string, messageId: string, emoji: string) {
+        let chatId = typeof chat === "string" ? chat : chat.id
         const conversations = get(this.conversations)
-        const conversation = conversations.find(c => c.id === chat.id)
+        const conversation = conversations.find(c => c.id === chatId)
+        const user = get(Store.state.user).key
+
+        if (conversation) {
+            for (let group of conversation.messages) {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    const reactions = group.messages[messageIndex].reactions
+                    const reaction = reactions[emoji]
+                    return reaction && reaction.reactors.has(user)
+                }
+            }
+        }
+        return false
+    }
+
+    async editReaction(chat: string, messageId: string, emoji: string, add: boolean, reactor?: string) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat)
+        const user = reactor ? reactor : get(Store.state.user).key
+
+        if (conversation) {
+            conversation.messages.forEach(group => {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    const reactions = group.messages[messageIndex].reactions
+                    const reaction = reactions[emoji]
+                    if (!add) {
+                        if (reaction !== undefined) {
+                            let reactors = reaction.reactors
+                            reactors.delete(user)
+                            if (reactors.size === 0) {
+                                delete reactions[emoji]
+                            } else {
+                                reactions[emoji] = {
+                                    ...reaction,
+                                    reactors,
+                                }
+                            }
+                        }
+                    } else {
+                        if (reaction !== undefined) {
+                            reactions[emoji] = {
+                                ...reaction,
+                                reactors: reaction.reactors.add(user),
+                            }
+                        } else {
+                            reactions[emoji] = {
+                                reactors: new Set([user]),
+                                emoji: emoji,
+                                highlight: Appearance.Default, //TODO
+                                description: "", //TODO
+                            }
+                        }
+                    }
+                    group.messages[messageIndex] = {
+                        ...group.messages[messageIndex],
+                        reactions: reactions,
+                    }
+                }
+            })
+
+            this.conversations.set(conversations)
+            await setStateToDB("conversations", conversations)
+        }
+    }
+
+    async removeMessage(chat: string, messageId: string) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat)
 
         if (conversation) {
             conversation.messages.forEach(group => {
@@ -98,6 +177,40 @@ class Conversations {
             this.conversations.set(conversations)
             await setStateToDB("conversations", conversations)
         }
+    }
+
+    async pinMessage(chat: Chat | string, messageId: string, pin: boolean) {
+        let chatId = typeof chat === "string" ? chat : chat.id
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chatId)
+        if (conversation) {
+            conversation.messages.forEach(group => {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    group.messages[messageIndex] = {
+                        ...group.messages[messageIndex],
+                        pinned: pin,
+                    }
+                }
+            })
+
+            this.conversations.set(conversations)
+            await setStateToDB("conversations", conversations)
+        }
+    }
+
+    getMessage(chat: string, messageId: string): Message | null {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat)
+        if (conversation) {
+            conversation.messages.forEach(group => {
+                const messageIndex = group.messages.findIndex(m => m.id === messageId)
+                if (messageIndex !== -1) {
+                    return group.messages[messageIndex]
+                }
+            })
+        }
+        return null
     }
 
     async loadMockData() {
