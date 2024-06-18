@@ -5,6 +5,7 @@ import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
+import { defaultProfileData, type User } from "$lib/types"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -330,6 +331,37 @@ class MultipassStore {
             await multipass.update_identity(wasm.IdentityUpdate.Banner, pictureAsBytes)
             await this._updateIdentity()
         }
+    }
+
+    async identity_from_did(id: string): Promise<User | undefined> {
+        let multipass = get(this.multipassWritable)
+        if (multipass) {
+            try {
+                let identity = await multipass.get_identity(wasm.Identifier.DID, id)
+                let profile = {
+                    ...defaultProfileData,
+                }
+                // TODO profile and banner etc. missing from wasm?
+                return {
+                    id: {
+                        short: identity.short_id,
+                    },
+                    key: identity.did_key,
+                    name: identity.username,
+                    profile: profile,
+                    media: {
+                        is_playing_audio: false,
+                        is_streaming_video: false,
+                        is_muted: false,
+                        is_deafened: false,
+                        is_unknown_status: false,
+                    },
+                }
+            } catch (error) {
+                log.error(`Coultn't fetch identity ${id}: ${error}`)
+            }
+        }
+        return undefined
     }
 
     /**

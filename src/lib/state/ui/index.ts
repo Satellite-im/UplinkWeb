@@ -2,6 +2,7 @@ import type { Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { Font } from "$lib/enums"
+import { Store as MainStore } from "../store"
 
 export interface IUIState {
     color: Writable<string>
@@ -66,8 +67,23 @@ class Store {
         }
     }
 
-    removeSidebarChat(chat: Chat) {
-        this.state.chats.set(get(this.state.chats).filter(c => c.id !== chat.id))
+    removeSidebarChat(chat: Chat | string) {
+        let id = typeof chat === "string" ? chat : chat.id
+        this.state.chats.set(get(this.state.chats).filter(c => c.id !== id))
+    }
+
+    mutateChat(conversationId: string, handler: (chat: Chat) => void) {
+        let chats = get(this.state.chats)
+        let chat = chats.find(c => c.id === conversationId)
+        if (chat) {
+            handler(chat)
+            this.state.chats.set(chats)
+            let active = get(MainStore.state.activeChat)
+            if (active.id === conversationId) {
+                handler(active)
+                MainStore.state.activeChat.set(active)
+            }
+        }
     }
 }
 

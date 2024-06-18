@@ -1,5 +1,6 @@
 export type Result<E, T> = {
     fold<R>(onFailure: (failure: E) => R, onSuccess: (value: T) => R): R
+    map<R>(callback: (value: T) => R): Result<E, R>
     onSuccess(callback: (value: T) => void): void
     onFailure(callback: (failure: E) => void): void
 }
@@ -9,6 +10,10 @@ class Success<E, T> implements Result<E, T> {
 
     fold<R>(_: (failure: E) => R, onSuccess: (value: T) => R): R {
         return onSuccess(this.value)
+    }
+
+    map<R>(callback: (value: T) => R): Result<E, R> {
+        return new Success(callback(this.value))
     }
 
     onSuccess(callback: (value: T) => void): void {
@@ -25,6 +30,10 @@ class Failure<E, T> implements Result<E, T> {
 
     fold<R>(onFailure: (failure: E) => R, _: (value: T) => R): R {
         return onFailure(this.failure)
+    }
+
+    map<R>(_: (value: T) => R): Result<E, R> {
+        return new Failure(this.failure)
     }
 
     onSuccess(_: (value: T) => void): void {

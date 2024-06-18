@@ -1,5 +1,4 @@
 import { log } from "$lib/utils/Logger"
-import { get } from "svelte/store"
 
 export enum WarpError {
     SELF_REQUEST = "You cannot send yourself a friend request",
@@ -14,6 +13,7 @@ export enum WarpError {
     GENERAL_ERROR = "An unknown error occurred",
     MULTIPASS_NOT_FOUND = "Multipass instance not found",
     CONSTELLATION_NOT_FOUND = "Constellation instance not found",
+    RAYGUN_NOT_FOUND = "Raygun instance not found",
 }
 
 export function handleErrors(error: any): WarpError {
