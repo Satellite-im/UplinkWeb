@@ -2,7 +2,7 @@
     import { Banner, Key } from "$lib/components"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Button, Icon, Label, Select, Spacer, Text } from "$lib/elements"
-    import { Appearance, KeybindAction, Shape, Size } from "$lib/enums"
+    import { Appearance, KeybindAction, KeybindState, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
     import { defaultKeybinds, SettingsStore, type ISettingsState } from "$lib/state"
@@ -30,6 +30,7 @@
                     action: recordedAction,
                     key: keyboardRecording.key,
                     modifiers: keyboardRecording.modifiers,
+                    state: KeybindState.Pressed,
                 }
             }
             return keybind
@@ -68,6 +69,14 @@
 
         // If both checks pass, the keybinds match
         return true
+    }
+
+    $: {
+        // Update the recordedAction to match the current key and modifiers
+        const matchingKeybind = keybinds.find(keybind => isKeybindMatching(keyboardRecording, keybind))
+        if (matchingKeybind) {
+            recordedAction = matchingKeybind.action
+        }
     }
 </script>
 
