@@ -9,6 +9,8 @@
     const dispatch = createEventDispatcher()
 
     function handleKeyDown(event: KeyboardEvent) {
+        if (event.repeat) return // Prevents duplicate keypresses while holding a key down
+
         let key = event.key
         let modifiers: string[] = []
 
@@ -19,12 +21,13 @@
 
         keybinds.forEach(keybind => {
             if (keybind.key === key && keybind.modifiers.sort().join() === modifiers.sort().join()) {
-                dispatch("match", keybind)
+                dispatch("matchRelease", keybind)
             }
         })
     }
 
     function handleKeyUp(event: KeyboardEvent) {
+        console.log("keyup")
         let key = event.key
         let modifiers: string[] = []
 
@@ -47,5 +50,6 @@
 
     onDestroy(() => {
         window.removeEventListener("keydown", handleKeyDown)
+        window.removeEventListener("keyup", handleKeyUp)
     })
 </script>
