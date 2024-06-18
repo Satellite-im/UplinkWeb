@@ -43,7 +43,7 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
-    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { log } from "$lib/utils/Logger"    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
 
@@ -112,7 +112,7 @@
         event.preventDefault()
         dragging_files = 0
         // upload files
-        get(Store.state.logger).debug(`dropping files ${event.dataTransfer?.files}`)
+        log.debug(`dropping files ${event.dataTransfer?.files}`)
     }
 
     function build_context_items(message: MessageType) {

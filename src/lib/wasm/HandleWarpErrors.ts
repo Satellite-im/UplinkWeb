@@ -1,4 +1,4 @@
-import { Store } from "$lib/state/store"
+import { log } from "$lib/utils/Logger"
 import { get } from "svelte/store"
 
 export enum WarpError {

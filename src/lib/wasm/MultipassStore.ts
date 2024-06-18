@@ -3,7 +3,8 @@ import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
-import { Store } from "$lib/state/store"
+import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
+import { log } from "$lib/utils/Logger"
 import { defaultProfileData, type User } from "$lib/types"
 
 /**
@@ -33,14 +34,20 @@ class MultipassStore {
         if (multipass) {
             try {
                 await multipass.create_identity(username, passphrase)
-                await this.updateStatusMessage(statusMessage)
+                if (statusMessage.length > 0) {
+                    if (statusMessage.length > MAX_STATUS_MESSAGE_LENGTH) {
+                        log.warn(`Status message len is ${statusMessage.length}. Max is ${MAX_STATUS_MESSAGE_LENGTH}. Truncating to fit.`)
+                        statusMessage = statusMessage.substring(0, MAX_STATUS_MESSAGE_LENGTH)
+                    }
+                    await this.updateStatusMessage(statusMessage)
+                }
                 const identity = get(this.identity)
-                get(Store.state.logger).info(`New account created. \n
+                log.info(`New account created. \n
                 Username: ${identity?.username()} \n 
                 StatusMessage: ${identity?.status_message()} \n
                 Did Key: ${identity?.did_key()} \n`)
             } catch (error) {
-                get(Store.state.logger).error("Error creating identity: " + error)
+                log.error("Error creating identity: " + error)
             }
         }
     }
@@ -55,7 +62,7 @@ class MultipassStore {
 
         if (multipass) {
             try {
-                get(Store.state.logger).debug("Sending friend request to: " + did)
+                log.debug("Sending friend request to: " + did)
                 return success(await multipass.send_request(did))
             } catch (error) {
                 return failure(handleErrors(error))
@@ -77,7 +84,7 @@ class MultipassStore {
             try {
                 return success(await multipass.accept_request(did))
             } catch (error) {
-                get(Store.state.logger).error("Error accepting friend request: " + error)
+                log.error("Error accepting friend request: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -96,7 +103,7 @@ class MultipassStore {
             try {
                 return success(await multipass.deny_request(did))
             } catch (error) {
-                get(Store.state.logger).error("Error denying friend request: " + error)
+                log.error("Error denying friend request: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -115,7 +122,7 @@ class MultipassStore {
             try {
                 return success(await multipass.close_request(did))
             } catch (error) {
-                get(Store.state.logger).error("Error cancelling friend request: " + error)
+                log.error("Error canceling friend request: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -134,7 +141,7 @@ class MultipassStore {
                 let friends = await multipass.list_incoming_request()
                 return friends
             } catch (error) {
-                get(Store.state.logger).error("Error listing incoming friend requests: " + error)
+                log.error("Error listing incoming friend requests: " + error)
                 return []
             }
         }
@@ -152,7 +159,7 @@ class MultipassStore {
                 let friends = await multipass.list_outgoing_request()
                 return friends
             } catch (error) {
-                get(Store.state.logger).error("Error listing outgoing friend requests: " + error)
+                log.error("Error listing outgoing friend requests: " + error)
                 return []
             }
         }
@@ -170,7 +177,7 @@ class MultipassStore {
                 let blockedFriends = await multipass.block_list()
                 return blockedFriends
             } catch (error) {
-                get(Store.state.logger).error("Error listing blocked friends: " + error)
+                log.error("Error listing blocked friends: " + error)
                 return []
             }
         }
@@ -188,7 +195,7 @@ class MultipassStore {
                 let friends = await multipass.list_friends()
                 return friends
             } catch (error) {
-                get(Store.state.logger).error("Error listing friends: " + error)
+                log.error("Error listing friends: " + error)
                 return []
             }
         }
@@ -206,7 +213,7 @@ class MultipassStore {
             try {
                 return success(await multipass.remove_friend(did))
             } catch (error) {
-                get(Store.state.logger).error("Error removing friend: " + error)
+                log.error("Error removing friend: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -225,7 +232,7 @@ class MultipassStore {
             try {
                 return success(await multipass.block(did))
             } catch (error) {
-                get(Store.state.logger).error("Error blocking user: " + error)
+                log.error("Error blocking user: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -244,7 +251,7 @@ class MultipassStore {
             try {
                 return success(await multipass.unblock(did))
             } catch (error) {
-                get(Store.state.logger).error("Error unblocking user: " + error)
+                log.error("Error unblocking user: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -263,7 +270,7 @@ class MultipassStore {
                 const identity = await multipass.get_own_identity()
                 return success(identity)
             } catch (error) {
-                get(Store.state.logger).error("Error getting own identity: " + error)
+                log.error("Error getting own identity: " + error)
                 return failure(handleErrors(error))
             }
         }
@@ -351,7 +358,7 @@ class MultipassStore {
                     },
                 }
             } catch (error) {
-                console.log(`Coultn't fetch identity ${id}: ${error}`)
+                log.error(`Coultn't fetch identity ${id}: ${error}`)
             }
         }
         return undefined
@@ -368,11 +375,11 @@ class MultipassStore {
             try {
                 const updated_identity = await multipass.get_own_identity()
                 this.identity.update(() => updated_identity)
-                get(Store.state.logger).info(`Identity updated\n 
+                log.info(`Identity updated\n 
                   Username: ${updated_identity.username()} \n
                   StatusMessage: ${updated_identity.status_message()} \n`)
             } catch (error) {
-                get(Store.state.logger).error("Error updating identity: " + error)
+                log.error("Error updating identity: " + error)
             }
         }
     }
