@@ -1,6 +1,7 @@
 import { get, writable, type Writable } from "svelte/store"
 import { createPersistentState } from "../db/persistedState"
 import { getStateFromDB } from "../db/dbOperations"
+import { log } from "$lib/utils/Logger"
 
 export type Authentication = {
     pin: string
@@ -25,7 +26,10 @@ class Auth {
     }
 
     setStoredPin(pin: string) {
-        this.state.set({ pin: pin, scramblePin: true })
+        this.state.update(auth => { 
+            auth.pin = pin 
+            return auth
+        })
     }
 
     async getStoredPin(): Promise<string> {
