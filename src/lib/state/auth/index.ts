@@ -1,4 +1,6 @@
-import { writable, type Writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
+import { createPersistentState } from "../db/persistedState"
+import { getStateFromDB } from "../db/dbOperations"
 
 export type Authentication = {
     pin: string
@@ -9,10 +11,10 @@ class Auth {
     state: Writable<Authentication>
 
     constructor() {
-        this.state = writable({
+        this.state = createPersistentState<Authentication>("uplink.auth", {
             pin: "",
             scramblePin: false
-        })
+        })   
     }
 
     setScrambleValue(scramble: boolean) {
@@ -23,10 +25,17 @@ class Auth {
     }
 
     setStoredPin(pin: string) {
-        this.state.update(auth => { 
-            auth.pin = pin 
-            return auth
+        console.log("Setting pin: " + pin)
+        this.state.set({ pin: pin, scramblePin: true })
+    }
+
+    async getStoredPin(): Promise<string> {
+        let state = await getStateFromDB<Authentication>("uplink.auth", {
+            pin: "",
+            scramblePin: false
         })
+        console.log("Getting pin: " + state.pin)
+        return state.pin
     }
 }
 

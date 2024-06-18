@@ -7,8 +7,11 @@
     import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
+    import { RelayStore } from "$lib/state/wasm/relays"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { WarpStore } from "$lib/wasm/WarpStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
@@ -89,11 +92,20 @@
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
-    if (get(AuthStore.state).pin === "") {
-        console.log("Redirecting to /auth/unlock")
-        goto(Route.Unlock)
-    } 
+    async function checkIfUserIsLogged() {
+        let authPin = await AuthStore.getStoredPin()
+        if (authPin === "") {
+            goto(Route.Unlock)
+        } else {
+            let addressed = Object.values(get(RelayStore.state))
+                .filter(r => r.active)
+                .map(r => r.address)
+            await WarpStore.initWarpInstances(addressed)
+            await TesseractStoreInstance.unlock(authPin)
+        }
+    }
 
+    checkIfUserIsLogged()
 </script>
 
 <div id="app">
