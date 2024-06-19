@@ -7,6 +7,8 @@ export enum Sound {
     OutgoingCall = "/assets/mp3/outgoing-call.mp3",
     IncomingCall = "/assets/mp3/incoming-call.mp3",
     Request = "/assets/mp3/request.mp3",
+    Press = "/assets/mp3/press.mp3",
+    Release = "/assets/mp3/release.mp3"
 }
 
 let on: HTMLAudioElement = new Audio(Sound.On)
@@ -17,9 +19,11 @@ let notification: HTMLAudioElement = new Audio(Sound.Notification)
 let outgoingCall: HTMLAudioElement = new Audio(Sound.OutgoingCall)
 let incomingCall: HTMLAudioElement = new Audio(Sound.IncomingCall)
 let request: HTMLAudioElement = new Audio(Sound.Request)
+let press: HTMLAudioElement = new Audio(Sound.Press)
+let release: HTMLAudioElement = new Audio(Sound.Release)
 
 export class Sounds {
-    constructor() {}
+    constructor() { }
     static play(sound: Sound) {
         switch (sound) {
             case Sound.On:
@@ -46,6 +50,12 @@ export class Sounds {
             case Sound.Request:
                 this.request()
                 break
+            case Sound.Press:
+                this.press()
+                break
+            case Sound.Release:
+                this.release()
+                break
         }
     }
 
@@ -58,6 +68,8 @@ export class Sounds {
         incomingCall.pause()
         outgoingCall.pause()
         request.pause()
+        press.pause()
+        release.pause()
 
         on.currentTime = 0
         off.currentTime = 0
@@ -67,6 +79,8 @@ export class Sounds {
         incomingCall.currentTime = 0
         outgoingCall.currentTime = 0
         request.currentTime = 0
+        press.currentTime = 0
+        release.currentTime = 0
     }
 
     static on() {
@@ -107,5 +121,15 @@ export class Sounds {
     static request() {
         this.stopAll()
         request.play()
+    }
+
+    static press() {
+        this.stopAll()
+        press.play()
+    }
+
+    static release() {
+        this.stopAll()
+        release.play()
     }
 }

@@ -1,8 +1,10 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { Toasts } from "$lib/components"
+    import Key from "$lib/components/settings/Key.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
-    import { Font, KeybindAction, Route } from "$lib/enums"
+    import { Sound, Sounds } from "$lib/components/utils/Sounds"
+    import { Font, KeybindAction, KeybindState, Route } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
     import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/store"
@@ -29,6 +31,8 @@
 
     function handleKeybindMatch(event: CustomEvent<any>) {
         let keybind: Keybind = event.detail
+        let state: KeybindState = keybind.state
+
         switch (keybind.action) {
             case KeybindAction.IncreaseFontSize:
                 UIStore.increaseFontSize()
@@ -50,6 +54,34 @@
                 break
             case KeybindAction.FocusUplink:
                 log.info("todo")
+                break
+            case KeybindAction.PushToTalk:
+                Sounds.play(Sound.Press)
+                break
+            case KeybindAction.PushToMute:
+                Sounds.play(Sound.Press)
+                break
+            case KeybindAction.PushToDeafen:
+                Sounds.play(Sound.Press)
+                break
+            default:
+                console.warn("unhandled keybind", keybind)
+        }
+    }
+
+    function handleKeybindMatchRelease(event: CustomEvent<any>) {
+        let keybind: Keybind = event.detail
+        let state: KeybindState = keybind.state
+
+        switch (keybind.action) {
+            case KeybindAction.PushToTalk:
+                Sounds.play(Sound.Release)
+                break
+            case KeybindAction.PushToMute:
+                Sounds.play(Sound.Release)
+                break
+            case KeybindAction.PushToDeafen:
+                Sounds.play(Sound.Release)
                 break
             default:
                 log.warn(`unhandled keybind ${keybind}`)
@@ -112,7 +144,7 @@
     {@html `<style>${style}</style>`}
     {@html `<style>${cssOverride}</style>`}
     <!-- <Titlebar /> -->
-    <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} />
+    <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
     <Toasts />
     <slot></slot>
 </div>

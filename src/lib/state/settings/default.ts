@@ -36,6 +36,21 @@ export let defaultKeybinds = [
         key: "U",
         modifiers: ["shift", "ctrl"],
     },
+    {
+        action: KeybindAction.PushToTalk,
+        key: ".",
+        modifiers: [],
+    },
+    {
+        action: KeybindAction.PushToMute,
+        key: ".",
+        modifiers: ["ctrl"],
+    },
+    {
+        action: KeybindAction.PushToDeafen,
+        key: ",",
+        modifiers: [],
+    },
 ]
 
 export let defaultSettings = {
