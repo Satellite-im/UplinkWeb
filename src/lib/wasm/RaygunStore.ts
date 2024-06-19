@@ -73,6 +73,11 @@ export type ConversationSettings =
           }
       }
 
+export type FileAttachment = {
+    file: string
+    attachment?: ReadableStream
+}
+
 type Range = {
     start: any
     end: any
@@ -123,7 +128,7 @@ class RaygunStore {
     async addGroupParticipants(conversation_id: string, recipients: string[]) {
         return await this.get(r => {
             for (let recipient of recipients) {
-                //TODO. Not impl for wasm atm
+                r.add_recipient(conversation_id, recipient)
             }
             return conversation_id
         }, "Error adding participants")
@@ -132,7 +137,7 @@ class RaygunStore {
     async removeGroupParticipants(conversation_id: string, recipients: string[]) {
         return await this.get(r => {
             for (let recipient of recipients) {
-                //TODO. Not impl for wasm atm
+                r.remove_recipient(conversation_id, recipient)
             }
             return conversation_id
         }, "Error removing participants")
@@ -140,7 +145,7 @@ class RaygunStore {
 
     async updateConversationName(conversation_id: string, name: string) {
         return await this.get(r => {
-            //TODO. Not impl for wasm atm
+            r.update_conversation_name(conversation_id, name)
             return conversation_id
         }, "Error updating conversation name")
     }
@@ -248,21 +253,48 @@ class RaygunStore {
         }, "Error fetching pinned messages")
     }
 
-    // TODO wasm only supports plain message without attachments atm
-    async send(conversation_id: string, message: string[]): Promise<Result<WarpError, SendMessageResult>> {
+    async send(conversation_id: string, message: string[], attachments?: FileAttachment[]): Promise<Result<WarpError, SendMessageResult>> {
         return await this.get(async r => {
+            if (attachments) {
+                let result = await r.attach(
+                    conversation_id,
+                    undefined,
+                    attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
+                    message
+                )
+                return {
+                    message: result.get_file(),
+                    progress: result,
+                }
+            }
             return {
                 message: await r.send(conversation_id, message),
             }
         }, "Error sending message")
     }
 
-    // TODO wasm only supports plain message without attachments atm
-    async sendMultiple(conversation_ids: string[], message: string[]): Promise<Result<WarpError, MultiSendMessageResult[]>> {
+    async sendMultiple(conversation_ids: string[], message: string[], attachments?: FileAttachment[]): Promise<Result<WarpError, MultiSendMessageResult[]>> {
         return await this.get(async r => {
             let sent = []
             for (let conversation_id of conversation_ids) {
-                let res: MultiSendMessageResult = { chat: conversation_id, result: { message: await r.send(conversation_id, message) } }
+                let sendResult
+                if (attachments) {
+                    let result = await r.attach(
+                        conversation_id,
+                        undefined,
+                        attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
+                        message
+                    )
+                    sendResult = {
+                        message: result.get_file(),
+                        progress: result,
+                    }
+                } else {
+                    sendResult = {
+                        message: await r.send(conversation_id, message),
+                    }
+                }
+                let res: MultiSendMessageResult = { chat: conversation_id, result: sendResult }
                 sent.push(res)
             }
             return sent
@@ -273,8 +305,11 @@ class RaygunStore {
         return await this.get(r => r.edit(conversation_id, message_id, message), "Error editing message")
     }
 
-    // TODO wasm only supports plain message without attachments atm
-    async downloadAttachment(conversation_id: string, message_id: string, file: string, destination: string) {}
+    async downloadAttachment(conversation_id: string, message_id: string, file: string) {
+        return await this.get(async r => {
+            return r.download_stream(conversation_id, message_id, file)
+        }, `Error downloading attachment from ${conversation_id} for message ${message_id}`)
+    }
 
     async react(conversation_id: string, message_id: string, state: wasm.ReactionState, emoji: string) {
         let result = await this.get(r => r.react(conversation_id, message_id, state, emoji), "Error reacting to message")
