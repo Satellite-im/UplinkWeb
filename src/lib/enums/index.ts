@@ -130,8 +130,8 @@ export const enum KeybindAction {
     ToggleDevmode = "Toggle Developer Mode.",
     FocusUplink = "Hide/Focus Uplink.",
     PushToTalk = "Push to talk.",
-    PushToMute = "Hold to momentarily mute your microphone.",
-    PushToDeafen = "Push to silence incoming audio."
+    PushToMute = "Push to mute.",
+    PushToDeafen = "Push to deafen."
 }
 
 export const enum KeybindState {
