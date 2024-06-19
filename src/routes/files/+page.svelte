@@ -26,6 +26,7 @@
     import type { Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
+    import { getFileNameAndExtension, isImageFile } from "$lib/utils/FilesExtensions"
 
     initLocale()
 
@@ -155,7 +156,6 @@
             name: "",
             source: "",
             isRenaming: OperationState.Loading,
-            isRename: false,
             items: [],
             parentId: $currentFolderIdStore,
         }
@@ -241,7 +241,6 @@
         name: "",
         source: "",
         isRenaming: OperationState.Initial,
-        isRename: false,
         items: [],
     }
 
@@ -306,31 +305,23 @@
     function itemsToFileInfo(items: Item[]): FileInfo[] {
         let filesInfo: FileInfo[] = []
         items.forEach(item => {
+            let isImage = isImageFile(item.name())
+            let file = item.get_file()
             let newItem: FileInfo = {
                 id: item!.id(),
-                type: item.is_file() ? "file" : "folder",
+                type: isImage ? "image" : item.is_file() ? "file" : "folder",
                 icon: item.is_file() ? Shape.Document : Shape.Folder,
-                name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
+                name: item.is_file() ? getFileNameAndExtension(item.name()).name : item!.name(),
                 size: item!.size(),
+                thumbnail: isImage ? item.thumbnail_format() : Uint8Array.from([]),
                 isRenaming: OperationState.Initial,
-                isRename: false,
-                extension: item.is_file() ? splitFileName(item.name()).extension : "",
+                extension: item.is_file() ? getFileNameAndExtension(item.name()).extension : "",
                 source: "",
                 items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
             }
             filesInfo = [...filesInfo, newItem]
         })
         return filesInfo
-    }
-
-    function splitFileName(fileName: string): { name: string; extension: string } {
-        const lastDotIndex = fileName.lastIndexOf(".")
-        if (lastDotIndex === -1) {
-            return { name: fileName, extension: "" }
-        }
-        const name = fileName.substring(0, lastDotIndex)
-        const extension = fileName.substring(lastDotIndex + 1)
-        return { name, extension }
     }
 
     async function getCurrentDirectoryFiles() {
@@ -379,6 +370,9 @@
                 const file = target.files[i]
                 const stream = file.stream()
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
+                result.onSuccess(() => {
+                    Store.addToastNotification(new ToastMessage("", "File uploaded successfully", 1))
+                })
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 2))
                 })
@@ -700,6 +694,7 @@
                             filesize={item.size}
                             name={item.name}
                             ImgSource={item.source}
+                            thumbnail={item.thumbnail}
                             on:click={_ => {
                                 previewImage = item.source
                             }} />
