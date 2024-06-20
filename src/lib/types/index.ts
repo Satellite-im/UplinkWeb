@@ -210,7 +210,6 @@ export type FileInfo = {
     name: string
     source: string
     isRenaming: OperationState
-    isRename: boolean
     extension?: string
     items?: FileInfo[]
     parentId?: string
@@ -267,6 +266,6 @@ export type Transaction = {
 export type Keybind = {
     action: KeybindAction
     key: string
-    modifiers: string[],
+    modifiers: string[]
     state: KeybindState
 }
