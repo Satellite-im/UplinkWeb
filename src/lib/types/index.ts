@@ -208,6 +208,7 @@ export type FileInfo = {
     type: string
     size: number
     name: string
+    remotePath: string
     source: string
     isRenaming: OperationState
     extension?: string
