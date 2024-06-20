@@ -6,6 +6,9 @@ import { failure, success, type Result } from "$lib/utils/Result"
 import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
 
+
+
+
 /**
  * A class that provides various methods to interact with a ConstellationBox.
  */
@@ -199,6 +202,33 @@ class ConstellationStore {
     private isValidFormat(path: string): boolean {
         const regex = /^\/[a-zA-Z0-9]+\/$/
         return regex.test(path)
+    }
+
+
+    async downloadFile(fileName: string): Promise<Result<WarpError, Blob>> {
+        const constellation = get(this.constellationWritable);
+        if (constellation) {
+            try {
+                let get_stream_async_iterator = await constellation.get_stream(fileName)
+                let get_stream = { [Symbol.asyncIterator]() { return get_stream_async_iterator } }
+                
+                const chunks = []
+                try {
+                    for await (const value of get_stream) {
+                        if (value.Ok != null) {
+                            chunks.push(Buffer.from(value.Ok))
+                        }
+                    }
+                } finally  {
+                    const combinedArray = Buffer.concat(chunks)
+                    const blob = new Blob([new Uint8Array(combinedArray)], { type: 'application/octet-stream' })
+                    return success(blob)
+                }
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 }
 
