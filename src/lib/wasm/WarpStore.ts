@@ -58,8 +58,8 @@ class Store {
         // This is a temporary solution
         // Run this command on Warp repo to start a relay server:
         // cargo run --bin relay-server --release -- --listen-addr /ip4/127.0.0.1/tcp/4444/ws --keyfile /tmp/key.bin
-        // Uncomment code below to use your local relay server
-        // And comment line 52
+        // Uncomment code below to use your local relay server - line 63
+        // And comment line 64
         // return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(["your-relay-address"]), tesseract)) as wasm.WarpInstance;
         return (await new wasm.WarpIpfs(wasm.Config.minimal_testing())) as wasm.WarpInstance;
     }

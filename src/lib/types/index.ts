@@ -211,7 +211,6 @@ export type FileInfo = {
     remotePath: string
     source: string
     isRenaming: OperationState
-    isRename: boolean
     extension?: string
     items?: FileInfo[]
     parentId?: string
