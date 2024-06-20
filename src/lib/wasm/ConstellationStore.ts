@@ -209,26 +209,26 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable);
         if (constellation) {
             try {
-                let get_stream_async_iterator = await constellation.get_stream(fileName);
-                let get_stream = { [Symbol.asyncIterator]() { return get_stream_async_iterator } };
+                let get_stream_async_iterator = await constellation.get_stream(fileName)
+                let get_stream = { [Symbol.asyncIterator]() { return get_stream_async_iterator } }
                 
-                const chunks = [];
+                const chunks = []
                 try {
                     for await (const value of get_stream) {
                         if (value.Ok != null) {
-                            chunks.push(Buffer.from(value.Ok));
+                            chunks.push(Buffer.from(value.Ok))
                         }
                     }
                 } finally  {
-                    const combinedArray = Buffer.concat(chunks);
-                    const blob = new Blob([new Uint8Array(combinedArray)], { type: 'application/octet-stream' });
-                    return success(blob);
+                    const combinedArray = Buffer.concat(chunks)
+                    const blob = new Blob([new Uint8Array(combinedArray)], { type: 'application/octet-stream' })
+                    return success(blob)
                 }
             } catch (error) {
-                return failure(handleErrors(error));
+                return failure(handleErrors(error))
             }
         }
-        return failure(WarpError.CONSTELLATION_NOT_FOUND);
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 }
 
