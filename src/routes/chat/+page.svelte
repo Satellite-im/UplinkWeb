@@ -6,7 +6,7 @@
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
-    import { Chatbar, Sidebar, Slimbar, Topbar, Profile } from "$lib/layouts"
+    import { Chatbar, Sidebar, Topbar, Profile } from "$lib/layouts"
     import {
         FileEmbed,
         PopupButton,
@@ -269,8 +269,6 @@
     {/if}
 
     <!-- Sidebar -->
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
-
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={() => search_component.select_first()}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <!--
@@ -474,9 +472,9 @@
                 {/if}
             {:else}
                 <div class="add-someone" data-cy="section-add-someone">
-                    <img src="/assets/mascot/better_with_friends.webp" style="max-width: 350px;" alt="Better with friends!" />
+                    <img src="/assets/mascot/better_with_friends.webp" class="better-with-friends" alt="Better with friends!" />
                     <Text>Let's get something started!</Text>
-                    <Text muted>You don't have any active chats yet, click the button below to head to the friends page to start one.</Text>
+                    <Text muted centered>You don't have any active chats yet, click the button below to head to the friends page to start one.</Text>
                     <Button hook="button-add-friends" appearance={Appearance.Primary} text="Add Friends" on:click={_ => goto(Route.Friends)}>
                         <Icon icon={Shape.Users} />
                     </Button>
@@ -549,6 +547,7 @@
             flex-direction: column;
             flex: 1;
             transition: all var(--animation-duration);
+            min-width: 0;
 
             .add-someone {
                 position: absolute;
@@ -642,6 +641,14 @@
                             right top 15px;
                     }
                 }
+            }
+        }
+    }
+
+    @media (min-width: 450px) {
+        .add-someone {
+            :global(.better-with-friends) {
+                max-width: 100%;
             }
         }
     }

@@ -4,7 +4,6 @@
     import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { _ } from "svelte-i18n"
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
@@ -198,11 +197,11 @@
                     }
                     return item.id === currArray[0].parentId
                 })
-                if (newFolders[i].length === 0 ) {
+                if (newFolders[i].length === 0) {
                     if (parentItem && parentItem.items) {
-                            currArray = [...parentItem.items]
+                        currArray = [...parentItem.items]
                     }
-                        }
+                }
                 if (parentItem && parentItem.items) {
                     newFolders[i] = [...parentItem.items]
                 }
@@ -472,7 +471,6 @@
         </Modal>
     {/if}
 
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>
@@ -526,25 +524,18 @@
     </Sidebar>
     <div class="content">
         <Topbar>
-            <div slot="before" class="before flex-column">
-                <Label text="Quick Actions" />
-                <div class="actions">
-                    <Button appearance={Appearance.Alt} text="Sync">
+            <div slot="controls" class="before flex-column">
+                <Controls>
+                    <Button appearance={Appearance.Alt} text="Sync" disabled>
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Gift Space">
-                        <Icon icon={Shape.Gift} />
-                    </Button>
-                    <Button appearance={Appearance.Alt} text="Rent Space">
-                        <Icon size={Size.Large} icon={Shape.Starlight} />
-                    </Button>
-                    <Button appearance={Appearance.Alt} text="Create Node">
+                    <Button appearance={Appearance.Alt} text="Create Node" disabled hideTextOnMobile>
                         <Icon icon={Shape.Info} />
                     </Button>
-                </div>
+                </Controls>
             </div>
         </Topbar>
-        <Topbar>
+        <Topbar hideSidebarToggle>
             <div slot="before" class="before">
                 <button class="stat">
                     <Label text="Free Space" /><Text singleLine>
@@ -554,16 +545,6 @@
                 <button class="stat">
                     <Label text="Total Space" /><Text singleLine>
                         {prettyBytes(13223423884917234002)}
-                    </Text>
-                </button>
-                <button class="stat">
-                    <Label text="Sync Size" /><Text singleLine>
-                        {prettyBytes(38481083182)}
-                    </Text>
-                </button>
-                <button class="stat">
-                    <Label text="Shuttle" /><Text singleLine>
-                        {prettyBytes(12345344)}
                     </Text>
                 </button>
             </div>
@@ -585,7 +566,7 @@
             </svelte:fragment>
         </Topbar>
         <div class="folder-back">
-            <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+            <Button appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -745,6 +726,7 @@
             flex: 1;
             overflow: hidden;
             width: 100%;
+            min-width: 0;
 
             .before {
                 gap: var(--gap-less);

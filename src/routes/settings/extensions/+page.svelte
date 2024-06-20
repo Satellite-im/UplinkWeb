@@ -47,6 +47,7 @@
             height: 100%;
             align-items: center;
             justify-content: center;
+            min-width: 0;
         }
     }
 </style>

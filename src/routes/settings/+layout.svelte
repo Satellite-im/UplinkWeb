@@ -5,7 +5,6 @@
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { SettingsStore } from "$lib/state"
     import { UIStore } from "$lib/state/ui"
     import type { ContextItem, NavRoute } from "$lib/types"
@@ -148,22 +147,20 @@
                         icon: Shape.Code,
                         name: "Developer",
                     },
-                ]);
+                ])
             }
         } else {
-            settingsRoutes.update(routes =>
-                routes.filter(route => route.to !== SettingsRoute.Developer)
-            );
+            settingsRoutes.update(routes => routes.filter(route => route.to !== SettingsRoute.Developer))
         }
-    });
+    })
 
     onMount(() => {
         // Ensure settingsRoutes is reactive
         const unsubscribe = settingsRoutes.subscribe(routes => {
             setRoutes = routes
-        });
-        return () => unsubscribe();
-    });
+        })
+        return () => unsubscribe()
+    })
 </script>
 
 <div id="settings">
@@ -171,7 +168,6 @@
     <!-- Unused atm -->
     <!-- <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} /> -->
 
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
         <Navigation
             routes={setRoutes}

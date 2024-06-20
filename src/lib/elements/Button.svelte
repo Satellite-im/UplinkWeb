@@ -16,6 +16,7 @@
     export let small: boolean = false
     export let fill: boolean = false
     export let hook: string = ""
+    export let hideTextOnMobile: boolean = false
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -46,7 +47,7 @@
         <slot></slot>
     {/if}
     {#if text.length > 0}
-        <Text loading={loading} appearance={outline ? appearance : Appearance.Alt}>{text}</Text>
+        <Text class={hideTextOnMobile ? "hidden-text" : ""} loading={loading} appearance={outline ? appearance : Appearance.Alt}>{text}</Text>
     {/if}
 </button>
 
@@ -253,6 +254,13 @@
             box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color) inset;
             outline: none;
             border: var(--border-width) solid var(--focus-color);
+        }
+    }
+    @media (max-width: 450px) {
+        .button {
+            :global(.hidden-text) {
+                display: none;
+            }
         }
     }
 </style>

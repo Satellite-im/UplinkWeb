@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
     import { ChatPreview, ContextMenu, Modal } from "$lib/components"
-    import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
+    import { Sidebar, Topbar } from "$lib/layouts"
     import { Appearance, MessageDirection, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
@@ -204,7 +204,6 @@
             </div>
         </Modal>
     {/if}
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends}>
         <!--
             <Button hook="button-marketplace" outline appearance={Appearance.Alt} text={$_("market.market")}>
@@ -246,10 +245,10 @@
                 <Button appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
                     <Icon icon={Shape.Users} />
                 </Button>
-                <Button appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")}>
+                <Button appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
                     <Icon icon={Shape.ArrowsLeftRight} />
                 </Button>
-                <Button appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")}>
+                <Button appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")} hideTextOnMobile>
                     <Icon icon={Shape.NoSymbol} />
                 </Button>
             </svelte:fragment>
@@ -463,6 +462,7 @@
             display: flex;
             flex-direction: column;
             flex: 1;
+            min-width: 0;
 
             .body {
                 width: 100%;
