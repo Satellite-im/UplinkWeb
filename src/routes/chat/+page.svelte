@@ -47,6 +47,8 @@
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
+    import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
+    import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
 
     initLocale()
 
@@ -471,6 +473,11 @@
                             {/each}
                         </MessageGroup>
                     {/each}
+                    <PendingMessageGroup>
+                        {#each Object.values(conversation.pending_messages) as pending, idx}
+                            <PendingMessage message={pending} position={idx === 0 ? MessagePosition.First : idx === Object.values(conversation.pending_messages).length - 1 ? MessagePosition.Last : MessagePosition.Middle}></PendingMessage>
+                        {/each}
+                    </PendingMessageGroup>
                 {/if}
             {:else}
                 <div class="add-someone" data-cy="section-add-someone">

@@ -1,4 +1,4 @@
-import type { MessageGroup, Chat, Message } from "$lib/types"
+import type { MessageGroup, Chat, Message, Attachment, PendingMessage, FileProgress } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
@@ -10,6 +10,7 @@ import { UIStore } from "../ui"
 export type ConversationMessages = {
     id: string
     messages: MessageGroup[]
+    pending_messages: { [id: string]: PendingMessage }
 }
 
 class Conversations {
@@ -38,7 +39,6 @@ class Conversations {
 
         if (message.id === "") message.id = uuidv4()
 
-        console.log("adding msg ", conversationIndex)
         if (conversationIndex !== -1) {
             const conversation = conversations[conversationIndex]
             const lastGroup = conversation.messages[conversation.messages.length - 1]
@@ -62,6 +62,7 @@ class Conversations {
                         messages: [message],
                     },
                 ],
+                pending_messages: {},
             }
             conversations.push(newConversation)
         }
@@ -213,11 +214,95 @@ class Conversations {
         return null
     }
 
+    async addPendingMessages(chat: string, messageId: string, message: string[]) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat)
+
+        if (conversation) {
+            conversation.pending_messages[messageId] = {
+                message: {
+                    id: messageId,
+                    at: new Date(),
+                    text: message,
+                },
+                attachmentProgress: {},
+            }
+            this.conversations.set(conversations)
+        } else {
+            const newConversation: ConversationMessages = {
+                id: chat,
+                messages: [],
+                pending_messages: {
+                    messageId: {
+                        message: {
+                            id: messageId,
+                            at: new Date(),
+                            text: message,
+                        },
+                        attachmentProgress: {},
+                    },
+                },
+            }
+            conversations.push(newConversation)
+        }
+    }
+
+    async updatePendingMessages(chat: string, message: string, progress: FileProgress) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat)
+
+        if (conversation) {
+            conversation.pending_messages[message].attachmentProgress[progress.name] = progress
+            this.conversations.set(conversations)
+        }
+    }
+
+    async removePendingMessages(chat: string, message: string) {
+        const conversations = get(this.conversations)
+        const conversation = conversations.find(c => c.id === chat)
+
+        if (conversation) {
+            delete conversation.pending_messages[message]
+            this.conversations.set(conversations)
+        }
+    }
+
     async loadMockData() {
         const firstChatId = get(this.conversations)[0].id
         const initialData: ConversationMessages = {
             id: firstChatId,
             messages: mock_messages,
+            pending_messages: {
+                mock_id: {
+                    message: {
+                        id: "mock_id",
+                        at: new Date(),
+                        text: ["Hello, world!"],
+                    },
+                    attachmentProgress: {
+                        test: {
+                            name: "filea",
+                            size: 5,
+                            total: 10,
+                            constellation: false,
+                        },
+                        testa: {
+                            name: "fileb",
+                            size: 10,
+                            total: 10,
+                            done: true,
+                            constellation: false,
+                        },
+                        testb: {
+                            name: "filec",
+                            size: 10,
+                            total: 10,
+                            constellation: false,
+                            error: "upload failed",
+                        },
+                    },
+                },
+            },
         }
         this.conversations.update(currentConversations => {
             const index = currentConversations.findIndex(c => c.id === firstChatId)

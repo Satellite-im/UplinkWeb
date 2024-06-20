@@ -15,7 +15,7 @@ import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
 
 const MAX_PINNED_MESSAGES = 100
-
+// Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
           type: "MostRecent"
@@ -181,8 +181,8 @@ class RaygunStore {
 
     async listConversations(): Promise<Result<WarpError, Chat[]>> {
         return this.get(async r => {
-            let convs = (await r.list_conversations()) as wasm.Conversation[]
-            return await Promise.all(convs.map(c => this.convertWarpConversation(c, r)))
+            let convs: { inner: wasm.Conversation }[] = await r.list_conversations()
+            return await Promise.all(convs.map(c => this.convertWarpConversation(c.inner, r)))
         }, `Error fetching conversations`)
     }
 
@@ -381,11 +381,11 @@ class RaygunStore {
     }
 
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
-        let conversations: wasm.Conversation[] = await raygun.list_conversations()
+        let conversations: { inner: wasm.Conversation }[] = await raygun.list_conversations()
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations) {
-            let handler = await this.createConversationEventHandler(raygun, conversation.id())
-            handlers[conversation.id()] = handler
+            let handler = await this.createConversationEventHandler(raygun, conversation.inner.id())
+            handlers[conversation.inner.id()] = handler
         }
         this.messageListeners.set(handlers)
     }
@@ -400,11 +400,12 @@ class RaygunStore {
             }
             for await (const value of listener) {
                 let event = parseJSValue(value)
-                log.info(`Handling messarge event: ${JSON.stringify(event)}`)
+                log.info(`Handling message event: ${JSON.stringify(event)}`)
                 switch (event.type) {
                     case "message_sent": {
                         let conversation_id: string = event.values["conversation_id"]
                         let message_id: string = event.values["message_id"]
+                        ConversationStore.removePendingMessages(conversation_id, message_id)
                         // Needs a delay because raygun does not contain the sent message yet
                         await new Promise(f => setTimeout(f, 10))
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
