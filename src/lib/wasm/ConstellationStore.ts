@@ -205,12 +205,11 @@ class ConstellationStore {
     }
 
 
-    async downloadFile(remotePath: string): Promise<Result<WarpError, Blob>> {
+    async downloadFile(fileName: string): Promise<Result<WarpError, Blob>> {
         const constellation = get(this.constellationWritable);
         if (constellation) {
             try {
-                console.log(remotePath);
-                let get_stream_async_iterator = await constellation.get_stream(remotePath);
+                let get_stream_async_iterator = await constellation.get_stream(fileName);
                 let get_stream = { [Symbol.asyncIterator]() { return get_stream_async_iterator } };
                 
                 const chunks = [];

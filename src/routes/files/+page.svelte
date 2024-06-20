@@ -436,8 +436,8 @@
         )
     }
 
-    async function downloadFile(remotePath: string, fileName: string) {
-        let result = await ConstellationStoreInstance.downloadFile(remotePath)
+    async function downloadFile(fileName: string) {
+        let result = await ConstellationStoreInstance.downloadFile(fileName)
         result.fold(
             err => {
                 Store.addToastNotification(new ToastMessage("", err, 2))
@@ -642,7 +642,7 @@
                                     text: "Download",
                                     appearance: Appearance.Default,
                                     onClick: async () => {
-                                        downloadFile(item.remotePath, `${item.name}.${item.extension}`)
+                                        downloadFile(`/${item.name}.${item.extension}`)
                                     },
                                 },
                                 {
