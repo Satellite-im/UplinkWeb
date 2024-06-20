@@ -152,6 +152,7 @@
             type: "folder",
             size: 0,
             icon: Shape.Folder,
+            remotePath: "",
             name: "",
             source: "",
             isRenaming: OperationState.Loading,
@@ -238,6 +239,7 @@
         type: "",
         size: 0,
         icon: Shape.Folder,
+        remotePath: "",
         name: "",
         source: "",
         isRenaming: OperationState.Initial,
@@ -312,6 +314,7 @@
                 icon: item.is_file() ? Shape.Document : Shape.Folder,
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
+                remotePath: item!.path(),
                 isRenaming: OperationState.Initial,
                 isRename: false,
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
@@ -429,6 +432,25 @@
                     }
                     return file
                 })
+            }
+        )
+    }
+
+    async function downloadFile(remotePath: string, fileName: string) {
+        let result = await ConstellationStoreInstance.downloadFile(remotePath)
+        result.fold(
+            err => {
+                Store.addToastNotification(new ToastMessage("", err, 2))
+            },
+            blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
             }
         )
     }
@@ -599,15 +621,6 @@
                             }}
                             items={[
                                 {
-                                    id: "delete-" + item.id,
-                                    icon: Shape.XMark,
-                                    text: "Delete",
-                                    appearance: Appearance.Default,
-                                    onClick: () => {
-                                        deleteItem(item.name)
-                                    },
-                                },
-                                {
                                     id: `rename-${item.id}`,
                                     icon: Shape.Pencil,
                                     text: "Rename",
@@ -621,6 +634,24 @@
                                             }
                                             return file
                                         })
+                                    },
+                                },
+                                {
+                                    id: "download-" + item.id,
+                                    icon: Shape.ArrowDown,
+                                    text: "Download",
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        downloadFile(item.remotePath, `${item.name}.${item.extension}`)
+                                    },
+                                },
+                                {
+                                    id: "delete-" + item.id,
+                                    icon: Shape.Trash,
+                                    text: "Delete",
+                                    appearance: Appearance.Error,
+                                    onClick: () => {
+                                        deleteItem(item.name)
                                     },
                                 },
                             ]}>
