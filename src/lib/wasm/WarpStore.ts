@@ -1,7 +1,6 @@
-import { createPersistentState } from "$lib/state/db/persistedState";
 import init, * as wasm from "warp-wasm";
 import type { IWarp } from "./IWarp";
-import { get } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 /**
  * Class representing the Store, which manages the state and interactions with Warp instances.
@@ -14,10 +13,10 @@ class Store {
      */
     constructor() {
         this.warp = {
-            tesseract: createPersistentState("warp.tesseract", null),
-            multipass: createPersistentState("warp.multipass", null),
-            raygun: createPersistentState("warp.raygun", null),
-            constellation: createPersistentState("warp.constellation", null),
+            tesseract: writable<wasm.Tesseract | null>(null),
+            multipass: writable<wasm.MultiPassBox | null>(null),
+            raygun: writable<wasm.RayGunBox | null>(null),
+            constellation: writable<wasm.ConstellationBox | null>(null),
         }
     }
 
@@ -61,7 +60,7 @@ class Store {
         // Uncomment code below to use your local relay server - line 63
         // And comment line 64
         // return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(["your-relay-address"]), tesseract)) as wasm.WarpInstance;
-        return (await new wasm.WarpIpfs(wasm.Config.minimal_testing())) as wasm.WarpInstance;
+        return (await new wasm.WarpIpfs(wasm.Config.minimal_basic())) as wasm.WarpInstance;
     }
 }
 
