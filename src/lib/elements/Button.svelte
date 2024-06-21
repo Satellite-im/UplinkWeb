@@ -257,7 +257,7 @@
             border: var(--border-width) solid var(--focus-color);
         }
     }
-    @media (max-width: 450px) {
+    @media (max-width: 800px) {
         .button {
             &.hidden-text {
                 min-width: unset;

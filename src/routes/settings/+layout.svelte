@@ -202,9 +202,15 @@
         .content {
             flex: 1;
             min-width: 0;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
 
             .slot {
-                padding: var(--padding);
+                width: 100%;
+                display: inline-flex;
+                flex-direction: column;
+                gap: var(--gap);
             }
         }
     }
