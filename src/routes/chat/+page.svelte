@@ -645,9 +645,15 @@
         }
     }
 
-    @media (min-width: 450px) {
+    .add-someone {
+        .better-with-friends {
+            max-width: 400px;
+        }
+    }
+
+    @media (max-width: 800px) {
         .add-someone {
-            :global(.better-with-friends) {
+            .better-with-friends {
                 max-width: 100%;
             }
         }

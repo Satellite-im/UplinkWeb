@@ -59,7 +59,7 @@
         }
     }
 
-    @media (min-width: 450px) {
+    @media (min-width: 800px) {
         .topbar {
             :global(.sidebar-toggle-ext) {
                 display: none;

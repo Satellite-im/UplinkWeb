@@ -1,3 +1,3 @@
 export function checkMobile(): boolean {
-    return window.matchMedia("screen and (max-width: 480px)").matches
+    return window.matchMedia("screen and (max-width: 800px)").matches
 }

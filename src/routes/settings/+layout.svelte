@@ -5,9 +5,11 @@
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
+    import Topbar from "$lib/layouts/Topbar.svelte"
     import { SettingsStore } from "$lib/state"
     import { UIStore } from "$lib/state/ui"
     import type { ContextItem, NavRoute } from "$lib/types"
+    import { checkMobile } from "$lib/utils/Mobile"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
     import { get, writable, type Writable } from "svelte/store"
@@ -180,7 +182,12 @@
     </Sidebar>
 
     <div class="content">
-        <slot></slot>
+        {#if checkMobile()}
+            <Topbar />
+        {/if}
+        <div class="slot">
+            <slot></slot>
+        </div>
     </div>
 </div>
 
@@ -194,7 +201,11 @@
 
         .content {
             flex: 1;
-            padding: var(--padding);
+            min-width: 0;
+
+            .slot {
+                padding: var(--padding);
+            }
         }
     }
 </style>

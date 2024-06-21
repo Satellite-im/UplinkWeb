@@ -105,8 +105,12 @@
         }
     }
 
-    @media (max-width: 430px) {
+    @media (max-width: 800px) {
+        .sidebar-layout {
+            min-width: 100%;
+        }
         .sidebar-layout.closed {
+            min-width: 0;
             :global(.slimbar) {
                 display: none;
             }
