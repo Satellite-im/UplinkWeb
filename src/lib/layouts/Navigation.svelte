@@ -1,7 +1,9 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
     import { Appearance, Route, SettingsRoute } from "$lib/enums"
+    import { UIStore } from "$lib/state/ui"
     import type { NavRoute } from "$lib/types"
+    import { checkMobile } from "$lib/utils/Mobile"
     import { createEventDispatcher } from "svelte"
 
     export let routes: NavRoute[] = []
@@ -11,6 +13,7 @@
 
     const dispatch = createEventDispatcher()
     function handleNavigate(route: NavRoute) {
+        if (checkMobile()) UIStore.state.sidebarOpen.set(false)
         dispatch("navigate", route.to.toString())
     }
 </script>

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte"
     import { Appearance, TooltipPosition } from "../enums/index"
 
     import { Loader, Text } from "./"
@@ -35,7 +34,9 @@
 </script>
 
 <button
-    class="button {fill ? 'fill' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip ? 'tooltip ' + tooltipPositionClass() : ''} {small ? 'small' : ''} {clazz || ''}"
+    class="button {fill ? 'fill' : ''} {hideTextOnMobile ? 'hidden-text' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip
+        ? 'tooltip ' + tooltipPositionClass()
+        : ''} {small ? 'small' : ''} {clazz || ''}"
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
@@ -258,6 +259,14 @@
     }
     @media (max-width: 450px) {
         .button {
+            &.hidden-text {
+                min-width: unset;
+                padding: unset;
+                min-width: var(--input-height);
+                min-height: var(--input-height);
+                max-width: var(--input-height);
+                max-height: var(--input-height);
+            }
             :global(.hidden-text) {
                 display: none;
             }
