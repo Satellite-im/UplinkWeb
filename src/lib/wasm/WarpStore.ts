@@ -61,7 +61,7 @@ class Store {
         // Uncomment code below to use your local relay server - line 63
         // And comment line 64
         // return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(["your-relay-address"]), tesseract)) as wasm.WarpInstance;
-        return (await new wasm.WarpIpfs(wasm.Config.minimal_testing())) as wasm.WarpInstance;
+        return (await new wasm.WarpIpfs(wasm.Config.minimal_basic())) as wasm.WarpInstance;
     }
 }
 
