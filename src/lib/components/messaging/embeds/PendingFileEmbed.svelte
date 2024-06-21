@@ -10,11 +10,13 @@
     export let onCancel: () => void = () => {}
 
     function getPercentage(fileInfo: FileProgress) {
-        return `${(fileInfo.size / fileInfo.total) * 100}`
+        return fileInfo.total ? `${(fileInfo.size / fileInfo.total) * 100}` : 0
     }
 
     function getSizeString(fileInfo: FileProgress) {
-        return fileInfo.error ? fileInfo.error : `${prettyBytes(fileInfo.total)}`
+        if (fileInfo.error) return fileInfo.error
+        if (fileInfo.total) return `${prettyBytes(fileInfo.total)}`
+        return ""
     }
 </script>
 

@@ -101,6 +101,10 @@
     ConversationStore.conversations.subscribe(_ => {
         conversation = ConversationStore.getConversation(activeChat)
     })
+    let pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
+    ConversationStore.pendingMsgConversations.subscribe(_ => {
+        pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
+    })
 
     function dragEnter(event: DragEvent) {
         event.preventDefault()
@@ -474,8 +478,8 @@
                         </MessageGroup>
                     {/each}
                     <PendingMessageGroup>
-                        {#each Object.values(conversation.pending_messages) as pending, idx}
-                            <PendingMessage message={pending} position={idx === 0 ? MessagePosition.First : idx === Object.values(conversation.pending_messages).length - 1 ? MessagePosition.Last : MessagePosition.Middle}></PendingMessage>
+                        {#each pendingMessages as pending, idx}
+                            <PendingMessage message={pending} position={idx === 0 ? MessagePosition.First : idx === pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}></PendingMessage>
                         {/each}
                     </PendingMessageGroup>
                 {/if}

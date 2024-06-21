@@ -266,9 +266,7 @@ export type FileProgress = {
     // The current progressed size of the file
     size: number
     // The total size of the file
-    total: number
-    // If true this file came from constellation. Else it came from an filestream
-    constellation: boolean
+    total?: number
     // Call this to abort the progress
     cancellation?: Cancellable
     // If true the progress has been finished

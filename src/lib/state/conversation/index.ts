@@ -10,14 +10,16 @@ import { UIStore } from "../ui"
 export type ConversationMessages = {
     id: string
     messages: MessageGroup[]
-    pending_messages: { [id: string]: PendingMessage }
 }
 
 class Conversations {
     conversations: Writable<ConversationMessages[]>
+    // We use a new writable so they dont get saved to db
+    pendingMsgConversations: Writable<{ [conversation: string]: { [id: string]: PendingMessage } }>
 
     constructor() {
         this.conversations = writable([])
+        this.pendingMsgConversations = writable({})
         this.loadConversations()
     }
 
@@ -62,7 +64,6 @@ class Conversations {
                         messages: [message],
                     },
                 ],
-                pending_messages: {},
             }
             conversations.push(newConversation)
         }
@@ -214,12 +215,18 @@ class Conversations {
         return null
     }
 
-    async addPendingMessages(chat: string, messageId: string, message: string[]) {
-        const conversations = get(this.conversations)
-        const conversation = conversations.find(c => c.id === chat)
+    getPendingMessages(chat: Chat | string) {
+        let chatId = typeof chat === "string" ? chat : chat.id
+        let msgs = get(this.pendingMsgConversations)[chatId]
+        return msgs ? msgs : {}
+    }
+
+    addPendingMessages(chat: string, messageId: string, message: string[]) {
+        const conversations = get(this.pendingMsgConversations)
+        const conversation = conversations[chat]
 
         if (conversation) {
-            conversation.pending_messages[messageId] = {
+            conversation[messageId] = {
                 message: {
                     id: messageId,
                     at: new Date(),
@@ -227,43 +234,41 @@ class Conversations {
                 },
                 attachmentProgress: {},
             }
-            this.conversations.set(conversations)
+            this.pendingMsgConversations.set(conversations)
         } else {
-            const newConversation: ConversationMessages = {
-                id: chat,
-                messages: [],
-                pending_messages: {
-                    messageId: {
-                        message: {
-                            id: messageId,
-                            at: new Date(),
-                            text: message,
-                        },
-                        attachmentProgress: {},
+            conversations[chat] = {
+                [messageId]: {
+                    message: {
+                        id: messageId,
+                        at: new Date(),
+                        text: message,
                     },
+                    attachmentProgress: {},
                 },
             }
-            conversations.push(newConversation)
+            this.pendingMsgConversations.set(conversations)
         }
     }
 
-    async updatePendingMessages(chat: string, message: string, progress: FileProgress) {
-        const conversations = get(this.conversations)
-        const conversation = conversations.find(c => c.id === chat)
+    updatePendingMessages(chat: string, messageId: string, file: string, update: (progress: FileProgress | undefined) => FileProgress | undefined) {
+        const conversations = get(this.pendingMsgConversations)
+        const conversation = conversations[chat]
 
         if (conversation) {
-            conversation.pending_messages[message].attachmentProgress[progress.name] = progress
-            this.conversations.set(conversations)
+            let current: FileProgress | undefined = update(conversation[messageId].attachmentProgress[file])
+            if (current) {
+                conversation[messageId].attachmentProgress[file] = current
+            }
+            this.pendingMsgConversations.set(conversations)
         }
     }
 
-    async removePendingMessages(chat: string, message: string) {
-        const conversations = get(this.conversations)
-        const conversation = conversations.find(c => c.id === chat)
-
+    removePendingMessages(chat: string, messageId: string) {
+        const conversations = get(this.pendingMsgConversations)
+        const conversation = conversations[chat]
         if (conversation) {
-            delete conversation.pending_messages[message]
-            this.conversations.set(conversations)
+            delete conversation[messageId]
+            this.pendingMsgConversations.set(conversations)
         }
     }
 
@@ -272,7 +277,18 @@ class Conversations {
         const initialData: ConversationMessages = {
             id: firstChatId,
             messages: mock_messages,
-            pending_messages: {
+        }
+        this.conversations.update(currentConversations => {
+            const index = currentConversations.findIndex(c => c.id === firstChatId)
+            if (index !== -1) {
+                currentConversations[index] = initialData
+            } else {
+                currentConversations.push(initialData)
+            }
+            return currentConversations
+        })
+        this.pendingMsgConversations.set({
+            [firstChatId]: {
                 mock_id: {
                     message: {
                         id: "mock_id",
@@ -284,34 +300,22 @@ class Conversations {
                             name: "filea",
                             size: 5,
                             total: 10,
-                            constellation: false,
                         },
                         testa: {
                             name: "fileb",
                             size: 10,
                             total: 10,
                             done: true,
-                            constellation: false,
                         },
                         testb: {
                             name: "filec",
                             size: 10,
                             total: 10,
-                            constellation: false,
                             error: "upload failed",
                         },
                     },
                 },
             },
-        }
-        this.conversations.update(currentConversations => {
-            const index = currentConversations.findIndex(c => c.id === firstChatId)
-            if (index !== -1) {
-                currentConversations[index] = initialData
-            } else {
-                currentConversations.push(initialData)
-            }
-            return currentConversations
         })
         await setStateToDB("conversations", get(this.conversations))
     }
