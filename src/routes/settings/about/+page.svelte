@@ -29,17 +29,17 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-about-website" name="Website" description="Open a new browser window to our official website.">
-        <Button hook="button-open-website" text="Open Website" appearance={Appearance.Alt}>
+        <Button hook="button-open-website" text="Open Website" appearance={Appearance.Alt} on:click={() => window.open("https://satellite.im/", "_blank")}>
             <Icon icon={Shape.Globe} />
         </Button>
     </SettingSection>
     <SettingSection hook="section-about-open-source-code" name="Open Source Code" description="Open a new browser window to our open source repository.">
-        <Button hook="button-open-source-code" text="Open Source Code" appearance={Appearance.Alt}>
+        <Button hook="button-open-source-code" text="Open Source Code" appearance={Appearance.Alt} on:click={() => window.open("https://github.com/Satellite-im", "_blank")}>
             <Icon icon={Shape.Code} />
         </Button>
     </SettingSection>
     <SettingSection hook="section-about-made-in" name="Made In" description="Our team is all over the world with different backgrounds and different day-to-day lives all working on a common goal to build this app.">
-        <div data-cy="about-made-in-flags" class="flags">🇺🇸 🇮🇹 🇩🇪 🇵🇹 🇧🇷 🇺🇦 🇧🇾 🇯🇵 🇦🇺 🇮🇩</div>
+        <div data-cy="about-made-in-flags" class="flags">🇺🇸 🇮🇹 🇩🇪 🇵🇹 🇧🇷 🇺🇦 🇧🇾 🇯🇵 🇦🇺 🇮🇩 🇲🇽 🇨🇦</div>
     </SettingSection>
     <SettingSection hook="section-about-dev-mode" name="DevMode" description="Click 10 times to enable developer settings.">
         <Button hook="button-about-dev-mode" on:click={_ => increment()} icon appearance={Appearance.Alt}>

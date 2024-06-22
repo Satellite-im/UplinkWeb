@@ -14,10 +14,10 @@
         <Button hook="button-installed" text="Installed" appearance={Appearance.Alt}>
             <Icon icon={Shape.CheckMark} />
         </Button>
-        <Button hook="button-explore" text="Explore" appearance={Appearance.Alt} outline>
+        <Button hook="button-explore" text="Explore" appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Beaker} />
         </Button>
-        <Button hook="button-settings" text="Settings" appearance={Appearance.Alt} outline>
+        <Button hook="button-settings" text="Settings" appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Cog} />
         </Button>
     </Controls>

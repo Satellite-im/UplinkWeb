@@ -58,4 +58,14 @@
             }
         }
     }
+
+    @media (max-width: 800px) {
+        .setting-section {
+            .body {
+                .content {
+                    min-width: fit-content !important;
+                }
+            }
+        }
+    }
 </style>

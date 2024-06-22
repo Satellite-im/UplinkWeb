@@ -49,4 +49,13 @@
             border-radius: var(--border-radius);
         }
     }
+
+    @media (max-width: 800px) {
+        .video-preview {
+            width: 100%;
+            video {
+                max-width: 100%;
+            }
+        }
+    }
 </style>

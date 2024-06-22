@@ -10,7 +10,7 @@
 
 <div id="page">
     <SettingSection hook="section-licenses-uplink" name={$_("generic.uplink")} description={$_("settings.licenses.description")}>
-        <Button hook="button-view-license" text={$_("settings.licenses.view")} appearance={Appearance.Alt}>
+        <Button hook="button-view-license" text={$_("settings.licenses.view")} appearance={Appearance.Alt} on:click={() => window.open("https://github.com/Satellite-im/UplinkWeb/blob/dev/LICENSE-MIT", "_blank")}>
             <Icon icon={Shape.Document} />
         </Button>
     </SettingSection>
