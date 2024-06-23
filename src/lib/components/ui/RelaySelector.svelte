@@ -231,11 +231,6 @@
             padding-bottom: var(--padding-less);
         }
 
-        hr {
-            width: 100%;
-            height: 0;
-        }
-
         .relay-entry {
             display: flex;
             gap: var(--gap);
