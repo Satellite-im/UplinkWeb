@@ -92,7 +92,7 @@
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>
-    <SettingSection hook="section-primary-color" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")}>
+    <SettingSection hook="section-primary-color" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")} wrapContent>
         <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")}>
             <ColorPicker textInputModes={["hex"]} isDialog={false} isAlpha={false} bind:hex={hex} />
             <div slot="icon" class="control">

@@ -8,7 +8,7 @@
     import Topbar from "$lib/layouts/Topbar.svelte"
     import { SettingsStore } from "$lib/state"
     import { UIStore } from "$lib/state/ui"
-    import type { ContextItem, NavRoute } from "$lib/types"
+    import type { NavRoute } from "$lib/types"
     import { checkMobile } from "$lib/utils/Mobile"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
@@ -140,6 +140,7 @@
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     $: setRoutes = get(settingsRoutes)
     SettingsStore.state.subscribe(value => {
+        let isMobile: boolean = checkMobile()
         if (value.devmode) {
             if (!get(settingsRoutes).find(route => route.to === SettingsRoute.Developer)) {
                 settingsRoutes.update(routes => [
@@ -153,6 +154,10 @@
             }
         } else {
             settingsRoutes.update(routes => routes.filter(route => route.to !== SettingsRoute.Developer))
+        }
+
+        if (isMobile) {
+            settingsRoutes.update(routes => routes.filter(route => route.to !== SettingsRoute.Keybinds))
         }
     })
 

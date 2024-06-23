@@ -5,6 +5,7 @@
     export let description: string = "Some setting description"
     export let fullWidth: boolean = false
     export let hook: string = ""
+    export let wrapContent: boolean = false
 </script>
 
 <div data-cy={hook} class="setting-section {fullWidth ? 'full-width' : ''}">
@@ -13,7 +14,7 @@
             <Label hook="setting-section-label" text={name} />
             <Text hook="setting-section-text" doubleLine>{description}</Text>
         </div>
-        <div class="content">
+        <div class="content {wrapContent ? 'wrap' : ''}">
             <slot></slot>
         </div>
     </div>
@@ -47,6 +48,10 @@
                 flex-direction: row;
                 min-width: var(--min-component-width);
                 gap: var(--gap);
+
+                &.wrap {
+                    flex-wrap: wrap;
+                }
             }
         }
 
