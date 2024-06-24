@@ -156,30 +156,30 @@
                             <Icon icon={Shape.CheckMark} />
                         {/if}
                     </Button>
-                    <Button
-                        hook="button-relay-edit"
-                        class="relay-edit"
-                        icon
-                        disabled={relay.default}
-                        appearance={!relay.default ? Appearance.Alt : Appearance.Error}
-                        on:click={_ => {
-                            editing = name
-                            nameToAdd = name
-                            relayToAdd = relay.address
-                        }}>
-                        <Icon icon={Shape.Pencil} />
-                    </Button>
-                    <Button
-                        hook="button-relay-delete"
-                        icon
-                        class="relay-delete"
-                        disabled={relay.default}
-                        appearance={!relay.default ? Appearance.Alt : Appearance.Error}
-                        on:click={_ => {
-                            deleteRelay(name)
-                        }}>
-                        <Icon icon={Shape.Trash} />
-                    </Button>
+                    {#if !relay.default}
+                        <Button
+                            hook="button-relay-edit"
+                            class="relay-edit"
+                            icon
+                            appearance={Appearance.Alt}
+                            on:click={_ => {
+                                editing = name
+                                nameToAdd = name
+                                relayToAdd = relay.address
+                            }}>
+                            <Icon icon={Shape.Pencil} />
+                        </Button>
+                        <Button
+                            hook="button-relay-delete"
+                            icon
+                            class="relay-delete"
+                            appearance={Appearance.Error}
+                            on:click={_ => {
+                                deleteRelay(name)
+                            }}>
+                            <Icon icon={Shape.Trash} />
+                        </Button>
+                    {/if}
                 </Controls>
             </div>
         {/each}
