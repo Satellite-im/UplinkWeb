@@ -198,11 +198,11 @@
                     }
                     return item.id === currArray[0].parentId
                 })
-                if (newFolders[i].length === 0 ) {
+                if (newFolders[i].length === 0) {
                     if (parentItem && parentItem.items) {
-                            currArray = [...parentItem.items]
+                        currArray = [...parentItem.items]
                     }
-                        }
+                }
                 if (parentItem && parentItem.items) {
                     newFolders[i] = [...parentItem.items]
                 }
@@ -440,14 +440,14 @@
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             blob => {
-                    const url = URL.createObjectURL(blob)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = fileName
-                    document.body.appendChild(a)
-                    a.click()
-                    document.body.removeChild(a)
-                    URL.revokeObjectURL(url)
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement("a")
+                a.href = url
+                a.download = fileName
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
             }
         )
     }
@@ -497,6 +497,7 @@
         <Controls>
             <Button
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
+                hook="button-sidebar-chats"
                 text={$_("chat.chat_plural")}
                 on:click={_ => {
                     activeTabRoute = "chats"
@@ -505,6 +506,7 @@
             </Button>
             <Button
                 appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
+                hook="button-sidebar-files"
                 text={$_("files.file_plural")}
                 on:click={_ => {
                     activeTabRoute = "files"
@@ -546,18 +548,18 @@
     <div class="content">
         <Topbar>
             <div slot="before" class="before flex-column">
-                <Label text="Quick Actions" />
+                <Label hook="label-quick-actions" text="Quick Actions" />
                 <div class="actions">
-                    <Button appearance={Appearance.Alt} text="Sync">
+                    <Button hook="button-sync" appearance={Appearance.Alt} text="Sync">
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Gift Space">
+                    <Button hook="button-gift-space" appearance={Appearance.Alt} text="Gift Space">
                         <Icon icon={Shape.Gift} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Rent Space">
+                    <Button hook="button-rent-space" appearance={Appearance.Alt} text="Rent Space">
                         <Icon size={Size.Large} icon={Shape.Starlight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Create Node">
+                    <Button hook="button-create-node" appearance={Appearance.Alt} text="Create Node">
                         <Icon icon={Shape.Info} />
                     </Button>
                 </div>
@@ -587,11 +589,12 @@
                 </button>
             </div>
             <svelte:fragment slot="controls">
-                <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
+                <Button hook="button-new-folder" appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
                 <Button
                     appearance={Appearance.Alt}
+                    hook="button-upload-file"
                     icon
                     tooltip={$_("files.upload")}
                     on:click={async () => {
@@ -604,7 +607,7 @@
             </svelte:fragment>
         </Topbar>
         <div class="folder-back">
-            <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+            <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -613,6 +616,7 @@
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
                         <ContextMenu
+                            hook="context-menu-file"
                             on:close={_ => {
                                 isContextMenuOpen = false
                             }}
@@ -669,7 +673,7 @@
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
-                            hook="context-menu-folder-{item.id}"
+                            hook="context-menu-folder"
                             on:close={_ => {
                                 isContextMenuOpen = false
                             }}
