@@ -47,7 +47,7 @@ class MultipassStore {
             log.info(`Handling multipass events: ${JSON.stringify(event)}`)
             eventStore.set(value.kind)
             switch (value.kind) {
-                case wasm.MultiPassEventKindEnum.FriendRequestReceived:
+                case wasm.MultiPassEventKindEnum.FriendRequestSent:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected:
                     {
