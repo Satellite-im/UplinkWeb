@@ -20,6 +20,7 @@
     import Toast from "$lib/elements/Toast.svelte"
     import { log } from "$lib/utils/Logger"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { eventStore } from '$lib/wasm/MultipassStore';
 
     // Initialize locale
     initLocale()
@@ -110,25 +111,25 @@
         })
     }
 
-    async function fetchFriendsAndRequests() {
-        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
-        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
-        let blockedUsers: Array<any> = await MultipassStoreInstance.listBlockedFriends()
-        let friends = await MultipassStoreInstance.listFriends()
-        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
-        Store.setFriends(friends)
-        Store.setBlockedUsers(blockedUsers)
-    }
+    // async function fetchFriendsAndRequests() {
+    //     let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
+    //     let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
+    //     let blockedUsers: Array<any> = await MultipassStoreInstance.listBlockedFriends()
+    //     let friends = await MultipassStoreInstance.listFriends()
+    //     Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+    //     Store.setFriends(friends)
+    //     Store.setBlockedUsers(blockedUsers)
+    // }
 
-    onMount(() => {
-        let intervalId = setInterval(() => {
-            fetchFriendsAndRequests()
-        }, 2000)
+    // let currentEvent = null;
 
-        return () => {
-            clearInterval(intervalId)
-        }
-    })
+    // eventStore.subscribe(value => {
+    //     console.log("Event received: ", value)
+    //     currentEvent = value
+    //     if (value!.kind === wasm.EventKind.FriendRequestReceived) {
+    //         fetchFriendsAndRequests()
+    //     }
+    // })
 
     let searchString: string = ""
 

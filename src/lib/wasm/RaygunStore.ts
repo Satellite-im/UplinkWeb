@@ -88,8 +88,8 @@ class RaygunStore {
     // A map of message listeners
     private messageListeners: Writable<{ [key: string]: Cancellable }>
 
-    constructor(multipass: Writable<wasm.RayGunBox | null>) {
-        this.raygunWritable = multipass
+    constructor(raygun: Writable<wasm.RayGunBox | null>) {
+        this.raygunWritable = raygun
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(r => {
             if (r) {
@@ -341,6 +341,7 @@ class RaygunStore {
                 return events
             },
         }
+        
         for await (const value of listener) {
             let event = parseJSValue(value)
             log.info(`Handling conversation event: ${JSON.stringify(event)}`)
