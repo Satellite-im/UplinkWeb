@@ -130,6 +130,7 @@
         display: inline-flex;
         flex-direction: column;
         justify-content: center;
+        white-space: nowrap;
         align-items: center;
         transition: background-color var(--animation-speed);
         padding: var(--padding-less);

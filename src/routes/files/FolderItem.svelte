@@ -55,14 +55,14 @@
     .tree > * {
         display: inline;
     }
-    ul,
-    li {
+    .tree {
         list-style-type: none;
-    }
-    li {
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space:nowrap;
+        white-space: nowrap;
+    }
+    ul,
+    li {
         margin-left: 10px;
     }
 </style>
