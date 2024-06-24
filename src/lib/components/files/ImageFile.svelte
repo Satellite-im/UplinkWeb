@@ -32,6 +32,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        white-space: nowrap;
         transition: background-color var(--animation-speed);
         padding: var(--padding-less);
 
@@ -62,7 +63,6 @@
             }
         }
         .img_text {
-            // width: 100%;
             height: 21px;
             overflow: hidden;
             text-overflow: ellipsis;
