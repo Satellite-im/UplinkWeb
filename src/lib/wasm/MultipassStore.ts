@@ -30,7 +30,9 @@ class MultipassStore {
     constructor(multipass: Writable<wasm.MultiPassBox | null>) {
         this.multipassWritable = multipass
         this.multipassWritable.subscribe(async multipass => {
-            await this.handleMultipassEvents(multipass!)
+            if (multipass) {
+                await this.handleMultipassEvents(multipass)
+            }
         })
     }
 
