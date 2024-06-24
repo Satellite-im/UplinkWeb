@@ -108,7 +108,7 @@
                 <div class="searchbar-entry searchbar-entry-group">
                     <div class="group" role="none" on:click={() => select_chat(chat, undefined)}>
                         <div class="profile-picture-wrap">
-                            {#if chat.users.length === 1}
+                            {#if chat.users.length === 2}
                                 <ProfilePicture typing={chat.activity} image={chat.users[0].profile.photo.image} status={chat.users[0].profile.status} size={Size.Medium} loading={loading} frame={chat.users[0].profile.photo.frame} />
                             {:else}
                                 <ProfilePictureMany users={chat.users} />
