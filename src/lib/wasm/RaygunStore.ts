@@ -263,7 +263,7 @@ class RaygunStore {
                     message
                 )
                 return {
-                    message: result.get_file(),
+                    message: result.get_message_id(),
                     progress: result,
                 }
             }
@@ -286,7 +286,7 @@ class RaygunStore {
                         message
                     )
                     sendResult = {
-                        message: result.get_file(),
+                        message: result.get_message_id(),
                         progress: result,
                     }
                 } else {
