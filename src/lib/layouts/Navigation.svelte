@@ -44,6 +44,7 @@
         gap: var(--gap);
         justify-content: space-evenly;
         width: 100%;
+        padding-bottom: var(--padding);
 
         &.vertical {
             flex-direction: column;
