@@ -42,11 +42,12 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
-    import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
     import { log } from "$lib/utils/Logger"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
+    import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
+    import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
 
     initLocale()
 
@@ -98,6 +99,10 @@
     })
     ConversationStore.conversations.subscribe(_ => {
         conversation = ConversationStore.getConversation(activeChat)
+    })
+    let pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
+    ConversationStore.pendingMsgConversations.subscribe(_ => {
+        pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
     })
 
     function dragEnter(event: DragEvent) {
@@ -319,7 +324,7 @@
         <Topbar>
             <div slot="before">
                 {#if activeChat.users.length > 0}
-                    {#if activeChat.users.length === 1}
+                    {#if activeChat.users.length === 2}
                         <ProfilePicture
                             typing={activeChat.activity}
                             image={activeChat.users[0]?.profile.photo.image}
@@ -471,6 +476,11 @@
                             {/each}
                         </MessageGroup>
                     {/each}
+                    <PendingMessageGroup>
+                        {#each pendingMessages as pending, idx}
+                            <PendingMessage message={pending} position={idx === 0 ? MessagePosition.First : idx === pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}></PendingMessage>
+                        {/each}
+                    </PendingMessageGroup>
                 {/if}
             {:else}
                 <div class="add-someone" data-cy="section-add-someone">

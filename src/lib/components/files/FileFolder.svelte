@@ -131,6 +131,7 @@
         display: inline-flex;
         flex-direction: column;
         justify-content: center;
+        white-space: nowrap;
         align-items: center;
         transition: background-color var(--animation-speed);
         padding: var(--padding-less);
@@ -154,16 +155,6 @@
                 background-color: var(--alt-color);
                 outline: none;
             }
-        }
-
-        .name {
-            width: 100%;
-            height: 21.36px;
-            align-self: center;
-            text-align: center;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         :global(.svg-icon) {

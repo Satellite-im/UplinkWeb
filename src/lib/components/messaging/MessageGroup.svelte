@@ -30,7 +30,7 @@
         </div>
     {/if}
     <div class="flex">
-        {#if username.length}
+        {#if username && username.length}
             <Label class="username-{remote ? 'remote' : 'local'}" text={username} />
         {/if}
         <slot></slot>
