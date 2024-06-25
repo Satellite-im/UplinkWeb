@@ -36,8 +36,8 @@
                     await clearState().then(() => {
                         goto(Route.Unlock)
                         setTimeout(() => {
-                            location.reload();
-                        }, 100)
+                            location.reload()
+                        }, 500)
                     })
                     .catch((error) => console.error('Error deleting database', error));
                 }}>Clear State</Button>
