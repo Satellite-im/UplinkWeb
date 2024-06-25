@@ -14,10 +14,22 @@ export async function initDB() {
 }
 
 export async function clearState() {
-    return new Promise((resolve, _) => {
-        const request = indexedDB.deleteDatabase("UplinkAppState")
-        request.onsuccess = () => resolve("")
-    })
+    return new Promise((resolve, reject) => {
+        console.log("Clearing state from DB");
+        const dbName = "UplinkAppState";
+        const request = indexedDB.deleteDatabase(dbName);
+
+        request.onerror = (event) => {
+            console.error(`Error deleting database ${dbName}`, event);
+            reject(event);
+        }
+
+        request.onblocked = () => {
+            console.warn(`Database ${dbName} deletion blocked`);
+        }
+
+        resolve(dbName)
+    });
 }
 
 export async function getStateFromDB<T>(key: string, defaultState: T): Promise<T> {
