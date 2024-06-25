@@ -580,7 +580,7 @@ class RaygunStore {
                                         break
                                     }
                                 }
-                                current
+                                return current
                             } else if (progress.type === "CurrentProgress") {
                                 return {
                                     name: file,
