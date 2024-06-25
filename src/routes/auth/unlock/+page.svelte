@@ -34,29 +34,29 @@
 
     async function auth(pin: string) {
         loading = true
-        let tesseract = await TesseractStoreInstance.getTesseract()
-        if (get(AuthStore.state).pin === "" || !tesseract.is_unlock()) {
+        if (get(AuthStore.state).pin === "" || get(AuthStore.state).pin === pin) {
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
                 .map(r => r.address)
-            await WarpStore.initWarpInstances(addressed)
-            await TesseractStoreInstance.unlock(pin)
+            if (get(AuthStore.state).pin === "") {
+                await WarpStore.initWarpInstances(addressed)
+                await TesseractStoreInstance.unlock(pin)
+            }
+            let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
+            ownIdentity.fold(
+                (_: any) => {
+                    AuthStore.setStoredPin(pin)
+                    goto(Route.NewAccount)
+                },
+                (_: any) => {
+                    setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
+                    goto(Route.Pre)
+                }
+            )
         } else if (pin !== get(AuthStore.state).pin) {
             Store.addToastNotification(new ToastMessage("", "Pin is wrong!", 2))
             loading = false
-            return
         }
-        let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
-        ownIdentity.fold(
-            (_: any) => {
-                AuthStore.setStoredPin(pin)
-                goto(Route.NewAccount)
-            },
-            (_: any) => {
-                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
-                goto(Route.Pre)
-            }
-        )
     }
 </script>
 
