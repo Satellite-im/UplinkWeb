@@ -38,7 +38,6 @@ class Conversations {
 
         if (message.id === "") message.id = uuidv4()
 
-        console.log("adding msg ", conversationIndex)
         if (conversationIndex !== -1) {
             const conversation = conversations[conversationIndex]
             const lastGroup = conversation.messages[conversation.messages.length - 1]

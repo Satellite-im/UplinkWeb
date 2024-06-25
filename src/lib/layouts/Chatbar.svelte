@@ -7,23 +7,41 @@
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
-    import { ConversationStore } from "$lib/state/conversation"
-    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import type { Message } from "$lib/types"
+    import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
+    import { type Message } from "$lib/types"
+    import { createEventDispatcher, type EventDispatcher } from "svelte"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
+    export let filesSelected: [File?, string?][] = []
+
+    const dispatch = createEventDispatcher()
+
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
 
     function sendMessage(text: string) {
+        let attachments: FileAttachment[] = []
+        filesSelected.forEach(([file, path]) => {
+            if (file) {
+                attachments.push({
+                    file: file.name,
+                    attachment: file.stream(),
+                })
+            } else if (path) {
+                attachments.push({
+                    file: path,
+                })
+            }
+        })
         if (replyTo) {
-            RaygunStoreInstance.reply(get(Store.state.activeChat).id, replyTo.id, text.split("\n"))
+            RaygunStoreInstance.reply(get(Store.state.activeChat).id, replyTo.id, text.split("\n"), attachments)
         } else {
-            RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"))
+            RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
         }
         message = ""
         replyTo = undefined
+        dispatch("onsend")
     }
 </script>
 

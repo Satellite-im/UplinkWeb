@@ -27,9 +27,9 @@
         ContextMenu,
         EmojiGroup,
     } from "$lib/components"
-    import { Button, Icon, Label, Text } from "$lib/elements"
+    import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { type Chat, type User } from "$lib/types"
+    import { OperationState, type Chat, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
@@ -44,8 +44,10 @@
     import Market from "$lib/components/market/Market.svelte"
     import { log } from "$lib/utils/Logger"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import type { Message as MessageType } from "$lib/types"
+    import type { Attachment, Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
+    import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
+    import { imageFromData } from "$lib/wasm/ConstellationStore"
 
     initLocale()
 
@@ -81,6 +83,9 @@
     let emojis: string[] = ["👍", "👎", "❤️", "🖖", "😂"]
     let own_user: User
     let replyTo: MessageType | undefined = undefined
+    let fileUpload: FileInput
+    let files: [File?, string?][] = []
+    let browseFiles: boolean = false
 
     Store.state.user.subscribe(u => (own_user = u))
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
@@ -112,7 +117,19 @@
         event.preventDefault()
         dragging_files = 0
         // upload files
-        log.debug(`dropping files ${event.dataTransfer?.files}`)
+        for (let file of event.dataTransfer?.files!) {
+            files.push([file, undefined])
+        }
+        // Force an update
+        files = files
+    }
+
+    function addFilesToUpload(selected: File[]) {
+        for (let file of selected) {
+            files.push([file, undefined])
+        }
+        // Force an update
+        files = files
     }
 
     function build_context_items(message: MessageType) {
@@ -191,6 +208,31 @@
 
     async function copy(txt: string) {
         await navigator.clipboard.writeText(txt)
+    }
+
+    async function download_attachment(message: string, attachment: Attachment) {
+        let res = await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name)
+        res.onSuccess(async it => {
+            console.log("downloading")
+            let listener = {
+                [Symbol.asyncIterator]() {
+                    return it
+                },
+            }
+            let data: any[] = []
+            try {
+                for await (const value of listener) {
+                    data = [...data, ...value]
+                }
+            } catch (err) {}
+            const elem = window.document.createElement("a")
+            const hrefData = imageFromData(data, "files", "generic")
+            elem.href = `data:files;base64, ${hrefData}`
+            elem.download = attachment.name
+            document.body.appendChild(elem)
+            elem.click()
+            document.body.removeChild(elem)
+        })
     }
 </script>
 
@@ -445,9 +487,21 @@
                                                                 filesize={attachment.size}
                                                                 on:click={_ => {
                                                                     previewImage = attachment.location
-                                                                }} />
+                                                                }}
+                                                                on:download={_ => download_attachment(message.id, attachment)} />
                                                         {:else if attachment.kind === MessageAttachmentKind.File}
-                                                            <FileEmbed />
+                                                            <FileEmbed
+                                                                fileInfo={{
+                                                                    id: "1",
+                                                                    isRenaming: OperationState.Initial,
+                                                                    source: "unknown",
+                                                                    name: attachment.name,
+                                                                    size: attachment.size,
+                                                                    icon: Shape.Document,
+                                                                    type: "unknown/unknown",
+                                                                    remotePath: attachment.location,
+                                                                }}
+                                                                on:download={_ => download_attachment(message.id, attachment)} />
                                                         {:else if attachment.kind === MessageAttachmentKind.STL}
                                                             <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
                                                         {:else if attachment.kind === MessageAttachmentKind.Audio}
@@ -483,9 +537,14 @@
             {/if}
         </Conversation>
 
+        {#if files.length > 0}
+            <FileUploadPreview filesSelected={files} />
+        {/if}
+
         {#if activeChat.users.length > 0}
-            <Chatbar replyTo={replyTo}>
+            <Chatbar filesSelected={files} replyTo={replyTo} on:onsend={_ => (files = [])}>
                 <svelte:fragment slot="pre-controls">
+                    <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     <ContextMenu
                         items={[
                             {
@@ -493,7 +552,9 @@
                                 icon: Shape.ArrowUp,
                                 text: "Upload",
                                 appearance: Appearance.Default,
-                                onClick: () => {},
+                                onClick: () => {
+                                    fileUpload.click()
+                                },
                             },
                             {
                                 id: "from_files",
@@ -503,7 +564,7 @@
                                 onClick: () => {},
                             },
                         ]}>
-                        <Button slot="content" let:open on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
+                        <Button slot="content" let:open on:click={open} on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
                             <Icon icon={Shape.Plus} />
                         </Button>
                     </ContextMenu>
@@ -543,6 +604,7 @@
 
         .content {
             display: flex;
+            min-width: 0;
             min-height: 0;
             display: flex;
             flex-direction: column;

@@ -5,9 +5,7 @@ import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
-
-
-
+import { func } from "three/examples/jsm/nodes/Nodes.js"
 
 /**
  * A class that provides various methods to interact with a ConstellationBox.
@@ -204,14 +202,17 @@ class ConstellationStore {
         return regex.test(path)
     }
 
-
     async downloadFile(fileName: string): Promise<Result<WarpError, Blob>> {
-        const constellation = get(this.constellationWritable);
+        const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
                 let get_stream_async_iterator = await constellation.get_stream(fileName)
-                let get_stream = { [Symbol.asyncIterator]() { return get_stream_async_iterator } }
-                
+                let get_stream = {
+                    [Symbol.asyncIterator]() {
+                        return get_stream_async_iterator
+                    },
+                }
+
                 const chunks = []
                 try {
                     for await (const value of get_stream) {
@@ -219,9 +220,9 @@ class ConstellationStore {
                             chunks.push(Buffer.from(value.Ok))
                         }
                     }
-                } finally  {
+                } finally {
                     const combinedArray = Buffer.concat(chunks)
-                    const blob = new Blob([new Uint8Array(combinedArray)], { type: 'application/octet-stream' })
+                    const blob = new Blob([new Uint8Array(combinedArray)], { type: "application/octet-stream" })
                     return success(blob)
                 }
             } catch (error) {
@@ -230,6 +231,11 @@ class ConstellationStore {
         }
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
+}
+
+export function imageFromData(data: any[], prefix: string, kind: string) {
+    let hrefData = btoa(new Uint8Array(data).reduce((data, byte) => data + String.fromCharCode(byte), ""))
+    return `data:${prefix}/${kind};base64, ${hrefData}`
 }
 
 export const ConstellationStoreInstance = new ConstellationStore(WarpStore.warp.constellation)

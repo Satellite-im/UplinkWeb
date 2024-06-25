@@ -5,14 +5,15 @@ import { Store } from "../state/store"
 import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
-import { ChatType } from "$lib/enums"
-import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user } from "$lib/types"
+import { ChatType, MessageAttachmentKind } from "$lib/enums"
+import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user, type Attachment } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 import { parseJSValue } from "./EnumParser"
 import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
+import { imageFromData } from "./ConstellationStore"
 
 const MAX_PINNED_MESSAGES = 100
 
@@ -255,13 +256,23 @@ class RaygunStore {
 
     async send(conversation_id: string, message: string[], attachments?: FileAttachment[]): Promise<Result<WarpError, SendMessageResult>> {
         return await this.get(async r => {
-            if (attachments) {
+            if (attachments && attachments.length > 0) {
                 let result = await r.attach(
                     conversation_id,
                     undefined,
                     attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
                     message
                 )
+                let listener = {
+                    [Symbol.asyncIterator]() {
+                        return result
+                    },
+                }
+                try {
+                    for await (const value of listener) {
+                        console.log("val ", value)
+                    }
+                } catch (e) {}
                 return {
                     message: result.get_message_id(),
                     progress: result,
@@ -322,8 +333,20 @@ class RaygunStore {
         return await this.get(r => r.pin(conversation_id, message_id, pin ? wasm.PinState.Pin : wasm.PinState.Unpin), "Error pinning message")
     }
 
-    async reply(conversation_id: string, message_id: string, message: string[]): Promise<Result<WarpError, SendMessageResult>> {
+    async reply(conversation_id: string, message_id: string, message: string[], attachments?: FileAttachment[]): Promise<Result<WarpError, SendMessageResult>> {
         return await this.get(async r => {
+            if (attachments && attachments.length > 0) {
+                let result = await r.attach(
+                    conversation_id,
+                    message_id,
+                    attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
+                    message
+                )
+                return {
+                    message: result.get_message_id(),
+                    progress: result,
+                }
+            }
             return {
                 message: await r.reply(conversation_id, message_id, message),
             }
@@ -559,6 +582,7 @@ class RaygunStore {
         let user = get(Store.state.user)
         let remote = message.sender() !== user.key
         let sender = remote ? (await MultipassStoreInstance.identity_from_did(message.sender()))! : user
+        let attachments: any[] = message.attachments()
         return {
             id: message.id(),
             details: {
@@ -569,8 +593,31 @@ class RaygunStore {
             text: message.lines(),
             inReplyTo: message.replied() ? ConversationStore.getMessage(conversation_id, message.replied()!) : null,
             reactions: message.reactions(),
-            attachments: message.attachments(),
+            attachments: attachments.map(f => this.convertWarpAttachment(f)),
             pinned: message.pinned(),
+        }
+    }
+
+    private convertWarpAttachment(attachment: any): Attachment {
+        let kind: MessageAttachmentKind = MessageAttachmentKind.File
+        console.log("att ", attachment)
+        let type = parseJSValue(attachment.file_type)
+        let mime = "application/octet-stream"
+        if (type.type === "mime") {
+            mime = type.values as any as string
+        }
+        if (mime.startsWith("image")) {
+            kind = MessageAttachmentKind.Image
+        } else if (mime.startsWith("video")) {
+            kind = MessageAttachmentKind.Video
+        }
+        let thumbnail: [] = attachment.thumbnail
+        let location = thumbnail.length > 0 ? imageFromData(attachment.thumbnail, "image", mime) : ""
+        return {
+            kind: kind,
+            name: attachment.name,
+            size: attachment.size,
+            location: location,
         }
     }
 
