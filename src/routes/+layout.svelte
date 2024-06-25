@@ -12,6 +12,7 @@
     import { RelayStore } from "$lib/state/wasm/relays"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { WarpStore } from "$lib/wasm/WarpStore"
     import "/src/app.scss"
@@ -127,13 +128,18 @@
     async function checkIfUserIsLogged() {
         let pinToLog = await AuthStore.getStoredPin()
         if (pinToLog === "") {
+            log.info("No pin stored, redirecting to unlock")
             goto(Route.Unlock)
         } else {
+            log.info("Pin stored, unlocking")
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
                 .map(r => r.address)
             await WarpStore.initWarpInstances(addressed)
-            await TesseractStoreInstance.unlock(pinToLog)
+            let result = await TesseractStoreInstance.unlock(pinToLog)
+            result.onSuccess(() => {
+                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
+            })
         }
     }
 

@@ -29,6 +29,7 @@
             async (identity: Identity) => {
                 Store.setUserFromIdentity(identity!)
                 await new Promise(resolve => setTimeout(resolve, 1000))
+                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 loading = false
                 goto(Route.Chat)
             }
