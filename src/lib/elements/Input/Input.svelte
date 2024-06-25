@@ -75,7 +75,15 @@
     }
 </script>
 
-<div class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}" data-tooltip={tooltip}>
+<div
+    class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}"
+    data-tooltip={tooltip}
+    role="none"
+    on:click={async _ => {
+        if (copyOnInteract) {
+            await navigator.clipboard.writeText(`${value}`)
+        }
+    }}>
     <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
         <slot></slot>
         <input

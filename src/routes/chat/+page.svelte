@@ -42,7 +42,6 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
-    import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
     import { log } from "$lib/utils/Logger"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message as MessageType } from "$lib/types"
@@ -319,7 +318,7 @@
         <Topbar>
             <div slot="before">
                 {#if activeChat.users.length > 0}
-                    {#if activeChat.users.length === 1}
+                    {#if activeChat.users.length === 2}
                         <ProfilePicture
                             typing={activeChat.activity}
                             image={activeChat.users[0]?.profile.photo.image}
