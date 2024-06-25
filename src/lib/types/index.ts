@@ -1,4 +1,5 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState } from "$lib/enums"
+import type { Cancellable } from "$lib/utils/CancellablePromise"
 
 export enum OperationState {
     Initial = "Initial",
@@ -249,6 +250,30 @@ export type Message = {
 export function mentions_user(message: Message, user: string): boolean {
     // TODO
     return false
+}
+
+export type PendingMessage = {
+    message: {
+        id: string
+        at: Date
+        text: string[]
+    }
+    attachmentProgress: { [file: string]: FileProgress }
+}
+
+export type FileProgress = {
+    // The name of the file
+    name: string
+    // The current progressed size of the file
+    size: number
+    // The total size of the file
+    total?: number
+    // Call this to abort the progress
+    cancellation?: Cancellable
+    // If true the progress has been finished
+    done?: boolean
+    // Returns the error that occured during filetransfer if present
+    error?: string
 }
 
 export type MessageGroup = {
