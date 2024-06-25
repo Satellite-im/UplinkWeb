@@ -28,7 +28,6 @@
         RelayStore.update(relays)
         if (tesseract && tesseract !== null) {
             WarpStore.initWarpInstances(
-                tesseract,
                 Object.values(relays)
                     .filter(r => r.active)
                     .map(r => r.address)
@@ -62,6 +61,8 @@
     }
 
     function deleteRelay(name: string) {
+        let current = relays[name]
+        if (current && current.default) return
         delete relays[name]
         relays = relays // Trigger update
         changed = true
@@ -78,6 +79,16 @@
 
     function verifyAddress(address: string) {
         return address !== "" && !address.includes(" ")
+    }
+
+    function getRelays(relays: { [x: string]: RelayState }) {
+        // Return a sorted array where default relays are first, followed by alphabetic ordering of their names
+        return Object.entries(relays).sort(([n, s], [n2, s2]) => {
+            if (s.default === s2.default) {
+                return n.localeCompare(n2)
+            }
+            return s.default ? -1 : 1
+        })
     }
 </script>
 
@@ -119,7 +130,7 @@
                 </div>
             </Modal>
         {/if}
-        {#each Object.entries(relays) as [name, relay]}
+        {#each getRelays(relays) as [name, relay]}
             <div class="relay-entry">
                 <div class="relay-info">
                     <div>
@@ -131,20 +142,21 @@
                         <Input hook="input-relay-address" value={relay.address} disabled copyOnInteract />
                     </div>
                 </div>
-                <div>
-                    <!-- note: This empty Label is for UI Alignment -->
-                    <Label text="" />
-                    <Controls>
-                        <Button
-                            hook="button-relay-toggle"
-                            class="relay-toggle"
-                            appearance={!relay.active ? Appearance.Alt : Appearance.Primary}
-                            on:click={_ => toggleRelay(name)}
-                            text={relay.active ? $_("generic.enabled") : $_("generic.enable")}>
-                            {#if relay.active}
-                                <Icon icon={Shape.CheckMark} />
-                            {/if}
-                        </Button>
+                <Controls>
+                    <Button
+                        hook="button-relay-toggle"
+                        class="relay-toggle"
+                        appearance={!relay.active ? Appearance.Alt : Appearance.Primary}
+                        on:click={_ => {
+                            console.log("act ", relay.active)
+                            toggleRelay(name)
+                        }}
+                        text={relay.active ? $_("generic.enabled") : $_("generic.enable")}>
+                        {#if relay.active}
+                            <Icon icon={Shape.CheckMark} />
+                        {/if}
+                    </Button>
+                    {#if !relay.default}
                         <Button
                             hook="button-relay-edit"
                             class="relay-edit"
@@ -157,11 +169,18 @@
                             }}>
                             <Icon icon={Shape.Pencil} />
                         </Button>
-                        <Button hook="button-relay-delete" icon class="relay-delete" appearance={Appearance.Alt} on:click={_ => deleteRelay(name)}>
+                        <Button
+                            hook="button-relay-delete"
+                            icon
+                            class="relay-delete"
+                            appearance={Appearance.Error}
+                            on:click={_ => {
+                                deleteRelay(name)
+                            }}>
                             <Icon icon={Shape.Trash} />
                         </Button>
-                    </Controls>
-                </div>
+                    {/if}
+                </Controls>
             </div>
         {/each}
         {#if changed}
@@ -231,11 +250,6 @@
             padding-bottom: var(--padding-less);
         }
 
-        hr {
-            width: 100%;
-            height: 0;
-        }
-
         .relay-entry {
             display: flex;
             gap: var(--gap);
@@ -252,6 +266,11 @@
                 &:hover:before {
                     opacity: 1;
                 }
+            }
+
+            :global(.controls) {
+                width: fit-content;
+                align-self: flex-end;
             }
         }
 
