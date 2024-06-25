@@ -20,6 +20,7 @@
     import { AuthStore } from "$lib/state/auth"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { Store } from "$lib/state/store"
+    import { log } from "$lib/utils/Logger"
 
     initLocale()
 
@@ -32,27 +33,28 @@
 
     async function auth(pin: string) {
         loading = true
-        if (get(AuthStore.state).pin === pin || get(AuthStore.state).pin === "") {
+        if (get(AuthStore.state).pin === "") {
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
                 .map(r => r.address)
             await WarpStore.initWarpInstances(addressed)
             await TesseractStoreInstance.unlock(pin)
-            let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
-            ownIdentity.fold(
-                (_: any) => {
-                    AuthStore.setStoredPin(pin)
-                    goto(Route.NewAccount)
-                },
-                (_: any) => {
-                    goto(Route.Pre)
-                }
-            )
-        } else {
+        } else if (pin !== get(AuthStore.state).pin) {
             Store.addToastNotification(new ToastMessage("", "Pin is wrong!", 2))
             loading = false
+            return
         }
-
+        let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
+        ownIdentity.fold(
+            (_: any) => {
+                AuthStore.setStoredPin(pin)
+                goto(Route.NewAccount)
+            },
+            (_: any) => {
+                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
+                goto(Route.Pre)
+            }
+        )
     }
 </script>
 

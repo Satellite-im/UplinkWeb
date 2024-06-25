@@ -6,6 +6,9 @@ import { failure, success, type Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
 import { defaultProfileData, type User } from "$lib/types"
+import { Store } from "$lib/state/store"
+import { MessageDirection } from "$lib/enums"
+import { parseJSValue } from "./EnumParser"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -20,6 +23,69 @@ class MultipassStore {
      */
     constructor(multipass: Writable<wasm.MultiPassBox | null>) {
         this.multipassWritable = multipass
+    }
+
+    initMultipassListener() {
+        this.multipassWritable.subscribe(async multipass => {
+            if (multipass) {
+                this.handleMultipassEvents(multipass)
+            } else {
+                log.error("Multipass or tesseract not found")
+            }
+        })
+    }
+
+    private async handleMultipassEvents(multipass: wasm.MultiPassBox) {
+        let events = await multipass.multipass_subscribe()
+        let listener = {
+            [Symbol.asyncIterator]() {
+                return events
+            },
+        }
+        log.info("Listening multipass events!")
+        for await (const value of listener) {
+            let event = parseJSValue(value)
+            log.info(`Handling multipass events: ${JSON.stringify(event)}`)
+            switch (value.kind) {
+                case wasm.MultiPassEventKindEnum.FriendRequestSent:
+                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
+                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected:
+                    {
+                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
+                        Store.setFriendRequests(get(Store.state.activeRequests)
+                            .filter(r => r.direction === MessageDirection.Inbound), outgoingFriendRequests)
+                        break
+                    }
+                case wasm.MultiPassEventKindEnum.FriendRequestReceived:
+                case wasm.MultiPassEventKindEnum.IncomingFriendRequestClosed:
+                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected:
+                    {
+                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
+                        Store.setFriendRequests(incomingFriendRequests, get(Store.state.activeRequests)
+                            .filter(r => r.direction === MessageDirection.Outbound))
+                        break
+                    }
+                case wasm.MultiPassEventKindEnum.FriendAdded:
+                    {
+                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
+                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
+                        let friends = await this.listFriends()
+                        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+                        Store.setFriends(friends)
+                        break
+                    }
+                case wasm.MultiPassEventKindEnum.FriendRemoved:
+                    {
+                        let friends = await this.listFriends()
+                        Store.setFriends(friends)
+                        break
+                    }
+                default: {
+                        log.error(`Unhandled message event: ${JSON.stringify(event)}`)
+                        break
+                    }
+            }
+          }
     }
 
     /**
