@@ -658,6 +658,7 @@
                             ]}>
                             <FileFolder
                                 itemId={item.id}
+                                hook="file-folder-item"
                                 slot="content"
                                 let:open
                                 on:contextmenu={e => {
