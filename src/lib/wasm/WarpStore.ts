@@ -1,6 +1,7 @@
 import init, * as wasm from "warp-wasm";
 import type { IWarp } from "./IWarp";
 import { get, writable } from "svelte/store";
+import { log } from "$lib/utils/Logger";
 
 /**
  * Class representing the Store, which manages the state and interactions with Warp instances.
@@ -26,20 +27,21 @@ class Store {
      * @param addresses - Optional addresses for IPFS configuration.
      */
     async initWarpInstances(addresses?: string[]) {
-        const multipassInstance = get(this.warp.multipass);
-        const tesseractInstance = get(this.warp.tesseract);
+        const multipassInstance = get(this.warp.multipass)
+        const tesseractInstance = get(this.warp.tesseract)
 
         if (multipassInstance !== null && tesseractInstance !== null) {
-            return;
+            log.info("Warp instances already initialized. Returning.")
+            return
         }
 
         await init();
         let warp_instance = await this.createIpfs(addresses);
         let tesseract = warp_instance.multipass.tesseract();
+        this.warp.tesseract.set(tesseract);
         this.warp.multipass.set(warp_instance.multipass);
         this.warp.raygun.set(warp_instance.raygun);
         this.warp.constellation.set(warp_instance.constellation);
-        this.warp.tesseract.set(tesseract);
     }
 
     /**

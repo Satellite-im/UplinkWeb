@@ -120,14 +120,8 @@
         Store.setBlockedUsers(blockedUsers)
     }
 
-    onMount(() => {
-        let intervalId = setInterval(() => {
-            fetchFriendsAndRequests()
-        }, 2000)
-
-        return () => {
-            clearInterval(intervalId)
-        }
+    onMount(async () => {
+        await fetchFriendsAndRequests()
     })
 
     let searchString: string = ""
