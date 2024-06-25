@@ -16,12 +16,13 @@
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
 
-    function sendMessage(text: string) {
-        if (replyTo) {
-            RaygunStoreInstance.reply(get(Store.state.activeChat).id, replyTo.id, text.split("\n"))
-        } else {
-            RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"))
-        }
+    async function sendMessage(text: string) {
+        let chat = get(Store.state.activeChat)
+        let txt = text.split("\n")
+        let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"))
+        result.onSuccess(res => {
+            ConversationStore.addPendingMessages(chat.id, res.message, txt)
+        })
         message = ""
         replyTo = undefined
     }

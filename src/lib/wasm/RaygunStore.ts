@@ -6,16 +6,17 @@ import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
 import { ChatType } from "$lib/enums"
-import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user } from "$lib/types"
+import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user, type FileProgress } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 import { parseJSValue } from "./EnumParser"
 import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
+import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
 
 const MAX_PINNED_MESSAGES = 100
-
+// Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
           type: "MostRecent"
@@ -88,8 +89,8 @@ class RaygunStore {
     // A map of message listeners
     private messageListeners: Writable<{ [key: string]: Cancellable }>
 
-    constructor(multipass: Writable<wasm.RayGunBox | null>) {
-        this.raygunWritable = multipass
+    constructor(raygun: Writable<wasm.RayGunBox | null>) {
+        this.raygunWritable = raygun
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(r => {
             if (r) {
@@ -181,8 +182,8 @@ class RaygunStore {
 
     async listConversations(): Promise<Result<WarpError, Chat[]>> {
         return this.get(async r => {
-            let convs = (await r.list_conversations()) as wasm.Conversation[]
-            return await Promise.all(convs.map(c => this.convertWarpConversation(c, r)))
+            let convs: { inner: wasm.Conversation }[] = await r.list_conversations()
+            return await Promise.all(convs.map(c => this.convertWarpConversation(c.inner, r)))
         }, `Error fetching conversations`)
     }
 
@@ -255,21 +256,7 @@ class RaygunStore {
 
     async send(conversation_id: string, message: string[], attachments?: FileAttachment[]): Promise<Result<WarpError, SendMessageResult>> {
         return await this.get(async r => {
-            if (attachments) {
-                let result = await r.attach(
-                    conversation_id,
-                    undefined,
-                    attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
-                    message
-                )
-                return {
-                    message: result.get_message_id(),
-                    progress: result,
-                }
-            }
-            return {
-                message: await r.send(conversation_id, message),
-            }
+            return await this.sendTo(r, conversation_id, message, attachments)
         }, "Error sending message")
     }
 
@@ -277,28 +264,44 @@ class RaygunStore {
         return await this.get(async r => {
             let sent = []
             for (let conversation_id of conversation_ids) {
-                let sendResult
-                if (attachments) {
-                    let result = await r.attach(
-                        conversation_id,
-                        undefined,
-                        attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
-                        message
-                    )
-                    sendResult = {
-                        message: result.get_message_id(),
-                        progress: result,
-                    }
-                } else {
-                    sendResult = {
-                        message: await r.send(conversation_id, message),
-                    }
-                }
-                let res: MultiSendMessageResult = { chat: conversation_id, result: sendResult }
+                let res: MultiSendMessageResult = { chat: conversation_id, result: await this.sendTo(r, conversation_id, message, attachments) }
                 sent.push(res)
             }
             return sent
         }, "Error sending message")
+    }
+
+    private async sendTo(raygun: wasm.RayGunBox, conversation_id: string, message: string[], attachments?: FileAttachment[]): Promise<SendMessageResult> {
+        if (attachments) {
+            let result = await raygun
+                .attach(
+                    conversation_id,
+                    undefined,
+                    attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
+                    message
+                )
+                .then(res => {
+                    // message_sent event gets fired AFTER this returns
+                    ConversationStore.addPendingMessages(conversation_id, res.get_message_id(), message)
+                    this.createFileAttachHandler(conversation_id, res)
+                    return res
+                })
+            return {
+                message: result.get_message_id(),
+                progress: result,
+            }
+        }
+        return {
+            message: await raygun.send(conversation_id, message).then(messageId => {
+                // message_sent event gets fired BEFORE this returns
+                // So to
+                // 1. unify this system
+                // 2. keep it roughly the same as native (as on native due to some channel delays it handles message_sent after #send returns)
+                // We add the pending msg here and remove it in message_sent which has a short delay
+                ConversationStore.addPendingMessages(conversation_id, messageId, message)
+                return messageId
+            }),
+        }
     }
 
     async edit(conversation_id: string, message_id: string, message: string[]) {
@@ -341,6 +344,7 @@ class RaygunStore {
                 return events
             },
         }
+        
         for await (const value of listener) {
             let event = parseJSValue(value)
             log.info(`Handling conversation event: ${JSON.stringify(event)}`)
@@ -381,11 +385,11 @@ class RaygunStore {
     }
 
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
-        let conversations: wasm.Conversation[] = await raygun.list_conversations()
+        let conversations: { inner: wasm.Conversation }[] = await raygun.list_conversations()
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations) {
-            let handler = await this.createConversationEventHandler(raygun, conversation.id())
-            handlers[conversation.id()] = handler
+            let handler = await this.createConversationEventHandler(raygun, conversation.inner.id())
+            handlers[conversation.inner.id()] = handler
         }
         this.messageListeners.set(handlers)
     }
@@ -400,7 +404,7 @@ class RaygunStore {
             }
             for await (const value of listener) {
                 let event = parseJSValue(value)
-                log.info(`Handling messarge event: ${JSON.stringify(event)}`)
+                log.info(`Handling message event: ${JSON.stringify(event)}`)
                 switch (event.type) {
                     case "message_sent": {
                         let conversation_id: string = event.values["conversation_id"]
@@ -408,6 +412,7 @@ class RaygunStore {
                         // Needs a delay because raygun does not contain the sent message yet
                         await new Promise(f => setTimeout(f, 10))
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
+                        ConversationStore.removePendingMessages(conversation_id, message_id)
                         if (message) {
                             ConversationStore.addMessage(conversation_id, message)
                             // TODO move chat to top
@@ -533,6 +538,77 @@ class RaygunStore {
             messages = (await Promise.all(warpMsgs.map(async msg => await this.convertWarpMessage(conversation_id, msg)))).filter((m: Message | null): m is Message => m !== null)
         }
         return messages
+    }
+
+    /**
+     * Create a handler for attachment results that uploads the file to chat and updates pending message attachments
+     * TODO: verify it works as we dont have a way to upload files yet
+     */
+    private async createFileAttachHandler(conversationId: string, upload: wasm.AttachmentResult) {
+        let listener = {
+            [Symbol.asyncIterator]() {
+                return upload
+            },
+        }
+        let cancelled = false
+        for await (const value of listener) {
+            let event = parseJSValue(value)
+            log.info(`Handling file progress event: ${JSON.stringify(event)}`)
+            switch (event.type) {
+                case "AttachedProgress": {
+                    let locationKind = parseJSValue(event.values[0])
+                    // Only streams need progress update
+                    if (locationKind.type === "Stream") {
+                        let progress = parseJSValue(event.values[1])
+                        let file = progress.values["name"]
+                        ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
+                            if (current) {
+                                switch (progress.type) {
+                                    case "CurrentProgress": {
+                                        current.size = progress.values["current"]
+                                        current.total = progress.values["total"]
+                                        break
+                                    }
+                                    case "ProgressComplete": {
+                                        current.size = progress.values["total"]
+                                        current.total = progress.values["total"]
+                                        current.done = true
+                                        break
+                                    }
+                                    case "ProgressFailed": {
+                                        current.size = progress.values["last_size"]
+                                        current.error = progress.values["error"]
+                                        break
+                                    }
+                                }
+                                return current
+                            } else if (progress.type === "CurrentProgress") {
+                                return {
+                                    name: file,
+                                    size: progress.values["current"],
+                                    total: progress.values["total"],
+                                    cancellation: {
+                                        cancel: () => {
+                                            cancelled = true
+                                        },
+                                    },
+                                }
+                            }
+                            return undefined
+                        })
+                    }
+                    break
+                }
+                case "Pending": {
+                    let res = parseJSValue(event.values[0])
+                    if (res.type === "Err") {
+                        log.error(`Error uploading file ${res.values[0]}`)
+                    }
+                    break
+                }
+            }
+            if (cancelled) break
+        }
     }
 
     /**

@@ -46,6 +46,8 @@
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
+    import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
+    import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
 
     initLocale()
 
@@ -97,6 +99,10 @@
     })
     ConversationStore.conversations.subscribe(_ => {
         conversation = ConversationStore.getConversation(activeChat)
+    })
+    let pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
+    ConversationStore.pendingMsgConversations.subscribe(_ => {
+        pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
     })
 
     function dragEnter(event: DragEvent) {
@@ -468,6 +474,11 @@
                             {/each}
                         </MessageGroup>
                     {/each}
+                    <PendingMessageGroup>
+                        {#each pendingMessages as pending, idx}
+                            <PendingMessage message={pending} position={idx === 0 ? MessagePosition.First : idx === pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}></PendingMessage>
+                        {/each}
+                    </PendingMessageGroup>
                 {/if}
             {:else}
                 <div class="add-someone" data-cy="section-add-someone">
