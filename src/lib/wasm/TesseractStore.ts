@@ -2,6 +2,9 @@ import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { log } from "$lib/utils/Logger"
+import { MultipassStoreInstance } from "./MultipassStore"
+import { failure, success, type Result } from "$lib/utils/Result"
+import { WarpError, handleErrors } from "./HandleWarpErrors"
 
 /**
  * Class representing the TesseractStore, which manages the state and interactions with a Tesseract instance.
@@ -25,7 +28,7 @@ class TesseractStore {
      * Unlocks the Tesseract using the provided pin.
      * @param {string} pin - The pin to unlock the Tesseract.
      */
-    async unlock(pin: string) {
+    async unlock(pin: string): Promise<Result<WarpError, void>> {
         const tesseract = get(this.tesseractWritable);
 
         const encoder = new TextEncoder()
@@ -33,13 +36,17 @@ class TesseractStore {
 
         try {
             if (tesseract) {
-                await tesseract.unlock(passphrase)
+                tesseract.unlock(passphrase)
     
-                log.info('Tesseract: ' + tesseract)
+                log.info('Tesseract Unlocked: ' + tesseract)
+                return success(undefined)
             }
+            return failure(handleErrors(new Error("Tesseract not initialized")))
         } catch (error) {
             log.error("Error unlocking Tesseract: " + error)
+            return failure(handleErrors(error))
         }
+
     }
 
     /**
