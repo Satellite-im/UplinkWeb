@@ -126,8 +126,8 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     async function checkIfUserIsLogged() {
-        let pinToLog = await AuthStore.getStoredPin()
-        if (pinToLog === "") {
+        let authentication = await AuthStore.getAuthentication()
+        if (authentication.pin === "") {
             log.info("No pin stored, redirecting to unlock")
             goto(Route.Unlock)
         } else {
@@ -136,10 +136,13 @@
                 .filter(r => r.active)
                 .map(r => r.address)
             await WarpStore.initWarpInstances(addressed)
-            let result = await TesseractStoreInstance.unlock(pinToLog)
+            let result = await TesseractStoreInstance.unlock(authentication.pin)
             result.onSuccess(() => {
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
             })
+            if (authentication.stayLoggedIn) {
+                goto(Route.Chat)
+            }
         }
     }
 

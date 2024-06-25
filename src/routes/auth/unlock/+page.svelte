@@ -27,13 +27,15 @@
     let create = false
     let loading = false
     let scramble = get(AuthStore.state).scramblePin
+    let stayLoggedIn = get(AuthStore.state).stayLoggedIn
 
     let showAccounts = false
     let showConfigureRelay = false
 
     async function auth(pin: string) {
         loading = true
-        if (get(AuthStore.state).pin === "") {
+        let tesseract = await TesseractStoreInstance.getTesseract()
+        if (get(AuthStore.state).pin === "" || !tesseract.is_unlock()) {
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
                 .map(r => r.address)
@@ -96,6 +98,7 @@
         max={8}
         loading={loading}
         scramble={scramble}
+        stayLoggedIn={stayLoggedIn}
         showSettings={false}
         on:submit={async e => {
             loading = true
