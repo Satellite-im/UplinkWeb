@@ -538,7 +538,7 @@
             {/each}
         {/if}
         {#if activeTabRoute === "files"}
-            <ul class="folderList">
+            <ul class="folderList" data-cy="folder-list">
                 {#each currentFiles as file}
                     <FolderItem file={file} openFolders={openFolders} toggleFolder={toggleFolder} />
                 {/each}
@@ -602,7 +602,7 @@
                     }}>
                     <Icon icon={Shape.Plus} />
                 </Button>
-                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
+                <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
@@ -658,7 +658,7 @@
                             ]}>
                             <FileFolder
                                 itemId={item.id}
-                                hook="file-folder-item"
+                                hook="file-{item.name}"
                                 slot="content"
                                 let:open
                                 on:contextmenu={e => {
@@ -708,6 +708,7 @@
                             ]}>
                             <FileFolder
                                 itemId={item.id}
+                                hook="folder-{item.name}"
                                 slot="content"
                                 let:open
                                 on:contextmenu={e => {
