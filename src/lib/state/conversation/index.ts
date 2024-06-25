@@ -1,4 +1,4 @@
-import type { MessageGroup, Chat, Message } from "$lib/types"
+import type { MessageGroup, Chat, Message, Attachment, PendingMessage, FileProgress } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
@@ -14,9 +14,12 @@ export type ConversationMessages = {
 
 class Conversations {
     conversations: Writable<ConversationMessages[]>
+    // We use a new writable so they dont get saved to db
+    pendingMsgConversations: Writable<{ [conversation: string]: { [id: string]: PendingMessage } }>
 
     constructor() {
         this.conversations = writable([])
+        this.pendingMsgConversations = writable({})
         this.loadConversations()
     }
 
@@ -38,7 +41,6 @@ class Conversations {
 
         if (message.id === "") message.id = uuidv4()
 
-        console.log("adding msg ", conversationIndex)
         if (conversationIndex !== -1) {
             const conversation = conversations[conversationIndex]
             const lastGroup = conversation.messages[conversation.messages.length - 1]
@@ -213,6 +215,63 @@ class Conversations {
         return null
     }
 
+    getPendingMessages(chat: Chat | string) {
+        let chatId = typeof chat === "string" ? chat : chat.id
+        let msgs = get(this.pendingMsgConversations)[chatId]
+        return msgs ? msgs : {}
+    }
+
+    addPendingMessages(chat: string, messageId: string, message: string[]) {
+        const conversations = get(this.pendingMsgConversations)
+        const conversation = conversations[chat]
+
+        if (conversation) {
+            conversation[messageId] = {
+                message: {
+                    id: messageId,
+                    at: new Date(),
+                    text: message,
+                },
+                attachmentProgress: {},
+            }
+            this.pendingMsgConversations.set(conversations)
+        } else {
+            conversations[chat] = {
+                [messageId]: {
+                    message: {
+                        id: messageId,
+                        at: new Date(),
+                        text: message,
+                    },
+                    attachmentProgress: {},
+                },
+            }
+            this.pendingMsgConversations.set(conversations)
+        }
+    }
+
+    updatePendingMessages(chat: string, messageId: string, file: string, update: (progress: FileProgress | undefined) => FileProgress | undefined) {
+        const conversations = get(this.pendingMsgConversations)
+        const conversation = conversations[chat]
+
+        if (conversation) {
+            let current: FileProgress | undefined = update(conversation[messageId].attachmentProgress[file])
+            if (current) {
+                conversation[messageId].attachmentProgress[file] = current
+            }
+            this.pendingMsgConversations.set(conversations)
+        }
+    }
+
+    removePendingMessages(chat: string, messageId: string) {
+        const conversations = get(this.pendingMsgConversations)
+        const conversation = conversations[chat]
+        if (conversation) {
+            delete conversation[messageId]
+            this.pendingMsgConversations.set(conversations)
+        }
+    }
+
     async loadMockData() {
         const firstChatId = get(this.conversations)[0].id
         const initialData: ConversationMessages = {
@@ -227,6 +286,36 @@ class Conversations {
                 currentConversations.push(initialData)
             }
             return currentConversations
+        })
+        this.pendingMsgConversations.set({
+            [firstChatId]: {
+                mock_id: {
+                    message: {
+                        id: "mock_id",
+                        at: new Date(),
+                        text: ["Hello, world!"],
+                    },
+                    attachmentProgress: {
+                        test: {
+                            name: "filea",
+                            size: 5,
+                            total: 10,
+                        },
+                        testa: {
+                            name: "fileb",
+                            size: 10,
+                            total: 10,
+                            done: true,
+                        },
+                        testb: {
+                            name: "filec",
+                            size: 10,
+                            total: 10,
+                            error: "upload failed",
+                        },
+                    },
+                },
+            },
         })
         await setStateToDB("conversations", get(this.conversations))
     }
