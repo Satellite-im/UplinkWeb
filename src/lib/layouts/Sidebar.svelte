@@ -39,7 +39,7 @@
     Store.state.activeCall.subscribe(c => (activeCall = c))
 </script>
 
-<div class="sidebar-layout {open ? 'open' : 'closed'}" data-cy="sidebar" transition:slide={{ duration: animationDuration, axis: "x" }}>
+<div class="sidebar-layout {open ? 'open' : 'closed'}" data-cy="sidebar">
     <Slimbar sidebarOpen={open} on:toggle={handleToggle} activeRoute={activeRoute}></Slimbar>
 
     {#if open}
