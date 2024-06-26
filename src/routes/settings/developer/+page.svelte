@@ -9,6 +9,7 @@
     import { ConversationStore } from "$lib/state/conversation"
     import { InventoryStore } from "$lib/state/inventory"
     import { goto } from "$app/navigation"
+    import { log } from "$lib/utils/Logger"
     initLocale()
 </script>
 
@@ -39,7 +40,7 @@
                             location.reload()
                         }, 500)
                     })
-                    .catch((error) => console.error('Error deleting database', error));
+                    .catch((error) => log.error(`Error deleting database: ${error}`));
                 }}>Clear State</Button>
     </SettingSection>
 
