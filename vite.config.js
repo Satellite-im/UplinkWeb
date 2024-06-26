@@ -3,15 +3,16 @@ import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
 import removeAttribute from "@castlenine/vite-remove-attribute"
 import { resolve } from 'path';
+import path from "node:path"
 
 
 const IS_PRODUCTION = process.env.NODE_ENV == "production"
 
 export default defineConfig({
     resolve: {
-        alias: [
-          { find: "$", replacement: resolve(__dirname, "./src") },
-        ],
+        alias: {
+          '$': path.resolve(__dirname, 'src'),
+        },
       },
     plugins: [
         IS_PRODUCTION
