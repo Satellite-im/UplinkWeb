@@ -8,10 +8,10 @@ import { resolve } from 'path';
 const IS_PRODUCTION = process.env.NODE_ENV == "production"
 
 export default defineConfig({
-    server: {
-        fs: {
-          cachedChecks: false
-        }
+    resolve: {
+        alias: [
+          { find: "$", replacement: resolve(__dirname, "./src") },
+        ],
       },
     plugins: [
         IS_PRODUCTION
