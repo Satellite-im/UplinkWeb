@@ -9,9 +9,16 @@ const IS_PRODUCTION = process.env.NODE_ENV == "production"
 
 export default defineConfig({
     resolve: {
-        alias: {
-          $lib: resolve(__dirname, 'src/lib'),
-        },
+        alias: [
+          {
+            find: /^\$lib\/state\/(.*)$/,
+            replacement: resolve(__dirname, 'src/lib/state/$1'),
+          },
+          {
+            find: /^\$lib\/(.*)$/,
+            replacement: resolve(__dirname, 'src/lib/$1'),
+          }
+        ],
       },
     plugins: [
         IS_PRODUCTION
