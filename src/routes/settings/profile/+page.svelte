@@ -15,6 +15,7 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onDestroy, onMount } from "svelte"
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { AuthStore } from "$lib/state/auth"
 
     initLocale()
 
@@ -27,6 +28,7 @@
     }
 
     async function logOut() {
+        AuthStore.setStayLogged(false)
         await TesseractStoreInstance.lock()
         goto(Route.Unlock)
     }

@@ -6,6 +6,7 @@ import { log } from "$lib/utils/Logger"
 export type Authentication = {
     pin: string
     scramblePin: boolean
+    stayLoggedIn: boolean
 }
 
 class Auth {
@@ -14,7 +15,8 @@ class Auth {
     constructor() {
         this.state = createPersistentState<Authentication>("uplink.auth", {
             pin: "",
-            scramblePin: false
+            scramblePin: false,
+            stayLoggedIn: false
         })   
     }
 
@@ -32,12 +34,20 @@ class Auth {
         })
     }
 
-    async getStoredPin(): Promise<string> {
+    setStayLogged(stayLoggedIn: boolean) {
+        this.state.update(auth => { 
+            auth.stayLoggedIn = stayLoggedIn 
+            return auth
+        })
+    }
+
+    async getAuthentication(): Promise<Authentication> {
         let state = await getStateFromDB<Authentication>("uplink.auth", {
             pin: "",
-            scramblePin: false
+            scramblePin: false,
+            stayLoggedIn: false
         })
-        return state.pin
+        return state
     }
 }
 
