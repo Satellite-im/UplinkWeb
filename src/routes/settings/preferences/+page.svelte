@@ -58,6 +58,9 @@
         { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
     ]
 
+    let possibleEmojis: string[] = ["🛰️", "🪐", "🤣", "😀", "🖖"]
+    let randomEmoji: string = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)]
+
     $: if (hex !== undefined) {
         UIStore.setThemeColor(hex)
     }
@@ -81,7 +84,7 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-emoji-font" name={$_("settings.preferences.emojiFont")} description={$_("settings.preferences.emojiFontDescription")}>
-        <span class="emoji">🤣</span>
+        <span class="emoji">{randomEmoji}</span>
         <Select
             hook="selector-current-emoji-font-{emojiFont.toLowerCase()}"
             selected={emojiFont}
