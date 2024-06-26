@@ -11,8 +11,8 @@ const IS_PRODUCTION = process.env.NODE_ENV == "production"
 export default defineConfig({
     resolve: {
         alias: {
-          '$': path.resolve(__dirname, 'src'),
-        },
+          src: path.resolve('./src')
+        }
       },
     plugins: [
         IS_PRODUCTION
