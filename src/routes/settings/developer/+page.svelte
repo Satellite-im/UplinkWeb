@@ -15,7 +15,13 @@
 
 <div id="page">
     <SettingSection hook="section-devmode" name="Devmode" description="Disable devmode.">
-        <Button hook="button-exit-devmode" appearance={Appearance.Alt} on:click={_ => {goto("/settings/about"); SettingsStore.toggleDevmode(false)}}>Exit Devmode</Button>
+        <Button
+            hook="button-exit-devmode"
+            appearance={Appearance.Alt}
+            on:click={_ => {
+                goto("/settings/about")
+                SettingsStore.toggleDevmode(false)
+            }}>Exit Devmode</Button>
     </SettingSection>
 
     <SettingSection hook="section-load-mock" name="Load Mock" description="Loads mock data into state.">
@@ -51,11 +57,13 @@
 
 <style lang="scss">
     #page {
-        display: flex;
-        flex-direction: column;
-        margin: 0;
         flex: 1;
+        width: 100%;
+        display: inline-flex;
+        flex-direction: column;
         gap: var(--gap);
+        padding: var(--padding);
+
         :global(.relay-selector > .relay-content) {
             background-color: var(--alt-color);
             padding: var(--padding);

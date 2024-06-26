@@ -1,16 +1,33 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
     import { Appearance, Route, SettingsRoute } from "$lib/enums"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { UIStore } from "$lib/state/ui"
     import type { NavRoute } from "$lib/types"
+    import { checkMobile } from "$lib/utils/Mobile"
     import { createEventDispatcher } from "svelte"
+    import { get } from "svelte/store"
 
     export let routes: NavRoute[] = []
     export let activeRoute: Route | SettingsRoute = Route.Home
     export let icons: boolean = false
     export let vertical: boolean = false
 
+    let settings: ISettingsState = get(SettingsStore.state)
+    SettingsStore.state.subscribe((s: ISettingsState) => {
+        settings = s
+    })
+
+    function overrides(route: NavRoute) {
+        if (route.to === Route.Chat && settings.messaging.quick) {
+            return true
+        }
+        if (route.to === Route.Settings) return true
+    }
+
     const dispatch = createEventDispatcher()
     function handleNavigate(route: NavRoute) {
+        if (checkMobile() && !overrides(route)) UIStore.state.sidebarOpen.set(false)
         dispatch("navigate", route.to.toString())
     }
 </script>
@@ -41,6 +58,7 @@
         gap: var(--gap);
         justify-content: space-evenly;
         width: 100%;
+        padding-bottom: var(--padding);
 
         &.vertical {
             flex-direction: column;
