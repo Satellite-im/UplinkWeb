@@ -38,7 +38,7 @@
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
                 .map(r => r.address)
-            if (get(AuthStore.state).pin === "") {
+            if (get(AuthStore.state).pin === "" || !(await TesseractStoreInstance.getTesseract()).is_unlock()) {
                 await WarpStore.initWarpInstances(addressed)
                 await TesseractStoreInstance.unlock(pin)
             }
