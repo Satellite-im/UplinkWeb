@@ -6,7 +6,6 @@
     import { SettingSection } from "$lib/layouts"
     import { Button, Icon, Input, Select } from "$lib/elements"
     import ColorPicker from "svelte-awesome-color-picker"
-    import { Store } from "$lib/state/store"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
@@ -56,6 +55,7 @@
         { text: EmojiFont.OpenMoji.split(".")[0], value: EmojiFont.OpenMoji },
         { text: EmojiFont.Blobmoji.split(".")[0], value: EmojiFont.Blobmoji },
         { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
+        { text: EmojiFont.Fluent.split(".")[0], value: EmojiFont.Fluent },
     ]
 
     let possibleEmojis: string[] = ["🛰️", "🪐", "🤣", "😀", "🖖"]

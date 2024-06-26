@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Input } from "$lib/elements"
-    import { Shape } from "$lib/enums"
+    import { Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
@@ -10,6 +10,8 @@
     import { ConversationStore } from "$lib/state/conversation"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message } from "$lib/types"
+    import { PopupButton } from "$lib/components"
+    import EmojiSelector from "$lib/components/messaging/emoji/EmojiSelector.svelte"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
@@ -36,6 +38,13 @@
     <Input alt placeholder={$_("generic.placeholder")} autoFocus bind:value={message} rounded rich={markdown} on:enter={_ => sendMessage(message)} />
 
     <slot></slot>
+
+    <PopupButton name="Emoji Pikcer">
+        <EmojiSelector />
+        <div slot="icon" class="control">
+            <Icon icon={Shape.Smile} size={Size.Large} />
+        </div>
+    </PopupButton>
 
     <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage(message)}>
         <Icon icon={Shape.ChevronRight} />
