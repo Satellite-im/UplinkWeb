@@ -217,28 +217,7 @@
     }
 
     async function download_attachment(message: string, attachment: Attachment) {
-        let res = await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name)
-        res.onSuccess(async it => {
-            console.log("downloading")
-            let listener = {
-                [Symbol.asyncIterator]() {
-                    return it
-                },
-            }
-            let data: any[] = []
-            try {
-                for await (const value of listener) {
-                    data = [...data, ...value]
-                }
-            } catch (err) {}
-            const elem = window.document.createElement("a")
-            const hrefData = imageFromData(data, "files", "generic")
-            elem.href = `data:files;base64, ${hrefData}`
-            elem.download = attachment.name
-            document.body.appendChild(elem)
-            elem.click()
-            document.body.removeChild(elem)
-        })
+        await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name)
     }
 </script>
 
@@ -532,7 +511,14 @@
                     {/each}
                     <PendingMessageGroup>
                         {#each pendingMessages as pending, idx}
-                            <PendingMessage message={pending} position={idx === 0 ? MessagePosition.First : idx === pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}></PendingMessage>
+                            <PendingMessage
+                                message={pending}
+                                position={idx === 0 ? MessagePosition.First : idx === pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
+                                on:abort={e => {
+                                    if (Object.keys(get(pending.attachmentProgress)).length == 0) {
+                                        ConversationStore.removePendingMessages(activeChat.id, e.detail.message)
+                                    }
+                                }}></PendingMessage>
                         {/each}
                     </PendingMessageGroup>
                 {/if}

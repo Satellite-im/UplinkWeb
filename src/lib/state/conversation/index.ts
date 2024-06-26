@@ -232,7 +232,7 @@ class Conversations {
                     at: new Date(),
                     text: message,
                 },
-                attachmentProgress: {},
+                attachmentProgress: writable({}),
             }
             this.pendingMsgConversations.set(conversations)
         } else {
@@ -243,7 +243,7 @@ class Conversations {
                         at: new Date(),
                         text: message,
                     },
-                    attachmentProgress: {},
+                    attachmentProgress: writable({}),
                 },
             }
             this.pendingMsgConversations.set(conversations)
@@ -255,11 +255,12 @@ class Conversations {
         const conversation = conversations[chat]
 
         if (conversation) {
-            let current: FileProgress | undefined = update(conversation[messageId].attachmentProgress[file])
+            let progresses = get(conversation[messageId].attachmentProgress)
+            let current: FileProgress | undefined = update(progresses[file])
             if (current) {
-                conversation[messageId].attachmentProgress[file] = current
+                progresses[file] = current
             }
-            this.pendingMsgConversations.set(conversations)
+            conversation[messageId].attachmentProgress.set(progresses)
         }
     }
 
@@ -295,7 +296,7 @@ class Conversations {
                         at: new Date(),
                         text: ["Hello, world!"],
                     },
-                    attachmentProgress: {
+                    attachmentProgress: writable({
                         test: {
                             name: "filea",
                             size: 5,
@@ -313,7 +314,7 @@ class Conversations {
                             total: 10,
                             error: "upload failed",
                         },
-                    },
+                    }),
                 },
             },
         })

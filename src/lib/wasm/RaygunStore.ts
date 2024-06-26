@@ -281,20 +281,10 @@ class RaygunStore {
                     attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
                     message
                 )
-                .then(async res => {
+                .then(res => {
                     // message_sent event gets fired AFTER this returns
                     ConversationStore.addPendingMessages(conversation_id, res.get_message_id(), message)
                     this.createFileAttachHandler(conversation_id, res)
-                    let listener = {
-                        [Symbol.asyncIterator]() {
-                            return result
-                        },
-                    }
-                    try {
-                        for await (const value of listener) {
-                            console.log("val ", value)
-                        }
-                    } catch (e) {}
                     return res
                 })
             return {
@@ -321,7 +311,8 @@ class RaygunStore {
 
     async downloadAttachment(conversation_id: string, message_id: string, file: string) {
         return await this.get(async r => {
-            return r.download_stream(conversation_id, message_id, file)
+            let result = await r.download_stream(conversation_id, message_id, file)
+            return this.createFileDownloadHandler(file, result)
         }, `Error downloading attachment from ${conversation_id} for message ${message_id}`)
     }
 
@@ -563,6 +554,27 @@ class RaygunStore {
         return messages
     }
 
+    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator) {
+        let listener = {
+            [Symbol.asyncIterator]() {
+                return it
+            },
+        }
+        let data: any[] = []
+        try {
+            for await (const value of listener) {
+                data = [...data, ...value]
+            }
+        } catch (_) {}
+        let blob = new Blob([new Uint8Array(data)])
+        const elem = window.document.createElement("a")
+        elem.href = window.URL.createObjectURL(blob)
+        elem.download = name
+        document.body.appendChild(elem)
+        elem.click()
+        document.body.removeChild(elem)
+    }
+
     /**
      * Create a handler for attachment results that uploads the file to chat and updates pending message attachments
      * TODO: verify it works as we dont have a way to upload files yet
@@ -586,25 +598,26 @@ class RaygunStore {
                         let file = progress.values["name"]
                         ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
                             if (current) {
+                                let copy = { ...current }
                                 switch (progress.type) {
                                     case "CurrentProgress": {
-                                        current.size = progress.values["current"]
-                                        current.total = progress.values["total"]
+                                        copy.size = progress.values["current"]
+                                        copy.total = progress.values["total"]
                                         break
                                     }
                                     case "ProgressComplete": {
-                                        current.size = progress.values["total"]
-                                        current.total = progress.values["total"]
-                                        current.done = true
+                                        copy.size = progress.values["total"]
+                                        copy.total = progress.values["total"]
+                                        copy.done = true
                                         break
                                     }
                                     case "ProgressFailed": {
-                                        current.size = progress.values["last_size"]
-                                        current.error = progress.values["error"]
+                                        copy.size = progress.values["last_size"]
+                                        copy.error = `Error: ${progress.values["error"]}`
                                         break
                                     }
                                 }
-                                return current
+                                return copy
                             } else if (progress.type === "CurrentProgress") {
                                 return {
                                     name: file,
@@ -623,9 +636,11 @@ class RaygunStore {
                     break
                 }
                 case "Pending": {
-                    let res = parseJSValue(event.values[0])
-                    if (res.type === "Err") {
-                        log.error(`Error uploading file ${res.values[0]}`)
+                    if (Object.keys(event.values).length > 0) {
+                        let res = parseJSValue(event.values)
+                        if (res.type === "Err") {
+                            log.error(`Error uploading file ${res.values}`)
+                        }
                     }
                     break
                 }
@@ -675,7 +690,6 @@ class RaygunStore {
 
     private convertWarpAttachment(attachment: any): Attachment {
         let kind: MessageAttachmentKind = MessageAttachmentKind.File
-        console.log("att ", attachment)
         let type = parseJSValue(attachment.file_type)
         let mime = "application/octet-stream"
         if (type.type === "mime") {
