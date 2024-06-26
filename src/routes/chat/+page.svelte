@@ -465,16 +465,7 @@
 
                                                 {#if message.attachments.length > 0}
                                                     {#each message.attachments as attachment}
-                                                        {#if attachment.kind === MessageAttachmentKind.Image}
-                                                            <ImageEmbed
-                                                                source={attachment.location}
-                                                                name={attachment.name}
-                                                                filesize={attachment.size}
-                                                                on:click={_ => {
-                                                                    previewImage = attachment.location
-                                                                }}
-                                                                on:download={_ => download_attachment(message.id, attachment)} />
-                                                        {:else if attachment.kind === MessageAttachmentKind.File}
+                                                        {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
                                                             <FileEmbed
                                                                 fileInfo={{
                                                                     id: "1",
@@ -484,7 +475,16 @@
                                                                     size: attachment.size,
                                                                     icon: Shape.Document,
                                                                     type: "unknown/unknown",
-                                                                    remotePath: attachment.location,
+                                                                    remotePath: "",
+                                                                }}
+                                                                on:download={_ => download_attachment(message.id, attachment)} />
+                                                        {:else if attachment.kind === MessageAttachmentKind.Image}
+                                                            <ImageEmbed
+                                                                source={attachment.location}
+                                                                name={attachment.name}
+                                                                filesize={attachment.size}
+                                                                on:click={_ => {
+                                                                    previewImage = attachment.location
                                                                 }}
                                                                 on:download={_ => download_attachment(message.id, attachment)} />
                                                         {:else if attachment.kind === MessageAttachmentKind.STL}
