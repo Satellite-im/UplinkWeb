@@ -16,9 +16,15 @@ export async function initDB() {
 }
 
 export async function clearState() {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         log.debug("Clearing state from DB")
         const dbName = "UplinkAppState"
+        localStorage.clear()
+        sessionStorage.clear()
+        if ('caches' in window) {
+            const cacheNames = await caches.keys()
+            await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)))
+        }
         const request = indexedDB.deleteDatabase(dbName)
 
         request.onerror = (event) => {
