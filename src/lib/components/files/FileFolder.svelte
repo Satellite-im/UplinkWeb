@@ -12,6 +12,7 @@
     export let info: FileInfo
     export let name = info.name
     export let isRenaming: OperationState = OperationState.Initial
+    export let hook: string = ""
     let hasFocus = false
     let oldName = name
 
@@ -108,17 +109,17 @@
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="filesitem" on:contextmenu>
+    <div data-cy={hook} class="filesitem" on:contextmenu>
         <Icon icon={getIcon()} />
         <Spacer less />
         {#if isRenaming === OperationState.Loading}
-            <input id="input-{itemId}" type="text" bind:value={name} on:input={updateName} on:blur={onBlur} on:keydown={onKeydown} bind:this={inputRef} />
+            <input data-cy="input-file-folder-name" id="input-{itemId}" type="text" bind:value={name} on:input={updateName} on:blur={onBlur} on:keydown={onKeydown} bind:this={inputRef} />
         {:else}
-            <Text class="name">
+            <Text hook="file-folder-name" class="name">
                 {name}{info?.extension && `.${info.extension}`}
             </Text>
         {/if}
-        <Text size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
+        <Text hook="file-folder-size" size={Size.Smallest} muted>{prettyBytes(info?.size)}</Text>
     </div>
 </section>
 

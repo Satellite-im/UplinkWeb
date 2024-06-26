@@ -20,7 +20,7 @@
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
 
-    function sendMessage(text: string) {
+    async function sendMessage(text: string) {
         let attachments: FileAttachment[] = []
         filesSelected.forEach(([file, path]) => {
             if (file) {
@@ -34,11 +34,12 @@
                 })
             }
         })
-        if (replyTo) {
-            RaygunStoreInstance.reply(get(Store.state.activeChat).id, replyTo.id, text.split("\n"), attachments)
-        } else {
-            RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
-        }
+        let chat = get(Store.state.activeChat)
+        let txt = text.split("\n")
+        let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
+        result.onSuccess(res => {
+            ConversationStore.addPendingMessages(chat.id, res.message, txt, attachments)
+        })
         message = ""
         replyTo = undefined
         dispatch("onsend")
