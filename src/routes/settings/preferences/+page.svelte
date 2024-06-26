@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, Font, Shape } from "$lib/enums"
+    import { Appearance, EmojiFont, Font, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { ColorSwatch } from "$lib/components"
@@ -15,6 +15,7 @@
 
     let hex = get(UIStore.state.color)
     let font: Font = get(UIStore.state.font)
+    let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
     let cssOverride = get(UIStore.state.cssOverride)
     let fontSize = get(UIStore.state.fontSize)
 
@@ -50,6 +51,13 @@
         { text: Font.OpenDyslexic, value: Font.OpenDyslexic },
     ]
 
+    const availableEmojiFonts = [
+        { text: EmojiFont.NotoColor.split(".")[0], value: EmojiFont.NotoColor },
+        { text: EmojiFont.OpenMoji.split(".")[0], value: EmojiFont.OpenMoji },
+        { text: EmojiFont.Blobmoji.split(".")[0], value: EmojiFont.Blobmoji },
+        { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
+    ]
+
     $: if (hex !== undefined) {
         UIStore.setThemeColor(hex)
     }
@@ -69,6 +77,20 @@
                 UIStore.setFont(v.detail)
             }} />
         <Button hook="button-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+            <Icon icon={Shape.FolderOpen} />
+        </Button>
+    </SettingSection>
+    <SettingSection hook="section-emoji-font" name={$_("settings.preferences.emojiFont")} description={$_("settings.preferences.emojiFontDescription")}>
+        <span class="emoji">🤣</span>
+        <Select
+            hook="selector-current-emoji-font-{emojiFont.toLowerCase()}"
+            selected={emojiFont}
+            options={availableEmojiFonts}
+            alt
+            on:change={v => {
+                UIStore.setEmojiFont(v.detail)
+            }} />
+        <Button hook="button-emoji-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>

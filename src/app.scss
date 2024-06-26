@@ -6,7 +6,7 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 /* Remove default margin */
@@ -67,18 +67,18 @@ select {
 
 /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
 @media (prefers-reduced-motion: reduce) {
-  html:focus-within {
-    scroll-behavior: auto;
-  }
-  
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+    html:focus-within {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 /* End CSS Clear */
@@ -156,6 +156,26 @@ select {
 @font-face {
     font-family: "OpenDyslexic";
     src: url('/assets/font/OpenDyslexicAlta-Regular.otf');
+}
+
+@font-face {
+    font-family: "OpenMoji";
+    src: url('/assets/emoji/OpenMoji.ttf');
+}
+
+@font-face {
+    font-family: "Twemoji";
+    src: url('/assets/emoji/Twemoji.ttf');
+}
+
+@font-face {
+    font-family: "NotoColor";
+    src: url('/assets/emoji/NotoColorEmoji.ttf');
+}
+
+@font-face {
+    font-family: "Blobmoji";
+    src: url('/assets/emoji/Blobmoji.ttf');
 }
 
 
@@ -257,6 +277,7 @@ body {
 .hover-text {
     cursor: default;
 }
+
 .hover-text:before {
     content: attr(data-hover-text);
     position: absolute;
@@ -275,9 +296,11 @@ body {
     pointer-events: none;
     transition: all var(--animation-speed);
 }
+
 .hover-text:hover:before {
-    display:block;
+    display: block;
 }
+
 code {
     background-color: var(--alt-color);
     padding: var(--padding-minimal);
@@ -314,4 +337,9 @@ code {
 /* Disable the corner of scrollbars */
 ::-webkit-scrollbar-corner {
     background-color: transparent;
+}
+
+.emoji {
+    font-size: var(--emoji-size);
+    font-family: "Twitter";
 }

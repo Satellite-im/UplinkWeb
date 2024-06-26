@@ -4,7 +4,7 @@
     import Key from "$lib/components/settings/Key.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Sound, Sounds } from "$lib/components/utils/Sounds"
-    import { Font, KeybindAction, KeybindState, Route } from "$lib/enums"
+    import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
     import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/store"
@@ -26,6 +26,7 @@
     let color: string = get(UIStore.state.color)
     let fontSize: number = get(UIStore.state.fontSize)
     let font: Font = get(UIStore.state.font)
+    let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
     let cssOverride: string = get(UIStore.state.cssOverride)
     let muted: boolean = get(Store.state.devices.muted)
     let deafened: boolean = get(Store.state.devices.deafened)
@@ -93,10 +94,13 @@
         return (
             cssOverride +
             `:root {
-            --font-size: ${fontSize.toFixed(2)}rem;
-            --primary-color: ${color};
-            --primary-font: ${font};
-        }`
+                --font-size: ${fontSize.toFixed(2)}rem;
+                --primary-color: ${color};
+                --primary-font: ${font};
+            }
+            .emoji {
+                font-family: ${emojiFont};
+            }`
         )
     }
 
@@ -118,6 +122,11 @@
 
     UIStore.state.font.subscribe(f => {
         font = f
+        style = buildStyle()
+    })
+
+    UIStore.state.emojiFont.subscribe(f => {
+        emojiFont = f
         style = buildStyle()
     })
 

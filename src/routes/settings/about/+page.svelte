@@ -39,7 +39,7 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-about-made-in" name="Made In" description="Our team is all over the world with different backgrounds and different day-to-day lives all working on a common goal to build this app.">
-        <div data-cy="about-made-in-flags" class="flags">🇺🇸 🇮🇹 🇩🇪 🇵🇹 🇧🇷 🇺🇦 🇧🇾 🇯🇵 🇦🇺 🇮🇩 🇲🇽 🇨🇦</div>
+        <div data-cy="about-made-in-flags" class="flags"><span class="emoji">🇺🇸 🇮🇹 🇩🇪 🇵🇹 🇧🇷 🇺🇦 🇧🇾 🇯🇵 🇦🇺 🇮🇩 🇲🇽 🇨🇦</span></div>
     </SettingSection>
     <SettingSection hook="section-about-dev-mode" name="DevMode" description="Click 10 times to enable developer settings.">
         <Button hook="button-about-dev-mode" on:click={_ => increment()} icon appearance={Appearance.Alt}>

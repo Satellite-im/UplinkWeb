@@ -26,6 +26,7 @@
         width: 100%;
         gap: var(--gap);
         padding: var(--padding-less) 0;
+        align-items: center;
 
         .body {
             display: inline-flex;
@@ -33,6 +34,7 @@
             width: 100%;
             align-items: center;
             flex-wrap: wrap;
+            align-items: center;
 
             .description {
                 flex: 1;
@@ -47,6 +49,7 @@
                 flex-direction: row;
                 min-width: var(--min-component-width);
                 gap: var(--gap);
+                align-items: center;
             }
         }
 

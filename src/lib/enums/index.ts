@@ -36,6 +36,14 @@ export const enum Font {
     OpenDyslexic = "OpenDyslexic",
 }
 
+export const enum EmojiFont {
+    Twemoji = "Twemoji",
+    NotoColor = "NotoColorEmoji",
+    OpenMoji = "OpenMoji",
+    Blobmoji = "Blobmoji",
+    Fluent = "Fluent"
+}
+
 export const enum Route {
     Home = "/",
     Chat = "/chat",
