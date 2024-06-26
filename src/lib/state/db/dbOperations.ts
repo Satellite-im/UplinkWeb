@@ -1,3 +1,5 @@
+import { log } from "$lib/utils/Logger"
+
 const storeName = "stateStore"
 
 export async function initDB() {
@@ -15,21 +17,21 @@ export async function initDB() {
 
 export async function clearState() {
     return new Promise((resolve, reject) => {
-        console.log("Clearing state from DB");
-        const dbName = "UplinkAppState";
-        const request = indexedDB.deleteDatabase(dbName);
+        log.debug("Clearing state from DB")
+        const dbName = "UplinkAppState"
+        const request = indexedDB.deleteDatabase(dbName)
 
         request.onerror = (event) => {
-            console.error(`Error deleting database ${dbName}`, event);
-            reject(event);
+            log.error(`Error deleting database ${dbName}. Event: ${event}`)
+            reject(event)
         }
 
         request.onblocked = () => {
-            console.warn(`Database ${dbName} deletion blocked`);
+            log.warn(`Database ${dbName} deletion blocked`)
         }
 
         resolve(dbName)
-    });
+    })
 }
 
 export async function getStateFromDB<T>(key: string, defaultState: T): Promise<T> {
