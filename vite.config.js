@@ -8,17 +8,10 @@ import { resolve } from 'path';
 const IS_PRODUCTION = process.env.NODE_ENV == "production"
 
 export default defineConfig({
-    resolve: {
-        alias: [
-          {
-            find: /^\$lib\/state\/(.*)$/,
-            replacement: resolve(__dirname, 'src/lib/state/$1'),
-          },
-          {
-            find: /^\$lib\/(.*)$/,
-            replacement: resolve(__dirname, 'src/lib/$1'),
-          }
-        ],
+    server: {
+        fs: {
+          cachedChecks: false
+        }
       },
     plugins: [
         IS_PRODUCTION
