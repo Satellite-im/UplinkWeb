@@ -2,10 +2,17 @@ import { sveltekit } from "@sveltejs/kit/vite"
 import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
 import removeAttribute from "@castlenine/vite-remove-attribute"
+import { resolve } from 'path';
+
 
 const IS_PRODUCTION = process.env.NODE_ENV == "production"
 
 export default defineConfig({
+    resolve: {
+        alias: {
+          $lib: resolve(__dirname, 'src/lib'),
+        },
+      },
     plugins: [
         IS_PRODUCTION
             ? removeAttribute({
