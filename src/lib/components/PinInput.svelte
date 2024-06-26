@@ -10,6 +10,7 @@
     export let error: boolean = false
     export let loading: boolean = false
     export let scramble: boolean = false
+    export let stayLoggedIn: boolean = false
     export let showSettings: boolean = false
     export let min: number = 4
     export let max: number = 6
@@ -80,6 +81,11 @@
             window.removeEventListener("keydown", handleKeyDown)
         }
     })
+
+    function handleStayLoggedIn(value: any) {
+        AuthStore.setStayLogged(value.detail)
+        stayLoggedIn = value.detail
+    }
 
     function handleToggleScramble(value: any) {
         AuthStore.setScrambleValue(value.detail)
@@ -162,7 +168,7 @@
             </div>
             <hr class="divider" />
             <div class="flex-row setting">
-                <Switch hook="switch-stay-unlocked" />
+                <Switch hook="switch-stay-unlocked" on={stayLoggedIn} on:toggle={handleStayLoggedIn} />
                 <Label text="Stay unlocked?" hook="label-stay-unlocked" />
             </div>
         </div>
