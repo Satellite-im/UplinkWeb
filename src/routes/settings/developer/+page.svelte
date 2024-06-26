@@ -9,6 +9,7 @@
     import { ConversationStore } from "$lib/state/conversation"
     import { InventoryStore } from "$lib/state/inventory"
     import { goto } from "$app/navigation"
+    import { log } from "$lib/utils/Logger"
     initLocale()
 </script>
 
@@ -37,7 +38,16 @@
     </SettingSection>
 
     <SettingSection hook="section-clear-state" name="Clear State" description="Reset the application state.">
-        <Button hook="button-clear-state" appearance={Appearance.Alt} on:click={_ => clearState()}>Clear State</Button>
+        <Button hook="button-clear-state" appearance={Appearance.Alt} 
+            on:click={async _ => {
+                    await clearState().then(() => {
+                        goto(Route.Unlock)
+                        setTimeout(() => {
+                            location.reload()
+                        }, 500)
+                    })
+                    .catch((error) => log.error(`Error deleting database: ${error}`));
+                }}>Clear State</Button>
     </SettingSection>
 
     <SettingSection hook="section-test-voice" name="Test Voice" description="Dev Voice">
