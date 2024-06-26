@@ -1,5 +1,6 @@
 {
   "name": "Uplink Web",
+  "short_name": "Uplink",
   "description": "Privacy first, modular, universal messaging client.",
   "display": "standalone",
   "start_url": "/",
@@ -10,5 +11,10 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "permissions": [
+    "unlimitedStorage",
+    "fullscreen"
+  ],
+  "orientation": "portrait"
 }

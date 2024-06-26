@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Appearance, Route, Shape, Size } from "$lib/enums"
-    import { Sidebar, Slimbar } from "$lib/layouts"
+    import { Sidebar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Label from "$lib/elements/Label.svelte"
@@ -15,7 +15,6 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import NewPayment from "$lib/components/wallet/payments/NewPayment.svelte"
-    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
 
@@ -24,7 +23,6 @@
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
-    let balace: number = balance
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
@@ -34,7 +32,6 @@
 </script>
 
 <div id="page">
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Wallet} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet}>
         <Label text="New Payment" />
         <NewPayment recipients={mock_users} embedded />
@@ -127,6 +124,7 @@
             gap: var(--gap);
             max-height: 100vh;
             overflow-y: scroll;
+            min-width: 0;
 
             .transacitons {
                 min-height: 0;

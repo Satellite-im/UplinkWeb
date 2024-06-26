@@ -321,9 +321,7 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        padding-right: var(--padding);
+        padding: var(--padding);
 
         .save-controls {
             z-index: 2;

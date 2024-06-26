@@ -10,6 +10,7 @@ export interface ISettingsState {
         markdownSupport: boolean
         spamRejection: boolean
         compact: boolean
+        quick: boolean
     }
     audio: {
         inputDevice: string
