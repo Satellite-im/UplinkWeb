@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Sidebar, Slimbar } from "$lib/layouts"
+    import { Sidebar } from "$lib/layouts"
     import { Route } from "$lib/enums"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
@@ -76,7 +76,6 @@
 </script>
 
 <div id="page">
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={() => UIStore.toggleSidebar()} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={() => UIStore.toggleSidebar()} open={sidebarOpen} activeRoute={Route.Friends}></Sidebar>
     <div class="content">
         <Label text="Channel" />
@@ -115,6 +114,7 @@
             flex-direction: column;
             gap: var(--gap);
             padding: var(--padding);
+            min-width: 0;
         }
 
         .row {

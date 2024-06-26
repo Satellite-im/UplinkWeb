@@ -13,6 +13,7 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/store"
     import type { Call } from "$lib/types"
+    import { Slimbar } from "."
 
     initLocale()
 
@@ -38,39 +39,52 @@
     Store.state.activeCall.subscribe(c => (activeCall = c))
 </script>
 
-{#if open}
-    <div class="sidebar" data-cy="sidebar" transition:slide={{ duration: animationDuration, axis: "x" }}>
-        <div class="sidebar-pre">
-            <Input hook="input-sidebar-search" alt placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
-                <Icon icon={Shape.Search} />
-            </Input>
+<div class="sidebar-layout {open ? 'open' : 'closed'}" data-cy="sidebar" transition:slide={{ duration: animationDuration, axis: "x" }}>
+    <Slimbar sidebarOpen={open} on:toggle={handleToggle} activeRoute={activeRoute}></Slimbar>
 
-            <Button hook="button-hide-sidebar" icon appearance={Appearance.Alt} on:click={handleToggle} loading={loading}>
-                <Icon icon={Shape.Sidebar} />
-            </Button>
-        </div>
-        <div class="sidebar-content">
-            <slot></slot>
-        </div>
+    {#if open}
+        <div class="sidebar">
+            <div class="sidebar-pre">
+                <Input hook="input-sidebar-search" alt placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
+                    <Icon icon={Shape.Search} />
+                </Input>
 
-        <div class="popups">
-            {#if activeCall}
-                <CallControls />
-            {/if}
+                <Button hook="button-hide-sidebar" icon appearance={Appearance.Alt} on:click={handleToggle} loading={loading}>
+                    <Icon icon={Shape.Sidebar} />
+                </Button>
+            </div>
+
+            <div class="sidebar-content">
+                <slot></slot>
+            </div>
+
+            <div class="popups">
+                {#if activeCall}
+                    <CallControls />
+                {/if}
+            </div>
+            <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />
         </div>
-        <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />
-    </div>
-{/if}
+    {/if}
+</div>
 
 <style lang="scss">
-    .sidebar {
-        min-width: var(--sidebar-width);
-        width: var(--sidebar-width);
+    .sidebar-layout {
+        width: fit-content;
         display: inline-flex;
-        flex-direction: column;
-        padding: var(--padding-less);
-        gap: var(--gap);
+        flex-direction: row;
         border-right: var(--border-width) solid var(--border-color);
+        max-height: 100vh;
+        overflow-y: hidden;
+
+        .sidebar {
+            display: inline-flex;
+            flex-direction: column;
+            padding: var(--padding-less);
+            width: var(--sidebar-width);
+            gap: var(--gap);
+            flex: 1;
+        }
 
         .sidebar-content {
             display: flex;
@@ -88,6 +102,18 @@
             display: inline-flex;
             gap: var(--gap);
             align-items: center;
+        }
+    }
+
+    @media (max-width: 800px) {
+        .sidebar-layout {
+            min-width: 100%;
+        }
+        .sidebar-layout.closed {
+            min-width: 0;
+            :global(.slimbar) {
+                display: none;
+            }
         }
     }
 </style>

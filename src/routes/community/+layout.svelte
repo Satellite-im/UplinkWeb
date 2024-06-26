@@ -2,7 +2,7 @@
     import { Appearance, CommunityChannelKind, Route, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { Sidebar, Slimbar } from "$lib/layouts"
+    import { Sidebar } from "$lib/layouts"
     import { ImageEmbed, Modal } from "$lib/components"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
@@ -45,8 +45,6 @@
     {/if}
 
     <!-- Sidebar -->
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
-
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
         {#each communityChannelGroups as group}
             <ChannelGroup group={group} />
@@ -68,6 +66,7 @@
 
         .content {
             flex: 1;
+            min-width: 0;
         }
     }
 </style>
