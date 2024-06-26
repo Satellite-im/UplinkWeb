@@ -1,10 +1,24 @@
 <script lang="ts">
+    import { Button, Icon } from "$lib/elements"
+    import { Appearance, Shape } from "$lib/enums"
     import Controls from "$lib/layouts/Controls.svelte"
+    import { UIStore } from "$lib/state/ui"
+    import { get } from "svelte/store"
 
     export let simple: boolean = false
+    export let hideSidebarToggle: boolean = false
+    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
+
+    UIStore.state.sidebarOpen.subscribe(o => (sidebarOpen = o))
 </script>
 
 <div data-cy="topbar" class="topbar {simple ? 'simple' : ''}">
+    {#if !sidebarOpen && !hideSidebarToggle}
+        <Button class="sidebar-toggle-ext" hook="button-show-sidebar" icon appearance={Appearance.Alt} on:click={() => UIStore.toggleSidebar()}>
+            <Icon icon={Shape.Sidebar} />
+        </Button>
+    {/if}
+
     <slot name="before" />
     <div class="content">
         <slot name="content" />
@@ -42,6 +56,14 @@
             display: inline-flex;
             flex-direction: column;
             justify-content: center;
+        }
+    }
+
+    @media (min-width: 800px) {
+        .topbar {
+            :global(.sidebar-toggle-ext) {
+                display: none;
+            }
         }
     }
 </style>

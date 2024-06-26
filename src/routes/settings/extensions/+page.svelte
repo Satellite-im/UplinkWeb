@@ -14,10 +14,10 @@
         <Button hook="button-installed" text="Installed" appearance={Appearance.Alt}>
             <Icon icon={Shape.CheckMark} />
         </Button>
-        <Button hook="button-explore" text="Explore" appearance={Appearance.Alt} outline>
+        <Button hook="button-explore" text="Explore" appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Beaker} />
         </Button>
-        <Button hook="button-settings" text="Settings" appearance={Appearance.Alt} outline>
+        <Button hook="button-settings" text="Settings" appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Cog} />
         </Button>
     </Controls>
@@ -30,14 +30,12 @@
 
 <style lang="scss">
     #page {
-        display: flex;
-        flex-direction: column;
-        margin: 0;
         flex: 1;
+        width: 100%;
+        display: inline-flex;
+        flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        padding-right: var(--padding);
+        padding: var(--padding);
 
         .content {
             display: inline-flex;
@@ -47,6 +45,7 @@
             height: 100%;
             align-items: center;
             justify-content: center;
+            min-width: 0;
         }
     }
 </style>

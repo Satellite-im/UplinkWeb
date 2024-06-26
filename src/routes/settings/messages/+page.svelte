@@ -47,6 +47,14 @@
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, compact: on.detail } })
             }} />
     </SettingSection>
+    <SettingSection hook="section-spam-bot-detection" name={$_("settings.messages.quick")} description={$_("settings.messages.quickDescription")}>
+        <Switch
+            hook="checkbox-quick-messaging"
+            on={settings.messaging.quick}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, quick: on.detail } })
+            }} />
+    </SettingSection>
 </div>
 
 <style lang="scss">
@@ -56,9 +64,6 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        padding-right: var(--padding);
+        padding: var(--padding);
     }
 </style>

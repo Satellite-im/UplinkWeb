@@ -1,4 +1,5 @@
 import { KeybindAction, Locale } from "$lib/enums"
+import type { Keybind } from "$lib/types"
 
 export let defaultKeybinds = [
     {
@@ -65,6 +66,7 @@ export let defaultSettings = {
         markdownSupport: true,
         spamRejection: true,
         compact: false,
+        quick: false,
     },
     audio: {
         inputDevice: "Default",
@@ -77,7 +79,7 @@ export let defaultSettings = {
         callTimer: true,
     },
     extensions: {},
-    keybinds: defaultKeybinds,
+    keybinds: defaultKeybinds as Keybind[],
     accessibility: {
         openDyslexic: true,
     },
