@@ -20,9 +20,11 @@
     let searchQuery: string = ""
     let filteredEmojiData: EmojiCategory = { ...emojiData }
     let showSkinTonePopup: boolean = false
-    let selectedSkinTone: string = "🏽" // Default skin tone
+    let selectedSkinTone: string = "" // No skin tone by default
 
     const skinTones = ["🚫", "🏿", "🏾", "🏽", "🏼", "🏻"]
+    const sampleEmojis = ["👍", "👋", "👏", "👌", "✌️"]
+    let randomEmoji: string = sampleEmojis[Math.floor(Math.random() * sampleEmojis.length)]
 
     const fuseOptions = {
         keys: ["name"],
@@ -51,23 +53,22 @@
     }
 
     function selectSkinTone(tone: string) {
-        if (tone === "🚫") {
-            selectedSkinTone = ""
-        } else {
-            selectedSkinTone = tone
-        }
+        selectedSkinTone = tone === "🚫" ? "" : tone
+        randomEmoji = sampleEmojis[Math.floor(Math.random() * sampleEmojis.length)]
         showSkinTonePopup = false
         tick().then(filterEmojis) // Re-filter emojis to trigger re-render
     }
 
-    function getEmojiWithSkinTone(emoji: string) {
+    function getEmojiWithSkinTone(emoji: string, tone: string) {
         const codePoints = Array.from(emoji).map(char => char.codePointAt(0))
         const baseEmoji = codePoints[0]
         if (codePoints.length > 1 && codePoints[1] >= 0x1f3fb && codePoints[1] <= 0x1f3ff) {
-            return String.fromCodePoint(baseEmoji, selectedSkinTone.codePointAt(0))
+            return String.fromCodePoint(baseEmoji, tone.codePointAt(0))
         }
-        return selectedSkinTone ? String.fromCodePoint(baseEmoji, selectedSkinTone.codePointAt(0)) : emoji
+        return tone ? String.fromCodePoint(baseEmoji, tone.codePointAt(0)) : emoji
     }
+
+    $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, selectedSkinTone)
 </script>
 
 <div id="emoji-container">
@@ -76,12 +77,14 @@
             <Icon icon={Shape.Search} />
         </Input>
         <button class="skin-tone-selector" on:click={toggleSkinTonePopup}>
-            <span class="emoji">{selectedSkinTone || "🚫"}</span>
+            <span class="emoji">{skinToneEmoji}</span>
         </button>
         {#if showSkinTonePopup}
             <div class="skin-tone-popup">
                 {#each skinTones as tone}
-                    <button class="skin-tone" on:click={() => selectSkinTone(tone)}><span class="emoji">{tone}</span></button>
+                    <button class="skin-tone" on:click={() => selectSkinTone(tone)}>
+                        <span class="emoji">{getEmojiWithSkinTone(randomEmoji, tone === "🚫" ? "" : tone)}</span>
+                    </button>
                 {/each}
             </div>
         {/if}
@@ -94,7 +97,7 @@
                 <div class="emoji-list">
                     {#each filteredEmojiData[category] as emoji}
                         {#if emoji.skin_tone}
-                            <span class="emoji" title={emoji.name}>{getEmojiWithSkinTone(emoji.glyph)}</span>
+                            <span class="emoji" title={emoji.name}>{getEmojiWithSkinTone(emoji.glyph, selectedSkinTone)}</span>
                         {:else}
                             <span class="emoji" title={emoji.name}>{emoji.glyph}</span>
                         {/if}
