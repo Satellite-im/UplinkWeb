@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Icon from "$lib/elements/Icon.svelte"
-    import Text from "$lib/elements/Text.svelte"
-    import { CommunityChannelKind, Shape } from "$lib/enums"
-    import type { CommunityChannel } from "$lib/types"
+    import Icon from "src/lib/elements/Icon.svelte"
+    import Text from "src/lib/elements/Text.svelte"
+    import { CommunityChannelKind, Shape } from "src/lib/enums"
+    import type { CommunityChannel } from "src/lib/types"
 
     export let channel: CommunityChannel = {
         icon: Shape.Hashtag,

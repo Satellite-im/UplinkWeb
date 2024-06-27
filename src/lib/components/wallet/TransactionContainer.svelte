@@ -1,5 +1,5 @@
 <script>
-    import Label from "$lib/elements/Label.svelte"
+    import Label from "src/lib/elements/Label.svelte"
 </script>
 
 <table class="transactions-container">

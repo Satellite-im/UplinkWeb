@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Button, Icon, Text } from "$lib/elements"
-    import Label from "$lib/elements/Label.svelte"
-    import { Appearance, Shape } from "$lib/enums"
-    import Chatbar from "$lib/layouts/Chatbar.svelte"
-    import Topbar from "$lib/layouts/Topbar.svelte"
+    import { Button, Icon, Text } from "src/lib/elements"
+    import Label from "src/lib/elements/Label.svelte"
+    import { Appearance, Shape } from "src/lib/enums"
+    import Chatbar from "src/lib/layouts/Chatbar.svelte"
+    import Topbar from "src/lib/layouts/Topbar.svelte"
 </script>
 
 <div id="community">

@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { initLocale } from "$lib/lang"
+    import { initLocale } from "src/lib/lang"
     import { _ } from "svelte-i18n"
-    import { Navigation, SettingSection } from "$lib/layouts"
-    import { Appearance, Route, SettingsRoute, Shape } from "$lib/enums"
-    import { Store } from "$lib/state/store"
-    import Button from "$lib/elements/Button.svelte"
-    import { SettingsStore, clearState } from "$lib/state"
-    import { ConversationStore } from "$lib/state/conversation"
-    import { InventoryStore } from "$lib/state/inventory"
+    import { Navigation, SettingSection } from "src/lib/layouts"
+    import { Appearance, Route, SettingsRoute, Shape } from "src/lib/enums"
+    import { Store } from "src/lib/state/store"
+    import Button from "src/lib/elements/Button.svelte"
+    import { SettingsStore, clearState } from "src/lib/state"
+    import { ConversationStore } from "src/lib/state/conversation"
+    import { InventoryStore } from "src/lib/state/inventory"
     import { goto } from "$app/navigation"
-    import { log } from "$lib/utils/Logger"
+    import { log } from "src/lib/utils/Logger"
     initLocale()
 </script>
 

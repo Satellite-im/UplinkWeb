@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "$lib/enums"
-    import { defaultUser, type User } from "$lib/types"
+    import { Appearance, Shape, Size } from "src/lib/enums"
+    import { defaultUser, type User } from "src/lib/types"
     import { fade } from "svelte/transition"
     import { ProfilePicture } from ".."
-    import { animationDuration } from "$lib/globals/animations"
-    import { mock_users } from "$lib/mock/users"
-    import Controls from "$lib/layouts/Controls.svelte"
-    import { Icon, Button, Text } from "$lib/elements"
+    import { animationDuration } from "src/lib/globals/animations"
+    import { mock_users } from "src/lib/mock/users"
+    import Controls from "src/lib/layouts/Controls.svelte"
+    import { Icon, Button, Text } from "src/lib/elements"
 
     export let participant: User = defaultUser
     export let hasVideo: boolean = false

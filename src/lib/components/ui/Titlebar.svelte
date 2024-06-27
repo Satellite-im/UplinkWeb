@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Button, Icon, Logo, Text } from "$lib/elements"
-    import { Appearance, Shape, Size } from "$lib/enums"
+    import { Button, Icon, Logo, Text } from "src/lib/elements"
+    import { Appearance, Shape, Size } from "src/lib/enums"
     import Controls from "../../layouts/Controls.svelte"
 
     export let title: string = "Uplink"

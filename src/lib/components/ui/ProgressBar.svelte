@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Label } from "$lib/elements"
-    import { Appearance } from "$lib/enums"
+    import { Label } from "src/lib/elements"
+    import { Appearance } from "src/lib/enums"
 
     export let percent: number = 0
     export let appearance: Appearance = Appearance.Default

@@ -1,6 +1,6 @@
 <script>
-    import { Spacer, Button, Label, Icon } from "$lib/elements"
-    import { Appearance, Shape } from "$lib/enums"
+    import { Spacer, Button, Label, Icon } from "src/lib/elements"
+    import { Appearance, Shape } from "src/lib/enums"
 </script>
 
 <div class="market-nav">

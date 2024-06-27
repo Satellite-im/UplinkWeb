@@ -1,9 +1,9 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
     import Modal from "../ui/Modal.svelte"
-    import Topbar from "$lib/layouts/Topbar.svelte"
-    import Text from "$lib/elements/Text.svelte"
-    import Sidebar from "$lib/layouts/market/Sidebar.svelte"
+    import Topbar from "src/lib/layouts/Topbar.svelte"
+    import Text from "src/lib/elements/Text.svelte"
+    import Sidebar from "src/lib/layouts/market/Sidebar.svelte"
     import MarketNav from "./MarketNav.svelte"
 
     const dispatch = createEventDispatcher()

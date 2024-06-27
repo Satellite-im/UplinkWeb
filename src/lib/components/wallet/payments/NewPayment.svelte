@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "$lib/enums"
-    import type { User } from "$lib/types"
-    import { ProfilePicture, ProgressBar } from "$lib/components"
-    import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
-    import Text from "$lib/elements/Text.svelte"
+    import { Appearance, Shape, Size } from "src/lib/enums"
+    import type { User } from "src/lib/types"
+    import { ProfilePicture, ProgressBar } from "src/lib/components"
+    import { Button, Checkbox, Icon, Input, Label } from "src/lib/elements"
+    import Text from "src/lib/elements/Text.svelte"
 
     export let recipients: Array<User> = []
     export let embedded: boolean = false

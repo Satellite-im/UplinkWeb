@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Size } from "$lib/enums"
-    import type { ProfilePictureRequirements } from "$lib/types"
-    import { ProfilePicture } from "$lib/components"
+    import { Size } from "src/lib/enums"
+    import type { ProfilePictureRequirements } from "src/lib/types"
+    import { ProfilePicture } from "src/lib/components"
     import { createEventDispatcher } from "svelte"
     import { get } from "svelte/store"
-    import { SettingsStore } from "$lib/state"
-    import Text from "$lib/elements/Text.svelte"
-    import { Label } from "$lib/elements"
+    import { SettingsStore } from "src/lib/state"
+    import Text from "src/lib/elements/Text.svelte"
+    import { Label } from "src/lib/elements"
 
     export let remote: boolean = false
     export let subtext: string | null = ""

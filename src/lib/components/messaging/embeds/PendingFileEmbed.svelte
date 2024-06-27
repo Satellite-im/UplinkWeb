@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Text } from "$lib/elements"
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import { Shape, Size } from "$lib/enums"
-    import { type FileProgress } from "$lib/types"
+    import { Text } from "src/lib/elements"
+    import Button from "src/lib/elements/Button.svelte"
+    import Icon from "src/lib/elements/Icon.svelte"
+    import { Shape, Size } from "src/lib/enums"
+    import { type FileProgress } from "src/lib/types"
     import prettyBytes from "pretty-bytes"
 
     export let fileInfo: FileProgress

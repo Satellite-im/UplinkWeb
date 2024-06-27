@@ -1,7 +1,7 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import { Appearance, Shape } from "$lib/enums"
+    import Button from "src/lib/elements/Button.svelte"
+    import Icon from "src/lib/elements/Icon.svelte"
+    import { Appearance, Shape } from "src/lib/enums"
     import { createEventDispatcher } from "svelte"
 
     export let acceptableFiles: string = ".jpg, .jpeg, .png, .heic, .avif"

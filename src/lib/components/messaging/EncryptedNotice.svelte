@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Icon, Text } from "$lib/elements"
-    import { Shape, Size } from "$lib/enums"
+    import { Icon, Text } from "src/lib/elements"
+    import { Shape, Size } from "src/lib/enums"
 </script>
 
 <div class="encrypted-notice">

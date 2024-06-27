@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { Sidebar } from "$lib/layouts"
-    import { Route } from "$lib/enums"
+    import { Sidebar } from "src/lib/layouts"
+    import { Route } from "src/lib/enums"
     import { get } from "svelte/store"
-    import { UIStore } from "$lib/state/ui"
-    import { Input, Label, Button } from "$lib/elements"
-    import Stream from "$lib/elements/Stream.svelte"
+    import { UIStore } from "src/lib/state/ui"
+    import { Input, Label, Button } from "src/lib/elements"
+    import Stream from "src/lib/elements/Stream.svelte"
     import { onMount } from "svelte"
     import SimplePeer from "simple-peer"
-    import { log } from "$lib/utils/Logger"
+    import { log } from "src/lib/utils/Logger"
 
     let loading: boolean = false
     let channel: string = "SHFDKLSDF"

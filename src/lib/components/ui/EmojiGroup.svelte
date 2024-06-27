@@ -1,7 +1,7 @@
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import { Appearance, Shape } from "$lib/enums"
+    import Button from "src/lib/elements/Button.svelte"
+    import Icon from "src/lib/elements/Icon.svelte"
+    import { Appearance, Shape } from "src/lib/enums"
 
     export let emojis: string[]
     export let close: (event: MouseEvent) => void

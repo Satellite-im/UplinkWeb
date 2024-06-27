@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { Button, Icon, Text } from "$lib/elements"
-    import { Appearance, Route, SettingsRoute } from "$lib/enums"
-    import { SettingsStore, type ISettingsState } from "$lib/state"
-    import { UIStore } from "$lib/state/ui"
-    import type { NavRoute } from "$lib/types"
-    import { checkMobile } from "$lib/utils/Mobile"
+    import { Button, Icon, Text } from "src/lib/elements"
+    import { Appearance, Route, SettingsRoute } from "src/lib/enums"
+    import { SettingsStore, type ISettingsState } from "src/lib/state"
+    import { UIStore } from "src/lib/state/ui"
+    import type { NavRoute } from "src/lib/types"
+    import { checkMobile } from "src/lib/utils/Mobile"
     import { createEventDispatcher } from "svelte"
     import { get } from "svelte/store"
 

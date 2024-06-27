@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Button, Icon } from "$lib/elements"
-    import { Appearance, Shape } from "$lib/enums"
+    import { Button, Icon } from "src/lib/elements"
+    import { Appearance, Shape } from "src/lib/enums"
 
     export let icon: Shape = Shape.Beaker
     export let appearance: Appearance = Appearance.Default

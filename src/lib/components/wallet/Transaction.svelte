@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Text } from "$lib/elements"
-    import { ProfilePicture } from "$lib/components"
-    import { defaultUser, type Transaction } from "$lib/types"
-    import { Size } from "$lib/enums"
+    import { Text } from "src/lib/elements"
+    import { ProfilePicture } from "src/lib/components"
+    import { defaultUser, type Transaction } from "src/lib/types"
+    import { Size } from "src/lib/enums"
 
     export let transaction: Transaction = {
         amount: 0,

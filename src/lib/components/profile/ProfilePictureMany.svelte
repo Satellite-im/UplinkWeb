@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Icon from "$lib/elements/Icon.svelte"
-    import Text from "$lib/elements/Text.svelte"
-    import { Shape, Size } from "$lib/enums"
-    import type { User } from "$lib/types"
+    import Icon from "src/lib/elements/Icon.svelte"
+    import Text from "src/lib/elements/Text.svelte"
+    import { Shape, Size } from "src/lib/enums"
+    import type { User } from "src/lib/types"
     import { createEventDispatcher } from "svelte"
     import ProfilePicture from "./ProfilePicture.svelte"
 

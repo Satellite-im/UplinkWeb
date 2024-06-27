@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Size } from "$lib/enums"
+    import { Size } from "src/lib/enums"
 
     export let size: Size = Size.Medium
 </script>

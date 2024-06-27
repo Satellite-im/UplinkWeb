@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { UIStore } from "$lib/state/ui"
+    import { UIStore } from "src/lib/state/ui"
 
     export let color: string = ""
     export let name: string = ""

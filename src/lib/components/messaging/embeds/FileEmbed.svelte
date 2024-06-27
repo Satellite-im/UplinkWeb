@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Controls from "$lib/layouts/Controls.svelte"
-    import { Text } from "$lib/elements"
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
-    import { Appearance, Shape, Size } from "$lib/enums"
-    import { OperationState, type FileInfo } from "$lib/types"
+    import Controls from "src/lib/layouts/Controls.svelte"
+    import { Text } from "src/lib/elements"
+    import Button from "src/lib/elements/Button.svelte"
+    import Icon from "src/lib/elements/Icon.svelte"
+    import { Appearance, Shape, Size } from "src/lib/enums"
+    import { OperationState, type FileInfo } from "src/lib/types"
     import prettyBytes from "pretty-bytes"
 
     export let fileInfo: FileInfo = {

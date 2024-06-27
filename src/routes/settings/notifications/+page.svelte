@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Switch } from "$lib/elements"
-    import { initLocale } from "$lib/lang"
-    import { SettingSection } from "$lib/layouts"
-    import { SettingsStore, type ISettingsState } from "$lib/state"
-    import { Store } from "$lib/state/store"
+    import { Switch } from "src/lib/elements"
+    import { initLocale } from "src/lib/lang"
+    import { SettingSection } from "src/lib/layouts"
+    import { SettingsStore, type ISettingsState } from "src/lib/state"
+    import { Store } from "src/lib/state/store"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
 

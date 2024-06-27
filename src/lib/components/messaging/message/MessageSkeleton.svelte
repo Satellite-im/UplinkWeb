@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MessagePosition } from "$lib/enums"
+    import { MessagePosition } from "src/lib/enums"
 
     export let remote: boolean = false
     export let reply: boolean = false

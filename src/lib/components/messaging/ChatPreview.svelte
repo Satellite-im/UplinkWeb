@@ -1,12 +1,12 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
-    import { Route, Size } from "$lib/enums"
-    import type { Chat } from "$lib/types"
-    import { Text, Loader } from "$lib/elements"
-    import { ProfilePicture } from "$lib/components"
+    import { Route, Size } from "src/lib/enums"
+    import type { Chat } from "src/lib/types"
+    import { Text, Loader } from "src/lib/elements"
+    import { ProfilePicture } from "src/lib/components"
     import { createEventDispatcher } from "svelte"
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
-    import { Store } from "$lib/state/store"
+    import { Store } from "src/lib/state/store"
     import { goto } from "$app/navigation"
 
     export let chat: Chat

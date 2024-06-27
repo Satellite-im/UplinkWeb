@@ -1,10 +1,10 @@
 <script lang="ts">
     import { afterUpdate, onMount } from "svelte"
-    import Button from "$lib/elements/Button.svelte"
-    import { Icon } from "$lib/elements"
-    import { Appearance, Shape } from "$lib/enums"
+    import Button from "src/lib/elements/Button.svelte"
+    import { Icon } from "src/lib/elements"
+    import { Appearance, Shape } from "src/lib/enums"
     import { fade } from "svelte/transition"
-    import { SettingsStore } from "$lib/state"
+    import { SettingsStore } from "src/lib/state"
     import { get } from "svelte/store"
 
     let scrollContainer: Element

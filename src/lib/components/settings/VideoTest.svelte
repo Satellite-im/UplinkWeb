@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Button, Icon } from "$lib/elements"
-    import { Shape } from "$lib/enums"
+    import { Button, Icon } from "src/lib/elements"
+    import { Shape } from "src/lib/enums"
 
     export let audioInput: string | undefined
     export let videoInput: string | undefined

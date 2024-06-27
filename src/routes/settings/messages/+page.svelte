@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { initLocale } from "$lib/lang"
+    import { initLocale } from "src/lib/lang"
     import { _ } from "svelte-i18n"
-    import { SettingSection } from "$lib/layouts"
-    import { Switch } from "$lib/elements"
+    import { SettingSection } from "src/lib/layouts"
+    import { Switch } from "src/lib/elements"
     import { get } from "svelte/store"
-    import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { SettingsStore, type ISettingsState } from "src/lib/state"
 
     initLocale()
 

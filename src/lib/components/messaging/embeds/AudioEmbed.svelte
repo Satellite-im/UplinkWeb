@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Button, Icon } from "$lib/elements"
-    import Text from "$lib/elements/Text.svelte"
-    import { Appearance, Shape, Size } from "$lib/enums"
+    import { Button, Icon } from "src/lib/elements"
+    import Text from "src/lib/elements/Text.svelte"
+    import { Appearance, Shape, Size } from "src/lib/enums"
     import prettyBytes from "pretty-bytes"
 
     export let location: string = ""

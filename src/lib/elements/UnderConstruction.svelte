@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "src/lib/enums"
     import Icon from "./Icon.svelte"
     import Text from "./Text.svelte"
 </script>

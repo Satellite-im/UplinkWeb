@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Controls from "$lib/layouts/Controls.svelte"
-    import { Button, Icon, Label } from "$lib/elements"
-    import { Appearance, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+    import Controls from "src/lib/layouts/Controls.svelte"
+    import { Button, Icon, Label } from "src/lib/elements"
+    import { Appearance, Shape } from "src/lib/enums"
+    import { initLocale } from "src/lib/lang"
     import { _ } from "svelte-i18n"
-    import UnderConstruction from "$lib/elements/UnderConstruction.svelte"
+    import UnderConstruction from "src/lib/elements/UnderConstruction.svelte"
 
     initLocale()
 </script>

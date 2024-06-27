@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { KeybindState } from "$lib/enums"
-    import type { Keybind } from "$lib/types"
+    import { KeybindState } from "src/lib/enums"
+    import type { Keybind } from "src/lib/types"
     import { onMount, onDestroy } from "svelte"
     import { createEventDispatcher } from "svelte"
 

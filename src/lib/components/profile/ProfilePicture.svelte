@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Appearance, Size, Status } from "$lib/enums"
-    import { Loader } from "$lib/elements"
+    import { Appearance, Size, Status } from "src/lib/enums"
+    import { Loader } from "src/lib/elements"
     import { createEventDispatcher } from "svelte"
-    import type { Frame } from "$lib/types"
+    import type { Frame } from "src/lib/types"
 
     export let image: string = ""
     export let notifications: number = 0

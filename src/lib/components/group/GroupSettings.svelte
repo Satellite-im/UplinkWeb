@@ -1,9 +1,9 @@
 <script lang="ts">
-    import Label from "$lib/elements/Label.svelte"
-    import SettingSection from "$lib/layouts/SettingSection.svelte"
-    import Switch from "$lib/elements/Switch.svelte"
-    import Input from "$lib/elements/Input/Input.svelte"
-    import Spacer from "$lib/elements/Spacer.svelte"
+    import Label from "src/lib/elements/Label.svelte"
+    import SettingSection from "src/lib/layouts/SettingSection.svelte"
+    import Switch from "src/lib/elements/Switch.svelte"
+    import Input from "src/lib/elements/Input/Input.svelte"
+    import Spacer from "src/lib/elements/Spacer.svelte"
 </script>
 
 <div class="settings">

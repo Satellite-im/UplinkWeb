@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { Appearance, ChatType, Shape, Size } from "$lib/enums"
-    import { defaultChat, type Chat, type User, hashChat } from "$lib/types"
-    import { ProfilePicture } from "$lib/components"
-    import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
-    import Text from "$lib/elements/Text.svelte"
+    import { Appearance, ChatType, Shape, Size } from "src/lib/enums"
+    import { defaultChat, type Chat, type User, hashChat } from "src/lib/types"
+    import { ProfilePicture } from "src/lib/components"
+    import { Button, Checkbox, Icon, Input, Label } from "src/lib/elements"
+    import Text from "src/lib/elements/Text.svelte"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/store"
-    import Controls from "$lib/layouts/Controls.svelte"
+    import { Store } from "src/lib/state/store"
+    import Controls from "src/lib/layouts/Controls.svelte"
     import { createEventDispatcher } from "svelte"
-    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { RaygunStoreInstance } from "src/lib/wasm/RaygunStore"
 
     export let embedded: boolean = false
     let name = ""

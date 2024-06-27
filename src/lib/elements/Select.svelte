@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Icon } from "$lib/elements"
-    import { Shape, Appearance } from "$lib/enums"
-    import type { SelectOption } from "$lib/types"
+    import { Icon } from "src/lib/elements"
+    import { Shape, Appearance } from "src/lib/enums"
+    import type { SelectOption } from "src/lib/types"
     import { createEventDispatcher } from "svelte"
 
     export let options: Array<SelectOption> = []

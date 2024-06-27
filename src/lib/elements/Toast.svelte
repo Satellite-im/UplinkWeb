@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Button, Icon } from "$lib/elements"
-    import { Appearance, Shape } from "$lib/enums"
-    import type { ToastMessage } from "$lib/state/ui/toast"
-    import Label from "$lib/elements/Label.svelte"
+    import { Button, Icon } from "src/lib/elements"
+    import { Appearance, Shape } from "src/lib/enums"
+    import type { ToastMessage } from "src/lib/state/ui/toast"
+    import Label from "src/lib/elements/Label.svelte"
 
     export let toast: ToastMessage
 </script>

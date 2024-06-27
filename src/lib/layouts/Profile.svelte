@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { ProfilePicture } from "$lib/components"
-    import { Button, Icon, Input, Label, Text } from "$lib/elements"
-    import { Appearance, Shape, Size } from "$lib/enums"
-    import { Store } from "$lib/state/store"
-    import type { User } from "$lib/types"
-    import { Notes } from "$lib/utils/Notes"
+    import { ProfilePicture } from "src/lib/components"
+    import { Button, Icon, Input, Label, Text } from "src/lib/elements"
+    import { Appearance, Shape, Size } from "src/lib/enums"
+    import { Store } from "src/lib/state/store"
+    import type { User } from "src/lib/types"
+    import { Notes } from "src/lib/utils/Notes"
     import { get } from "svelte/store"
 
     export let user: User | null = null

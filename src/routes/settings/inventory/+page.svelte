@@ -1,11 +1,11 @@
 <script lang="ts">
-    import InventoryItem from "$lib/components/inventory/InventoryItem.svelte"
-    import Label from "$lib/elements/Label.svelte"
-    import { InventoryKind } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
-    import { mock_frames } from "$lib/mock/inventory"
-    import { Store } from "$lib/state/store"
-    import type { User } from "$lib/types"
+    import InventoryItem from "src/lib/components/inventory/InventoryItem.svelte"
+    import Label from "src/lib/elements/Label.svelte"
+    import { InventoryKind } from "src/lib/enums"
+    import { initLocale } from "src/lib/lang"
+    import { mock_frames } from "src/lib/mock/inventory"
+    import { Store } from "src/lib/state/store"
+    import type { User } from "src/lib/types"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
 

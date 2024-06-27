@@ -4,13 +4,13 @@
 </script>
 
 <script lang="ts">
-    import Button from "$lib/elements/Button.svelte"
-    import Icon from "$lib/elements/Icon.svelte"
+    import Button from "src/lib/elements/Button.svelte"
+    import Icon from "src/lib/elements/Icon.svelte"
     import { clickoutside } from "@svelte-put/clickoutside"
-    import { Appearance } from "$lib/enums"
-    import type { ContextItem } from "$lib/types"
+    import { Appearance } from "src/lib/enums"
+    import type { ContextItem } from "src/lib/types"
     import { createEventDispatcher, tick } from "svelte"
-    import { log } from "$lib/utils/Logger"
+    import { log } from "src/lib/utils/Logger"
 
     let visible: boolean = false
     let coords: [number, number] = [0, 0]

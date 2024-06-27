@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Route, Size } from "$lib/enums"
-    import { Text } from "$lib/elements"
-    import Logo from "$lib/elements/Logo.svelte"
+    import { Route, Size } from "src/lib/enums"
+    import { Text } from "src/lib/elements"
+    import Logo from "src/lib/elements/Logo.svelte"
     import { goto } from "$app/navigation"
 
     let stepLabels: string[] = ["Fetching your friends from space.", "Aligning multiple satellites.", "Spinning up warp drives.", "Initializing forward shields for maximum safety.", "Almost ready, finalizing."]
