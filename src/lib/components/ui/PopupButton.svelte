@@ -10,11 +10,14 @@
     function toggle() {
         open = !open
     }
+
+    let clazz = ""
+    export { clazz as class }
 </script>
 
 <div class="popup" data-cy={hook}>
     {#if open}
-        <Modal on:close={toggle} padded>
+        <Modal on:close={toggle} padded class={clazz}>
             <slot></slot>
             <svelte:fragment slot="controls">
                 <Button icon small appearance={Appearance.Alt} on:click={toggle}>
