@@ -4,8 +4,8 @@
     import "./markdown.scss"
     import { createEventDispatcher, onMount } from "svelte"
     import { EditorView } from "@codemirror/view"
+    import { writable } from "svelte/store"
 
-    // export let loading: boolean = false;
     export let placeholder: string = ""
     export let hook: string = ""
     export let alt: boolean = false
@@ -26,6 +26,10 @@
 
     let clazz = ""
     let input: HTMLElement
+    const dispatch = createEventDispatcher()
+    const writableValue = writable(value)
+
+    $: value = $writableValue
 
     let onsend: any[] = []
     if (rich) {
@@ -46,20 +50,21 @@
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
-                value = val
+                writableValue.set(val)
             })
             onsend.push(() => {
                 editor.value("")
             })
         })
     }
+
     export { clazz as class }
 
-    const dispatch = createEventDispatcher()
     const send = () => {
         dispatch("enter", value)
         onsend.forEach(e => e())
     }
+
     function onInput() {
         dispatch("input", value)
     }
@@ -92,7 +97,7 @@
             type="text"
             disabled={disabled}
             bind:this={input}
-            bind:value={value}
+            bind:value={$writableValue}
             placeholder={placeholder}
             on:keydown={onKeyDown}
             on:input={onInput}

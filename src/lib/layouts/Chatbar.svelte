@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Button, Icon, Input } from "$lib/elements"
-    import { Shape, Size } from "$lib/enums"
+    import { Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
     import { Store } from "$lib/state/store"
-    import { get } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { ConversationStore } from "$lib/state/conversation"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
@@ -16,17 +16,17 @@
     initLocale()
     export let replyTo: Message | undefined = undefined
     let markdown = get(SettingsStore.state).messaging.markdownSupport
-    let message: string = ""
-    let emojiPickerOpen: boolean = false
+    let message = writable("")
+    let emojiPickerOpen = writable(false)
 
     async function sendMessage(text: string) {
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
-        let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"))
+        let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(chat.id, text.split("\n"))
         result.onSuccess(res => {
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
-        message = ""
+        message.set("")
         replyTo = undefined
     }
 </script>
@@ -36,21 +36,22 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input alt placeholder={$_("generic.placeholder")} autoFocus bind:value={message} rounded rich={markdown} on:enter={_ => sendMessage(message)} />
+    <Input alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:enter={_ => sendMessage($message)} />
 
     <slot></slot>
 
-    <PopupButton name="Emoji Pikcer" class="emoji-popup" bind:open={emojiPickerOpen}>
+    <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiPickerOpen}>
         <EmojiSelector
             on:emoji={e => {
-                emojiPickerOpen = false
+                emojiPickerOpen.set(false)
+                message.update(current => current + e.detail)
             }} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>
     </PopupButton>
 
-    <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage(message)}>
+    <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
         <Icon icon={Shape.ChevronRight} />
     </Button>
 </div>
