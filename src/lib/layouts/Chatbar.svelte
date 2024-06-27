@@ -17,6 +17,7 @@
     export let replyTo: Message | undefined = undefined
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message: string = ""
+    let emojiPickerOpen: boolean = false
 
     async function sendMessage(text: string) {
         let chat = get(Store.state.activeChat)
@@ -39,8 +40,11 @@
 
     <slot></slot>
 
-    <PopupButton name="Emoji Pikcer" class="emoji-popup">
-        <EmojiSelector />
+    <PopupButton name="Emoji Pikcer" class="emoji-popup" bind:open={emojiPickerOpen}>
+        <EmojiSelector
+            on:emoji={e => {
+                emojiPickerOpen = false
+            }} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>

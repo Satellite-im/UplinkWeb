@@ -5,14 +5,16 @@
     import { emojiList } from "./EmojiList"
     import Fuse from "fuse.js"
     import { _ } from "svelte-i18n"
-    import { tick } from "svelte"
+    import { createEventDispatcher, tick } from "svelte"
+
+    interface Emoji {
+        skin_tone: boolean
+        name: string
+        glyph: string
+    }
 
     interface EmojiCategory {
-        [category: string]: {
-            skin_tone: boolean
-            name: string
-            glyph: string
-        }[]
+        [category: string]: Emoji[]
     }
 
     const emojiData: EmojiCategory = emojiList
@@ -22,14 +24,16 @@
     let showSkinTonePopup: boolean = false
     let selectedSkinTone: string = "" // No skin tone by default
 
-    const skinTones = ["🚫", "🏿", "🏾", "🏽", "🏼", "🏻"]
-    const sampleEmojis = ["👍", "👋", "👏", "👌", "✌️"]
+    const skinTones: string[] = ["🚫", "🏿", "🏾", "🏽", "🏼", "🏻"]
+    const sampleEmojis: string[] = ["👍", "👋", "👏", "👌", "✌️"]
     let randomEmoji: string = sampleEmojis[Math.floor(Math.random() * sampleEmojis.length)]
 
     const fuseOptions = {
         keys: ["name"],
         threshold: 0.3,
     }
+
+    const dispatch = createEventDispatcher()
 
     function filterEmojis() {
         if (!searchQuery) {
@@ -59,13 +63,18 @@
         tick().then(filterEmojis) // Re-filter emojis to trigger re-render
     }
 
-    function getEmojiWithSkinTone(emoji: string, tone: string) {
-        const codePoints = Array.from(emoji).map(char => char.codePointAt(0))
+    function getEmojiWithSkinTone(emoji: string, tone: string): string {
+        const codePoints = Array.from(emoji).map(char => char.codePointAt(0) as number)
         const baseEmoji = codePoints[0]
         if (codePoints.length > 1 && codePoints[1] >= 0x1f3fb && codePoints[1] <= 0x1f3ff) {
-            return String.fromCodePoint(baseEmoji, tone.codePointAt(0))
+            return String.fromCodePoint(baseEmoji, tone.codePointAt(0) as number)
         }
-        return tone ? String.fromCodePoint(baseEmoji, tone.codePointAt(0)) : emoji
+        return tone ? String.fromCodePoint(baseEmoji, tone.codePointAt(0) as number) : emoji
+    }
+
+    function handleEmojiClick(emoji: string, skinTone: string) {
+        const emojiWithTone = getEmojiWithSkinTone(emoji, skinTone)
+        dispatch("emoji", emojiWithTone)
     }
 
     $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, selectedSkinTone)
@@ -97,9 +106,9 @@
                 <div class="emoji-list">
                     {#each filteredEmojiData[category] as emoji}
                         {#if emoji.skin_tone}
-                            <span class="emoji" title={emoji.name}>{getEmojiWithSkinTone(emoji.glyph, selectedSkinTone)}</span>
+                            <span class="emoji" title={emoji.name} on:click={() => handleEmojiClick(emoji.glyph, selectedSkinTone)}>{getEmojiWithSkinTone(emoji.glyph, selectedSkinTone)}</span>
                         {:else}
-                            <span class="emoji" title={emoji.name}>{emoji.glyph}</span>
+                            <span class="emoji" title={emoji.name} on:click={() => handleEmojiClick(emoji.glyph, "")}>{emoji.glyph}</span>
                         {/if}
                     {/each}
                 </div>
