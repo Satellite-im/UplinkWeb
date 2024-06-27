@@ -162,6 +162,8 @@ export function initLocale() {
                         "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots from detecting they have been blocked too quickly.",
                     compactMessaging: "Compact Messages",
                     compactMessagingDescription: "Compact messages to group messages closer together and display more on screen.",
+                    quick: "Quick Chat",
+                    quickDescription: "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation."
                 },
                 preferences: {
                     appLanguage: "App Language",

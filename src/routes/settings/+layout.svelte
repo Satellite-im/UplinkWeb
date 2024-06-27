@@ -5,10 +5,11 @@
     import { initLocale } from "$lib/lang"
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import Slimbar from "$lib/layouts/Slimbar.svelte"
+    import Topbar from "$lib/layouts/Topbar.svelte"
     import { SettingsStore } from "$lib/state"
     import { UIStore } from "$lib/state/ui"
-    import type { ContextItem, NavRoute } from "$lib/types"
+    import type { NavRoute } from "$lib/types"
+    import { checkMobile } from "$lib/utils/Mobile"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
     import { get, writable, type Writable } from "svelte/store"
@@ -139,6 +140,7 @@
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     $: setRoutes = get(settingsRoutes)
     SettingsStore.state.subscribe(value => {
+        let isMobile: boolean = checkMobile()
         if (value.devmode) {
             if (!get(settingsRoutes).find(route => route.to === SettingsRoute.Developer)) {
                 settingsRoutes.update(routes => [
@@ -148,22 +150,24 @@
                         icon: Shape.Code,
                         name: "Developer",
                     },
-                ]);
+                ])
             }
         } else {
-            settingsRoutes.update(routes =>
-                routes.filter(route => route.to !== SettingsRoute.Developer)
-            );
+            settingsRoutes.update(routes => routes.filter(route => route.to !== SettingsRoute.Developer))
         }
-    });
+
+        if (isMobile) {
+            settingsRoutes.update(routes => routes.filter(route => route.to !== SettingsRoute.Keybinds))
+        }
+    })
 
     onMount(() => {
         // Ensure settingsRoutes is reactive
         const unsubscribe = settingsRoutes.subscribe(routes => {
             setRoutes = routes
-        });
-        return () => unsubscribe();
-    });
+        })
+        return () => unsubscribe()
+    })
 </script>
 
 <div id="settings">
@@ -171,7 +175,6 @@
     <!-- Unused atm -->
     <!-- <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} /> -->
 
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
         <Navigation
             routes={setRoutes}
@@ -184,7 +187,12 @@
     </Sidebar>
 
     <div class="content">
-        <slot></slot>
+        {#if checkMobile()}
+            <Topbar />
+        {/if}
+        <div class="slot">
+            <slot></slot>
+        </div>
     </div>
 </div>
 
@@ -198,7 +206,17 @@
 
         .content {
             flex: 1;
-            padding: var(--padding);
+            min-width: 0;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+
+            .slot {
+                width: 100%;
+                display: inline-flex;
+                flex-direction: column;
+                gap: var(--gap);
+            }
         }
     }
 </style>

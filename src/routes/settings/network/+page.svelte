@@ -17,9 +17,6 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        padding-right: var(--padding);
+        padding: var(--padding);
     }
 </style>
