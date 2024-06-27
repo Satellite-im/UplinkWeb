@@ -74,12 +74,12 @@
             <Icon icon={Shape.Search} />
         </Input>
         <button class="skin-tone-selector" on:click={toggleSkinTonePopup}>
-            {selectedSkinTone || "🚫"}
+            <span class="emoji">{selectedSkinTone || "🚫"}</span>
         </button>
         {#if showSkinTonePopup}
             <div class="skin-tone-popup">
                 {#each skinTones as tone}
-                    <button class="skin-tone" on:click={() => selectSkinTone(tone)}>{tone}</button>
+                    <button class="skin-tone" on:click={() => selectSkinTone(tone)}><span class="emoji">{tone}</span></button>
                 {/each}
             </div>
         {/if}
