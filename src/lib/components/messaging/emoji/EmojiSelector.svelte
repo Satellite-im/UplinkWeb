@@ -69,7 +69,7 @@
         display: flex;
         flex-direction: column;
         height: var(--emoji-selector-height);
-        width: var(--min-component-width);
+        width: calc(var(--min-component-width) * 2);
 
         #emoji-selector {
             flex: 1;
@@ -109,7 +109,18 @@
                 background: var(--alt-color);
                 border-radius: var(--border-radius-more);
                 font-size: var(--label-size);
+
+                &:hover {
+                    background-color: var(--primary-color);
+                }
             }
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        #emoji-container {
+            width: 100%;
+            height: 100%;
         }
     }
 </style>

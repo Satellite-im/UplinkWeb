@@ -39,7 +39,7 @@
 
     <slot></slot>
 
-    <PopupButton name="Emoji Pikcer">
+    <PopupButton name="Emoji Pikcer" class="emoji-popup">
         <EmojiSelector />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} size={Size.Large} />
@@ -59,5 +59,24 @@
         gap: var(--gap);
         width: 100%;
         border-top: var(--border-width) solid var(--border-color);
+
+        :global(.emoji-popup) {
+            position: absolute;
+            right: 1rem;
+            bottom: var(--input-height);
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        .chatbar {
+            :global(.emoji-popup) {
+                position: absolute;
+                right: var(--padding-less);
+                left: var(--padding-less);
+                bottom: var(--input-height);
+                top: var(--padding-less);
+                width: 100%;
+            }
+        }
     }
 </style>
