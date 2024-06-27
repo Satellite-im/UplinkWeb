@@ -5,7 +5,7 @@
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import Controls from "$lib/layouts/Controls.svelte"
     import { createEventDispatcher } from "svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"

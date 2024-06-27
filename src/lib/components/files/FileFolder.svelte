@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Icon, Text, Spacer } from "$lib/elements"
     import { FilesItemKind, Shape, Size } from "$lib/enums"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import type { FileInfo } from "$lib/types"
     import { OperationState } from "$lib/types"
     import prettyBytes from "pretty-bytes"

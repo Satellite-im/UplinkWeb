@@ -10,7 +10,7 @@
     import PopupButton from "../ui/PopupButton.svelte"
     import CallSettings from "./CallSettings.svelte"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
 
     export let expanded: boolean = false

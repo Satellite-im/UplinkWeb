@@ -11,7 +11,7 @@
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import type { Call } from "$lib/types"
     import { Slimbar } from "."
 

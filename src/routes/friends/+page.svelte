@@ -8,7 +8,7 @@
     import type { Chat, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"

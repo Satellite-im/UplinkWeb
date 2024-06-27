@@ -14,11 +14,6 @@ export default defineConfig({
           $lib: path.resolve(__dirname, 'src/lib')
         }
       },
-      server: {
-        hmr: {
-          overlay: false
-        }
-      },
     plugins: [
         IS_PRODUCTION
             ? removeAttribute({

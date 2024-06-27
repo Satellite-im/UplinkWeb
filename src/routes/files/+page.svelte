@@ -15,7 +15,7 @@
     import { Sortable } from "@shopify/draggable"
     import type { Chat, FileInfo } from "$lib/types"
     import { get, writable } from "svelte/store"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"

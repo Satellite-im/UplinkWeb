@@ -4,7 +4,7 @@
     import { _ } from "svelte-i18n"
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { type Chat, type User } from "$lib/types"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
