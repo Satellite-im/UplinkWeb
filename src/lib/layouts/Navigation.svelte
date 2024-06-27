@@ -58,7 +58,6 @@
         gap: var(--gap);
         justify-content: space-evenly;
         width: 100%;
-        padding-bottom: var(--padding);
 
         &.vertical {
             flex-direction: column;
@@ -76,6 +75,12 @@
                     justify-content: space-between;
                 }
             }
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        .navigation {
+            padding-bottom: var(--padding);
         }
     }
 </style>

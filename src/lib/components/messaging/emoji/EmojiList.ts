@@ -1,2872 +1,2898 @@
 export const emojiList = {
-    "smileys_and_emoticons": [
+    "smileys_and_emotion": [
         {
-            "name": "Grinning Face",
+            "name": "grinning face",
             "glyph": "😀"
         },
         {
-            "name": "Grinning Face with Big Eyes",
+            "name": "grinning face with big eyes",
             "glyph": "😃"
         },
         {
-            "name": "Grinning Face with Smiling Eyes",
+            "name": "grinning face with smiling eyes",
             "glyph": "😄"
         },
         {
-            "name": "Beaming Face with Smiling Eyes",
+            "name": "beaming face with smiling eyes",
             "glyph": "😁"
         },
         {
-            "name": "Grinning Squinting Face",
+            "name": "grinning squinting face",
             "glyph": "😆"
         },
         {
-            "name": "Grinning Face with Sweat",
+            "name": "grinning face with sweat",
             "glyph": "😅"
         },
         {
-            "name": "Rolling on the Floor Laughing",
+            "name": "rolling on the floor laughing",
             "glyph": "🤣"
         },
         {
-            "name": "Face with Tears of Joy",
+            "name": "face with tears of joy",
             "glyph": "😂"
         },
         {
-            "name": "Slightly Smiling Face",
+            "name": "slightly smiling face",
             "glyph": "🙂"
         },
         {
-            "name": "Upside-Down Face",
+            "name": "upside-down face",
             "glyph": "🙃"
         },
         {
-            "name": "Winking Face",
+            "name": "melting face",
+            "glyph": "🫠"
+        },
+        {
+            "name": "winking face",
             "glyph": "😉"
         },
         {
-            "name": "Smiling Face with Smiling Eyes",
+            "name": "smiling face with smiling eyes",
             "glyph": "😊"
         },
         {
-            "name": "Smiling Face with Halo",
+            "name": "smiling face with halo",
             "glyph": "😇"
         },
         {
-            "name": "Smiling Face with Hearts",
+            "name": "smiling face with hearts",
             "glyph": "🥰"
         },
         {
-            "name": "Smiling Face with Heart-Eyes",
+            "name": "smiling face with heart-eyes",
             "glyph": "😍"
         },
         {
-            "name": "Star-Struck",
+            "name": "star-struck",
             "glyph": "🤩"
         },
         {
-            "name": "Face Blowing a Kiss",
+            "name": "face blowing a kiss",
             "glyph": "😘"
         },
         {
-            "name": "Kissing Face",
+            "name": "kissing face",
             "glyph": "😗"
         },
         {
-            "name": "Smiling Face",
-            "glyph": "☺️"
+            "name": "smiling face",
+            "glyph": "☺"
         },
         {
-            "name": "Kissing Face with Closed Eyes",
+            "name": "kissing face with closed eyes",
             "glyph": "😚"
         },
         {
-            "name": "Kissing Face with Smiling Eyes",
+            "name": "kissing face with smiling eyes",
             "glyph": "😙"
         },
         {
-            "name": "Face Savoring Food",
+            "name": "smiling face with tear",
+            "glyph": "🥲"
+        },
+        {
+            "name": "face savoring food",
             "glyph": "😋"
         },
         {
-            "name": "Face with Tongue",
+            "name": "face with tongue",
             "glyph": "😛"
         },
         {
-            "name": "Winking Face with Tongue",
+            "name": "winking face with tongue",
             "glyph": "😜"
         },
         {
-            "name": "Zany Face",
+            "name": "zany face",
             "glyph": "🤪"
         },
         {
-            "name": "Squinting Face with Tongue",
+            "name": "squinting face with tongue",
             "glyph": "😝"
         },
         {
-            "name": "Money-Mouth Face",
+            "name": "money-mouth face",
             "glyph": "🤑"
         },
         {
-            "name": "Hugging Face",
+            "name": "smiling face with open hands",
             "glyph": "🤗"
         },
         {
-            "name": "Face with Hand Over Mouth",
+            "name": "face with hand over mouth",
             "glyph": "🤭"
         },
         {
-            "name": "Shushing Face",
+            "name": "face with open eyes and hand over mouth",
+            "glyph": "🫢"
+        },
+        {
+            "name": "face with peeking eye",
+            "glyph": "🫣"
+        },
+        {
+            "name": "shushing face",
             "glyph": "🤫"
         },
         {
-            "name": "Thinking Face",
+            "name": "thinking face",
             "glyph": "🤔"
         },
         {
-            "name": "Zipper-Mouth Face",
+            "name": "saluting face",
+            "glyph": "🫡"
+        },
+        {
+            "name": "zipper-mouth face",
             "glyph": "🤐"
         },
         {
-            "name": "Face with Raised Eyebrow",
+            "name": "face with raised eyebrow",
             "glyph": "🤨"
         },
         {
-            "name": "Neutral Face",
+            "name": "neutral face",
             "glyph": "😐"
         },
         {
-            "name": "Expressionless Face",
+            "name": "expressionless face",
             "glyph": "😑"
         },
         {
-            "name": "Face Without Mouth",
+            "name": "face without mouth",
             "glyph": "😶"
         },
         {
-            "name": "Smirking Face",
+            "name": "dotted line face",
+            "glyph": "🫥"
+        },
+        {
+            "name": "face in clouds",
+            "glyph": "😶‍🌫️"
+        },
+        {
+            "name": "smirking face",
             "glyph": "😏"
         },
         {
-            "name": "Unamused Face",
+            "name": "unamused face",
             "glyph": "😒"
         },
         {
-            "name": "Face with Rolling Eyes",
+            "name": "face with rolling eyes",
             "glyph": "🙄"
         },
         {
-            "name": "Grimacing Face",
+            "name": "grimacing face",
             "glyph": "😬"
         },
         {
-            "name": "Lying Face",
+            "name": "face exhaling",
+            "glyph": "😮‍💨"
+        },
+        {
+            "name": "lying face",
             "glyph": "🤥"
         },
         {
-            "name": "Relieved Face",
+            "name": "shaking face",
+            "glyph": "🫨"
+        },
+        {
+            "name": "⊛ head shaking horizontally",
+            "glyph": "🙂‍↔️"
+        },
+        {
+            "name": "⊛ head shaking vertically",
+            "glyph": "🙂‍↕️"
+        },
+        {
+            "name": "relieved face",
             "glyph": "😌"
         },
         {
-            "name": "Pensive Face",
+            "name": "pensive face",
             "glyph": "😔"
         },
         {
-            "name": "Sleepy Face",
+            "name": "sleepy face",
             "glyph": "😪"
         },
         {
-            "name": "Drooling Face",
+            "name": "drooling face",
             "glyph": "🤤"
         },
         {
-            "name": "Sleeping Face",
+            "name": "sleeping face",
             "glyph": "😴"
         },
         {
-            "name": "Face with Medical Mask",
+            "name": "face with medical mask",
             "glyph": "😷"
         },
         {
-            "name": "Face with Thermometer",
+            "name": "face with thermometer",
             "glyph": "🤒"
         },
         {
-            "name": "Face with Head-Bandage",
+            "name": "face with head-bandage",
             "glyph": "🤕"
         },
         {
-            "name": "Nauseated Face",
+            "name": "nauseated face",
             "glyph": "🤢"
         },
         {
-            "name": "Face Vomiting",
+            "name": "face vomiting",
             "glyph": "🤮"
         },
         {
-            "name": "Sneezing Face",
+            "name": "sneezing face",
             "glyph": "🤧"
         },
         {
-            "name": "Hot Face",
+            "name": "hot face",
             "glyph": "🥵"
         },
         {
-            "name": "Cold Face",
+            "name": "cold face",
             "glyph": "🥶"
         },
         {
-            "name": "Woozy Face",
+            "name": "woozy face",
             "glyph": "🥴"
         },
         {
-            "name": "Dizzy Face",
+            "name": "face with crossed-out eyes",
             "glyph": "😵"
         },
         {
-            "name": "Exploding Head",
+            "name": "face with spiral eyes",
+            "glyph": "😵‍💫"
+        },
+        {
+            "name": "exploding head",
             "glyph": "🤯"
         },
         {
-            "name": "Cowboy Hat Face",
+            "name": "cowboy hat face",
             "glyph": "🤠"
         },
         {
-            "name": "Partying Face",
+            "name": "partying face",
             "glyph": "🥳"
         },
         {
-            "name": "Disguised Face",
+            "name": "disguised face",
             "glyph": "🥸"
         },
         {
-            "name": "Smiling Face with Sunglasses",
+            "name": "smiling face with sunglasses",
             "glyph": "😎"
         },
         {
-            "name": "Nerd Face",
+            "name": "nerd face",
             "glyph": "🤓"
         },
         {
-            "name": "Face with Monocle",
+            "name": "face with monocle",
             "glyph": "🧐"
         },
         {
-            "name": "Confused Face",
+            "name": "confused face",
             "glyph": "😕"
         },
         {
-            "name": "Worried Face",
+            "name": "face with diagonal mouth",
+            "glyph": "🫤"
+        },
+        {
+            "name": "worried face",
             "glyph": "😟"
         },
         {
-            "name": "Slightly Frowning Face",
+            "name": "slightly frowning face",
             "glyph": "🙁"
         },
         {
-            "name": "Frowning Face",
-            "glyph": "☹️"
+            "name": "frowning face",
+            "glyph": "☹"
         },
         {
-            "name": "Face with Open Mouth",
+            "name": "face with open mouth",
             "glyph": "😮"
         },
         {
-            "name": "Hushed Face",
+            "name": "hushed face",
             "glyph": "😯"
         },
         {
-            "name": "Astonished Face",
+            "name": "astonished face",
             "glyph": "😲"
         },
         {
-            "name": "Flushed Face",
+            "name": "flushed face",
             "glyph": "😳"
         },
         {
-            "name": "Pleading Face",
+            "name": "pleading face",
             "glyph": "🥺"
         },
         {
-            "name": "Frowning Face with Open Mouth",
+            "name": "face holding back tears",
+            "glyph": "🥹"
+        },
+        {
+            "name": "frowning face with open mouth",
             "glyph": "😦"
         },
         {
-            "name": "Anguished Face",
+            "name": "anguished face",
             "glyph": "😧"
         },
         {
-            "name": "Fearful Face",
+            "name": "fearful face",
             "glyph": "😨"
         },
         {
-            "name": "Anxious Face with Sweat",
+            "name": "anxious face with sweat",
             "glyph": "😰"
         },
         {
-            "name": "Sad but Relieved Face",
+            "name": "sad but relieved face",
             "glyph": "😥"
         },
         {
-            "name": "Crying Face",
+            "name": "crying face",
             "glyph": "😢"
         },
         {
-            "name": "Loudly Crying Face",
+            "name": "loudly crying face",
             "glyph": "😭"
         },
         {
-            "name": "Face Screaming in Fear",
+            "name": "face screaming in fear",
             "glyph": "😱"
         },
         {
-            "name": "Confounded Face",
+            "name": "confounded face",
             "glyph": "😖"
         },
         {
-            "name": "Persevering Face",
+            "name": "persevering face",
             "glyph": "😣"
         },
         {
-            "name": "Disappointed Face",
+            "name": "disappointed face",
             "glyph": "😞"
         },
         {
-            "name": "Downcast Face with Sweat",
+            "name": "downcast face with sweat",
             "glyph": "😓"
         },
         {
-            "name": "Weary Face",
+            "name": "weary face",
             "glyph": "😩"
         },
         {
-            "name": "Tired Face",
+            "name": "tired face",
             "glyph": "😫"
         },
         {
-            "name": "Yawning Face",
+            "name": "yawning face",
             "glyph": "🥱"
         },
         {
-            "name": "Face with Steam From Nose",
+            "name": "face with steam from nose",
             "glyph": "😤"
         },
         {
-            "name": "Pouting Face",
+            "name": "enraged face",
             "glyph": "😡"
         },
         {
-            "name": "Angry Face",
+            "name": "angry face",
             "glyph": "😠"
         },
         {
-            "name": "Face with Symbols on Mouth",
+            "name": "face with symbols on mouth",
             "glyph": "🤬"
         },
         {
-            "name": "Smiling Face with Horns",
+            "name": "smiling face with horns",
             "glyph": "😈"
         },
         {
-            "name": "Angry Face with Horns",
+            "name": "angry face with horns",
             "glyph": "👿"
         },
         {
-            "name": "Skull",
+            "name": "skull",
             "glyph": "💀"
         },
         {
-            "name": "Skull and Crossbones",
-            "glyph": "☠️"
+            "name": "skull and crossbones",
+            "glyph": "☠"
         },
         {
-            "name": "Pile of Poo",
+            "name": "pile of poo",
             "glyph": "💩"
         },
         {
-            "name": "Clown Face",
+            "name": "clown face",
             "glyph": "🤡"
         },
         {
-            "name": "Ogre",
+            "name": "ogre",
             "glyph": "👹"
         },
         {
-            "name": "Goblin",
+            "name": "goblin",
             "glyph": "👺"
         },
         {
-            "name": "Ghost",
+            "name": "ghost",
             "glyph": "👻"
         },
         {
-            "name": "Alien",
+            "name": "alien",
             "glyph": "👽"
         },
         {
-            "name": "Alien Monster",
+            "name": "alien monster",
             "glyph": "👾"
         },
         {
-            "name": "Robot",
+            "name": "robot",
             "glyph": "🤖"
         },
         {
-            "name": "Grinning Cat",
+            "name": "grinning cat",
             "glyph": "😺"
         },
         {
-            "name": "Grinning Cat with Smiling Eyes",
+            "name": "grinning cat with smiling eyes",
             "glyph": "😸"
         },
         {
-            "name": "Cat with Tears of Joy",
+            "name": "cat with tears of joy",
             "glyph": "😹"
         },
         {
-            "name": "Smiling Cat with Heart-Eyes",
+            "name": "smiling cat with heart-eyes",
             "glyph": "😻"
         },
         {
-            "name": "Cat with Wry Smile",
+            "name": "cat with wry smile",
             "glyph": "😼"
         },
         {
-            "name": "Kissing Cat",
+            "name": "kissing cat",
             "glyph": "😽"
         },
         {
-            "name": "Weary Cat",
+            "name": "weary cat",
             "glyph": "🙀"
         },
         {
-            "name": "Crying Cat",
+            "name": "crying cat",
             "glyph": "😿"
         },
         {
-            "name": "Pouting Cat",
+            "name": "pouting cat",
             "glyph": "😾"
-        }
-    ],
-    "flags": [
-        {
-            "name": "Flag: Afghanistan",
-            "glyph": "🇦🇫"
-        },
-        {
-            "name": "Flag: Albania",
-            "glyph": "🇦🇱"
-        },
-        {
-            "name": "Flag: Algeria",
-            "glyph": "🇩🇿"
-        },
-        {
-            "name": "Flag: American Samoa",
-            "glyph": "🇦🇸"
-        },
-        {
-            "name": "Flag: Andorra",
-            "glyph": "🇦🇩"
-        },
-        {
-            "name": "Flag: Angola",
-            "glyph": "🇦🇴"
-        },
-        {
-            "name": "Flag: Anguilla",
-            "glyph": "🇦🇮"
-        },
-        {
-            "name": "Flag: Antarctica",
-            "glyph": "🇦🇶"
-        },
-        {
-            "name": "Flag: Antigua & Barbuda",
-            "glyph": "🇦🇬"
-        },
-        {
-            "name": "Flag: Argentina",
-            "glyph": "🇦🇷"
-        },
-        {
-            "name": "Flag: Armenia",
-            "glyph": "🇦🇲"
-        },
-        {
-            "name": "Flag: Aruba",
-            "glyph": "🇦🇼"
-        },
-        {
-            "name": "Flag: Australia",
-            "glyph": "🇦🇺"
-        },
-        {
-            "name": "Flag: Austria",
-            "glyph": "🇦🇹"
-        },
-        {
-            "name": "Flag: Azerbaijan",
-            "glyph": "🇦🇿"
-        },
-        {
-            "name": "Flag: Bahamas",
-            "glyph": "🇧🇸"
-        },
-        {
-            "name": "Flag: Bahrain",
-            "glyph": "🇧🇭"
-        },
-        {
-            "name": "Flag: Bangladesh",
-            "glyph": "🇧🇩"
-        },
-        {
-            "name": "Flag: Barbados",
-            "glyph": "🇧🇧"
-        },
-        {
-            "name": "Flag: Belarus",
-            "glyph": "🇧🇾"
-        },
-        {
-            "name": "Flag: Belgium",
-            "glyph": "🇧🇪"
-        },
-        {
-            "name": "Flag: Belize",
-            "glyph": "🇧🇿"
-        },
-        {
-            "name": "Flag: Benin",
-            "glyph": "🇧🇯"
-        },
-        {
-            "name": "Flag: Bermuda",
-            "glyph": "🇧🇲"
-        },
-        {
-            "name": "Flag: Bhutan",
-            "glyph": "🇧🇹"
-        },
-        {
-            "name": "Flag: Bolivia",
-            "glyph": "🇧🇴"
-        },
-        {
-            "name": "Flag: Bosnia & Herzegovina",
-            "glyph": "🇧🇦"
-        },
-        {
-            "name": "Flag: Botswana",
-            "glyph": "🇧🇼"
-        },
-        {
-            "name": "Flag: Brazil",
-            "glyph": "🇧🇷"
-        },
-        {
-            "name": "Flag: British Indian Ocean Territory",
-            "glyph": "🇮🇴"
-        },
-        {
-            "name": "Flag: British Virgin Islands",
-            "glyph": "🇻🇬"
-        },
-        {
-            "name": "Flag: Brunei",
-            "glyph": "🇧🇳"
-        },
-        {
-            "name": "Flag: Bulgaria",
-            "glyph": "🇧🇬"
-        },
-        {
-            "name": "Flag: Burkina Faso",
-            "glyph": "🇧🇫"
-        },
-        {
-            "name": "Flag: Burundi",
-            "glyph": "🇧🇮"
-        },
-        {
-            "name": "Flag: Cape Verde",
-            "glyph": "🇨🇻"
-        },
-        {
-            "name": "Flag: Cambodia",
-            "glyph": "🇰🇭"
-        },
-        {
-            "name": "Flag: Cameroon",
-            "glyph": "🇨🇲"
-        },
-        {
-            "name": "Flag: Canada",
-            "glyph": "🇨🇦"
-        },
-        {
-            "name": "Flag: Canary Islands",
-            "glyph": "🇮🇨"
-        },
-        {
-            "name": "Flag: Cayman Islands",
-            "glyph": "🇰🇾"
-        },
-        {
-            "name": "Flag: Central African Republic",
-            "glyph": "🇨🇫"
-        },
-        {
-            "name": "Flag: Chad",
-            "glyph": "🇹🇩"
-        },
-        {
-            "name": "Flag: Chile",
-            "glyph": "🇨🇱"
-        },
-        {
-            "name": "Flag: China",
-            "glyph": "🇨🇳"
-        },
-        {
-            "name": "Flag: Christmas Island",
-            "glyph": "🇨🇽"
-        },
-        {
-            "name": "Flag: Cocos (Keeling) Islands",
-            "glyph": "🇨🇨"
-        },
-        {
-            "name": "Flag: Colombia",
-            "glyph": "🇨🇴"
-        },
-        {
-            "name": "Flag: Comoros",
-            "glyph": "🇰🇲"
-        },
-        {
-            "name": "Flag: Congo - Brazzaville",
-            "glyph": "🇨🇬"
-        },
-        {
-            "name": "Flag: Congo - Kinshasa",
-            "glyph": "🇨🇩"
-        },
-        {
-            "name": "Flag: Cook Islands",
-            "glyph": "🇨🇰"
-        },
-        {
-            "name": "Flag: Costa Rica",
-            "glyph": "🇨🇷"
-        },
-        {
-            "name": "Flag: Croatia",
-            "glyph": "🇭🇷"
-        },
-        {
-            "name": "Flag: Cuba",
-            "glyph": "🇨🇺"
-        },
-        {
-            "name": "Flag: Curaçao",
-            "glyph": "🇨🇼"
-        },
-        {
-            "name": "Flag: Cyprus",
-            "glyph": "🇨🇾"
-        },
-        {
-            "name": "Flag: Czechia",
-            "glyph": "🇨🇿"
-        },
-        {
-            "name": "Flag: Côte d’Ivoire",
-            "glyph": "🇨🇮"
-        },
-        {
-            "name": "Flag: Denmark",
-            "glyph": "🇩🇰"
-        },
-        {
-            "name": "Flag: Djibouti",
-            "glyph": "🇩🇯"
-        },
-        {
-            "name": "Flag: Dominica",
-            "glyph": "🇩🇲"
-        },
-        {
-            "name": "Flag: Dominican Republic",
-            "glyph": "🇩🇴"
-        },
-        {
-            "name": "Flag: Ecuador",
-            "glyph": "🇪🇨"
-        },
-        {
-            "name": "Flag: Egypt",
-            "glyph": "🇪🇬"
-        },
-        {
-            "name": "Flag: El Salvador",
-            "glyph": "🇸🇻"
-        },
-        {
-            "name": "Flag: Equatorial Guinea",
-            "glyph": "🇬🇶"
-        },
-        {
-            "name": "Flag: Eritrea",
-            "glyph": "🇪🇷"
-        },
-        {
-            "name": "Flag: Estonia",
-            "glyph": "🇪🇪"
-        },
-        {
-            "name": "Flag: Eswatini",
-            "glyph": "🇸🇿"
-        },
-        {
-            "name": "Flag: Ethiopia",
-            "glyph": "🇪🇹"
-        },
-        {
-            "name": "Flag: European Union",
-            "glyph": "🇪🇺"
-        },
-        {
-            "name": "Flag: Falkland Islands",
-            "glyph": "🇫🇰"
-        },
-        {
-            "name": "Flag: Faroe Islands",
-            "glyph": "🇫🇴"
-        },
-        {
-            "name": "Flag: Fiji",
-            "glyph": "🇫🇯"
-        },
-        {
-            "name": "Flag: Finland",
-            "glyph": "🇫🇮"
-        },
-        {
-            "name": "Flag: France",
-            "glyph": "🇫🇷"
-        },
-        {
-            "name": "Flag: French Guiana",
-            "glyph": "🇬🇫"
-        },
-        {
-            "name": "Flag: French Polynesia",
-            "glyph": "🇵🇫"
-        },
-        {
-            "name": "Flag: French Southern Territories",
-            "glyph": "🇹🇫"
-        },
-        {
-            "name": "Flag: Gabon",
-            "glyph": "🇬🇦"
-        },
-        {
-            "name": "Flag: Gambia",
-            "glyph": "🇬🇲"
-        },
-        {
-            "name": "Flag: Georgia",
-            "glyph": "🇬🇪"
-        },
-        {
-            "name": "Flag: Germany",
-            "glyph": "🇩🇪"
-        },
-        {
-            "name": "Flag: Ghana",
-            "glyph": "🇬🇭"
-        },
-        {
-            "name": "Flag: Gibraltar",
-            "glyph": "🇬🇮"
-        },
-        {
-            "name": "Flag: Greece",
-            "glyph": "🇬🇷"
-        },
-        {
-            "name": "Flag: Greenland",
-            "glyph": "🇬🇱"
-        },
-        {
-            "name": "Flag: Grenada",
-            "glyph": "🇬🇩"
-        },
-        {
-            "name": "Flag: Guadeloupe",
-            "glyph": "🇬🇵"
-        },
-        {
-            "name": "Flag: Guam",
-            "glyph": "🇬🇺"
-        },
-        {
-            "name": "Flag: Guatemala",
-            "glyph": "🇬🇹"
-        },
-        {
-            "name": "Flag: Guernsey",
-            "glyph": "🇬🇬"
-        },
-        {
-            "name": "Flag: Guinea",
-            "glyph": "🇬🇳"
-        },
-        {
-            "name": "Flag: Guinea-Bissau",
-            "glyph": "🇬🇼"
-        },
-        {
-            "name": "Flag: Guyana",
-            "glyph": "🇬🇾"
-        },
-        {
-            "name": "Flag: Haiti",
-            "glyph": "🇭🇹"
-        },
-        {
-            "name": "Flag: Honduras",
-            "glyph": "🇭🇳"
-        },
-        {
-            "name": "Flag: Hong Kong SAR China",
-            "glyph": "🇭🇰"
-        },
-        {
-            "name": "Flag: Hungary",
-            "glyph": "🇭🇺"
-        },
-        {
-            "name": "Flag: Iceland",
-            "glyph": "🇮🇸"
-        },
-        {
-            "name": "Flag: India",
-            "glyph": "🇮🇳"
-        },
-        {
-            "name": "Flag: Indonesia",
-            "glyph": "🇮🇩"
-        },
-        {
-            "name": "Flag: Iran",
-            "glyph": "🇮🇷"
-        },
-        {
-            "name": "Flag: Iraq",
-            "glyph": "🇮🇶"
-        },
-        {
-            "name": "Flag: Ireland",
-            "glyph": "🇮🇪"
-        },
-        {
-            "name": "Flag: Isle of Man",
-            "glyph": "🇮🇲"
-        },
-        {
-            "name": "Flag: Israel",
-            "glyph": "🇮🇱"
-        },
-        {
-            "name": "Flag: Italy",
-            "glyph": "🇮🇹"
-        },
-        {
-            "name": "Flag: Jamaica",
-            "glyph": "🇯🇲"
-        },
-        {
-            "name": "Flag: Japan",
-            "glyph": "🇯🇵"
-        },
-        {
-            "name": "Flag: Jersey",
-            "glyph": "🇯🇪"
-        },
-        {
-            "name": "Flag: Jordan",
-            "glyph": "🇯🇴"
-        },
-        {
-            "name": "Flag: Kazakhstan",
-            "glyph": "🇰🇿"
-        },
-        {
-            "name": "Flag: Kenya",
-            "glyph": "🇰🇪"
-        },
-        {
-            "name": "Flag: Kiribati",
-            "glyph": "🇰🇮"
-        },
-        {
-            "name": "Flag: North Korea",
-            "glyph": "🇰🇵"
-        },
-        {
-            "name": "Flag: South Korea",
-            "glyph": "🇰🇷"
-        },
-        {
-            "name": "Flag: Kuwait",
-            "glyph": "🇰🇼"
-        },
-        {
-            "name": "Flag: Kyrgyzstan",
-            "glyph": "🇰🇬"
-        },
-        {
-            "name": "Flag: Laos",
-            "glyph": "🇱🇦"
-        },
-        {
-            "name": "Flag: Latvia",
-            "glyph": "🇱🇻"
-        },
-        {
-            "name": "Flag: Lebanon",
-            "glyph": "🇱🇧"
-        },
-        {
-            "name": "Flag: Lesotho",
-            "glyph": "🇱🇸"
-        },
-        {
-            "name": "Flag: Liberia",
-            "glyph": "🇱🇷"
-        },
-        {
-            "name": "Flag: Libya",
-            "glyph": "🇱🇾"
-        },
-        {
-            "name": "Flag: Liechtenstein",
-            "glyph": "🇱🇮"
-        },
-        {
-            "name": "Flag: Lithuania",
-            "glyph": "🇱🇹"
-        },
-        {
-            "name": "Flag: Luxembourg",
-            "glyph": "🇱🇺"
-        },
-        {
-            "name": "Flag: Macao SAR China",
-            "glyph": "🇲🇴"
-        },
-        {
-            "name": "Flag: Madagascar",
-            "glyph": "🇲🇬"
-        },
-        {
-            "name": "Flag: Malawi",
-            "glyph": "🇲🇼"
-        },
-        {
-            "name": "Flag: Malaysia",
-            "glyph": "🇲🇾"
-        },
-        {
-            "name": "Flag: Maldives",
-            "glyph": "🇲🇻"
-        },
-        {
-            "name": "Flag: Mali",
-            "glyph": "🇲🇱"
-        },
-        {
-            "name": "Flag: Malta",
-            "glyph": "🇲🇹"
-        },
-        {
-            "name": "Flag: Marshall Islands",
-            "glyph": "🇲🇭"
-        },
-        {
-            "name": "Flag: Martinique",
-            "glyph": "🇲🇶"
-        },
-        {
-            "name": "Flag: Mauritania",
-            "glyph": "🇲🇷"
-        },
-        {
-            "name": "Flag: Mauritius",
-            "glyph": "🇲🇺"
-        },
-        {
-            "name": "Flag: Mayotte",
-            "glyph": "🇾🇹"
-        },
-        {
-            "name": "Flag: Mexico",
-            "glyph": "🇲🇽"
-        },
-        {
-            "name": "Flag: Micronesia",
-            "glyph": "🇫🇲"
-        },
-        {
-            "name": "Flag: Moldova",
-            "glyph": "🇲🇩"
-        },
-        {
-            "name": "Flag: Monaco",
-            "glyph": "🇲🇨"
-        },
-        {
-            "name": "Flag: Mongolia",
-            "glyph": "🇲🇳"
-        },
-        {
-            "name": "Flag: Montenegro",
-            "glyph": "🇲🇪"
-        },
-        {
-            "name": "Flag: Montserrat",
-            "glyph": "🇲🇸"
-        },
-        {
-            "name": "Flag: Morocco",
-            "glyph": "🇲🇦"
-        },
-        {
-            "name": "Flag: Mozambique",
-            "glyph": "🇲🇿"
-        },
-        {
-            "name": "Flag: Myanmar (Burma)",
-            "glyph": "🇲🇲"
-        },
-        {
-            "name": "Flag: Namibia",
-            "glyph": "🇳🇦"
-        },
-        {
-            "name": "Flag: Nauru",
-            "glyph": "🇳🇷"
-        },
-        {
-            "name": "Flag: Nepal",
-            "glyph": "🇳🇵"
-        },
-        {
-            "name": "Flag: Netherlands",
-            "glyph": "🇳🇱"
-        },
-        {
-            "name": "Flag: New Caledonia",
-            "glyph": "🇳🇨"
-        },
-        {
-            "name": "Flag: New Zealand",
-            "glyph": "🇳🇿"
-        },
-        {
-            "name": "Flag: Nicaragua",
-            "glyph": "🇳🇮"
-        },
-        {
-            "name": "Flag: Niger",
-            "glyph": "🇳🇪"
-        },
-        {
-            "name": "Flag: Nigeria",
-            "glyph": "🇳🇬"
-        },
-        {
-            "name": "Flag: Niue",
-            "glyph": "🇳🇺"
-        },
-        {
-            "name": "Flag: Norfolk Island",
-            "glyph": "🇳🇫"
-        },
-        {
-            "name": "Flag: North Macedonia",
-            "glyph": "🇲🇰"
-        },
-        {
-            "name": "Flag: Northern Mariana Islands",
-            "glyph": "🇲🇵"
-        },
-        {
-            "name": "Flag: Norway",
-            "glyph": "🇳🇴"
-        },
-        {
-            "name": "Flag: Oman",
-            "glyph": "🇴🇲"
-        },
-        {
-            "name": "Flag: Pakistan",
-            "glyph": "🇵🇰"
-        },
-        {
-            "name": "Flag: Palau",
-            "glyph": "🇵🇼"
-        },
-        {
-            "name": "Flag: Palestine",
-            "glyph": "🇵🇸"
-        },
-        {
-            "name": "Flag: Panama",
-            "glyph": "🇵🇦"
-        },
-        {
-            "name": "Flag: Papua New Guinea",
-            "glyph": "🇵🇬"
-        },
-        {
-            "name": "Flag: Paraguay",
-            "glyph": "🇵🇾"
-        },
-        {
-            "name": "Flag: Peru",
-            "glyph": "🇵🇪"
-        },
-        {
-            "name": "Flag: Philippines",
-            "glyph": "🇵🇭"
-        },
-        {
-            "name": "Flag: Pitcairn Islands",
-            "glyph": "🇵🇳"
-        },
-        {
-            "name": "Flag: Poland",
-            "glyph": "🇵🇱"
-        },
-        {
-            "name": "Flag: Portugal",
-            "glyph": "🇵🇹"
-        },
-        {
-            "name": "Flag: Puerto Rico",
-            "glyph": "🇵🇷"
-        },
-        {
-            "name": "Flag: Qatar",
-            "glyph": "🇶🇦"
-        },
-        {
-            "name": "Flag: Réunion",
-            "glyph": "🇷🇪"
-        },
-        {
-            "name": "Flag: Romania",
-            "glyph": "🇷🇴"
-        },
-        {
-            "name": "Flag: Russia",
-            "glyph": "🇷🇺"
-        },
-        {
-            "name": "Flag: Rwanda",
-            "glyph": "🇷🇼"
-        },
-        {
-            "name": "Flag: Samoa",
-            "glyph": "🇼🇸"
-        },
-        {
-            "name": "Flag: San Marino",
-            "glyph": "🇸🇲"
-        },
-        {
-            "name": "Flag: São Tomé & Príncipe",
-            "glyph": "🇸🇹"
-        },
-        {
-            "name": "Flag: Saudi Arabia",
-            "glyph": "🇸🇦"
-        },
-        {
-            "name": "Flag: Senegal",
-            "glyph": "🇸🇳"
-        },
-        {
-            "name": "Flag: Serbia",
-            "glyph": "🇷🇸"
-        },
-        {
-            "name": "Flag: Seychelles",
-            "glyph": "🇸🇨"
-        },
-        {
-            "name": "Flag: Sierra Leone",
-            "glyph": "🇸🇱"
-        },
-        {
-            "name": "Flag: Singapore",
-            "glyph": "🇸🇬"
-        },
-        {
-            "name": "Flag: Sint Maarten",
-            "glyph": "🇸🇽"
-        },
-        {
-            "name": "Flag: Slovakia",
-            "glyph": "🇸🇰"
-        },
-        {
-            "name": "Flag: Slovenia",
-            "glyph": "🇸🇮"
-        },
-        {
-            "name": "Flag: Solomon Islands",
-            "glyph": "🇸🇧"
-        },
-        {
-            "name": "Flag: Somalia",
-            "glyph": "🇸🇴"
-        },
-        {
-            "name": "Flag: South Africa",
-            "glyph": "🇿🇦"
-        },
-        {
-            "name": "Flag: South Georgia & South Sandwich Islands",
-            "glyph": "🇬🇸"
-        },
-        {
-            "name": "Flag: South Sudan",
-            "glyph": "🇸🇸"
-        },
-        {
-            "name": "Flag: Spain",
-            "glyph": "🇪🇸"
-        },
-        {
-            "name": "Flag: Sri Lanka",
-            "glyph": "🇱🇰"
-        },
-        {
-            "name": "Flag: St. Barthélemy",
-            "glyph": "🇧🇱"
-        },
-        {
-            "name": "Flag: St. Helena",
-            "glyph": "🇸🇭"
-        },
-        {
-            "name": "Flag: St. Kitts & Nevis",
-            "glyph": "🇰🇳"
         },
         {
-            "name": "Flag: St. Lucia",
-            "glyph": "🇱🇨"
+            "name": "see-no-evil monkey",
+            "glyph": "🙈"
         },
         {
-            "name": "Flag: St. Martin",
-            "glyph": "🇲🇫"
+            "name": "hear-no-evil monkey",
+            "glyph": "🙉"
         },
         {
-            "name": "Flag: St. Pierre & Miquelon",
-            "glyph": "🇵🇲"
+            "name": "speak-no-evil monkey",
+            "glyph": "🙊"
         },
         {
-            "name": "Flag: St. Vincent & Grenadines",
-            "glyph": "🇻🇨"
+            "name": "love letter",
+            "glyph": "💌"
         },
         {
-            "name": "Flag: Sudan",
-            "glyph": "🇸🇩"
+            "name": "heart with arrow",
+            "glyph": "💘"
         },
         {
-            "name": "Flag: Suriname",
-            "glyph": "🇸🇷"
+            "name": "heart with ribbon",
+            "glyph": "💝"
         },
         {
-            "name": "Flag: Svalbard & Jan Mayen",
-            "glyph": "🇸🇯"
+            "name": "sparkling heart",
+            "glyph": "💖"
         },
         {
-            "name": "Flag: Sweden",
-            "glyph": "🇸🇪"
+            "name": "growing heart",
+            "glyph": "💗"
         },
         {
-            "name": "Flag: Switzerland",
-            "glyph": "🇨🇭"
+            "name": "beating heart",
+            "glyph": "💓"
         },
         {
-            "name": "Flag: Syria",
-            "glyph": "🇸🇾"
+            "name": "revolving hearts",
+            "glyph": "💞"
         },
         {
-            "name": "Flag: Taiwan",
-            "glyph": "🇹🇼"
+            "name": "two hearts",
+            "glyph": "💕"
         },
         {
-            "name": "Flag: Tajikistan",
-            "glyph": "🇹🇯"
+            "name": "heart decoration",
+            "glyph": "💟"
         },
         {
-            "name": "Flag: Tanzania",
-            "glyph": "🇹🇿"
+            "name": "heart exclamation",
+            "glyph": "❣"
         },
         {
-            "name": "Flag: Thailand",
-            "glyph": "🇹🇭"
+            "name": "broken heart",
+            "glyph": "💔"
         },
         {
-            "name": "Flag: Timor-Leste",
-            "glyph": "🇹🇱"
+            "name": "heart on fire",
+            "glyph": "❤️‍🔥"
         },
         {
-            "name": "Flag: Togo",
-            "glyph": "🇹🇬"
+            "name": "mending heart",
+            "glyph": "❤️‍🩹"
         },
         {
-            "name": "Flag: Tokelau",
-            "glyph": "🇹🇰"
+            "name": "red heart",
+            "glyph": "❤"
         },
         {
-            "name": "Flag: Tonga",
-            "glyph": "🇹🇴"
+            "name": "pink heart",
+            "glyph": "🩷"
         },
         {
-            "name": "Flag: Trinidad & Tobago",
-            "glyph": "🇹🇹"
+            "name": "orange heart",
+            "glyph": "🧡"
         },
         {
-            "name": "Flag: Tristan da Cunha",
-            "glyph": "🇹🇦"
+            "name": "yellow heart",
+            "glyph": "💛"
         },
         {
-            "name": "Flag: Tunisia",
-            "glyph": "🇹🇳"
+            "name": "green heart",
+            "glyph": "💚"
         },
         {
-            "name": "Flag: Turkey",
-            "glyph": "🇹🇷"
+            "name": "blue heart",
+            "glyph": "💙"
         },
         {
-            "name": "Flag: Turkmenistan",
-            "glyph": "🇹🇲"
+            "name": "light blue heart",
+            "glyph": "🩵"
         },
         {
-            "name": "Flag: Turks & Caicos Islands",
-            "glyph": "🇹🇨"
+            "name": "purple heart",
+            "glyph": "💜"
         },
         {
-            "name": "Flag: Tuvalu",
-            "glyph": "🇹🇻"
+            "name": "brown heart",
+            "glyph": "🤎"
         },
         {
-            "name": "Flag: Uganda",
-            "glyph": "🇺🇬"
+            "name": "black heart",
+            "glyph": "🖤"
         },
         {
-            "name": "Flag: Ukraine",
-            "glyph": "🇺🇦"
+            "name": "grey heart",
+            "glyph": "🩶"
         },
         {
-            "name": "Flag: United Arab Emirates",
-            "glyph": "🇦🇪"
+            "name": "white heart",
+            "glyph": "🤍"
         },
         {
-            "name": "Flag: United Kingdom",
-            "glyph": "🇬🇧"
+            "name": "kiss mark",
+            "glyph": "💋"
         },
         {
-            "name": "Flag: United States",
-            "glyph": "🇺🇸"
+            "name": "hundred points",
+            "glyph": "💯"
         },
         {
-            "name": "Flag: U.S. Outlying Islands",
-            "glyph": "🇺🇲"
+            "name": "anger symbol",
+            "glyph": "💢"
         },
         {
-            "name": "Flag: Uruguay",
-            "glyph": "🇺🇾"
+            "name": "collision",
+            "glyph": "💥"
         },
         {
-            "name": "Flag: Uzbekistan",
-            "glyph": "🇺🇿"
+            "name": "dizzy",
+            "glyph": "💫"
         },
         {
-            "name": "Flag: Vanuatu",
-            "glyph": "🇻🇺"
+            "name": "sweat droplets",
+            "glyph": "💦"
         },
         {
-            "name": "Flag: Vatican City",
-            "glyph": "🇻🇦"
+            "name": "dashing away",
+            "glyph": "💨"
         },
         {
-            "name": "Flag: Venezuela",
-            "glyph": "🇻🇪"
+            "name": "hole",
+            "glyph": "🕳"
         },
         {
-            "name": "Flag: Vietnam",
-            "glyph": "🇻🇳"
+            "name": "speech balloon",
+            "glyph": "💬"
         },
         {
-            "name": "Flag: Wallis & Futuna",
-            "glyph": "🇼🇫"
+            "name": "eye in speech bubble",
+            "glyph": "👁️‍🗨️"
         },
         {
-            "name": "Flag: Western Sahara",
-            "glyph": "🇪🇭"
+            "name": "left speech bubble",
+            "glyph": "🗨"
         },
         {
-            "name": "Flag: Yemen",
-            "glyph": "🇾🇪"
+            "name": "right anger bubble",
+            "glyph": "🗯"
         },
         {
-            "name": "Flag: Zambia",
-            "glyph": "🇿🇲"
+            "name": "thought balloon",
+            "glyph": "💭"
         },
         {
-            "name": "Flag: Zimbabwe",
-            "glyph": "🇿🇼"
+            "name": "ZZZ",
+            "glyph": "💤"
         }
     ],
     "people_and_body": [
         {
-            "name": "Baby",
-            "glyph": "👶"
+            "name": "waving hand",
+            "glyph": "👋",
+            "skin_tone": true
         },
         {
-            "name": "Child",
-            "glyph": "🧒"
+            "name": "raised back of hand",
+            "glyph": "🤚",
+            "skin_tone": true
         },
         {
-            "name": "Boy",
-            "glyph": "👦"
+            "name": "hand with fingers splayed",
+            "glyph": "🖐",
+            "skin_tone": true
         },
         {
-            "name": "Girl",
-            "glyph": "👧"
+            "name": "raised hand",
+            "glyph": "✋",
+            "skin_tone": true
         },
         {
-            "name": "Person",
-            "glyph": "🧑"
+            "name": "vulcan salute",
+            "glyph": "🖖",
+            "skin_tone": true
         },
         {
-            "name": "Person: Blond Hair",
-            "glyph": "👱"
+            "name": "rightwards hand",
+            "glyph": "🫱",
+            "skin_tone": true
         },
         {
-            "name": "Man",
-            "glyph": "👨"
+            "name": "leftwards hand",
+            "glyph": "🫲",
+            "skin_tone": true
         },
         {
-            "name": "Man: Beard",
-            "glyph": "🧔"
+            "name": "palm down hand",
+            "glyph": "🫳",
+            "skin_tone": true
         },
         {
-            "name": "Man: Blond Hair",
-            "glyph": "👱‍♂️"
+            "name": "palm up hand",
+            "glyph": "🫴",
+            "skin_tone": true
         },
         {
-            "name": "Man: Red Hair",
-            "glyph": "👨‍🦰"
+            "name": "leftwards pushing hand",
+            "glyph": "🫷",
+            "skin_tone": true
         },
         {
-            "name": "Man: Curly Hair",
-            "glyph": "👨‍🦱"
+            "name": "rightwards pushing hand",
+            "glyph": "🫸",
+            "skin_tone": true
         },
         {
-            "name": "Man: White Hair",
-            "glyph": "👨‍🦳"
+            "name": "OK hand",
+            "glyph": "👌",
+            "skin_tone": true
         },
         {
-            "name": "Man: Bald",
-            "glyph": "👨‍🦲"
+            "name": "pinched fingers",
+            "glyph": "🤌",
+            "skin_tone": true
         },
         {
-            "name": "Woman",
-            "glyph": "👩"
+            "name": "pinching hand",
+            "glyph": "🤏",
+            "skin_tone": true
         },
         {
-            "name": "Woman: Blond Hair",
-            "glyph": "👱‍♀️"
+            "name": "victory hand",
+            "glyph": "✌",
+            "skin_tone": true
         },
         {
-            "name": "Woman: Red Hair",
-            "glyph": "👩‍🦰"
+            "name": "crossed fingers",
+            "glyph": "🤞",
+            "skin_tone": true
         },
         {
-            "name": "Woman: Curly Hair",
-            "glyph": "👩‍🦱"
+            "name": "hand with index finger and thumb crossed",
+            "glyph": "🫰",
+            "skin_tone": true
         },
         {
-            "name": "Woman: White Hair",
-            "glyph": "👩‍🦳"
+            "name": "love-you gesture",
+            "glyph": "🤟",
+            "skin_tone": true
         },
         {
-            "name": "Woman: Bald",
-            "glyph": "👩‍🦲"
+            "name": "sign of the horns",
+            "glyph": "🤘",
+            "skin_tone": true
         },
         {
-            "name": "Older Person",
-            "glyph": "🧓"
+            "name": "call me hand",
+            "glyph": "🤙",
+            "skin_tone": true
         },
         {
-            "name": "Old Man",
-            "glyph": "👴"
+            "name": "backhand index pointing left",
+            "glyph": "👈",
+            "skin_tone": true
         },
         {
-            "name": "Old Woman",
-            "glyph": "👵"
+            "name": "backhand index pointing right",
+            "glyph": "👉",
+            "skin_tone": true
         },
         {
-            "name": "Person Frowning",
-            "glyph": "🙍"
+            "name": "backhand index pointing up",
+            "glyph": "👆",
+            "skin_tone": true
         },
         {
-            "name": "Man Frowning",
-            "glyph": "🙍‍♂️"
+            "name": "middle finger",
+            "glyph": "🖕",
+            "skin_tone": true
         },
         {
-            "name": "Woman Frowning",
-            "glyph": "🙍‍♀️"
+            "name": "backhand index pointing down",
+            "glyph": "👇",
+            "skin_tone": true
         },
         {
-            "name": "Person Pouting",
-            "glyph": "🙎"
+            "name": "index pointing up",
+            "glyph": "☝",
+            "skin_tone": true
         },
         {
-            "name": "Man Pouting",
-            "glyph": "🙎‍♂️"
+            "name": "index pointing at the viewer",
+            "glyph": "🫵",
+            "skin_tone": true
         },
         {
-            "name": "Woman Pouting",
-            "glyph": "🙎‍♀️"
+            "name": "thumbs up",
+            "glyph": "👍",
+            "skin_tone": true
         },
         {
-            "name": "Person Gesturing NO",
-            "glyph": "🙅"
+            "name": "thumbs down",
+            "glyph": "👎",
+            "skin_tone": true
         },
         {
-            "name": "Man Gesturing NO",
-            "glyph": "🙅‍♂️"
+            "name": "raised fist",
+            "glyph": "✊",
+            "skin_tone": true
         },
         {
-            "name": "Woman Gesturing NO",
-            "glyph": "🙅‍♀️"
+            "name": "oncoming fist",
+            "glyph": "👊",
+            "skin_tone": true
         },
         {
-            "name": "Person Gesturing OK",
-            "glyph": "🙆"
+            "name": "left-facing fist",
+            "glyph": "🤛",
+            "skin_tone": true
         },
         {
-            "name": "Man Gesturing OK",
-            "glyph": "🙆‍♂️"
+            "name": "right-facing fist",
+            "glyph": "🤜",
+            "skin_tone": true
         },
         {
-            "name": "Woman Gesturing OK",
-            "glyph": "🙆‍♀️"
+            "name": "clapping hands",
+            "glyph": "👏",
+            "skin_tone": true
         },
         {
-            "name": "Person Tipping Hand",
-            "glyph": "💁"
+            "name": "raising hands",
+            "glyph": "🙌",
+            "skin_tone": true
         },
         {
-            "name": "Man Tipping Hand",
-            "glyph": "💁‍♂️"
+            "name": "heart hands",
+            "glyph": "🫶",
+            "skin_tone": true
         },
         {
-            "name": "Woman Tipping Hand",
-            "glyph": "💁‍♀️"
+            "name": "open hands",
+            "glyph": "👐",
+            "skin_tone": true
         },
         {
-            "name": "Person Raising Hand",
-            "glyph": "🙋"
+            "name": "palms up together",
+            "glyph": "🤲",
+            "skin_tone": true
         },
         {
-            "name": "Man Raising Hand",
-            "glyph": "🙋‍♂️"
+            "name": "handshake",
+            "glyph": "🤝",
+            "skin_tone": true
         },
         {
-            "name": "Woman Raising Hand",
-            "glyph": "🙋‍♀️"
+            "name": "folded hands",
+            "glyph": "🙏",
+            "skin_tone": true
         },
         {
-            "name": "Deaf Person",
-            "glyph": "🧏"
+            "name": "writing hand",
+            "glyph": "✍",
+            "skin_tone": true
         },
         {
-            "name": "Deaf Man",
-            "glyph": "🧏‍♂️"
+            "name": "nail polish",
+            "glyph": "💅",
+            "skin_tone": true
         },
         {
-            "name": "Deaf Woman",
-            "glyph": "🧏‍♀️"
+            "name": "selfie",
+            "glyph": "🤳",
+            "skin_tone": true
         },
         {
-            "name": "Person Bowing",
-            "glyph": "🙇"
+            "name": "flexed biceps",
+            "glyph": "💪",
+            "skin_tone": true
         },
         {
-            "name": "Man Bowing",
-            "glyph": "🙇‍♂️"
+            "name": "mechanical arm",
+            "glyph": "🦾",
+            "skin_tone": false
         },
         {
-            "name": "Woman Bowing",
-            "glyph": "🙇‍♀️"
+            "name": "mechanical leg",
+            "glyph": "🦿",
+            "skin_tone": false
         },
         {
-            "name": "Person Facepalming",
-            "glyph": "🤦"
+            "name": "leg",
+            "glyph": "🦵",
+            "skin_tone": true
         },
         {
-            "name": "Man Facepalming",
-            "glyph": "🤦‍♂️"
+            "name": "foot",
+            "glyph": "🦶",
+            "skin_tone": true
         },
         {
-            "name": "Woman Facepalming",
-            "glyph": "🤦‍♀️"
+            "name": "ear",
+            "glyph": "👂",
+            "skin_tone": true
         },
         {
-            "name": "Person Shrugging",
-            "glyph": "🤷"
+            "name": "ear with hearing aid",
+            "glyph": "🦻",
+            "skin_tone": true
         },
         {
-            "name": "Man Shrugging",
-            "glyph": "🤷‍♂️"
+            "name": "nose",
+            "glyph": "👃",
+            "skin_tone": true
         },
         {
-            "name": "Woman Shrugging",
-            "glyph": "🤷‍♀️"
+            "name": "brain",
+            "glyph": "🧠",
+            "skin_tone": false
         },
         {
-            "name": "Health Worker",
-            "glyph": "🧑‍⚕️"
+            "name": "anatomical heart",
+            "glyph": "🫀",
+            "skin_tone": false
         },
         {
-            "name": "Man Health Worker",
-            "glyph": "👨‍⚕️"
+            "name": "lungs",
+            "glyph": "🫁",
+            "skin_tone": false
         },
         {
-            "name": "Woman Health Worker",
-            "glyph": "👩‍⚕️"
+            "name": "tooth",
+            "glyph": "🦷",
+            "skin_tone": false
         },
         {
-            "name": "Student",
-            "glyph": "🧑‍🎓"
+            "name": "bone",
+            "glyph": "🦴",
+            "skin_tone": false
         },
         {
-            "name": "Man Student",
-            "glyph": "👨‍🎓"
+            "name": "eyes",
+            "glyph": "👀",
+            "skin_tone": false
         },
         {
-            "name": "Woman Student",
-            "glyph": "👩‍🎓"
+            "name": "eye",
+            "glyph": "👁",
+            "skin_tone": false
         },
         {
-            "name": "Teacher",
-            "glyph": "🧑‍🏫"
+            "name": "tongue",
+            "glyph": "👅",
+            "skin_tone": false
         },
         {
-            "name": "Man Teacher",
-            "glyph": "👨‍🏫"
+            "name": "mouth",
+            "glyph": "👄",
+            "skin_tone": false
         },
         {
-            "name": "Woman Teacher",
-            "glyph": "👩‍🏫"
+            "name": "biting lip",
+            "glyph": "🫦",
+            "skin_tone": false
         },
         {
-            "name": "Judge",
-            "glyph": "🧑‍⚖️"
+            "name": "baby",
+            "glyph": "👶",
+            "skin_tone": true
         },
         {
-            "name": "Man Judge",
-            "glyph": "👨‍⚖️"
+            "name": "child",
+            "glyph": "🧒",
+            "skin_tone": true
         },
         {
-            "name": "Woman Judge",
-            "glyph": "👩‍⚖️"
+            "name": "boy",
+            "glyph": "👦",
+            "skin_tone": true
         },
         {
-            "name": "Farmer",
-            "glyph": "🧑‍🌾"
+            "name": "girl",
+            "glyph": "👧",
+            "skin_tone": true
         },
         {
-            "name": "Man Farmer",
-            "glyph": "👨‍🌾"
+            "name": "person",
+            "glyph": "🧑",
+            "skin_tone": true
         },
         {
-            "name": "Woman Farmer",
-            "glyph": "👩‍🌾"
+            "name": "person: blond hair",
+            "glyph": "👱",
+            "skin_tone": true
         },
         {
-            "name": "Cook",
-            "glyph": "🧑‍🍳"
+            "name": "man",
+            "glyph": "👨",
+            "skin_tone": true
         },
         {
-            "name": "Man Cook",
-            "glyph": "👨‍🍳"
+            "name": "person: beard",
+            "glyph": "🧔",
+            "skin_tone": true
         },
         {
-            "name": "Woman Cook",
-            "glyph": "👩‍🍳"
+            "name": "man: beard",
+            "glyph": "🧔‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Mechanic",
-            "glyph": "🧑‍🔧"
+            "name": "woman: beard",
+            "glyph": "🧔‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Mechanic",
-            "glyph": "👨‍🔧"
+            "name": "man: red hair",
+            "glyph": "👨‍🦰",
+            "skin_tone": true
         },
         {
-            "name": "Woman Mechanic",
-            "glyph": "👩‍🔧"
+            "name": "man: curly hair",
+            "glyph": "👨‍🦱",
+            "skin_tone": true
         },
         {
-            "name": "Factory Worker",
-            "glyph": "🧑‍🏭"
+            "name": "man: white hair",
+            "glyph": "👨‍🦳",
+            "skin_tone": true
         },
         {
-            "name": "Man Factory Worker",
-            "glyph": "👨‍🏭"
+            "name": "man: bald",
+            "glyph": "👨‍🦲",
+            "skin_tone": true
         },
         {
-            "name": "Woman Factory Worker",
-            "glyph": "👩‍🏭"
+            "name": "woman",
+            "glyph": "👩",
+            "skin_tone": true
         },
         {
-            "name": "Office Worker",
-            "glyph": "🧑‍💼"
+            "name": "woman: red hair",
+            "glyph": "👩‍🦰",
+            "skin_tone": true
         },
         {
-            "name": "Man Office Worker",
-            "glyph": "👨‍💼"
+            "name": "person: red hair",
+            "glyph": "🧑‍🦰",
+            "skin_tone": true
         },
         {
-            "name": "Woman Office Worker",
-            "glyph": "👩‍💼"
+            "name": "woman: curly hair",
+            "glyph": "👩‍🦱",
+            "skin_tone": true
         },
         {
-            "name": "Scientist",
-            "glyph": "🧑‍🔬"
+            "name": "person: curly hair",
+            "glyph": "🧑‍🦱",
+            "skin_tone": true
         },
         {
-            "name": "Man Scientist",
-            "glyph": "👨‍🔬"
+            "name": "woman: white hair",
+            "glyph": "👩‍🦳",
+            "skin_tone": true
         },
         {
-            "name": "Woman Scientist",
-            "glyph": "👩‍🔬"
+            "name": "person: white hair",
+            "glyph": "🧑‍🦳",
+            "skin_tone": true
         },
         {
-            "name": "Technologist",
-            "glyph": "🧑‍💻"
+            "name": "woman: bald",
+            "glyph": "👩‍🦲",
+            "skin_tone": true
         },
         {
-            "name": "Man Technologist",
-            "glyph": "👨‍💻"
+            "name": "person: bald",
+            "glyph": "🧑‍🦲",
+            "skin_tone": true
         },
         {
-            "name": "Woman Technologist",
-            "glyph": "👩‍💻"
+            "name": "woman: blond hair",
+            "glyph": "👱‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Singer",
-            "glyph": "🧑‍🎤"
+            "name": "man: blond hair",
+            "glyph": "👱‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Man Singer",
-            "glyph": "👨‍🎤"
+            "name": "older person",
+            "glyph": "🧓",
+            "skin_tone": true
         },
         {
-            "name": "Woman Singer",
-            "glyph": "👩‍🎤"
+            "name": "old man",
+            "glyph": "👴",
+            "skin_tone": true
         },
         {
-            "name": "Artist",
-            "glyph": "🧑‍🎨"
+            "name": "old woman",
+            "glyph": "👵",
+            "skin_tone": true
         },
         {
-            "name": "Man Artist",
-            "glyph": "👨‍🎨"
+            "name": "person frowning",
+            "glyph": "🙍",
+            "skin_tone": true
         },
         {
-            "name": "Woman Artist",
-            "glyph": "👩‍🎨"
+            "name": "man frowning",
+            "glyph": "🙍‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Pilot",
-            "glyph": "🧑‍✈️"
+            "name": "woman frowning",
+            "glyph": "🙍‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Pilot",
-            "glyph": "👨‍✈️"
+            "name": "person pouting",
+            "glyph": "🙎",
+            "skin_tone": true
         },
         {
-            "name": "Woman Pilot",
-            "glyph": "👩‍✈️"
+            "name": "man pouting",
+            "glyph": "🙎‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Astronaut",
-            "glyph": "🧑‍🚀"
+            "name": "woman pouting",
+            "glyph": "🙎‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Astronaut",
-            "glyph": "👨‍🚀"
+            "name": "person gesturing NO",
+            "glyph": "🙅",
+            "skin_tone": true
         },
         {
-            "name": "Woman Astronaut",
-            "glyph": "👩‍🚀"
+            "name": "man gesturing NO",
+            "glyph": "🙅‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Firefighter",
-            "glyph": "🧑‍🚒"
+            "name": "woman gesturing NO",
+            "glyph": "🙅‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Firefighter",
-            "glyph": "👨‍🚒"
+            "name": "person gesturing OK",
+            "glyph": "🙆",
+            "skin_tone": true
         },
         {
-            "name": "Woman Firefighter",
-            "glyph": "👩‍🚒"
+            "name": "man gesturing OK",
+            "glyph": "🙆‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Police Officer",
-            "glyph": "👮"
+            "name": "woman gesturing OK",
+            "glyph": "🙆‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Police Officer",
-            "glyph": "👮‍♂️"
+            "name": "person tipping hand",
+            "glyph": "💁",
+            "skin_tone": true
         },
         {
-            "name": "Woman Police Officer",
-            "glyph": "👮‍♀️"
+            "name": "man tipping hand",
+            "glyph": "💁‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Detective",
-            "glyph": "🕵️"
+            "name": "woman tipping hand",
+            "glyph": "💁‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Detective",
-            "glyph": "🕵️‍♂️"
+            "name": "person raising hand",
+            "glyph": "🙋",
+            "skin_tone": true
         },
         {
-            "name": "Woman Detective",
-            "glyph": "🕵️‍♀️"
+            "name": "man raising hand",
+            "glyph": "🙋‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Guard",
-            "glyph": "💂"
+            "name": "woman raising hand",
+            "glyph": "🙋‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Guard",
-            "glyph": "💂‍♂️"
+            "name": "deaf person",
+            "glyph": "🧏",
+            "skin_tone": true
         },
         {
-            "name": "Woman Guard",
-            "glyph": "💂‍♀️"
+            "name": "deaf man",
+            "glyph": "🧏‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Ninja",
-            "glyph": "🥷"
+            "name": "deaf woman",
+            "glyph": "🧏‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Construction Worker",
-            "glyph": "👷"
+            "name": "person bowing",
+            "glyph": "🙇",
+            "skin_tone": true
         },
         {
-            "name": "Man Construction Worker",
-            "glyph": "👷‍♂️"
+            "name": "man bowing",
+            "glyph": "🙇‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Construction Worker",
-            "glyph": "👷‍♀️"
+            "name": "woman bowing",
+            "glyph": "🙇‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Prince",
-            "glyph": "🤴"
+            "name": "person facepalming",
+            "glyph": "🤦",
+            "skin_tone": true
         },
         {
-            "name": "Princess",
-            "glyph": "👸"
+            "name": "man facepalming",
+            "glyph": "🤦‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person Wearing Turban",
-            "glyph": "👳"
+            "name": "woman facepalming",
+            "glyph": "🤦‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Wearing Turban",
-            "glyph": "👳‍♂️"
+            "name": "person shrugging",
+            "glyph": "🤷",
+            "skin_tone": true
         },
         {
-            "name": "Woman Wearing Turban",
-            "glyph": "👳‍♀️"
+            "name": "man shrugging",
+            "glyph": "🤷‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person with Skullcap",
-            "glyph": "👲"
+            "name": "woman shrugging",
+            "glyph": "🤷‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Woman with Headscarf",
-            "glyph": "🧕"
+            "name": "health worker",
+            "glyph": "🧑‍⚕️",
+            "skin_tone": true
         },
         {
-            "name": "Person in Tuxedo",
-            "glyph": "🤵"
+            "name": "man health worker",
+            "glyph": "👨‍⚕️",
+            "skin_tone": true
         },
         {
-            "name": "Man in Tuxedo",
-            "glyph": "🤵‍♂️"
+            "name": "woman health worker",
+            "glyph": "👩‍⚕️",
+            "skin_tone": true
         },
         {
-            "name": "Woman in Tuxedo",
-            "glyph": "🤵‍♀️"
+            "name": "student",
+            "glyph": "🧑‍🎓",
+            "skin_tone": true
         },
         {
-            "name": "Person with Veil",
-            "glyph": "👰"
+            "name": "man student",
+            "glyph": "👨‍🎓",
+            "skin_tone": true
         },
         {
-            "name": "Man with Veil",
-            "glyph": "👰‍♂️"
+            "name": "woman student",
+            "glyph": "👩‍🎓",
+            "skin_tone": true
         },
         {
-            "name": "Woman with Veil",
-            "glyph": "👰‍♀️"
+            "name": "teacher",
+            "glyph": "🧑‍🏫",
+            "skin_tone": true
         },
         {
-            "name": "Pregnant Woman",
-            "glyph": "🤰"
+            "name": "man teacher",
+            "glyph": "👨‍🏫",
+            "skin_tone": true
         },
         {
-            "name": "Pregnant Person",
-            "glyph": "🫃"
+            "name": "woman teacher",
+            "glyph": "👩‍🏫",
+            "skin_tone": true
         },
         {
-            "name": "Pregnant Man",
-            "glyph": "🫄"
+            "name": "judge",
+            "glyph": "🧑‍⚖️",
+            "skin_tone": true
         },
         {
-            "name": "Breast-Feeding",
-            "glyph": "🤱"
+            "name": "man judge",
+            "glyph": "👨‍⚖️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Feeding Baby",
-            "glyph": "👩‍🍼"
+            "name": "woman judge",
+            "glyph": "👩‍⚖️",
+            "skin_tone": true
         },
         {
-            "name": "Man Feeding Baby",
-            "glyph": "👨‍🍼"
+            "name": "farmer",
+            "glyph": "🧑‍🌾",
+            "skin_tone": true
         },
         {
-            "name": "Person Feeding Baby",
-            "glyph": "🧑‍🍼"
+            "name": "man farmer",
+            "glyph": "👨‍🌾",
+            "skin_tone": true
         },
         {
-            "name": "Baby Angel",
-            "glyph": "👼"
+            "name": "woman farmer",
+            "glyph": "👩‍🌾",
+            "skin_tone": true
+        },
+        {
+            "name": "cook",
+            "glyph": "🧑‍🍳",
+            "skin_tone": true
+        },
+        {
+            "name": "man cook",
+            "glyph": "👨‍🍳",
+            "skin_tone": true
+        },
+        {
+            "name": "woman cook",
+            "glyph": "👩‍🍳",
+            "skin_tone": true
+        },
+        {
+            "name": "mechanic",
+            "glyph": "🧑‍🔧",
+            "skin_tone": true
+        },
+        {
+            "name": "man mechanic",
+            "glyph": "👨‍🔧",
+            "skin_tone": true
+        },
+        {
+            "name": "woman mechanic",
+            "glyph": "👩‍🔧",
+            "skin_tone": true
+        },
+        {
+            "name": "factory worker",
+            "glyph": "🧑‍🏭",
+            "skin_tone": true
+        },
+        {
+            "name": "man factory worker",
+            "glyph": "👨‍🏭",
+            "skin_tone": true
+        },
+        {
+            "name": "woman factory worker",
+            "glyph": "👩‍🏭",
+            "skin_tone": true
+        },
+        {
+            "name": "office worker",
+            "glyph": "🧑‍💼",
+            "skin_tone": true
+        },
+        {
+            "name": "man office worker",
+            "glyph": "👨‍💼",
+            "skin_tone": true
+        },
+        {
+            "name": "woman office worker",
+            "glyph": "👩‍💼",
+            "skin_tone": true
+        },
+        {
+            "name": "scientist",
+            "glyph": "🧑‍🔬",
+            "skin_tone": true
+        },
+        {
+            "name": "man scientist",
+            "glyph": "👨‍🔬",
+            "skin_tone": true
+        },
+        {
+            "name": "woman scientist",
+            "glyph": "👩‍🔬",
+            "skin_tone": true
+        },
+        {
+            "name": "technologist",
+            "glyph": "🧑‍💻",
+            "skin_tone": true
+        },
+        {
+            "name": "man technologist",
+            "glyph": "👨‍💻",
+            "skin_tone": true
+        },
+        {
+            "name": "woman technologist",
+            "glyph": "👩‍💻",
+            "skin_tone": true
+        },
+        {
+            "name": "singer",
+            "glyph": "🧑‍🎤",
+            "skin_tone": true
+        },
+        {
+            "name": "man singer",
+            "glyph": "👨‍🎤",
+            "skin_tone": true
+        },
+        {
+            "name": "woman singer",
+            "glyph": "👩‍🎤",
+            "skin_tone": true
+        },
+        {
+            "name": "artist",
+            "glyph": "🧑‍🎨",
+            "skin_tone": true
+        },
+        {
+            "name": "man artist",
+            "glyph": "👨‍🎨",
+            "skin_tone": true
+        },
+        {
+            "name": "woman artist",
+            "glyph": "👩‍🎨",
+            "skin_tone": true
+        },
+        {
+            "name": "pilot",
+            "glyph": "🧑‍✈️",
+            "skin_tone": true
+        },
+        {
+            "name": "man pilot",
+            "glyph": "👨‍✈️",
+            "skin_tone": true
+        },
+        {
+            "name": "woman pilot",
+            "glyph": "👩‍✈️",
+            "skin_tone": true
+        },
+        {
+            "name": "astronaut",
+            "glyph": "🧑‍🚀",
+            "skin_tone": true
+        },
+        {
+            "name": "man astronaut",
+            "glyph": "👨‍🚀",
+            "skin_tone": true
+        },
+        {
+            "name": "woman astronaut",
+            "glyph": "👩‍🚀",
+            "skin_tone": true
+        },
+        {
+            "name": "firefighter",
+            "glyph": "🧑‍🚒",
+            "skin_tone": true
+        },
+        {
+            "name": "man firefighter",
+            "glyph": "👨‍🚒",
+            "skin_tone": true
+        },
+        {
+            "name": "woman firefighter",
+            "glyph": "👩‍🚒",
+            "skin_tone": true
+        },
+        {
+            "name": "police officer",
+            "glyph": "👮",
+            "skin_tone": true
+        },
+        {
+            "name": "man police officer",
+            "glyph": "👮‍♂️",
+            "skin_tone": true
+        },
+        {
+            "name": "woman police officer",
+            "glyph": "👮‍♀️",
+            "skin_tone": true
+        },
+        {
+            "name": "detective",
+            "glyph": "🕵",
+            "skin_tone": true
+        },
+        {
+            "name": "man detective",
+            "glyph": "🕵️‍♂️",
+            "skin_tone": true
+        },
+        {
+            "name": "woman detective",
+            "glyph": "🕵️‍♀️",
+            "skin_tone": true
+        },
+        {
+            "name": "guard",
+            "glyph": "💂",
+            "skin_tone": true
+        },
+        {
+            "name": "man guard",
+            "glyph": "💂‍♂️",
+            "skin_tone": true
+        },
+        {
+            "name": "woman guard",
+            "glyph": "💂‍♀️",
+            "skin_tone": true
+        },
+        {
+            "name": "ninja",
+            "glyph": "🥷",
+            "skin_tone": true
+        },
+        {
+            "name": "construction worker",
+            "glyph": "👷",
+            "skin_tone": true
+        },
+        {
+            "name": "man construction worker",
+            "glyph": "👷‍♂️",
+            "skin_tone": true
+        },
+        {
+            "name": "person with crown",
+            "glyph": "🫅",
+            "skin_tone": true
+        },
+        {
+            "name": "prince",
+            "glyph": "🤴",
+            "skin_tone": true
+        },
+        {
+            "name": "princess",
+            "glyph": "👸",
+            "skin_tone": true
+        },
+        {
+            "name": "person wearing turban",
+            "glyph": "👳",
+            "skin_tone": true
+        },
+        {
+            "name": "man wearing turban",
+            "glyph": "👳‍♂️",
+            "skin_tone": true
+        },
+        {
+            "name": "woman wearing turban",
+            "glyph": "👳‍♀️",
+            "skin_tone": true
+        },
+        {
+            "name": "person with skullcap",
+            "glyph": "👲",
+            "skin_tone": true
+        },
+        {
+            "name": "woman with headscarf",
+            "glyph": "🧕",
+            "skin_tone": true
+        },
+        {
+            "name": "person in tuxedo",
+            "glyph": "🤵",
+            "skin_tone": true
+        },
+        {
+            "name": "man in tuxedo",
+            "glyph": "🤵‍♂️",
+            "skin_tone": true
+        },
+        {
+            "name": "woman in tuxedo",
+            "glyph": "🤵‍♀️",
+            "skin_tone": true
+        },
+        {
+            "name": "person with veil",
+            "glyph": "👰",
+            "skin_tone": true
+        },
+        {
+            "name": "man with veil",
+            "glyph": "👰‍♂️",
+            "skin_tone": true
+        },
+        {
+            "name": "woman with veil",
+            "glyph": "👰‍♀️",
+            "skin_tone": true
+        },
+        {
+            "name": "pregnant woman",
+            "glyph": "🤰",
+            "skin_tone": true
+        },
+        {
+            "name": "pregnant man",
+            "glyph": "🫃",
+            "skin_tone": true
+        },
+        {
+            "name": "pregnant person",
+            "glyph": "🫄",
+            "skin_tone": true
+        },
+        {
+            "name": "breast-feeding",
+            "glyph": "🤱",
+            "skin_tone": true
+        },
+        {
+            "name": "woman feeding baby",
+            "glyph": "👩‍🍼",
+            "skin_tone": true
+        },
+        {
+            "name": "man feeding baby",
+            "glyph": "👨‍🍼",
+            "skin_tone": true
+        },
+        {
+            "name": "baby angel",
+            "glyph": "👼",
+            "skin_tone": true
         },
         {
             "name": "Santa Claus",
-            "glyph": "🎅"
+            "glyph": "🎅",
+            "skin_tone": true
         },
         {
-            "name": "Mrs. Claus",
-            "glyph": "🤶"
+            "name": "superhero",
+            "glyph": "🦸",
+            "skin_tone": true
         },
         {
-            "name": "Mx Claus",
-            "glyph": "🧑‍🎄"
+            "name": "man superhero",
+            "glyph": "🦸‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Superhero",
-            "glyph": "🦸"
+            "name": "woman superhero",
+            "glyph": "🦸‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Superhero",
-            "glyph": "🦸‍♂️"
+            "name": "supervillain",
+            "glyph": "🦹",
+            "skin_tone": true
         },
         {
-            "name": "Woman Superhero",
-            "glyph": "🦸‍♀️"
+            "name": "man supervillain",
+            "glyph": "🦹‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Supervillain",
-            "glyph": "🦹"
+            "name": "woman supervillain",
+            "glyph": "🦹‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Supervillain",
-            "glyph": "🦹‍♂️"
+            "name": "mage",
+            "glyph": "🧙",
+            "skin_tone": true
         },
         {
-            "name": "Woman Supervillain",
-            "glyph": "🦹‍♀️"
+            "name": "man mage",
+            "glyph": "🧙‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Mage",
-            "glyph": "🧙"
+            "name": "woman mage",
+            "glyph": "🧙‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Mage",
-            "glyph": "🧙‍♂️"
+            "name": "fairy",
+            "glyph": "🧚",
+            "skin_tone": true
         },
         {
-            "name": "Woman Mage",
-            "glyph": "🧙‍♀️"
+            "name": "man fairy",
+            "glyph": "🧚‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Fairy",
-            "glyph": "🧚"
+            "name": "woman fairy",
+            "glyph": "🧚‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Fairy",
-            "glyph": "🧚‍♂️"
+            "name": "vampire",
+            "glyph": "🧛",
+            "skin_tone": true
         },
         {
-            "name": "Woman Fairy",
-            "glyph": "🧚‍♀️"
+            "name": "man vampire",
+            "glyph": "🧛‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Vampire",
-            "glyph": "🧛"
+            "name": "woman vampire",
+            "glyph": "🧛‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Vampire",
-            "glyph": "🧛‍♂️"
+            "name": "merperson",
+            "glyph": "🧜",
+            "skin_tone": true
         },
         {
-            "name": "Woman Vampire",
-            "glyph": "🧛‍♀️"
+            "name": "merman",
+            "glyph": "🧜‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Merperson",
-            "glyph": "🧜"
+            "name": "mermaid",
+            "glyph": "🧜‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Merman",
-            "glyph": "🧜‍♂️"
+            "name": "elf",
+            "glyph": "🧝",
+            "skin_tone": true
         },
         {
-            "name": "Mermaid",
-            "glyph": "🧜‍♀️"
+            "name": "man elf",
+            "glyph": "🧝‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Elf",
-            "glyph": "🧝"
+            "name": "genie",
+            "glyph": "🧞",
+            "skin_tone": false
         },
         {
-            "name": "Man Elf",
-            "glyph": "🧝‍♂️"
+            "name": "man genie",
+            "glyph": "🧞‍♂️",
+            "skin_tone": false
         },
         {
-            "name": "Woman Elf",
-            "glyph": "🧝‍♀️"
+            "name": "woman genie",
+            "glyph": "🧞‍♀️",
+            "skin_tone": false
         },
         {
-            "name": "Genie",
-            "glyph": "🧞"
+            "name": "zombie",
+            "glyph": "🧟",
+            "skin_tone": false
         },
         {
-            "name": "Man Genie",
-            "glyph": "🧞‍♂️"
+            "name": "man zombie",
+            "glyph": "🧟‍♂️",
+            "skin_tone": false
         },
         {
-            "name": "Woman Genie",
-            "glyph": "🧞‍♀️"
+            "name": "woman zombie",
+            "glyph": "🧟‍♀️",
+            "skin_tone": false
         },
         {
-            "name": "Zombie",
-            "glyph": "🧟"
+            "name": "troll",
+            "glyph": "🧌",
+            "skin_tone": false
         },
         {
-            "name": "Man Zombie",
-            "glyph": "🧟‍♂️"
+            "name": "person getting massage",
+            "glyph": "💆",
+            "skin_tone": true
         },
         {
-            "name": "Woman Zombie",
-            "glyph": "🧟‍♀️"
+            "name": "man getting massage",
+            "glyph": "💆‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Troll",
-            "glyph": "🧌"
+            "name": "woman getting massage",
+            "glyph": "💆‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Getting Massage",
-            "glyph": "💆"
+            "name": "person getting haircut",
+            "glyph": "💇",
+            "skin_tone": true
         },
         {
-            "name": "Man Getting Massage",
-            "glyph": "💆‍♂️"
+            "name": "man getting haircut",
+            "glyph": "💇‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Getting Massage",
-            "glyph": "💆‍♀️"
+            "name": "man walking",
+            "glyph": "🚶‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person Getting Haircut",
-            "glyph": "💇"
+            "name": "woman walking",
+            "glyph": "🚶‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Getting Haircut",
-            "glyph": "💇‍♂️"
+            "name": "⊛ person walking facing right",
+            "glyph": "🚶‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Getting Haircut",
-            "glyph": "💇‍♀️"
+            "name": "⊛ woman walking facing right",
+            "glyph": "🚶‍♀️‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Person Walking",
-            "glyph": "🚶"
+            "name": "⊛ man walking facing right",
+            "glyph": "🚶‍♂️‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Man Walking",
-            "glyph": "🚶‍♂️"
+            "name": "person standing",
+            "glyph": "🧍",
+            "skin_tone": true
         },
         {
-            "name": "Woman Walking",
-            "glyph": "🚶‍♀️"
+            "name": "man standing",
+            "glyph": "🧍‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person Standing",
-            "glyph": "🧍"
+            "name": "woman standing",
+            "glyph": "🧍‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Standing",
-            "glyph": "🧍‍♂️"
+            "name": "person kneeling",
+            "glyph": "🧎",
+            "skin_tone": true
         },
         {
-            "name": "Woman Standing",
-            "glyph": "🧍‍♀️"
+            "name": "man kneeling",
+            "glyph": "🧎‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person Kneeling",
-            "glyph": "🧎"
+            "name": "woman kneeling",
+            "glyph": "🧎‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Kneeling",
-            "glyph": "🧎‍♂️"
+            "name": "⊛ person kneeling facing right",
+            "glyph": "🧎‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Kneeling",
-            "glyph": "🧎‍♀️"
+            "name": "⊛ woman kneeling facing right",
+            "glyph": "🧎‍♀️‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Person with White Cane",
-            "glyph": "🧑‍🦯"
+            "name": "⊛ man kneeling facing right",
+            "glyph": "🧎‍♂️‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Man with White Cane",
-            "glyph": "👨‍🦯"
+            "name": "person with white cane",
+            "glyph": "🧑‍🦯",
+            "skin_tone": true
         },
         {
-            "name": "Woman with White Cane",
-            "glyph": "👩‍🦯"
+            "name": "⊛ person with white cane facing right",
+            "glyph": "🧑‍🦯‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Person in Motorized Wheelchair",
-            "glyph": "🧑‍🦼"
+            "name": "man with white cane",
+            "glyph": "👨‍🦯",
+            "skin_tone": true
         },
         {
-            "name": "Man in Motorized Wheelchair",
-            "glyph": "👨‍🦼"
+            "name": "⊛ man with white cane facing right",
+            "glyph": "👨‍🦯‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Woman in Motorized Wheelchair",
-            "glyph": "👩‍🦼"
+            "name": "woman with white cane",
+            "glyph": "👩‍🦯",
+            "skin_tone": true
         },
         {
-            "name": "Person in Manual Wheelchair",
-            "glyph": "🧑‍🦽"
+            "name": "⊛ woman with white cane facing right",
+            "glyph": "👩‍🦯‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Man in Manual Wheelchair",
-            "glyph": "👨‍🦽"
+            "name": "⊛ person in motorized wheelchair facing right",
+            "glyph": "🧑‍🦼‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Woman in Manual Wheelchair",
-            "glyph": "👩‍🦽"
+            "name": "man in motorized wheelchair",
+            "glyph": "👨‍🦼",
+            "skin_tone": true
         },
         {
-            "name": "Person Running",
-            "glyph": "🏃"
+            "name": "⊛ man in motorized wheelchair facing right",
+            "glyph": "👨‍🦼‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Man Running",
-            "glyph": "🏃‍♂️"
+            "name": "woman in motorized wheelchair",
+            "glyph": "👩‍🦼",
+            "skin_tone": true
         },
         {
-            "name": "Woman Running",
-            "glyph": "🏃‍♀️"
+            "name": "⊛ woman in motorized wheelchair facing right",
+            "glyph": "👩‍🦼‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Dancing",
-            "glyph": "💃"
+            "name": "person in manual wheelchair",
+            "glyph": "🧑‍🦽",
+            "skin_tone": true
         },
         {
-            "name": "Man Dancing",
-            "glyph": "🕺"
+            "name": "⊛ person in manual wheelchair facing right",
+            "glyph": "🧑‍🦽‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Person in Suit Levitating",
-            "glyph": "🕴️"
+            "name": "man in manual wheelchair",
+            "glyph": "👨‍🦽",
+            "skin_tone": true
         },
         {
-            "name": "People with Bunny Ears",
-            "glyph": "👯"
+            "name": "⊛ man in manual wheelchair facing right",
+            "glyph": "👨‍🦽‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Men with Bunny Ears",
-            "glyph": "👯‍♂️"
+            "name": "woman in manual wheelchair",
+            "glyph": "👩‍🦽",
+            "skin_tone": true
         },
         {
-            "name": "Women with Bunny Ears",
-            "glyph": "👯‍♀️"
+            "name": "⊛ woman in manual wheelchair facing right",
+            "glyph": "👩‍🦽‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Person in Steamy Room",
-            "glyph": "🧖"
+            "name": "person running",
+            "glyph": "🏃",
+            "skin_tone": true
         },
         {
-            "name": "Man in Steamy Room",
-            "glyph": "🧖‍♂️"
+            "name": "man running",
+            "glyph": "🏃‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman in Steamy Room",
-            "glyph": "🧖‍♀️"
+            "name": "woman running",
+            "glyph": "🏃‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Climbing",
-            "glyph": "🧗"
+            "name": "⊛ person running facing right",
+            "glyph": "🏃‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Man Climbing",
-            "glyph": "🧗‍♂️"
+            "name": "⊛ woman running facing right",
+            "glyph": "🏃‍♀️‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Climbing",
-            "glyph": "🧗‍♀️"
+            "name": "⊛ man running facing right",
+            "glyph": "🏃‍♂️‍➡️",
+            "skin_tone": true
         },
         {
-            "name": "Person Fencing",
-            "glyph": "🤺"
+            "name": "woman dancing",
+            "glyph": "💃",
+            "skin_tone": true
         },
         {
-            "name": "Horse Racing",
-            "glyph": "🏇"
+            "name": "man dancing",
+            "glyph": "🕺",
+            "skin_tone": true
         },
         {
-            "name": "Skier",
-            "glyph": "⛷️"
+            "name": "person in suit levitating",
+            "glyph": "🕴",
+            "skin_tone": true
         },
         {
-            "name": "Snowboarder",
-            "glyph": "🏂"
+            "name": "men with bunny ears",
+            "glyph": "👯‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person Golfing",
-            "glyph": "🏌️"
+            "name": "women with bunny ears",
+            "glyph": "👯‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Golfing",
-            "glyph": "🏌️‍♂️"
+            "name": "person in steamy room",
+            "glyph": "🧖",
+            "skin_tone": true
         },
         {
-            "name": "Woman Golfing",
-            "glyph": "🏌️‍♀️"
+            "name": "man in steamy room",
+            "glyph": "🧖‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person Surfing",
-            "glyph": "🏄"
+            "name": "woman in steamy room",
+            "glyph": "🧖‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Surfing",
-            "glyph": "🏄‍♂️"
+            "name": "person climbing",
+            "glyph": "🧗",
+            "skin_tone": true
         },
         {
-            "name": "Woman Surfing",
-            "glyph": "🏄‍♀️"
+            "name": "man climbing",
+            "glyph": "🧗‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person Rowing Boat",
-            "glyph": "🚣"
+            "name": "woman climbing",
+            "glyph": "🧗‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Man Rowing Boat",
-            "glyph": "🚣‍♂️"
+            "name": "person fencing",
+            "glyph": "🤺",
+            "skin_tone": false
         },
         {
-            "name": "Woman Rowing Boat",
-            "glyph": "🚣‍♀️"
+            "name": "horse racing",
+            "glyph": "🏇",
+            "skin_tone": true
         },
         {
-            "name": "Person Swimming",
-            "glyph": "🏊"
+            "name": "skier",
+            "glyph": "⛷",
+            "skin_tone": true
         },
         {
-            "name": "Man Swimming",
-            "glyph": "🏊‍♂️"
+            "name": "snowboarder",
+            "glyph": "🏂",
+            "skin_tone": true
         },
         {
-            "name": "Woman Swimming",
-            "glyph": "🏊‍♀️"
+            "name": "person golfing",
+            "glyph": "🏌",
+            "skin_tone": true
         },
         {
-            "name": "Person Bouncing Ball",
-            "glyph": "⛹️"
+            "name": "man golfing",
+            "glyph": "🏌️‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Man Bouncing Ball",
-            "glyph": "⛹️‍♂️"
+            "name": "woman golfing",
+            "glyph": "🏌️‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Bouncing Ball",
-            "glyph": "⛹️‍♀️"
+            "name": "person surfing",
+            "glyph": "🏄",
+            "skin_tone": true
         },
         {
-            "name": "Person Lifting Weights",
-            "glyph": "🏋️"
+            "name": "man surfing",
+            "glyph": "🏄‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Man Lifting Weights",
-            "glyph": "🏋️‍♂️"
+            "name": "man rowing boat",
+            "glyph": "🚣‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Lifting Weights",
-            "glyph": "🏋️‍♀️"
+            "name": "woman rowing boat",
+            "glyph": "🚣‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Biking",
-            "glyph": "🚴"
+            "name": "person swimming",
+            "glyph": "🏊",
+            "skin_tone": true
         },
         {
-            "name": "Man Biking",
-            "glyph": "🚴‍♂️"
+            "name": "man swimming",
+            "glyph": "🏊‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Biking",
-            "glyph": "🚴‍♀️"
+            "name": "woman swimming",
+            "glyph": "🏊‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Mountain Biking",
-            "glyph": "🚵"
+            "name": "person bouncing ball",
+            "glyph": "⛹",
+            "skin_tone": true
         },
         {
-            "name": "Man Mountain Biking",
-            "glyph": "🚵‍♂️"
+            "name": "man bouncing ball",
+            "glyph": "⛹️‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Mountain Biking",
-            "glyph": "🚵‍♀️"
+            "name": "woman bouncing ball",
+            "glyph": "⛹️‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Cartwheeling",
-            "glyph": "🤸"
+            "name": "person lifting weights",
+            "glyph": "🏋",
+            "skin_tone": true
         },
         {
-            "name": "Man Cartwheeling",
-            "glyph": "🤸‍♂️"
+            "name": "man lifting weights",
+            "glyph": "🏋️‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Cartwheeling",
-            "glyph": "🤸‍♀️"
+            "name": "woman lifting weights",
+            "glyph": "🏋️‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "People Wrestling",
-            "glyph": "🤼"
+            "name": "person biking",
+            "glyph": "🚴",
+            "skin_tone": true
         },
         {
-            "name": "Men Wrestling",
-            "glyph": "🤼‍♂️"
+            "name": "man biking",
+            "glyph": "🚴‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Women Wrestling",
-            "glyph": "🤼‍♀️"
+            "name": "woman biking",
+            "glyph": "🚴‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Playing Water Polo",
-            "glyph": "🤽"
+            "name": "person mountain biking",
+            "glyph": "🚵",
+            "skin_tone": true
         },
         {
-            "name": "Man Playing Water Polo",
-            "glyph": "🤽‍♂️"
+            "name": "man mountain biking",
+            "glyph": "🚵‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Playing Water Polo",
-            "glyph": "🤽‍♀️"
+            "name": "woman mountain biking",
+            "glyph": "🚵‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Playing Handball",
-            "glyph": "🤾"
+            "name": "person cartwheeling",
+            "glyph": "🤸",
+            "skin_tone": true
         },
         {
-            "name": "Man Playing Handball",
-            "glyph": "🤾‍♂️"
+            "name": "man cartwheeling",
+            "glyph": "🤸‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Playing Handball",
-            "glyph": "🤾‍♀️"
+            "name": "woman cartwheeling",
+            "glyph": "🤸‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Person Juggling",
-            "glyph": "🤹"
+            "name": "men wrestling",
+            "glyph": "🤼‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Man Juggling",
-            "glyph": "🤹‍♂️"
+            "name": "women wrestling",
+            "glyph": "🤼‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Woman Juggling",
-            "glyph": "🤹‍♀️"
+            "name": "person playing water polo",
+            "glyph": "🤽",
+            "skin_tone": true
         },
         {
-            "name": "Person in Lotus Position",
-            "glyph": "🧘"
+            "name": "man playing water polo",
+            "glyph": "🤽‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Man in Lotus Position",
-            "glyph": "🧘‍♂️"
+            "name": "woman playing water polo",
+            "glyph": "🤽‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Woman in Lotus Position",
-            "glyph": "🧘‍♀️"
+            "name": "person playing handball",
+            "glyph": "🤾",
+            "skin_tone": true
         },
         {
-            "name": "Person Taking Bath",
-            "glyph": "🛀"
+            "name": "man playing handball",
+            "glyph": "🤾‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Person in Bed",
-            "glyph": "🛌"
+            "name": "woman playing handball",
+            "glyph": "🤾‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "People Holding Hands",
-            "glyph": "🧑‍🤝‍🧑"
+            "name": "person juggling",
+            "glyph": "🤹",
+            "skin_tone": true
         },
         {
-            "name": "Women Holding Hands",
-            "glyph": "👭"
+            "name": "man juggling",
+            "glyph": "🤹‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Woman and Man Holding Hands",
-            "glyph": "👫"
+            "name": "woman juggling",
+            "glyph": "🤹‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Men Holding Hands",
-            "glyph": "👬"
+            "name": "person in lotus position",
+            "glyph": "🧘",
+            "skin_tone": true
         },
         {
-            "name": "Kiss",
-            "glyph": "💏"
+            "name": "man in lotus position",
+            "glyph": "🧘‍♂️",
+            "skin_tone": true
         },
         {
-            "name": "Kiss: Woman, Man",
-            "glyph": "👩‍❤️‍💋‍👨"
+            "name": "woman in lotus position",
+            "glyph": "🧘‍♀️",
+            "skin_tone": true
         },
         {
-            "name": "Kiss: Man, Man",
-            "glyph": "👨‍❤️‍💋‍👨"
+            "name": "person taking bath",
+            "glyph": "🛀",
+            "skin_tone": true
         },
         {
-            "name": "Kiss: Woman, Woman",
-            "glyph": "👩‍❤️‍💋‍👩"
+            "name": "person in bed",
+            "glyph": "🛌",
+            "skin_tone": true
         },
         {
-            "name": "Couple with Heart",
-            "glyph": "💑"
+            "name": "people holding hands",
+            "glyph": "🧑‍🤝‍🧑",
+            "skin_tone": true
         },
         {
-            "name": "Couple with Heart: Woman, Man",
-            "glyph": "👩‍❤️‍👨"
+            "name": "women holding hands",
+            "glyph": "👭",
+            "skin_tone": true
         },
         {
-            "name": "Couple with Heart: Man, Man",
-            "glyph": "👨‍❤️‍👨"
+            "name": "woman and man holding hands",
+            "glyph": "👫",
+            "skin_tone": true
         },
         {
-            "name": "Couple with Heart: Woman, Woman",
-            "glyph": "👩‍❤️‍👩"
+            "name": "men holding hands",
+            "glyph": "👬",
+            "skin_tone": true
         },
         {
-            "name": "Family",
-            "glyph": "👪"
+            "name": "kiss: woman, man",
+            "glyph": "👩‍❤️‍💋‍👨",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Woman, Boy",
-            "glyph": "👨‍👩‍👦"
+            "name": "kiss: man, man",
+            "glyph": "👨‍❤️‍💋‍👨",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Woman, Girl",
-            "glyph": "👨‍👩‍👧"
+            "name": "kiss: woman, woman",
+            "glyph": "👩‍❤️‍💋‍👩",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Woman, Girl, Boy",
-            "glyph": "👨‍👩‍👧‍👦"
+            "name": "couple with heart: man, man",
+            "glyph": "👨‍❤️‍👨",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Woman, Boy, Boy",
-            "glyph": "👨‍👩‍👦‍👦"
+            "name": "couple with heart: woman, woman",
+            "glyph": "👩‍❤️‍👩",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Woman, Girl, Girl",
-            "glyph": "👨‍👩‍👧‍👧"
+            "name": "family: man, woman, boy",
+            "glyph": "👨‍👩‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Man, Boy",
-            "glyph": "👨‍👨‍👦"
+            "name": "family: man, woman, girl",
+            "glyph": "👨‍👩‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Man, Girl",
-            "glyph": "👨‍👨‍👧"
+            "name": "family: man, woman, girl, boy",
+            "glyph": "👨‍👩‍👧‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Man, Girl, Boy",
-            "glyph": "👨‍👨‍👧‍👦"
+            "name": "family: man, man, boy",
+            "glyph": "👨‍👨‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Man, Boy, Boy",
-            "glyph": "👨‍👨‍👦‍👦"
+            "name": "family: man, man, girl",
+            "glyph": "👨‍👨‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Man, Girl, Girl",
-            "glyph": "👨‍👨‍👧‍👧"
+            "name": "family: man, man, girl, boy",
+            "glyph": "👨‍👨‍👧‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Woman, Boy",
-            "glyph": "👩‍👩‍👦"
+            "name": "family: man, man, boy, boy",
+            "glyph": "👨‍👨‍👦‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Woman, Girl",
-            "glyph": "👩‍👩‍👧"
+            "name": "family: man, man, girl, girl",
+            "glyph": "👨‍👨‍👧‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Woman, Girl, Boy",
-            "glyph": "👩‍👩‍👧‍👦"
+            "name": "family: woman, woman, boy",
+            "glyph": "👩‍👩‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Woman, Boy, Boy",
-            "glyph": "👩‍👩‍👦‍👦"
+            "name": "family: woman, woman, girl",
+            "glyph": "👩‍👩‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Woman, Girl, Girl",
-            "glyph": "👩‍👩‍👧‍👧"
+            "name": "family: woman, woman, girl, boy",
+            "glyph": "👩‍👩‍👧‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Boy",
-            "glyph": "👨‍👦"
+            "name": "family: woman, woman, boy, boy",
+            "glyph": "👩‍👩‍👦‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Boy, Boy",
-            "glyph": "👨‍👦‍👦"
+            "name": "family: woman, woman, girl, girl",
+            "glyph": "👩‍👩‍👧‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Girl",
-            "glyph": "👨‍👧"
+            "name": "family: man, boy",
+            "glyph": "👨‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Girl, Boy",
-            "glyph": "👨‍👧‍👦"
+            "name": "family: man, boy, boy",
+            "glyph": "👨‍👦‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Man, Girl, Girl",
-            "glyph": "👨‍👧‍👧"
+            "name": "family: man, girl",
+            "glyph": "👨‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Boy",
-            "glyph": "👩‍👦"
+            "name": "family: man, girl, boy",
+            "glyph": "👨‍👧‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Boy, Boy",
-            "glyph": "👩‍👦‍👦"
+            "name": "family: man, girl, girl",
+            "glyph": "👨‍👧‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Girl",
-            "glyph": "👩‍👧"
+            "name": "family: woman, boy",
+            "glyph": "👩‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Girl, Boy",
-            "glyph": "👩‍👧‍👦"
+            "name": "family: woman, boy, boy",
+            "glyph": "👩‍👦‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Family: Woman, Girl, Girl",
-            "glyph": "👩‍👧‍👧"
+            "name": "family: woman, girl",
+            "glyph": "👩‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Speaking Head",
-            "glyph": "🗣️"
+            "name": "family: woman, girl, boy",
+            "glyph": "👩‍👧‍👦",
+            "skin_tone": true
         },
         {
-            "name": "Bust in Silhouette",
-            "glyph": "👤"
+            "name": "family: woman, girl, girl",
+            "glyph": "👩‍👧‍👧",
+            "skin_tone": true
         },
         {
-            "name": "Busts in Silhouette",
-            "glyph": "👥"
+            "name": "bust in silhouette",
+            "glyph": "👤",
+            "skin_tone": false
         },
         {
-            "name": "Footprints",
-            "glyph": "👣"
+            "name": "busts in silhouette",
+            "glyph": "👥",
+            "skin_tone": false
         },
         {
-            "name": "Red Hair",
-            "glyph": "🦰"
+            "name": "people hugging",
+            "glyph": "🫂",
+            "skin_tone": false
         },
         {
-            "name": "Curly Hair",
-            "glyph": "🦱"
+            "name": "family",
+            "glyph": "👪",
+            "skin_tone": true
         },
         {
-            "name": "White Hair",
-            "glyph": "🦳"
+            "name": "⊛ family: adult, adult, child",
+            "glyph": "🧑‍🧑‍🧒",
+            "skin_tone": true
         },
         {
-            "name": "Bald",
-            "glyph": "🦲"
+            "name": "⊛ family: adult, adult, child, child",
+            "glyph": "🧑‍🧑‍🧒‍🧒",
+            "skin_tone": true
         },
         {
-            "name": "Flexed Biceps",
-            "glyph": "💪"
+            "name": "⊛ family: adult, child",
+            "glyph": "🧑‍🧒",
+            "skin_tone": true
         },
         {
-            "name": "Leg",
-            "glyph": "🦵"
+            "name": "⊛ family: adult, child, child",
+            "glyph": "🧑‍🧒‍🧒",
+            "skin_tone": true
         },
         {
-            "name": "Foot",
-            "glyph": "🦶"
-        },
-        {
-            "name": "Mechanical Arm",
-            "glyph": "🦾"
-        },
-        {
-            "name": "Mechanical Leg",
-            "glyph": "🦿"
-        },
-        {
-            "name": "Ear with Hearing Aid",
-            "glyph": "🦻"
-        },
-        {
-            "name": "Ear",
-            "glyph": "👂"
-        },
-        {
-            "name": "Nose",
-            "glyph": "👃"
-        },
-        {
-            "name": "Brain",
-            "glyph": "🧠"
-        },
-        {
-            "name": "Anatomical Heart",
-            "glyph": "🫀"
-        },
-        {
-            "name": "Lungs",
-            "glyph": "🫁"
-        },
-        {
-            "name": "Tooth",
-            "glyph": "🦷"
-        },
-        {
-            "name": "Bone",
-            "glyph": "🦴"
-        },
-        {
-            "name": "Eyes",
-            "glyph": "👀"
-        },
-        {
-            "name": "Eye",
-            "glyph": "👁️"
-        },
-        {
-            "name": "Tongue",
-            "glyph": "👅"
-        },
-        {
-            "name": "Mouth",
-            "glyph": "👄"
-        },
-        {
-            "name": "Biting Lip",
-            "glyph": "🫦"
-        }],
+            "name": "footprints",
+            "glyph": "👣",
+            "skin_tone": false
+        }
+    ],
     "animals_and_nature": [
         {
-            "name": "Dog Face",
-            "glyph": "🐶"
-        },
-        {
-            "name": "Cat Face",
-            "glyph": "🐱"
-        },
-        {
-            "name": "Mouse Face",
-            "glyph": "🐭"
-        },
-        {
-            "name": "Hamster Face",
-            "glyph": "🐹"
-        },
-        {
-            "name": "Rabbit Face",
-            "glyph": "🐰"
-        },
-        {
-            "name": "Fox Face",
-            "glyph": "🦊"
-        },
-        {
-            "name": "Bear Face",
-            "glyph": "🐻"
-        },
-        {
-            "name": "Panda Face",
-            "glyph": "🐼"
-        },
-        {
-            "name": "Koala",
-            "glyph": "🐨"
-        },
-        {
-            "name": "Tiger Face",
-            "glyph": "🐯"
-        },
-        {
-            "name": "Lion Face",
-            "glyph": "🦁"
-        },
-        {
-            "name": "Cow Face",
-            "glyph": "🐮"
-        },
-        {
-            "name": "Pig Face",
-            "glyph": "🐷"
-        },
-        {
-            "name": "Frog Face",
-            "glyph": "🐸"
-        },
-        {
-            "name": "Monkey Face",
+            "name": "monkey face",
             "glyph": "🐵"
         },
         {
-            "name": "See-No-Evil Monkey",
-            "glyph": "🙈"
-        },
-        {
-            "name": "Hear-No-Evil Monkey",
-            "glyph": "🙉"
-        },
-        {
-            "name": "Speak-No-Evil Monkey",
-            "glyph": "🙊"
-        },
-        {
-            "name": "Monkey",
+            "name": "monkey",
             "glyph": "🐒"
         },
         {
-            "name": "Chicken",
+            "name": "gorilla",
+            "glyph": "🦍"
+        },
+        {
+            "name": "orangutan",
+            "glyph": "🦧"
+        },
+        {
+            "name": "dog face",
+            "glyph": "🐶"
+        },
+        {
+            "name": "dog",
+            "glyph": "🐕"
+        },
+        {
+            "name": "guide dog",
+            "glyph": "🦮"
+        },
+        {
+            "name": "service dog",
+            "glyph": "🐕‍🦺"
+        },
+        {
+            "name": "poodle",
+            "glyph": "🐩"
+        },
+        {
+            "name": "wolf",
+            "glyph": "🐺"
+        },
+        {
+            "name": "fox",
+            "glyph": "🦊"
+        },
+        {
+            "name": "raccoon",
+            "glyph": "🦝"
+        },
+        {
+            "name": "cat face",
+            "glyph": "🐱"
+        },
+        {
+            "name": "cat",
+            "glyph": "🐈"
+        },
+        {
+            "name": "black cat",
+            "glyph": "🐈‍⬛"
+        },
+        {
+            "name": "lion",
+            "glyph": "🦁"
+        },
+        {
+            "name": "tiger face",
+            "glyph": "🐯"
+        },
+        {
+            "name": "tiger",
+            "glyph": "🐅"
+        },
+        {
+            "name": "leopard",
+            "glyph": "🐆"
+        },
+        {
+            "name": "horse face",
+            "glyph": "🐴"
+        },
+        {
+            "name": "moose",
+            "glyph": "🫎"
+        },
+        {
+            "name": "donkey",
+            "glyph": "🫏"
+        },
+        {
+            "name": "horse",
+            "glyph": "🐎"
+        },
+        {
+            "name": "unicorn",
+            "glyph": "🦄"
+        },
+        {
+            "name": "zebra",
+            "glyph": "🦓"
+        },
+        {
+            "name": "deer",
+            "glyph": "🦌"
+        },
+        {
+            "name": "bison",
+            "glyph": "🦬"
+        },
+        {
+            "name": "cow face",
+            "glyph": "🐮"
+        },
+        {
+            "name": "ox",
+            "glyph": "🐂"
+        },
+        {
+            "name": "water buffalo",
+            "glyph": "🐃"
+        },
+        {
+            "name": "cow",
+            "glyph": "🐄"
+        },
+        {
+            "name": "pig face",
+            "glyph": "🐷"
+        },
+        {
+            "name": "pig",
+            "glyph": "🐖"
+        },
+        {
+            "name": "boar",
+            "glyph": "🐗"
+        },
+        {
+            "name": "pig nose",
+            "glyph": "🐽"
+        },
+        {
+            "name": "ram",
+            "glyph": "🐏"
+        },
+        {
+            "name": "ewe",
+            "glyph": "🐑"
+        },
+        {
+            "name": "goat",
+            "glyph": "🐐"
+        },
+        {
+            "name": "camel",
+            "glyph": "🐪"
+        },
+        {
+            "name": "two-hump camel",
+            "glyph": "🐫"
+        },
+        {
+            "name": "llama",
+            "glyph": "🦙"
+        },
+        {
+            "name": "giraffe",
+            "glyph": "🦒"
+        },
+        {
+            "name": "elephant",
+            "glyph": "🐘"
+        },
+        {
+            "name": "mammoth",
+            "glyph": "🦣"
+        },
+        {
+            "name": "rhinoceros",
+            "glyph": "🦏"
+        },
+        {
+            "name": "hippopotamus",
+            "glyph": "🦛"
+        },
+        {
+            "name": "mouse face",
+            "glyph": "🐭"
+        },
+        {
+            "name": "mouse",
+            "glyph": "🐁"
+        },
+        {
+            "name": "rat",
+            "glyph": "🐀"
+        },
+        {
+            "name": "hamster",
+            "glyph": "🐹"
+        },
+        {
+            "name": "rabbit face",
+            "glyph": "🐰"
+        },
+        {
+            "name": "rabbit",
+            "glyph": "🐇"
+        },
+        {
+            "name": "chipmunk",
+            "glyph": "🐿"
+        },
+        {
+            "name": "beaver",
+            "glyph": "🦫"
+        },
+        {
+            "name": "hedgehog",
+            "glyph": "🦔"
+        },
+        {
+            "name": "bat",
+            "glyph": "🦇"
+        },
+        {
+            "name": "bear",
+            "glyph": "🐻"
+        },
+        {
+            "name": "polar bear",
+            "glyph": "🐻‍❄️"
+        },
+        {
+            "name": "koala",
+            "glyph": "🐨"
+        },
+        {
+            "name": "panda",
+            "glyph": "🐼"
+        },
+        {
+            "name": "sloth",
+            "glyph": "🦥"
+        },
+        {
+            "name": "otter",
+            "glyph": "🦦"
+        },
+        {
+            "name": "skunk",
+            "glyph": "🦨"
+        },
+        {
+            "name": "kangaroo",
+            "glyph": "🦘"
+        },
+        {
+            "name": "badger",
+            "glyph": "🦡"
+        },
+        {
+            "name": "paw prints",
+            "glyph": "🐾"
+        },
+        {
+            "name": "turkey",
+            "glyph": "🦃"
+        },
+        {
+            "name": "chicken",
             "glyph": "🐔"
         },
         {
-            "name": "Penguin",
-            "glyph": "🐧"
+            "name": "rooster",
+            "glyph": "🐓"
         },
         {
-            "name": "Bird",
-            "glyph": "🐦"
-        },
-        {
-            "name": "Baby Chick",
-            "glyph": "🐤"
-        },
-        {
-            "name": "Hatching Chick",
+            "name": "hatching chick",
             "glyph": "🐣"
         },
         {
-            "name": "Front-Facing Baby Chick",
+            "name": "baby chick",
+            "glyph": "🐤"
+        },
+        {
+            "name": "front-facing baby chick",
             "glyph": "🐥"
         },
         {
-            "name": "Duck",
-            "glyph": "🦆"
+            "name": "bird",
+            "glyph": "🐦"
         },
         {
-            "name": "Eagle",
+            "name": "penguin",
+            "glyph": "🐧"
+        },
+        {
+            "name": "dove",
+            "glyph": "🕊"
+        },
+        {
+            "name": "eagle",
             "glyph": "🦅"
         },
         {
-            "name": "Owl",
+            "name": "duck",
+            "glyph": "🦆"
+        },
+        {
+            "name": "swan",
+            "glyph": "🦢"
+        },
+        {
+            "name": "owl",
             "glyph": "🦉"
         },
         {
-            "name": "Dodo",
+            "name": "dodo",
             "glyph": "🦤"
         },
         {
-            "name": "Feather",
+            "name": "feather",
             "glyph": "🪶"
         },
         {
-            "name": "Flamingo",
+            "name": "flamingo",
             "glyph": "🦩"
         },
         {
-            "name": "Peacock",
+            "name": "peacock",
             "glyph": "🦚"
         },
         {
-            "name": "Parrot",
+            "name": "parrot",
             "glyph": "🦜"
         },
         {
-            "name": "Frog",
+            "name": "wing",
+            "glyph": "🪽"
+        },
+        {
+            "name": "black bird",
+            "glyph": "🐦‍⬛"
+        },
+        {
+            "name": "goose",
+            "glyph": "🪿"
+        },
+        {
+            "name": "phoenix",
+            "glyph": "🐦‍🔥"
+        },
+        {
+            "name": "frog",
             "glyph": "🐸"
         },
         {
-            "name": "Crocodile",
+            "name": "crocodile",
             "glyph": "🐊"
         },
         {
-            "name": "Turtle",
+            "name": "turtle",
             "glyph": "🐢"
         },
         {
-            "name": "Lizard",
+            "name": "lizard",
             "glyph": "🦎"
         },
         {
-            "name": "Snake",
+            "name": "snake",
             "glyph": "🐍"
         },
         {
-            "name": "Dragon Face",
+            "name": "dragon face",
             "glyph": "🐲"
         },
         {
-            "name": "Dragon",
+            "name": "dragon",
             "glyph": "🐉"
         },
         {
-            "name": "Sauropod",
+            "name": "sauropod",
             "glyph": "🦕"
         },
         {
@@ -2874,1143 +2900,939 @@ export const emojiList = {
             "glyph": "🦖"
         },
         {
-            "name": "Spouting Whale",
+            "name": "spouting whale",
             "glyph": "🐳"
         },
         {
-            "name": "Whale",
+            "name": "whale",
             "glyph": "🐋"
         },
         {
-            "name": "Dolphin",
+            "name": "dolphin",
             "glyph": "🐬"
         },
         {
-            "name": "Fish",
+            "name": "seal",
+            "glyph": "🦭"
+        },
+        {
+            "name": "fish",
             "glyph": "🐟"
         },
         {
-            "name": "Tropical Fish",
+            "name": "tropical fish",
             "glyph": "🐠"
         },
         {
-            "name": "Blowfish",
+            "name": "blowfish",
             "glyph": "🐡"
         },
         {
-            "name": "Shark",
+            "name": "shark",
             "glyph": "🦈"
         },
         {
-            "name": "Octopus",
+            "name": "octopus",
             "glyph": "🐙"
         },
         {
-            "name": "Spiral Shell",
+            "name": "spiral shell",
             "glyph": "🐚"
         },
         {
-            "name": "Snail",
+            "name": "coral",
+            "glyph": "🪸"
+        },
+        {
+            "name": "jellyfish",
+            "glyph": "🪼"
+        },
+        {
+            "name": "snail",
             "glyph": "🐌"
         },
         {
-            "name": "Butterfly",
+            "name": "butterfly",
             "glyph": "🦋"
         },
         {
-            "name": "Bug",
+            "name": "bug",
             "glyph": "🐛"
         },
         {
-            "name": "Ant",
+            "name": "ant",
             "glyph": "🐜"
         },
         {
-            "name": "Honeybee",
+            "name": "honeybee",
             "glyph": "🐝"
         },
         {
-            "name": "Beetle",
+            "name": "beetle",
             "glyph": "🪲"
         },
         {
-            "name": "Lady Beetle",
+            "name": "lady beetle",
             "glyph": "🐞"
         },
         {
-            "name": "Cricket",
+            "name": "cricket",
             "glyph": "🦗"
         },
         {
-            "name": "Cockroach",
+            "name": "cockroach",
             "glyph": "🪳"
         },
         {
-            "name": "Spider",
-            "glyph": "🕷️"
+            "name": "spider",
+            "glyph": "🕷"
         },
         {
-            "name": "Spider Web",
-            "glyph": "🕸️"
+            "name": "spider web",
+            "glyph": "🕸"
         },
         {
-            "name": "Scorpion",
+            "name": "scorpion",
             "glyph": "🦂"
         },
         {
-            "name": "Mosquito",
+            "name": "mosquito",
             "glyph": "🦟"
         },
         {
-            "name": "Fly",
+            "name": "fly",
             "glyph": "🪰"
         },
         {
-            "name": "Worm",
+            "name": "worm",
             "glyph": "🪱"
         },
         {
-            "name": "Microbe",
+            "name": "microbe",
             "glyph": "🦠"
         },
         {
-            "name": "Bouquet",
+            "name": "bouquet",
             "glyph": "💐"
         },
         {
-            "name": "Cherry Blossom",
+            "name": "cherry blossom",
             "glyph": "🌸"
         },
         {
-            "name": "White Flower",
+            "name": "white flower",
             "glyph": "💮"
         },
         {
-            "name": "Lotus",
+            "name": "lotus",
             "glyph": "🪷"
         },
         {
-            "name": "Rosette",
-            "glyph": "🏵️"
+            "name": "rosette",
+            "glyph": "🏵"
         },
         {
-            "name": "Rose",
+            "name": "rose",
             "glyph": "🌹"
         },
         {
-            "name": "Wilted Flower",
+            "name": "wilted flower",
             "glyph": "🥀"
         },
         {
-            "name": "Hibiscus",
+            "name": "hibiscus",
             "glyph": "🌺"
         },
         {
-            "name": "Sunflower",
+            "name": "sunflower",
             "glyph": "🌻"
         },
         {
-            "name": "Blossom",
+            "name": "blossom",
             "glyph": "🌼"
         },
         {
-            "name": "Tulip",
+            "name": "tulip",
             "glyph": "🌷"
         },
         {
-            "name": "Seedling",
+            "name": "hyacinth",
+            "glyph": "🪻"
+        },
+        {
+            "name": "seedling",
             "glyph": "🌱"
         },
         {
-            "name": "Potted Plant",
+            "name": "potted plant",
             "glyph": "🪴"
         },
         {
-            "name": "Evergreen Tree",
+            "name": "evergreen tree",
             "glyph": "🌲"
         },
         {
-            "name": "Deciduous Tree",
+            "name": "deciduous tree",
             "glyph": "🌳"
         },
         {
-            "name": "Palm Tree",
+            "name": "palm tree",
             "glyph": "🌴"
         },
         {
-            "name": "Cactus",
+            "name": "cactus",
             "glyph": "🌵"
         },
         {
-            "name": "Sheaf of Rice",
+            "name": "sheaf of rice",
             "glyph": "🌾"
         },
         {
-            "name": "Herb",
+            "name": "herb",
             "glyph": "🌿"
         },
         {
-            "name": "Shamrock",
-            "glyph": "☘️"
+            "name": "shamrock",
+            "glyph": "☘"
         },
         {
-            "name": "Four Leaf Clover",
+            "name": "four leaf clover",
             "glyph": "🍀"
         },
         {
-            "name": "Maple Leaf",
+            "name": "maple leaf",
             "glyph": "🍁"
         },
         {
-            "name": "Fallen Leaf",
+            "name": "fallen leaf",
             "glyph": "🍂"
         },
         {
-            "name": "Leaf Fluttering in Wind",
+            "name": "leaf fluttering in wind",
             "glyph": "🍃"
         },
         {
-            "name": "Empty Nest",
+            "name": "empty nest",
             "glyph": "🪹"
         },
         {
-            "name": "Nest with Eggs",
+            "name": "nest with eggs",
             "glyph": "🪺"
         },
         {
-            "name": "Mushroom",
+            "name": "mushroom",
             "glyph": "🍄"
-        },
-        {
-            "name": "Globe Showing Europe-Africa",
-            "glyph": "🌍"
-        },
-        {
-            "name": "Globe Showing Americas",
-            "glyph": "🌎"
-        },
-        {
-            "name": "Globe Showing Asia-Australia",
-            "glyph": "🌏"
-        },
-        {
-            "name": "Globe with Meridians",
-            "glyph": "🌐"
-        },
-        {
-            "name": "Rock",
-            "glyph": "🪨"
-        },
-        {
-            "name": "Wood",
-            "glyph": "🪵"
-        },
-        {
-            "name": "Moon Viewing Ceremony",
-            "glyph": "🎑"
-        },
-        {
-            "name": "Sun",
-            "glyph": "☀️"
-        },
-        {
-            "name": "Full Moon",
-            "glyph": "🌕"
-        },
-        {
-            "name": "Waning Gibbous Moon",
-            "glyph": "🌖"
-        },
-        {
-            "name": "Last Quarter Moon",
-            "glyph": "🌗"
-        },
-        {
-            "name": "Waning Crescent Moon",
-            "glyph": "🌘"
-        },
-        {
-            "name": "New Moon",
-            "glyph": "🌑"
-        },
-        {
-            "name": "Waxing Crescent Moon",
-            "glyph": "🌒"
-        },
-        {
-            "name": "First Quarter Moon",
-            "glyph": "🌓"
-        },
-        {
-            "name": "Waxing Gibbous Moon",
-            "glyph": "🌔"
-        },
-        {
-            "name": "New Moon Face",
-            "glyph": "🌚"
-        },
-        {
-            "name": "Full Moon Face",
-            "glyph": "🌝"
-        },
-        {
-            "name": "First Quarter Moon Face",
-            "glyph": "🌛"
-        },
-        {
-            "name": "Last Quarter Moon Face",
-            "glyph": "🌜"
-        },
-        {
-            "name": "Thermometer",
-            "glyph": "🌡️"
-        },
-        {
-            "name": "Sun with Face",
-            "glyph": "🌞"
-        },
-        {
-            "name": "Ringed Planet",
-            "glyph": "🪐"
-        },
-        {
-            "name": "Star",
-            "glyph": "⭐"
-        },
-        {
-            "name": "Star Struck",
-            "glyph": "🤩"
-        },
-        {
-            "name": "Shooting Star",
-            "glyph": "🌠"
-        },
-        {
-            "name": "Milky Way",
-            "glyph": "🌌"
-        },
-        {
-            "name": "Cloud",
-            "glyph": "☁️"
-        },
-        {
-            "name": "Sun Behind Cloud",
-            "glyph": "🌥️"
-        },
-        {
-            "name": "Cloud with Lightning and Rain",
-            "glyph": "⛈️"
-        },
-        {
-            "name": "Sun Behind Small Cloud",
-            "glyph": "🌤️"
-        },
-        {
-            "name": "Sun Behind Large Cloud",
-            "glyph": "🌦️"
-        },
-        {
-            "name": "Sun Behind Rain Cloud",
-            "glyph": "🌦️"
-        },
-        {
-            "name": "Cloud with Rain",
-            "glyph": "🌧️"
-        },
-        {
-            "name": "Cloud with Snow",
-            "glyph": "🌨️"
-        },
-        {
-            "name": "Cloud with Lightning",
-            "glyph": "🌩️"
-        },
-        {
-            "name": "Tornado",
-            "glyph": "🌪️"
-        },
-        {
-            "name": "Fog",
-            "glyph": "🌫️"
-        },
-        {
-            "name": "Wind Face",
-            "glyph": "🌬️"
-        },
-        {
-            "name": "Cyclone",
-            "glyph": "🌀"
-        },
-        {
-            "name": "Rainbow",
-            "glyph": "🌈"
-        },
-        {
-            "name": "Closed Umbrella",
-            "glyph": "🌂"
-        },
-        {
-            "name": "Umbrella",
-            "glyph": "☔"
-        },
-        {
-            "name": "Umbrella on Ground",
-            "glyph": "⛱️"
-        },
-        {
-            "name": "High Voltage",
-            "glyph": "⚡"
-        },
-        {
-            "name": "Snowflake",
-            "glyph": "❄️"
-        },
-        {
-            "name": "Snowman",
-            "glyph": "⛄"
-        },
-        {
-            "name": "Snowman Without Snow",
-            "glyph": "⛇"
-        },
-        {
-            "name": "Comet",
-            "glyph": "☄️"
-        },
-        {
-            "name": "Fire",
-            "glyph": "🔥"
-        },
-        {
-            "name": "Droplet",
-            "glyph": "💧"
-        },
-        {
-            "name": "Water Wave",
-            "glyph": "🌊"
-        },
-        {
-            "name": "Christmas Tree",
-            "glyph": "🎄"
-        },
-        {
-            "name": "Sparkles",
-            "glyph": "✨"
-        },
-        {
-            "name": "Tanabata Tree",
-            "glyph": "🎋"
-        },
-        {
-            "name": "Pine Decoration",
-            "glyph": "🎍"
-        },
-        {
-            "name": "Japanese Dolls",
-            "glyph": "🎎"
-        },
-        {
-            "name": "Carp Streamer",
-            "glyph": "🎏"
-        },
-        {
-            "name": "Wind Chime",
-            "glyph": "🎐"
-        },
-        {
-            "name": "Moon Viewing Ceremony",
-            "glyph": "🎑"
         }
     ],
     "food_and_drink": [
         {
-            "name": "Grapes",
+            "name": "grapes",
             "glyph": "🍇"
         },
         {
-            "name": "Melon",
+            "name": "melon",
             "glyph": "🍈"
         },
         {
-            "name": "Watermelon",
+            "name": "watermelon",
             "glyph": "🍉"
         },
         {
-            "name": "Tangerine",
+            "name": "tangerine",
             "glyph": "🍊"
         },
         {
-            "name": "Lemon",
+            "name": "lemon",
             "glyph": "🍋"
         },
         {
-            "name": "Banana",
+            "name": "⊛ lime",
+            "glyph": "🍋‍🟩"
+        },
+        {
+            "name": "banana",
             "glyph": "🍌"
         },
         {
-            "name": "Pineapple",
+            "name": "pineapple",
             "glyph": "🍍"
         },
         {
-            "name": "Mango",
+            "name": "mango",
             "glyph": "🥭"
         },
         {
-            "name": "Red Apple",
+            "name": "red apple",
             "glyph": "🍎"
         },
         {
-            "name": "Green Apple",
+            "name": "green apple",
             "glyph": "🍏"
         },
         {
-            "name": "Pear",
+            "name": "pear",
             "glyph": "🍐"
         },
         {
-            "name": "Peach",
+            "name": "peach",
             "glyph": "🍑"
         },
         {
-            "name": "Cherries",
+            "name": "cherries",
             "glyph": "🍒"
         },
         {
-            "name": "Strawberry",
+            "name": "strawberry",
             "glyph": "🍓"
         },
         {
-            "name": "Blueberries",
+            "name": "blueberries",
             "glyph": "🫐"
         },
         {
-            "name": "Kiwi Fruit",
+            "name": "kiwi fruit",
             "glyph": "🥝"
         },
         {
-            "name": "Tomato",
+            "name": "tomato",
             "glyph": "🍅"
         },
         {
-            "name": "Olive",
+            "name": "olive",
             "glyph": "🫒"
         },
         {
-            "name": "Coconut",
+            "name": "coconut",
             "glyph": "🥥"
         },
         {
-            "name": "Avocado",
+            "name": "avocado",
             "glyph": "🥑"
         },
         {
-            "name": "Eggplant",
+            "name": "eggplant",
             "glyph": "🍆"
         },
         {
-            "name": "Potato",
+            "name": "potato",
             "glyph": "🥔"
         },
         {
-            "name": "Carrot",
+            "name": "carrot",
             "glyph": "🥕"
         },
         {
-            "name": "Ear of Corn",
+            "name": "ear of corn",
             "glyph": "🌽"
         },
         {
-            "name": "Hot Pepper",
-            "glyph": "🌶️"
+            "name": "hot pepper",
+            "glyph": "🌶"
         },
         {
-            "name": "Bell Pepper",
+            "name": "bell pepper",
             "glyph": "🫑"
         },
         {
-            "name": "Cucumber",
+            "name": "cucumber",
             "glyph": "🥒"
         },
         {
-            "name": "Leafy Green",
+            "name": "leafy green",
             "glyph": "🥬"
         },
         {
-            "name": "Broccoli",
+            "name": "broccoli",
             "glyph": "🥦"
         },
         {
-            "name": "Garlic",
+            "name": "garlic",
             "glyph": "🧄"
         },
         {
-            "name": "Onion",
+            "name": "onion",
             "glyph": "🧅"
         },
         {
-            "name": "Mushroom",
-            "glyph": "🍄"
-        },
-        {
-            "name": "Peanuts",
+            "name": "peanuts",
             "glyph": "🥜"
         },
         {
-            "name": "Chestnut",
+            "name": "beans",
+            "glyph": "🫘"
+        },
+        {
+            "name": "chestnut",
             "glyph": "🌰"
         },
         {
-            "name": "Bread",
+            "name": "ginger root",
+            "glyph": "🫚"
+        },
+        {
+            "name": "pea pod",
+            "glyph": "🫛"
+        },
+        {
+            "name": "⊛ brown mushroom",
+            "glyph": "🍄‍🟫"
+        },
+        {
+            "name": "bread",
             "glyph": "🍞"
         },
         {
-            "name": "Croissant",
+            "name": "croissant",
             "glyph": "🥐"
         },
         {
-            "name": "Baguette Bread",
+            "name": "baguette bread",
             "glyph": "🥖"
         },
         {
-            "name": "Flatbread",
+            "name": "flatbread",
             "glyph": "🫓"
         },
         {
-            "name": "Pretzel",
+            "name": "pretzel",
             "glyph": "🥨"
         },
         {
-            "name": "Bagel",
+            "name": "bagel",
             "glyph": "🥯"
         },
         {
-            "name": "Pancakes",
+            "name": "pancakes",
             "glyph": "🥞"
         },
         {
-            "name": "Waffle",
+            "name": "waffle",
             "glyph": "🧇"
         },
         {
-            "name": "Cheese Wedge",
+            "name": "cheese wedge",
             "glyph": "🧀"
         },
         {
-            "name": "Meat on Bone",
+            "name": "meat on bone",
             "glyph": "🍖"
         },
         {
-            "name": "Poultry Leg",
+            "name": "poultry leg",
             "glyph": "🍗"
         },
         {
-            "name": "Cut of Meat",
+            "name": "cut of meat",
             "glyph": "🥩"
         },
         {
-            "name": "Bacon",
+            "name": "bacon",
             "glyph": "🥓"
         },
         {
-            "name": "Hamburger",
+            "name": "hamburger",
             "glyph": "🍔"
         },
         {
-            "name": "French Fries",
+            "name": "french fries",
             "glyph": "🍟"
         },
         {
-            "name": "Pizza",
+            "name": "pizza",
             "glyph": "🍕"
         },
         {
-            "name": "Hot Dog",
+            "name": "hot dog",
             "glyph": "🌭"
         },
         {
-            "name": "Sandwich",
+            "name": "sandwich",
             "glyph": "🥪"
         },
         {
-            "name": "Taco",
+            "name": "taco",
             "glyph": "🌮"
         },
         {
-            "name": "Burrito",
+            "name": "burrito",
             "glyph": "🌯"
         },
         {
-            "name": "Tamale",
+            "name": "tamale",
             "glyph": "🫔"
         },
         {
-            "name": "Stuffed Flatbread",
+            "name": "stuffed flatbread",
             "glyph": "🥙"
         },
         {
-            "name": "Falafel",
+            "name": "falafel",
             "glyph": "🧆"
         },
         {
-            "name": "Egg",
+            "name": "egg",
             "glyph": "🥚"
         },
         {
-            "name": "Cooking",
+            "name": "cooking",
             "glyph": "🍳"
         },
         {
-            "name": "Shallow Pan of Food",
+            "name": "shallow pan of food",
             "glyph": "🥘"
         },
         {
-            "name": "Pot of Food",
+            "name": "pot of food",
             "glyph": "🍲"
         },
         {
-            "name": "Fondue",
+            "name": "fondue",
             "glyph": "🫕"
         },
         {
-            "name": "Bowl with Spoon",
+            "name": "bowl with spoon",
             "glyph": "🥣"
         },
         {
-            "name": "Green Salad",
+            "name": "green salad",
             "glyph": "🥗"
         },
         {
-            "name": "Popcorn",
+            "name": "popcorn",
             "glyph": "🍿"
         },
         {
-            "name": "Butter",
+            "name": "butter",
             "glyph": "🧈"
         },
         {
-            "name": "Salt",
+            "name": "salt",
             "glyph": "🧂"
         },
         {
-            "name": "Canned Food",
+            "name": "canned food",
             "glyph": "🥫"
         },
         {
-            "name": "Bento Box",
+            "name": "bento box",
             "glyph": "🍱"
         },
         {
-            "name": "Rice Crackers",
+            "name": "rice cracker",
             "glyph": "🍘"
         },
         {
-            "name": "Rice Ball",
+            "name": "rice ball",
             "glyph": "🍙"
         },
         {
-            "name": "Cooked Rice",
+            "name": "cooked rice",
             "glyph": "🍚"
         },
         {
-            "name": "Curry Rice",
+            "name": "curry rice",
             "glyph": "🍛"
         },
         {
-            "name": "Steaming Bowl",
+            "name": "steaming bowl",
             "glyph": "🍜"
         },
         {
-            "name": "Spaghetti",
+            "name": "spaghetti",
             "glyph": "🍝"
         },
         {
-            "name": "Roasted Sweet Potato",
+            "name": "roasted sweet potato",
             "glyph": "🍠"
         },
         {
-            "name": "Oden",
+            "name": "oden",
             "glyph": "🍢"
         },
         {
-            "name": "Sushi",
+            "name": "sushi",
             "glyph": "🍣"
         },
         {
-            "name": "Fried Shrimp",
+            "name": "fried shrimp",
             "glyph": "🍤"
         },
         {
-            "name": "Fish Cake with Swirl",
+            "name": "fish cake with swirl",
             "glyph": "🍥"
         },
         {
-            "name": "Moon Cake",
+            "name": "moon cake",
             "glyph": "🥮"
         },
         {
-            "name": "Dango",
+            "name": "dango",
             "glyph": "🍡"
         },
         {
-            "name": "Dumpling",
+            "name": "dumpling",
             "glyph": "🥟"
         },
         {
-            "name": "Fortune Cookie",
+            "name": "fortune cookie",
             "glyph": "🥠"
         },
         {
-            "name": "Takeout Box",
+            "name": "takeout box",
             "glyph": "🥡"
         },
         {
-            "name": "Crab",
+            "name": "crab",
             "glyph": "🦀"
         },
         {
-            "name": "Lobster",
+            "name": "lobster",
             "glyph": "🦞"
         },
         {
-            "name": "Shrimp",
+            "name": "shrimp",
             "glyph": "🦐"
         },
         {
-            "name": "Squid",
+            "name": "squid",
             "glyph": "🦑"
         },
         {
-            "name": "Oyster",
+            "name": "oyster",
             "glyph": "🦪"
         },
         {
-            "name": "Soft Ice Cream",
+            "name": "soft ice cream",
             "glyph": "🍦"
         },
         {
-            "name": "Shaved Ice",
+            "name": "shaved ice",
             "glyph": "🍧"
         },
         {
-            "name": "Ice Cream",
+            "name": "ice cream",
             "glyph": "🍨"
         },
         {
-            "name": "Doughnut",
+            "name": "doughnut",
             "glyph": "🍩"
         },
         {
-            "name": "Cookie",
+            "name": "cookie",
             "glyph": "🍪"
         },
         {
-            "name": "Birthday Cake",
+            "name": "birthday cake",
             "glyph": "🎂"
         },
         {
-            "name": "Shortcake",
+            "name": "shortcake",
             "glyph": "🍰"
         },
         {
-            "name": "Cupcake",
+            "name": "cupcake",
             "glyph": "🧁"
         },
         {
-            "name": "Pie",
+            "name": "pie",
             "glyph": "🥧"
         },
         {
-            "name": "Chocolate Bar",
+            "name": "chocolate bar",
             "glyph": "🍫"
         },
         {
-            "name": "Candy",
+            "name": "candy",
             "glyph": "🍬"
         },
         {
-            "name": "Lollipop",
+            "name": "lollipop",
             "glyph": "🍭"
         },
         {
-            "name": "Custard",
+            "name": "custard",
             "glyph": "🍮"
         },
         {
-            "name": "Honey Pot",
+            "name": "honey pot",
             "glyph": "🍯"
         },
         {
-            "name": "Baby Bottle",
+            "name": "baby bottle",
             "glyph": "🍼"
         },
         {
-            "name": "Glass of Milk",
+            "name": "glass of milk",
             "glyph": "🥛"
         },
         {
-            "name": "Hot Beverage",
+            "name": "hot beverage",
             "glyph": "☕"
         },
         {
-            "name": "Teapot",
+            "name": "teapot",
             "glyph": "🫖"
         },
         {
-            "name": "Teacup Without Handle",
+            "name": "teacup without handle",
             "glyph": "🍵"
         },
         {
-            "name": "Sake",
+            "name": "sake",
             "glyph": "🍶"
         },
         {
-            "name": "Bottle with Popping Cork",
+            "name": "bottle with popping cork",
             "glyph": "🍾"
         },
         {
-            "name": "Wine Glass",
+            "name": "wine glass",
             "glyph": "🍷"
         },
         {
-            "name": "Cocktail Glass",
+            "name": "cocktail glass",
             "glyph": "🍸"
         },
         {
-            "name": "Tropical Drink",
+            "name": "tropical drink",
             "glyph": "🍹"
         },
         {
-            "name": "Beer Mug",
+            "name": "beer mug",
             "glyph": "🍺"
         },
         {
-            "name": "Clinking Beer Mugs",
+            "name": "clinking beer mugs",
             "glyph": "🍻"
         },
         {
-            "name": "Clinking Glasses",
+            "name": "clinking glasses",
             "glyph": "🥂"
         },
         {
-            "name": "Tumbler Glass",
+            "name": "tumbler glass",
             "glyph": "🥃"
         },
         {
-            "name": "Pouring Liquid",
+            "name": "pouring liquid",
             "glyph": "🫗"
         },
         {
-            "name": "Cup with Straw",
+            "name": "cup with straw",
             "glyph": "🥤"
         },
         {
-            "name": "Bubble Tea",
+            "name": "bubble tea",
             "glyph": "🧋"
         },
         {
-            "name": "Beverage Box",
+            "name": "beverage box",
             "glyph": "🧃"
         },
         {
-            "name": "Mate",
+            "name": "mate",
             "glyph": "🧉"
         },
         {
-            "name": "Ice",
+            "name": "ice",
             "glyph": "🧊"
         },
         {
-            "name": "Chopsticks",
+            "name": "chopsticks",
             "glyph": "🥢"
         },
         {
-            "name": "Fork and Knife with Plate",
-            "glyph": "🍽️"
+            "name": "fork and knife with plate",
+            "glyph": "🍽"
         },
         {
-            "name": "Fork and Knife",
+            "name": "fork and knife",
             "glyph": "🍴"
         },
         {
-            "name": "Spoon",
+            "name": "spoon",
             "glyph": "🥄"
         },
         {
-            "name": "Kitchen Knife",
+            "name": "kitchen knife",
             "glyph": "🔪"
         },
         {
-            "name": "Amphora",
+            "name": "jar",
+            "glyph": "🫙"
+        },
+        {
+            "name": "amphora",
             "glyph": "🏺"
         }
     ],
     "travel_and_places": [
         {
-            "name": "Globe Showing Europe-Africa",
+            "name": "globe showing Europe-Africa",
             "glyph": "🌍"
         },
         {
-            "name": "Globe Showing Americas",
+            "name": "globe showing Americas",
             "glyph": "🌎"
         },
         {
-            "name": "Globe Showing Asia-Australia",
+            "name": "globe showing Asia-Australia",
             "glyph": "🌏"
         },
         {
-            "name": "Globe with Meridians",
+            "name": "globe with meridians",
             "glyph": "🌐"
         },
         {
-            "name": "World Map",
-            "glyph": "🗺️"
+            "name": "world map",
+            "glyph": "🗺"
         },
         {
-            "name": "Map of Japan",
+            "name": "map of Japan",
             "glyph": "🗾"
         },
         {
-            "name": "Compass",
+            "name": "compass",
             "glyph": "🧭"
         },
         {
-            "name": "Snow-Capped Mountain",
-            "glyph": "🏔️"
+            "name": "snow-capped mountain",
+            "glyph": "🏔"
         },
         {
-            "name": "Mountain",
-            "glyph": "⛰️"
+            "name": "mountain",
+            "glyph": "⛰"
         },
         {
-            "name": "Volcano",
+            "name": "volcano",
             "glyph": "🌋"
         },
         {
-            "name": "Mount Fuji",
+            "name": "mount fuji",
             "glyph": "🗻"
         },
         {
-            "name": "Camping",
-            "glyph": "🏕️"
+            "name": "camping",
+            "glyph": "🏕"
         },
         {
-            "name": "Beach with Umbrella",
-            "glyph": "🏖️"
+            "name": "beach with umbrella",
+            "glyph": "🏖"
         },
         {
-            "name": "Desert",
-            "glyph": "🏜️"
+            "name": "desert",
+            "glyph": "🏜"
         },
         {
-            "name": "Desert Island",
-            "glyph": "🏝️"
+            "name": "desert island",
+            "glyph": "🏝"
         },
         {
-            "name": "National Park",
-            "glyph": "🏞️"
+            "name": "national park",
+            "glyph": "🏞"
         },
         {
-            "name": "Stadium",
-            "glyph": "🏟️"
+            "name": "stadium",
+            "glyph": "🏟"
         },
         {
-            "name": "Classical Building",
-            "glyph": "🏛️"
+            "name": "classical building",
+            "glyph": "🏛"
         },
         {
-            "name": "Building Construction",
-            "glyph": "🏗️"
+            "name": "building construction",
+            "glyph": "🏗"
         },
         {
-            "name": "Brick",
+            "name": "brick",
             "glyph": "🧱"
         },
         {
-            "name": "Rock",
+            "name": "rock",
             "glyph": "🪨"
         },
         {
-            "name": "Wood",
+            "name": "wood",
             "glyph": "🪵"
         },
         {
-            "name": "Hut",
+            "name": "hut",
             "glyph": "🛖"
         },
         {
-            "name": "Houses",
-            "glyph": "🏘️"
+            "name": "houses",
+            "glyph": "🏘"
         },
         {
-            "name": "Derelict House",
-            "glyph": "🏚️"
+            "name": "derelict house",
+            "glyph": "🏚"
         },
         {
-            "name": "House",
+            "name": "house",
             "glyph": "🏠"
         },
         {
-            "name": "House with Garden",
+            "name": "house with garden",
             "glyph": "🏡"
         },
         {
-            "name": "Office Building",
+            "name": "office building",
             "glyph": "🏢"
         },
         {
-            "name": "Japanese Post Office",
+            "name": "Japanese post office",
             "glyph": "🏣"
         },
         {
-            "name": "Post Office",
+            "name": "post office",
             "glyph": "🏤"
         },
         {
-            "name": "Hospital",
+            "name": "hospital",
             "glyph": "🏥"
         },
         {
-            "name": "Bank",
+            "name": "bank",
             "glyph": "🏦"
         },
         {
-            "name": "Hotel",
+            "name": "hotel",
             "glyph": "🏨"
         },
         {
-            "name": "Love Hotel",
+            "name": "love hotel",
             "glyph": "🏩"
         },
         {
-            "name": "Convenience Store",
+            "name": "convenience store",
             "glyph": "🏪"
         },
         {
-            "name": "School",
+            "name": "school",
             "glyph": "🏫"
         },
         {
-            "name": "Department Store",
+            "name": "department store",
             "glyph": "🏬"
         },
         {
-            "name": "Factory",
+            "name": "factory",
             "glyph": "🏭"
         },
         {
-            "name": "Japanese Castle",
+            "name": "Japanese castle",
             "glyph": "🏯"
         },
         {
-            "name": "Castle",
+            "name": "castle",
             "glyph": "🏰"
         },
         {
-            "name": "Wedding",
+            "name": "wedding",
             "glyph": "💒"
         },
         {
-            "name": "Tokyo Tower",
+            "name": "Tokyo tower",
             "glyph": "🗼"
         },
         {
@@ -4018,1295 +3840,2330 @@ export const emojiList = {
             "glyph": "🗽"
         },
         {
-            "name": "Church",
+            "name": "church",
             "glyph": "⛪"
         },
         {
-            "name": "Mosque",
+            "name": "mosque",
             "glyph": "🕌"
         },
         {
-            "name": "Hindu Temple",
+            "name": "hindu temple",
             "glyph": "🛕"
         },
         {
-            "name": "Synagogue",
+            "name": "synagogue",
             "glyph": "🕍"
         },
         {
-            "name": "Shinto Shrine",
-            "glyph": "⛩️"
+            "name": "shinto shrine",
+            "glyph": "⛩"
         },
         {
-            "name": "Kaaba",
+            "name": "kaaba",
             "glyph": "🕋"
         },
         {
-            "name": "Fountain",
+            "name": "fountain",
             "glyph": "⛲"
         },
         {
-            "name": "Tent",
+            "name": "tent",
             "glyph": "⛺"
         },
         {
-            "name": "Foggy",
+            "name": "foggy",
             "glyph": "🌁"
         },
         {
-            "name": "Night with Stars",
+            "name": "night with stars",
             "glyph": "🌃"
         },
         {
-            "name": "Cityscape",
-            "glyph": "🏙️"
+            "name": "cityscape",
+            "glyph": "🏙"
         },
         {
-            "name": "Sunrise Over Mountains",
+            "name": "sunrise over mountains",
             "glyph": "🌄"
         },
         {
-            "name": "Sunrise",
+            "name": "sunrise",
             "glyph": "🌅"
         },
         {
-            "name": "Cityscape at Dusk",
+            "name": "cityscape at dusk",
             "glyph": "🌆"
         },
         {
-            "name": "Sunset",
+            "name": "sunset",
             "glyph": "🌇"
         },
         {
-            "name": "Bridge at Night",
+            "name": "bridge at night",
             "glyph": "🌉"
         },
         {
-            "name": "Hot Springs",
-            "glyph": "♨️"
+            "name": "hot springs",
+            "glyph": "♨"
         },
         {
-            "name": "Carousel Horse",
+            "name": "carousel horse",
             "glyph": "🎠"
         },
         {
-            "name": "Ferris Wheel",
+            "name": "playground slide",
+            "glyph": "🛝"
+        },
+        {
+            "name": "ferris wheel",
             "glyph": "🎡"
         },
         {
-            "name": "Roller Coaster",
+            "name": "roller coaster",
             "glyph": "🎢"
         },
         {
-            "name": "Barber Pole",
+            "name": "barber pole",
             "glyph": "💈"
         },
         {
-            "name": "Circus Tent",
+            "name": "circus tent",
             "glyph": "🎪"
         },
         {
-            "name": "Locomotive",
+            "name": "locomotive",
             "glyph": "🚂"
         },
         {
-            "name": "Railway Car",
+            "name": "railway car",
             "glyph": "🚃"
         },
         {
-            "name": "High-Speed Train",
+            "name": "high-speed train",
             "glyph": "🚄"
         },
         {
-            "name": "Bullet Train",
+            "name": "bullet train",
             "glyph": "🚅"
         },
         {
-            "name": "Train",
+            "name": "train",
             "glyph": "🚆"
         },
         {
-            "name": "Metro",
+            "name": "metro",
             "glyph": "🚇"
         },
         {
-            "name": "Light Rail",
+            "name": "light rail",
             "glyph": "🚈"
         },
         {
-            "name": "Station",
+            "name": "station",
             "glyph": "🚉"
         },
         {
-            "name": "Tram",
+            "name": "tram",
             "glyph": "🚊"
         },
         {
-            "name": "Monorail",
+            "name": "monorail",
             "glyph": "🚝"
         },
         {
-            "name": "Mountain Railway",
+            "name": "mountain railway",
             "glyph": "🚞"
         },
         {
-            "name": "Tram Car",
+            "name": "tram car",
             "glyph": "🚋"
         },
         {
-            "name": "Bus",
+            "name": "bus",
             "glyph": "🚌"
         },
         {
-            "name": "Oncoming Bus",
+            "name": "oncoming bus",
             "glyph": "🚍"
         },
         {
-            "name": "Trolleybus",
+            "name": "trolleybus",
             "glyph": "🚎"
         },
         {
-            "name": "Minibus",
+            "name": "minibus",
             "glyph": "🚐"
         },
         {
-            "name": "Ambulance",
+            "name": "ambulance",
             "glyph": "🚑"
         },
         {
-            "name": "Fire Engine",
+            "name": "fire engine",
             "glyph": "🚒"
         },
         {
-            "name": "Police Car",
+            "name": "police car",
             "glyph": "🚓"
         },
         {
-            "name": "Oncoming Police Car",
+            "name": "oncoming police car",
             "glyph": "🚔"
         },
         {
-            "name": "Taxi",
+            "name": "taxi",
             "glyph": "🚕"
         },
         {
-            "name": "Oncoming Taxi",
+            "name": "oncoming taxi",
             "glyph": "🚖"
         },
         {
-            "name": "Automobile",
+            "name": "automobile",
             "glyph": "🚗"
         },
         {
-            "name": "Oncoming Automobile",
+            "name": "oncoming automobile",
             "glyph": "🚘"
         },
         {
-            "name": "Sport Utility Vehicle",
+            "name": "sport utility vehicle",
             "glyph": "🚙"
         },
         {
-            "name": "Delivery Truck",
+            "name": "pickup truck",
+            "glyph": "🛻"
+        },
+        {
+            "name": "delivery truck",
             "glyph": "🚚"
         },
         {
-            "name": "Articulated Lorry",
+            "name": "articulated lorry",
             "glyph": "🚛"
         },
         {
-            "name": "Tractor",
+            "name": "tractor",
             "glyph": "🚜"
         },
         {
-            "name": "Racing Car",
-            "glyph": "🏎️"
+            "name": "racing car",
+            "glyph": "🏎"
         },
         {
-            "name": "Motorcycle",
-            "glyph": "🏍️"
+            "name": "motorcycle",
+            "glyph": "🏍"
         },
         {
-            "name": "Motor Scooter",
+            "name": "motor scooter",
             "glyph": "🛵"
         },
         {
-            "name": "Manual Wheelchair",
+            "name": "manual wheelchair",
             "glyph": "🦽"
         },
         {
-            "name": "Motorized Wheelchair",
+            "name": "motorized wheelchair",
             "glyph": "🦼"
         },
         {
-            "name": "Auto Rickshaw",
+            "name": "auto rickshaw",
             "glyph": "🛺"
         },
         {
-            "name": "Bicycle",
+            "name": "bicycle",
             "glyph": "🚲"
         },
         {
-            "name": "Kick Scooter",
+            "name": "kick scooter",
             "glyph": "🛴"
         },
         {
-            "name": "Skateboard",
+            "name": "skateboard",
             "glyph": "🛹"
         },
         {
-            "name": "Roller Skate",
+            "name": "roller skate",
             "glyph": "🛼"
         },
         {
-            "name": "Bus Stop",
+            "name": "bus stop",
             "glyph": "🚏"
         },
         {
-            "name": "Motorway",
-            "glyph": "🛣️"
+            "name": "motorway",
+            "glyph": "🛣"
         },
         {
-            "name": "Railway Track",
-            "glyph": "🛤️"
+            "name": "railway track",
+            "glyph": "🛤"
         },
         {
-            "name": "Oil Drum",
-            "glyph": "🛢️"
+            "name": "oil drum",
+            "glyph": "🛢"
         },
         {
-            "name": "Fuel Pump",
+            "name": "fuel pump",
             "glyph": "⛽"
         },
         {
-            "name": "Police Car Light",
+            "name": "wheel",
+            "glyph": "🛞"
+        },
+        {
+            "name": "police car light",
             "glyph": "🚨"
         },
         {
-            "name": "Horizontal Traffic Light",
+            "name": "horizontal traffic light",
             "glyph": "🚥"
         },
         {
-            "name": "Vertical Traffic Light",
+            "name": "vertical traffic light",
             "glyph": "🚦"
         },
         {
-            "name": "Stop Sign",
+            "name": "stop sign",
             "glyph": "🛑"
         },
         {
-            "name": "Construction",
+            "name": "construction",
             "glyph": "🚧"
         },
         {
-            "name": "Anchor",
+            "name": "anchor",
             "glyph": "⚓"
         },
         {
-            "name": "Sailboat",
+            "name": "ring buoy",
+            "glyph": "🛟"
+        },
+        {
+            "name": "sailboat",
             "glyph": "⛵"
         },
         {
-            "name": "Canoe",
+            "name": "canoe",
             "glyph": "🛶"
         },
         {
-            "name": "Speedboat",
+            "name": "speedboat",
             "glyph": "🚤"
         },
         {
-            "name": "Passenger Ship",
-            "glyph": "🛳️"
+            "name": "passenger ship",
+            "glyph": "🛳"
         },
         {
-            "name": "Ferry",
-            "glyph": "⛴️"
+            "name": "ferry",
+            "glyph": "⛴"
         },
         {
-            "name": "Motor Boat",
-            "glyph": "🛥️"
+            "name": "motor boat",
+            "glyph": "🛥"
         },
         {
-            "name": "Ship",
+            "name": "ship",
             "glyph": "🚢"
         },
         {
-            "name": "Airplane",
-            "glyph": "✈️"
+            "name": "airplane",
+            "glyph": "✈"
         },
         {
-            "name": "Small Airplane",
-            "glyph": "🛩️"
+            "name": "small airplane",
+            "glyph": "🛩"
         },
         {
-            "name": "Airplane Departure",
+            "name": "airplane departure",
             "glyph": "🛫"
         },
         {
-            "name": "Airplane Arrival",
+            "name": "airplane arrival",
             "glyph": "🛬"
         },
         {
-            "name": "Parachute",
+            "name": "parachute",
             "glyph": "🪂"
         },
         {
-            "name": "Seat",
+            "name": "seat",
             "glyph": "💺"
         },
         {
-            "name": "Helicopter",
+            "name": "helicopter",
             "glyph": "🚁"
         },
         {
-            "name": "Suspension Railway",
+            "name": "suspension railway",
             "glyph": "🚟"
         },
         {
-            "name": "Mountain Cableway",
+            "name": "mountain cableway",
             "glyph": "🚠"
         },
         {
-            "name": "Aerial Tramway",
+            "name": "aerial tramway",
             "glyph": "🚡"
         },
         {
-            "name": "Satellite",
-            "glyph": "🛰️"
+            "name": "satellite",
+            "glyph": "🛰"
         },
         {
-            "name": "Rocket",
+            "name": "rocket",
             "glyph": "🚀"
         },
         {
-            "name": "Flying Saucer",
+            "name": "flying saucer",
             "glyph": "🛸"
         },
         {
-            "name": "Bellhop Bell",
-            "glyph": "🛎️"
+            "name": "bellhop bell",
+            "glyph": "🛎"
         },
         {
-            "name": "Luggage",
+            "name": "luggage",
             "glyph": "🧳"
         },
         {
-            "name": "Hourglass Done",
+            "name": "hourglass done",
             "glyph": "⌛"
         },
         {
-            "name": "Hourglass Not Done",
+            "name": "hourglass not done",
             "glyph": "⏳"
         },
         {
-            "name": "Watch",
+            "name": "watch",
             "glyph": "⌚"
         },
         {
-            "name": "Alarm Clock",
+            "name": "alarm clock",
             "glyph": "⏰"
         },
         {
-            "name": "Stopwatch",
-            "glyph": "⏱️"
+            "name": "stopwatch",
+            "glyph": "⏱"
         },
         {
-            "name": "Timer Clock",
-            "glyph": "⏲️"
+            "name": "timer clock",
+            "glyph": "⏲"
         },
         {
-            "name": "Mantelpiece Clock",
-            "glyph": "🕰️"
+            "name": "mantelpiece clock",
+            "glyph": "🕰"
         },
         {
-            "name": "Twelve O’Clock",
+            "name": "twelve o’clock",
             "glyph": "🕛"
         },
         {
-            "name": "Twelve-Thirty",
+            "name": "twelve-thirty",
             "glyph": "🕧"
         },
         {
-            "name": "One O’Clock",
+            "name": "one o’clock",
             "glyph": "🕐"
         },
         {
-            "name": "One-Thirty",
+            "name": "one-thirty",
             "glyph": "🕜"
         },
         {
-            "name": "Two O’Clock",
+            "name": "two o’clock",
             "glyph": "🕑"
         },
         {
-            "name": "Two-Thirty",
+            "name": "two-thirty",
             "glyph": "🕝"
         },
         {
-            "name": "Three O’Clock",
+            "name": "three o’clock",
             "glyph": "🕒"
         },
         {
-            "name": "Three-Thirty",
+            "name": "three-thirty",
             "glyph": "🕞"
         },
         {
-            "name": "Four O’Clock",
+            "name": "four o’clock",
             "glyph": "🕓"
         },
         {
-            "name": "Four-Thirty",
+            "name": "four-thirty",
             "glyph": "🕟"
         },
         {
-            "name": "Five O’Clock",
+            "name": "five o’clock",
             "glyph": "🕔"
         },
         {
-            "name": "Five-Thirty",
+            "name": "five-thirty",
             "glyph": "🕠"
         },
         {
-            "name": "Six O’Clock",
+            "name": "six o’clock",
             "glyph": "🕕"
         },
         {
-            "name": "Six-Thirty",
+            "name": "six-thirty",
             "glyph": "🕡"
         },
         {
-            "name": "Seven O’Clock",
+            "name": "seven o’clock",
             "glyph": "🕖"
         },
         {
-            "name": "Seven-Thirty",
+            "name": "seven-thirty",
             "glyph": "🕢"
         },
         {
-            "name": "Eight O’Clock",
+            "name": "eight o’clock",
             "glyph": "🕗"
         },
         {
-            "name": "Eight-Thirty",
+            "name": "eight-thirty",
             "glyph": "🕣"
         },
         {
-            "name": "Nine O’Clock",
+            "name": "nine o’clock",
             "glyph": "🕘"
         },
         {
-            "name": "Nine-Thirty",
+            "name": "nine-thirty",
             "glyph": "🕤"
         },
         {
-            "name": "Ten O’Clock",
+            "name": "ten o’clock",
             "glyph": "🕙"
         },
         {
-            "name": "Ten-Thirty",
+            "name": "ten-thirty",
             "glyph": "🕥"
         },
         {
-            "name": "Eleven O’Clock",
+            "name": "eleven o’clock",
             "glyph": "🕚"
         },
         {
-            "name": "Eleven-Thirty",
+            "name": "eleven-thirty",
             "glyph": "🕦"
-        }],
+        },
+        {
+            "name": "new moon",
+            "glyph": "🌑"
+        },
+        {
+            "name": "waxing crescent moon",
+            "glyph": "🌒"
+        },
+        {
+            "name": "first quarter moon",
+            "glyph": "🌓"
+        },
+        {
+            "name": "waxing gibbous moon",
+            "glyph": "🌔"
+        },
+        {
+            "name": "full moon",
+            "glyph": "🌕"
+        },
+        {
+            "name": "waning gibbous moon",
+            "glyph": "🌖"
+        },
+        {
+            "name": "last quarter moon",
+            "glyph": "🌗"
+        },
+        {
+            "name": "waning crescent moon",
+            "glyph": "🌘"
+        },
+        {
+            "name": "crescent moon",
+            "glyph": "🌙"
+        },
+        {
+            "name": "new moon face",
+            "glyph": "🌚"
+        },
+        {
+            "name": "first quarter moon face",
+            "glyph": "🌛"
+        },
+        {
+            "name": "last quarter moon face",
+            "glyph": "🌜"
+        },
+        {
+            "name": "thermometer",
+            "glyph": "🌡"
+        },
+        {
+            "name": "sun",
+            "glyph": "☀"
+        },
+        {
+            "name": "full moon face",
+            "glyph": "🌝"
+        },
+        {
+            "name": "sun with face",
+            "glyph": "🌞"
+        },
+        {
+            "name": "ringed planet",
+            "glyph": "🪐"
+        },
+        {
+            "name": "star",
+            "glyph": "⭐"
+        },
+        {
+            "name": "glowing star",
+            "glyph": "🌟"
+        },
+        {
+            "name": "shooting star",
+            "glyph": "🌠"
+        },
+        {
+            "name": "milky way",
+            "glyph": "🌌"
+        },
+        {
+            "name": "cloud",
+            "glyph": "☁"
+        },
+        {
+            "name": "sun behind cloud",
+            "glyph": "⛅"
+        },
+        {
+            "name": "cloud with lightning and rain",
+            "glyph": "⛈"
+        },
+        {
+            "name": "sun behind small cloud",
+            "glyph": "🌤"
+        },
+        {
+            "name": "sun behind large cloud",
+            "glyph": "🌥"
+        },
+        {
+            "name": "sun behind rain cloud",
+            "glyph": "🌦"
+        },
+        {
+            "name": "cloud with rain",
+            "glyph": "🌧"
+        },
+        {
+            "name": "cloud with snow",
+            "glyph": "🌨"
+        },
+        {
+            "name": "cloud with lightning",
+            "glyph": "🌩"
+        },
+        {
+            "name": "tornado",
+            "glyph": "🌪"
+        },
+        {
+            "name": "fog",
+            "glyph": "🌫"
+        },
+        {
+            "name": "wind face",
+            "glyph": "🌬"
+        },
+        {
+            "name": "cyclone",
+            "glyph": "🌀"
+        },
+        {
+            "name": "rainbow",
+            "glyph": "🌈"
+        },
+        {
+            "name": "closed umbrella",
+            "glyph": "🌂"
+        },
+        {
+            "name": "umbrella",
+            "glyph": "☂"
+        },
+        {
+            "name": "umbrella with rain drops",
+            "glyph": "☔"
+        },
+        {
+            "name": "umbrella on ground",
+            "glyph": "⛱"
+        },
+        {
+            "name": "high voltage",
+            "glyph": "⚡"
+        },
+        {
+            "name": "snowflake",
+            "glyph": "❄"
+        },
+        {
+            "name": "snowman",
+            "glyph": "☃"
+        },
+        {
+            "name": "snowman without snow",
+            "glyph": "⛄"
+        },
+        {
+            "name": "comet",
+            "glyph": "☄"
+        },
+        {
+            "name": "fire",
+            "glyph": "🔥"
+        },
+        {
+            "name": "droplet",
+            "glyph": "💧"
+        },
+        {
+            "name": "water wave",
+            "glyph": "🌊"
+        }
+    ],
     "activities": [
         {
-            "name": "Soccer Ball",
-            "glyph": "⚽"
+            "name": "jack-o-lantern",
+            "glyph": "🎃"
         },
         {
-            "name": "Basketball",
-            "glyph": "🏀"
+            "name": "Christmas tree",
+            "glyph": "🎄"
         },
         {
-            "name": "American Football",
-            "glyph": "🏈"
+            "name": "fireworks",
+            "glyph": "🎆"
         },
         {
-            "name": "Baseball",
-            "glyph": "⚾"
+            "name": "sparkler",
+            "glyph": "🎇"
         },
         {
-            "name": "Softball",
-            "glyph": "🥎"
+            "name": "firecracker",
+            "glyph": "🧨"
         },
         {
-            "name": "Tennis",
-            "glyph": "🎾"
+            "name": "sparkles",
+            "glyph": "✨"
         },
         {
-            "name": "Volleyball",
-            "glyph": "🏐"
+            "name": "balloon",
+            "glyph": "🎈"
         },
         {
-            "name": "Rugby Football",
-            "glyph": "🏉"
+            "name": "party popper",
+            "glyph": "🎉"
         },
         {
-            "name": "Flying Disc",
-            "glyph": "🥏"
+            "name": "confetti ball",
+            "glyph": "🎊"
         },
         {
-            "name": "Pool 8 Ball",
-            "glyph": "🎱"
+            "name": "tanabata tree",
+            "glyph": "🎋"
         },
         {
-            "name": "Boomerang",
-            "glyph": "🪃"
+            "name": "pine decoration",
+            "glyph": "🎍"
         },
         {
-            "name": "Kite",
-            "glyph": "🪁"
+            "name": "Japanese dolls",
+            "glyph": "🎎"
         },
         {
-            "name": "Ping Pong",
-            "glyph": "🏓"
+            "name": "carp streamer",
+            "glyph": "🎏"
         },
         {
-            "name": "Badminton",
-            "glyph": "🏸"
+            "name": "wind chime",
+            "glyph": "🎐"
         },
         {
-            "name": "Goal Net",
-            "glyph": "🥅"
+            "name": "moon viewing ceremony",
+            "glyph": "🎑"
         },
         {
-            "name": "Ice Hockey",
-            "glyph": "🏒"
+            "name": "red envelope",
+            "glyph": "🧧"
         },
         {
-            "name": "Field Hockey",
-            "glyph": "🏑"
+            "name": "ribbon",
+            "glyph": "🎀"
         },
         {
-            "name": "Cricket Game",
-            "glyph": "🏏"
+            "name": "wrapped gift",
+            "glyph": "🎁"
         },
         {
-            "name": "Yo-Yo",
-            "glyph": "🪀"
+            "name": "reminder ribbon",
+            "glyph": "🎗"
         },
         {
-            "name": "Sled",
-            "glyph": "🛷"
+            "name": "admission tickets",
+            "glyph": "🎟"
         },
         {
-            "name": "Curling Stone",
-            "glyph": "🥌"
-        },
-        {
-            "name": "Skis",
-            "glyph": "🎿"
-        },
-        {
-            "name": "Skier",
-            "glyph": "⛷️"
-        },
-        {
-            "name": "Snowboarder",
-            "glyph": "🏂"
-        },
-        {
-            "name": "Parachute",
-            "glyph": "🪂"
-        },
-        {
-            "name": "Person Lifting Weights",
-            "glyph": "🏋️"
-        },
-        {
-            "name": "Man Lifting Weights",
-            "glyph": "🏋️‍♂️"
-        },
-        {
-            "name": "Woman Lifting Weights",
-            "glyph": "🏋️‍♀️"
-        },
-        {
-            "name": "People Wrestling",
-            "glyph": "🤼"
-        },
-        {
-            "name": "Men Wrestling",
-            "glyph": "🤼‍♂️"
-        },
-        {
-            "name": "Women Wrestling",
-            "glyph": "🤼‍♀️"
-        },
-        {
-            "name": "Person Cartwheeling",
-            "glyph": "🤸"
-        },
-        {
-            "name": "Man Cartwheeling",
-            "glyph": "🤸‍♂️"
-        },
-        {
-            "name": "Woman Cartwheeling",
-            "glyph": "🤸‍♀️"
-        },
-        {
-            "name": "Person Bouncing Ball",
-            "glyph": "⛹️"
-        },
-        {
-            "name": "Man Bouncing Ball",
-            "glyph": "⛹️‍♂️"
-        },
-        {
-            "name": "Woman Bouncing Ball",
-            "glyph": "⛹️‍♀️"
-        },
-        {
-            "name": "Person Fencing",
-            "glyph": "🤺"
-        },
-        {
-            "name": "Person Playing Handball",
-            "glyph": "🤾"
-        },
-        {
-            "name": "Man Playing Handball",
-            "glyph": "🤾‍♂️"
-        },
-        {
-            "name": "Woman Playing Handball",
-            "glyph": "🤾‍♀️"
-        },
-        {
-            "name": "Person Golfing",
-            "glyph": "🏌️"
-        },
-        {
-            "name": "Man Golfing",
-            "glyph": "🏌️‍♂️"
-        },
-        {
-            "name": "Woman Golfing",
-            "glyph": "🏌️‍♀️"
-        },
-        {
-            "name": "Horse Racing",
-            "glyph": "🏇"
-        },
-        {
-            "name": "Person in Lotus Position",
-            "glyph": "🧘"
-        },
-        {
-            "name": "Man in Lotus Position",
-            "glyph": "🧘‍♂️"
-        },
-        {
-            "name": "Woman in Lotus Position",
-            "glyph": "🧘‍♀️"
-        },
-        {
-            "name": "Person Surfing",
-            "glyph": "🏄"
-        },
-        {
-            "name": "Man Surfing",
-            "glyph": "🏄‍♂️"
-        },
-        {
-            "name": "Woman Surfing",
-            "glyph": "🏄‍♀️"
-        },
-        {
-            "name": "Person Swimming",
-            "glyph": "🏊"
-        },
-        {
-            "name": "Man Swimming",
-            "glyph": "🏊‍♂️"
-        },
-        {
-            "name": "Woman Swimming",
-            "glyph": "🏊‍♀️"
-        },
-        {
-            "name": "Person Playing Water Polo",
-            "glyph": "🤽"
-        },
-        {
-            "name": "Man Playing Water Polo",
-            "glyph": "🤽‍♂️"
-        },
-        {
-            "name": "Woman Playing Water Polo",
-            "glyph": "🤽‍♀️"
-        },
-        {
-            "name": "Person Rowing Boat",
-            "glyph": "🚣"
-        },
-        {
-            "name": "Man Rowing Boat",
-            "glyph": "🚣‍♂️"
-        },
-        {
-            "name": "Woman Rowing Boat",
-            "glyph": "🚣‍♀️"
-        },
-        {
-            "name": "Person Climbing",
-            "glyph": "🧗"
-        },
-        {
-            "name": "Man Climbing",
-            "glyph": "🧗‍♂️"
-        },
-        {
-            "name": "Woman Climbing",
-            "glyph": "🧗‍♀️"
-        },
-        {
-            "name": "Person Mountain Biking",
-            "glyph": "🚵"
-        },
-        {
-            "name": "Man Mountain Biking",
-            "glyph": "🚵‍♂️"
-        },
-        {
-            "name": "Woman Mountain Biking",
-            "glyph": "🚵‍♀️"
-        },
-        {
-            "name": "Person Biking",
-            "glyph": "🚴"
-        },
-        {
-            "name": "Man Biking",
-            "glyph": "🚴‍♂️"
-        },
-        {
-            "name": "Woman Biking",
-            "glyph": "🚴‍♀️"
-        },
-        {
-            "name": "Trophy",
-            "glyph": "🏆"
-        },
-        {
-            "name": "1st Place Medal",
-            "glyph": "🥇"
-        },
-        {
-            "name": "2nd Place Medal",
-            "glyph": "🥈"
-        },
-        {
-            "name": "3rd Place Medal",
-            "glyph": "🥉"
-        },
-        {
-            "name": "Sports Medal",
-            "glyph": "🏅"
-        },
-        {
-            "name": "Military Medal",
-            "glyph": "🎖️"
-        },
-        {
-            "name": "Rosette",
-            "glyph": "🏵️"
-        },
-        {
-            "name": "Reminder Ribbon",
-            "glyph": "🎗️"
-        },
-        {
-            "name": "Ticket",
+            "name": "ticket",
             "glyph": "🎫"
         },
         {
-            "name": "Admission Tickets",
-            "glyph": "🎟️"
+            "name": "military medal",
+            "glyph": "🎖"
         },
         {
-            "name": "Circus Tent",
-            "glyph": "🎪"
+            "name": "trophy",
+            "glyph": "🏆"
         },
         {
-            "name": "Person Juggling",
-            "glyph": "🤹"
+            "name": "sports medal",
+            "glyph": "🏅"
         },
         {
-            "name": "Man Juggling",
-            "glyph": "🤹‍♂️"
+            "name": "1st place medal",
+            "glyph": "🥇"
         },
         {
-            "name": "Woman Juggling",
-            "glyph": "🤹‍♀️"
+            "name": "2nd place medal",
+            "glyph": "🥈"
         },
         {
-            "name": "Performing Arts",
+            "name": "3rd place medal",
+            "glyph": "🥉"
+        },
+        {
+            "name": "soccer ball",
+            "glyph": "⚽"
+        },
+        {
+            "name": "baseball",
+            "glyph": "⚾"
+        },
+        {
+            "name": "softball",
+            "glyph": "🥎"
+        },
+        {
+            "name": "basketball",
+            "glyph": "🏀"
+        },
+        {
+            "name": "volleyball",
+            "glyph": "🏐"
+        },
+        {
+            "name": "american football",
+            "glyph": "🏈"
+        },
+        {
+            "name": "rugby football",
+            "glyph": "🏉"
+        },
+        {
+            "name": "tennis",
+            "glyph": "🎾"
+        },
+        {
+            "name": "flying disc",
+            "glyph": "🥏"
+        },
+        {
+            "name": "bowling",
+            "glyph": "🎳"
+        },
+        {
+            "name": "cricket game",
+            "glyph": "🏏"
+        },
+        {
+            "name": "field hockey",
+            "glyph": "🏑"
+        },
+        {
+            "name": "ice hockey",
+            "glyph": "🏒"
+        },
+        {
+            "name": "lacrosse",
+            "glyph": "🥍"
+        },
+        {
+            "name": "ping pong",
+            "glyph": "🏓"
+        },
+        {
+            "name": "badminton",
+            "glyph": "🏸"
+        },
+        {
+            "name": "boxing glove",
+            "glyph": "🥊"
+        },
+        {
+            "name": "martial arts uniform",
+            "glyph": "🥋"
+        },
+        {
+            "name": "goal net",
+            "glyph": "🥅"
+        },
+        {
+            "name": "flag in hole",
+            "glyph": "⛳"
+        },
+        {
+            "name": "ice skate",
+            "glyph": "⛸"
+        },
+        {
+            "name": "fishing pole",
+            "glyph": "🎣"
+        },
+        {
+            "name": "diving mask",
+            "glyph": "🤿"
+        },
+        {
+            "name": "running shirt",
+            "glyph": "🎽"
+        },
+        {
+            "name": "skis",
+            "glyph": "🎿"
+        },
+        {
+            "name": "sled",
+            "glyph": "🛷"
+        },
+        {
+            "name": "curling stone",
+            "glyph": "🥌"
+        },
+        {
+            "name": "bullseye",
+            "glyph": "🎯"
+        },
+        {
+            "name": "yo-yo",
+            "glyph": "🪀"
+        },
+        {
+            "name": "kite",
+            "glyph": "🪁"
+        },
+        {
+            "name": "water pistol",
+            "glyph": "🔫"
+        },
+        {
+            "name": "pool 8 ball",
+            "glyph": "🎱"
+        },
+        {
+            "name": "crystal ball",
+            "glyph": "🔮"
+        },
+        {
+            "name": "magic wand",
+            "glyph": "🪄"
+        },
+        {
+            "name": "video game",
+            "glyph": "🎮"
+        },
+        {
+            "name": "joystick",
+            "glyph": "🕹"
+        },
+        {
+            "name": "game die",
+            "glyph": "🎲"
+        },
+        {
+            "name": "puzzle piece",
+            "glyph": "🧩"
+        },
+        {
+            "name": "teddy bear",
+            "glyph": "🧸"
+        },
+        {
+            "name": "piñata",
+            "glyph": "🪅"
+        },
+        {
+            "name": "mirror ball",
+            "glyph": "🪩"
+        },
+        {
+            "name": "nesting dolls",
+            "glyph": "🪆"
+        },
+        {
+            "name": "spade suit",
+            "glyph": "♠"
+        },
+        {
+            "name": "heart suit",
+            "glyph": "♥"
+        },
+        {
+            "name": "diamond suit",
+            "glyph": "♦"
+        },
+        {
+            "name": "club suit",
+            "glyph": "♣"
+        },
+        {
+            "name": "chess pawn",
+            "glyph": "♟"
+        },
+        {
+            "name": "joker",
+            "glyph": "🃏"
+        },
+        {
+            "name": "mahjong red dragon",
+            "glyph": "🀄"
+        },
+        {
+            "name": "flower playing cards",
+            "glyph": "🎴"
+        },
+        {
+            "name": "performing arts",
             "glyph": "🎭"
         },
         {
-            "name": "Ballet Shoes",
-            "glyph": "🩰"
+            "name": "framed picture",
+            "glyph": "🖼"
         },
         {
-            "name": "Artist Palette",
+            "name": "artist palette",
             "glyph": "🎨"
         },
         {
-            "name": "Microphone",
-            "glyph": "🎤"
+            "name": "thread",
+            "glyph": "🧵"
         },
         {
-            "name": "Headphone",
-            "glyph": "🎧"
+            "name": "sewing needle",
+            "glyph": "🪡"
         },
         {
-            "name": "Radio",
-            "glyph": "📻"
+            "name": "yarn",
+            "glyph": "🧶"
         },
         {
-            "name": "Saxophone",
-            "glyph": "🎷"
+            "name": "knot",
+            "glyph": "🪢"
+        }
+    ],
+    "objects": [
+        {
+            "name": "glasses",
+            "glyph": "👓"
         },
         {
-            "name": "Accordion",
-            "glyph": "🪗"
+            "name": "sunglasses",
+            "glyph": "🕶"
         },
         {
-            "name": "Guitar",
-            "glyph": "🎸"
+            "name": "goggles",
+            "glyph": "🥽"
         },
         {
-            "name": "Musical Keyboard",
-            "glyph": "🎹"
+            "name": "lab coat",
+            "glyph": "🥼"
         },
         {
-            "name": "Trumpet",
-            "glyph": "🎺"
+            "name": "safety vest",
+            "glyph": "🦺"
         },
         {
-            "name": "Violin",
-            "glyph": "🎻"
-        },
-        {
-            "name": "Banjo",
-            "glyph": "🪕"
-        },
-        {
-            "name": "Drum",
-            "glyph": "🥁"
-        },
-        {
-            "name": "Long Drum",
-            "glyph": "🪘"
-        },
-        {
-            "name": "Postal Horn",
-            "glyph": "📯"
-        },
-        {
-            "name": "Studio Microphone",
-            "glyph": "🎙️"
-        },
-        {
-            "name": "Level Slider",
-            "glyph": "🎚️"
-        },
-        {
-            "name": "Control Knobs",
-            "glyph": "🎛️"
-        },
-        {
-            "name": "Optical Disk",
-            "glyph": "📀"
-        },
-        {
-            "name": "DVD",
-            "glyph": "💿"
-        },
-        {
-            "name": "Movie Camera",
-            "glyph": "🎥"
-        },
-        {
-            "name": "Film Projector",
-            "glyph": "📽️"
-        },
-        {
-            "name": "Film Frames",
-            "glyph": "🎞️"
-        },
-        {
-            "name": "Camera with Flash",
-            "glyph": "📸"
-        },
-        {
-            "name": "Camera",
-            "glyph": "📷"
-        },
-        {
-            "name": "Video Camera",
-            "glyph": "📹"
-        },
-        {
-            "name": "Videocassette",
-            "glyph": "📼"
-        },
-        {
-            "name": "Briefs",
-            "glyph": "🩲"
-        },
-        {
-            "name": "Shorts",
-            "glyph": "🩳"
-        },
-        {
-            "name": "Bikini",
-            "glyph": "👙"
-        },
-        {
-            "name": "Woman’s Clothes",
-            "glyph": "👚"
-        },
-        {
-            "name": "T-Shirt",
-            "glyph": "👕"
-        },
-        {
-            "name": "Jeans",
-            "glyph": "👖"
-        },
-        {
-            "name": "Scarf",
-            "glyph": "🧣"
-        },
-        {
-            "name": "Gloves",
-            "glyph": "🧤"
-        },
-        {
-            "name": "Coat",
-            "glyph": "🧥"
-        },
-        {
-            "name": "Socks",
-            "glyph": "🧦"
-        },
-        {
-            "name": "Necktie",
+            "name": "necktie",
             "glyph": "👔"
         },
         {
-            "name": "Dress",
+            "name": "t-shirt",
+            "glyph": "👕"
+        },
+        {
+            "name": "jeans",
+            "glyph": "👖"
+        },
+        {
+            "name": "scarf",
+            "glyph": "🧣"
+        },
+        {
+            "name": "gloves",
+            "glyph": "🧤"
+        },
+        {
+            "name": "coat",
+            "glyph": "🧥"
+        },
+        {
+            "name": "socks",
+            "glyph": "🧦"
+        },
+        {
+            "name": "dress",
             "glyph": "👗"
         },
         {
-            "name": "Kimono",
+            "name": "kimono",
             "glyph": "👘"
         },
         {
-            "name": "High-Heeled Shoe",
-            "glyph": "👠"
+            "name": "sari",
+            "glyph": "🥻"
         },
         {
-            "name": "Woman’s Sandal",
-            "glyph": "👡"
+            "name": "one-piece swimsuit",
+            "glyph": "🩱"
         },
         {
-            "name": "Woman’s Boot",
-            "glyph": "👢"
+            "name": "briefs",
+            "glyph": "🩲"
         },
         {
-            "name": "Man’s Shoe",
-            "glyph": "👞"
+            "name": "shorts",
+            "glyph": "🩳"
         },
         {
-            "name": "Running Shoe",
-            "glyph": "👟"
+            "name": "bikini",
+            "glyph": "👙"
         },
         {
-            "name": "Thong Sandal",
-            "glyph": "🩴"
+            "name": "woman’s clothes",
+            "glyph": "👚"
         },
         {
-            "name": "Flat Shoe",
-            "glyph": "🥿"
-        },
-        {
-            "name": "Military Helmet",
-            "glyph": "🪖"
-        },
-        {
-            "name": "Woman’s Hat",
-            "glyph": "👒"
-        },
-        {
-            "name": "Top Hat",
-            "glyph": "🎩"
-        },
-        {
-            "name": "Graduation Cap",
-            "glyph": "🎓"
-        },
-        {
-            "name": "Billed Cap",
-            "glyph": "🧢"
-        },
-        {
-            "name": "Hair Pick",
-            "glyph": "🪮"
-        },
-        {
-            "name": "Folding Hand Fan",
+            "name": "folding hand fan",
             "glyph": "🪭"
         },
         {
-            "name": "Rescue Worker’s Helmet",
-            "glyph": "⛑️"
+            "name": "purse",
+            "glyph": "👛"
         },
         {
-            "name": "Prayer Beads",
+            "name": "handbag",
+            "glyph": "👜"
+        },
+        {
+            "name": "clutch bag",
+            "glyph": "👝"
+        },
+        {
+            "name": "shopping bags",
+            "glyph": "🛍"
+        },
+        {
+            "name": "backpack",
+            "glyph": "🎒"
+        },
+        {
+            "name": "thong sandal",
+            "glyph": "🩴"
+        },
+        {
+            "name": "man’s shoe",
+            "glyph": "👞"
+        },
+        {
+            "name": "running shoe",
+            "glyph": "👟"
+        },
+        {
+            "name": "hiking boot",
+            "glyph": "🥾"
+        },
+        {
+            "name": "flat shoe",
+            "glyph": "🥿"
+        },
+        {
+            "name": "high-heeled shoe",
+            "glyph": "👠"
+        },
+        {
+            "name": "woman’s sandal",
+            "glyph": "👡"
+        },
+        {
+            "name": "ballet shoes",
+            "glyph": "🩰"
+        },
+        {
+            "name": "woman’s boot",
+            "glyph": "👢"
+        },
+        {
+            "name": "hair pick",
+            "glyph": "🪮"
+        },
+        {
+            "name": "crown",
+            "glyph": "👑"
+        },
+        {
+            "name": "woman’s hat",
+            "glyph": "👒"
+        },
+        {
+            "name": "top hat",
+            "glyph": "🎩"
+        },
+        {
+            "name": "graduation cap",
+            "glyph": "🎓"
+        },
+        {
+            "name": "billed cap",
+            "glyph": "🧢"
+        },
+        {
+            "name": "military helmet",
+            "glyph": "🪖"
+        },
+        {
+            "name": "rescue worker’s helmet",
+            "glyph": "⛑"
+        },
+        {
+            "name": "prayer beads",
             "glyph": "📿"
         },
         {
-            "name": "Lipstick",
+            "name": "lipstick",
             "glyph": "💄"
         },
         {
-            "name": "Ring",
+            "name": "ring",
             "glyph": "💍"
         },
         {
-            "name": "Gem Stone",
+            "name": "gem stone",
             "glyph": "💎"
         },
         {
-            "name": "Muted Speaker",
+            "name": "muted speaker",
             "glyph": "🔇"
         },
         {
-            "name": "Speaker Low Volume",
+            "name": "speaker low volume",
             "glyph": "🔈"
         },
         {
-            "name": "Speaker Medium Volume",
+            "name": "speaker medium volume",
             "glyph": "🔉"
         },
         {
-            "name": "Speaker High Volume",
+            "name": "speaker high volume",
             "glyph": "🔊"
         },
         {
-            "name": "Loudspeaker",
+            "name": "loudspeaker",
             "glyph": "📢"
         },
         {
-            "name": "Megaphone",
+            "name": "megaphone",
             "glyph": "📣"
         },
         {
-            "name": "Postal Horn",
+            "name": "postal horn",
             "glyph": "📯"
         },
         {
-            "name": "Bell",
+            "name": "bell",
             "glyph": "🔔"
         },
         {
-            "name": "Bell with Slash",
+            "name": "bell with slash",
             "glyph": "🔕"
         },
         {
-            "name": "Musical Score",
+            "name": "musical score",
             "glyph": "🎼"
         },
         {
-            "name": "Musical Note",
+            "name": "musical note",
             "glyph": "🎵"
         },
         {
-            "name": "Musical Notes",
+            "name": "musical notes",
             "glyph": "🎶"
         },
         {
-            "name": "Studio Microphone",
-            "glyph": "🎙️"
+            "name": "studio microphone",
+            "glyph": "🎙"
         },
         {
-            "name": "Level Slider",
-            "glyph": "🎚️"
+            "name": "level slider",
+            "glyph": "🎚"
         },
         {
-            "name": "Control Knobs",
-            "glyph": "🎛️"
+            "name": "control knobs",
+            "glyph": "🎛"
         },
         {
-            "name": "Optical Disk",
-            "glyph": "📀"
+            "name": "microphone",
+            "glyph": "🎤"
         },
         {
-            "name": "DVD",
+            "name": "headphone",
+            "glyph": "🎧"
+        },
+        {
+            "name": "radio",
+            "glyph": "📻"
+        },
+        {
+            "name": "saxophone",
+            "glyph": "🎷"
+        },
+        {
+            "name": "accordion",
+            "glyph": "🪗"
+        },
+        {
+            "name": "guitar",
+            "glyph": "🎸"
+        },
+        {
+            "name": "musical keyboard",
+            "glyph": "🎹"
+        },
+        {
+            "name": "trumpet",
+            "glyph": "🎺"
+        },
+        {
+            "name": "violin",
+            "glyph": "🎻"
+        },
+        {
+            "name": "banjo",
+            "glyph": "🪕"
+        },
+        {
+            "name": "drum",
+            "glyph": "🥁"
+        },
+        {
+            "name": "long drum",
+            "glyph": "🪘"
+        },
+        {
+            "name": "maracas",
+            "glyph": "🪇"
+        },
+        {
+            "name": "flute",
+            "glyph": "🪈"
+        },
+        {
+            "name": "mobile phone",
+            "glyph": "📱"
+        },
+        {
+            "name": "mobile phone with arrow",
+            "glyph": "📲"
+        },
+        {
+            "name": "telephone",
+            "glyph": "☎"
+        },
+        {
+            "name": "telephone receiver",
+            "glyph": "📞"
+        },
+        {
+            "name": "pager",
+            "glyph": "📟"
+        },
+        {
+            "name": "fax machine",
+            "glyph": "📠"
+        },
+        {
+            "name": "battery",
+            "glyph": "🔋"
+        },
+        {
+            "name": "low battery",
+            "glyph": "🪫"
+        },
+        {
+            "name": "electric plug",
+            "glyph": "🔌"
+        },
+        {
+            "name": "laptop",
+            "glyph": "💻"
+        },
+        {
+            "name": "desktop computer",
+            "glyph": "🖥"
+        },
+        {
+            "name": "printer",
+            "glyph": "🖨"
+        },
+        {
+            "name": "keyboard",
+            "glyph": "⌨"
+        },
+        {
+            "name": "computer mouse",
+            "glyph": "🖱"
+        },
+        {
+            "name": "trackball",
+            "glyph": "🖲"
+        },
+        {
+            "name": "computer disk",
+            "glyph": "💽"
+        },
+        {
+            "name": "floppy disk",
+            "glyph": "💾"
+        },
+        {
+            "name": "optical disk",
             "glyph": "💿"
         },
         {
-            "name": "Movie Camera",
+            "name": "dvd",
+            "glyph": "📀"
+        },
+        {
+            "name": "abacus",
+            "glyph": "🧮"
+        },
+        {
+            "name": "movie camera",
             "glyph": "🎥"
         },
         {
-            "name": "Film Projector",
-            "glyph": "📽️"
+            "name": "film frames",
+            "glyph": "🎞"
         },
         {
-            "name": "Film Frames",
-            "glyph": "🎞️"
+            "name": "film projector",
+            "glyph": "📽"
         },
         {
-            "name": "Camera with Flash",
-            "glyph": "📸"
+            "name": "clapper board",
+            "glyph": "🎬"
         },
         {
-            "name": "Camera",
+            "name": "television",
+            "glyph": "📺"
+        },
+        {
+            "name": "camera",
             "glyph": "📷"
         },
         {
-            "name": "Video Camera",
+            "name": "camera with flash",
+            "glyph": "📸"
+        },
+        {
+            "name": "video camera",
             "glyph": "📹"
         },
         {
-            "name": "Videocassette",
+            "name": "videocassette",
             "glyph": "📼"
+        },
+        {
+            "name": "magnifying glass tilted left",
+            "glyph": "🔍"
+        },
+        {
+            "name": "magnifying glass tilted right",
+            "glyph": "🔎"
+        },
+        {
+            "name": "candle",
+            "glyph": "🕯"
+        },
+        {
+            "name": "light bulb",
+            "glyph": "💡"
+        },
+        {
+            "name": "flashlight",
+            "glyph": "🔦"
+        },
+        {
+            "name": "red paper lantern",
+            "glyph": "🏮"
+        },
+        {
+            "name": "diya lamp",
+            "glyph": "🪔"
+        },
+        {
+            "name": "notebook with decorative cover",
+            "glyph": "📔"
+        },
+        {
+            "name": "closed book",
+            "glyph": "📕"
+        },
+        {
+            "name": "open book",
+            "glyph": "📖"
+        },
+        {
+            "name": "green book",
+            "glyph": "📗"
+        },
+        {
+            "name": "blue book",
+            "glyph": "📘"
+        },
+        {
+            "name": "orange book",
+            "glyph": "📙"
+        },
+        {
+            "name": "books",
+            "glyph": "📚"
+        },
+        {
+            "name": "notebook",
+            "glyph": "📓"
+        },
+        {
+            "name": "ledger",
+            "glyph": "📒"
+        },
+        {
+            "name": "page with curl",
+            "glyph": "📃"
+        },
+        {
+            "name": "scroll",
+            "glyph": "📜"
+        },
+        {
+            "name": "page facing up",
+            "glyph": "📄"
+        },
+        {
+            "name": "newspaper",
+            "glyph": "📰"
+        },
+        {
+            "name": "rolled-up newspaper",
+            "glyph": "🗞"
+        },
+        {
+            "name": "bookmark tabs",
+            "glyph": "📑"
+        },
+        {
+            "name": "bookmark",
+            "glyph": "🔖"
+        },
+        {
+            "name": "label",
+            "glyph": "🏷"
+        },
+        {
+            "name": "money bag",
+            "glyph": "💰"
+        },
+        {
+            "name": "coin",
+            "glyph": "🪙"
+        },
+        {
+            "name": "yen banknote",
+            "glyph": "💴"
+        },
+        {
+            "name": "dollar banknote",
+            "glyph": "💵"
+        },
+        {
+            "name": "euro banknote",
+            "glyph": "💶"
+        },
+        {
+            "name": "pound banknote",
+            "glyph": "💷"
+        },
+        {
+            "name": "money with wings",
+            "glyph": "💸"
+        },
+        {
+            "name": "credit card",
+            "glyph": "💳"
+        },
+        {
+            "name": "receipt",
+            "glyph": "🧾"
+        },
+        {
+            "name": "chart increasing with yen",
+            "glyph": "💹"
+        },
+        {
+            "name": "envelope",
+            "glyph": "✉"
+        },
+        {
+            "name": "e-mail",
+            "glyph": "📧"
+        },
+        {
+            "name": "incoming envelope",
+            "glyph": "📨"
+        },
+        {
+            "name": "envelope with arrow",
+            "glyph": "📩"
+        },
+        {
+            "name": "outbox tray",
+            "glyph": "📤"
+        },
+        {
+            "name": "inbox tray",
+            "glyph": "📥"
+        },
+        {
+            "name": "package",
+            "glyph": "📦"
+        },
+        {
+            "name": "closed mailbox with raised flag",
+            "glyph": "📫"
+        },
+        {
+            "name": "closed mailbox with lowered flag",
+            "glyph": "📪"
+        },
+        {
+            "name": "open mailbox with raised flag",
+            "glyph": "📬"
+        },
+        {
+            "name": "open mailbox with lowered flag",
+            "glyph": "📭"
+        },
+        {
+            "name": "postbox",
+            "glyph": "📮"
+        },
+        {
+            "name": "ballot box with ballot",
+            "glyph": "🗳"
+        },
+        {
+            "name": "pencil",
+            "glyph": "✏"
+        },
+        {
+            "name": "black nib",
+            "glyph": "✒"
+        },
+        {
+            "name": "fountain pen",
+            "glyph": "🖋"
+        },
+        {
+            "name": "pen",
+            "glyph": "🖊"
+        },
+        {
+            "name": "paintbrush",
+            "glyph": "🖌"
+        },
+        {
+            "name": "crayon",
+            "glyph": "🖍"
+        },
+        {
+            "name": "memo",
+            "glyph": "📝"
+        },
+        {
+            "name": "briefcase",
+            "glyph": "💼"
+        },
+        {
+            "name": "file folder",
+            "glyph": "📁"
+        },
+        {
+            "name": "open file folder",
+            "glyph": "📂"
+        },
+        {
+            "name": "card index dividers",
+            "glyph": "🗂"
+        },
+        {
+            "name": "calendar",
+            "glyph": "📅"
+        },
+        {
+            "name": "tear-off calendar",
+            "glyph": "📆"
+        },
+        {
+            "name": "spiral notepad",
+            "glyph": "🗒"
+        },
+        {
+            "name": "spiral calendar",
+            "glyph": "🗓"
+        },
+        {
+            "name": "card index",
+            "glyph": "📇"
+        },
+        {
+            "name": "chart increasing",
+            "glyph": "📈"
+        },
+        {
+            "name": "chart decreasing",
+            "glyph": "📉"
+        },
+        {
+            "name": "bar chart",
+            "glyph": "📊"
+        },
+        {
+            "name": "clipboard",
+            "glyph": "📋"
+        },
+        {
+            "name": "pushpin",
+            "glyph": "📌"
+        },
+        {
+            "name": "round pushpin",
+            "glyph": "📍"
+        },
+        {
+            "name": "paperclip",
+            "glyph": "📎"
+        },
+        {
+            "name": "linked paperclips",
+            "glyph": "🖇"
+        },
+        {
+            "name": "straight ruler",
+            "glyph": "📏"
+        },
+        {
+            "name": "triangular ruler",
+            "glyph": "📐"
+        },
+        {
+            "name": "scissors",
+            "glyph": "✂"
+        },
+        {
+            "name": "card file box",
+            "glyph": "🗃"
+        },
+        {
+            "name": "file cabinet",
+            "glyph": "🗄"
+        },
+        {
+            "name": "wastebasket",
+            "glyph": "🗑"
+        },
+        {
+            "name": "locked",
+            "glyph": "🔒"
+        },
+        {
+            "name": "unlocked",
+            "glyph": "🔓"
+        },
+        {
+            "name": "locked with pen",
+            "glyph": "🔏"
+        },
+        {
+            "name": "locked with key",
+            "glyph": "🔐"
+        },
+        {
+            "name": "key",
+            "glyph": "🔑"
+        },
+        {
+            "name": "old key",
+            "glyph": "🗝"
+        },
+        {
+            "name": "hammer",
+            "glyph": "🔨"
+        },
+        {
+            "name": "axe",
+            "glyph": "🪓"
+        },
+        {
+            "name": "pick",
+            "glyph": "⛏"
+        },
+        {
+            "name": "hammer and pick",
+            "glyph": "⚒"
+        },
+        {
+            "name": "hammer and wrench",
+            "glyph": "🛠"
+        },
+        {
+            "name": "dagger",
+            "glyph": "🗡"
+        },
+        {
+            "name": "crossed swords",
+            "glyph": "⚔"
+        },
+        {
+            "name": "bomb",
+            "glyph": "💣"
+        },
+        {
+            "name": "boomerang",
+            "glyph": "🪃"
+        },
+        {
+            "name": "bow and arrow",
+            "glyph": "🏹"
+        },
+        {
+            "name": "shield",
+            "glyph": "🛡"
+        },
+        {
+            "name": "carpentry saw",
+            "glyph": "🪚"
+        },
+        {
+            "name": "wrench",
+            "glyph": "🔧"
+        },
+        {
+            "name": "screwdriver",
+            "glyph": "🪛"
+        },
+        {
+            "name": "nut and bolt",
+            "glyph": "🔩"
+        },
+        {
+            "name": "gear",
+            "glyph": "⚙"
+        },
+        {
+            "name": "clamp",
+            "glyph": "🗜"
+        },
+        {
+            "name": "balance scale",
+            "glyph": "⚖"
+        },
+        {
+            "name": "white cane",
+            "glyph": "🦯"
+        },
+        {
+            "name": "link",
+            "glyph": "🔗"
+        },
+        {
+            "name": "chains",
+            "glyph": "⛓"
+        },
+        {
+            "name": "hook",
+            "glyph": "🪝"
+        },
+        {
+            "name": "toolbox",
+            "glyph": "🧰"
+        },
+        {
+            "name": "magnet",
+            "glyph": "🧲"
+        },
+        {
+            "name": "ladder",
+            "glyph": "🪜"
+        },
+        {
+            "name": "alembic",
+            "glyph": "⚗"
+        },
+        {
+            "name": "test tube",
+            "glyph": "🧪"
+        },
+        {
+            "name": "petri dish",
+            "glyph": "🧫"
+        },
+        {
+            "name": "dna",
+            "glyph": "🧬"
+        },
+        {
+            "name": "microscope",
+            "glyph": "🔬"
+        },
+        {
+            "name": "telescope",
+            "glyph": "🔭"
+        },
+        {
+            "name": "satellite antenna",
+            "glyph": "📡"
+        },
+        {
+            "name": "syringe",
+            "glyph": "💉"
+        },
+        {
+            "name": "drop of blood",
+            "glyph": "🩸"
+        },
+        {
+            "name": "pill",
+            "glyph": "💊"
+        },
+        {
+            "name": "adhesive bandage",
+            "glyph": "🩹"
+        },
+        {
+            "name": "crutch",
+            "glyph": "🩼"
+        },
+        {
+            "name": "stethoscope",
+            "glyph": "🩺"
+        },
+        {
+            "name": "x-ray",
+            "glyph": "🩻"
+        },
+        {
+            "name": "door",
+            "glyph": "🚪"
+        },
+        {
+            "name": "elevator",
+            "glyph": "🛗"
+        },
+        {
+            "name": "mirror",
+            "glyph": "🪞"
+        },
+        {
+            "name": "window",
+            "glyph": "🪟"
+        },
+        {
+            "name": "bed",
+            "glyph": "🛏"
+        },
+        {
+            "name": "couch and lamp",
+            "glyph": "🛋"
+        },
+        {
+            "name": "chair",
+            "glyph": "🪑"
+        },
+        {
+            "name": "toilet",
+            "glyph": "🚽"
+        },
+        {
+            "name": "plunger",
+            "glyph": "🪠"
+        },
+        {
+            "name": "shower",
+            "glyph": "🚿"
+        },
+        {
+            "name": "bathtub",
+            "glyph": "🛁"
+        },
+        {
+            "name": "mouse trap",
+            "glyph": "🪤"
+        },
+        {
+            "name": "razor",
+            "glyph": "🪒"
+        },
+        {
+            "name": "lotion bottle",
+            "glyph": "🧴"
+        },
+        {
+            "name": "safety pin",
+            "glyph": "🧷"
+        },
+        {
+            "name": "broom",
+            "glyph": "🧹"
+        },
+        {
+            "name": "basket",
+            "glyph": "🧺"
+        },
+        {
+            "name": "roll of paper",
+            "glyph": "🧻"
+        },
+        {
+            "name": "bucket",
+            "glyph": "🪣"
+        },
+        {
+            "name": "soap",
+            "glyph": "🧼"
+        },
+        {
+            "name": "bubbles",
+            "glyph": "🫧"
+        },
+        {
+            "name": "toothbrush",
+            "glyph": "🪥"
+        },
+        {
+            "name": "sponge",
+            "glyph": "🧽"
+        },
+        {
+            "name": "fire extinguisher",
+            "glyph": "🧯"
+        },
+        {
+            "name": "shopping cart",
+            "glyph": "🛒"
+        },
+        {
+            "name": "cigarette",
+            "glyph": "🚬"
+        },
+        {
+            "name": "coffin",
+            "glyph": "⚰"
+        },
+        {
+            "name": "headstone",
+            "glyph": "🪦"
+        },
+        {
+            "name": "funeral urn",
+            "glyph": "⚱"
+        },
+        {
+            "name": "nazar amulet",
+            "glyph": "🧿"
+        },
+        {
+            "name": "hamsa",
+            "glyph": "🪬"
+        },
+        {
+            "name": "moai",
+            "glyph": "🗿"
+        },
+        {
+            "name": "placard",
+            "glyph": "🪧"
+        },
+        {
+            "name": "identification card",
+            "glyph": "🪪"
         }
     ],
     "symbols": [
         {
-            "name": "Red Heart",
-            "glyph": "❤️"
+            "name": "ATM sign",
+            "glyph": "🏧"
         },
         {
-            "name": "Orange Heart",
-            "glyph": "🧡"
+            "name": "litter in bin sign",
+            "glyph": "🚮"
         },
         {
-            "name": "Yellow Heart",
-            "glyph": "💛"
+            "name": "potable water",
+            "glyph": "🚰"
         },
         {
-            "name": "Green Heart",
-            "glyph": "💚"
+            "name": "wheelchair symbol",
+            "glyph": "♿"
         },
         {
-            "name": "Blue Heart",
-            "glyph": "💙"
+            "name": "men’s room",
+            "glyph": "🚹"
         },
         {
-            "name": "Purple Heart",
-            "glyph": "💜"
+            "name": "women’s room",
+            "glyph": "🚺"
         },
         {
-            "name": "Black Heart",
-            "glyph": "🖤"
+            "name": "restroom",
+            "glyph": "🚻"
         },
         {
-            "name": "White Heart",
-            "glyph": "🤍"
+            "name": "baby symbol",
+            "glyph": "🚼"
         },
         {
-            "name": "Brown Heart",
-            "glyph": "🤎"
+            "name": "water closet",
+            "glyph": "🚾"
         },
         {
-            "name": "Broken Heart",
-            "glyph": "💔"
+            "name": "passport control",
+            "glyph": "🛂"
         },
         {
-            "name": "Heart Exclamation",
-            "glyph": "❣️"
+            "name": "customs",
+            "glyph": "🛃"
         },
         {
-            "name": "Two Hearts",
-            "glyph": "💕"
+            "name": "baggage claim",
+            "glyph": "🛄"
         },
         {
-            "name": "Revolving Hearts",
-            "glyph": "💞"
+            "name": "left luggage",
+            "glyph": "🛅"
         },
         {
-            "name": "Beating Heart",
-            "glyph": "💓"
+            "name": "warning",
+            "glyph": "⚠"
         },
         {
-            "name": "Growing Heart",
-            "glyph": "💗"
+            "name": "children crossing",
+            "glyph": "🚸"
         },
         {
-            "name": "Sparkling Heart",
-            "glyph": "💖"
+            "name": "no entry",
+            "glyph": "⛔"
         },
         {
-            "name": "Heart with Arrow",
-            "glyph": "💘"
+            "name": "prohibited",
+            "glyph": "🚫"
         },
         {
-            "name": "Heart with Ribbon",
-            "glyph": "💝"
+            "name": "no bicycles",
+            "glyph": "🚳"
         },
         {
-            "name": "Heart Decoration",
-            "glyph": "💟"
+            "name": "no smoking",
+            "glyph": "🚭"
         },
         {
-            "name": "Peace Symbol",
-            "glyph": "☮️"
+            "name": "no littering",
+            "glyph": "🚯"
         },
         {
-            "name": "Latin Cross",
-            "glyph": "✝️"
+            "name": "non-potable water",
+            "glyph": "🚱"
         },
         {
-            "name": "Star and Crescent",
-            "glyph": "☪️"
+            "name": "no pedestrians",
+            "glyph": "🚷"
         },
         {
-            "name": "Om",
-            "glyph": "🕉️"
+            "name": "no mobile phones",
+            "glyph": "📵"
         },
         {
-            "name": "Wheel of Dharma",
-            "glyph": "☸️"
+            "name": "no one under eighteen",
+            "glyph": "🔞"
         },
         {
-            "name": "Star of David",
-            "glyph": "✡️"
+            "name": "radioactive",
+            "glyph": "☢"
         },
         {
-            "name": "Six Pointed Star with Middle Dot",
-            "glyph": "🔯"
+            "name": "biohazard",
+            "glyph": "☣"
         },
         {
-            "name": "Menorah",
-            "glyph": "🕎"
+            "name": "up arrow",
+            "glyph": "⬆"
         },
         {
-            "name": "Yin Yang",
-            "glyph": "☯️"
+            "name": "up-right arrow",
+            "glyph": "↗"
         },
         {
-            "name": "Orthodox Cross",
-            "glyph": "☦️"
+            "name": "right arrow",
+            "glyph": "➡"
         },
         {
-            "name": "Place of Worship",
+            "name": "down-right arrow",
+            "glyph": "↘"
+        },
+        {
+            "name": "down arrow",
+            "glyph": "⬇"
+        },
+        {
+            "name": "down-left arrow",
+            "glyph": "↙"
+        },
+        {
+            "name": "left arrow",
+            "glyph": "⬅"
+        },
+        {
+            "name": "up-left arrow",
+            "glyph": "↖"
+        },
+        {
+            "name": "up-down arrow",
+            "glyph": "↕"
+        },
+        {
+            "name": "left-right arrow",
+            "glyph": "↔"
+        },
+        {
+            "name": "right arrow curving left",
+            "glyph": "↩"
+        },
+        {
+            "name": "left arrow curving right",
+            "glyph": "↪"
+        },
+        {
+            "name": "right arrow curving up",
+            "glyph": "⤴"
+        },
+        {
+            "name": "right arrow curving down",
+            "glyph": "⤵"
+        },
+        {
+            "name": "clockwise vertical arrows",
+            "glyph": "🔃"
+        },
+        {
+            "name": "counterclockwise arrows button",
+            "glyph": "🔄"
+        },
+        {
+            "name": "BACK arrow",
+            "glyph": "🔙"
+        },
+        {
+            "name": "END arrow",
+            "glyph": "🔚"
+        },
+        {
+            "name": "ON! arrow",
+            "glyph": "🔛"
+        },
+        {
+            "name": "SOON arrow",
+            "glyph": "🔜"
+        },
+        {
+            "name": "TOP arrow",
+            "glyph": "🔝"
+        },
+        {
+            "name": "place of worship",
             "glyph": "🛐"
         },
         {
-            "name": "Ophiuchus",
-            "glyph": "⛎"
+            "name": "atom symbol",
+            "glyph": "⚛"
+        },
+        {
+            "name": "om",
+            "glyph": "🕉"
+        },
+        {
+            "name": "star of David",
+            "glyph": "✡"
+        },
+        {
+            "name": "wheel of dharma",
+            "glyph": "☸"
+        },
+        {
+            "name": "yin yang",
+            "glyph": "☯"
+        },
+        {
+            "name": "latin cross",
+            "glyph": "✝"
+        },
+        {
+            "name": "orthodox cross",
+            "glyph": "☦"
+        },
+        {
+            "name": "star and crescent",
+            "glyph": "☪"
+        },
+        {
+            "name": "peace symbol",
+            "glyph": "☮"
+        },
+        {
+            "name": "menorah",
+            "glyph": "🕎"
+        },
+        {
+            "name": "dotted six-pointed star",
+            "glyph": "🔯"
+        },
+        {
+            "name": "khanda",
+            "glyph": "🪯"
         },
         {
             "name": "Aries",
@@ -5357,1246 +6214,1686 @@ export const emojiList = {
             "glyph": "♓"
         },
         {
-            "name": "ID Button",
-            "glyph": "🆔"
+            "name": "Ophiuchus",
+            "glyph": "⛎"
         },
         {
-            "name": "Atom Symbol",
-            "glyph": "⚛️"
+            "name": "shuffle tracks button",
+            "glyph": "🔀"
         },
         {
-            "name": "Japanese Acceptable Button",
-            "glyph": "🉑"
+            "name": "repeat button",
+            "glyph": "🔁"
         },
         {
-            "name": "Radioactive",
-            "glyph": "☢️"
+            "name": "repeat single button",
+            "glyph": "🔂"
         },
         {
-            "name": "Biohazard",
-            "glyph": "☣️"
+            "name": "play button",
+            "glyph": "▶"
         },
         {
-            "name": "Mobile Phone Off",
-            "glyph": "📴"
+            "name": "fast-forward button",
+            "glyph": "⏩"
         },
         {
-            "name": "Vibration Mode",
+            "name": "next track button",
+            "glyph": "⏭"
+        },
+        {
+            "name": "play or pause button",
+            "glyph": "⏯"
+        },
+        {
+            "name": "reverse button",
+            "glyph": "◀"
+        },
+        {
+            "name": "fast reverse button",
+            "glyph": "⏪"
+        },
+        {
+            "name": "last track button",
+            "glyph": "⏮"
+        },
+        {
+            "name": "upwards button",
+            "glyph": "🔼"
+        },
+        {
+            "name": "fast up button",
+            "glyph": "⏫"
+        },
+        {
+            "name": "downwards button",
+            "glyph": "🔽"
+        },
+        {
+            "name": "fast down button",
+            "glyph": "⏬"
+        },
+        {
+            "name": "pause button",
+            "glyph": "⏸"
+        },
+        {
+            "name": "stop button",
+            "glyph": "⏹"
+        },
+        {
+            "name": "record button",
+            "glyph": "⏺"
+        },
+        {
+            "name": "eject button",
+            "glyph": "⏏"
+        },
+        {
+            "name": "cinema",
+            "glyph": "🎦"
+        },
+        {
+            "name": "dim button",
+            "glyph": "🔅"
+        },
+        {
+            "name": "bright button",
+            "glyph": "🔆"
+        },
+        {
+            "name": "antenna bars",
+            "glyph": "📶"
+        },
+        {
+            "name": "wireless",
+            "glyph": "🛜"
+        },
+        {
+            "name": "vibration mode",
             "glyph": "📳"
         },
         {
-            "name": "Japanese Not Free of Charge Button",
-            "glyph": "🈶"
+            "name": "mobile phone off",
+            "glyph": "📴"
         },
         {
-            "name": "Japanese Free of Charge Button",
-            "glyph": "🈚"
+            "name": "female sign",
+            "glyph": "♀"
         },
         {
-            "name": "Japanese Application Button",
-            "glyph": "🈸"
+            "name": "male sign",
+            "glyph": "♂"
         },
         {
-            "name": "Japanese Open for Business Button",
-            "glyph": "🈺"
+            "name": "transgender symbol",
+            "glyph": "⚧"
         },
         {
-            "name": "Japanese Monthly Amount Button",
-            "glyph": "🈷️"
+            "name": "multiply",
+            "glyph": "✖"
         },
         {
-            "name": "Eight Spoked Asterisk",
-            "glyph": "✴️"
+            "name": "plus",
+            "glyph": "➕"
         },
         {
-            "name": "VS Button",
-            "glyph": "🆚"
+            "name": "minus",
+            "glyph": "➖"
         },
         {
-            "name": "White Flower",
-            "glyph": "💮"
+            "name": "divide",
+            "glyph": "➗"
         },
         {
-            "name": "Japanese Bargain Button",
-            "glyph": "🉐"
+            "name": "heavy equals sign",
+            "glyph": "🟰"
         },
         {
-            "name": "Japanese Secret Button",
-            "glyph": "㊙️"
+            "name": "infinity",
+            "glyph": "♾"
         },
         {
-            "name": "Japanese Congratulations Button",
-            "glyph": "㊗️"
+            "name": "double exclamation mark",
+            "glyph": "‼"
         },
         {
-            "name": "Japanese Passing Grade Button",
-            "glyph": "🈴"
+            "name": "exclamation question mark",
+            "glyph": "⁉"
         },
         {
-            "name": "Japanese Prohibited Button",
-            "glyph": "🈵"
+            "name": "red question mark",
+            "glyph": "❓"
         },
         {
-            "name": "Japanese Discount Button",
-            "glyph": "🈹"
+            "name": "white question mark",
+            "glyph": "❔"
         },
         {
-            "name": "Japanese No Vacancy Button",
-            "glyph": "🈲"
+            "name": "white exclamation mark",
+            "glyph": "❕"
         },
         {
-            "name": "A Button (Blood Type)",
-            "glyph": "🅰️"
+            "name": "red exclamation mark",
+            "glyph": "❗"
         },
         {
-            "name": "B Button (Blood Type)",
-            "glyph": "🅱️"
+            "name": "wavy dash",
+            "glyph": "〰"
         },
         {
-            "name": "AB Button (Blood Type)",
-            "glyph": "🆎"
+            "name": "currency exchange",
+            "glyph": "💱"
         },
         {
-            "name": "CL Button",
-            "glyph": "🆑"
+            "name": "heavy dollar sign",
+            "glyph": "💲"
         },
         {
-            "name": "O Button (Blood Type)",
-            "glyph": "🅾️"
+            "name": "medical symbol",
+            "glyph": "⚕"
         },
         {
-            "name": "SOS Button",
-            "glyph": "🆘"
+            "name": "recycling symbol",
+            "glyph": "♻"
         },
         {
-            "name": "Cross Mark",
-            "glyph": "❌"
+            "name": "fleur-de-lis",
+            "glyph": "⚜"
         },
         {
-            "name": "Hollow Red Circle",
-            "glyph": "⭕"
-        },
-        {
-            "name": "Cross Mark Button",
-            "glyph": "❎"
-        },
-        {
-            "name": "Check Mark Button",
-            "glyph": "✅"
-        },
-        {
-            "name": "Fleur-de-lis",
-            "glyph": "⚜️"
-        },
-        {
-            "name": "Anger Symbol",
-            "glyph": "💢"
-        },
-        {
-            "name": "Recycling Symbol",
-            "glyph": "♻️"
-        },
-        {
-            "name": "Medical Symbol",
-            "glyph": "⚕️"
-        },
-        {
-            "name": "Trident Emblem",
+            "name": "trident emblem",
             "glyph": "🔱"
         },
         {
-            "name": "Name Badge",
+            "name": "name badge",
             "glyph": "📛"
         },
         {
-            "name": "Japanese Symbol for Beginner",
+            "name": "Japanese symbol for beginner",
             "glyph": "🔰"
         },
         {
-            "name": "Curly Loop",
+            "name": "hollow red circle",
+            "glyph": "⭕"
+        },
+        {
+            "name": "check mark button",
+            "glyph": "✅"
+        },
+        {
+            "name": "check box with check",
+            "glyph": "☑"
+        },
+        {
+            "name": "check mark",
+            "glyph": "✔"
+        },
+        {
+            "name": "cross mark",
+            "glyph": "❌"
+        },
+        {
+            "name": "cross mark button",
+            "glyph": "❎"
+        },
+        {
+            "name": "curly loop",
             "glyph": "➰"
         },
         {
-            "name": "Double Curly Loop",
+            "name": "double curly loop",
             "glyph": "➿"
         },
         {
-            "name": "Part Alternation Mark",
-            "glyph": "〽️"
+            "name": "part alternation mark",
+            "glyph": "〽"
         },
         {
-            "name": "Eight-Pointed Star",
-            "glyph": "✳️"
+            "name": "eight-spoked asterisk",
+            "glyph": "✳"
         },
         {
-            "name": "Sparkle",
-            "glyph": "❇️"
+            "name": "eight-pointed star",
+            "glyph": "✴"
         },
         {
-            "name": "Copyright",
-            "glyph": "©️"
+            "name": "sparkle",
+            "glyph": "❇"
         },
         {
-            "name": "Registered",
-            "glyph": "®️"
+            "name": "copyright",
+            "glyph": "©"
         },
         {
-            "name": "Trade Mark",
-            "glyph": "™️"
+            "name": "registered",
+            "glyph": "®"
         },
         {
-            "name": "Red Circle",
+            "name": "trade mark",
+            "glyph": "™"
+        },
+        {
+            "name": "keycap: #",
+            "glyph": "#️⃣"
+        },
+        {
+            "name": "keycap: *",
+            "glyph": "*️⃣"
+        },
+        {
+            "name": "keycap: 0",
+            "glyph": "0️⃣"
+        },
+        {
+            "name": "keycap: 1",
+            "glyph": "1️⃣"
+        },
+        {
+            "name": "keycap: 2",
+            "glyph": "2️⃣"
+        },
+        {
+            "name": "keycap: 3",
+            "glyph": "3️⃣"
+        },
+        {
+            "name": "keycap: 4",
+            "glyph": "4️⃣"
+        },
+        {
+            "name": "keycap: 5",
+            "glyph": "5️⃣"
+        },
+        {
+            "name": "keycap: 6",
+            "glyph": "6️⃣"
+        },
+        {
+            "name": "keycap: 7",
+            "glyph": "7️⃣"
+        },
+        {
+            "name": "keycap: 8",
+            "glyph": "8️⃣"
+        },
+        {
+            "name": "keycap: 9",
+            "glyph": "9️⃣"
+        },
+        {
+            "name": "keycap: 10",
+            "glyph": "🔟"
+        },
+        {
+            "name": "input latin uppercase",
+            "glyph": "🔠"
+        },
+        {
+            "name": "input latin lowercase",
+            "glyph": "🔡"
+        },
+        {
+            "name": "input numbers",
+            "glyph": "🔢"
+        },
+        {
+            "name": "input symbols",
+            "glyph": "🔣"
+        },
+        {
+            "name": "input latin letters",
+            "glyph": "🔤"
+        },
+        {
+            "name": "A button (blood type)",
+            "glyph": "🅰"
+        },
+        {
+            "name": "AB button (blood type)",
+            "glyph": "🆎"
+        },
+        {
+            "name": "B button (blood type)",
+            "glyph": "🅱"
+        },
+        {
+            "name": "CL button",
+            "glyph": "🆑"
+        },
+        {
+            "name": "COOL button",
+            "glyph": "🆒"
+        },
+        {
+            "name": "FREE button",
+            "glyph": "🆓"
+        },
+        {
+            "name": "information",
+            "glyph": "ℹ"
+        },
+        {
+            "name": "ID button",
+            "glyph": "🆔"
+        },
+        {
+            "name": "circled M",
+            "glyph": "Ⓜ"
+        },
+        {
+            "name": "NEW button",
+            "glyph": "🆕"
+        },
+        {
+            "name": "NG button",
+            "glyph": "🆖"
+        },
+        {
+            "name": "O button (blood type)",
+            "glyph": "🅾"
+        },
+        {
+            "name": "OK button",
+            "glyph": "🆗"
+        },
+        {
+            "name": "P button",
+            "glyph": "🅿"
+        },
+        {
+            "name": "SOS button",
+            "glyph": "🆘"
+        },
+        {
+            "name": "UP! button",
+            "glyph": "🆙"
+        },
+        {
+            "name": "VS button",
+            "glyph": "🆚"
+        },
+        {
+            "name": "Japanese “here” button",
+            "glyph": "🈁"
+        },
+        {
+            "name": "Japanese “service charge” button",
+            "glyph": "🈂"
+        },
+        {
+            "name": "Japanese “monthly amount” button",
+            "glyph": "🈷"
+        },
+        {
+            "name": "Japanese “not free of charge” button",
+            "glyph": "🈶"
+        },
+        {
+            "name": "Japanese “reserved” button",
+            "glyph": "🈯"
+        },
+        {
+            "name": "Japanese “bargain” button",
+            "glyph": "🉐"
+        },
+        {
+            "name": "Japanese “discount” button",
+            "glyph": "🈹"
+        },
+        {
+            "name": "Japanese “free of charge” button",
+            "glyph": "🈚"
+        },
+        {
+            "name": "Japanese “prohibited” button",
+            "glyph": "🈲"
+        },
+        {
+            "name": "Japanese “acceptable” button",
+            "glyph": "🉑"
+        },
+        {
+            "name": "Japanese “application” button",
+            "glyph": "🈸"
+        },
+        {
+            "name": "Japanese “passing grade” button",
+            "glyph": "🈴"
+        },
+        {
+            "name": "Japanese “vacancy” button",
+            "glyph": "🈳"
+        },
+        {
+            "name": "Japanese “congratulations” button",
+            "glyph": "㊗"
+        },
+        {
+            "name": "Japanese “secret” button",
+            "glyph": "㊙"
+        },
+        {
+            "name": "Japanese “open for business” button",
+            "glyph": "🈺"
+        },
+        {
+            "name": "Japanese “no vacancy” button",
+            "glyph": "🈵"
+        },
+        {
+            "name": "red circle",
             "glyph": "🔴"
         },
         {
-            "name": "Orange Circle",
+            "name": "orange circle",
             "glyph": "🟠"
         },
         {
-            "name": "Yellow Circle",
+            "name": "yellow circle",
             "glyph": "🟡"
         },
         {
-            "name": "Green Circle",
+            "name": "green circle",
             "glyph": "🟢"
         },
         {
-            "name": "Blue Circle",
+            "name": "blue circle",
             "glyph": "🔵"
         },
         {
-            "name": "Purple Circle",
+            "name": "purple circle",
             "glyph": "🟣"
         },
         {
-            "name": "Black Circle",
+            "name": "brown circle",
+            "glyph": "🟤"
+        },
+        {
+            "name": "black circle",
             "glyph": "⚫"
         },
         {
-            "name": "White Circle",
+            "name": "white circle",
             "glyph": "⚪"
         },
         {
-            "name": "Red Square",
+            "name": "red square",
             "glyph": "🟥"
         },
         {
-            "name": "Orange Square",
+            "name": "orange square",
             "glyph": "🟧"
         },
         {
-            "name": "Yellow Square",
+            "name": "yellow square",
             "glyph": "🟨"
         },
         {
-            "name": "Green Square",
+            "name": "green square",
             "glyph": "🟩"
         },
         {
-            "name": "Blue Square",
+            "name": "blue square",
             "glyph": "🟦"
         },
         {
-            "name": "Purple Square",
+            "name": "purple square",
             "glyph": "🟪"
         },
         {
-            "name": "Black Large Square",
+            "name": "brown square",
+            "glyph": "🟫"
+        },
+        {
+            "name": "black large square",
             "glyph": "⬛"
         },
         {
-            "name": "White Large Square",
+            "name": "white large square",
             "glyph": "⬜"
         },
         {
-            "name": "Black Medium Square",
-            "glyph": "◼️"
+            "name": "black medium square",
+            "glyph": "◼"
         },
         {
-            "name": "White Medium Square",
-            "glyph": "◻️"
+            "name": "white medium square",
+            "glyph": "◻"
         },
         {
-            "name": "Black Medium-Small Square",
+            "name": "black medium-small square",
             "glyph": "◾"
         },
         {
-            "name": "White Medium-Small Square",
+            "name": "white medium-small square",
             "glyph": "◽"
         },
         {
-            "name": "Black Small Square",
-            "glyph": "▪️"
+            "name": "black small square",
+            "glyph": "▪"
         },
         {
-            "name": "White Small Square",
-            "glyph": "▫️"
+            "name": "white small square",
+            "glyph": "▫"
         },
         {
-            "name": "Large Orange Diamond",
+            "name": "large orange diamond",
             "glyph": "🔶"
         },
         {
-            "name": "Large Blue Diamond",
+            "name": "large blue diamond",
             "glyph": "🔷"
         },
         {
-            "name": "Small Orange Diamond",
+            "name": "small orange diamond",
             "glyph": "🔸"
         },
         {
-            "name": "Small Blue Diamond",
+            "name": "small blue diamond",
             "glyph": "🔹"
+        },
+        {
+            "name": "red triangle pointed up",
+            "glyph": "🔺"
+        },
+        {
+            "name": "red triangle pointed down",
+            "glyph": "🔻"
+        },
+        {
+            "name": "diamond with a dot",
+            "glyph": "💠"
+        },
+        {
+            "name": "radio button",
+            "glyph": "🔘"
+        },
+        {
+            "name": "white square button",
+            "glyph": "🔳"
+        },
+        {
+            "name": "black square button",
+            "glyph": "🔲"
         }
     ],
-    "objects": [
+    "flags": [
         {
-            "name": "File Folder",
-            "glyph": "📁"
+            "name": "chequered flag",
+            "glyph": "🏁"
         },
         {
-            "name": "Open File Folder",
-            "glyph": "📂"
+            "name": "triangular flag",
+            "glyph": "🚩"
         },
         {
-            "name": "Card Index Dividers",
-            "glyph": "🗂️"
+            "name": "crossed flags",
+            "glyph": "🎌"
         },
         {
-            "name": "Calendar",
-            "glyph": "📅"
+            "name": "black flag",
+            "glyph": "🏴"
         },
         {
-            "name": "Tear-Off Calendar",
-            "glyph": "📆"
+            "name": "white flag",
+            "glyph": "🏳"
         },
         {
-            "name": "Spiral Notepad",
-            "glyph": "🗒️"
+            "name": "rainbow flag",
+            "glyph": "🏳️‍🌈"
         },
         {
-            "name": "Spiral Calendar",
-            "glyph": "🗓️"
+            "name": "transgender flag",
+            "glyph": "🏳️‍⚧️"
         },
         {
-            "name": "Card Index",
-            "glyph": "📇"
+            "name": "pirate flag",
+            "glyph": "🏴‍☠️"
         },
         {
-            "name": "Chart Increasing",
-            "glyph": "📈"
+            "name": "flag: Ascension Island",
+            "glyph": "🇦🇨"
         },
         {
-            "name": "Chart Decreasing",
-            "glyph": "📉"
+            "name": "flag: Andorra",
+            "glyph": "🇦🇩"
         },
         {
-            "name": "Bar Chart",
-            "glyph": "📊"
+            "name": "flag: United Arab Emirates",
+            "glyph": "🇦🇪"
         },
         {
-            "name": "Clipboard",
-            "glyph": "📋"
+            "name": "flag: Afghanistan",
+            "glyph": "🇦🇫"
         },
         {
-            "name": "Pushpin",
-            "glyph": "📌"
+            "name": "flag: Antigua & Barbuda",
+            "glyph": "🇦🇬"
         },
         {
-            "name": "Round Pushpin",
-            "glyph": "📍"
+            "name": "flag: Anguilla",
+            "glyph": "🇦🇮"
         },
         {
-            "name": "Paperclip",
-            "glyph": "📎"
+            "name": "flag: Albania",
+            "glyph": "🇦🇱"
         },
         {
-            "name": "Linked Paperclips",
-            "glyph": "🖇️"
+            "name": "flag: Armenia",
+            "glyph": "🇦🇲"
         },
         {
-            "name": "Straight Ruler",
-            "glyph": "📏"
+            "name": "flag: Angola",
+            "glyph": "🇦🇴"
         },
         {
-            "name": "Triangular Ruler",
-            "glyph": "📐"
+            "name": "flag: Antarctica",
+            "glyph": "🇦🇶"
         },
         {
-            "name": "Scissors",
-            "glyph": "✂️"
+            "name": "flag: Argentina",
+            "glyph": "🇦🇷"
         },
         {
-            "name": "Card File Box",
-            "glyph": "🗃️"
+            "name": "flag: American Samoa",
+            "glyph": "🇦🇸"
         },
         {
-            "name": "File Cabinet",
-            "glyph": "🗄️"
+            "name": "flag: Austria",
+            "glyph": "🇦🇹"
         },
         {
-            "name": "Wastebasket",
-            "glyph": "🗑️"
+            "name": "flag: Australia",
+            "glyph": "🇦🇺"
         },
         {
-            "name": "Locked",
-            "glyph": "🔒"
+            "name": "flag: Aruba",
+            "glyph": "🇦🇼"
         },
         {
-            "name": "Unlocked",
-            "glyph": "🔓"
+            "name": "flag: Åland Islands",
+            "glyph": "🇦🇽"
         },
         {
-            "name": "Locked with Pen",
-            "glyph": "🔏"
+            "name": "flag: Azerbaijan",
+            "glyph": "🇦🇿"
         },
         {
-            "name": "Locked with Key",
-            "glyph": "🔐"
+            "name": "flag: Bosnia & Herzegovina",
+            "glyph": "🇧🇦"
         },
         {
-            "name": "Key",
-            "glyph": "🔑"
+            "name": "flag: Barbados",
+            "glyph": "🇧🇧"
         },
         {
-            "name": "Old Key",
-            "glyph": "🗝️"
+            "name": "flag: Bangladesh",
+            "glyph": "🇧🇩"
         },
         {
-            "name": "Hammer",
-            "glyph": "🔨"
+            "name": "flag: Belgium",
+            "glyph": "🇧🇪"
         },
         {
-            "name": "Axe",
-            "glyph": "🪓"
+            "name": "flag: Burkina Faso",
+            "glyph": "🇧🇫"
         },
         {
-            "name": "Pick",
-            "glyph": "⛏️"
+            "name": "flag: Bulgaria",
+            "glyph": "🇧🇬"
         },
         {
-            "name": "Hammer and Pick",
-            "glyph": "⚒️"
+            "name": "flag: Bahrain",
+            "glyph": "🇧🇭"
         },
         {
-            "name": "Hammer and Wrench",
-            "glyph": "🛠️"
+            "name": "flag: Burundi",
+            "glyph": "🇧🇮"
         },
         {
-            "name": "Dagger",
-            "glyph": "🗡️"
+            "name": "flag: Benin",
+            "glyph": "🇧🇯"
         },
         {
-            "name": "Crossed Swords",
-            "glyph": "⚔️"
+            "name": "flag: St. Barthélemy",
+            "glyph": "🇧🇱"
         },
         {
-            "name": "Pistol",
-            "glyph": "🔫"
+            "name": "flag: Bermuda",
+            "glyph": "🇧🇲"
         },
         {
-            "name": "Boomerang",
-            "glyph": "🪃"
+            "name": "flag: Brunei",
+            "glyph": "🇧🇳"
         },
         {
-            "name": "Bow and Arrow",
-            "glyph": "🏹"
+            "name": "flag: Bolivia",
+            "glyph": "🇧🇴"
         },
         {
-            "name": "Shield",
-            "glyph": "🛡️"
+            "name": "flag: Caribbean Netherlands",
+            "glyph": "🇧🇶"
         },
         {
-            "name": "Carpentry Saw",
-            "glyph": "🪚"
+            "name": "flag: Brazil",
+            "glyph": "🇧🇷"
         },
         {
-            "name": "Wrench",
-            "glyph": "🔧"
+            "name": "flag: Bahamas",
+            "glyph": "🇧🇸"
         },
         {
-            "name": "Screwdriver",
-            "glyph": "🪛"
+            "name": "flag: Bhutan",
+            "glyph": "🇧🇹"
         },
         {
-            "name": "Nut and Bolt",
-            "glyph": "🔩"
+            "name": "flag: Bouvet Island",
+            "glyph": "🇧🇻"
         },
         {
-            "name": "Gear",
-            "glyph": "⚙️"
+            "name": "flag: Botswana",
+            "glyph": "🇧🇼"
         },
         {
-            "name": "Clamp",
-            "glyph": "🗜️"
+            "name": "flag: Belarus",
+            "glyph": "🇧🇾"
         },
         {
-            "name": "Balance Scale",
-            "glyph": "⚖️"
+            "name": "flag: Belize",
+            "glyph": "🇧🇿"
         },
         {
-            "name": "White Cane",
-            "glyph": "🦯"
+            "name": "flag: Canada",
+            "glyph": "🇨🇦"
         },
         {
-            "name": "Link",
-            "glyph": "🔗"
+            "name": "flag: Cocos (Keeling) Islands",
+            "glyph": "🇨🇨"
         },
         {
-            "name": "Chains",
-            "glyph": "⛓️"
+            "name": "flag: Congo - Kinshasa",
+            "glyph": "🇨🇩"
         },
         {
-            "name": "Hook",
-            "glyph": "🪝"
+            "name": "flag: Central African Republic",
+            "glyph": "🇨🇫"
         },
         {
-            "name": "Toolbox",
-            "glyph": "🧰"
+            "name": "flag: Congo - Brazzaville",
+            "glyph": "🇨🇬"
         },
         {
-            "name": "Magnet",
-            "glyph": "🧲"
+            "name": "flag: Switzerland",
+            "glyph": "🇨🇭"
         },
         {
-            "name": "Ladder",
-            "glyph": "🪜"
+            "name": "flag: Côte d’Ivoire",
+            "glyph": "🇨🇮"
         },
         {
-            "name": "Alembic",
-            "glyph": "⚗️"
+            "name": "flag: Cook Islands",
+            "glyph": "🇨🇰"
         },
         {
-            "name": "Test Tube",
-            "glyph": "🧪"
+            "name": "flag: Chile",
+            "glyph": "🇨🇱"
         },
         {
-            "name": "Petri Dish",
-            "glyph": "🧫"
+            "name": "flag: Cameroon",
+            "glyph": "🇨🇲"
         },
         {
-            "name": "DNA",
-            "glyph": "🧬"
+            "name": "flag: China",
+            "glyph": "🇨🇳"
         },
         {
-            "name": "Microscope",
-            "glyph": "🔬"
+            "name": "flag: Colombia",
+            "glyph": "🇨🇴"
         },
         {
-            "name": "Telescope",
-            "glyph": "🔭"
+            "name": "flag: Clipperton Island",
+            "glyph": "🇨🇵"
         },
         {
-            "name": "Satellite Antenna",
-            "glyph": "📡"
+            "name": "flag: Costa Rica",
+            "glyph": "🇨🇷"
         },
         {
-            "name": "Syringe",
-            "glyph": "💉"
+            "name": "flag: Cuba",
+            "glyph": "🇨🇺"
         },
         {
-            "name": "Drop of Blood",
-            "glyph": "🩸"
+            "name": "flag: Cape Verde",
+            "glyph": "🇨🇻"
         },
         {
-            "name": "Pill",
-            "glyph": "💊"
+            "name": "flag: Curaçao",
+            "glyph": "🇨🇼"
         },
         {
-            "name": "Adhesive Bandage",
-            "glyph": "🩹"
+            "name": "flag: Christmas Island",
+            "glyph": "🇨🇽"
         },
         {
-            "name": "Crutch",
-            "glyph": "🩼"
+            "name": "flag: Cyprus",
+            "glyph": "🇨🇾"
         },
         {
-            "name": "Stethoscope",
-            "glyph": "🩺"
+            "name": "flag: Czechia",
+            "glyph": "🇨🇿"
         },
         {
-            "name": "X-Ray",
-            "glyph": "🩻"
+            "name": "flag: Germany",
+            "glyph": "🇩🇪"
         },
         {
-            "name": "Brain",
-            "glyph": "🧠"
+            "name": "flag: Diego Garcia",
+            "glyph": "🇩🇬"
         },
         {
-            "name": "Tooth",
-            "glyph": "🦷"
+            "name": "flag: Djibouti",
+            "glyph": "🇩🇯"
         },
         {
-            "name": "Bone",
-            "glyph": "🦴"
+            "name": "flag: Denmark",
+            "glyph": "🇩🇰"
         },
         {
-            "name": "Mechanical Arm",
-            "glyph": "🦾"
+            "name": "flag: Dominica",
+            "glyph": "🇩🇲"
         },
         {
-            "name": "Mechanical Leg",
-            "glyph": "🦿"
+            "name": "flag: Dominican Republic",
+            "glyph": "🇩🇴"
         },
         {
-            "name": "Ear with Hearing Aid",
-            "glyph": "🦻"
+            "name": "flag: Algeria",
+            "glyph": "🇩🇿"
         },
         {
-            "name": "Deaf Person",
-            "glyph": "🧏"
+            "name": "flag: Ceuta & Melilla",
+            "glyph": "🇪🇦"
         },
         {
-            "name": "Deaf Man",
-            "glyph": "🧏‍♂️"
+            "name": "flag: Ecuador",
+            "glyph": "🇪🇨"
         },
         {
-            "name": "Deaf Woman",
-            "glyph": "🧏‍♀️"
+            "name": "flag: Estonia",
+            "glyph": "🇪🇪"
         },
         {
-            "name": "Manual Wheelchair",
-            "glyph": "🦽"
+            "name": "flag: Egypt",
+            "glyph": "🇪🇬"
         },
         {
-            "name": "Motorized Wheelchair",
-            "glyph": "🦼"
+            "name": "flag: Western Sahara",
+            "glyph": "🇪🇭"
         },
         {
-            "name": "Person Kneeling",
-            "glyph": "🧎"
+            "name": "flag: Eritrea",
+            "glyph": "🇪🇷"
         },
         {
-            "name": "Man Kneeling",
-            "glyph": "🧎‍♂️"
+            "name": "flag: Spain",
+            "glyph": "🇪🇸"
         },
         {
-            "name": "Woman Kneeling",
-            "glyph": "🧎‍♀️"
+            "name": "flag: Ethiopia",
+            "glyph": "🇪🇹"
         },
         {
-            "name": "Mirror",
-            "glyph": "🪞"
+            "name": "flag: European Union",
+            "glyph": "🇪🇺"
         },
         {
-            "name": "Window",
-            "glyph": "🪟"
+            "name": "flag: Finland",
+            "glyph": "🇫🇮"
         },
         {
-            "name": "Bed",
-            "glyph": "🛏️"
+            "name": "flag: Fiji",
+            "glyph": "🇫🇯"
         },
         {
-            "name": "Couch and Lamp",
-            "glyph": "🛋️"
+            "name": "flag: Falkland Islands",
+            "glyph": "🇫🇰"
         },
         {
-            "name": "Chair",
-            "glyph": "🪑"
+            "name": "flag: Micronesia",
+            "glyph": "🇫🇲"
         },
         {
-            "name": "Door",
-            "glyph": "🚪"
+            "name": "flag: Faroe Islands",
+            "glyph": "🇫🇴"
         },
         {
-            "name": "Hut",
-            "glyph": "🛖"
+            "name": "flag: France",
+            "glyph": "🇫🇷"
         },
         {
-            "name": "Teddy Bear",
-            "glyph": "🧸"
+            "name": "flag: Gabon",
+            "glyph": "🇬🇦"
         },
         {
-            "name": "Nesting Dolls",
-            "glyph": "🪆"
+            "name": "flag: United Kingdom",
+            "glyph": "🇬🇧"
         },
         {
-            "name": "Nazar Amulet",
-            "glyph": "🧿"
+            "name": "flag: Grenada",
+            "glyph": "🇬🇩"
         },
         {
-            "name": "Puzzle Piece",
-            "glyph": "🧩"
+            "name": "flag: Georgia",
+            "glyph": "🇬🇪"
         },
         {
-            "name": "Yo-Yo",
-            "glyph": "🪀"
+            "name": "flag: French Guiana",
+            "glyph": "🇬🇫"
         },
         {
-            "name": "Kite",
-            "glyph": "🪁"
+            "name": "flag: Guernsey",
+            "glyph": "🇬🇬"
         },
         {
-            "name": "Locomotive",
-            "glyph": "🚂"
+            "name": "flag: Ghana",
+            "glyph": "🇬🇭"
         },
         {
-            "name": "Railway Car",
-            "glyph": "🚃"
+            "name": "flag: Gibraltar",
+            "glyph": "🇬🇮"
         },
         {
-            "name": "High-Speed Train",
-            "glyph": "🚄"
+            "name": "flag: Greenland",
+            "glyph": "🇬🇱"
         },
         {
-            "name": "Bullet Train",
-            "glyph": "🚅"
+            "name": "flag: Gambia",
+            "glyph": "🇬🇲"
         },
         {
-            "name": "Train",
-            "glyph": "🚆"
+            "name": "flag: Guinea",
+            "glyph": "🇬🇳"
         },
         {
-            "name": "Metro",
-            "glyph": "🚇"
+            "name": "flag: Guadeloupe",
+            "glyph": "🇬🇵"
         },
         {
-            "name": "Light Rail",
-            "glyph": "🚈"
+            "name": "flag: Equatorial Guinea",
+            "glyph": "🇬🇶"
         },
         {
-            "name": "Station",
-            "glyph": "🚉"
+            "name": "flag: Greece",
+            "glyph": "🇬🇷"
         },
         {
-            "name": "Tram",
-            "glyph": "🚊"
+            "name": "flag: South Georgia & South Sandwich Islands",
+            "glyph": "🇬🇸"
         },
         {
-            "name": "Railway Track",
-            "glyph": "🛤️"
+            "name": "flag: Guatemala",
+            "glyph": "🇬🇹"
         },
         {
-            "name": "Taxi",
-            "glyph": "🚖"
+            "name": "flag: Guam",
+            "glyph": "🇬🇺"
         },
         {
-            "name": "Oncoming Police Car",
-            "glyph": "🚔"
+            "name": "flag: Guinea-Bissau",
+            "glyph": "🇬🇼"
         },
         {
-            "name": "Police Car",
-            "glyph": "🚕"
+            "name": "flag: Guyana",
+            "glyph": "🇬🇾"
         },
         {
-            "name": "Oncoming Taxi",
-            "glyph": "🚓"
+            "name": "flag: Hong Kong SAR China",
+            "glyph": "🇭🇰"
         },
         {
-            "name": "Ambulance",
-            "glyph": "🚑"
+            "name": "flag: Heard & McDonald Islands",
+            "glyph": "🇭🇲"
         },
         {
-            "name": "Fire Engine",
-            "glyph": "🚒"
+            "name": "flag: Honduras",
+            "glyph": "🇭🇳"
         },
         {
-            "name": "Minibus",
-            "glyph": "🚐"
+            "name": "flag: Croatia",
+            "glyph": "🇭🇷"
         },
         {
-            "name": "Pickup Truck",
-            "glyph": "🛻"
+            "name": "flag: Haiti",
+            "glyph": "🇭🇹"
         },
         {
-            "name": "Delivery Truck",
-            "glyph": "🚚"
+            "name": "flag: Hungary",
+            "glyph": "🇭🇺"
         },
         {
-            "name": "Articulated Lorry",
-            "glyph": "🚛"
+            "name": "flag: Canary Islands",
+            "glyph": "🇮🇨"
         },
         {
-            "name": "Tractor",
-            "glyph": "🚜"
+            "name": "flag: Indonesia",
+            "glyph": "🇮🇩"
         },
         {
-            "name": "Motorcycle",
-            "glyph": "🏍️"
+            "name": "flag: Ireland",
+            "glyph": "🇮🇪"
         },
         {
-            "name": "Motor Scooter",
-            "glyph": "🛵"
+            "name": "flag: Israel",
+            "glyph": "🇮🇱"
         },
         {
-            "name": "Manual Wheelchair",
-            "glyph": "🦽"
+            "name": "flag: Isle of Man",
+            "glyph": "🇮🇲"
         },
         {
-            "name": "Motorized Wheelchair",
-            "glyph": "🦼"
+            "name": "flag: India",
+            "glyph": "🇮🇳"
         },
         {
-            "name": "Auto Rickshaw",
-            "glyph": "🛺"
+            "name": "flag: British Indian Ocean Territory",
+            "glyph": "🇮🇴"
         },
         {
-            "name": "Bicycle",
-            "glyph": "🚲"
+            "name": "flag: Iraq",
+            "glyph": "🇮🇶"
         },
         {
-            "name": "Kick Scooter",
-            "glyph": "🛴"
+            "name": "flag: Iran",
+            "glyph": "🇮🇷"
         },
         {
-            "name": "Skateboard",
-            "glyph": "🛹"
+            "name": "flag: Iceland",
+            "glyph": "🇮🇸"
         },
         {
-            "name": "Roller Skate",
-            "glyph": "🛼"
+            "name": "flag: Italy",
+            "glyph": "🇮🇹"
         },
         {
-            "name": "Sled",
-            "glyph": "🛷"
+            "name": "flag: Jersey",
+            "glyph": "🇯🇪"
         },
         {
-            "name": "Skis",
-            "glyph": "⛷️"
+            "name": "flag: Jamaica",
+            "glyph": "🇯🇲"
         },
         {
-            "name": "Snowboarder",
-            "glyph": "🏂"
+            "name": "flag: Jordan",
+            "glyph": "🇯🇴"
         },
         {
-            "name": "Person Lifting Weights",
-            "glyph": "🏋️"
+            "name": "flag: Japan",
+            "glyph": "🇯🇵"
         },
         {
-            "name": "Man Lifting Weights",
-            "glyph": "🏋️‍♂️"
+            "name": "flag: Kenya",
+            "glyph": "🇰🇪"
         },
         {
-            "name": "Woman Lifting Weights",
-            "glyph": "🏋️‍♀️"
+            "name": "flag: Kyrgyzstan",
+            "glyph": "🇰🇬"
         },
         {
-            "name": "People Wrestling",
-            "glyph": "🤼"
+            "name": "flag: Cambodia",
+            "glyph": "🇰🇭"
         },
         {
-            "name": "Men Wrestling",
-            "glyph": "🤼‍♂️"
+            "name": "flag: Kiribati",
+            "glyph": "🇰🇮"
         },
         {
-            "name": "Women Wrestling",
-            "glyph": "🤼‍♀️"
+            "name": "flag: Comoros",
+            "glyph": "🇰🇲"
         },
         {
-            "name": "Person Cartwheeling",
-            "glyph": "🤸"
+            "name": "flag: St. Kitts & Nevis",
+            "glyph": "🇰🇳"
         },
         {
-            "name": "Man Cartwheeling",
-            "glyph": "🤸‍♂️"
+            "name": "flag: North Korea",
+            "glyph": "🇰🇵"
         },
         {
-            "name": "Woman Cartwheeling",
-            "glyph": "🤸‍♀️"
+            "name": "flag: South Korea",
+            "glyph": "🇰🇷"
         },
         {
-            "name": "Person Bouncing Ball",
-            "glyph": "⛹️"
+            "name": "flag: Kuwait",
+            "glyph": "🇰🇼"
         },
         {
-            "name": "Man Bouncing Ball",
-            "glyph": "⛹️‍♂️"
+            "name": "flag: Cayman Islands",
+            "glyph": "🇰🇾"
         },
         {
-            "name": "Woman Bouncing Ball",
-            "glyph": "⛹️‍♀️"
+            "name": "flag: Kazakhstan",
+            "glyph": "🇰🇿"
         },
         {
-            "name": "Person Fencing",
-            "glyph": "🤺"
+            "name": "flag: Laos",
+            "glyph": "🇱🇦"
         },
         {
-            "name": "Person Playing Handball",
-            "glyph": "🤾"
+            "name": "flag: Lebanon",
+            "glyph": "🇱🇧"
         },
         {
-            "name": "Man Playing Handball",
-            "glyph": "🤾‍♂️"
+            "name": "flag: St. Lucia",
+            "glyph": "🇱🇨"
         },
         {
-            "name": "Woman Playing Handball",
-            "glyph": "🤾‍♀️"
+            "name": "flag: Liechtenstein",
+            "glyph": "🇱🇮"
         },
         {
-            "name": "Person Golfing",
-            "glyph": "🏌️"
+            "name": "flag: Sri Lanka",
+            "glyph": "🇱🇰"
         },
         {
-            "name": "Man Golfing",
-            "glyph": "🏌️‍♂️"
+            "name": "flag: Liberia",
+            "glyph": "🇱🇷"
         },
         {
-            "name": "Woman Golfing",
-            "glyph": "🏌️‍♀️"
+            "name": "flag: Lesotho",
+            "glyph": "🇱🇸"
         },
         {
-            "name": "Horse Racing",
-            "glyph": "🏇"
+            "name": "flag: Lithuania",
+            "glyph": "🇱🇹"
         },
         {
-            "name": "Person in Lotus Position",
-            "glyph": "🧘"
+            "name": "flag: Luxembourg",
+            "glyph": "🇱🇺"
         },
         {
-            "name": "Man in Lotus Position",
-            "glyph": "🧘‍♂️"
+            "name": "flag: Latvia",
+            "glyph": "🇱🇻"
         },
         {
-            "name": "Woman in Lotus Position",
-            "glyph": "🧘‍♀️"
+            "name": "flag: Libya",
+            "glyph": "🇱🇾"
         },
         {
-            "name": "Person Surfing",
-            "glyph": "🏄"
+            "name": "flag: Morocco",
+            "glyph": "🇲🇦"
         },
         {
-            "name": "Man Surfing",
-            "glyph": "🏄‍♂️"
+            "name": "flag: Monaco",
+            "glyph": "🇲🇨"
         },
         {
-            "name": "Woman Surfing",
-            "glyph": "🏄‍♀️"
+            "name": "flag: Moldova",
+            "glyph": "🇲🇩"
         },
         {
-            "name": "Person Swimming",
-            "glyph": "🏊"
+            "name": "flag: Montenegro",
+            "glyph": "🇲🇪"
         },
         {
-            "name": "Man Swimming",
-            "glyph": "🏊‍♂️"
+            "name": "flag: St. Martin",
+            "glyph": "🇲🇫"
         },
         {
-            "name": "Woman Swimming",
-            "glyph": "🏊‍♀️"
+            "name": "flag: Madagascar",
+            "glyph": "🇲🇬"
         },
         {
-            "name": "Person Playing Water Polo",
-            "glyph": "🤽"
+            "name": "flag: Marshall Islands",
+            "glyph": "🇲🇭"
         },
         {
-            "name": "Man Playing Water Polo",
-            "glyph": "🤽‍♂️"
+            "name": "flag: North Macedonia",
+            "glyph": "🇲🇰"
         },
         {
-            "name": "Woman Playing Water Polo",
-            "glyph": "🤽‍♀️"
+            "name": "flag: Mali",
+            "glyph": "🇲🇱"
         },
         {
-            "name": "Person Rowing Boat",
-            "glyph": "🚣"
+            "name": "flag: Myanmar (Burma)",
+            "glyph": "🇲🇲"
         },
         {
-            "name": "Man Rowing Boat",
-            "glyph": "🚣‍♂️"
+            "name": "flag: Mongolia",
+            "glyph": "🇲🇳"
         },
         {
-            "name": "Woman Rowing Boat",
-            "glyph": "🚣‍♀️"
+            "name": "flag: Macao SAR China",
+            "glyph": "🇲🇴"
         },
         {
-            "name": "Person Climbing",
-            "glyph": "🧗"
+            "name": "flag: Northern Mariana Islands",
+            "glyph": "🇲🇵"
         },
         {
-            "name": "Man Climbing",
-            "glyph": "🧗‍♂️"
+            "name": "flag: Martinique",
+            "glyph": "🇲🇶"
         },
         {
-            "name": "Woman Climbing",
-            "glyph": "🧗‍♀️"
+            "name": "flag: Mauritania",
+            "glyph": "🇲🇷"
         },
         {
-            "name": "Person Mountain Biking",
-            "glyph": "🚵"
+            "name": "flag: Montserrat",
+            "glyph": "🇲🇸"
         },
         {
-            "name": "Man Mountain Biking",
-            "glyph": "🚵‍♂️"
+            "name": "flag: Malta",
+            "glyph": "🇲🇹"
         },
         {
-            "name": "Woman Mountain Biking",
-            "glyph": "🚵‍♀️"
+            "name": "flag: Mauritius",
+            "glyph": "🇲🇺"
         },
         {
-            "name": "Person Biking",
-            "glyph": "🚴"
+            "name": "flag: Maldives",
+            "glyph": "🇲🇻"
         },
         {
-            "name": "Man Biking",
-            "glyph": "🚴‍♂️"
+            "name": "flag: Malawi",
+            "glyph": "🇲🇼"
         },
         {
-            "name": "Woman Biking",
-            "glyph": "🚴‍♀️"
+            "name": "flag: Mexico",
+            "glyph": "🇲🇽"
         },
         {
-            "name": "Trophy",
-            "glyph": "🏆"
+            "name": "flag: Malaysia",
+            "glyph": "🇲🇾"
         },
         {
-            "name": "1st Place Medal",
-            "glyph": "🥇"
+            "name": "flag: Mozambique",
+            "glyph": "🇲🇿"
         },
         {
-            "name": "2nd Place Medal",
-            "glyph": "🥈"
+            "name": "flag: Namibia",
+            "glyph": "🇳🇦"
         },
         {
-            "name": "3rd Place Medal",
-            "glyph": "🥉"
+            "name": "flag: New Caledonia",
+            "glyph": "🇳🇨"
         },
         {
-            "name": "Sports Medal",
-            "glyph": "🏅"
+            "name": "flag: Niger",
+            "glyph": "🇳🇪"
         },
         {
-            "name": "Military Medal",
-            "glyph": "🎖️"
+            "name": "flag: Norfolk Island",
+            "glyph": "🇳🇫"
         },
         {
-            "name": "Rosette",
-            "glyph": "🏵️"
+            "name": "flag: Nigeria",
+            "glyph": "🇳🇬"
         },
         {
-            "name": "Reminder Ribbon",
-            "glyph": "🎗️"
+            "name": "flag: Nicaragua",
+            "glyph": "🇳🇮"
         },
         {
-            "name": "Ticket",
-            "glyph": "🎫"
+            "name": "flag: Netherlands",
+            "glyph": "🇳🇱"
         },
         {
-            "name": "Admission Tickets",
-            "glyph": "🎟️"
+            "name": "flag: Norway",
+            "glyph": "🇳🇴"
         },
         {
-            "name": "Circus Tent",
-            "glyph": "🎪"
+            "name": "flag: Nepal",
+            "glyph": "🇳🇵"
         },
         {
-            "name": "Person Juggling",
-            "glyph": "🤹"
+            "name": "flag: Nauru",
+            "glyph": "🇳🇷"
         },
         {
-            "name": "Man Juggling",
-            "glyph": "🤹‍♂️"
+            "name": "flag: Niue",
+            "glyph": "🇳🇺"
         },
         {
-            "name": "Woman Juggling",
-            "glyph": "🤹‍♀️"
+            "name": "flag: New Zealand",
+            "glyph": "🇳🇿"
         },
         {
-            "name": "Performing Arts",
-            "glyph": "🎭"
+            "name": "flag: Oman",
+            "glyph": "🇴🇲"
         },
         {
-            "name": "Ballet Shoes",
-            "glyph": "🩰"
+            "name": "flag: Panama",
+            "glyph": "🇵🇦"
         },
         {
-            "name": "Artist Palette",
-            "glyph": "🎨"
+            "name": "flag: Peru",
+            "glyph": "🇵🇪"
         },
         {
-            "name": "Microphone",
-            "glyph": "🎤"
+            "name": "flag: French Polynesia",
+            "glyph": "🇵🇫"
         },
         {
-            "name": "Headphone",
-            "glyph": "🎧"
+            "name": "flag: Papua New Guinea",
+            "glyph": "🇵🇬"
         },
         {
-            "name": "Radio",
-            "glyph": "📻"
+            "name": "flag: Philippines",
+            "glyph": "🇵🇭"
         },
         {
-            "name": "Saxophone",
-            "glyph": "🎷"
+            "name": "flag: Pakistan",
+            "glyph": "🇵🇰"
         },
         {
-            "name": "Accordion",
-            "glyph": "🪗"
+            "name": "flag: Poland",
+            "glyph": "🇵🇱"
         },
         {
-            "name": "Guitar",
-            "glyph": "🎸"
+            "name": "flag: St. Pierre & Miquelon",
+            "glyph": "🇵🇲"
         },
         {
-            "name": "Musical Keyboard",
-            "glyph": "🎹"
+            "name": "flag: Pitcairn Islands",
+            "glyph": "🇵🇳"
         },
         {
-            "name": "Trumpet",
-            "glyph": "🎺"
+            "name": "flag: Puerto Rico",
+            "glyph": "🇵🇷"
         },
         {
-            "name": "Violin",
-            "glyph": "🎻"
+            "name": "flag: Palestinian Territories",
+            "glyph": "🇵🇸"
         },
         {
-            "name": "Banjo",
-            "glyph": "🪕"
+            "name": "flag: Portugal",
+            "glyph": "🇵🇹"
         },
         {
-            "name": "Drum",
-            "glyph": "🥁"
+            "name": "flag: Palau",
+            "glyph": "🇵🇼"
         },
         {
-            "name": "Long Drum",
-            "glyph": "🪘"
+            "name": "flag: Paraguay",
+            "glyph": "🇵🇾"
         },
         {
-            "name": "Postal Horn",
-            "glyph": "📯"
+            "name": "flag: Qatar",
+            "glyph": "🇶🇦"
         },
         {
-            "name": "Studio Microphone",
-            "glyph": "🎙️"
+            "name": "flag: Réunion",
+            "glyph": "🇷🇪"
         },
         {
-            "name": "Level Slider",
-            "glyph": "🎚️"
+            "name": "flag: Romania",
+            "glyph": "🇷🇴"
         },
         {
-            "name": "Control Knobs",
-            "glyph": "🎛️"
+            "name": "flag: Serbia",
+            "glyph": "🇷🇸"
         },
         {
-            "name": "Optical Disk",
-            "glyph": "📀"
+            "name": "flag: Russia",
+            "glyph": "🇷🇺"
         },
         {
-            "name": "DVD",
-            "glyph": "💿"
+            "name": "flag: Rwanda",
+            "glyph": "🇷🇼"
         },
         {
-            "name": "Movie Camera",
-            "glyph": "🎥"
+            "name": "flag: Saudi Arabia",
+            "glyph": "🇸🇦"
         },
         {
-            "name": "Film Projector",
-            "glyph": "📽️"
+            "name": "flag: Solomon Islands",
+            "glyph": "🇸🇧"
         },
         {
-            "name": "Film Frames",
-            "glyph": "🎞️"
+            "name": "flag: Seychelles",
+            "glyph": "🇸🇨"
         },
         {
-            "name": "Camera with Flash",
-            "glyph": "📸"
+            "name": "flag: Sudan",
+            "glyph": "🇸🇩"
         },
         {
-            "name": "Camera",
-            "glyph": "📷"
+            "name": "flag: Sweden",
+            "glyph": "🇸🇪"
         },
         {
-            "name": "Video Camera",
-            "glyph": "📹"
+            "name": "flag: Singapore",
+            "glyph": "🇸🇬"
         },
         {
-            "name": "Videocassette",
-            "glyph": "📼"
+            "name": "flag: St. Helena",
+            "glyph": "🇸🇭"
         },
         {
-            "name": "Laptop",
-            "glyph": "💻"
+            "name": "flag: Slovenia",
+            "glyph": "🇸🇮"
         },
         {
-            "name": "Desktop Computer",
-            "glyph": "🖥️"
+            "name": "flag: Svalbard & Jan Mayen",
+            "glyph": "🇸🇯"
         },
         {
-            "name": "Printer",
-            "glyph": "🖨️"
+            "name": "flag: Slovakia",
+            "glyph": "🇸🇰"
         },
         {
-            "name": "Keyboard",
-            "glyph": "⌨️"
+            "name": "flag: Sierra Leone",
+            "glyph": "🇸🇱"
         },
         {
-            "name": "Computer Mouse",
-            "glyph": "🖱️"
+            "name": "flag: San Marino",
+            "glyph": "🇸🇲"
         },
         {
-            "name": "Trackball",
-            "glyph": "🖲️"
+            "name": "flag: Senegal",
+            "glyph": "🇸🇳"
         },
         {
-            "name": "Computer Disk",
-            "glyph": "💽"
+            "name": "flag: Somalia",
+            "glyph": "🇸🇴"
         },
         {
-            "name": "Floppy Disk",
-            "glyph": "💾"
+            "name": "flag: Suriname",
+            "glyph": "🇸🇷"
         },
         {
-            "name": "Optical Disk",
-            "glyph": "💿"
+            "name": "flag: South Sudan",
+            "glyph": "🇸🇸"
         },
         {
-            "name": "DVD",
-            "glyph": "📀"
+            "name": "flag: São Tomé & Príncipe",
+            "glyph": "🇸🇹"
         },
         {
-            "name": "Videocassette",
-            "glyph": "📼"
+            "name": "flag: El Salvador",
+            "glyph": "🇸🇻"
         },
         {
-            "name": "Video Camera",
-            "glyph": "📹"
+            "name": "flag: Sint Maarten",
+            "glyph": "🇸🇽"
         },
         {
-            "name": "Camera",
-            "glyph": "📷"
+            "name": "flag: Syria",
+            "glyph": "🇸🇾"
         },
         {
-            "name": "Camera with Flash",
-            "glyph": "📸"
+            "name": "flag: Eswatini",
+            "glyph": "🇸🇿"
         },
         {
-            "name": "Movie Camera",
-            "glyph": "🎥"
+            "name": "flag: Tristan da Cunha",
+            "glyph": "🇹🇦"
         },
         {
-            "name": "Film Frames",
-            "glyph": "🎞️"
+            "name": "flag: Turks & Caicos Islands",
+            "glyph": "🇹🇨"
         },
         {
-            "name": "Film Projector",
-            "glyph": "📽️"
+            "name": "flag: Chad",
+            "glyph": "🇹🇩"
         },
         {
-            "name": "Clapper Board",
-            "glyph": "🎬"
+            "name": "flag: French Southern Territories",
+            "glyph": "🇹🇫"
         },
         {
-            "name": "Fountain Pen",
-            "glyph": "🖋️"
+            "name": "flag: Togo",
+            "glyph": "🇹🇬"
         },
         {
-            "name": "Pen",
-            "glyph": "🖊️"
+            "name": "flag: Thailand",
+            "glyph": "🇹🇭"
         },
         {
-            "name": "Paintbrush",
-            "glyph": "🖌️"
+            "name": "flag: Tajikistan",
+            "glyph": "🇹🇯"
         },
         {
-            "name": "Crayon",
-            "glyph": "🖍️"
+            "name": "flag: Tokelau",
+            "glyph": "🇹🇰"
         },
         {
-            "name": "Memo",
-            "glyph": "📝"
+            "name": "flag: Timor-Leste",
+            "glyph": "🇹🇱"
         },
         {
-            "name": "Briefcase",
-            "glyph": "💼"
+            "name": "flag: Turkmenistan",
+            "glyph": "🇹🇲"
+        },
+        {
+            "name": "flag: Tunisia",
+            "glyph": "🇹🇳"
+        },
+        {
+            "name": "flag: Tonga",
+            "glyph": "🇹🇴"
+        },
+        {
+            "name": "flag: Türkiye",
+            "glyph": "🇹🇷"
+        },
+        {
+            "name": "flag: Trinidad & Tobago",
+            "glyph": "🇹🇹"
+        },
+        {
+            "name": "flag: Tuvalu",
+            "glyph": "🇹🇻"
+        },
+        {
+            "name": "flag: Taiwan",
+            "glyph": "🇹🇼"
+        },
+        {
+            "name": "flag: Tanzania",
+            "glyph": "🇹🇿"
+        },
+        {
+            "name": "flag: Ukraine",
+            "glyph": "🇺🇦"
+        },
+        {
+            "name": "flag: Uganda",
+            "glyph": "🇺🇬"
+        },
+        {
+            "name": "flag: U.S. Outlying Islands",
+            "glyph": "🇺🇲"
+        },
+        {
+            "name": "flag: United Nations",
+            "glyph": "🇺🇳"
+        },
+        {
+            "name": "flag: United States",
+            "glyph": "🇺🇸"
+        },
+        {
+            "name": "flag: Uruguay",
+            "glyph": "🇺🇾"
+        },
+        {
+            "name": "flag: Uzbekistan",
+            "glyph": "🇺🇿"
+        },
+        {
+            "name": "flag: Vatican City",
+            "glyph": "🇻🇦"
+        },
+        {
+            "name": "flag: St. Vincent & Grenadines",
+            "glyph": "🇻🇨"
+        },
+        {
+            "name": "flag: Venezuela",
+            "glyph": "🇻🇪"
+        },
+        {
+            "name": "flag: British Virgin Islands",
+            "glyph": "🇻🇬"
+        },
+        {
+            "name": "flag: U.S. Virgin Islands",
+            "glyph": "🇻🇮"
+        },
+        {
+            "name": "flag: Vietnam",
+            "glyph": "🇻🇳"
+        },
+        {
+            "name": "flag: Vanuatu",
+            "glyph": "🇻🇺"
+        },
+        {
+            "name": "flag: Wallis & Futuna",
+            "glyph": "🇼🇫"
+        },
+        {
+            "name": "flag: Samoa",
+            "glyph": "🇼🇸"
+        },
+        {
+            "name": "flag: Kosovo",
+            "glyph": "🇽🇰"
+        },
+        {
+            "name": "flag: Yemen",
+            "glyph": "🇾🇪"
+        },
+        {
+            "name": "flag: Mayotte",
+            "glyph": "🇾🇹"
+        },
+        {
+            "name": "flag: South Africa",
+            "glyph": "🇿🇦"
+        },
+        {
+            "name": "flag: Zambia",
+            "glyph": "🇿🇲"
+        },
+        {
+            "name": "flag: Zimbabwe",
+            "glyph": "🇿🇼"
+        },
+        {
+            "name": "flag: England",
+            "glyph": "🏴"
+        },
+        {
+            "name": "flag: Scotland",
+            "glyph": "🏴"
+        },
+        {
+            "name": "flag: Wales",
+            "glyph": "🏴"
         }
     ]
 }

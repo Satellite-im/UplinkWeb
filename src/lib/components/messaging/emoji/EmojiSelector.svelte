@@ -5,10 +5,11 @@
     import { emojiList } from "./EmojiList"
     import Fuse from "fuse.js"
     import { _ } from "svelte-i18n"
+    import { tick } from "svelte"
 
     interface EmojiCategory {
         [category: string]: {
-            skintone: any
+            skin_tone: boolean
             name: string
             glyph: string
         }[]
@@ -56,15 +57,16 @@
             selectedSkinTone = tone
         }
         showSkinTonePopup = false
+        tick().then(filterEmojis) // Re-filter emojis to trigger re-render
     }
 
     function getEmojiWithSkinTone(emoji: string) {
-        const baseEmoji = emoji[0]
-        const modifier = emoji[1]
-        if (modifier >= "\u{1F3FB}" && modifier <= "\u{1F3FF}") {
-            return baseEmoji + selectedSkinTone
+        const codePoints = Array.from(emoji).map(char => char.codePointAt(0))
+        const baseEmoji = codePoints[0]
+        if (codePoints.length > 1 && codePoints[1] >= 0x1f3fb && codePoints[1] <= 0x1f3ff) {
+            return String.fromCodePoint(baseEmoji, selectedSkinTone.codePointAt(0))
         }
-        return selectedSkinTone ? emoji + selectedSkinTone : emoji
+        return selectedSkinTone ? String.fromCodePoint(baseEmoji, selectedSkinTone.codePointAt(0)) : emoji
     }
 </script>
 
@@ -91,7 +93,7 @@
                 <Label text={category.replaceAll("_", " ")} />
                 <div class="emoji-list">
                     {#each filteredEmojiData[category] as emoji}
-                        {#if emoji.skintone}
+                        {#if emoji.skin_tone}
                             <span class="emoji" title={emoji.name}>{getEmojiWithSkinTone(emoji.glyph)}</span>
                         {:else}
                             <span class="emoji" title={emoji.name}>{emoji.glyph}</span>
