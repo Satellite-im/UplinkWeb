@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
 import { mock_messages } from "$lib/mock/messages"
 import { Appearance } from "$lib/enums"
-import { Store } from "../store"
+import { Store } from "../Store"
 import { UIStore } from "../ui"
 
 export type ConversationMessages = {
