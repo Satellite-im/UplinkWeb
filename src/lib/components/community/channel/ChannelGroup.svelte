@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Channel } from "src/lib/components"
-    import { Button, Icon, Label } from "src/lib/elements"
-    import { Appearance, Shape, Size } from "src/lib/enums"
-    import type { CommunityChannelGroup } from "src/lib/types"
+    import { Channel } from "$lib/components"
+    import { Button, Icon, Label } from "$lib/elements"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import type { CommunityChannelGroup } from "$lib/types"
 
     export let group: CommunityChannelGroup = { name: "", channels: [] }
 </script>

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { initLocale } from "src/lib/lang"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { Switch } from "src/lib/elements"
-    import { SettingSection } from "src/lib/layouts"
-    import { Font } from "src/lib/enums"
+    import { Switch } from "$lib/elements"
+    import { SettingSection } from "$lib/layouts"
+    import { Font } from "$lib/enums"
     import { get } from "svelte/store"
-    import { Store } from "src/lib/state/store"
-    import { UIStore } from "src/lib/state/ui"
+    import { Store } from "$lib/state/store"
+    import { UIStore } from "$lib/state/ui"
 
     initLocale()
 

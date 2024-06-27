@@ -1,7 +1,7 @@
 <script lang="ts">
     import SvelteMarkdown from "svelte-markdown"
 
-    import { Appearance, Size } from "src/lib/enums"
+    import { Appearance, Size } from "$lib/enums"
     import { Loader } from "./"
 
     export let appearance: Appearance = Appearance.Default

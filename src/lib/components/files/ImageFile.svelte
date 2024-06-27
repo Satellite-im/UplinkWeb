@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Spacer, Text } from "src/lib/elements"
+    import { Spacer, Text } from "$lib/elements"
     import prettyBytes from "pretty-bytes"
-    import { Size } from "src/lib/enums"
+    import { Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
 
     const dispatch = createEventDispatcher()

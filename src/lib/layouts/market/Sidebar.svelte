@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { Input, Icon } from "src/lib/elements"
-    import { Shape } from "src/lib/enums"
+    import { Input, Icon } from "$lib/elements"
+    import { Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
     import { slide } from "svelte/transition"
-    import { animationDuration } from "src/lib/globals/animations"
-    import { initLocale } from "src/lib/lang"
+    import { animationDuration } from "$lib/globals/animations"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
-    import { Store } from "src/lib/state/store"
-    import type { Call } from "src/lib/types"
+    import { Store } from "$lib/state/store"
+    import type { Call } from "$lib/types"
 
     initLocale()
 

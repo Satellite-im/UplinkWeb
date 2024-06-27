@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Label, Text } from "src/lib/elements"
+    import { Label, Text } from "$lib/elements"
 
     export let name: string = "Setting"
     export let description: string = "Some setting description"

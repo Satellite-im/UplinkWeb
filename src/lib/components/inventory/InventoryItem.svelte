@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Text, Icon, Button } from "src/lib/elements"
-    import { Appearance, InventoryKind, Shape } from "src/lib/enums"
+    import { Text, Icon, Button } from "$lib/elements"
+    import { Appearance, InventoryKind, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
 
     export let name: string = ""

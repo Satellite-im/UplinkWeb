@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Text from "src/lib/elements/Text.svelte"
-    import { Size } from "src/lib/enums"
+    import Text from "$lib/elements/Text.svelte"
+    import { Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
     import prettyBytes from "pretty-bytes"
 

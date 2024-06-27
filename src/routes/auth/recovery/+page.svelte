@@ -1,10 +1,10 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
-    import { OrderedPhrase } from "src/lib/components"
-    import Controls from "src/lib/layouts/Controls.svelte"
-    import { Button, Icon, Text, Title } from "src/lib/elements"
-    import { Appearance, Route, Shape } from "src/lib/enums"
-    import { initLocale } from "src/lib/lang"
+    import { OrderedPhrase } from "$lib/components"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { Button, Icon, Text, Title } from "$lib/elements"
+    import { Appearance, Route, Shape } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
 
     initLocale()

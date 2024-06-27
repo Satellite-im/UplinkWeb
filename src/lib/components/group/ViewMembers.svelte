@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "src/lib/enums"
-    import type { User } from "src/lib/types"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import type { User } from "$lib/types"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
-    import { Text } from "src/lib/elements"
-    import Controls from "src/lib/layouts/Controls.svelte"
-    import Button from "src/lib/elements/Button.svelte"
-    import Icon from "src/lib/elements/Icon.svelte"
-    import Label from "src/lib/elements/Label.svelte"
+    import { Text } from "$lib/elements"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import Button from "$lib/elements/Button.svelte"
+    import Icon from "$lib/elements/Icon.svelte"
+    import Label from "$lib/elements/Label.svelte"
 
     export let members: User[] = []
     export let adminControls: boolean = false

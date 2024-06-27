@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Icon } from "src/lib/elements"
-    import { Shape } from "src/lib/enums"
-    import type { FileInfo } from "src/lib/types"
+    import { Icon } from "$lib/elements"
+    import { Shape } from "$lib/enums"
+    import type { FileInfo } from "$lib/types"
     export let file: FileInfo
     export let openFolders: Record<string, boolean>
     export let toggleFolder: any

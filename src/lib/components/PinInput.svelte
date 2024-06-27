@@ -1,11 +1,11 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte"
-    import { Appearance, Shape } from "src/lib/enums"
+    import { Appearance, Shape } from "$lib/enums"
 
-    import { Button, Icon, Spacer, Loader, Switch, Label } from "src/lib/elements"
+    import { Button, Icon, Spacer, Loader, Switch, Label } from "$lib/elements"
 
     import { _ } from "svelte-i18n"
-    import { AuthStore } from "src/lib/state/auth"
+    import { AuthStore } from "$lib/state/auth"
 
     export let error: boolean = false
     export let loading: boolean = false

@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Icon, Text, Label, Button, Input, Spacer } from "src/lib/elements"
-    import { Appearance, Shape, Size } from "src/lib/enums"
-    import { RelayStore, type RelayState } from "src/lib/state/wasm/relays"
-    import Modal from "src/lib/components/ui/Modal.svelte"
-    import { WarpStore } from "src/lib/wasm/WarpStore"
+    import { Icon, Text, Label, Button, Input, Spacer } from "$lib/elements"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import { RelayStore, type RelayState } from "$lib/state/wasm/relays"
+    import Modal from "$lib/components/ui/Modal.svelte"
+    import { WarpStore } from "$lib/wasm/WarpStore"
     import { get } from "svelte/store"
     import { _ } from "svelte-i18n"
-    import Controls from "src/lib/layouts/Controls.svelte"
+    import Controls from "$lib/layouts/Controls.svelte"
 
     type onClose = () => {}
     export let close: onClose | undefined = undefined

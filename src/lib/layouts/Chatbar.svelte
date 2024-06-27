@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { Button, Icon, Input } from "src/lib/elements"
-    import { Shape } from "src/lib/enums"
-    import { initLocale } from "src/lib/lang"
+    import { Button, Icon, Input } from "$lib/elements"
+    import { Shape } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
-    import { Store } from "src/lib/state/store"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
-    import { SettingsStore } from "src/lib/state"
-    import { ConversationStore } from "src/lib/state/conversation"
-    import { RaygunStoreInstance } from "src/lib/wasm/RaygunStore"
-    import type { Message } from "src/lib/types"
+    import { SettingsStore } from "$lib/state"
+    import { ConversationStore } from "$lib/state/conversation"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import type { Message } from "$lib/types"
 
     initLocale()
     export let replyTo: Message | undefined = undefined

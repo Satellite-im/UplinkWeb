@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { ToastMessage } from "src/lib/state/ui/toast"
-    import { Store } from "src/lib/state/store"
+    import type { ToastMessage } from "$lib/state/ui/toast"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
-    import Toast from "src/lib/elements/Toast.svelte"
+    import Toast from "$lib/elements/Toast.svelte"
 
     let toasts: { [key: string]: [ToastMessage, NodeJS.Timeout] } = get(Store.state.toasts)
     Store.state.toasts.subscribe(t => (toasts = t))

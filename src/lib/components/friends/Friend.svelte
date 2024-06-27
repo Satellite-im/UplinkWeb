@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { Text } from "src/lib/elements"
-    import { defaultUser, type User } from "src/lib/types"
+    import { Text } from "$lib/elements"
+    import { defaultUser, type User } from "$lib/types"
     import { ProfilePicture } from ".."
-    import Controls from "src/lib/layouts/Controls.svelte"
-    import { initLocale } from "src/lib/lang"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { Size } from "src/lib/enums"
+    import { Size } from "$lib/enums"
 
     initLocale()
 

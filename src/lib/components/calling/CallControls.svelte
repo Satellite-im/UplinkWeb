@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Text, Button, Icon, Label } from "src/lib/elements"
-    import { Appearance, Shape } from "src/lib/enums"
-    import { initLocale } from "src/lib/lang"
+    import { Text, Button, Icon, Label } from "$lib/elements"
+    import { Appearance, Shape } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "../../layouts/Controls.svelte"
     import { get } from "svelte/store"
-    import { SettingsStore, type ISettingsState } from "src/lib/state"
-    import { Store } from "src/lib/state/store"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { Store } from "$lib/state/store"
 
     initLocale()
 

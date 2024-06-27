@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Text } from "src/lib/elements"
-    import { MessagePosition } from "src/lib/enums"
-    import { SettingsStore } from "src/lib/state"
-    import { type FileProgress, type PendingMessage } from "src/lib/types"
+    import { Text } from "$lib/elements"
+    import { MessagePosition } from "$lib/enums"
+    import { SettingsStore } from "$lib/state"
+    import { type FileProgress, type PendingMessage } from "$lib/types"
     import { get } from "svelte/store"
     import PendingFileEmbed from "../embeds/PendingFileEmbed.svelte"
 

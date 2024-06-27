@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Icon, Text, Spacer } from "src/lib/elements"
-    import { FilesItemKind, Shape, Size } from "src/lib/enums"
-    import { Store } from "src/lib/state/store"
-    import type { FileInfo } from "src/lib/types"
-    import { OperationState } from "src/lib/types"
+    import { Icon, Text, Spacer } from "$lib/elements"
+    import { FilesItemKind, Shape, Size } from "$lib/enums"
+    import { Store } from "$lib/state/store"
+    import type { FileInfo } from "$lib/types"
+    import { OperationState } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
 

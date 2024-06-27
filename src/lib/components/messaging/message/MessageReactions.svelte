@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Reaction } from "src/lib/types"
+    import type { Reaction } from "$lib/types"
 
     export let reactions: Array<Reaction> = []
     export let remote: boolean = false

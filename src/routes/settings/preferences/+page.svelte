@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { Appearance, Font, Shape } from "src/lib/enums"
-    import { initLocale } from "src/lib/lang"
+    import { Appearance, Font, Shape } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { ColorSwatch } from "src/lib/components"
-    import { SettingSection } from "src/lib/layouts"
-    import { Button, Icon, Input, Select } from "src/lib/elements"
+    import { ColorSwatch } from "$lib/components"
+    import { SettingSection } from "$lib/layouts"
+    import { Button, Icon, Input, Select } from "$lib/elements"
     import ColorPicker from "svelte-awesome-color-picker"
-    import { Store } from "src/lib/state/store"
-    import PopupButton from "src/lib/components/ui/PopupButton.svelte"
+    import { Store } from "$lib/state/store"
+    import PopupButton from "$lib/components/ui/PopupButton.svelte"
     import { get } from "svelte/store"
-    import { UIStore } from "src/lib/state/ui"
+    import { UIStore } from "$lib/state/ui"
 
     initLocale()
 

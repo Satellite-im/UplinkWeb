@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Button, Icon, Text } from "src/lib/elements"
+    import { Button, Icon, Text } from "$lib/elements"
 
-    import { Appearance, Shape, Size } from "src/lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
 
     export let balance: number = 0
 

@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { initLocale } from "src/lib/lang"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { SettingSection } from "src/lib/layouts"
-    import { Button, Switch, Select } from "src/lib/elements"
-    import { Meter, VideoTest } from "src/lib/components"
-    import { Appearance } from "src/lib/enums"
-    import { Store } from "src/lib/state/store"
+    import { SettingSection } from "$lib/layouts"
+    import { Button, Switch, Select } from "$lib/elements"
+    import { Meter, VideoTest } from "$lib/components"
+    import { Appearance } from "$lib/enums"
+    import { Store } from "$lib/state/store"
     import { onMount } from "svelte"
     import { get } from "svelte/store"
-    import { SettingsStore, type ISettingsState } from "src/lib/state"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
 
     initLocale()
 

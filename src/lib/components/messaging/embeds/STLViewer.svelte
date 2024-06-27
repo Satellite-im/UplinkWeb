@@ -1,13 +1,13 @@
 <script lang="ts">
     import * as THREE from "three"
-    import Text from "src/lib/elements/Text.svelte"
+    import Text from "$lib/elements/Text.svelte"
     import { STLLoader } from "three/addons/loaders/STLLoader.js"
     import { OrbitControls } from "three/addons/controls/OrbitControls.js"
     import { onMount } from "svelte"
-    import { Appearance, Shape, Size } from "src/lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import prettyBytes from "pretty-bytes"
-    import Icon from "src/lib/elements/Icon.svelte"
-    import { Button } from "src/lib/elements"
+    import Icon from "$lib/elements/Icon.svelte"
+    import { Button } from "$lib/elements"
 
     export let url: string = ""
     export let wireframe: boolean = false

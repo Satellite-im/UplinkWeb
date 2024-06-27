@@ -1,6 +1,6 @@
 <script lang="ts">
     import { get } from "svelte/store"
-    import { SettingsStore } from "src/lib/state"
+    import { SettingsStore } from "$lib/state"
 
     const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>

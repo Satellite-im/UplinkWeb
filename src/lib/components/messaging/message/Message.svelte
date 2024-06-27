@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { MessagePosition } from "src/lib/enums"
-    import { SettingsStore } from "src/lib/state"
+    import { MessagePosition } from "$lib/enums"
+    import { SettingsStore } from "$lib/state"
     import { get } from "svelte/store"
 
     export let remote: boolean = false

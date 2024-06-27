@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { ChatType, Route, Size } from "src/lib/enums"
-    import { initLocale } from "src/lib/lang"
+    import { ChatType, Route, Size } from "$lib/enums"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { ProfilePicture, ProfilePictureMany } from "src/lib/components"
-    import { type Chat, type User } from "src/lib/types"
-    import { Store } from "src/lib/state/store"
+    import { ProfilePicture, ProfilePictureMany } from "$lib/components"
+    import { type Chat, type User } from "$lib/types"
+    import { Store } from "$lib/state/store"
     import { get } from "svelte/store"
-    import { UIStore } from "src/lib/state/ui"
-    import { RaygunStoreInstance } from "src/lib/wasm/RaygunStore"
+    import { UIStore } from "$lib/state/ui"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { goto } from "$app/navigation"
 
     initLocale()

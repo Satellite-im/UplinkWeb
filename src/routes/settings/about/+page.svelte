@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { initLocale } from "src/lib/lang"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { Appearance, Shape } from "src/lib/enums"
-    import { Button, Icon } from "src/lib/elements"
-    import { SettingSection } from "src/lib/layouts"
-    import { SettingsStore } from "src/lib/state"
+    import { Appearance, Shape } from "$lib/enums"
+    import { Button, Icon } from "$lib/elements"
+    import { SettingSection } from "$lib/layouts"
+    import { SettingsStore } from "$lib/state"
     import { goto } from "$app/navigation"
 
     initLocale()

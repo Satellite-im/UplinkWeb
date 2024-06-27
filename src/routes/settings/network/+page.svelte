@@ -1,6 +1,6 @@
 <script lang="ts">
-    import RelaySelector from "src/lib/components/ui/RelaySelector.svelte"
-    import { initLocale } from "src/lib/lang"
+    import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
+    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
 
     initLocale()

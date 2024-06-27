@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, Shape, Size } from "src/lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
 
     export let icon: Shape = Shape.Beaker
     export let alt: boolean = false
