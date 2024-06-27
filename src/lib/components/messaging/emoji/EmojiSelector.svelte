@@ -7,13 +7,21 @@
     import { _ } from "svelte-i18n"
 
     interface EmojiCategory {
-        [category: string]: { name: string; glyph: string }[]
+        [category: string]: {
+            skintone: any
+            name: string
+            glyph: string
+        }[]
     }
 
     const emojiData: EmojiCategory = emojiList
 
     let searchQuery: string = ""
     let filteredEmojiData: EmojiCategory = { ...emojiData }
+    let showSkinTonePopup: boolean = false
+    let selectedSkinTone: string = "🏽" // Default skin tone
+
+    const skinTones = ["🚫", "🏿", "🏾", "🏽", "🏼", "🏻"]
 
     const fuseOptions = {
         keys: ["name"],
@@ -36,12 +44,46 @@
             }
         }
     }
+
+    function toggleSkinTonePopup() {
+        showSkinTonePopup = !showSkinTonePopup
+    }
+
+    function selectSkinTone(tone: string) {
+        if (tone === "🚫") {
+            selectedSkinTone = ""
+        } else {
+            selectedSkinTone = tone
+        }
+        showSkinTonePopup = false
+    }
+
+    function getEmojiWithSkinTone(emoji: string) {
+        const baseEmoji = emoji[0]
+        const modifier = emoji[1]
+        if (modifier >= "\u{1F3FB}" && modifier <= "\u{1F3FF}") {
+            return baseEmoji + selectedSkinTone
+        }
+        return selectedSkinTone ? emoji + selectedSkinTone : emoji
+    }
 </script>
 
 <div id="emoji-container">
-    <Input alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
-        <Icon icon={Shape.Search} />
-    </Input>
+    <div class="input-group">
+        <Input alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
+            <Icon icon={Shape.Search} />
+        </Input>
+        <button class="skin-tone-selector" on:click={toggleSkinTonePopup}>
+            {selectedSkinTone || "🚫"}
+        </button>
+        {#if showSkinTonePopup}
+            <div class="skin-tone-popup">
+                {#each skinTones as tone}
+                    <button class="skin-tone" on:click={() => selectSkinTone(tone)}>{tone}</button>
+                {/each}
+            </div>
+        {/if}
+    </div>
     <Spacer less />
     <div id="emoji-selector">
         {#each Object.keys(filteredEmojiData) as category}
@@ -49,7 +91,11 @@
                 <Label text={category.replaceAll("_", " ")} />
                 <div class="emoji-list">
                     {#each filteredEmojiData[category] as emoji}
-                        <span class="emoji" title={emoji.name}>{emoji.glyph}</span>
+                        {#if emoji.skintone}
+                            <span class="emoji" title={emoji.name}>{getEmojiWithSkinTone(emoji.glyph)}</span>
+                        {:else}
+                            <span class="emoji" title={emoji.name}>{emoji.glyph}</span>
+                        {/if}
                     {/each}
                 </div>
             </section>
@@ -70,6 +116,38 @@
         flex-direction: column;
         height: var(--emoji-selector-height);
         width: calc(var(--min-component-width) * 2);
+
+        .input-group {
+            display: flex;
+            align-items: center;
+
+            .skin-tone-selector {
+                font-size: 1.5rem;
+                cursor: pointer;
+                border: none;
+                background: transparent;
+                border-radius: 50%;
+                padding: 0 0 0 var(--gap);
+            }
+
+            .skin-tone-popup {
+                display: inline-flex;
+                position: absolute;
+                background: var(--alt-color);
+                border: var(--border-width) solid var(--border-color);
+                border-radius: var(--border-radius);
+                padding: var(--padding-less);
+                z-index: 10;
+                right: var(--padding);
+
+                .skin-tone {
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                    background-color: transparent;
+                    border: none;
+                }
+            }
+        }
 
         #emoji-selector {
             flex: 1;

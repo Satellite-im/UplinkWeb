@@ -42,7 +42,7 @@
     <PopupButton name="Emoji Pikcer" class="emoji-popup">
         <EmojiSelector />
         <div slot="icon" class="control">
-            <Icon icon={Shape.Smile} size={Size.Large} />
+            <Icon icon={Shape.Smile} />
         </div>
     </PopupButton>
 
