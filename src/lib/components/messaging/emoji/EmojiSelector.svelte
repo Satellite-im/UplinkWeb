@@ -105,6 +105,8 @@
                 <Label text={category.replaceAll("_", " ")} />
                 <div class="emoji-list">
                     {#each filteredEmojiData[category] as emoji}
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
                         {#if emoji.skin_tone}
                             <span class="emoji" title={emoji.name} on:click={() => handleEmojiClick(emoji.glyph, selectedSkinTone)}>{getEmojiWithSkinTone(emoji.glyph, selectedSkinTone)}</span>
                         {:else}

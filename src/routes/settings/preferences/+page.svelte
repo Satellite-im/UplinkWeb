@@ -51,7 +51,7 @@
     ]
 
     const availableEmojiFonts = [
-        { text: EmojiFont.NotoColor.split(".")[0], value: EmojiFont.NotoColor },
+        { text: EmojiFont.NotoEmoji.split(".")[0], value: EmojiFont.NotoEmoji },
         { text: EmojiFont.OpenMoji.split(".")[0], value: EmojiFont.OpenMoji },
         { text: EmojiFont.Blobmoji.split(".")[0], value: EmojiFont.Blobmoji },
         { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
