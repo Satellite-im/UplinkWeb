@@ -38,7 +38,7 @@ export const enum Font {
 
 export const enum EmojiFont {
     Twemoji = "Twemoji",
-    NotoColor = "NotoColorEmoji",
+    NotoEmoji = "NotoEmoji",
     OpenMoji = "OpenMoji",
     Blobmoji = "Blobmoji",
     Fluent = "Fluent"
