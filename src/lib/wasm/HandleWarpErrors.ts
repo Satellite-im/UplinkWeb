@@ -2,9 +2,9 @@ import { log } from "$lib/utils/Logger"
 
 export enum WarpError {
     SELF_REQUEST = "You cannot send yourself a friend request",
-    FRIEND_REQUEST_ALREADY_EXIST = "Friend request already exist",
+    FRIEND_REQUEST_ALREADY_EXIST = "Friend request already exists",
     IDENTITY_NOT_CREATED = "Identity has not been created",
-    DIRECTORY_ALREADY_EXIST = "Directory already exist",
+    DIRECTORY_ALREADY_EXIST = "Directory already exists",
     USER_HAS_BLOCKED_YOU = "User has blocked you from being able to interact with them",
     USER_ALREADY_EXIST_AS_FRIEND = "User already exist as a friend",
     FILE_ALREADY_EXIST = "File already exists",
