@@ -2,7 +2,7 @@ import type { Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { EmojiFont, Font } from "$lib/enums"
-import { Store as MainStore } from "../store"
+import { Store as MainStore } from "../Store"
 
 export interface IUIState {
     color: Writable<string>

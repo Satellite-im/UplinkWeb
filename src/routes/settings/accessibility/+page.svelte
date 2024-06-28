@@ -5,7 +5,7 @@
     import { SettingSection } from "$lib/layouts"
     import { Font } from "$lib/enums"
     import { get } from "svelte/store"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
 
     initLocale()

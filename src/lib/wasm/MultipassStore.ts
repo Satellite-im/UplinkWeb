@@ -6,7 +6,7 @@ import { failure, success, type Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
 import { defaultProfileData, type User } from "$lib/types"
-import { Store } from "$lib/state/store"
+import { Store } from "$lib/state/Store"
 import { MessageDirection } from "$lib/enums"
 import { parseJSValue } from "./EnumParser"
 

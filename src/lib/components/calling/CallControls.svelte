@@ -6,7 +6,7 @@
     import Controls from "../../layouts/Controls.svelte"
     import { get } from "svelte/store"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
 
     initLocale()
 

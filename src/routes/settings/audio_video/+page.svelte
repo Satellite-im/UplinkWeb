@@ -5,7 +5,7 @@
     import { Button, Switch, Select } from "$lib/elements"
     import { Meter, VideoTest } from "$lib/components"
     import { Appearance } from "$lib/enums"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { onMount } from "svelte"
     import { get } from "svelte/store"
     import { SettingsStore, type ISettingsState } from "$lib/state"

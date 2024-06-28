@@ -7,7 +7,7 @@
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
     import type { Identity } from "warp-wasm"
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
