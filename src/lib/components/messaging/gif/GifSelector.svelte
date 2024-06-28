@@ -30,7 +30,25 @@
         title: string
     }
 
-    const fetchGifs = async (query: string, offsetValue: number) => {
+    const fetchTrendingGifs = async (offsetValue: number) => {
+        const { data } = await gf.trending({ limit, offset: offsetValue })
+        gifs.update(gifs =>
+            gifs.concat(
+                data.map((gif: any, index: number) => ({
+                    id: gif.id,
+                    uniqueKey: `${gif.id}-${offsetValue + index}`,
+                    images: {
+                        fixed_height_small: {
+                            url: gif.images.fixed_height_small.url,
+                        },
+                    },
+                    title: gif.title,
+                }))
+            )
+        )
+    }
+
+    const fetchSearchGifs = async (query: string, offsetValue: number) => {
         const { data } = await gf.search(query, { limit, offset: offsetValue })
         gifs.update(gifs =>
             gifs.concat(
@@ -51,7 +69,11 @@
     $: if ($searchQuery) {
         gifs.set([])
         offset.set(0)
-        fetchGifs($searchQuery, 0)
+        fetchSearchGifs($searchQuery, 0)
+    } else {
+        gifs.set([])
+        offset.set(0)
+        fetchTrendingGifs(0)
     }
 
     function selectGif(gif: GiphyGif) {
@@ -61,7 +83,11 @@
     function loadMoreGifs() {
         const currentOffset = $offset + limit
         offset.set(currentOffset)
-        fetchGifs($searchQuery, currentOffset)
+        if ($searchQuery) {
+            fetchSearchGifs($searchQuery, currentOffset)
+        } else {
+            fetchTrendingGifs(currentOffset)
+        }
     }
 
     let observer: IntersectionObserver
