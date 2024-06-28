@@ -19,7 +19,7 @@
     import { Controls } from "$lib/layouts"
     import { AuthStore } from "$lib/state/auth"
     import { ToastMessage } from "$lib/state/ui/toast"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { log } from "$lib/utils/Logger"
 
     initLocale()

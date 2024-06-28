@@ -4,7 +4,7 @@
     import { InventoryKind } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { mock_frames } from "$lib/mock/inventory"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"

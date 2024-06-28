@@ -1,12 +1,12 @@
 import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
-import { Store } from "../state/store"
+import { Store } from "../state/Store"
 import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
-import { ChatType } from "$lib/enums"
-import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user, type FileProgress } from "$lib/types"
+import { ChatType, MessageAttachmentKind } from "$lib/enums"
+import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user, type FileProgress, type Attachment } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
@@ -14,38 +14,39 @@ import { parseJSValue } from "./EnumParser"
 import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
 import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
+import { imageFromData } from "./ConstellationStore"
 
 const MAX_PINNED_MESSAGES = 100
 // Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
-        type: "MostRecent"
-        amount: number
-    }
+          type: "MostRecent"
+          amount: number
+      }
     // fetch messages which occur earlier in time
     | {
-        type: "Earlier"
-        start_date: Date
-        limit: number
-    }
+          type: "Earlier"
+          start_date: Date
+          limit: number
+      }
     // fetch messages which occur later in time
     | {
-        type: "Later"
-        start_date: Date
-        limit: number
-    }
+          type: "Later"
+          start_date: Date
+          limit: number
+      }
     // fetch messages between given time
     | {
-        type: "Between"
-        from: Date
-        to: Date
-    }
+          type: "Between"
+          from: Date
+          to: Date
+      }
     // fetch half_size messages before and after center.
     | {
-        type: "Window"
-        start_date: Date
-        half_size: number
-    }
+          type: "Window"
+          start_date: Date
+          half_size: number
+      }
 
 export type FetchMessageResponse = {
     messages: Message[]
@@ -65,14 +66,14 @@ export type MultiSendMessageResult = {
 
 export type ConversationSettings =
     | {
-        direct: {}
-    }
+          direct: {}
+      }
     | {
-        group: {
-            members_can_add_participants: boolean
-            members_can_change_name: boolean
-        }
-    }
+          group: {
+              members_can_add_participants: boolean
+              members_can_change_name: boolean
+          }
+      }
 
 export type FileAttachment = {
     file: string
@@ -272,7 +273,7 @@ class RaygunStore {
     }
 
     private async sendTo(raygun: wasm.RayGunBox, conversation_id: string, message: string[], attachments?: FileAttachment[]): Promise<SendMessageResult> {
-        if (attachments) {
+        if (attachments && attachments.length > 0) {
             let result = await raygun
                 .attach(
                     conversation_id,
@@ -310,7 +311,8 @@ class RaygunStore {
 
     async downloadAttachment(conversation_id: string, message_id: string, file: string) {
         return await this.get(async r => {
-            return r.download_stream(conversation_id, message_id, file)
+            let result = await r.download_stream(conversation_id, message_id, file)
+            return this.createFileDownloadHandler(file, result)
         }, `Error downloading attachment from ${conversation_id} for message ${message_id}`)
     }
 
@@ -325,8 +327,20 @@ class RaygunStore {
         return await this.get(r => r.pin(conversation_id, message_id, pin ? wasm.PinState.Pin : wasm.PinState.Unpin), "Error pinning message")
     }
 
-    async reply(conversation_id: string, message_id: string, message: string[]): Promise<Result<WarpError, SendMessageResult>> {
+    async reply(conversation_id: string, message_id: string, message: string[], attachments?: FileAttachment[]): Promise<Result<WarpError, SendMessageResult>> {
         return await this.get(async r => {
+            if (attachments && attachments.length > 0) {
+                let result = await r.attach(
+                    conversation_id,
+                    message_id,
+                    attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment)),
+                    message
+                )
+                return {
+                    message: result.get_message_id(),
+                    progress: result,
+                }
+            }
             return {
                 message: await r.reply(conversation_id, message_id, message),
             }
@@ -540,6 +554,27 @@ class RaygunStore {
         return messages
     }
 
+    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator) {
+        let listener = {
+            [Symbol.asyncIterator]() {
+                return it
+            },
+        }
+        let data: any[] = []
+        try {
+            for await (const value of listener) {
+                data = [...data, ...value]
+            }
+        } catch (_) {}
+        let blob = new Blob([new Uint8Array(data)])
+        const elem = window.document.createElement("a")
+        elem.href = window.URL.createObjectURL(blob)
+        elem.download = name
+        document.body.appendChild(elem)
+        elem.click()
+        document.body.removeChild(elem)
+    }
+
     /**
      * Create a handler for attachment results that uploads the file to chat and updates pending message attachments
      * TODO: verify it works as we dont have a way to upload files yet
@@ -563,25 +598,26 @@ class RaygunStore {
                         let file = progress.values["name"]
                         ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
                             if (current) {
+                                let copy = { ...current }
                                 switch (progress.type) {
                                     case "CurrentProgress": {
-                                        current.size = progress.values["current"]
-                                        current.total = progress.values["total"]
+                                        copy.size = progress.values["current"]
+                                        copy.total = progress.values["total"]
                                         break
                                     }
                                     case "ProgressComplete": {
-                                        current.size = progress.values["total"]
-                                        current.total = progress.values["total"]
-                                        current.done = true
+                                        copy.size = progress.values["total"]
+                                        copy.total = progress.values["total"]
+                                        copy.done = true
                                         break
                                     }
                                     case "ProgressFailed": {
-                                        current.size = progress.values["last_size"]
-                                        current.error = progress.values["error"]
+                                        copy.size = progress.values["last_size"]
+                                        copy.error = `Error: ${progress.values["error"]}`
                                         break
                                     }
                                 }
-                                return current
+                                return copy
                             } else if (progress.type === "CurrentProgress") {
                                 return {
                                     name: file,
@@ -600,9 +636,11 @@ class RaygunStore {
                     break
                 }
                 case "Pending": {
-                    let res = parseJSValue(event.values[0])
-                    if (res.type === "Err") {
-                        log.error(`Error uploading file ${res.values[0]}`)
+                    if (Object.keys(event.values).length > 0) {
+                        let res = parseJSValue(event.values)
+                        if (res.type === "Err") {
+                            log.error(`Error uploading file ${res.values}`)
+                        }
                     }
                     break
                 }
@@ -634,6 +672,7 @@ class RaygunStore {
         let user = get(Store.state.user)
         let remote = message.sender() !== user.key
         let sender = remote ? (await MultipassStoreInstance.identity_from_did(message.sender()))! : user
+        let attachments: any[] = message.attachments()
         return {
             id: message.id(),
             details: {
@@ -644,8 +683,30 @@ class RaygunStore {
             text: message.lines(),
             inReplyTo: message.replied() ? ConversationStore.getMessage(conversation_id, message.replied()!) : null,
             reactions: message.reactions(),
-            attachments: message.attachments(),
+            attachments: attachments.map(f => this.convertWarpAttachment(f)),
             pinned: message.pinned(),
+        }
+    }
+
+    private convertWarpAttachment(attachment: any): Attachment {
+        let kind: MessageAttachmentKind = MessageAttachmentKind.File
+        let type = parseJSValue(attachment.file_type)
+        let mime = "application/octet-stream"
+        if (type.type === "mime") {
+            mime = type.values as any as string
+        }
+        if (mime.startsWith("image")) {
+            kind = MessageAttachmentKind.Image
+        } else if (mime.startsWith("video")) {
+            kind = MessageAttachmentKind.Video
+        }
+        let thumbnail: [] = attachment.thumbnail
+        let location = thumbnail.length > 0 ? imageFromData(attachment.thumbnail, "image", mime) : ""
+        return {
+            kind: kind,
+            name: attachment.name,
+            size: attachment.size,
+            location: location,
         }
     }
 

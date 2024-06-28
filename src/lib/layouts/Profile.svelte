@@ -2,7 +2,7 @@
     import { ProfilePicture } from "$lib/components"
     import { Button, Icon, Input, Label, Text } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"

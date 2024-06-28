@@ -3,7 +3,7 @@
     import { initLocale } from "$lib/lang"
     import { SettingSection } from "$lib/layouts"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
 
