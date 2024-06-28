@@ -54,9 +54,13 @@
     </PopupButton>
 
     <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifPickerOpen}>
-        <GifSelector />
+        <GifSelector
+            on:gif={e => {
+                gifPickerOpen.set(false)
+                // TODO: Send gif
+            }} />
         <div slot="icon" class="control">
-            <Icon icon={Shape.Document} />
+            <Icon icon={Shape.Gif} />
         </div>
     </PopupButton>
 
