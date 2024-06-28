@@ -3,6 +3,7 @@
 
     import { Appearance, Size } from "$lib/enums"
     import { Loader } from "./"
+    import { TextRenderer, HtmlRenderer } from "./renderer/index"
 
     export let appearance: Appearance = Appearance.Default
     export let muted: boolean = false
@@ -41,7 +42,7 @@
     {#if loading}
         <Loader text />
     {:else if markdown}
-        <SvelteMarkdown source={markdown} />
+        <SvelteMarkdown source={markdown} renderers={{ text: TextRenderer, html: HtmlRenderer }} />
     {:else}
         <slot></slot>
     {/if}

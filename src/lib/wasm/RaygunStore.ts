@@ -1,7 +1,7 @@
 import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
-import { Store } from "../state/store"
+import { Store } from "../state/Store"
 import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"

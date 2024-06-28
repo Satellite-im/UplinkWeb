@@ -3,7 +3,7 @@
     import { _ } from "svelte-i18n"
     import { Navigation, SettingSection } from "$lib/layouts"
     import { Appearance, Route, SettingsRoute, Shape } from "$lib/enums"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import Button from "$lib/elements/Button.svelte"
     import { SettingsStore, clearState } from "$lib/state"
     import { ConversationStore } from "$lib/state/conversation"

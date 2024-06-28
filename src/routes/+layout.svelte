@@ -7,7 +7,7 @@
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
     import { AuthStore } from "$lib/state/auth"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
     import { RelayStore } from "$lib/state/wasm/relays"
     import type { Keybind } from "$lib/types"
