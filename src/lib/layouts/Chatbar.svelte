@@ -12,12 +12,14 @@
     import type { Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
     import EmojiSelector from "$lib/components/messaging/emoji/EmojiSelector.svelte"
+    import GifSelector from "$lib/components/messaging/gif/GifSelector.svelte"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message = writable("")
-    let emojiPickerOpen = writable(false)
+    let emojiSelectorOpen = writable(false)
+    let gifPickerOpen = writable(false)
 
     async function sendMessage(text: string) {
         let chat = get(Store.state.activeChat)
@@ -40,14 +42,21 @@
 
     <slot></slot>
 
-    <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiPickerOpen}>
+    <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiSelectorOpen}>
         <EmojiSelector
             on:emoji={e => {
-                emojiPickerOpen.set(false)
+                emojiSelectorOpen.set(false)
                 message.update(current => current + e.detail)
             }} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
+        </div>
+    </PopupButton>
+
+    <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifPickerOpen}>
+        <GifSelector />
+        <div slot="icon" class="control">
+            <Icon icon={Shape.Document} />
         </div>
     </PopupButton>
 
