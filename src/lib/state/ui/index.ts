@@ -1,7 +1,7 @@
 import type { Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
-import { Font } from "$lib/enums"
+import { EmojiFont, Font } from "$lib/enums"
 import { Store as MainStore } from "../store"
 
 export interface IUIState {
@@ -9,6 +9,7 @@ export interface IUIState {
     fontSize: Writable<number>
     cssOverride: Writable<string>
     font: Writable<Font>
+    emojiFont: Writable<EmojiFont>
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
 }
@@ -21,6 +22,7 @@ class Store {
             color: createPersistentState("uplink.color", "#4d4dff"),
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
             font: createPersistentState("uplink.ui.font", Font.Poppins),
+            emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
             sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),
             chats: createPersistentState("uplink.ui.chats", []),
@@ -37,6 +39,10 @@ class Store {
 
     setFont(font: Font) {
         this.state.font.set(font)
+    }
+
+    setEmojiFont(font: EmojiFont) {
+        this.state.emojiFont.set(font)
     }
 
     increaseFontSize(amount: number = 0.025) {
