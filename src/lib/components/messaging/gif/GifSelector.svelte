@@ -118,7 +118,6 @@
             top: 0;
             background: var(--background-color);
             z-index: 1;
-            padding: var(--padding-less);
         }
 
         .gifs {
