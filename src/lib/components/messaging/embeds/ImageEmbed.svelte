@@ -1,8 +1,10 @@
 <script lang="ts">
     import Text from "$lib/elements/Text.svelte"
-    import { Size } from "$lib/enums"
+    import { Shape, Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
     import prettyBytes from "pretty-bytes"
+    import { Button, Icon } from "$lib/elements"
+    import { Controls } from "$lib/layouts"
 
     export let filesize: number = 0
     export let source: string = ""
@@ -13,6 +15,10 @@
     const dispatch = createEventDispatcher()
     function onClick(event: MouseEvent) {
         dispatch("click", event)
+    }
+
+    function download() {
+        dispatch("download")
     }
 </script>
 
@@ -29,6 +35,11 @@
             {/if}
         </div>
     {/if}
+    <Controls>
+        <Button icon tooltip="Download" on:click={download}>
+            <Icon icon={Shape.Download} />
+        </Button>
+    </Controls>
 </div>
 
 <style lang="scss">
@@ -37,6 +48,7 @@
         max-height: 100%;
     }
     .container {
+        position: relative;
         background-color: var(--background-alt);
         border-radius: var(--border-radius);
 
@@ -55,6 +67,12 @@
             display: inline-flex;
             padding: var(--padding-minimal) var(--padding-less);
             gap: var(--gap);
+        }
+
+        :global(.controls) {
+            position: absolute;
+            // top: var(--padding-less);
+            // right: var(--padding-less);
         }
     }
 </style>

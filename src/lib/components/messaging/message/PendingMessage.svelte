@@ -5,19 +5,29 @@
     import { type FileProgress, type PendingMessage } from "$lib/types"
     import { get } from "svelte/store"
     import PendingFileEmbed from "../embeds/PendingFileEmbed.svelte"
+    import { createEventDispatcher } from "svelte"
 
     export let message: PendingMessage
     export let morePadding: boolean = false
 
     export let position: MessagePosition = MessagePosition.Middle
 
+    let attachments = Object.values(get(message.attachmentProgress))
+    message.attachmentProgress.subscribe(progresses => {
+        attachments = Object.values(progresses)
+    })
+
     const compact: boolean = get(SettingsStore.state).messaging.compact
 
+    const dispatcher = createEventDispatcher()
     function abortFileTransfer(progress: FileProgress) {
         if (progress.cancellation) {
             progress.cancellation?.cancel()
         }
-        delete message.attachmentProgress[progress.name]
+        let progresses = get(message.attachmentProgress)
+        delete progresses[progress.name]
+        message.attachmentProgress.set(progresses)
+        dispatcher("abort", { message: message.message.id, file: progress.name })
     }
 </script>
 
@@ -27,8 +37,8 @@
         {#each message.message.text as line}
             <Text markdown={line} />
         {/each}
-        {#if Object.entries(message.attachmentProgress).length > 0}
-            {#each Object.values(message.attachmentProgress) as progress}
+        {#if attachments.length > 0}
+            {#each attachments as progress}
                 <PendingFileEmbed fileInfo={progress} onCancel={() => abortFileTransfer(progress)} />
             {/each}
         {/if}
