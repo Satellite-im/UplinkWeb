@@ -7,7 +7,7 @@ export enum WarpError {
     DIRECTORY_ALREADY_EXIST = "Directory already exist",
     USER_HAS_BLOCKED_YOU = "User has blocked you from being able to interact with them",
     USER_ALREADY_EXIST_AS_FRIEND = "User already exist as a friend",
-    FILE_ALREADY_EXIST = "File already exist",
+    FILE_ALREADY_EXIST = "File already exists",
     ITEM_ALREADY_EXIST_WITH_SAME_NAME = "Item with name already exists in current directory",
     ITEM_DOES_NOT_EXIST = "Item cannot be found or is invalid",
     GENERAL_ERROR = "An unknown error occurred",
