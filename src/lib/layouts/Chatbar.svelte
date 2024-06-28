@@ -7,8 +7,9 @@
     import { Store } from "$lib/state/Store"
     import { get, writable } from "svelte/store"
     import { SettingsStore } from "$lib/state"
+    import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
+    import { createEventDispatcher, type EventDispatcher } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
     import EmojiSelector from "$lib/components/messaging/emoji/EmojiSelector.svelte"
@@ -16,20 +17,39 @@
 
     initLocale()
     export let replyTo: Message | undefined = undefined
+    export let filesSelected: [File?, string?][] = []
+
+    const dispatch = createEventDispatcher()
+
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message = writable("")
     let emojiSelectorOpen = writable(false)
     let gifPickerOpen = writable(false)
 
     async function sendMessage(text: string) {
+        let attachments: FileAttachment[] = []
+        filesSelected.forEach(([file, path]) => {
+            if (file) {
+                attachments.push({
+                    file: file.name,
+                    attachment: file.stream(),
+                })
+            } else if (path) {
+                attachments.push({
+                    file: path,
+                })
+            }
+        })
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
-        let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(chat.id, text.split("\n"))
+        let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
+
         result.onSuccess(res => {
-            ConversationStore.addPendingMessages(chat.id, res.message, txt)
+            ConversationStore.addPendingMessages(chat.id, res.message, txt, attachments)
         })
         message.set("")
         replyTo = undefined
+        dispatch("onsend")
     }
 </script>
 
