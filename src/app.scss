@@ -158,6 +158,30 @@ select {
     src: url('/assets/font/OpenDyslexicAlta-Regular.otf');
 }
 
+@font-face {
+    font-family: "OpenMoji";
+    src: url('/assets/emoji/OpenMoji.ttf');
+}
+
+@font-face {
+    font-family: "Twemoji";
+    src: url('/assets/emoji/Twemoji.ttf');
+}
+
+@font-face {
+    font-family: "NotoEmoji";
+    src: url('/assets/emoji/NotoColorEmoji.ttf');
+}
+
+@font-face {
+    font-family: "Blobmoji";
+    src: url('/assets/emoji/Blobmoji.ttf');
+}
+
+@font-face {
+    font-family: "Fluent";
+    src: url('/assets/emoji/Fluent.ttf');
+}
 
 strong {
     font-weight: bold;
@@ -317,4 +341,9 @@ code {
 /* Disable the corner of scrollbars */
 ::-webkit-scrollbar-corner {
     background-color: transparent;
+}
+
+.emoji {
+    font-size: var(--emoji-size);
+    font-family: "Fluent";
 }

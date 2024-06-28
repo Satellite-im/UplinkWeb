@@ -10,12 +10,15 @@
     export let padded: boolean = false
     export let withControls: boolean = false
     export let hook: string = ""
+
+    let clazz = ""
+    export { clazz as class }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="modal" data-cy={hook} on:click={onClose}>
-    <div class="body {padded ? 'padded' : ''}" on:click|stopPropagation>
+    <div class="body {padded ? 'padded' : ''} {clazz}" on:click|stopPropagation>
         {#if withControls}
             <Controls>
                 <slot name="controls"></slot>
