@@ -6,7 +6,7 @@
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
 
     export let chat: Chat
