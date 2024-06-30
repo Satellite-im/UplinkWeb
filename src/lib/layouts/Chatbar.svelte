@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Input } from "$lib/elements"
-    import { Shape } from "$lib/enums"
+    import { Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
@@ -60,7 +60,7 @@
                 // TODO: Send gif
             }} />
         <div slot="icon" class="control">
-            <Icon icon={Shape.Gif} />
+            <Icon icon={Shape.Gif} size={Size.Large} />
         </div>
     </PopupButton>
 

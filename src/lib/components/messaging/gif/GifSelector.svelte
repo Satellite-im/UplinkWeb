@@ -35,7 +35,10 @@
             fixed_height_small: GiphyImage
         }
         title: string
+        loaded?: boolean
     }
+
+    const generateUniqueKey = (id: string, index: number) => `${id}-${index}`
 
     const fetchTrendingGifs = async (offsetValue: number) => {
         loading.set(true)
@@ -44,7 +47,7 @@
             gifs.concat(
                 data.map((gif: any, index: number) => ({
                     id: gif.id,
-                    uniqueKey: `${gif.id}-${offsetValue + index}`,
+                    uniqueKey: generateUniqueKey(gif.id, offsetValue + index),
                     images: {
                         fixed_height_small: {
                             url: gif.images.fixed_height_small.url,
@@ -64,7 +67,7 @@
             gifs.concat(
                 data.map((gif: any, index: number) => ({
                     id: gif.id,
-                    uniqueKey: `${gif.id}-${offsetValue + index}`,
+                    uniqueKey: generateUniqueKey(gif.id, offsetValue + index),
                     images: {
                         fixed_height_small: {
                             url: gif.images.fixed_height_small.url,
@@ -147,30 +150,29 @@
 </script>
 
 <div class="giphy-selector">
-    {#if $activeTab === "search"}
-        <div class="search-bar">
-            <div class="header">
-                <Input alt placeholder={$_("generic.search_placeholder")} bind:value={$searchQuery}>
-                    <Icon icon={Shape.Search} />
-                </Input>
+    <div class="search-bar">
+        <div class="header">
+            <Input alt placeholder={$_("generic.search_placeholder")} bind:value={$searchQuery}>
+                <Icon icon={Shape.Search} />
+            </Input>
 
-                <Button icon appearance={$activeTab === "favorites" ? Appearance.Primary : Appearance.Alt} on:click={toggleTab}>
-                    <Icon icon={Shape.Heart} />
-                </Button>
-            </div>
-            <Label text="Powered by Giphy" />
+            <Button icon appearance={$activeTab === "favorites" ? Appearance.Primary : Appearance.Alt} on:click={toggleTab}>
+                <Icon icon={Shape.Heart} />
+            </Button>
         </div>
+        <Label text="Powered by Giphy" />
+    </div>
+    {#if $activeTab === "search"}
         <div class="gifs">
             {#each $gifs as gif (gif.uniqueKey)}
                 <div class="gif-container">
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <div class="icon-container" on:click={() => toggleFavorite(gif)}>
+                    <button class="icon-container" class:show-heart-icon={$isFavorite(gif)} on:click={() => toggleFavorite(gif)} aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
-                    </div>
+                    </button>
                     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} />
+                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
             {#if $loading}
@@ -182,28 +184,15 @@
         </div>
     {:else if $activeTab === "favorites"}
         <div class="gifs">
-            <div class="search-bar">
-                <div class="header">
-                    <Input alt placeholder={$_("generic.search_placeholder")} bind:value={$searchQuery}>
-                        <Icon icon={Shape.Search} />
-                    </Input>
-
-                    <Button icon appearance={$activeTab === "favorites" ? Appearance.Primary : Appearance.Alt} on:click={toggleTab}>
-                        <Icon icon={Shape.Heart} />
-                    </Button>
-                </div>
-                <Label text="Powered by Giphy" />
-            </div>
             {#each $favorites as gif (gif.uniqueKey)}
                 <div class="gif-container">
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div class="icon-container" on:click={() => toggleFavorite(gif)}>
+                    <button class="icon-container" class:show-heart-icon={$isFavorite(gif)} on:click={() => toggleFavorite(gif)} aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
-                    </div>
+                    </button>
                     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} />
+                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
             {#if $favorites.length === 0}
@@ -224,6 +213,17 @@
     :global(.favorited) {
         stroke: var(--primary-color);
         fill: var(--primary-color);
+    }
+
+    .icon-container {
+        visibility: hidden;
+        border: none;
+        background: none;
+        padding: 0;
+    }
+
+    .icon-container.show-heart-icon {
+        visibility: visible;
     }
 
     .giphy-selector {
@@ -287,6 +287,10 @@
                 align-items: center;
                 justify-content: center;
                 position: relative;
+
+                &:hover .icon-container {
+                    visibility: visible;
+                }
 
                 .icon-container {
                     position: absolute;

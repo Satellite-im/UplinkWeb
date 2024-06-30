@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { writable } from "svelte/store"
     import { Icon, Input, Label } from "$lib/elements"
     import Spacer from "$lib/elements/Spacer.svelte"
     import { Shape } from "$lib/enums"
@@ -6,6 +7,8 @@
     import Fuse from "fuse.js"
     import { _ } from "svelte-i18n"
     import { createEventDispatcher, tick } from "svelte"
+    import { onMount } from "svelte"
+    import { createPersistentState } from "$lib/state"
 
     interface Emoji {
         skin_tone: boolean
@@ -17,12 +20,18 @@
         [category: string]: Emoji[]
     }
 
+    // @ts-ignore
     const emojiData: EmojiCategory = emojiList
 
     let searchQuery: string = ""
     let filteredEmojiData: EmojiCategory = { ...emojiData }
     let showSkinTonePopup: boolean = false
     let selectedSkinTone: string = "" // No skin tone by default
+
+    interface FrequentlyUsedEmoji {
+        [glyph: string]: number
+    }
+    const frequentlyUsedEmojis = createPersistentState<FrequentlyUsedEmoji>("emoji.history", {})
 
     const skinTones: string[] = ["🚫", "🏿", "🏾", "🏽", "🏼", "🏻"]
     const sampleEmojis: string[] = ["👍", "👋", "👏", "👌", "✌️"]
@@ -75,9 +84,32 @@
     function handleEmojiClick(emoji: string, skinTone: string) {
         const emojiWithTone = getEmojiWithSkinTone(emoji, skinTone)
         dispatch("emoji", emojiWithTone)
+        trackEmojiUsage(emojiWithTone)
     }
 
+    function trackEmojiUsage(emoji: string) {
+        frequentlyUsedEmojis.update(current => {
+            if (current[emoji]) {
+                current[emoji]++
+            } else {
+                current[emoji] = 1
+            }
+            return current
+        })
+    }
+
+    let frequentlyUsed: { glyph: string }[] = []
+
+    frequentlyUsedEmojis.subscribe(value => {
+        const sortedEmojis = Object.entries(value).sort((a, b) => b[1] - a[1])
+        frequentlyUsed = sortedEmojis.slice(0, 20).map(([glyph]) => ({ glyph }))
+    })
+
     $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, selectedSkinTone)
+
+    onMount(() => {
+        // Initialize frequently used emojis if needed
+    })
 </script>
 
 <div id="emoji-container">
@@ -85,13 +117,13 @@
         <Input alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
             <Icon icon={Shape.Search} />
         </Input>
-        <button class="skin-tone-selector" on:click={toggleSkinTonePopup}>
+        <button class="skin-tone-selector" on:click={toggleSkinTonePopup} aria-haspopup="true" aria-expanded={showSkinTonePopup}>
             <span class="emoji">{skinToneEmoji}</span>
         </button>
         {#if showSkinTonePopup}
             <div class="skin-tone-popup">
                 {#each skinTones as tone}
-                    <button class="skin-tone" on:click={() => selectSkinTone(tone)}>
+                    <button class="skin-tone" on:click={() => selectSkinTone(tone)} aria-label={tone === "🚫" ? "No skin tone" : "Select skin tone"}>
                         <span class="emoji">{getEmojiWithSkinTone(randomEmoji, tone === "🚫" ? "" : tone)}</span>
                     </button>
                 {/each}
@@ -100,24 +132,46 @@
     </div>
     <Spacer less />
     <div id="emoji-selector">
+        <section id="frequently_used">
+            <Label text="Frequently Used" />
+            <div class="emoji-list frequently-used-list">
+                {#each frequentlyUsed as emoji}
+                    <span
+                        class="emoji"
+                        role="button"
+                        tabindex="0"
+                        aria-label={emoji.glyph}
+                        on:click={() => handleEmojiClick(emoji.glyph, "")}
+                        on:keydown={e => {
+                            if (e.key === "Enter") handleEmojiClick(emoji.glyph, "")
+                        }}>{emoji.glyph}</span>
+                {/each}
+            </div>
+        </section>
         {#each Object.keys(filteredEmojiData) as category}
             <section id={category}>
                 <Label text={category.replaceAll("_", " ")} />
                 <div class="emoji-list">
                     {#each filteredEmojiData[category] as emoji}
-                        <!-- svelte-ignore a11y-no-static-element-interactions -->
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        {#if emoji.skin_tone}
-                            <span class="emoji" title={emoji.name} on:click={() => handleEmojiClick(emoji.glyph, selectedSkinTone)}>{getEmojiWithSkinTone(emoji.glyph, selectedSkinTone)}</span>
-                        {:else}
-                            <span class="emoji" title={emoji.name} on:click={() => handleEmojiClick(emoji.glyph, "")}>{emoji.glyph}</span>
-                        {/if}
+                        <span
+                            class="emoji"
+                            role="button"
+                            tabindex="0"
+                            title={emoji.name}
+                            aria-label={emoji.name}
+                            on:click={() => handleEmojiClick(emoji.glyph, emoji.skin_tone ? selectedSkinTone : "")}
+                            on:keydown={e => {
+                                if (e.key === "Enter") handleEmojiClick(emoji.glyph, emoji.skin_tone ? selectedSkinTone : "")
+                            }}>
+                            {emoji.skin_tone ? getEmojiWithSkinTone(emoji.glyph, selectedSkinTone) : emoji.glyph}
+                        </span>
                     {/each}
                 </div>
             </section>
         {/each}
     </div>
     <div id="category-nav">
+        <a href="#frequently_used" class="category-link">Frequently Used</a>
         {#each Object.keys(filteredEmojiData) as category}
             <a href={`#${category}`} class="category-link">
                 {category.replaceAll("_", " ")}
@@ -183,7 +237,15 @@
                     .emoji {
                         font-size: 1.5rem;
                         cursor: pointer;
+                        outline: none;
+                        &:focus {
+                            box-shadow: 0 0 0 3px var(--primary-color);
+                        }
                     }
+                }
+
+                .frequently-used-list {
+                    justify-content: flex-start;
                 }
             }
         }
