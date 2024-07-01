@@ -21,7 +21,7 @@
             text={tab.name}
             small
             class={`pill ${index === 0 ? "tab-first" : index > 0 && index < tabs.length - 1 ? "tab-middle" : "tab-last"}`}
-            appearance={active === tab ? Appearance.Primary : Appearance.Alt}
+            appearance={active.name === tab.name ? Appearance.Primary : Appearance.Alt}
             on:click={() => handleTabClick(tab)}>
             <Icon icon={tab.icon} />
         </Button>

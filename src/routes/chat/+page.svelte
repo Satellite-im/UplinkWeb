@@ -346,9 +346,9 @@
                     {#if activeChat.users.length === 2}
                         <ProfilePicture
                             typing={activeChat.activity}
-                            image={activeChat.users[0]?.profile.photo.image}
-                            frame={activeChat.users[0]?.profile.photo.frame}
-                            status={activeChat.users[0]?.profile.status}
+                            image={activeChat.users[1]?.profile.photo.image}
+                            frame={activeChat.users[2]?.profile.photo.frame}
+                            status={activeChat.users[1]?.profile.status}
                             size={Size.Medium}
                             loading={loading} />
                     {:else}
@@ -358,9 +358,9 @@
             </div>
             <div slot="content">
                 {#if activeChat.users.length > 0}
-                    <Text singleLine>{activeChat.name.length ? activeChat.name : activeChat.users[0]?.name}</Text>
+                    <Text singleLine>{activeChat.name.length ? activeChat.name : activeChat.users[1]?.name}</Text>
                     <Text singleLine muted size={Size.Smaller}>
-                        {activeChat.motd.length ? activeChat.motd : activeChat.users[0]?.profile?.status_message}
+                        {activeChat.motd.length ? activeChat.motd : activeChat.users[1]?.profile?.status_message}
                     </Text>
                 {/if}
             </div>

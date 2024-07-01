@@ -65,14 +65,14 @@
     <slot></slot>
 
     <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiSelectorOpen}>
-        <CombinedSelector active={"Emoji"} />
+        <CombinedSelector active={{ name: "Emoji", icon: Shape.Smile }} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>
     </PopupButton>
 
     <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifPickerOpen}>
-        <CombinedSelector active="Gif" />
+        <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Gif} size={Size.Large} />
         </div>

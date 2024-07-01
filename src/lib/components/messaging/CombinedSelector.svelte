@@ -4,23 +4,24 @@
     import PillTabs from "../ui/PillTabs.svelte"
     import EmojiSelector from "./emoji/EmojiSelector.svelte"
     import GifSelector from "./gif/GifSelector.svelte"
+    import StickerSelector from "./stickers/StickerSelector.svelte"
 
     let tabs: SimpleRoute[] = [
-        { name: "Emoji", icon: Shape.Smile },
+        { name: "Emojis", icon: Shape.Smile },
         { name: "GIFs", icon: Shape.Gif },
-        { name: "Sticker", icon: Shape.Beaker },
+        { name: "Stickers", icon: Shape.Beaker },
     ]
-    export let active: SimpleRoute = tabs[0]
+    export let active: SimpleRoute = { name: "Emoji", icon: Shape.Smile }
 </script>
 
 <div id="combined-selector">
     <div class="body">
-        {#if active === tabs[0]}
+        {#if active.name == tabs[0].name}
             <EmojiSelector />
-        {:else if active === tabs[1]}
+        {:else if active.name == tabs[1].name}
             <GifSelector />
         {:else}
-            <div>Stickers</div>
+            <StickerSelector />
         {/if}
     </div>
     <footer>
