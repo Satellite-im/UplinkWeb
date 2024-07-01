@@ -8,6 +8,7 @@
     import { onMount } from "svelte"
     import SimplePeer from "simple-peer"
     import { log } from "$lib/utils/Logger"
+    import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
 
     let loading: boolean = false
     let channel: string = "SHFDKLSDF"

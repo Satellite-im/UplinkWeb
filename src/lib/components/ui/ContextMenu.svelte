@@ -96,6 +96,7 @@
 
         :global(.item) {
             justify-content: flex-start;
+            text-wrap: no-wrap;
         }
     }
 </style>
