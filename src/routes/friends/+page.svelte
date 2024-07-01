@@ -15,7 +15,7 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
     import { onMount } from "svelte"
-    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import Key from "$lib/components/settings/Key.svelte"
     import Toast from "$lib/elements/Toast.svelte"
     import { log } from "$lib/utils/Logger"
@@ -30,6 +30,7 @@
     let blocked: User[] = get(Store.state.blocked)
     let incomingRequests: FriendRequest[] = Store.inboundRequests
     let outgoingRequests: FriendRequest[] = Store.outboundRequests
+    let isValidFriendDid: boolean = false
 
     let tab: string = "all"
 
@@ -55,6 +56,10 @@
     let requestString: string
     let submitRequest = async function () {
         log.info("Sending friend request to " + requestString)
+        if (!isValidFriendDid) {
+            sentRequest = false
+            return
+        }
         let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
         requestSent.fold(
             (e: WarpError) => {
@@ -252,7 +257,12 @@
             {#if tab === "all"}
                 <Label text={$_("friends.add_someone")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} bind:value={requestString}>
+                    <Input alt placeholder={$_("friends.find_placeholder")} 
+                        on:isValid={e => {
+                           isValidFriendDid = e.detail
+                        }}
+                        rules={{ required: false, minLength: 13, maxLength: 56, pattern: /^(did:key:[a-zA-Z0-9]{48}|[a-z]{4}#[a-zA-Z0-9]{8})$/}}
+                        on:enter={submitRequest} bind:value={requestString}>
                         <Icon icon={Shape.Search} />
                     </Input>
                     <Button hook="button-add-friend" appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
