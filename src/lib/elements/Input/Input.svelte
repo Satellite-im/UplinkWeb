@@ -29,7 +29,7 @@
     const dispatch = createEventDispatcher()
     const writableValue = writable(value)
 
-    $: value = $writableValue
+    $: writableValue.set(value)
 
     let onsend: any[] = []
     if (rich) {

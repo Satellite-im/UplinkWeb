@@ -102,7 +102,7 @@
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
-            <Input hook="input-font-scaling" alt value={fontSize.toFixed(2).toString()} centered />
+            <Input hook="input-font-scaling" disabled={true} alt value={fontSize.toFixed(2).toString()} centered />
         </div>
         <Button hook="button-font-scaling-increase" icon appearance={Appearance.Alt} on:click={_ => UIStore.increaseFontSize()}>
             <Icon icon={Shape.Plus} />
