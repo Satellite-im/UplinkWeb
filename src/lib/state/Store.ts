@@ -12,6 +12,7 @@ import * as wasm from "warp-wasm"
 import { ToastMessage } from "./ui/toast"
 import { v4 as uuidv4 } from "uuid"
 import { Logger } from "$lib/utils/Logger"
+import { ConversationStore } from "./conversation"
 
 class GlobalStore {
     state: IState
@@ -64,26 +65,26 @@ class GlobalStore {
     setStatusMessage(message: string) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status_message: message,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status_message: message,
+                    },
+                })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status: status,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status: status,
+                    },
+                })
         )
     }
 
@@ -332,6 +333,14 @@ class GlobalStore {
         this.state.friends.set(mock_users)
         this.state.blocked.set(blocked_users)
         this.state.favorites.set([activeChat])
+        ConversationStore.conversations.set(
+            mchatsMod.map(c => {
+                return {
+                    id: c.id,
+                    messages: [],
+                }
+            })
+        )
     }
 }
 
