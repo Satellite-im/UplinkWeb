@@ -7,7 +7,7 @@
     import { Button, Icon, Input, Select } from "$lib/elements"
     import ColorPicker from "svelte-awesome-color-picker"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
-    import { get } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
 
     initLocale()
@@ -98,7 +98,7 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
-        <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
+        <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Primary} on:click={_ => UIStore.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">

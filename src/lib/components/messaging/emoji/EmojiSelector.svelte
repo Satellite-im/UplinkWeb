@@ -200,14 +200,15 @@
                     display: flex;
                     flex-wrap: wrap;
                     justify-content: space-between;
-                    gap: 0.5rem;
+                    gap: var(--gap-less);
 
                     .emoji {
                         font-size: var(--emoji-size);
                         cursor: pointer;
                         outline: none;
+                        user-select: none;
                         &:focus {
-                            box-shadow: 0 0 0 3px var(--primary-color);
+                            border-bottom: var(--border-width) solid var(--primary-color);
                         }
                     }
                 }
