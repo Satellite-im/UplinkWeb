@@ -46,6 +46,11 @@ export type ProfilePictureRequirements = {
     frame: Frame
 }
 
+export type SimpleRoute = {
+    name: string,
+    icon: Shape
+}
+
 export type ProfilePicture = {
     image: string
     frame: Frame

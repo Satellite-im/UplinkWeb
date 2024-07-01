@@ -187,38 +187,6 @@
         height: var(--emoji-selector-height);
         width: calc(var(--min-component-width) * 2);
 
-        .input-group {
-            display: flex;
-            align-items: center;
-
-            .skin-tone-selector {
-                font-size: 1.5rem;
-                cursor: pointer;
-                border: none;
-                background: transparent;
-                border-radius: 50%;
-                padding: 0 0 0 var(--gap);
-            }
-
-            .skin-tone-popup {
-                display: inline-flex;
-                position: absolute;
-                background: var(--alt-color);
-                border: var(--border-width) solid var(--border-color);
-                border-radius: var(--border-radius);
-                padding: var(--padding-less);
-                z-index: 10;
-                right: var(--padding);
-
-                .skin-tone {
-                    font-size: 1.5rem;
-                    cursor: pointer;
-                    background-color: transparent;
-                    border: none;
-                }
-            }
-        }
-
         #emoji-selector {
             flex: 1;
             overflow-y: scroll;
@@ -235,7 +203,7 @@
                     gap: 0.5rem;
 
                     .emoji {
-                        font-size: 1.5rem;
+                        font-size: var(--emoji-size);
                         cursor: pointer;
                         outline: none;
                         &:focus {
@@ -268,6 +236,42 @@
 
                 &:hover {
                     background-color: var(--primary-color);
+                }
+            }
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+
+            .skin-tone-selector {
+                font-size: 1.5rem;
+                cursor: pointer;
+                border: none;
+                background: transparent;
+                border-radius: 50%;
+                padding: 0 0 0 var(--gap);
+            }
+
+            .skin-tone-popup {
+                display: inline-flex;
+                position: absolute;
+                background: var(--alt-color);
+                border: var(--border-width) solid var(--border-color);
+                border-radius: var(--border-radius);
+                padding: var(--padding-less);
+                z-index: 10;
+                right: var(--padding);
+
+                .skin-tone {
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                    background-color: transparent;
+                    border: none;
+
+                    .emoji {
+                        font-size: var(--input-height);
+                    }
                 }
             }
         }

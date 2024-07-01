@@ -13,6 +13,8 @@
     import { PopupButton } from "$lib/components"
     import EmojiSelector from "$lib/components/messaging/emoji/EmojiSelector.svelte"
     import GifSelector from "$lib/components/messaging/gif/GifSelector.svelte"
+    import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
+    import { acos } from "three/examples/jsm/nodes/Nodes.js"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
@@ -43,22 +45,14 @@
     <slot></slot>
 
     <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiSelectorOpen}>
-        <EmojiSelector
-            on:emoji={e => {
-                emojiSelectorOpen.set(false)
-                message.update(current => current + e.detail)
-            }} />
+        <CombinedSelector active={"Emoji"} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>
     </PopupButton>
 
     <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifPickerOpen}>
-        <GifSelector
-            on:gif={e => {
-                gifPickerOpen.set(false)
-                // TODO: Send gif
-            }} />
+        <CombinedSelector active="Gif" />
         <div slot="icon" class="control">
             <Icon icon={Shape.Gif} size={Size.Large} />
         </div>
