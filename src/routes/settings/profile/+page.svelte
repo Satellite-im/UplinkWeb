@@ -16,12 +16,15 @@
     import { onDestroy, onMount } from "svelte"
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { AuthStore } from "$lib/state/auth"
+    import { log } from "$lib/utils/Logger"
 
     initLocale()
 
     let loading = true
     let showSeed = false
-
+    let maxSize = 2097152
+    let maxDimension = 1024
+    
     function toggleSeedPhrase() {
         showSeed = !showSeed
         if (loading) setTimeout(() => (loading = false), 200)
@@ -37,6 +40,94 @@
         await MultipassStoreInstance.updateProfilePhoto(picture)
         Store.setPhoto(picture)
     }
+
+    async function handleBase64Image(imageBase64: string, isProfilePicture: boolean) {
+        const blob = base64ToBlob(imageBase64)
+
+        if (blob.size > maxSize) {
+            log.debug(`Image size too large (${blob.size} bytes), resizing it to upload.`)
+            await resizeImage(imageBase64, isProfilePicture)
+        } else {
+            if (isProfilePicture) {
+                await updateProfilePicture(imageBase64)
+            } else {
+                await MultipassStoreInstance.updateBannerPicture(imageBase64)
+            }
+        }
+    } 
+
+    async function resizeImage(base64: string, isProfilePicture: boolean) {
+        const img = new Image()
+        img.onload = async ()  => {
+            let quality = 1
+            const canvas = document.createElement('canvas')
+            const ctx = canvas.getContext('2d')
+
+            let width = img.width
+            let height = img.height
+            
+            if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                    height = Math.round(height * maxDimension / width)
+                    width = maxDimension
+                } else {
+                    width = Math.round(width * maxDimension / height)
+                    height = maxDimension
+                }
+            }
+
+            canvas.width = width
+            canvas.height = height
+            ctx?.drawImage(img, 0, 0, width, height)
+
+            let mimeType = base64.split(',')[0].split(':')[1].split(';')[0]
+            let resizedBase64 = canvas.toDataURL(mimeType, 1)
+            let resizedBlob = base64ToBlob(resizedBase64)
+
+            while (resizedBlob.size > maxSize && quality > 0.5) {
+                    quality -= 0.1
+                    const tempImg = new Image();
+                    tempImg.onload = async () => {
+                        canvas.width = tempImg.width
+                        canvas.height = tempImg.height
+                        ctx?.drawImage(tempImg, 0, 0, tempImg.width, tempImg.height)
+                        resizedBase64 = canvas.toDataURL(mimeType, quality)
+                        resizedBlob = base64ToBlob(resizedBase64)
+                        if (resizedBlob.size <= maxSize) {  
+                            log.debug(`Resized image size: ${resizedBlob.size} bytes`)
+                            if (isProfilePicture) {
+                                await updateProfilePicture(resizedBase64)
+                            } else {
+                                await MultipassStoreInstance.updateBannerPicture(resizedBase64)
+                            }
+                            Store.addToastNotification(new ToastMessage("", "The image size was too large. It has been reduced to fit the upload requirements.", 4))
+                        } else {
+                            log.debug(`Try with new image. ${quality}`)
+                            tempImg.src = resizedBase64
+                        }
+                }
+                tempImg.src = resizedBase64
+                resizedBlob = base64ToBlob(resizedBase64)
+                log.debug(`Resized image size: ${resizedBlob.size} bytes. ARRIVED HERE.`)
+                if (resizedBlob.size <= maxSize || quality <= 0.5) {
+                    break
+                }
+            }
+        }
+        img.src = base64
+    }
+
+
+  function base64ToBlob(base64: string): Blob {
+        const byteString = atob(base64.split(',')[1])
+        const arrayBuffer = new ArrayBuffer(byteString.length)
+        const uint8Array = new Uint8Array(arrayBuffer)
+        for (let i = 0; i < byteString.length; i++) {
+            uint8Array[i] = byteString.charCodeAt(i)
+        }
+        const mimeType = base64.split(',')[0].split(':')[1].split(';')[0]
+        return new Blob([arrayBuffer], { type: mimeType })
+  }
 
     async function updateUsername(newUsername: string) {
         userReference.name = newUsername
@@ -91,7 +182,7 @@
         reader.readAsDataURL(image)
         reader.onload = async e => {
             let imageString = e.target?.result?.toString()
-            await MultipassStoreInstance.updateBannerPicture(imageString || "")
+            await handleBase64Image(imageString || "", false)
             Store.setBanner(imageString || "")
         }
     }
@@ -163,7 +254,7 @@
                 icon
                 tooltip={$_("settings.profile.change_profile_photo")}
                 on:upload={async picture => {
-                    await updateProfilePicture(picture.detail)
+                    await handleBase64Image(picture.detail, true)
                 }} />
         </div>
 
