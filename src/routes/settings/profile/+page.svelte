@@ -61,13 +61,8 @@
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
-    let userReference: User
-    let statusMessage: string
-
-    onMount(() => {
-        userReference = { ...get(Store.state.user) }
-        statusMessage = userReference.profile.status_message
-    })
+    let userReference: User = { ...get(Store.state.user) }
+    let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
     onDestroy(() => {
         Store.setUsername(userReference.name)
