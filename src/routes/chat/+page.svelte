@@ -217,7 +217,7 @@
     }
 
     async function download_attachment(message: string, attachment: Attachment) {
-        await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name)
+        await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
     }
 </script>
 
