@@ -6,6 +6,9 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import { OperationState, type FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
+    import { createEventDispatcher } from "svelte"
+
+    const dispatch = createEventDispatcher()
 
     export let fileInfo: FileInfo = {
         id: "1",
@@ -15,6 +18,11 @@
         size: 999999999999999,
         icon: Shape.Document,
         type: "unknown/unknown",
+        remotePath: "",
+    }
+
+    function download() {
+        dispatch("download")
     }
 </script>
 
@@ -28,7 +36,7 @@
             </Text>
         </div>
         <Controls>
-            <Button icon tooltip="Download">
+            <Button icon tooltip="Download" on:click={download}>
                 <Icon icon={Shape.Download} />
             </Button>
             <Button icon appearance={Appearance.Alt} tooltip="Share">
