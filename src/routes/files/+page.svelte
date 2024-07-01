@@ -633,7 +633,7 @@
                                     text: "Delete",
                                     appearance: Appearance.Error,
                                     onClick: () => {
-                                        deleteItem(item.name)
+                                        deleteItem(`/${item.name}.${item.extension}`)
                                     },
                                 },
                             ]}>
