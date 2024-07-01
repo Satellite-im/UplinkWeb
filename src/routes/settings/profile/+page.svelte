@@ -64,6 +64,8 @@
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
+    console.log("userReference", userReference) 
+
     onDestroy(() => {
         Store.setUsername(userReference.name)
         Store.setStatusMessage(userReference.profile.status_message)
@@ -129,8 +131,8 @@
                     text={$_("generic.save")}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        await updateUsername(user.name)
-                        await updateStatusMessage(statusMessage)
+                        if (changeList.username) await updateUsername(user.name)
+                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
                         Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}>
