@@ -4,11 +4,12 @@
     import { _ } from "svelte-i18n"
     import { ColorSwatch } from "$lib/components"
     import { SettingSection } from "$lib/layouts"
-    import { Button, Icon, Input, Select } from "$lib/elements"
+    import { Button, Icon, Input, Select, Switch } from "$lib/elements"
     import ColorPicker from "svelte-awesome-color-picker"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
-    import { get } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
 
     initLocale()
 
@@ -61,6 +62,11 @@
     let possibleEmojis: string[] = ["🛰️", "🪐", "🤣", "😀", "🖖"]
     let randomEmoji: string = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)]
 
+    let settings: ISettingsState = get(SettingsStore.state)
+    SettingsStore.state.subscribe((s: ISettingsState) => {
+        settings = s
+    })
+
     $: if (hex !== undefined) {
         UIStore.setThemeColor(hex)
     }
@@ -98,11 +104,11 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
-        <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
+        <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Primary} on:click={_ => UIStore.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
-            <Input hook="input-font-scaling" alt value={fontSize.toFixed(2).toString()} centered />
+            <Input hook="input-font-scaling" disabled={true} alt value={fontSize.toFixed(2).toString()} centered />
         </div>
         <Button hook="button-font-scaling-increase" icon appearance={Appearance.Alt} on:click={_ => UIStore.increaseFontSize()}>
             <Icon icon={Shape.Plus} />
@@ -135,6 +141,14 @@
         <ColorSwatch name="Squeaky" color="#075ff9" />
         <ColorSwatch name="Apple Valley" color="#0a8560" />
         <ColorSwatch name="Pencil Lead" color="#3c424d" />
+    </SettingSection>
+    <SettingSection hook="section-convert-to-emoji" name={$_("settings.messages.showStatusWidgets")} description={$_("settings.messages.showStatusWidgetsDescription")}>
+        <Switch
+            hook="checkbox-show-widgets"
+            on={settings ? settings.widgets.show : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, widgets: { ...settings.widgets, show: on.detail } })
+            }} />
     </SettingSection>
     <SettingSection hook="section-custom-css" name={$_("settings.preferences.customCss")} description={$_("settings.preferences.customCssDescription")} fullWidth>
         <textarea

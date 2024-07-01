@@ -10,7 +10,7 @@
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher, type EventDispatcher } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { Message } from "$lib/types"
+    import type { GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
     import EmojiSelector from "$lib/components/messaging/emoji/EmojiSelector.svelte"
     import GifSelector from "$lib/components/messaging/gif/GifSelector.svelte"
@@ -26,7 +26,7 @@
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message = writable("")
     let emojiSelectorOpen = writable(false)
-    let gifPickerOpen = writable(false)
+    let gifSelectorOpen = writable(false)
 
     async function sendMessage(text: string) {
         let attachments: FileAttachment[] = []
@@ -53,6 +53,14 @@
         replyTo = undefined
         dispatch("onsend")
     }
+
+    function handleEmojiClick(emoji: string) {
+        emojiSelectorOpen.set(false)
+    }
+
+    function handleGif(gif: GiphyGif) {
+        gifSelectorOpen.set(false)
+    }
 </script>
 
 <div class="chatbar">
@@ -65,16 +73,16 @@
     <slot></slot>
 
     <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiSelectorOpen}>
-        <CombinedSelector active={{ name: "Emoji", icon: Shape.Smile }} />
+        <CombinedSelector active={{ name: "Emojis", icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>
     </PopupButton>
 
-    <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifPickerOpen}>
-        <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} />
+    <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifSelectorOpen}>
+        <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:gif={e => handleGif(e.detail)} />
         <div slot="icon" class="control">
-            <Icon icon={Shape.Gif} size={Size.Large} />
+            <Icon icon={Shape.Gif} />
         </div>
     </PopupButton>
 
