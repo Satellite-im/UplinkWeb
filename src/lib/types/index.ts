@@ -301,3 +301,17 @@ export type Keybind = {
     modifiers: string[]
     state: KeybindState
 }
+
+export type GiphyImage = {
+    url: string
+}
+
+export type GiphyGif = {
+    id: string
+    uniqueKey: string
+    images: {
+        fixed_height_small: GiphyImage
+    }
+    title: string
+    loaded?: boolean
+}

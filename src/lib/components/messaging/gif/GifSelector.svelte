@@ -10,6 +10,7 @@
     import Label from "$lib/elements/Label.svelte"
     import Button from "$lib/elements/Button.svelte"
     import { createPersistentState } from "$lib/state"
+    import type { GiphyGif } from "$lib/types"
 
     const gf = new GiphyFetch(GIPHY_API_KEY)
     const searchQuery = writable("")
@@ -23,20 +24,6 @@
     const activeTab = writable<Tab>("search")
 
     const dispatch = createEventDispatcher()
-
-    type GiphyImage = {
-        url: string
-    }
-
-    type GiphyGif = {
-        id: string
-        uniqueKey: string
-        images: {
-            fixed_height_small: GiphyImage
-        }
-        title: string
-        loaded?: boolean
-    }
 
     const generateUniqueKey = (id: string, index: number) => `${id}-${index}`
 
