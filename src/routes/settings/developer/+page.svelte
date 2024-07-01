@@ -10,6 +10,9 @@
     import { InventoryStore } from "$lib/state/inventory"
     import { goto } from "$app/navigation"
     import { log } from "$lib/utils/Logger"
+    import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
+    import RamUsage from "$lib/components/widgets/RamUsage.svelte"
+    import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     initLocale()
 </script>
 
@@ -38,21 +41,26 @@
     </SettingSection>
 
     <SettingSection hook="section-clear-state" name="Clear State" description="Reset the application state.">
-        <Button hook="button-clear-state" appearance={Appearance.Alt} 
+        <Button
+            hook="button-clear-state"
+            appearance={Appearance.Alt}
             on:click={async _ => {
-                    await clearState().then(() => {
+                await clearState()
+                    .then(() => {
                         goto(Route.Unlock)
                         setTimeout(() => {
                             location.reload()
                         }, 500)
                     })
-                    .catch((error) => log.error(`Error deleting database: ${error}`));
-                }}>Clear State</Button>
+                    .catch(error => log.error(`Error deleting database: ${error}`))
+            }}>Clear State</Button>
     </SettingSection>
 
     <SettingSection hook="section-test-voice" name="Test Voice" description="Dev Voice">
         <Button hook="button-test-voice" appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
     </SettingSection>
+
+    <WidgetBar />
 </div>
 
 <style lang="scss">
