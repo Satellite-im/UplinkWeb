@@ -12,6 +12,9 @@
     import { log, LogLevel } from "$lib/utils/Logger"
     import { Select } from "$lib/elements"
     import { get } from "svelte/store"
+    import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
+    import RamUsage from "$lib/components/widgets/RamUsage.svelte"
+    import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     initLocale()
 
     let settings = get(log.settings)
@@ -106,6 +109,7 @@
             bind:selected={settings.level}>
         </Select>
     </SettingSection>
+    <WidgetBar />
 </div>
 
 <style lang="scss">
