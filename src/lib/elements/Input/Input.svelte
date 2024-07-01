@@ -30,6 +30,8 @@
     const writableValue = writable(value)
 
     $: writableValue.set(value)
+    $: value = $writableValue
+
 
     let onsend: any[] = []
     if (rich) {
