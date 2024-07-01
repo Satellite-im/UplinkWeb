@@ -244,7 +244,7 @@
         isRenaming: OperationState.Initial,
         items: [],
     }
-
+    let draggedItemId: string | null = ""
     function initializeSortable() {
         const dropzone = document.querySelector(".files") as HTMLElement
         if (dropzone) {
@@ -273,12 +273,168 @@
                     Store.updateFileOrder(folder.items)
                 }
             }
+            let ctrlKeyPressed = false
+            let draggedElement: HTMLElement | null = null
+            let targetFolderId: string | null = null
+            document.addEventListener('mousedown', (event: MouseEvent) => {
+    if (event.ctrlKey) {
+        ctrlKeyPressed = true;
+        draggedElement = (event.target as HTMLElement).closest('.draggable-item');
+        if (draggedElement) {
+            console.log('Ctrl + mousedown on:', draggedElement);
+        }
+    }
+});
+
+document.addEventListener('dragstart', (event: DragEvent) => {
+    if (ctrlKeyPressed) {
+        draggedElement = (event.target as HTMLElement).closest('.draggable-item');
+        if (draggedElement) {
+            console.log('Dragging started on:', draggedElement);
+        }
+    }
+});
+
+document.addEventListener('dragover', (event: DragEvent) => {
+    event.preventDefault(); // Necessary to allow dropping
+});
+
+document.addEventListener('drop', (event: DragEvent) => {
+    if (ctrlKeyPressed) {
+        const dropTargetElement = (event.target as HTMLElement).closest('.draggable-item');
+        if (dropTargetElement) {
+            targetFolderId = dropTargetElement.getAttribute('data-id');
+            // console.log('Dropped on:', dropTargetElement);
+            // console.log('Target Folder ID:', targetFolderId);
+
+            if (draggedElement) {
+                draggedItemId = draggedElement.getAttribute('data-id');
+
+                if (draggedItemId && targetFolderId) {
+                    console.log('Dragged Item ID:', draggedItemId);
+                    moveItemToFolder(draggedItemId, targetFolderId);
+                }
+            }
+
+            // Reset the state
+            ctrlKeyPressed = false;
+            draggedElement = null;
+        }
+    }
+});
+
+document.addEventListener('mouseup', (event: MouseEvent) => {
+    if (ctrlKeyPressed) {
+        // Reset the state if the mouse is released
+        ctrlKeyPressed = false;
+        draggedElement = null;
+    }
+});
+
+// Optional: Reset the flag if the Ctrl key is released
+document.addEventListener('keyup', (event: KeyboardEvent) => {
+    if (event.key === 'Control') {
+        ctrlKeyPressed = false;
+    }
+});
+
+function moveItemToFolder(draggedItemId: string, targetFolderId: string) {
+    folderStackStore.update(folders => {
+        const draggedItem = currentFiles.find(item => item.id === draggedItemId);
+
+        function removeDraggedItem(items: FileInfo[]): FileInfo[] {
+            return items.reduce((acc: FileInfo[], item) => {
+                if (item.items) {
+                    return [...acc, { ...item, items: removeDraggedItem(item.items) }];
+                }
+                return [...acc, item];
+            }, []);
+        }
+
+        function insertIntoFolder(items: FileInfo[], parentId: string): FileInfo[] {
+            if (parentId === "") {
+                return [...items, draggedItem!];
+            }
+            return items.map(item => {
+                console.log(item.id, parentId)
+                if (item.id === parentId) {
+                    draggedItem!.parentId = parentId;
+                    console.log(item.id, item.items, draggedItem, parentId)
+                    return {
+                        ...item,
+                        items: [...item.items!, draggedItem!],
+                    };
+                }
+                console.log(item, "osdighsdihgjihdosg")
+                if (item.items && item.items.length > 0) {
+                    return {
+                        ...item,
+                        items: insertIntoFolder(item.items, parentId),
+                    };
+                }
+                return item;
+            });
+        }
+
+        // Remove the dragged item from its original location
+        let newFolders = folders.map(folderStack => {
+            if (Array.isArray(folderStack)) {
+                return removeDraggedItem(folderStack);
+            }
+            return folderStack;
+        });
+
+        // Ensure the dragged item was found and removed
+        if (!draggedItem) {
+            console.error('Dragged item not found!');
+            return folders;
+        }
+
+        // Insert the dragged item into the target folder
+        newFolders = newFolders.map(folderStack => {
+            if (Array.isArray(folderStack)) {
+                return insertIntoFolder(folderStack, targetFolderId);
+            }
+            return folderStack;
+        });
+        console.log(newFolders, "NEWFOLDERSEDRKLFGHJ400")
+
+        // Additional logic to update the folder tree UI
+        for (let i = 1; i < newFolders.length; i++) {
+            let prevArray = newFolders[i - 1];
+            let currArray = newFolders[i];
+            const parentItem = prevArray.find(item => {
+                if (currArray.length === 0) {
+                    newFolders[i].push(draggedItem!);
+                }
+                return item.id === currArray[0].parentId;
+            });
+            console.log("parentidte", parentItem)
+            if (newFolders[i].length === 0) {
+                if (parentItem && parentItem.items) {
+                    currArray = [...parentItem.items];
+                }
+            }
+            if (parentItem && parentItem.items) {
+                newFolders[i] = [...parentItem.items];
+            }
+
+            const currentOpenFolders = openFolders;
+            const updatedOpenFolders = {
+                ...currentOpenFolders,
+                [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
+            };
+            Store.updateFolderTree(updatedOpenFolders);
+        }
+
+        return newFolders;
+    });
+}
             dropzone.addEventListener("mousedown", event => {
                 let target = event.target as HTMLElement
                 while (target && !target.classList.contains("draggable-item")) {
                     target = target.parentElement as HTMLElement
                 }
-
                 const currentTime = Date.now()
                 if (lastClickTarget === target && currentTime - lastClickTime < 200) {
                     if (lastClickTarget.classList.contains("folder-draggable")) {
