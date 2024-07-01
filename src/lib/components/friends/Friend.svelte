@@ -12,9 +12,9 @@
     export let friend: User = defaultUser
 </script>
 
-<div class="friend">
-    <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
-    <Text class="username" singleLine>
+<div class="friend" data-cy="friend-{friend.name}">
+    <ProfilePicture hook="friend-profile-picture" size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
+    <Text hook="friend-name" class="username" singleLine>
         {friend.name}
     </Text>
     <Controls>
