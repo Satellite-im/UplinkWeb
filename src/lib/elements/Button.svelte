@@ -239,8 +239,8 @@
         }
 
         &.small {
-            min-height: calc(var(--input-height) / 2);
-            max-height: calc(var(--input-height) / 2);
+            min-height: calc(var(--input-height) / 1.25);
+            max-height: calc(var(--input-height) / 1.25);
             &.icon {
                 min-width: calc(var(--input-height) / 1.75);
                 max-width: calc(var(--input-height) / 1.75);
