@@ -309,10 +309,10 @@ class RaygunStore {
         return await this.get(r => r.edit(conversation_id, message_id, message), "Error editing message")
     }
 
-    async downloadAttachment(conversation_id: string, message_id: string, file: string) {
+    async downloadAttachment(conversation_id: string, message_id: string, file: string, size?: number) {
         return await this.get(async r => {
             let result = await r.download_stream(conversation_id, message_id, file)
-            return this.createFileDownloadHandler(file, result)
+            return this.createFileDownloadHandler(file, result, size)
         }, `Error downloading attachment from ${conversation_id} for message ${message_id}`)
     }
 
@@ -554,7 +554,7 @@ class RaygunStore {
         return messages
     }
 
-    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator) {
+    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator, _size?: number) {
         let listener = {
             [Symbol.asyncIterator]() {
                 return it
