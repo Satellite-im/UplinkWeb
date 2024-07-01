@@ -1,4 +1,5 @@
 <script lang="ts">
+    import CdnConfigurator from "$lib/components/ui/CDNConfigurator.svelte"
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
@@ -8,6 +9,7 @@
 
 <div id="page">
     <RelaySelector />
+    <CdnConfigurator />
 </div>
 
 <style lang="scss">
