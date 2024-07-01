@@ -5,6 +5,9 @@ import { createPersistentState, defaultSettings } from ".."
 
 export interface ISettingsState {
     lang: Locale
+    widgets: {
+        show: boolean
+    },
     messaging: {
         convertEmoji: boolean
         markdownSupport: boolean
