@@ -128,7 +128,7 @@ class Conversations {
                         if (reaction !== undefined) {
                             let reactors = reaction.reactors
                             reactors.delete(user)
-                            if (reactors.size === 0) {
+                            if (reactors && reactors.size === 0) {
                                 delete reactions[emoji]
                             } else {
                                 reactions[emoji] = {

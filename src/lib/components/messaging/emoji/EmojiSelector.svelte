@@ -187,60 +187,6 @@
         height: var(--emoji-selector-height);
         width: calc(var(--min-component-width) * 2);
 
-        #emoji-selector {
-            flex: 1;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            padding-right: var(--gap-less);
-
-            section {
-                margin-bottom: 1rem;
-
-                .emoji-list {
-                    display: flex;
-                    flex-wrap: wrap;
-                    justify-content: space-between;
-                    gap: var(--gap-less);
-
-                    .emoji {
-                        font-size: var(--emoji-size);
-                        cursor: pointer;
-                        outline: none;
-                        user-select: none;
-                        &:focus {
-                            border-bottom: var(--border-width) solid var(--primary-color);
-                        }
-                    }
-                }
-
-                .frequently-used-list {
-                    justify-content: flex-start;
-                }
-            }
-        }
-
-        #category-nav {
-            display: flex;
-            overflow-x: auto;
-            padding: var(--padding-less) 0;
-            box-sizing: border-box;
-            white-space: nowrap;
-            gap: var(--gap);
-
-            .category-link {
-                padding: var(--padding-minimal) var(--padding);
-                text-decoration: none;
-                color: var(--text-color);
-                background: var(--alt-color);
-                border-radius: var(--border-radius-more);
-                font-size: var(--label-size);
-
-                &:hover {
-                    background-color: var(--primary-color);
-                }
-            }
-        }
-
         .input-group {
             display: flex;
             align-items: center;
@@ -273,6 +219,78 @@
                     .emoji {
                         font-size: var(--input-height);
                     }
+                }
+            }
+        }
+
+        #emoji-selector {
+            flex: 1;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding-right: var(--gap-less);
+
+            section {
+                margin-bottom: 1rem;
+
+                .emoji-list {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-between;
+                    gap: var(--gap-less);
+
+                    .emoji {
+                        font-size: var(--emoji-size);
+                        cursor: pointer;
+                        outline: none;
+                        user-select: none;
+                        position: relative;
+                        transition:
+                            transform 0.3s ease,
+                            filter 0.3s ease;
+
+                        &:focus {
+                            transform: scale(1.2);
+                            filter: brightness(1.2);
+                            &:focus::after {
+                                content: "";
+                                position: absolute;
+                                bottom: -0.25rem;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                width: 0.5rem;
+                                height: 0.5rem;
+                                background-color: var(--primary-color-alt);
+                                border-radius: 50%;
+                                box-shadow: 0 0 8px var(--primary-color-alt);
+                            }
+                        }
+                    }
+                }
+
+                .frequently-used-list {
+                    justify-content: flex-start;
+                }
+            }
+        }
+
+        #category-nav {
+            display: flex;
+            overflow-x: auto;
+            padding: var(--padding-less) 0;
+            box-sizing: border-box;
+            white-space: nowrap;
+            gap: var(--gap);
+
+            .category-link {
+                padding: var(--padding-minimal) var(--padding);
+                text-decoration: none;
+                color: var(--text-color);
+                background: var(--alt-color);
+                border-radius: var(--border-radius-more);
+                font-size: var(--label-size);
+
+                &:hover {
+                    background-color: var(--primary-color);
                 }
             }
         }
