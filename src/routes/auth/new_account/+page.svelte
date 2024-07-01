@@ -13,6 +13,7 @@
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { log } from "$lib/utils/Logger"
     import { ToastMessage } from "$lib/state/ui/toast"
+    import { CommonInputRules } from "$lib/utils/CommonInputRules"
 
     let username = ""
     let statusMessage = ""
@@ -59,7 +60,7 @@
                 on:isValid={e => {
                     isValidUsername = e.detail
                 }}
-                rules={{ required: true, minLength: 4, maxLength: 20, pattern: /^[a-zA-Z0-9_]+$/}}
+                rules={CommonInputRules.username}
                 on:input={async e => {
                     username = e.detail
                 }} />
