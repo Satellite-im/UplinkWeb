@@ -1,5 +1,6 @@
 import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState } from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
+import type { Writable } from "svelte/store"
 
 export enum OperationState {
     Initial = "Initial",
@@ -263,7 +264,7 @@ export type PendingMessage = {
         at: Date
         text: string[]
     }
-    attachmentProgress: { [file: string]: FileProgress }
+    attachmentProgress: Writable<{ [file: string]: FileProgress }>
 }
 
 export type FileProgress = {

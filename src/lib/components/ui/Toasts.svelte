@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { ToastMessage } from "$lib/state/ui/toast"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
     import Toast from "$lib/elements/Toast.svelte"
 
