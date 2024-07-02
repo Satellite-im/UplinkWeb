@@ -138,7 +138,7 @@
                     <Button
                         hook="button-save"
                         text={$_("generic.save")}
-                        disabled={!isValidUsernameToUpdate || !isValidStatusMessageToUpdate}
+                        disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                         appearance={Appearance.Primary}
                         on:click={async _ => {
                             if (changeList.username) await updateUsername(user.name)
