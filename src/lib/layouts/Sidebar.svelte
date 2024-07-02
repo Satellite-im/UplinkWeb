@@ -62,7 +62,7 @@
             </div>
 
             <div class="sidebar-content">
-                {#if settings.widgets.show}
+                {#if settings && settings.widgets && settings.widgets.show}
                     <WidgetBar />
                 {/if}
 
