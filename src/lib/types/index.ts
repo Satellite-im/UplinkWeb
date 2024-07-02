@@ -315,3 +315,16 @@ export type GiphyGif = {
     title: string
     loaded?: boolean
 }
+
+export type Sticker = {
+    name: string
+    path: string
+}
+
+export type StickerCollection = {
+    name: string
+    author: string
+    assets: Sticker[]
+}
+
+export type StickerManifest = StickerCollection[]

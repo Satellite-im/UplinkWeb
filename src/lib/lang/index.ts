@@ -163,7 +163,9 @@ export function initLocale() {
                     compactMessaging: "Compact Messages",
                     compactMessagingDescription: "Compact messages to group messages closer together and display more on screen.",
                     quick: "Quick Chat",
-                    quickDescription: "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation."
+                    quickDescription: "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation.",
+                    showStatusWidgets: "Widget Panel",
+                    showStatusWidgetsDescription: "Enable the widget panel, which displays system information and other helpful data."
                 },
                 preferences: {
                     appLanguage: "App Language",

@@ -37,7 +37,7 @@
     <div class="memory-bar">
         <div class="memory-level" style="width: {($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100}%;"></div>
     </div>
-    {(($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100).toFixed(2)}%
+    {(($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100).toFixed(0)}%
 </div>
 
 <style>
