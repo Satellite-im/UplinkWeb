@@ -21,7 +21,7 @@
     export let rich: boolean = false
     export let autoFocus: boolean = false
     export let rules: InputRules = new InputRules()
-
+  
     let errorMessage: string = ""
 
     function isValidInput(): boolean {
