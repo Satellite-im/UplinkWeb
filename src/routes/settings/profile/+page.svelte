@@ -218,8 +218,8 @@
                                 updatePendentItemsToSave()
                             }}
                             on:input={_ => {
-                                changeList.username = true
-                                unsavedChanges = changeList.username || changeList.statusMessage
+                                changeList.username = isValidUsernameToUpdate
+                                unsavedChanges = (changeList.username || changeList.statusMessage) && (isValidStatusMessageToUpdate && isValidUsernameToUpdate)
                             }} />
                     </div>
                     <ContextMenu
@@ -264,8 +264,8 @@
                         updatePendentItemsToSave()
                     }}
                     on:input={_ => {
-                        changeList.statusMessage = true
-                        unsavedChanges = changeList.username || changeList.statusMessage
+                        changeList.statusMessage = isValidStatusMessageToUpdate
+                        unsavedChanges = (changeList.username || changeList.statusMessage) && (isValidStatusMessageToUpdate && isValidUsernameToUpdate)
                     }} />
             </div>
             <div class="section">
