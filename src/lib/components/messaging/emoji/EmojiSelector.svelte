@@ -7,6 +7,7 @@
     import Fuse from "fuse.js"
     import { _ } from "svelte-i18n"
     import { createEventDispatcher, tick } from "svelte"
+    import { onMount } from "svelte"
     import { createPersistentState } from "$lib/state"
 
     interface Emoji {
