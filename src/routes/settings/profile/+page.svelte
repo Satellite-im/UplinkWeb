@@ -23,7 +23,7 @@
     let loading = true
     let showSeed = false
     let isValidUsernameToUpdate = false
-    let isValidStatusMessageToUpdate = false
+    let isValidStatusMessageToUpdate = true
 
     function toggleSeedPhrase() {
         showSeed = !showSeed
@@ -66,6 +66,8 @@
         changeList.statusMessage = false
 
         unsavedChanges = changeList.username || changeList.statusMessage
+        isValidStatusMessageToUpdate = false
+        isValidUsernameToUpdate = false
     }
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
@@ -133,17 +135,18 @@
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-                <Button
-                    hook="button-save"
-                    text={$_("generic.save")}
-                    appearance={Appearance.Primary}
-                    on:click={async _ => {
-                        if (changeList.username) await updateUsername(user.name)
-                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
-                        updatePendentItemsToSave()
-                    }}>
-                    <Icon icon={Shape.CheckMark} />
-                </Button>
+                    <Button
+                        hook="button-save"
+                        text={$_("generic.save")}
+                        disabled={!isValidUsernameToUpdate || !isValidStatusMessageToUpdate}
+                        appearance={Appearance.Primary}
+                        on:click={async _ => {
+                            if (changeList.username) await updateUsername(user.name)
+                            if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                            updatePendentItemsToSave()
+                        }}>
+                        <Icon icon={Shape.CheckMark} />
+                    </Button>
             </Controls>
         </div>
     {/if}
@@ -218,8 +221,8 @@
                                 updatePendentItemsToSave()
                             }}
                             on:input={_ => {
-                                changeList.username = isValidUsernameToUpdate
-                                unsavedChanges = (changeList.username || changeList.statusMessage) && (isValidStatusMessageToUpdate && isValidUsernameToUpdate)
+                                changeList.username = true
+                                unsavedChanges = (changeList.username || changeList.statusMessage)
                             }} />
                     </div>
                     <ContextMenu
@@ -264,8 +267,8 @@
                         updatePendentItemsToSave()
                     }}
                     on:input={_ => {
-                        changeList.statusMessage = isValidStatusMessageToUpdate
-                        unsavedChanges = (changeList.username || changeList.statusMessage) && (isValidStatusMessageToUpdate && isValidUsernameToUpdate)
+                        changeList.statusMessage = true
+                        unsavedChanges = (changeList.username || changeList.statusMessage)
                     }} />
             </div>
             <div class="section">
