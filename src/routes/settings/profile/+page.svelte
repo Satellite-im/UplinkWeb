@@ -69,8 +69,6 @@
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
-    console.log("userReference", userReference) 
-
     onDestroy(() => {
         Store.setUsername(userReference.name)
         Store.setStatusMessage(userReference.profile.status_message)
@@ -162,16 +160,18 @@
                     },
                 },
             ]}>
-        <div
-            slot="content"  let:open on:contextmenu={open}
-            class="profile-header"
-            data-cy="profile-banner"
-            style="background-image: url('{user.profile.banner.image}')"
-            on:click={_ => {
-                fileinput.click()
-            }}>
-            <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
-        </div>
+            <div
+                slot="content"
+                let:open
+                on:contextmenu={open}
+                class="profile-header"
+                data-cy="profile-banner"
+                style="background-image: url('{user.profile.banner.image}')"
+                on:click={_ => {
+                    fileinput.click()
+                }}>
+                <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
+            </div>
         </ContextMenu>
         <ContextMenu
             items={[
@@ -185,13 +185,8 @@
                     },
                 },
             ]}>
-            <div slot="content"  let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture
-                    image={user.profile.photo.image}
-                    size={Size.Large}
-                    status={user.profile.status}
-                    frame={user.profile.photo.frame}
-                    noIndicator />
+            <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
+                <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}
