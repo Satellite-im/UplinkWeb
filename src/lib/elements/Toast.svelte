@@ -10,7 +10,7 @@
 <div class="toast" data-cy="toast-notification" role="none" on:mouseleave on:mouseenter>
     {#if toast.icon}
         <div class="toast-icon">
-            <Icon icon={toast.icon} />
+            <Icon icon={toast.icon} highlight={toast.appearance} />
         </div>
     {/if}
     <div class="toast-content">
