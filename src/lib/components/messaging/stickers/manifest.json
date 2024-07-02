@@ -1,0 +1,172 @@
+[
+    {
+        "name": "Space Cat",
+        "author": "Team Satellite",
+        "assets": [
+            {
+                "name": "Deadlift",
+                "path": "assets/stickers/space_cat/1.png"
+            },
+            {
+                "name": "Hungry",
+                "path": "assets/stickers/space_cat/2.png"
+            },
+            {
+                "name": "Couch Potato",
+                "path": "assets/stickers/space_cat/4.png"
+            },
+            {
+                "name": "Calling",
+                "path": "assets/stickers/space_cat/5.png"
+            },
+            {
+                "name": "Hello",
+                "path": "assets/stickers/space_cat/6.png"
+            },
+            {
+                "name": "High Kick",
+                "path": "assets/stickers/space_cat/8.png"
+            },
+            {
+                "name": "No",
+                "path": "assets/stickers/space_cat/9.png"
+            },
+            {
+                "name": "Power Up",
+                "path": "assets/stickers/space_cat/10.png"
+            },
+            {
+                "name": "But How?",
+                "path": "assets/stickers/space_cat/11.png"
+            },
+            {
+                "name": "Really!?",
+                "path": "assets/stickers/space_cat/12.png"
+            },
+            {
+                "name": "Angry Kick",
+                "path": "assets/stickers/space_cat/13.png"
+            },
+            {
+                "name": "Erm",
+                "path": "assets/stickers/space_cat/14.png"
+            },
+            {
+                "name": "Fit",
+                "path": "assets/stickers/space_cat/15.png"
+            },
+            {
+                "name": "Depression",
+                "path": "assets/stickers/space_cat/16.png"
+            },
+            {
+                "name": "Sadness",
+                "path": "assets/stickers/space_cat/17.png"
+            },
+            {
+                "name": "Furious",
+                "path": "assets/stickers/space_cat/18.png"
+            }
+        ]
+    },
+    {
+        "name": "Bad Animals",
+        "author": "Team Satellite",
+        "assets": [
+            {
+                "name": "Cappybara",
+                "path": "assets/stickers/bad_animals/capybara.png"
+            },
+            {
+                "name": "Cracked Out",
+                "path": "assets/stickers/bad_animals/cracked.png"
+            },
+            {
+                "name": "Crazy",
+                "path": "assets/stickers/bad_animals/crazy_coyote.png"
+            },
+            {
+                "name": "Blaze Up",
+                "path": "assets/stickers/bad_animals/dope_cat.png"
+            },
+            {
+                "name": "Eureka!",
+                "path": "assets/stickers/bad_animals/eureka.png"
+            },
+            {
+                "name": "Late Night",
+                "path": "assets/stickers/bad_animals/late_night.png"
+            },
+            {
+                "name": "Panda Pals",
+                "path": "assets/stickers/bad_animals/panda_party.png"
+            },
+            {
+                "name": "Judge Birdy",
+                "path": "assets/stickers/bad_animals/peacock_judge.png"
+            },
+            {
+                "name": "Math Hard",
+                "path": "assets/stickers/bad_animals/math_hard.png"
+            },
+            {
+                "name": "Wild Night",
+                "path": "assets/stickers/bad_animals/party_sloth.png"
+            },
+            {
+                "name": "Puke",
+                "path": "assets/stickers/bad_animals/puke_fish.png"
+            },
+            {
+                "name": "Big Chillin'",
+                "path": "assets/stickers/bad_animals/racoon_pool.png"
+            },
+            {
+                "name": "Dope",
+                "path": "assets/stickers/bad_animals/dope_dog.png"
+            },
+            {
+                "name": "PEV Ostrich",
+                "path": "assets/stickers/bad_animals/rad_ostrich.png"
+            },
+            {
+                "name": "Hauk Tuah",
+                "path": "assets/stickers/bad_animals/llama_spit.png"
+            },
+            {
+                "name": "Boxing Toads",
+                "path": "assets/stickers/bad_animals/red_vs_blue.png"
+            },
+            {
+                "name": "Meep Meep",
+                "path": "assets/stickers/bad_animals/road_crack.png"
+            }
+        ]
+    },
+    {
+        "name": "Words",
+        "author": "Team Satellite",
+        "assets": [
+            {
+                "name": "Good Night",
+                "path": "assets/stickers/words/good_night.png"
+            },
+            {
+                "name": "Good Morning",
+                "path": "assets/stickers/words/good_morning.png"
+            },
+            {
+                "name": "Love That",
+                "path": "assets/stickers/words/love_that.png"
+            },
+            {
+                "name": "Get On",
+                "path": "assets/stickers/words/get_on.png"
+            },
+            {
+                "name": "F*ck Off",
+                "path": "assets/stickers/words/fck_off.png"
+            }
+        ]
+    }
+]

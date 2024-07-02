@@ -1,6 +1,6 @@
 <script lang="ts">
     import Text from "$lib/elements/Text.svelte"
-    import { Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
     import prettyBytes from "pretty-bytes"
     import { Button, Icon } from "$lib/elements"
@@ -36,7 +36,7 @@
         </div>
     {/if}
     <Controls>
-        <Button icon tooltip="Download" on:click={download}>
+        <Button icon small tooltip="Download" on:click={download} appearance={Appearance.Transparent}>
             <Icon icon={Shape.Download} />
         </Button>
     </Controls>

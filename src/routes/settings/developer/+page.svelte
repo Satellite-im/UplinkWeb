@@ -24,6 +24,7 @@
 </script>
 
 <div id="page">
+    <WidgetBar />
     <SettingSection hook="section-devmode" name="Devmode" description="Disable devmode.">
         <Button
             hook="button-exit-devmode"
@@ -109,7 +110,6 @@
             bind:selected={settings.level}>
         </Select>
     </SettingSection>
-    <WidgetBar />
 </div>
 
 <style lang="scss">
