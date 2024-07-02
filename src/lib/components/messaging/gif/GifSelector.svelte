@@ -4,7 +4,7 @@
     import { GIPHY_API_KEY } from "$lib/keys"
     import { writable, derived } from "svelte/store"
     import { createEventDispatcher } from "svelte"
-    import { Icon, Input, Loader } from "$lib/elements"
+    import { Icon, Input, Loader, RangeSelector } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import Label from "$lib/elements/Label.svelte"
@@ -115,6 +115,8 @@
         }
     }
 
+    const gifHeight = writable(133.33)
+
     onMount(() => {
         observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
@@ -147,8 +149,15 @@
                 <Icon icon={Shape.Heart} />
             </Button>
         </div>
-        <Label text="Powered by Giphy" />
+        <div class="tools">
+            <Label text="Powered by Giphy" />
+            <div class="slider-container">
+                <Label text="Size" />
+                <RangeSelector min={100} max={200} bind:value={$gifHeight} />
+            </div>
+        </div>
     </div>
+
     {#if $activeTab === "search"}
         <div class="gifs">
             {#each $gifs as gif (gif.uniqueKey)}
@@ -156,10 +165,7 @@
                     <button class="icon-container" class:show-heart-icon={$isFavorite(gif)} on:click={() => toggleFavorite(gif)} aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
                     </button>
-                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
+                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" style="height: {$gifHeight}px;" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
             {#if $loading}
@@ -172,13 +178,10 @@
     {:else if $activeTab === "favorites"}
         <div class="gifs">
             {#each $favorites as gif (gif.uniqueKey)}
-                <div class="gif-container">
+                <div class="gif-container" style="height: {$gifHeight}px;">
                     <button class="icon-container" class:show-heart-icon={$isFavorite(gif)} on:click={() => toggleFavorite(gif)} aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
                     </button>
-                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
@@ -211,6 +214,20 @@
 
     .icon-container.show-heart-icon {
         visibility: visible;
+    }
+    .tools {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .slider-container {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        gap: var(--gap-less);
+        max-width: var(--min-component-width);
     }
 
     .giphy-selector {
@@ -291,9 +308,9 @@
                 }
 
                 .gif {
-                    object-fit: cover;
+                    object-fit: fill;
                     cursor: pointer;
-                    height: 100px;
+                    height: 133.33px;
                     width: 100%;
                     border: var(--border-width) solid var(--border-color);
                     border-radius: var(--border-radius-minimal);
@@ -309,7 +326,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: 100px;
+                height: 140px;
             }
 
             .observer {

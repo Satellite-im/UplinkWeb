@@ -11,15 +11,15 @@ const IS_PRODUCTION = process.env.NODE_ENV == "production"
 export default defineConfig({
     resolve: {
         alias: {
-          $lib: path.resolve(__dirname, 'src/lib')
+            $lib: path.resolve(__dirname, 'src/lib')
         }
-      },
+    },
     plugins: [
         IS_PRODUCTION
             ? removeAttribute({
-                  extensions: ["svelte"],
-                  attributes: ["data-cy", "hook"],
-              })
+                extensions: ["svelte"],
+                attributes: ["data-cy", "hook"],
+            })
             : null,
         sveltekit(),
         nodePolyfills(),

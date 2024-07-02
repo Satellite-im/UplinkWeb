@@ -148,7 +148,6 @@
                         class="relay-toggle"
                         appearance={!relay.active ? Appearance.Alt : Appearance.Primary}
                         on:click={_ => {
-                            console.log("act ", relay.active)
                             toggleRelay(name)
                         }}
                         text={relay.active ? $_("generic.enabled") : $_("generic.enable")}>

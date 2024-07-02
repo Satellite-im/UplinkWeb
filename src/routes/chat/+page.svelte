@@ -365,7 +365,7 @@
                 {/if}
             </div>
             <svelte:fragment slot="controls">
-                <CoinBalance balance={4560.53} />
+                <CoinBalance balance={0.0} />
                 <Button icon appearance={Appearance.Alt} disabled={activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
