@@ -168,8 +168,16 @@
                 "path": "assets/stickers/words/good_morning.png"
             },
             {
+                "name": "I Love You",
+                "path": "assets/stickers/words/iloveu.png"
+            },
+            {
                 "name": "Happy Friday",
                 "path": "assets/stickers/words/happyfriday.png"
+            },
+            {
+                "name": "Depression",
+                "path": "assets/stickers/words/depression.png"
             },
             {
                 "name": "F*ck Off",
@@ -192,6 +200,40 @@
             {
                 "name": "Trejus",
                 "path": "assets/stickers/pop_culture/trejus.png"
+            }
+        ]
+    },
+    {
+        "name": "Fishy Business",
+        "author": "Team Satellite",
+        "assets": [
+            {
+                "name": "Stonks Bad",
+                "path": "assets/stickers/fishy_business/stonkbad.png"
+            },
+            {
+                "name": "Star Accountant",
+                "path": "assets/stickers/fishy_business/accounting.png"
+            },
+            {
+                "name": "On The Phone",
+                "path": "assets/stickers/fishy_business/puffercall.png"
+            },
+            {
+                "name": "Money Akakakakak",
+                "path": "assets/stickers/fishy_business/akakakakak.png"
+            },
+            {
+                "name": "On Holiday",
+                "path": "assets/stickers/fishy_business/onholiday.png"
+            },
+            {
+                "name": "Elevator",
+                "path": "assets/stickers/fishy_business/elevator.png"
+            },
+            {
+                "name": "Busy",
+                "path": "assets/stickers/fishy_business/busy.png"
             }
         ]
     },
@@ -222,6 +264,18 @@
             {
                 "name": "SUCCULENT",
                 "path": "assets/stickers/garden/sukka.png"
+            },
+            {
+                "name": "MAD MOWER",
+                "path": "assets/stickers/garden/angrymower.png"
+            },
+            {
+                "name": "Wilted",
+                "path": "assets/stickers/garden/wilted.png"
+            },
+            {
+                "name": "Smelly",
+                "path": "assets/stickers/garden/smelly.png"
             }
         ]
     }
