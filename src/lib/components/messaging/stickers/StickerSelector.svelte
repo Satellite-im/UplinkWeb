@@ -85,8 +85,8 @@
             margin-bottom: var(--gap-less);
 
             img {
-                width: 40px;
-                height: 40px;
+                width: 64px;
+                height: 64px;
                 border-radius: 5px;
                 transition:
                     transform 0.3s,
@@ -122,7 +122,7 @@
             padding: var(--padding);
             display: flex;
             flex-direction: column;
-            gap: var(--gap-less);
+            gap: var(--gap);
             overflow-y: auto;
 
             section {
@@ -144,7 +144,6 @@
                 transition: transform 0.3s;
                 background: none;
                 border: none;
-                padding: var(--padding-less);
 
                 &:hover,
                 &:focus {

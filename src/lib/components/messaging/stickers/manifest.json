@@ -4,6 +4,22 @@
         "author": "Team Satellite",
         "assets": [
             {
+                "name": "Power Up",
+                "path": "assets/stickers/space_cat/10.png"
+            },
+            {
+                "name": "Huh?",
+                "path": "assets/stickers/space_cat/8.png"
+            },
+            {
+                "name": "Really!?",
+                "path": "assets/stickers/space_cat/12.png"
+            },
+            {
+                "name": "Hello",
+                "path": "assets/stickers/space_cat/6.png"
+            },
+            {
                 "name": "Deadlift",
                 "path": "assets/stickers/space_cat/1.png"
             },
@@ -20,28 +36,12 @@
                 "path": "assets/stickers/space_cat/5.png"
             },
             {
-                "name": "Hello",
-                "path": "assets/stickers/space_cat/6.png"
-            },
-            {
-                "name": "High Kick",
-                "path": "assets/stickers/space_cat/8.png"
-            },
-            {
                 "name": "No",
                 "path": "assets/stickers/space_cat/9.png"
             },
             {
-                "name": "Power Up",
-                "path": "assets/stickers/space_cat/10.png"
-            },
-            {
                 "name": "But How?",
                 "path": "assets/stickers/space_cat/11.png"
-            },
-            {
-                "name": "Really!?",
-                "path": "assets/stickers/space_cat/12.png"
             },
             {
                 "name": "Angry Kick",
@@ -73,6 +73,10 @@
         "name": "Bad Animals",
         "author": "Team Satellite",
         "assets": [
+            {
+                "name": "Big Chillin'",
+                "path": "assets/stickers/bad_animals/racoon_pool.png"
+            },
             {
                 "name": "Cappybara",
                 "path": "assets/stickers/bad_animals/capybara.png"
@@ -118,10 +122,6 @@
                 "path": "assets/stickers/bad_animals/puke_fish.png"
             },
             {
-                "name": "Big Chillin'",
-                "path": "assets/stickers/bad_animals/racoon_pool.png"
-            },
-            {
                 "name": "Dope",
                 "path": "assets/stickers/bad_animals/dope_dog.png"
             },
@@ -152,14 +152,6 @@
         "author": "Team Satellite",
         "assets": [
             {
-                "name": "Good Night",
-                "path": "assets/stickers/words/good_night.png"
-            },
-            {
-                "name": "Good Morning",
-                "path": "assets/stickers/words/good_morning.png"
-            },
-            {
                 "name": "Love That",
                 "path": "assets/stickers/words/love_that.png"
             },
@@ -168,8 +160,68 @@
                 "path": "assets/stickers/words/get_on.png"
             },
             {
+                "name": "Good Night",
+                "path": "assets/stickers/words/good_night.png"
+            },
+            {
+                "name": "Good Morning",
+                "path": "assets/stickers/words/good_morning.png"
+            },
+            {
+                "name": "Happy Friday",
+                "path": "assets/stickers/words/happyfriday.png"
+            },
+            {
                 "name": "F*ck Off",
                 "path": "assets/stickers/words/fck_off.png"
+            },
+            {
+                "name": "GG Next",
+                "path": "assets/stickers/words/ggnext.png"
+            }
+        ]
+    },
+    {
+        "name": "Pop Culture",
+        "author": "Team Satellite",
+        "assets": [
+            {
+                "name": "Power Up",
+                "path": "assets/stickers/pop_culture/borgor_kong.png"
+            },
+            {
+                "name": "Trejus",
+                "path": "assets/stickers/pop_culture/trejus.png"
+            }
+        ]
+    },
+    {
+        "name": "The Garden",
+        "author": "Team Satellite",
+        "assets": [
+            {
+                "name": "Moon Flower",
+                "path": "assets/stickers/garden/vampire_flower.png"
+            },
+            {
+                "name": "Trowely",
+                "path": "assets/stickers/garden/trowely.png"
+            },
+            {
+                "name": "Uh-huh.",
+                "path": "assets/stickers/garden/uh_huh.png"
+            },
+            {
+                "name": "Blehhhhhh",
+                "path": "assets/stickers/garden/drool.png"
+            },
+            {
+                "name": "Like A Rock",
+                "path": "assets/stickers/garden/like_a_rock.png"
+            },
+            {
+                "name": "SUCCULENT",
+                "path": "assets/stickers/garden/sukka.png"
             }
         ]
     }

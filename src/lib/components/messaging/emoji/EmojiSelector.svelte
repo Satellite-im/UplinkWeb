@@ -7,7 +7,6 @@
     import Fuse from "fuse.js"
     import { _ } from "svelte-i18n"
     import { createEventDispatcher, tick } from "svelte"
-    import { onMount } from "svelte"
     import { createPersistentState } from "$lib/state"
 
     interface Emoji {
@@ -107,11 +106,7 @@
 
     $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, selectedSkinTone)
 
-    const emojiSize = writable(24)
-
-    onMount(() => {
-        // Initialize frequently used emojis if needed
-    })
+    const emojiSize = createPersistentState("emoji.selectorsize", 44)
 </script>
 
 <div id="emoji-container">
