@@ -102,6 +102,14 @@
                 "path": "assets/stickers/bad_animals/panda_party.png"
             },
             {
+                "name": "Judge Birdy",
+                "path": "assets/stickers/bad_animals/peacock_judge.png"
+            },
+            {
+                "name": "Math Hard",
+                "path": "assets/stickers/bad_animals/math_hard.png"
+            },
+            {
                 "name": "Wild Night",
                 "path": "assets/stickers/bad_animals/party_sloth.png"
             },

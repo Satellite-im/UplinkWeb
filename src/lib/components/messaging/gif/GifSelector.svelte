@@ -4,7 +4,7 @@
     import { GIPHY_API_KEY } from "$lib/keys"
     import { writable, derived } from "svelte/store"
     import { createEventDispatcher } from "svelte"
-    import { Icon, Input, Loader } from "$lib/elements"
+    import { Icon, Input, Loader, RangeSelector } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import Label from "$lib/elements/Label.svelte"
@@ -153,7 +153,7 @@
             <Label text="Powered by Giphy" />
             <div class="slider-container">
                 <Label text="Size" />
-                <input type="range" min="50" max="300" bind:value={$gifHeight} />
+                <RangeSelector min={100} max={200} bind:value={$gifHeight} />
             </div>
         </div>
     </div>
@@ -227,6 +227,7 @@
         flex-direction: row;
         align-items: center;
         gap: var(--gap-less);
+        max-width: var(--min-component-width);
     }
 
     .giphy-selector {
