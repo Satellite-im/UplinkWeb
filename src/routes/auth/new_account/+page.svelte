@@ -12,9 +12,11 @@
     import type { Identity } from "warp-wasm"
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { log } from "$lib/utils/Logger"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     let username = ""
     let statusMessage = ""
+    let isValidUsername = false
 
     initLocale()
 
@@ -54,6 +56,10 @@
                 hook="input-new-account-username"
                 alt
                 placeholder={$_("pages.auth.new_account.enter_username")}
+                on:isValid={e => {
+                    isValidUsername = e.detail
+                }}
+                rules={{ required: true, minLength: 4, maxLength: 20, pattern: /^[a-zA-Z0-9_]+$/}}
                 on:input={async e => {
                     username = e.detail
                 }} />
@@ -78,7 +84,13 @@
             text={$_("pages.auth.new_account.create")}
             loading={loading}
             on:click={async _ => {
-                await createAccount(username, statusMessage)
+                if (username === "") {
+                    Store.addToastNotification(new ToastMessage("", "You need to select a username to proceed.", 2))
+                    return
+                }
+                if (isValidUsername) {
+                    await createAccount(username, statusMessage)
+                }
             }}>
             <Icon icon={Shape.ArrowRight} />
         </Button>
