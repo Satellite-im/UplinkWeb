@@ -85,7 +85,7 @@
             loading={loading}
             on:click={async _ => {
                 if (username === "") {
-                    Store.addToastNotification(new ToastMessage("", "You need to select a username to proceed.", 2))
+                    Store.addToastNotification(new ToastMessage("", "Select a username to proceed.", 2))
                     return
                 }
                 if (isValidUsername) {
