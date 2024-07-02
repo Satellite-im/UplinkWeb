@@ -12,6 +12,7 @@
     import type { Identity } from "warp-wasm"
     import type { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { log } from "$lib/utils/Logger"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     let username = ""
     let statusMessage = ""
@@ -83,6 +84,10 @@
             text={$_("pages.auth.new_account.create")}
             loading={loading}
             on:click={async _ => {
+                if (username === "") {
+                    Store.addToastNotification(new ToastMessage("", "You need to select a user to proceed.", 2))
+                    return
+                }
                 if (isValidUsername) {
                     await createAccount(username, statusMessage)
                 }

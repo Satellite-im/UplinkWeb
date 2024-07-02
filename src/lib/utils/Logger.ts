@@ -1,3 +1,6 @@
+import { createPersistentState } from "$lib/state"
+import { get, type Writable } from "svelte/store"
+
 export enum LogLevel {
     Info = "INFO",
     Developer = "DEV",
@@ -14,25 +17,28 @@ export type LogItem = {
 
 export type LoggerSettings = {
     relay_to_js_console: boolean
+    level: LogLevel
 }
 
 export class Logger {
     log: LogItem[]
-    settings: LoggerSettings
+    settings: Writable<LoggerSettings>
 
     constructor(settings: LoggerSettings) {
-        this.settings = settings
+        this.settings = createPersistentState("uplink.settings.developer", settings)
         this.log = []
     }
 
     write(level: LogLevel, message: string) {
+        let settings = get(this.settings)
+        if (Object.values(LogLevel).indexOf(level) < Object.values(LogLevel).indexOf(settings.level)) return
         this.log.push({
             timestamp: Date.now(),
             level,
             message,
         })
 
-        if (this.settings.relay_to_js_console) {
+        if (settings.relay_to_js_console) {
             console.log(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message)
         }
     }
@@ -58,4 +64,4 @@ export class Logger {
     }
 }
 
-export let log = new Logger({ relay_to_js_console: true })
+export let log = new Logger({ relay_to_js_console: true, level: LogLevel.Info })
