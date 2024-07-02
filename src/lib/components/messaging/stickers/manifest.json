@@ -140,6 +140,10 @@
             {
                 "name": "Meep Meep",
                 "path": "assets/stickers/bad_animals/road_crack.png"
+            },
+            {
+                "name": "Taxes",
+                "path": "assets/stickers/bad_animals/taxes.png"
             }
         ]
     },
