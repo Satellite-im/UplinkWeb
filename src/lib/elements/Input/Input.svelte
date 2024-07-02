@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { InputRules } from './inputRules';
+    import { InputRules } from "./inputRules"
     import { Appearance } from "../../enums/index"
     import { MarkdownEditor } from "markdown-editor"
     import "./markdown.scss"
@@ -22,7 +22,7 @@
     export let autoFocus: boolean = false
     export let rules: InputRules = new InputRules()
   
-    let errorMessage: string = "";
+    let errorMessage: string = ""
 
     function isValidInput(): boolean {
         if (rules.required && !value) {
@@ -55,7 +55,9 @@
     const dispatch = createEventDispatcher()
     const writableValue = writable(value)
 
+    $: writableValue.set(value)
     $: value = $writableValue
+
 
     let onsend: any[] = []
     if (rich) {
