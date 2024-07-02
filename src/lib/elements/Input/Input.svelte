@@ -1,10 +1,12 @@
 <script lang="ts">
+    import { InputRules } from "./inputRules"
     import { Appearance } from "../../enums/index"
     import { MarkdownEditor } from "markdown-editor"
     import "./markdown.scss"
     import { createEventDispatcher, onMount } from "svelte"
     import { EditorView } from "@codemirror/view"
     import { writable } from "svelte/store"
+    import Text from "../Text.svelte"
 
     export let placeholder: string = ""
     export let hook: string = ""
@@ -18,6 +20,30 @@
     export let centered: boolean = false
     export let rich: boolean = false
     export let autoFocus: boolean = false
+    export let rules: InputRules = new InputRules()
+  
+    let errorMessage: string = ""
+
+    function isValidInput(): boolean {
+        if (rules.required && !value) {
+            errorMessage = "This field is required."
+            return false
+        }
+        if (value.length < rules.minLength) {
+            errorMessage = `Minimum length is ${rules.minLength} characters.`
+            return false
+        }
+        if (value.length > rules.maxLength) {
+            errorMessage = `Maximum length is ${rules.maxLength} characters.`
+            return false
+        }
+        if (rules.pattern && !rules.pattern.test(value)) {
+            errorMessage = "Invalid format."
+            return false
+        }
+        errorMessage = ""
+        return true
+    }
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -68,6 +94,8 @@
     }
 
     function onInput() {
+        let isValid = isValidInput()
+        dispatch("isValid", isValid)
         dispatch("input", value)
     }
 
@@ -112,6 +140,9 @@
             on:blur={onBlur} />
     </div>
 </div>
+{#if errorMessage}
+    <Text appearance={Appearance.Warning}>{errorMessage}</Text>
+{/if}
 
 <style lang="scss">
     .input-group {

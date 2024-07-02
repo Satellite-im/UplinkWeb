@@ -16,11 +16,13 @@
     import { onDestroy, onMount } from "svelte"
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { AuthStore } from "$lib/state/auth"
+    import { CommonInputRules } from "$lib/utils/CommonInputRules"
 
     initLocale()
 
     let loading = true
     let showSeed = false
+    let isValidUsernameToUpdate = false
 
     function toggleSeedPhrase() {
         showSeed = !showSeed
@@ -39,6 +41,9 @@
     }
 
     async function updateUsername(newUsername: string) {
+        if (!isValidUsernameToUpdate) {
+            return
+        }
         userReference.name = newUsername
         Store.setUsername(newUsername)
         await MultipassStoreInstance.updateUsername(newUsername)
@@ -134,7 +139,6 @@
                         if (changeList.username) await updateUsername(user.name)
                         if (changeList.statusMessage) await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
-                        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
@@ -206,6 +210,10 @@
                             alt
                             bind:value={user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
+                            on:isValid={e => {
+                                isValidUsernameToUpdate = e.detail
+                            }}
+                            rules={CommonInputRules.username}
                             on:enter={async _ => {
                                 await updateUsername(user.name)
                                 updatePendentItemsToSave()
