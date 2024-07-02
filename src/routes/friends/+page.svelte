@@ -20,6 +20,8 @@
     import Toast from "$lib/elements/Toast.svelte"
     import { log } from "$lib/utils/Logger"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { ToastMessage } from "$lib/state/ui/toast"
+    import { CommonInputRules } from "$lib/utils/CommonInputRules"
 
     // Initialize locale
     initLocale()
@@ -51,24 +53,21 @@
         return groupedUsers
     }
 
-    let sentRequest: boolean
-    let sentRequestError: WarpError | undefined
     let requestString: string
     let submitRequest = async function () {
         log.info("Sending friend request to " + requestString)
         if (!isValidFriendDid) {
-            sentRequest = false
             return
         }
         let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
         requestSent.fold(
             (e: WarpError) => {
-                sentRequestError = e
-                sentRequest = true
+                requestString = ""
+                Store.addToastNotification(new ToastMessage("", e, 3, Shape.XMark, Appearance.Error))
             },
             () => {
-                sentRequest = true
-                sentRequestError = undefined
+                requestString = ""
+                Store.addToastNotification(new ToastMessage("", `Your request is making it's way!`, 3, Shape.CheckMark, Appearance.Success))
             }
         )
     }
@@ -172,39 +171,6 @@
 </script>
 
 <div id="page">
-    <!-- Modals -->
-    {#if sentRequest}
-        <Modal
-            hook="modal-request-sent"
-            padded
-            on:close={_ => {
-                sentRequest = false
-            }}>
-            <svelte:fragment slot="controls">
-                <Button
-                    hook="button-close-request-sent"
-                    icon
-                    small
-                    appearance={Appearance.Alt}
-                    on:click={_ => {
-                        sentRequest = false
-                    }}>
-                    <Icon icon={Shape.XMark} />
-                </Button>
-            </svelte:fragment>
-            <div class="request-sent">
-                {#if sentRequestError != undefined}
-                    <Icon size={Size.Largest} icon={Shape.XMark} highlight={Appearance.Error} />
-                    <Text size={Size.Large}>Error!</Text>
-                    <Text muted>{sentRequestError}</Text>
-                {:else}
-                    <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
-                    <Text hook="label-modal-request-sent" size={Size.Large}>Request Dispatched!</Text>
-                    <Text hook="text-modal-request-sent" muted>Your request is making it's way to {requestString}.</Text>
-                {/if}
-            </div>
-        </Modal>
-    {/if}
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends}>
         <!--
             <Button hook="button-marketplace" outline appearance={Appearance.Alt} text={$_("market.market")}>
@@ -264,7 +230,7 @@
                         on:isValid={e => {
                            isValidFriendDid = e.detail
                         }}
-                        rules={{ required: false, minLength: 13, maxLength: 56, pattern: /^(did:key:[a-zA-Z0-9]{48}|[a-z]{4}#[a-zA-Z0-9]{8})$/}}
+                        rules={CommonInputRules.friendRequestDid}
                         on:enter={submitRequest} bind:value={requestString}>
                         <Icon icon={Shape.Search} />
                     </Input>
@@ -451,14 +417,6 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
-
-        .request-sent {
-            display: inline-flex;
-            justify-content: center;
-            flex-direction: column;
-            gap: var(--gap);
-            align-items: center;
-        }
 
         .content-header {
             display: inline-flex;

@@ -19,6 +19,7 @@
     let username = ""
     let statusMessage = ""
     let isValidUsername = false
+    let isValidStatusMessage = true
 
     initLocale()
 
@@ -71,6 +72,10 @@
                 hook="input-new-account-status"
                 alt
                 placeholder={$_("pages.auth.new_account.set_status")}
+                on:isValid={e => {
+                    isValidStatusMessage = e.detail
+                }}
+                rules={CommonInputRules.statusMessage}
                 on:input={async e => {
                     statusMessage = e.detail
                 }} />
@@ -90,7 +95,7 @@
                     Store.addToastNotification(new ToastMessage("", "Select a username to proceed.", 2))
                     return
                 }
-                if (isValidUsername) {
+                if (isValidUsername && isValidStatusMessage) {
                     await createAccount(username, statusMessage)
                 }
             }}>
