@@ -9,8 +9,18 @@
     import { ConversationStore } from "$lib/state/conversation"
     import { InventoryStore } from "$lib/state/inventory"
     import { goto } from "$app/navigation"
-    import { log } from "$lib/utils/Logger"
+    import { log, LogLevel } from "$lib/utils/Logger"
+    import { Select } from "$lib/elements"
+    import { get } from "svelte/store"
+    import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
+    import RamUsage from "$lib/components/widgets/RamUsage.svelte"
+    import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     initLocale()
+
+    let settings = get(log.settings)
+    log.settings.subscribe(s => {
+        settings = s
+    })
 </script>
 
 <div id="page">
@@ -38,21 +48,68 @@
     </SettingSection>
 
     <SettingSection hook="section-clear-state" name="Clear State" description="Reset the application state.">
-        <Button hook="button-clear-state" appearance={Appearance.Alt} 
+        <Button
+            hook="button-clear-state"
+            appearance={Appearance.Alt}
             on:click={async _ => {
-                    await clearState().then(() => {
+                await clearState()
+                    .then(() => {
                         goto(Route.Unlock)
                         setTimeout(() => {
                             location.reload()
                         }, 500)
                     })
-                    .catch((error) => log.error(`Error deleting database: ${error}`));
-                }}>Clear State</Button>
+                    .catch(error => log.error(`Error deleting database: ${error}`))
+            }}>Clear State</Button>
     </SettingSection>
 
     <SettingSection hook="section-test-voice" name="Test Voice" description="Dev Voice">
         <Button hook="button-test-voice" appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
     </SettingSection>
+
+    <SettingSection hook="section-logger-level" name="Logger Level" description="Set the logging level">
+        <Select
+            hook="selector-current-logger-level-{settings.level}"
+            options={[
+                { text: LogLevel.Info, value: LogLevel.Info },
+                { text: LogLevel.Developer, value: LogLevel.Developer },
+                { text: LogLevel.Debug, value: LogLevel.Debug },
+                { text: LogLevel.Warning, value: LogLevel.Warning },
+                { text: LogLevel.Error, value: LogLevel.Error },
+            ]}
+            on:change={v => {
+                switch (v.detail) {
+                    case LogLevel.Info:
+                        return log.settings.update(s => {
+                            s.level = LogLevel.Info
+                            return s
+                        })
+                    case LogLevel.Developer:
+                        return log.settings.update(s => {
+                            s.level = LogLevel.Developer
+                            return s
+                        })
+                    case LogLevel.Debug:
+                        return log.settings.update(s => {
+                            s.level = LogLevel.Debug
+                            return s
+                        })
+                    case LogLevel.Warning:
+                        return log.settings.update(s => {
+                            s.level = LogLevel.Warning
+                            return s
+                        })
+                    case LogLevel.Error:
+                        return log.settings.update(s => {
+                            s.level = LogLevel.Error
+                            return s
+                        })
+                }
+            }}
+            bind:selected={settings.level}>
+        </Select>
+    </SettingSection>
+    <WidgetBar />
 </div>
 
 <style lang="scss">
