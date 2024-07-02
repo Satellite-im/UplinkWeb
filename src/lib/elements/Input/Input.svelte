@@ -107,6 +107,20 @@
             send()
         }
     }
+
+    function handleFocus(event: FocusEvent) {
+        const input = event.target as HTMLInputElement
+        requestAnimationFrame(() => {
+        input.select()
+        
+        const mouseupListener = () => {
+            input.removeEventListener('mouseup', mouseupListener)
+            return false
+        }
+        
+        input.addEventListener('mouseup', mouseupListener)
+    })
+    } 
 </script>
 
 <div
@@ -126,6 +140,7 @@
             type="text"
             disabled={disabled}
             bind:this={input}
+            on:focus={handleFocus}
             bind:value={$writableValue}
             placeholder={placeholder}
             on:keydown={onKeyDown}

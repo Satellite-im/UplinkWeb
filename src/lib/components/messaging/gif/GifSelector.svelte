@@ -115,7 +115,7 @@
         }
     }
 
-    const gifHeight = writable(133.33)
+    const gifHeight = createPersistentState("uplink.gifsize", 133.33)
 
     onMount(() => {
         observer = new IntersectionObserver(entries => {
