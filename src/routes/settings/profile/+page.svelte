@@ -23,6 +23,7 @@
     let loading = true
     let showSeed = false
     let isValidUsernameToUpdate = false
+    let isValidStatusMessageToUpdate = false
 
     function toggleSeedPhrase() {
         showSeed = !showSeed
@@ -51,6 +52,9 @@
     }
 
     async function updateStatusMessage(newStatusMessage: string) {
+        if (!isValidStatusMessageToUpdate) {
+            return
+        }
         userReference.profile.status_message = newStatusMessage
         Store.setStatusMessage(newStatusMessage)
         await MultipassStoreInstance.updateStatusMessage(newStatusMessage)
@@ -251,6 +255,10 @@
                     bind:value={statusMessage}
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
+                    on:isValid={e => {
+                        isValidStatusMessageToUpdate = e.detail
+                    }}
+                    rules={CommonInputRules.statusMessage}
                     on:enter={async _ => {
                         await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
