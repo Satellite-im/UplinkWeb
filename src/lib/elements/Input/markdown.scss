@@ -12,6 +12,7 @@
         white-space: pre-wrap;
         word-wrap: anywhere;
         width: 100%;
+        flex-direction: column;
     }
 
     .cm-scroller {
@@ -19,7 +20,6 @@
         overflow-y: scroll;
         div:first-of-type {
             display: inline-flex;
-            align-items: center;
         }
 
         font-family: unset;

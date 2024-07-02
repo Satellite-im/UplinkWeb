@@ -21,7 +21,7 @@
     export let rich: boolean = false
     export let autoFocus: boolean = false
     export let rules: InputRules = new InputRules()
-  
+
     let errorMessage: string = ""
 
     function isValidInput(): boolean {
@@ -57,7 +57,6 @@
 
     $: writableValue.set(value)
     $: value = $writableValue
-
 
     let onsend: any[] = []
     if (rich) {
@@ -111,7 +110,7 @@
 </script>
 
 <div
-    class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}"
+    class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
     data-tooltip={tooltip}
     role="none"
     on:click={async _ => {
@@ -119,7 +118,7 @@
             await navigator.clipboard.writeText(`${value}`)
         }
     }}>
-    <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
+    <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''} {rich ? 'multiline' : ''}">
         <slot></slot>
         <input
             data-cy={hook}
@@ -140,6 +139,7 @@
 
 <style lang="scss">
     .input-group {
+        min-height: var(--input-height);
         height: var(--input-height);
         display: inline-flex;
         flex-direction: row;
@@ -155,6 +155,7 @@
             gap: var(--gap);
             align-items: center;
             width: fit-content;
+            min-height: var(--input-height);
             height: var(--input-height);
             transition: all var(--animation-speed);
             padding: 0 var(--padding);
@@ -163,6 +164,14 @@
             &.rounded {
                 border-radius: var(--border-radius-more);
             }
+
+            &.multiline {
+                height: fit-content;
+            }
+        }
+
+        &.multiline {
+            height: fit-content;
         }
 
         .input {
