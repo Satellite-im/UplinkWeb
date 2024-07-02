@@ -104,7 +104,7 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
-        <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Primary} on:click={_ => UIStore.decreaseFontSize()}>
+        <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
         </Button>
         <div class="font-size">
