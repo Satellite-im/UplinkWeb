@@ -1,6 +1,6 @@
 <script lang="ts">
     import { writable } from "svelte/store"
-    import { Icon, Input, Label } from "$lib/elements"
+    import { Icon, Input, Label, RangeSelector } from "$lib/elements"
     import Spacer from "$lib/elements/Spacer.svelte"
     import { Shape } from "$lib/enums"
     import { emojiList } from "./EmojiList"
@@ -107,6 +107,8 @@
 
     $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, selectedSkinTone)
 
+    const emojiSize = writable(24)
+
     onMount(() => {
         // Initialize frequently used emojis if needed
     })
@@ -130,6 +132,10 @@
             </div>
         {/if}
     </div>
+    <div class="slider-container">
+        <Label text="Size" />
+        <RangeSelector min={16} max={45} bind:value={$emojiSize} />
+    </div>
     <Spacer less />
     <div id="emoji-selector">
         <section id="frequently_used">
@@ -144,7 +150,8 @@
                         on:click={() => handleEmojiClick(emoji.glyph, "")}
                         on:keydown={e => {
                             if (e.key === "Enter") handleEmojiClick(emoji.glyph, "")
-                        }}>{emoji.glyph}</span>
+                        }}
+                        style="font-size: {$emojiSize}px">{emoji.glyph}</span>
                 {/each}
             </div>
         </section>
@@ -162,9 +169,8 @@
                             on:click={() => handleEmojiClick(emoji.glyph, emoji.skin_tone ? selectedSkinTone : "")}
                             on:keydown={e => {
                                 if (e.key === "Enter") handleEmojiClick(emoji.glyph, emoji.skin_tone ? selectedSkinTone : "")
-                            }}>
-                            {emoji.skin_tone ? getEmojiWithSkinTone(emoji.glyph, selectedSkinTone) : emoji.glyph}
-                        </span>
+                            }}
+                            style="font-size: {$emojiSize}px">{emoji.skin_tone ? getEmojiWithSkinTone(emoji.glyph, selectedSkinTone) : emoji.glyph}</span>
                     {/each}
                 </div>
             </section>
@@ -217,10 +223,18 @@
                     border: none;
 
                     .emoji {
-                        font-size: var(--input-height);
+                        font-size: var(--input-height) !important;
                     }
                 }
             }
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: var(--gap);
+            width: 200px;
+            align-self: flex-end;
         }
 
         #emoji-selector {
