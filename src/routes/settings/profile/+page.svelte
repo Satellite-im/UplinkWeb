@@ -64,6 +64,8 @@
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
+    console.log("userReference", userReference) 
+
     onDestroy(() => {
         Store.setUsername(userReference.name)
         Store.setStatusMessage(userReference.profile.status_message)
@@ -129,8 +131,8 @@
                     text={$_("generic.save")}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        await updateUsername(user.name)
-                        await updateStatusMessage(statusMessage)
+                        if (changeList.username) await updateUsername(user.name)
+                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
                         Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}>
@@ -143,27 +145,57 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <ContextMenu
+            items={[
+                {
+                    id: "clear-banner-picture",
+                    icon: Shape.Trash,
+                    text: "Delete Banner Picture",
+                    appearance: Appearance.Default,
+                    onClick: async () => {
+                        await MultipassStoreInstance.updateBannerPicture("/0")
+                        Store.setBanner("")
+                    },
+                },
+            ]}>
         <div
+            slot="content"  let:open on:contextmenu={open}
             class="profile-header"
             data-cy="profile-banner"
             style="background-image: url('{user.profile.banner.image}')"
             on:click={_ => {
                 fileinput.click()
             }}>
+            <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
         </div>
-
-        <div class="profile-picture-container">
-            <ProfilePicture hook="profile-picture" image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
-            <FileUploadButton
-                icon
-                tooltip={$_("settings.profile.change_profile_photo")}
-                on:upload={async picture => {
-                    await updateProfilePicture(picture.detail)
-                }} />
-        </div>
-
-        <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
-
+        </ContextMenu>
+        <ContextMenu
+            items={[
+                {
+                    id: "clear-profile-picture",
+                    icon: Shape.Trash,
+                    text: "Delete Profile Picture",
+                    appearance: Appearance.Default,
+                    onClick: () => {
+                        updateProfilePicture("/0")
+                    },
+                },
+            ]}>
+            <div slot="content"  let:open on:contextmenu={open} class="profile-picture-container">
+                <ProfilePicture
+                    image={user.profile.photo.image}
+                    size={Size.Large}
+                    status={user.profile.status}
+                    frame={user.profile.photo.frame}
+                    noIndicator />
+                <FileUploadButton
+                    icon
+                    tooltip={$_("settings.profile.change_profile_photo")}
+                    on:upload={async picture => {
+                        await updateProfilePicture(picture.detail)
+                    }} />
+            </div>
+        </ContextMenu>
         <div class="content">
             <div class="section">
                 <Label hook="label-settings-profile-username" text={$_("generic.username")} />
@@ -375,7 +407,6 @@
             }
 
             .profile-picture-container {
-                pointer-events: none;
                 position: absolute;
                 z-index: 2;
                 top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 2 / 2));
@@ -395,6 +426,7 @@
                 background-size: cover;
                 padding: var(--padding-less);
                 width: 100%;
+                z-index: 1;
                 border-radius: var(--border-radius);
                 display: inline-flex;
                 align-items: flex-end;

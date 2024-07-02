@@ -61,6 +61,9 @@ export let defaultSettings = {
     activeRequests: [],
     blocked: [],
     files: [],
+    widgets: {
+        show: false,
+    },
     messaging: {
         convertEmoji: true,
         markdownSupport: true,
