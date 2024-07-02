@@ -22,6 +22,7 @@
             avatar = e.target?.result?.toString()
             dispatch("upload", avatar)
         }
+        e.target.value = ""
     }
 </script>
 
