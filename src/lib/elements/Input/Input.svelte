@@ -108,6 +108,11 @@
             send()
         }
     }
+
+    function handleFocus(event: FocusEvent) {
+        const input = event.target as HTMLInputElement
+        input.select()
+    } 
 </script>
 
 <div
@@ -127,6 +132,7 @@
             type="text"
             disabled={disabled}
             bind:this={input}
+            on:focus={handleFocus}
             bind:value={$writableValue}
             placeholder={placeholder}
             on:keydown={onKeyDown}
