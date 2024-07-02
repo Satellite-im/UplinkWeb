@@ -110,8 +110,8 @@
     }
 
     function handleFocus(event: FocusEvent) {
-        const input = event.target as HTMLInputElement;
-        input.select();
+        const input = event.target as HTMLInputElement
+        input.select()
     } 
 </script>
 
