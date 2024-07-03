@@ -17,6 +17,7 @@
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
+    import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
 
     initLocale()
 
@@ -91,15 +92,25 @@
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
     let fileinput: HTMLElement
 
-    const onFileSelected = (e: any) => {
+    const onFileSelected = async (e: any) => {
         let image = e.target.files[0]
-        let reader = new FileReader()
-        reader.readAsDataURL(image)
-        reader.onload = async e => {
-            let imageString = e.target?.result?.toString()
-            await MultipassStoreInstance.updateBannerPicture(imageString || "")
-            Store.setBanner(imageString || "")
+        let quality = 0.9
+
+        while (true) {
+            let compressedImage = await compressImageToUpload(image, quality)
+            if (compressedImage!.size <= MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE || quality <= 0.1) {
+                let reader = new FileReader()
+                reader.readAsDataURL(compressedImage!)
+                reader.onload = async (e) => {
+                    let imageString = e.target?.result?.toString()
+                    await MultipassStoreInstance.updateBannerPicture(imageString || "")
+                    Store.setBanner(imageString || "")
+                }
+                break
+            }
+            quality -= 0.1
         }
+        e.target.value = ""
     }
 
     let changeList = {
@@ -242,7 +253,7 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
                             <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>

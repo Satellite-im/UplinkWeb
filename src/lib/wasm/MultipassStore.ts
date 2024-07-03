@@ -403,7 +403,7 @@ class MultipassStore {
         let multipass = get(this.multipassWritable)
         if (multipass) {
             try {
-                let identity = await multipass.get_identity(wasm.Identifier.DID, id)
+                let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
                 let profile = {
                     ...defaultProfileData,
                 }
