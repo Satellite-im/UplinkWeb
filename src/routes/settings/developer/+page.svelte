@@ -1,8 +1,8 @@
 <script lang="ts">
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { Navigation, SettingSection } from "$lib/layouts"
-    import { Appearance, Route, SettingsRoute, Shape } from "$lib/enums"
+    import { SettingSection } from "$lib/layouts"
+    import { Appearance, Route } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import Button from "$lib/elements/Button.svelte"
     import { SettingsStore, clearState } from "$lib/state"
@@ -12,8 +12,6 @@
     import { log, LogLevel } from "$lib/utils/Logger"
     import { Select } from "$lib/elements"
     import { get } from "svelte/store"
-    import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
-    import RamUsage from "$lib/components/widgets/RamUsage.svelte"
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     initLocale()
 

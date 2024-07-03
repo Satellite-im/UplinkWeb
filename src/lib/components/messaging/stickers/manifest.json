@@ -234,6 +234,14 @@
             {
                 "name": "Busy",
                 "path": "assets/stickers/fishy_business/busy.png"
+            },
+            {
+                "name": "Mondays",
+                "path": "assets/stickers/fishy_business/mondays.png"
+            },
+            {
+                "name": "Construction",
+                "path": "assets/stickers/fishy_business/construction.png"
             }
         ]
     },

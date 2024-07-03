@@ -48,7 +48,7 @@ export type ProfilePictureRequirements = {
 }
 
 export type SimpleRoute = {
-    name: string,
+    name: string
     icon: Shape
 }
 

@@ -4,7 +4,7 @@
     import { GIPHY_API_KEY } from "$lib/keys"
     import { writable, derived } from "svelte/store"
     import { createEventDispatcher } from "svelte"
-    import { Icon, Input, Loader, RangeSelector } from "$lib/elements"
+    import { Icon, Input, Loader, RangeSelector, Spacer } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import Label from "$lib/elements/Label.svelte"
@@ -149,8 +149,10 @@
                 <Icon icon={Shape.Heart} />
             </Button>
         </div>
+        <Spacer less />
         <div class="tools">
-            <Label text="Powered by Giphy" />
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <img src="/assets/brand/giphy_attr.png" width="150" />
             <div class="slider-container">
                 <Label text="Size" />
                 <RangeSelector min={100} max={200} bind:value={$gifHeight} />
@@ -161,10 +163,13 @@
     {#if $activeTab === "search"}
         <div class="gifs">
             {#each $gifs as gif (gif.uniqueKey)}
+                <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                 <div class="gif-container">
                     <button class="icon-container" class:show-heart-icon={$isFavorite(gif)} on:click={() => toggleFavorite(gif)} aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
                     </button>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" style="height: {$gifHeight}px;" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
@@ -178,10 +183,13 @@
     {:else if $activeTab === "favorites"}
         <div class="gifs">
             {#each $favorites as gif (gif.uniqueKey)}
+                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                 <div class="gif-container" style="height: {$gifHeight}px;">
                     <button class="icon-container" class:show-heart-icon={$isFavorite(gif)} on:click={() => toggleFavorite(gif)} aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
                     </button>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                     <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
@@ -236,29 +244,6 @@
         gap: 1rem;
         height: var(--emoji-selector-height);
         width: calc(var(--min-component-width) * 2);
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-
-            button {
-                padding: 0.5rem 1rem;
-                background: var(--background-color);
-                border: 1px solid var(--border-color);
-                cursor: pointer;
-                transition: background-color 0.3s;
-
-                &.active {
-                    background: var(--primary-color);
-                    color: var(--white);
-                }
-
-                &:hover {
-                    background: var(--primary-color-light);
-                }
-            }
-        }
 
         .search-bar {
             position: sticky;

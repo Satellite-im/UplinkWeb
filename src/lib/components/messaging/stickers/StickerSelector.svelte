@@ -112,10 +112,6 @@
             background: var(--background-color);
             z-index: 1;
             padding: 0 var(--padding-less);
-
-            input {
-                width: 100%;
-            }
         }
 
         .stickers {

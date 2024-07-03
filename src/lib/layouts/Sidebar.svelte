@@ -5,8 +5,6 @@
     import { CallControls } from "$lib/components"
     import { Appearance, Route, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
-    import { slide } from "svelte/transition"
-    import { animationDuration } from "$lib/globals/animations"
     import { goto } from "$app/navigation"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"

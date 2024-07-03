@@ -29,7 +29,7 @@ class TesseractStore {
      * @param {string} pin - The pin to unlock the Tesseract.
      */
     async unlock(pin: string): Promise<Result<WarpError, void>> {
-        const tesseract = get(this.tesseractWritable);
+        const tesseract = get(this.tesseractWritable)
 
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
@@ -37,8 +37,8 @@ class TesseractStore {
         try {
             if (tesseract) {
                 tesseract.unlock(passphrase)
-    
-                log.info('Tesseract Unlocked: ' + tesseract)
+
+                log.info("Tesseract Unlocked: " + tesseract)
                 return success(undefined)
             }
             return failure(handleErrors(new Error("Tesseract not initialized")))
@@ -46,7 +46,6 @@ class TesseractStore {
             log.error("Error unlocking Tesseract: " + error)
             return failure(handleErrors(error))
         }
-
     }
 
     /**

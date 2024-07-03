@@ -13,7 +13,7 @@
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { onDestroy, onMount } from "svelte"
+    import { onDestroy } from "svelte"
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
@@ -135,18 +135,18 @@
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-                    <Button
-                        hook="button-save"
-                        text={$_("generic.save")}
-                        disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
-                        appearance={Appearance.Primary}
-                        on:click={async _ => {
-                            if (changeList.username) await updateUsername(user.name)
-                            if (changeList.statusMessage) await updateStatusMessage(statusMessage)
-                            updatePendentItemsToSave()
-                        }}>
-                        <Icon icon={Shape.CheckMark} />
-                    </Button>
+                <Button
+                    hook="button-save"
+                    text={$_("generic.save")}
+                    disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
+                    appearance={Appearance.Primary}
+                    on:click={async _ => {
+                        if (changeList.username) await updateUsername(user.name)
+                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                        updatePendentItemsToSave()
+                    }}>
+                    <Icon icon={Shape.CheckMark} />
+                </Button>
             </Controls>
         </div>
     {/if}
@@ -193,7 +193,7 @@
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}
@@ -222,7 +222,7 @@
                             }}
                             on:input={_ => {
                                 changeList.username = true
-                                unsavedChanges = (changeList.username || changeList.statusMessage)
+                                unsavedChanges = changeList.username || changeList.statusMessage
                             }} />
                     </div>
                     <ContextMenu
@@ -268,7 +268,7 @@
                     }}
                     on:input={_ => {
                         changeList.statusMessage = true
-                        unsavedChanges = (changeList.username || changeList.statusMessage)
+                        unsavedChanges = changeList.username || changeList.statusMessage
                     }} />
             </div>
             <div class="section">
@@ -423,13 +423,13 @@
             .profile-picture-container {
                 position: absolute;
                 z-index: 2;
-                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 2 / 2));
+                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 4 / 2));
                 height: calc(var(--profile-picture-size) * 2);
-                margin-bottom: calc((var(--profile-picture-size) * 2) * -0.5);
+                margin-bottom: calc((var(--profile-picture-size) * 3) * -0.5);
                 :global(.button) {
                     position: absolute;
-                    bottom: calc(var(--padding-less) * -0.75);
-                    right: calc(var(--padding-less) * -0.75);
+                    bottom: calc(var(--padding-less) * -6.3);
+                    right: calc(var(--padding-less) * -1);
                     z-index: 2;
                 }
             }
