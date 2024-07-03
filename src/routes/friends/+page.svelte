@@ -260,7 +260,7 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
                             <Icon icon={Shape.Clipboard} />
                         </Button>
                     </ContextMenu>
