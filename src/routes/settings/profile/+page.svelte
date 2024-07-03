@@ -100,6 +100,7 @@
             await MultipassStoreInstance.updateBannerPicture(imageString || "")
             Store.setBanner(imageString || "")
         }
+        e.target.value = ""
     }
 
     let changeList = {
