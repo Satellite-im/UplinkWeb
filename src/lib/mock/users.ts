@@ -13,7 +13,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/moon.png",
-                frame: { name: "Water", image: "/assets/frames/water.png" },
+                frame: { name: "Far Too Epic", image: "/assets/frames/twine.png" },
             },
             banner: {
                 image: "/assets/space.jpg",
@@ -65,7 +65,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/saturn.png",
-                frame: { name: "Fire", image: "/assets/frames/fire.png" },
+                frame: { name: "Robot", image: "/assets/frames/foxy.png" },
             },
             banner: {
                 image: "/assets/space.jpg",
@@ -86,7 +86,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/pluto.png",
-                frame: { name: "Gold Ring", image: "/assets/frames/gold.png" },
+                frame: { name: "", image: "" },
             },
             status: Status.Offline,
             status_message: "I am also testing a bunch of things a bunch of the time!",
@@ -107,7 +107,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "/assets/neptune.png",
-                frame: { name: "Mustache", image: "/assets/frames/mustache.png" },
+                frame: { name: "", image: "" },
             },
             banner: {
                 image: "/assets/space.jpg",

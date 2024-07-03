@@ -1,4 +1,4 @@
-import type { MessageGroup, Chat, Message, Attachment, PendingMessage, FileProgress } from "$lib/types"
+import type { MessageGroup, Chat, Message, PendingMessage, FileProgress } from "$lib/types"
 import { get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."

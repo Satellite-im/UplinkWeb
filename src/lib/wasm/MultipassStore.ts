@@ -49,37 +49,37 @@ class MultipassStore {
             switch (value.kind) {
                 case wasm.MultiPassEventKindEnum.FriendRequestSent:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected:
-                    {
-                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
-                        Store.setFriendRequests(get(Store.state.activeRequests)
-                            .filter(r => r.direction === MessageDirection.Inbound), outgoingFriendRequests)
-                        break
-                    }
+                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected: {
+                    let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
+                    Store.setFriendRequests(
+                        get(Store.state.activeRequests).filter(r => r.direction === MessageDirection.Inbound),
+                        outgoingFriendRequests
+                    )
+                    break
+                }
                 case wasm.MultiPassEventKindEnum.FriendRequestReceived:
                 case wasm.MultiPassEventKindEnum.IncomingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected:
-                    {
-                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
-                        Store.setFriendRequests(incomingFriendRequests, get(Store.state.activeRequests)
-                            .filter(r => r.direction === MessageDirection.Outbound))
-                        break
-                    }
-                case wasm.MultiPassEventKindEnum.FriendAdded:
-                    {
-                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
-                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
-                        let friends = await this.listFriends()
-                        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
-                        Store.setFriends(friends)
-                        break
-                    }
-                case wasm.MultiPassEventKindEnum.FriendRemoved:
-                    {
-                        let friends = await this.listFriends()
-                        Store.setFriends(friends)
-                        break
-                    }
+                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected: {
+                    let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
+                    Store.setFriendRequests(
+                        incomingFriendRequests,
+                        get(Store.state.activeRequests).filter(r => r.direction === MessageDirection.Outbound)
+                    )
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendAdded: {
+                    let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
+                    let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
+                    let friends = await this.listFriends()
+                    Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
+                    Store.setFriends(friends)
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendRemoved: {
+                    let friends = await this.listFriends()
+                    Store.setFriends(friends)
+                    break
+                }
                 default: {
                     log.error(`Unhandled message event: ${JSON.stringify(event)}`)
                     break

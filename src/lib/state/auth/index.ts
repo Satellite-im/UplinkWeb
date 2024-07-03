@@ -1,7 +1,6 @@
-import { get, writable, type Writable } from "svelte/store"
+import { type Writable } from "svelte/store"
 import { createPersistentState } from "../db/persistedState"
 import { getStateFromDB } from "../db/dbOperations"
-import { log } from "$lib/utils/Logger"
 
 export type Authentication = {
     pin: string
@@ -16,27 +15,27 @@ class Auth {
         this.state = createPersistentState<Authentication>("uplink.auth", {
             pin: "",
             scramblePin: false,
-            stayLoggedIn: false
-        })   
+            stayLoggedIn: false,
+        })
     }
 
     setScrambleValue(scramble: boolean) {
-        this.state.update(auth => { 
-            auth.scramblePin = scramble 
+        this.state.update(auth => {
+            auth.scramblePin = scramble
             return auth
         })
     }
 
     setStoredPin(pin: string) {
-        this.state.update(auth => { 
-            auth.pin = pin 
+        this.state.update(auth => {
+            auth.pin = pin
             return auth
         })
     }
 
     setStayLogged(stayLoggedIn: boolean) {
-        this.state.update(auth => { 
-            auth.stayLoggedIn = stayLoggedIn 
+        this.state.update(auth => {
+            auth.stayLoggedIn = stayLoggedIn
             return auth
         })
     }
@@ -45,7 +44,7 @@ class Auth {
         let state = await getStateFromDB<Authentication>("uplink.auth", {
             pin: "",
             scramblePin: false,
-            stayLoggedIn: false
+            stayLoggedIn: false,
         })
         return state
     }

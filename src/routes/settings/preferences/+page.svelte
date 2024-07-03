@@ -7,7 +7,7 @@
     import { Button, Icon, Input, Select, Switch } from "$lib/elements"
     import ColorPicker from "svelte-awesome-color-picker"
     import PopupButton from "$lib/components/ui/PopupButton.svelte"
-    import { get, writable } from "svelte/store"
+    import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, type ISettingsState } from "$lib/state"
 

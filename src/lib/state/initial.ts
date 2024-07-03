@@ -1,5 +1,4 @@
 import type { Call, Chat, FileInfo, FriendRequest, User } from "$lib/types"
-import type { Logger } from "$lib/utils/Logger"
 import type { Writable } from "svelte/store"
 import type { ToastMessage } from "./ui/toast"
 

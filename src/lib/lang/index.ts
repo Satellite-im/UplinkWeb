@@ -165,7 +165,7 @@ export function initLocale() {
                     quick: "Quick Chat",
                     quickDescription: "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation.",
                     showStatusWidgets: "Widget Panel",
-                    showStatusWidgetsDescription: "Enable the widget panel, which displays system information and other helpful data."
+                    showStatusWidgetsDescription: "Enable the widget panel, which displays system information and other helpful data.",
                 },
                 preferences: {
                     appLanguage: "App Language",

@@ -41,7 +41,7 @@ export const enum EmojiFont {
     NotoEmoji = "NotoEmoji",
     OpenMoji = "OpenMoji",
     Blobmoji = "Blobmoji",
-    Fluent = "Fluent"
+    Fluent = "Fluent",
 }
 
 export const enum Route {
@@ -139,12 +139,12 @@ export const enum KeybindAction {
     FocusUplink = "Hide/Focus Uplink.",
     PushToTalk = "Push to talk.",
     PushToMute = "Push to mute.",
-    PushToDeafen = "Push to deafen."
+    PushToDeafen = "Push to deafen.",
 }
 
 export const enum KeybindState {
     Pressed,
-    Released
+    Released,
 }
 
 export enum MessageDirection {

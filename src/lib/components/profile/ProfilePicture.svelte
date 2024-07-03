@@ -64,15 +64,15 @@
         }
 
         &.larger {
-            height: calc(var(--profile-picture-size) * 2);
-            width: calc(var(--profile-picture-size) * 2);
-            min-height: calc(var(--profile-picture-size) * 2);
-            min-width: calc(var(--profile-picture-size) * 2);
+            height: calc(var(--profile-picture-size) * 3);
+            width: calc(var(--profile-picture-size) * 3);
+            min-height: calc(var(--profile-picture-size) * 3);
+            min-width: calc(var(--profile-picture-size) * 3);
 
             .profile-image-frame {
-                height: calc(var(--profile-picture-size) * 2.2);
-                width: calc(var(--profile-picture-size) * 2.2);
-                min-width: calc(var(--profile-picture-size) * 2.2);
+                height: calc(var(--profile-picture-size) * 3.75);
+                width: calc(var(--profile-picture-size) * 3.75);
+                min-width: calc(var(--profile-picture-size) * 3.75);
             }
         }
 
