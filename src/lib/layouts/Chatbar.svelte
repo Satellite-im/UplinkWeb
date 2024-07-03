@@ -86,6 +86,13 @@
         </div>
     </PopupButton>
 
+    <PopupButton name="Stickers" class="sticker-popup" bind:open={$gifSelectorOpen}>
+        <CombinedSelector active={{ name: "Stickers", icon: Shape.Sticker }} on:gif={e => handleGif(e.detail)} />
+        <div slot="icon" class="control">
+            <Icon icon={Shape.Gif} />
+        </div>
+    </PopupButton>
+
     <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
         <Icon icon={Shape.ChevronRight} />
     </Button>

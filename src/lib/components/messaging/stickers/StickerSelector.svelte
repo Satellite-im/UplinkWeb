@@ -123,7 +123,6 @@
             display: flex;
             flex-direction: column;
             gap: var(--gap);
-
             overflow-y: auto;
 
             section {

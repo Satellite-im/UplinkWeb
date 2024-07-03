@@ -23,7 +23,7 @@
     let loading = true
     let showSeed = false
     let isValidUsernameToUpdate = false
-    let isValidStatusMessageToUpdate = false
+    let isValidStatusMessageToUpdate = true
 
     function toggleSeedPhrase() {
         showSeed = !showSeed
@@ -66,6 +66,8 @@
         changeList.statusMessage = false
 
         unsavedChanges = changeList.username || changeList.statusMessage
+        isValidStatusMessageToUpdate = false
+        isValidUsernameToUpdate = false
     }
 
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
@@ -134,17 +136,18 @@
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-                <Button
-                    hook="button-save"
-                    text={$_("generic.save")}
-                    appearance={Appearance.Primary}
-                    on:click={async _ => {
-                        if (changeList.username) await updateUsername(user.name)
-                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
-                        updatePendentItemsToSave()
-                    }}>
-                    <Icon icon={Shape.CheckMark} />
-                </Button>
+                    <Button
+                        hook="button-save"
+                        text={$_("generic.save")}
+                        disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
+                        appearance={Appearance.Primary}
+                        on:click={async _ => {
+                            if (changeList.username) await updateUsername(user.name)
+                            if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                            updatePendentItemsToSave()
+                        }}>
+                        <Icon icon={Shape.CheckMark} />
+                    </Button>
             </Controls>
         </div>
     {/if}
@@ -220,7 +223,7 @@
                             }}
                             on:input={_ => {
                                 changeList.username = true
-                                unsavedChanges = changeList.username || changeList.statusMessage
+                                unsavedChanges = (changeList.username || changeList.statusMessage)
                             }} />
                     </div>
                     <ContextMenu
@@ -266,7 +269,7 @@
                     }}
                     on:input={_ => {
                         changeList.statusMessage = true
-                        unsavedChanges = changeList.username || changeList.statusMessage
+                        unsavedChanges = (changeList.username || changeList.statusMessage)
                     }} />
             </div>
             <div class="section">

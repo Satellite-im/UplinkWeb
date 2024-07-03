@@ -89,6 +89,7 @@
             hook="button-new-account-create"
             class="full-width"
             text={$_("pages.auth.new_account.create")}
+            disabled={!isValidUsername || !isValidStatusMessage}
             loading={loading}
             on:click={async _ => {
                 if (username === "") {
