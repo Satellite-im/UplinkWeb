@@ -1,4 +1,3 @@
-
 export let defaultInventory = {
     frames: [],
 }
