@@ -95,6 +95,12 @@ export function initLocale() {
                         set_status: "Set status message . . .",
                         create: "Create Account",
                     },
+                    create: {
+                        title: "Account Creation",
+                        description: "We're going to create an account for you. On the next screen, you'll see a set of words. Screenshot this or write it down. This is the only way to backup your account.",
+                        new: "Create New Account",
+                        import: "Import Account",
+                    },
                 },
             },
             user: {
@@ -165,7 +171,7 @@ export function initLocale() {
                     quick: "Quick Chat",
                     quickDescription: "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation.",
                     showStatusWidgets: "Widget Panel",
-                    showStatusWidgetsDescription: "Enable the widget panel, which displays system information and other helpful data."
+                    showStatusWidgetsDescription: "Enable the widget panel, which displays system information and other helpful data.",
                 },
                 preferences: {
                     appLanguage: "App Language",

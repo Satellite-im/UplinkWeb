@@ -1,7 +1,8 @@
-import init, * as wasm from "warp-wasm";
-import type { IWarp } from "./IWarp";
-import { get, writable } from "svelte/store";
-import { log } from "$lib/utils/Logger";
+import init, * as wasm from "warp-wasm"
+import { initWarp, type IWarp } from "./IWarp"
+import { get, writable, type Writable } from "svelte/store"
+import { log } from "$lib/utils/Logger"
+import { TesseractStoreInstance } from "./TesseractStore"
 
 /**
  * Class representing the Store, which manages the state and interactions with Warp instances.
@@ -26,22 +27,20 @@ class Store {
      * @param tesseract - The Tesseract instance to use.
      * @param addresses - Optional addresses for IPFS configuration.
      */
-    async initWarpInstances(addresses?: string[]) {
+    async initWarpInstances(addresses?: string[], override?: boolean) {
         const multipassInstance = get(this.warp.multipass)
-        const tesseractInstance = get(this.warp.tesseract)
 
-        if (multipassInstance !== null && tesseractInstance !== null) {
+        if (!override && multipassInstance !== null) {
             log.info("Warp instances already initialized. Returning.")
             return
         }
-
-        await init();
-        let warp_instance = await this.createIpfs(addresses);
-        let tesseract = warp_instance.multipass.tesseract();
-        this.warp.tesseract.set(tesseract);
-        this.warp.multipass.set(warp_instance.multipass);
-        this.warp.raygun.set(warp_instance.raygun);
-        this.warp.constellation.set(warp_instance.constellation);
+        await initWarp()
+        let warp_instance = await this.createIpfs(addresses)
+        let tesseract = warp_instance.multipass.tesseract()
+        this.warp.tesseract.set(tesseract)
+        this.warp.multipass.set(warp_instance.multipass)
+        this.warp.raygun.set(warp_instance.raygun)
+        this.warp.constellation.set(warp_instance.constellation)
     }
 
     /**
@@ -52,8 +51,10 @@ class Store {
      * @private
      */
     private async createIpfs(addresses?: string[]): Promise<wasm.WarpInstance> {
+        addresses = ["/ip4/127.0.0.1/tcp/4444/ws/p2p/12D3KooWDE9ryqR3FMgiDxN42a5Cny26Bbb9L6PL9SyA4V9hwCgp"]
+        let tesseract: wasm.Tesseract = await TesseractStoreInstance.getTesseract()
         if (addresses && addresses.length > 0) {
-            return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(addresses))) as wasm.WarpInstance;
+            return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(addresses), tesseract)) as wasm.WarpInstance
         }
         // HACK: Replace 'your-relay-address-here' with your relay address
         // This is a temporary solution
@@ -62,7 +63,7 @@ class Store {
         // Uncomment code below to use your local relay server - line 63
         // And comment line 64
         // return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(["your-relay-address"]), tesseract)) as wasm.WarpInstance;
-        return (await new wasm.WarpIpfs(wasm.Config.minimal_basic())) as wasm.WarpInstance;
+        return (await new wasm.WarpIpfs(wasm.Config.minimal_basic(), tesseract)) as wasm.WarpInstance
     }
 }
 

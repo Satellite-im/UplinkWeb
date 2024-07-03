@@ -1,10 +1,11 @@
 import { get, writable, type Writable } from "svelte/store"
-import * as wasm from "warp-wasm"
+import init, * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { log } from "$lib/utils/Logger"
 import { MultipassStoreInstance } from "./MultipassStore"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
+import { initWarp } from "./IWarp"
 
 /**
  * Class representing the TesseractStore, which manages the state and interactions with a Tesseract instance.
@@ -18,10 +19,15 @@ class TesseractStore {
 
     /**
      * Retrieves the Tesseract instance.
-     * @returns {Promise<wasm.Tesseract>} A promise that resolves to the Tesseract instance.
+     * @returns {wasm.Tesseract} The current Tesseract instance.
      */
-    async getTesseract(): Promise<wasm.Tesseract> {
-        return get(this.tesseractWritable)!
+    async getTesseract(init?: boolean): Promise<wasm.Tesseract> {
+        let tesseract = get(this.tesseractWritable)!
+        if (init && tesseract === null) {
+            tesseract = await createTesseract()
+            this.tesseractWritable.set(tesseract)
+        }
+        return tesseract
     }
 
     /**
@@ -29,7 +35,7 @@ class TesseractStore {
      * @param {string} pin - The pin to unlock the Tesseract.
      */
     async unlock(pin: string): Promise<Result<WarpError, void>> {
-        const tesseract = get(this.tesseractWritable);
+        const tesseract = get(this.tesseractWritable)
 
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
@@ -37,8 +43,8 @@ class TesseractStore {
         try {
             if (tesseract) {
                 tesseract.unlock(passphrase)
-    
-                log.info('Tesseract Unlocked: ' + tesseract)
+
+                log.info("Tesseract Unlocked: " + tesseract)
                 return success(undefined)
             }
             return failure(handleErrors(new Error("Tesseract not initialized")))
@@ -46,7 +52,6 @@ class TesseractStore {
             log.error("Error unlocking Tesseract: " + error)
             return failure(handleErrors(error))
         }
-
     }
 
     /**
@@ -58,6 +63,25 @@ class TesseractStore {
             tesseract.lock()
         }
     }
+
+    exists() {
+        const tesseract = get(this.tesseractWritable)
+        return tesseract?.exist("keypair")
+    }
+
+    async initTesseract() {
+        let tesseract = get(this.tesseractWritable)
+        if (tesseract === null) this.tesseractWritable.set(await createTesseract())
+    }
 }
 
-export const TesseractStoreInstance = new TesseractStore(WarpStore.warp.tesseract)
+export async function createTesseract(): Promise<wasm.Tesseract> {
+    return await initWarp().then(_ => {
+        let tesseract = new wasm.Tesseract()
+        tesseract.load_from_storage()
+        tesseract.set_autosave()
+        return tesseract
+    })
+}
+
+export const TesseractStoreInstance = new TesseractStore(writable(null))

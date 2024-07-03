@@ -6,12 +6,14 @@
     import { Appearance, Route, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
+    import { createEventDispatcher } from "svelte"
 
     initLocale()
 
-    let loading = false
+    const dispatch = createEventDispatcher()
 
-    let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
+    export let phrase: string[]
+    let loading = false
 </script>
 
 <div id="auth-recover">
@@ -19,14 +21,21 @@
         <Title>{$_("pages.auth.recovery.title")}</Title>
         <Text muted>{$_("pages.auth.recovery.save_warning")}</Text>
     </div>
-    {#each samplePhrase as word, i}
+    {#each phrase as word, i}
         <OrderedPhrase number={i + 1} word={word} loading={loading} />
     {/each}
     <Controls>
         <Button class="full-width" text={$_("pages.auth.recovery.download")} appearance={Appearance.Alt} loading={loading}>
             <Icon icon={Shape.Download} />
         </Button>
-        <Button class="full-width" text={$_("pages.auth.recovery.next_step")} loading={loading} on:click={() => goto(Route.NewAccount)}>
+        <Button
+            class="full-width"
+            text={$_("pages.auth.recovery.next_step")}
+            loading={loading}
+            on:click={_ => {
+                loading = true
+                dispatch("click")
+            }}>
             <Icon icon={Shape.ArrowRight} />
         </Button>
     </Controls>

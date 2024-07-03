@@ -1,47 +1,22 @@
 <script lang="ts">
-    import { goto } from "$app/navigation"
     import { ProfilePicture } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
-    import { Appearance, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Store } from "$lib/state/Store"
-    import { get } from "svelte/store"
-    import type { Identity } from "warp-wasm"
-    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
-    import { log } from "$lib/utils/Logger"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
+    import { LoginPage } from "$lib/layouts/login"
 
-
-    let username = ""
-    let statusMessage = ""
+    export let page: LoginPage
+    export let username = ""
+    export let statusMessage = ""
     let isValidUsername = false
     let isValidStatusMessage = true
 
     initLocale()
-
-    async function createAccount(username: string, statusMessage: string) {
-        loading = true
-        await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
-        let identity = await MultipassStoreInstance.getOwnIdentity()
-        identity.fold(
-            (e: WarpError) => {
-                log.error("Error creating identity: " + e)
-            },
-            async (identity: Identity) => {
-                Store.setUserFromIdentity(identity!)
-                await new Promise(resolve => setTimeout(resolve, 1000))
-                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
-                loading = false
-                goto(Route.Chat)
-            }
-        )
-    }
-
-    let loading = false
 </script>
 
 <div id="auth-recover">
@@ -82,7 +57,7 @@
         </div>
     </div>
     <Controls>
-        <Button hook="button-new-account-go-back" class="full-width" text={$_("controls.go_back")} appearance={Appearance.Alt} loading={loading} on:click={() => goto(Route.RecoverySeed)}>
+        <Button hook="button-new-account-go-back" class="full-width" text={$_("controls.go_back")} appearance={Appearance.Alt} on:click={() => (page = LoginPage.EntryPoint)}>
             <Icon icon={Shape.ArrowLeft} />
         </Button>
         <Button
@@ -90,14 +65,13 @@
             class="full-width"
             text={$_("pages.auth.new_account.create")}
             disabled={!isValidUsername || !isValidStatusMessage}
-            loading={loading}
             on:click={async _ => {
                 if (username === "") {
                     Store.addToastNotification(new ToastMessage("", "Select a username to proceed.", 2))
                     return
                 }
                 if (isValidUsername && isValidStatusMessage) {
-                    await createAccount(username, statusMessage)
+                    page = LoginPage.Pin
                 }
             }}>
             <Icon icon={Shape.ArrowRight} />
