@@ -136,18 +136,18 @@
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-                    <Button
-                        hook="button-save"
-                        text={$_("generic.save")}
-                        disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
-                        appearance={Appearance.Primary}
-                        on:click={async _ => {
-                            if (changeList.username) await updateUsername(user.name)
-                            if (changeList.statusMessage) await updateStatusMessage(statusMessage)
-                            updatePendentItemsToSave()
-                        }}>
-                        <Icon icon={Shape.CheckMark} />
-                    </Button>
+                <Button
+                    hook="button-save"
+                    text={$_("generic.save")}
+                    disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
+                    appearance={Appearance.Primary}
+                    on:click={async _ => {
+                        if (changeList.username) await updateUsername(user.name)
+                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                        updatePendentItemsToSave()
+                    }}>
+                    <Icon icon={Shape.CheckMark} />
+                </Button>
             </Controls>
         </div>
     {/if}
@@ -223,7 +223,7 @@
                             }}
                             on:input={_ => {
                                 changeList.username = true
-                                unsavedChanges = (changeList.username || changeList.statusMessage)
+                                unsavedChanges = changeList.username || changeList.statusMessage
                             }} />
                     </div>
                     <ContextMenu
@@ -243,7 +243,7 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
                             <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
@@ -269,7 +269,7 @@
                     }}
                     on:input={_ => {
                         changeList.statusMessage = true
-                        unsavedChanges = (changeList.username || changeList.statusMessage)
+                        unsavedChanges = changeList.username || changeList.statusMessage
                     }} />
             </div>
             <div class="section">
