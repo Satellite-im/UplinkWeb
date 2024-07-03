@@ -227,12 +227,16 @@
             {#if tab === "all"}
                 <Label hook="label-add-someone" text={$_("friends.add_someone")} />
                 <div class="section">
-                    <Input hook="input-add-friend" alt placeholder={$_("friends.find_placeholder")} 
+                    <Input
+                        hook="input-add-friend"
+                        alt
+                        placeholder={$_("friends.find_placeholder")}
                         on:isValid={e => {
-                           isValidFriendDid = e.detail
+                            isValidFriendDid = e.detail
                         }}
                         rules={CommonInputRules.friendRequestDid}
-                        on:enter={submitRequest} bind:value={requestString}>
+                        on:enter={submitRequest}
+                        bind:value={requestString}>
                         <Icon icon={Shape.Search} />
                     </Input>
                     <Button hook="button-add-friend" disabled={!isValidFriendDid} appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
@@ -256,7 +260,7 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
                             <Icon icon={Shape.Clipboard} />
                         </Button>
                     </ContextMenu>
