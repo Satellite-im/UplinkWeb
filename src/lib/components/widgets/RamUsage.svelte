@@ -15,6 +15,7 @@
     let interval: any
     onMount(() => {
         function updateMemoryInfo() {
+            // @ts-ignore
             const memory = performance.memory
             if (memory) {
                 memoryStatus.set({

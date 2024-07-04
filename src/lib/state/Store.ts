@@ -1,7 +1,6 @@
 import { Sound, Sounds } from "$lib/components/utils/Sounds"
 import { ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
-import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
 import { get, writable } from "svelte/store"

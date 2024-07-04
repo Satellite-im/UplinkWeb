@@ -13,10 +13,11 @@
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { onDestroy, onMount } from "svelte"
+    import { onDestroy } from "svelte"
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
+    import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
 
     initLocale()
 
@@ -91,14 +92,23 @@
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
     let fileinput: HTMLElement
 
-    const onFileSelected = (e: any) => {
+    const onFileSelected = async (e: any) => {
         let image = e.target.files[0]
-        let reader = new FileReader()
-        reader.readAsDataURL(image)
-        reader.onload = async e => {
-            let imageString = e.target?.result?.toString()
-            await MultipassStoreInstance.updateBannerPicture(imageString || "")
-            Store.setBanner(imageString || "")
+        let quality = 0.9
+
+        while (true) {
+            let compressedImage = await compressImageToUpload(image, quality)
+            if (compressedImage!.size <= MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE || quality <= 0.1) {
+                let reader = new FileReader()
+                reader.readAsDataURL(compressedImage!)
+                reader.onload = async (e) => {
+                    let imageString = e.target?.result?.toString()
+                    await MultipassStoreInstance.updateBannerPicture(imageString || "")
+                    Store.setBanner(imageString || "")
+                }
+                break
+            }
+            quality -= 0.1
         }
         e.target.value = ""
     }
@@ -136,18 +146,18 @@
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
-                    <Button
-                        hook="button-save"
-                        text={$_("generic.save")}
-                        disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
-                        appearance={Appearance.Primary}
-                        on:click={async _ => {
-                            if (changeList.username) await updateUsername(user.name)
-                            if (changeList.statusMessage) await updateStatusMessage(statusMessage)
-                            updatePendentItemsToSave()
-                        }}>
-                        <Icon icon={Shape.CheckMark} />
-                    </Button>
+                <Button
+                    hook="button-save"
+                    text={$_("generic.save")}
+                    disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
+                    appearance={Appearance.Primary}
+                    on:click={async _ => {
+                        if (changeList.username) await updateUsername(user.name)
+                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                        updatePendentItemsToSave()
+                    }}>
+                    <Icon icon={Shape.CheckMark} />
+                </Button>
             </Controls>
         </div>
     {/if}
@@ -194,7 +204,7 @@
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}
@@ -223,7 +233,7 @@
                             }}
                             on:input={_ => {
                                 changeList.username = true
-                                unsavedChanges = (changeList.username || changeList.statusMessage)
+                                unsavedChanges = changeList.username || changeList.statusMessage
                             }} />
                     </div>
                     <ContextMenu
@@ -243,7 +253,7 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
                             <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
@@ -269,7 +279,7 @@
                     }}
                     on:input={_ => {
                         changeList.statusMessage = true
-                        unsavedChanges = (changeList.username || changeList.statusMessage)
+                        unsavedChanges = changeList.username || changeList.statusMessage
                     }} />
             </div>
             <div class="section">
@@ -424,13 +434,13 @@
             .profile-picture-container {
                 position: absolute;
                 z-index: 2;
-                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 2 / 2));
+                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 4 / 2));
                 height: calc(var(--profile-picture-size) * 2);
-                margin-bottom: calc((var(--profile-picture-size) * 2) * -0.5);
+                margin-bottom: calc((var(--profile-picture-size) * 3) * -0.5);
                 :global(.button) {
                     position: absolute;
-                    bottom: calc(var(--padding-less) * -0.75);
-                    right: calc(var(--padding-less) * -0.75);
+                    bottom: calc(var(--padding-less) * -6.3);
+                    right: calc(var(--padding-less) * -1);
                     z-index: 2;
                 }
             }

@@ -5,7 +5,6 @@
     import { createEventDispatcher } from "svelte"
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
-    import Text from "$lib/elements/Text.svelte"
     import { Label } from "$lib/elements"
 
     export let remote: boolean = false

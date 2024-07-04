@@ -17,7 +17,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="image-file" on:click={onClick}>
     <img class="preview" src={ImgSource} alt="preview" />
-    <Spacer less/>
+    <Spacer less />
     <input class="img_text" value={name} />
     <Text size={Size.Smallest} muted class="name">{prettyBytes(filesize)}</Text>
 </div>
@@ -66,7 +66,7 @@
             height: 21px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space:nowrap;
+            white-space: nowrap;
         }
 
         :global(.svg-icon) {

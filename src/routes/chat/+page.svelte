@@ -2,17 +2,14 @@
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
-    import { mock_users } from "$lib/mock/users"
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
     import { Chatbar, Sidebar, Topbar, Profile } from "$lib/layouts"
     import {
         FileEmbed,
-        PopupButton,
         ImageEmbed,
         ChatPreview,
-        NewPayment,
         Conversation,
         Message,
         MessageGroup,
@@ -42,7 +39,6 @@
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
-    import { log } from "$lib/utils/Logger"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Attachment, Message as MessageType } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
@@ -564,13 +560,6 @@
                         </Button>
                     </ContextMenu>
                 </svelte:fragment>
-
-                <PopupButton name={$_("payments.send_coin")}>
-                    <NewPayment recipients={mock_users} />
-                    <div slot="icon" class="control">
-                        <Icon icon={Shape.Starlight} size={Size.Large} />
-                    </div>
-                </PopupButton>
             </Chatbar>
         {/if}
     </div>
