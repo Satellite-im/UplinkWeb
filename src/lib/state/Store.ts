@@ -195,29 +195,8 @@ class GlobalStore {
         this.state.friends.set(friendsList)
     }
 
-    setFriendRequests(incomingFriendRequests: Array<any>, outgoingFriendRequests: Array<any>) {
-        let user = get(this.state.user)
-
-        const createFriendRequests = (friendRequests: Array<any>, direction: MessageDirection): FriendRequest[] => {
-            return friendRequests.map(friendDid => {
-                let friendUser: User = {
-                    ...defaultUser,
-                    name: friendDid,
-                    key: friendDid,
-                }
-                return {
-                    at: new Date(),
-                    from: direction === MessageDirection.Inbound ? friendUser : user,
-                    to: direction === MessageDirection.Inbound ? user : friendUser,
-                    direction: direction,
-                }
-            })
-        }
-
-        let incomingRequests = createFriendRequests(incomingFriendRequests, MessageDirection.Inbound)
-        let outgoingRequests = createFriendRequests(outgoingFriendRequests, MessageDirection.Outbound)
-
-        let allFriendRequests = new Set([...incomingRequests, ...outgoingRequests])
+    setFriendRequests(incomingFriendRequests: Array<FriendRequest>, outgoingFriendRequests: Array<FriendRequest>) {
+        let allFriendRequests = new Set([...incomingFriendRequests, ...outgoingFriendRequests])
 
         this.state.activeRequests.set(Array.from(allFriendRequests.values()))
     }

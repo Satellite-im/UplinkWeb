@@ -5,7 +5,7 @@ import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
-import { defaultProfileData, type User } from "$lib/types"
+import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
 import { Store } from "$lib/state/Store"
 import { MessageDirection } from "$lib/enums"
 import { parseJSValue } from "./EnumParser"
@@ -51,26 +51,21 @@ class MultipassStore {
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected:
                     {
-                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
-                        Store.setFriendRequests(get(Store.state.activeRequests)
-                            .filter(r => r.direction === MessageDirection.Inbound), outgoingFriendRequests)
+                        await this.listOutgoingFriendRequests()
                         break
                     }
                 case wasm.MultiPassEventKindEnum.FriendRequestReceived:
                 case wasm.MultiPassEventKindEnum.IncomingFriendRequestClosed:
                 case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected:
                     {
-                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
-                        Store.setFriendRequests(incomingFriendRequests, get(Store.state.activeRequests)
-                            .filter(r => r.direction === MessageDirection.Outbound))
+                        await this.listIncomingFriendRequests()
                         break
                     }
                 case wasm.MultiPassEventKindEnum.FriendAdded:
                     {
-                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
-                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
+                        await this.listOutgoingFriendRequests()
+                        await this.listIncomingFriendRequests()
                         let friends = await this.listFriends()
-                        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
                         Store.setFriends(friends)
                         break
                     }
@@ -114,6 +109,53 @@ class MultipassStore {
                 Did Key: ${identity?.did_key()} \n`)
             } catch (error) {
                 log.error("Error creating identity: " + error)
+            }
+        }
+    }
+
+    async fetchAllFriendsAndRequests() {
+        await this.listIncomingFriendRequests()
+        await this.listOutgoingFriendRequests()
+        let blockedUsers: Array<any> = await MultipassStoreInstance.listBlockedFriends()
+        let friends = await MultipassStoreInstance.listFriends()
+        Store.setFriends(friends)
+        Store.setBlockedUsers(blockedUsers)
+    }
+
+     /**
+     * Lists outgoing friend requests.
+     * @returns A list of outgoing friend requests or an empty array in case of error.
+     */
+    async listOutgoingFriendRequests() {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let outgoingFriendRequests: Array<any> = await multipass.list_outgoing_request()
+                let outgoingFriendRequestsUsers: Array<FriendRequest> = []
+                for (let i = 0; i < outgoingFriendRequests.length; i++) {
+                    let friendIdentity: any = (await multipass.get_identity(wasm.Identifier.DID, outgoingFriendRequests[i]))[0]
+                    let friendUser: User =   {
+                        ...defaultUser,
+                        name: friendIdentity === undefined ? outgoingFriendRequests[i] : friendIdentity.username,
+                        key: friendIdentity === undefined ? outgoingFriendRequests[i] : friendIdentity.did_key,
+                        profile: {
+                            ...defaultProfileData,
+                            status_message: friendIdentity === undefined ? "" : friendIdentity.status_message ?? "",
+                        },
+                    }
+                    let friendRequest: FriendRequest = {
+                        direction: MessageDirection.Outbound,
+                        to: friendUser,
+                        from: get(Store.state.user),
+                        at: new Date(),
+                    }
+                    outgoingFriendRequestsUsers.push(friendRequest)
+                }
+                Store.setFriendRequests(get(Store.state.activeRequests)
+                    .filter(r => r.direction === MessageDirection.Inbound), outgoingFriendRequestsUsers)
+            } catch (error) {
+                log.error("Error listing incoming friend requests: " + error)
             }
         }
     }
@@ -199,34 +241,36 @@ class MultipassStore {
      * Lists incoming friend requests.
      * @returns A list of incoming friend requests or an empty array in case of error.
      */
-    async listIncomingFriendRequests(): Promise<any> {
+    async listIncomingFriendRequests() {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                let friends = await multipass.list_incoming_request()
-                return friends
+                let incomingFriendRequests: Array<any> = await multipass.list_incoming_request()
+                let incomingFriendRequestsUsers: Array<FriendRequest> = []
+                for (let i = 0; i < incomingFriendRequests.length; i++) {
+                    let friendIdentity: any = (await multipass.get_identity(wasm.Identifier.DID, incomingFriendRequests[i]))[0]
+                    let friendUser: User =   {
+                        ...defaultUser,
+                        name: friendIdentity === undefined ? incomingFriendRequests[i] : friendIdentity.username,
+                        key: friendIdentity === undefined ? incomingFriendRequests[i] : friendIdentity.did_key,
+                        profile: {
+                            ...defaultProfileData,
+                            status_message: friendIdentity === undefined ? "" : friendIdentity.status_message ?? "",
+                        },
+                    }
+                    let friendRequest: FriendRequest = {
+                        direction: MessageDirection.Inbound,
+                        to: get(Store.state.user),
+                        from: friendUser,
+                        at: new Date(),
+                    }
+                    incomingFriendRequestsUsers.push(friendRequest)
+                }
+                Store.setFriendRequests(incomingFriendRequestsUsers, get(Store.state.activeRequests)
+                    .filter(r => r.direction === MessageDirection.Outbound))
             } catch (error) {
                 log.error("Error listing incoming friend requests: " + error)
-                return []
-            }
-        }
-    }
-
-    /**
-     * Lists outgoing friend requests.
-     * @returns A list of outgoing friend requests or an empty array in case of error.
-     */
-    async listOutgoingFriendRequests(): Promise<any> {
-        const multipass = get(this.multipassWritable)
-
-        if (multipass) {
-            try {
-                let friends = await multipass.list_outgoing_request()
-                return friends
-            } catch (error) {
-                log.error("Error listing outgoing friend requests: " + error)
-                return []
             }
         }
     }

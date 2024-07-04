@@ -115,18 +115,8 @@
         })
     }
 
-    async function fetchFriendsAndRequests() {
-        let incomingFriendRequests: Array<any> = await MultipassStoreInstance.listIncomingFriendRequests()
-        let outgoingFriendRequests: Array<any> = await MultipassStoreInstance.listOutgoingFriendRequests()
-        let blockedUsers: Array<any> = await MultipassStoreInstance.listBlockedFriends()
-        let friends = await MultipassStoreInstance.listFriends()
-        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
-        Store.setFriends(friends)
-        Store.setBlockedUsers(blockedUsers)
-    }
-
     onMount(async () => {
-        await fetchFriendsAndRequests()
+        await MultipassStoreInstance.fetchAllFriendsAndRequests()
     })
 
     let searchString: string = ""
