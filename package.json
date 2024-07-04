@@ -43,6 +43,7 @@
         "simple-peer": "^9.11.1",
         "svelte-awesome-color-picker": "^3.0.6",
         "svelte-dnd-action": "^0.9.42",
+        "svelte-highlight": "^7.6.1",
         "svelte-i18n": "^4.0.0",
         "svelte-markdown": "^0.4.1",
         "three": "^0.163.0",

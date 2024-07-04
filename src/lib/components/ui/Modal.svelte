@@ -82,4 +82,15 @@
             }
         }
     }
+
+    @media only screen and (max-width: 600px) {
+        .modal {
+            .body {
+                max-width: 100%;
+
+                width: 100%;
+                left: 0;
+            }
+        }
+    }
 </style>

@@ -34,6 +34,10 @@ export let mock_frames: Frame[] = [
         name: "Orbiting Moon",
     },
     {
+        image: "/assets/frames/skulls.png",
+        name: "Skull Party",
+    },
+    {
         image: "/assets/frames/bronze.png",
         name: "Bronze",
     },
@@ -80,9 +84,5 @@ export let mock_frames: Frame[] = [
     {
         image: "/assets/frames/gems.png",
         name: "Gems",
-    },
-    {
-        image: "/assets/frames/skulls.png",
-        name: "Skull Party",
-    },
+    }
 ]

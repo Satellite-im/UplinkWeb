@@ -77,6 +77,7 @@ export const enum SettingsRoute {
     Developer = "/settings/developer",
     Inventory = "/settings/inventory",
     Network = "/settings/network",
+    Realms = "/settings/realms",
 }
 
 export const enum Appearance {
@@ -120,6 +121,7 @@ export const enum MessageAttachmentKind {
     STL = "STL",
     Audio = "Audio",
     Video = "Video",
+    Text = "Text",
 }
 
 export const enum Status {
