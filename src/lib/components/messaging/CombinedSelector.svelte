@@ -11,7 +11,7 @@
         { name: "Emojis", icon: Shape.Smile },
         { name: "GIFs", icon: Shape.Gif },
         { name: "Stickers", icon: Shape.Beaker },
-        { name: "Effects", icon: Shape.Effects },
+        //    { name: "Effects", icon: Shape.Effects },
     ]
     export let active: SimpleRoute = { name: "Emojis", icon: Shape.Smile }
 
