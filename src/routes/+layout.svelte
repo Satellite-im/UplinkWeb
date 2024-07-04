@@ -138,6 +138,7 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     async function checkIfUserIsLogged() {
+        await TesseractStoreInstance.initTesseract()
         let authentication = await AuthStore.getAuthentication()
         if (authentication.pin === "") {
             log.info("No pin stored, redirecting to unlock")

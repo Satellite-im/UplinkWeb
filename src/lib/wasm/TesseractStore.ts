@@ -11,22 +11,18 @@ import { initWarp } from "./IWarp"
  * Class representing the TesseractStore, which manages the state and interactions with a Tesseract instance.
  */
 class TesseractStore {
-    private tesseractWritable: Writable<wasm.Tesseract | null> = writable(null)
+    private tesseractWritable: Writable<wasm.Tesseract | null>
 
-    constructor(tesseract: Writable<wasm.Tesseract | null>) {
-        this.tesseractWritable = tesseract
+    constructor() {
+        this.tesseractWritable = writable(null)
     }
 
     /**
      * Retrieves the Tesseract instance.
      * @returns {wasm.Tesseract} The current Tesseract instance.
      */
-    async getTesseract(init?: boolean): Promise<wasm.Tesseract> {
+    async getTesseract(): Promise<wasm.Tesseract> {
         let tesseract = get(this.tesseractWritable)!
-        if (init && tesseract === null) {
-            tesseract = await createTesseract()
-            this.tesseractWritable.set(tesseract)
-        }
         return tesseract
     }
 
@@ -35,7 +31,7 @@ class TesseractStore {
      * @param {string} pin - The pin to unlock the Tesseract.
      */
     async unlock(pin: string): Promise<Result<WarpError, void>> {
-        const tesseract = get(this.tesseractWritable)
+        const tesseract = get(this.tesseractWritable)!
 
         const encoder = new TextEncoder()
         const passphrase = encoder.encode(pin)
@@ -69,19 +65,22 @@ class TesseractStore {
         return tesseract?.exist("keypair")
     }
 
-    async initTesseract() {
+    async initTesseract(from?: wasm.Tesseract) {
+        if (from) {
+            this.tesseractWritable.set(from)
+            return
+        }
         let tesseract = get(this.tesseractWritable)
         if (tesseract === null) this.tesseractWritable.set(await createTesseract())
     }
 }
 
 export async function createTesseract(): Promise<wasm.Tesseract> {
-    return await initWarp().then(_ => {
-        let tesseract = new wasm.Tesseract()
-        tesseract.load_from_storage()
-        tesseract.set_autosave()
-        return tesseract
-    })
+    await initWarp()
+    let tesseract = new wasm.Tesseract()
+    tesseract.load_from_storage()
+    tesseract.set_autosave()
+    return tesseract
 }
 
-export const TesseractStoreInstance = new TesseractStore(writable(null))
+export const TesseractStoreInstance = new TesseractStore()

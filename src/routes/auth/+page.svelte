@@ -22,13 +22,8 @@
     let statusMessage: string = ""
     let phrase: string[] = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
-    async function accountExist() {
-        return TesseractStoreInstance.exists()
-    }
-
     async function checkIfAccountExist() {
-        await TesseractStoreInstance.initTesseract()
-        let exist = await accountExist()
+        let exist = TesseractStoreInstance.exists()
         if (exist) {
             currentPage = LoginPage.Pin
         }
