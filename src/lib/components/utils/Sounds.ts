@@ -8,7 +8,7 @@ export enum Sound {
     IncomingCall = "/assets/mp3/incoming-call.mp3",
     Request = "/assets/mp3/request.mp3",
     Press = "/assets/mp3/press.mp3",
-    Release = "/assets/mp3/release.mp3"
+    Release = "/assets/mp3/release.mp3",
 }
 
 let on: HTMLAudioElement = new Audio(Sound.On)
@@ -23,7 +23,7 @@ let press: HTMLAudioElement = new Audio(Sound.Press)
 let release: HTMLAudioElement = new Audio(Sound.Release)
 
 export class Sounds {
-    constructor() { }
+    constructor() {}
     static play(sound: Sound) {
         switch (sound) {
             case Sound.On:

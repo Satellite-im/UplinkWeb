@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { writable } from "svelte/store"
     import { Icon, Input, Label, RangeSelector } from "$lib/elements"
     import Spacer from "$lib/elements/Spacer.svelte"
     import { Shape } from "$lib/enums"

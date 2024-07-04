@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, Icon, Input, Text } from "$lib/elements"
+    import { Button, Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"

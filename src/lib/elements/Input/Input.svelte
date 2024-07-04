@@ -111,16 +111,16 @@
     function handleFocus(event: FocusEvent) {
         const input = event.target as HTMLInputElement
         requestAnimationFrame(() => {
-        input.select()
-        
-        const mouseupListener = () => {
-            input.removeEventListener('mouseup', mouseupListener)
-            return false
-        }
-        
-        input.addEventListener('mouseup', mouseupListener)
-    })
-    } 
+            input.select()
+
+            const mouseupListener = () => {
+                input.removeEventListener("mouseup", mouseupListener)
+                return false
+            }
+
+            input.addEventListener("mouseup", mouseupListener)
+        })
+    }
 </script>
 
 <div

@@ -48,8 +48,8 @@
             stream: localStream,
         })
 
-        peer.on("signal", (data: any) => {
-            log.info("SIGNAL", JSON.stringify(data))
+        peer.on("signal", (_data: any) => {
+            // log.info("SIGNAL", JSON.stringify(data))
             // Send this data to the remote peer via signaling server
         })
 

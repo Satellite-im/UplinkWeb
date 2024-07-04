@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Appearance, ChatType, Shape, Size } from "$lib/enums"
-    import { defaultChat, type Chat, type User, hashChat } from "$lib/types"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import { type User } from "$lib/types"
     import { ProfilePicture } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"

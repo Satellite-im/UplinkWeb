@@ -48,7 +48,7 @@ export type ProfilePictureRequirements = {
 }
 
 export type SimpleRoute = {
-    name: string,
+    name: string
     icon: Shape
 }
 
@@ -278,7 +278,7 @@ export type FileProgress = {
     cancellation?: Cancellable
     // If true the progress has been finished
     done?: boolean
-    // Returns the error that occured during filetransfer if present
+    // Returns the error that occurred during filetransfer if present
     error?: string
 }
 

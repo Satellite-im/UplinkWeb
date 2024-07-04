@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Input } from "$lib/elements"
-    import { Shape, Size } from "$lib/enums"
+    import { Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
@@ -8,14 +8,11 @@
     import { get, writable } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
-    import { createEventDispatcher, type EventDispatcher } from "svelte"
+    import { createEventDispatcher } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
     import type { GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
-    import EmojiSelector from "$lib/components/messaging/emoji/EmojiSelector.svelte"
-    import GifSelector from "$lib/components/messaging/gif/GifSelector.svelte"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
-    import { acos } from "three/examples/jsm/nodes/Nodes.js"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
@@ -27,6 +24,7 @@
     let message = writable("")
     let emojiSelectorOpen = writable(false)
     let gifSelectorOpen = writable(false)
+    let stickerSelectorOpen = writable(false)
 
     async function sendMessage(text: string) {
         let attachments: FileAttachment[] = []
@@ -47,7 +45,7 @@
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
 
         result.onSuccess(res => {
-            ConversationStore.addPendingMessages(chat.id, res.message, txt, attachments)
+            ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         message.set("")
         replyTo = undefined
@@ -60,6 +58,10 @@
 
     function handleGif(gif: GiphyGif) {
         gifSelectorOpen.set(false)
+    }
+
+    function handleSticker(gif: GiphyGif) {
+        stickerSelectorOpen.set(false)
     }
 </script>
 
@@ -86,10 +88,10 @@
         </div>
     </PopupButton>
 
-    <PopupButton name="Stickers" class="sticker-popup" bind:open={$gifSelectorOpen}>
-        <CombinedSelector active={{ name: "Stickers", icon: Shape.Sticker }} on:gif={e => handleGif(e.detail)} />
+    <PopupButton name="Stickers" class="emoji-popup" bind:open={$stickerSelectorOpen}>
+        <CombinedSelector active={{ name: "Stickers", icon: Shape.Sticker }} on:sticker={e => handleSticker(e.detail)} />
         <div slot="icon" class="control">
-            <Icon icon={Shape.Gif} />
+            <Icon icon={Shape.Sticker} />
         </div>
     </PopupButton>
 
