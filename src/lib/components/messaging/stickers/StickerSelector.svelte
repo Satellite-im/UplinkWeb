@@ -12,6 +12,8 @@
     const dispatch = createEventDispatcher()
     const searchQuery = writable("")
 
+    let tempCDN: string = "https://cdn.deepspaceshipping.co"
+
     function handleStickerClick(sticker: any) {
         dispatch("select", { sticker })
     }
@@ -30,7 +32,7 @@
 
         {#each stickers as collection}
             <a href={`#${collection.name}`} class="collection-link" aria-label={`Jump to ${collection.name}`}>
-                <img src={collection.assets[0].path} alt={collection.name} />
+                <img src={`${tempCDN}${collection.assets[0].path}`} alt={collection.name} />
             </a>
         {/each}
     </div>
@@ -48,7 +50,7 @@
                     <div class="collection-items">
                         {#each collection.assets as sticker}
                             <button class="sticker-item" on:click={() => handleStickerClick(sticker)} on:keydown={event => handleKeyDown(event, sticker)} tabindex="0" aria-label={`Select sticker ${sticker.name}`}>
-                                <img src={sticker.path} alt={sticker.name} />
+                                <img src={`${tempCDN}${sticker.path}`} alt={sticker.name} />
                                 <Label class="label" text={sticker.name} />
                             </button>
                         {/each}

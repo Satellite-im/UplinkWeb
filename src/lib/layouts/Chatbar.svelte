@@ -13,6 +13,7 @@
     import type { GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
+    import { checkMobile } from "$lib/utils/Mobile"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
@@ -81,19 +82,21 @@
         </div>
     </PopupButton>
 
-    <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifSelectorOpen}>
-        <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:gif={e => handleGif(e.detail)} />
-        <div slot="icon" class="control">
-            <Icon icon={Shape.Gif} />
-        </div>
-    </PopupButton>
+    {#if !checkMobile()}
+        <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifSelectorOpen}>
+            <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:gif={e => handleGif(e.detail)} />
+            <div slot="icon" class="control">
+                <Icon icon={Shape.Gif} />
+            </div>
+        </PopupButton>
 
-    <PopupButton name="Stickers" class="emoji-popup" bind:open={$stickerSelectorOpen}>
-        <CombinedSelector active={{ name: "Stickers", icon: Shape.Sticker }} on:sticker={e => handleSticker(e.detail)} />
-        <div slot="icon" class="control">
-            <Icon icon={Shape.Sticker} />
-        </div>
-    </PopupButton>
+        <PopupButton name="Stickers" class="emoji-popup" bind:open={$stickerSelectorOpen}>
+            <CombinedSelector active={{ name: "Stickers", icon: Shape.Sticker }} on:sticker={e => handleSticker(e.detail)} />
+            <div slot="icon" class="control">
+                <Icon icon={Shape.Sticker} />
+            </div>
+        </PopupButton>
+    {/if}
 
     <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
         <Icon icon={Shape.ChevronRight} />

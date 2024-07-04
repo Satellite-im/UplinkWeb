@@ -74,6 +74,26 @@ export let mock_messages: MessageGroup[] = [
                 text: ["This is another message"],
                 inReplyTo: null,
                 reactions: {},
+                attachments: [
+                    {
+                        kind: MessageAttachmentKind.Text,
+                        name: "TextDocument.svelte",
+                        location: "remote",
+                        size: 35,
+                    }
+                ],
+                pinned: false,
+            },
+            {
+                id: uuidv4(),
+                details: {
+                    at: new Date(),
+                    origin: mock_users[0],
+                    remote: false,
+                },
+                text: ["This is another message"],
+                inReplyTo: null,
+                reactions: {},
                 attachments: [],
                 pinned: false,
             },

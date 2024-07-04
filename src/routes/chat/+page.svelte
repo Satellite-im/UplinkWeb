@@ -46,6 +46,7 @@
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
     import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
     import { imageFromData } from "$lib/wasm/ConstellationStore"
+    import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
 
     initLocale()
 
@@ -481,6 +482,8 @@
                                                                     previewImage = attachment.location
                                                                 }}
                                                                 on:download={_ => download_attachment(message.id, attachment)} />
+                                                        {:else if attachment.kind === MessageAttachmentKind.Text}
+                                                            <TextDocument />
                                                         {:else if attachment.kind === MessageAttachmentKind.STL}
                                                             <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
                                                         {:else if attachment.kind === MessageAttachmentKind.Audio}
