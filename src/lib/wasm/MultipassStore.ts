@@ -65,14 +65,17 @@ class MultipassStore {
                     {
                         await this.listOutgoingFriendRequests()
                         await this.listIncomingFriendRequests()
-                        let friends = await this.listFriends()
-                        Store.setFriends(friends)
+                        await this.listFriends()
                         break
                     }
                 case wasm.MultiPassEventKindEnum.FriendRemoved:
                     {
-                        let friends = await this.listFriends()
-                        Store.setFriends(friends)
+                        await this.listFriends()
+                        break
+                    }
+                case wasm.MultiPassEventKindEnum.Blocked:
+                    {
+                        await this.listBlockedFriends()
                         break
                     }
                 default: {
@@ -116,10 +119,8 @@ class MultipassStore {
     async fetchAllFriendsAndRequests() {
         await this.listIncomingFriendRequests()
         await this.listOutgoingFriendRequests()
-        let blockedUsers: Array<any> = await MultipassStoreInstance.listBlockedFriends()
-        let friends = await MultipassStoreInstance.listFriends()
-        Store.setFriends(friends)
-        Store.setBlockedUsers(blockedUsers)
+        await this.listBlockedFriends()
+        await this.listFriends()
     }
 
      /**
@@ -279,16 +280,29 @@ class MultipassStore {
      * Lists blocked friends.
      * @returns A list of blocked friends or an empty array in case of error.
      */
-    async listBlockedFriends(): Promise<any> {
+    async listBlockedFriends() {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                let blockedFriends = await multipass.block_list()
-                return blockedFriends
+                let blockedUsersAny: Array<any> = await multipass.block_list()
+                let blockedUsers: Array<User> = []
+                for (let i = 0; i < blockedUsersAny.length; i++) {
+                    let identity: any = (await multipass.get_identity(wasm.Identifier.DID, blockedUsersAny[i]))[0]
+                    let user: User =   {
+                        ...defaultUser,
+                        name: identity === undefined ? blockedUsersAny[i] : identity.username,
+                        key: identity === undefined ? blockedUsersAny[i] : identity.did_key,
+                        profile: {
+                            ...defaultProfileData,
+                            status_message: identity === undefined ? "" : identity.status_message ?? "",
+                        },
+                    }
+                    blockedUsers.push(user)
+                }
+                Store.setBlockedUsers(blockedUsers)
             } catch (error) {
                 log.error("Error listing blocked friends: " + error)
-                return []
             }
         }
     }
@@ -297,13 +311,27 @@ class MultipassStore {
      * Lists friends.
      * @returns A list of friends or an empty array in case of error.
      */
-    async listFriends(): Promise<any> {
+    async listFriends() {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                let friends = await multipass.list_friends()
-                return friends
+                let friendsAny: Array<any> = await multipass.list_friends()
+                let friendsUsers: Array<User> = []
+                for (let i = 0; i < friendsAny.length; i++) {
+                    let identity: any = (await multipass.get_identity(wasm.Identifier.DID, friendsAny[i]))[0]
+                    let user: User =   {
+                        ...defaultUser,
+                        name: identity === undefined ? friendsAny[i] : identity.username,
+                        key: identity === undefined ? friendsAny[i] : identity.did_key,
+                        profile: {
+                            ...defaultProfileData,
+                            status_message: identity === undefined ? "" : identity.status_message ?? "",
+                        },
+                    }
+                    friendsUsers.push(user)
+                }
+                Store.setFriends(friendsUsers)
             } catch (error) {
                 log.error("Error listing friends: " + error)
                 return []
