@@ -17,7 +17,7 @@
     const timeAgo = new TimeAgo("en-US")
 
     let photo = chat.users.length > 2 ? "todo" : chat.users[0].profile.photo.image
-    let name = chat.users.length > 2 ? chat.name : chat.users[0].name
+    let name = chat.users.length > 2 ? chat.name : (chat.users[1].name ?? chat.users[0].name)
 
     const dispatch = createEventDispatcher()
 
