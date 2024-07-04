@@ -135,23 +135,16 @@ class MultipassStore {
                 let outgoingFriendRequests: Array<any> = await multipass.list_outgoing_request()
                 let outgoingFriendRequestsUsers: Array<FriendRequest> = []
                 for (let i = 0; i < outgoingFriendRequests.length; i++) {
-                    let friendIdentity: any = (await multipass.get_identity(wasm.Identifier.DID, outgoingFriendRequests[i]))[0]
-                    let friendUser: User =   {
-                        ...defaultUser,
-                        name: friendIdentity === undefined ? outgoingFriendRequests[i] : friendIdentity.username,
-                        key: friendIdentity === undefined ? outgoingFriendRequests[i] : friendIdentity.did_key,
-                        profile: {
-                            ...defaultProfileData,
-                            status_message: friendIdentity === undefined ? "" : friendIdentity.status_message ?? "",
-                        },
+                    let friendUser = await this.identity_from_did(outgoingFriendRequests[i])
+                    if (friendUser) {
+                        let friendRequest: FriendRequest = {
+                            direction: MessageDirection.Outbound,
+                            to: friendUser,
+                            from: get(Store.state.user),
+                            at: new Date(),
+                        }
+                        outgoingFriendRequestsUsers.push(friendRequest)
                     }
-                    let friendRequest: FriendRequest = {
-                        direction: MessageDirection.Outbound,
-                        to: friendUser,
-                        from: get(Store.state.user),
-                        at: new Date(),
-                    }
-                    outgoingFriendRequestsUsers.push(friendRequest)
                 }
                 Store.setFriendRequests(get(Store.state.activeRequests)
                     .filter(r => r.direction === MessageDirection.Inbound), outgoingFriendRequestsUsers)
@@ -250,23 +243,16 @@ class MultipassStore {
                 let incomingFriendRequests: Array<any> = await multipass.list_incoming_request()
                 let incomingFriendRequestsUsers: Array<FriendRequest> = []
                 for (let i = 0; i < incomingFriendRequests.length; i++) {
-                    let friendIdentity: any = (await multipass.get_identity(wasm.Identifier.DID, incomingFriendRequests[i]))[0]
-                    let friendUser: User =   {
-                        ...defaultUser,
-                        name: friendIdentity === undefined ? incomingFriendRequests[i] : friendIdentity.username,
-                        key: friendIdentity === undefined ? incomingFriendRequests[i] : friendIdentity.did_key,
-                        profile: {
-                            ...defaultProfileData,
-                            status_message: friendIdentity === undefined ? "" : friendIdentity.status_message ?? "",
-                        },
+                    let friendUser = await this.identity_from_did(incomingFriendRequests[i])
+                    if (friendUser) {
+                        let friendRequest: FriendRequest = {
+                            direction: MessageDirection.Inbound,
+                            to: get(Store.state.user),
+                            from: friendUser,
+                            at: new Date(),
+                        }
+                        incomingFriendRequestsUsers.push(friendRequest)
                     }
-                    let friendRequest: FriendRequest = {
-                        direction: MessageDirection.Inbound,
-                        to: get(Store.state.user),
-                        from: friendUser,
-                        at: new Date(),
-                    }
-                    incomingFriendRequestsUsers.push(friendRequest)
                 }
                 Store.setFriendRequests(incomingFriendRequestsUsers, get(Store.state.activeRequests)
                     .filter(r => r.direction === MessageDirection.Outbound))
@@ -288,17 +274,10 @@ class MultipassStore {
                 let blockedUsersAny: Array<any> = await multipass.block_list()
                 let blockedUsers: Array<User> = []
                 for (let i = 0; i < blockedUsersAny.length; i++) {
-                    let identity: any = (await multipass.get_identity(wasm.Identifier.DID, blockedUsersAny[i]))[0]
-                    let user: User =   {
-                        ...defaultUser,
-                        name: identity === undefined ? blockedUsersAny[i] : identity.username,
-                        key: identity === undefined ? blockedUsersAny[i] : identity.did_key,
-                        profile: {
-                            ...defaultProfileData,
-                            status_message: identity === undefined ? "" : identity.status_message ?? "",
-                        },
+                    let friendUser = await this.identity_from_did(blockedUsersAny[i])
+                    if (friendUser) {
+                        blockedUsers.push(friendUser)
                     }
-                    blockedUsers.push(user)
                 }
                 Store.setBlockedUsers(blockedUsers)
             } catch (error) {
@@ -319,17 +298,10 @@ class MultipassStore {
                 let friendsAny: Array<any> = await multipass.list_friends()
                 let friendsUsers: Array<User> = []
                 for (let i = 0; i < friendsAny.length; i++) {
-                    let identity: any = (await multipass.get_identity(wasm.Identifier.DID, friendsAny[i]))[0]
-                    let user: User =   {
-                        ...defaultUser,
-                        name: identity === undefined ? friendsAny[i] : identity.username,
-                        key: identity === undefined ? friendsAny[i] : identity.did_key,
-                        profile: {
-                            ...defaultProfileData,
-                            status_message: identity === undefined ? "" : identity.status_message ?? "",
-                        },
+                    let friendUser = await this.identity_from_did(friendsAny[i])
+                    if (friendUser) {
+                        friendsUsers.push(friendUser)
                     }
-                    friendsUsers.push(user)
                 }
                 Store.setFriends(friendsUsers)
             } catch (error) {
@@ -476,17 +448,15 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
-                let profile = {
-                    ...defaultProfileData,
-                }
                 // TODO profile and banner etc. missing from wasm?
                 return {
-                    id: {
-                        short: identity.short_id,
+                    ...defaultUser,
+                    key:    identity === undefined ? id : identity.did_key,
+                    name: identity === undefined ? id : identity.username,
+                    profile: {
+                        ...defaultProfileData,
+                        status_message: identity === undefined ? "" : identity.status_message ?? "",
                     },
-                    key: identity.did_key,
-                    name: identity.username,
-                    profile: profile,
                     media: {
                         is_playing_audio: false,
                         is_streaming_video: false,
