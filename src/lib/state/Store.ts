@@ -181,56 +181,18 @@ class GlobalStore {
         this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
     }
 
-    setFriends(friends: Array<any>) {
-        let friendsList: Array<User> = []
-        friends.forEach(friend => {
-            friendsList.push({
-                ...defaultUser,
-                name: friend,
-                key: friend,
-            })
-        })
-
-        this.state.friends.set(friendsList)
+    setFriends(friends: Array<User>) {
+        this.state.friends.set(friends)
     }
 
-    setFriendRequests(incomingFriendRequests: Array<any>, outgoingFriendRequests: Array<any>) {
-        let user = get(this.state.user)
-
-        const createFriendRequests = (friendRequests: Array<any>, direction: MessageDirection): FriendRequest[] => {
-            return friendRequests.map(friendDid => {
-                let friendUser: User = {
-                    ...defaultUser,
-                    name: friendDid,
-                    key: friendDid,
-                }
-                return {
-                    at: new Date(),
-                    from: direction === MessageDirection.Inbound ? friendUser : user,
-                    to: direction === MessageDirection.Inbound ? user : friendUser,
-                    direction: direction,
-                }
-            })
-        }
-
-        let incomingRequests = createFriendRequests(incomingFriendRequests, MessageDirection.Inbound)
-        let outgoingRequests = createFriendRequests(outgoingFriendRequests, MessageDirection.Outbound)
-
-        let allFriendRequests = new Set([...incomingRequests, ...outgoingRequests])
+    setFriendRequests(incomingFriendRequests: Array<FriendRequest>, outgoingFriendRequests: Array<FriendRequest>) {
+        let allFriendRequests = new Set([...incomingFriendRequests, ...outgoingFriendRequests])
 
         this.state.activeRequests.set(Array.from(allFriendRequests.values()))
     }
 
-    setBlockedUsers(blockedUsers: Array<any>) {
-        let blockedUsersList: Array<User> = []
-        blockedUsers.forEach(blockedUser => {
-            blockedUsersList.push({
-                ...defaultUser,
-                name: blockedUser,
-                key: blockedUser,
-            })
-        })
-        this.state.blocked.set(blockedUsersList)
+    setBlockedUsers(blockedUsers: Array<User>) {
+        this.state.blocked.set(blockedUsers)
     }
 
     cancelRequest(user: User) {
