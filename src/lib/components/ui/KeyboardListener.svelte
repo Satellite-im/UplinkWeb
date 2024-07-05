@@ -13,11 +13,10 @@
         modifiers: string[]
     }
 
-    let keyboardRecording: Recording = { key: "", modifiers: [] }
     let isRecording = false
 
     function handleKeyDown(event: KeyboardEvent) {
-        if (event.repeat) return // Prevents duplicate keypresses while holding a key down
+        if (event.repeat) return
 
         let key = event.key
         let modifiers: string[] = []
@@ -25,7 +24,6 @@
         if (event.shiftKey) modifiers.push("shift")
         if (event.ctrlKey) modifiers.push("ctrl")
 
-        keyboardRecording = { key, modifiers } // Update recording
         isRecording = true
 
         dispatch("event", { key, modifiers, state: KeybindState.Pressed })
@@ -54,7 +52,6 @@
             }
         })
 
-        // Stop recording
         isRecording = false
     }
 
