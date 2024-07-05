@@ -17,9 +17,10 @@
 
     initLocale()
 
+    export let create: boolean = false
+
     const dispatch = createEventDispatcher()
 
-    let create = false
     let loading = false
     let scramble = get(AuthStore.state).scramblePin
     let stayLoggedIn = get(AuthStore.state).stayLoggedIn

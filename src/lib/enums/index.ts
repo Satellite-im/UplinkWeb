@@ -52,8 +52,6 @@ export const enum Route {
     Wallet = "/wallet",
     Settings = "/settings/profile",
     Unlock = "/auth",
-    RecoverySeed = "/auth/recovery",
-    NewAccount = "/auth/new_account",
     Pre = "/pre",
 }
 

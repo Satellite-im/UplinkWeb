@@ -17,17 +17,14 @@
 
     initLocale()
 
-    let currentPage: LoginPage = LoginPage.EntryPoint
+    function exist() {
+        return TesseractStoreInstance.exists()
+    }
+
+    let currentPage: LoginPage = exist() ? LoginPage.Pin : LoginPage.EntryPoint
     let username: string = ""
     let statusMessage: string = ""
     let phrase: string[] = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
-
-    async function checkIfAccountExist() {
-        let exist = TesseractStoreInstance.exists()
-        if (exist) {
-            currentPage = LoginPage.Pin
-        }
-    }
 
     async function auth(pin: string) {
         let addressed = Object.values(get(RelayStore.state))
@@ -74,8 +71,6 @@
             }
         )
     }
-
-    checkIfAccountExist()
 </script>
 
 {#if currentPage == LoginPage.EntryPoint}
@@ -84,6 +79,7 @@
     <NewAccount bind:page={currentPage} bind:username={username} bind:statusMessage={statusMessage} />
 {:else if currentPage == LoginPage.Pin}
     <Unlock
+        create={!exist()}
         on:pin={async e => {
             await auth(e.detail.pin)
             e.detail.done()
