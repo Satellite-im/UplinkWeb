@@ -155,8 +155,8 @@
             result.onSuccess(() => {
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
             })
-            if (authentication.stayLoggedIn) {
-                goto(Route.Chat)
+            if (!authentication.stayLoggedIn) {
+                goto(Route.Unlock)
             }
         }
     }
