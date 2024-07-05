@@ -86,6 +86,8 @@
 
     Store.state.user.subscribe(val => {
         user = val
+        userReference = { ...val }
+        statusMessage = user.profile.status_message
         activityStatus = user.profile.status
     })
 
