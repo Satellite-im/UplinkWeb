@@ -481,6 +481,8 @@
     .controller-mappings {
         display: flex;
         justify-content: space-between;
+        gap: var(--gap);
+        align-items: center;
 
         .left-controls,
         .right-controls {
@@ -488,8 +490,7 @@
         }
 
         #controller {
-            max-width: 400px;
-            height: 260px;
+            max-width: 600px;
             position: relative;
 
             img.button,
