@@ -4,6 +4,7 @@
     import { goto } from "$app/navigation"
     import { Toasts } from "$lib/components"
     import Polling from "$lib/components/Polling.svelte"
+    import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Sound, Sounds } from "$lib/components/utils/Sounds"
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
@@ -167,6 +168,7 @@
     <Polling rate={5000} />
     <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
     <Toasts />
+    <GamepadListener />
     <slot></slot>
 </div>
 
