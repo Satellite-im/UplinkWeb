@@ -8,14 +8,23 @@
 
     const dispatch = createEventDispatcher()
 
+    interface Recording {
+        key: string
+        modifiers: string[]
+    }
+
+    let isRecording = false
+
     function handleKeyDown(event: KeyboardEvent) {
-        if (event.repeat) return // Prevents duplicate keypresses while holding a key down
+        if (event.repeat) return
 
         let key = event.key
         let modifiers: string[] = []
 
         if (event.shiftKey) modifiers.push("shift")
         if (event.ctrlKey) modifiers.push("ctrl")
+
+        isRecording = true
 
         dispatch("event", { key, modifiers, state: KeybindState.Pressed })
 
@@ -27,6 +36,8 @@
     }
 
     function handleKeyUp(event: KeyboardEvent) {
+        if (!isRecording) return
+
         let key = event.key
         let modifiers: string[] = []
 
@@ -40,6 +51,8 @@
                 dispatch("match", keybind)
             }
         })
+
+        isRecording = false
     }
 
     onMount(() => {
