@@ -78,6 +78,7 @@ export const enum SettingsRoute {
     Inventory = "/settings/inventory",
     Network = "/settings/network",
     Realms = "/settings/realms",
+    Gamepad = "/settings/gamepad",
 }
 
 export const enum Appearance {

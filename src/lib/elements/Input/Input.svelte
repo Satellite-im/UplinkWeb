@@ -59,10 +59,11 @@
     $: value = $writableValue
 
     let onsend: any[] = []
+    let editor: MarkdownEditor
     if (rich) {
         onMount(() => {
             if (autoFocus) input.focus()
-            let editor = new MarkdownEditor(input, {
+            editor = new MarkdownEditor(input, {
                 keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
                 extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
@@ -83,6 +84,10 @@
                 editor.value("")
             })
         })
+    }
+
+    $: if (rich && editor) {
+        editor.value($writableValue);
     }
 
     export { clazz as class }
