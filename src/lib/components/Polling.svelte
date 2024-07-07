@@ -4,7 +4,6 @@
     export let rate: number = 5000
 
     function poll() {
-        console.log("polling")
         // add processes here.
         setTimeout(poll, rate)
     }

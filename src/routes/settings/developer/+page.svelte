@@ -13,6 +13,7 @@
     import { Select } from "$lib/elements"
     import { get } from "svelte/store"
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
+    import AAR from "$lib/components/ui/AAR.svelte"
     initLocale()
 
     let settings = get(log.settings)
