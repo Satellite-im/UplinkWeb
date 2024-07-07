@@ -154,6 +154,11 @@
                         icon: Shape.Beaker,
                         name: "Realms",
                     },
+                    {
+                        to: SettingsRoute.Gamepad,
+                        icon: Shape.Beaker,
+                        name: "Gamepad",
+                    },
                 ])
             }
         } else {
