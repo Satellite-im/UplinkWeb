@@ -1,6 +1,4 @@
 <script lang="ts">
-    export const ssr = false
-
     import { goto } from "$app/navigation"
     import { Toasts } from "$lib/components"
     import Polling from "$lib/components/Polling.svelte"
