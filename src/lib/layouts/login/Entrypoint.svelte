@@ -1,8 +1,7 @@
 <script lang="ts">
     import { Label } from "$lib/elements"
-    import { Modal, PinInput } from "$lib/components"
-    import { goto } from "$app/navigation"
-    import { Appearance, Route, Shape } from "$lib/enums"
+    import { Modal } from "$lib/components"
+    import { Appearance, Shape } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
@@ -10,56 +9,21 @@
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
     import { mock_users } from "$lib/mock/users"
     import Spacer from "$lib/elements/Spacer.svelte"
-    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
-    import { WarpStore } from "$lib/wasm/WarpStore"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { get } from "svelte/store"
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
-    import { RelayStore } from "$lib/state/wasm/relays"
     import { Controls } from "$lib/layouts"
-    import { AuthStore } from "$lib/state/auth"
-    import { ToastMessage } from "$lib/state/ui/toast"
-    import { Store } from "$lib/state/Store"
+    import { LoginPage } from "$lib/layouts/login"
 
     initLocale()
 
-    let create = false
+    export let page: LoginPage
+
     let loading = false
-    let scramble = get(AuthStore.state).scramblePin
-    let stayLoggedIn = get(AuthStore.state).stayLoggedIn
 
     let showAccounts = false
     let showConfigureRelay = false
-
-    async function auth(pin: string) {
-        loading = true
-        if (get(AuthStore.state).pin === "" || get(AuthStore.state).pin === pin) {
-            let addressed = Object.values(get(RelayStore.state))
-                .filter(r => r.active)
-                .map(r => r.address)
-            if (get(AuthStore.state).pin === "" || !(await TesseractStoreInstance.getTesseract()).is_unlock()) {
-                await WarpStore.initWarpInstances(addressed)
-                await TesseractStoreInstance.unlock(pin)
-            }
-            let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
-            ownIdentity.fold(
-                (_: any) => {
-                    AuthStore.setStoredPin(pin)
-                    goto(Route.NewAccount)
-                },
-                (_: any) => {
-                    setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
-                    goto(Route.Pre)
-                }
-            )
-        } else if (pin !== get(AuthStore.state).pin) {
-            Store.addToastNotification(new ToastMessage("", "Pin is wrong!", 2))
-            loading = false
-        }
-    }
 </script>
 
-<div id="auth-unlock">
+<div id="auth-create">
     {#if showAccounts}
         <Modal hook="modal-select-profile" on:close={_ => (showAccounts = false)} padded>
             <div class="profiles">
@@ -86,23 +50,20 @@
         </Modal>
     {/if}
 
-    {#if loading}
-        <Label text={$_("generic.loading")} />
-    {:else}
-        <Label text={create ? $_("pages.auth.unlock.choose_pin") : $_("pages.auth.unlock.enter_pin")} hook="label-choose-enter-pin" />
-    {/if}
-
-    <PinInput
-        min={4}
-        max={8}
-        loading={loading}
-        scramble={scramble}
-        stayLoggedIn={stayLoggedIn}
-        showSettings={false}
-        on:submit={async e => {
-            loading = true
-            await auth(e.detail)
-        }} />
+    <div class="create-content">
+        {#if loading}
+            <Label text={$_("generic.loading")} />
+        {:else}
+            <Label hook="label-create-title" text={$_("pages.auth.create.title")} />
+        {/if}
+        <Text hook="text-create-description">
+            {$_("pages.auth.create.description")}
+        </Text>
+        <Controls>
+            <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Success} />
+            <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} />
+        </Controls>
+    </div>
 
     <div class="unlock-controls">
         <Controls>
@@ -117,7 +78,7 @@
 </div>
 
 <style lang="scss">
-    #auth-unlock {
+    #auth-create {
         display: inline-flex;
         flex-direction: column;
         flex: 1;
@@ -131,6 +92,17 @@
             position: absolute;
             right: var(--padding);
             bottom: var(--padding);
+        }
+
+        .create-content {
+            display: flex;
+            flex-direction: column;
+            width: 40%;
+            gap: var(--gap);
+
+            :global(.controls) {
+                align-self: center;
+            }
         }
 
         .profiles {

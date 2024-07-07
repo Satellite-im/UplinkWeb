@@ -2,6 +2,7 @@
     export const ssr = false
 
     import { goto } from "$app/navigation"
+    import { page } from "$app/stores"
     import { Toasts } from "$lib/components"
     import Polling from "$lib/components/Polling.svelte"
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
@@ -142,11 +143,14 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     async function checkIfUserIsLogged() {
+        await TesseractStoreInstance.initTesseract()
         let authentication = await AuthStore.getAuthentication()
         if (authentication.pin === "") {
             log.info("No pin stored, redirecting to unlock")
             goto(Route.Unlock)
-        } else {
+        } else if ($page.route.id !== Route.Unlock) {
+            // We need to find a better way of handling it so the password doesnt get stored
+            // But for now: dont login if the user is on the login page
             log.info("Pin stored, unlocking")
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
