@@ -14,24 +14,23 @@
 
     export let gui: boolean = false
 
-    // Modify this section to change the controller button mappings
     const actions: Record<number, string> = {
-        0: "A", // A
-        1: "B", // B
-        2: "X", // X
-        3: "Y", // Y
-        4: "LeftClick", // Left Bumper
-        5: "RightClick", // Right Bumper
-        6: "Forward", // Left Trigger
-        7: "Back", // Right Trigger
-        8: "LeftMenu", // Left Menu
-        9: "RightMenu", // Right Menu
-        10: "Button10", // Left Stick In
-        11: "Button11", // Right Stick In
-        12: "ArrowUp", // D-Pad Up
-        13: "ArrowDown", // D-Pad Down
-        14: "ArrowLeft", // D-Pad Left
-        15: "ArrowRight", // D-Pad Right
+        0: "A",
+        1: "B",
+        2: "X",
+        3: "Y",
+        4: "LeftClick",
+        5: "RightClick",
+        6: "Forward",
+        7: "Back",
+        8: "LeftMenu",
+        9: "RightMenu",
+        10: "Button10",
+        11: "Button11",
+        12: "ArrowUp",
+        13: "ArrowDown",
+        14: "ArrowLeft",
+        15: "ArrowRight",
     }
 
     const deadzone = createPersistentState("gamepad.deadzone", 0.1)
@@ -109,10 +108,16 @@
                     focusPreviousElement()
                     break
                 case "ArrowUp":
-                    focusPreviousElement()
+                    triggerKeyEvent("ArrowUp")
                     break
                 case "ArrowDown":
-                    focusNextElement()
+                    triggerKeyEvent("ArrowDown")
+                    break
+                case "ArrowLeft":
+                    triggerKeyEvent("ArrowLeft")
+                    break
+                case "ArrowRight":
+                    triggerKeyEvent("ArrowRight")
                     break
                 case "Enter":
                     activateElement()
@@ -158,11 +163,9 @@
         const element = document.elementFromPoint(mouseX, mouseY) as HTMLElement
 
         if (element) {
-            // Focus the element if it's an input or select
             if (element instanceof HTMLInputElement || element instanceof HTMLSelectElement) {
                 element.focus()
 
-                // If the element is a select box, trigger a spacebar key event after a small delay
                 if (element instanceof HTMLSelectElement) {
                     const spacebarEvent = new KeyboardEvent("keydown", {
                         key: " ",
@@ -182,9 +185,7 @@
                     })
                     element.dispatchEvent(spacebarEventUp)
                 } else {
-                    // Add a small delay before triggering the mouse click events
                     setTimeout(() => {
-                        // Dispatch mousedown event
                         const mousedownEvent = new MouseEvent("mousedown", {
                             view: window,
                             bubbles: true,
@@ -194,7 +195,6 @@
                         })
                         element.dispatchEvent(mousedownEvent)
 
-                        // Dispatch mouseup event
                         const mouseupEvent = new MouseEvent("mouseup", {
                             view: window,
                             bubbles: true,
@@ -204,7 +204,6 @@
                         })
                         element.dispatchEvent(mouseupEvent)
 
-                        // Dispatch click event
                         const clickEvent = new MouseEvent("click", {
                             view: window,
                             bubbles: true,
@@ -213,10 +212,9 @@
                             clientY: mouseY,
                         })
                         element.dispatchEvent(clickEvent)
-                    }, 100) // 100 milliseconds delay
+                    }, 100)
                 }
             } else {
-                // Dispatch mousedown event
                 const mousedownEvent = new MouseEvent("mousedown", {
                     view: window,
                     bubbles: true,
@@ -226,7 +224,6 @@
                 })
                 element.dispatchEvent(mousedownEvent)
 
-                // Dispatch mouseup event
                 const mouseupEvent = new MouseEvent("mouseup", {
                     view: window,
                     bubbles: true,
@@ -236,7 +233,6 @@
                 })
                 element.dispatchEvent(mouseupEvent)
 
-                // Dispatch click event
                 const clickEvent = new MouseEvent("click", {
                     view: window,
                     bubbles: true,
@@ -281,7 +277,6 @@
             ArrowRight: 39,
             Enter: 13,
             Tab: 9,
-            " ": 32,
             Circle: 79,
             Square: 81,
             Triangle: 84,
@@ -302,8 +297,6 @@
         gamepad.buttons.forEach((button, index) => {
             newButtonStates[index] = button.pressed
             if (button.pressed && !previousButtonStates[index]) {
-                console.log("button", index)
-
                 buttonMap.subscribe(map => {
                     const action = map[index]
                     if (action) handleNavigation(action)
