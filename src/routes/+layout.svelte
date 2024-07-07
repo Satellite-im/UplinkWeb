@@ -5,10 +5,11 @@
     import { page } from "$app/stores"
     import { Toasts } from "$lib/components"
     import Polling from "$lib/components/Polling.svelte"
+    import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Sound, Sounds } from "$lib/components/utils/Sounds"
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
-    import { SettingsStore } from "$lib/state"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
     import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
@@ -26,6 +27,7 @@
     TimeAgo.addDefaultLocale(en)
 
     let keybinds: Keybind[]
+    let devmode: boolean = get(SettingsStore.state).devmode
     let color: string = get(UIStore.state.color)
     let fontSize: number = get(UIStore.state.fontSize)
     let font: Font = get(UIStore.state.font)
@@ -133,7 +135,10 @@
         style = buildStyle()
     })
 
-    SettingsStore.state.subscribe(settings => (keybinds = settings.keybinds))
+    SettingsStore.state.subscribe(settings => {
+        keybinds = settings.keybinds
+        devmode = settings.devmode
+    })
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
@@ -171,6 +176,9 @@
     <Polling rate={5000} />
     <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
     <Toasts />
+    {#if devmode}
+        <GamepadListener />
+    {/if}
     <slot></slot>
 </div>
 
