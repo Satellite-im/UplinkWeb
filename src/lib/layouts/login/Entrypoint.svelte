@@ -54,9 +54,9 @@
         {#if loading}
             <Label text={$_("generic.loading")} />
         {:else}
-            <Label text={$_("pages.auth.create.title")} />
+            <Label hook="label-create-title" text={$_("pages.auth.create.title")} />
         {/if}
-        <Text>
+        <Text hook="text-create-description">
             {$_("pages.auth.create.description")}
         </Text>
         <Controls>

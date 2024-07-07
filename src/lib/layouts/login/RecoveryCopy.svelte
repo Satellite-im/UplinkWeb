@@ -18,17 +18,18 @@
 
 <div id="auth-recover">
     <div class="header">
-        <Title>{$_("pages.auth.recovery.title")}</Title>
-        <Text muted>{$_("pages.auth.recovery.save_warning")}</Text>
+        <Title hook="title-recovery-page">{$_("pages.auth.recovery.title")}</Title>
+        <Text hook="text-recovery-page-warning" muted>{$_("pages.auth.recovery.save_warning")}</Text>
     </div>
     {#each phrase as word, i}
         <OrderedPhrase number={i + 1} word={word} loading={loading} />
     {/each}
     <Controls>
-        <Button class="full-width" text={$_("pages.auth.recovery.download")} appearance={Appearance.Alt} loading={loading}>
+        <Button hook="button-download-phrase" class="full-width" text={$_("pages.auth.recovery.download")} appearance={Appearance.Alt} loading={loading}>
             <Icon icon={Shape.Download} />
         </Button>
         <Button
+            hook="button-save-phrase"
             class="full-width"
             text={$_("pages.auth.recovery.next_step")}
             loading={loading}
