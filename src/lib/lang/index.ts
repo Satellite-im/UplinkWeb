@@ -95,6 +95,12 @@ export function initLocale() {
                         set_status: "Set status message . . .",
                         create: "Create Account",
                     },
+                    create: {
+                        title: "Account Creation",
+                        description: "We're going to create an account for you. On the next screen, you'll see a set of words. Screenshot this or write it down. This is the only way to backup your account.",
+                        new: "Create New Account",
+                        import: "Import Account",
+                    },
                 },
             },
             user: {
