@@ -18,11 +18,20 @@
     function handleKeyDown(event: KeyboardEvent) {
         if (event.repeat) return
 
-        let key = event.key
         let modifiers: string[] = []
 
         if (event.shiftKey) modifiers.push("shift")
         if (event.ctrlKey) modifiers.push("ctrl")
+        if (event.altKey) modifiers.push("alt")
+
+        let key = event.key.toWellFormed()
+        if (event.altKey) {
+            if (event.code.startsWith('Key')) {
+                key = event.code.replace('Key', '')
+            } else if (event.code.startsWith('Digit')) {
+                key = event.code.replace('Digit', '')
+            }
+        }
 
         isRecording = true
 
@@ -57,11 +66,9 @@
 
     onMount(() => {
         window.addEventListener("keydown", handleKeyDown)
-        window.addEventListener("keyup", handleKeyUp)
     })
 
     onDestroy(() => {
         window.removeEventListener("keydown", handleKeyDown)
-        window.removeEventListener("keyup", handleKeyUp)
     })
 </script>
