@@ -95,10 +95,10 @@
             <Label hook="label-keybind-recorded-keys" text="Recorded Keys"></Label>
             <div class="binding">
                 {#if keyboardRecording.key}
-                    <Key character={keyboardRecording.key} />
                     {#each keyboardRecording.modifiers as modifier}
                         <Key character={modifier} />
                     {/each}
+                    <Key character={keyboardRecording.key} />
                 {:else}
                     <Key character={$_("settings.keybinds.pressAKey")} />
                 {/if}

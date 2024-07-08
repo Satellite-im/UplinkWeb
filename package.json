@@ -38,7 +38,7 @@
         "fuse.js": "^7.0.0",
         "javascript-time-ago": "^2.5.9",
         "js-3d-model-viewer": "^0.2.2",
-        "markdown-editor": "github:Flemmli97/markdown-editor#a0ed34b1ebabe5c7bea04b8ab9eac238600633c8",
+        "markdown-editor": "github:Flemmli97/markdown-editor#5d17bfc53bca8958aa5599ddcbb991312c90a156",
         "pretty-bytes": "^6.1.1",
         "simple-peer": "^9.11.1",
         "svelte-awesome-color-picker": "^3.0.6",

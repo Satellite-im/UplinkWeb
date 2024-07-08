@@ -51,9 +51,7 @@ export const enum Route {
     Friends = "/friends",
     Wallet = "/wallet",
     Settings = "/settings/profile",
-    Unlock = "/auth/unlock",
-    RecoverySeed = "/auth/recovery",
-    NewAccount = "/auth/new_account",
+    Unlock = "/auth",
     Pre = "/pre",
 }
 
@@ -78,6 +76,7 @@ export const enum SettingsRoute {
     Inventory = "/settings/inventory",
     Network = "/settings/network",
     Realms = "/settings/realms",
+    Gamepad = "/settings/gamepad",
 }
 
 export const enum Appearance {

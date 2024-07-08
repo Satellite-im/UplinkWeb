@@ -330,5 +330,31 @@
                 "path": "/stickers/garden/smelly.png"
             }
         ]
+    },
+    {
+        "name": "Sassy Toons",
+        "author": "Team Satellite",
+        "assets": [
+            {
+                "name": "Whatever",
+                "path": "/stickers/toon/whatever.png"
+            },
+            {
+                "name": "Ban Hammer",
+                "path": "/stickers/toon/banhammer.png"
+            },
+            {
+                "name": "Okie Dokie",
+                "path": "/stickers/toon/okiedokie.png"
+            },
+            {
+                "name": "Heard Ya",
+                "path": "/stickers/toon/heardyathefirsttime.png"
+            },
+            {
+                "name": "Bot Alert",
+                "path": "/stickers/toon/botalert.png"
+            }
+        ]
     }
 ]
