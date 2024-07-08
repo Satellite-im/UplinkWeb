@@ -39,7 +39,7 @@
     <div class="content">
         <div class="header">
             <div id="payment-profile">
-                <ProfilePicture image={mock_users[0]?.profile.photo.image} size={Size.Large} status={mock_users[0]?.profile.status} />
+                <ProfilePicture id={mock_users[0].key} image={mock_users[0]?.profile.photo.image} size={Size.Large} status={mock_users[0]?.profile.status} />
 
                 <div class="profile-details">
                     <Label text="Username" />

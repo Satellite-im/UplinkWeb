@@ -23,6 +23,8 @@
 
         if (event.shiftKey) modifiers.push("shift")
         if (event.ctrlKey) modifiers.push("ctrl")
+        if (event.metaKey) modifiers.push("meta")
+        if (event.altKey) modifiers.push("alt")
 
         isRecording = true
 

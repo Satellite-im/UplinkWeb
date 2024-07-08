@@ -5,7 +5,7 @@
     import { createEventDispatcher } from "svelte"
     import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "../utils/CompressImage"
 
-    export let acceptableFiles: string = ".jpg, .jpeg, .png, .heic, .avif"
+    export let acceptableFiles: string = ".jpg, .jpeg, .png, .heic, .avif, .webp"
     export let appearance: Appearance = Appearance.Default
     export let small: boolean = false
     export let icon: boolean = false
@@ -24,7 +24,7 @@
             if (compressedImage!.size <= MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE || quality <= 0.1) {
                 let reader = new FileReader()
                 reader.readAsDataURL(compressedImage!)
-                reader.onload = async (e) => {
+                reader.onload = async e => {
                     avatar = e.target?.result?.toString()
                     dispatch("upload", avatar)
                 }

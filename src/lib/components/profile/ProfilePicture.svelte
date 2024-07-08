@@ -1,7 +1,9 @@
 <script lang="ts">
+    import jazzicon from "@metamask/jazzicon"
+    import { onMount } from "svelte"
+    import { createEventDispatcher } from "svelte"
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from "$lib/elements"
-    import { createEventDispatcher } from "svelte"
     import type { Frame } from "$lib/types"
 
     export let image: string = ""
@@ -14,6 +16,43 @@
     export let noIndicator: boolean = false
     export let frame: Frame = { name: "", image: "" }
     export let hook: string = ""
+    export let id: string = ""
+
+    let identicon: string | HTMLElement = ""
+
+    onMount(() => {
+        if (!image) {
+            let identiconSize: number
+
+            switch (size) {
+                case Size.Smallest:
+                    identiconSize = 80
+                    break
+                case Size.Smaller:
+                    identiconSize = 100
+                    break
+                case Size.Small:
+                    identiconSize = 100
+                    break
+                case Size.Medium:
+                    identiconSize = 120
+                    break
+                case Size.Large:
+                    identiconSize = 150
+                    break
+                case Size.Larger:
+                    identiconSize = 180
+                    break
+                case Size.Largest:
+                    identiconSize = 200
+                    break
+                default:
+                    identiconSize = 100
+            }
+
+            identicon = jazzicon(identiconSize, id).outerHTML
+        }
+    })
 
     const dispatch = createEventDispatcher()
 </script>
@@ -27,7 +66,13 @@
         {#if frame && frame.name}
             <img data-cy="profile-image-frame" class="profile-image-frame" src={frame.image} alt="" />
         {/if}
-        <img data-cy="profile-image" class="profile-image" src={image} alt="" />
+        {#if image}
+            <img data-cy="profile-image" class="profile-image" src={image} alt="" />
+        {:else}
+            <div class="identicon">
+                {@html identicon}
+            </div>
+        {/if}
     {/if}
     {#if typing}
         <div class="typing-indicator"></div>
@@ -53,6 +98,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
+        .identicon {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+        }
 
         .profile-image-frame {
             position: absolute;

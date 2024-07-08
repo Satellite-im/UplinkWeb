@@ -28,7 +28,7 @@
 <div class="profile-picture-many" on:click={_ => dispatch("click")}>
     {#each users as user, i}
         {#if i < 3}
-            <ProfilePicture size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
+            <ProfilePicture id={user.key} size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
         {/if}
     {/each}
     <div class="count">
