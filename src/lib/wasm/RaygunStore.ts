@@ -15,6 +15,8 @@ import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
 import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
 import { imageFromData } from "./ConstellationStore"
+import { SoundHandler, Sounds as Sounds2, playSound } from "$lib/utils/SoundHandler"
+import { Sounds } from "$lib/components/utils/Sounds"
 
 const MAX_PINNED_MESSAGES = 100
 // Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
@@ -440,6 +442,8 @@ class RaygunStore {
                         if (message) {
                             let ping = mentions_user(message, get(Store.state.user).key)
                             ConversationStore.addMessage(conversation_id, message)
+                            playSound(Sounds2.Sample)
+                            Sounds.disconnect()
                             //TODO move chat to top
                             //TODO handle ping and notification
                         }
