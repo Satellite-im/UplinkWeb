@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Automated Tests
 
 on:
     pull_request:
