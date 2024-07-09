@@ -9,6 +9,9 @@ import { defaultProfileData, defaultUser, type FriendRequest, type User } from "
 import { Store } from "$lib/state/Store"
 import { MessageDirection, Status } from "$lib/enums"
 import { parseJSValue } from "./EnumParser"
+import { ToastMessage } from "$lib/state/ui/toast"
+import { SettingsStore } from "$lib/state"
+import { Sounds } from "$lib/components/utils/SoundHandler"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -44,40 +47,42 @@ class MultipassStore {
         }
         log.info("Listening multipass events!")
         for await (const value of listener) {
-            let event = parseJSValue(value)
-            log.info(`Handling multipass events: ${JSON.stringify(event)}`)
-            switch (value.kind) {
+            let event = value as wasm.MultiPassEventKind
+            log.info(`Handling multipass events: ${event.kind} with did ${event.did}`)
+            switch (event.kind) {
                 case wasm.MultiPassEventKindEnum.FriendRequestSent:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected:
-                    {
-                        await this.listOutgoingFriendRequests()
-                        break
+                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected: {
+                    await this.listOutgoingFriendRequests()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
+                    if (get(SettingsStore.state).notifications.friends) {
+                        let incoming = await this.identity_from_did(event.did)
+                        Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
                     }
-                case wasm.MultiPassEventKindEnum.FriendRequestReceived:
+                    await this.listIncomingFriendRequests()
+                    break
+                }
                 case wasm.MultiPassEventKindEnum.IncomingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected:
-                    {
-                        await this.listIncomingFriendRequests()
-                        break
-                    }
-                case wasm.MultiPassEventKindEnum.FriendAdded:
-                    {
-                        await this.listOutgoingFriendRequests()
-                        await this.listIncomingFriendRequests()
-                        await this.listFriends()
-                        break
-                    }
-                case wasm.MultiPassEventKindEnum.FriendRemoved:
-                    {
-                        await this.listFriends()
-                        break
-                    }
-                case wasm.MultiPassEventKindEnum.Blocked:
-                    {
-                        await this.listBlockedFriends()
-                        break
-                    }
+                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected: {
+                    await this.listIncomingFriendRequests()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendAdded: {
+                    await this.listOutgoingFriendRequests()
+                    await this.listIncomingFriendRequests()
+                    await this.listFriends()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendRemoved: {
+                    await this.listFriends()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.Blocked: {
+                    await this.listBlockedFriends()
+                    break
+                }
                 default: {
                     log.error(`Unhandled message event: ${JSON.stringify(event)}`)
                     break
@@ -123,7 +128,7 @@ class MultipassStore {
         await this.listFriends()
     }
 
-     /**
+    /**
      * Lists outgoing friend requests.
      * @returns A list of outgoing friend requests or an empty array in case of error.
      */
@@ -146,8 +151,10 @@ class MultipassStore {
                         outgoingFriendRequestsUsers.push(friendRequest)
                     }
                 }
-                Store.setFriendRequests(get(Store.state.activeRequests)
-                    .filter(r => r.direction === MessageDirection.Inbound), outgoingFriendRequestsUsers)
+                Store.setFriendRequests(
+                    get(Store.state.activeRequests).filter(r => r.direction === MessageDirection.Inbound),
+                    outgoingFriendRequestsUsers
+                )
             } catch (error) {
                 log.error("Error listing incoming friend requests: " + error)
             }
@@ -254,8 +261,10 @@ class MultipassStore {
                         incomingFriendRequestsUsers.push(friendRequest)
                     }
                 }
-                Store.setFriendRequests(incomingFriendRequestsUsers, get(Store.state.activeRequests)
-                    .filter(r => r.direction === MessageDirection.Outbound))
+                Store.setFriendRequests(
+                    incomingFriendRequestsUsers,
+                    get(Store.state.activeRequests).filter(r => r.direction === MessageDirection.Outbound)
+                )
             } catch (error) {
                 log.error("Error listing incoming friend requests: " + error)
             }
@@ -488,7 +497,7 @@ class MultipassStore {
                 // TODO profile and banner etc. missing from wasm?
                 return {
                     ...defaultUser,
-                    key:    identity === undefined ? id : identity.did_key,
+                    key: identity === undefined ? id : identity.did_key,
                     name: identity === undefined ? id : identity.username,
                     profile: {
                         ...defaultProfileData,
