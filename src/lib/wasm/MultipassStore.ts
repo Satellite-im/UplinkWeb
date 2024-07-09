@@ -443,6 +443,40 @@ class MultipassStore {
         }
     }
 
+    /**
+     * Updates the status.
+     * @param newStatus - The new status to be set.
+     */
+    async updateStatus(newStatus: string) {
+        const multipass = get(this.multipassWritable)
+        if (multipass) {
+            try {
+                let identityStatus: wasm.IdentityStatus
+                switch (newStatus) {
+                    case "online":
+                        identityStatus = wasm.IdentityStatus.Online
+                        break
+                    case "idle":
+                        identityStatus = wasm.IdentityStatus.Away
+                        break
+                    case "do-not-disturb":
+                        identityStatus = wasm.IdentityStatus.Busy
+                        break
+                    case "offline":
+                        identityStatus = wasm.IdentityStatus.Offline
+                        break
+                    default:
+                        identityStatus = wasm.IdentityStatus.Offline
+                        break
+                }
+                await multipass.set_identity_status(identityStatus)
+                console.log("Status updated: ", identityStatus)
+            } catch (error) {
+                log.error("Error updating status: " + error)
+            }
+        }
+    }
+
     async identity_from_did(id: string): Promise<User | undefined> {
         let multipass = get(this.multipassWritable)
         if (multipass) {
