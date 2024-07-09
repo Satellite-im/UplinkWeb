@@ -7,7 +7,7 @@ import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
 import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
 import { Store } from "$lib/state/Store"
-import { MessageDirection } from "$lib/enums"
+import { MessageDirection, Status } from "$lib/enums"
 import { parseJSValue } from "./EnumParser"
 
 /**
@@ -448,24 +448,9 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
-                let profilePicture = ""
-                let bannerPicture = ""
-                try {
-                    let identityProfilePicture = await multipass.identity_picture(id)
-                    let identityBannerPicture = await multipass.identity_banner(id) 
-                    function to_b64(data: Uint8Array) {
-                        const binaryString = Array.from(data)
-                        .map(byte => String.fromCharCode(byte))
-                        .join('')
-                        const base64String = btoa(binaryString)
-                        const cleanedBase64String = base64String.replace('dataimage/jpegbase64', '')
-                        return `data:image/jpeg;base64,${cleanedBase64String}`
-                      }
-                    profilePicture = identityProfilePicture ? to_b64(identityProfilePicture.data()) : ""
-                    bannerPicture = identityBannerPicture ? to_b64(identityBannerPicture.data()) : ""
-                } catch (error) {
-                    log.error(`Couldn't fetch profile picture for ${id}: ${error}`)
-                }
+                let profilePicture = await this.getUserProfilePicture(id)
+                let bannerPicture = await this.getUserBannerPicture(id)
+                let status = await this.getUserStatus(id)
                 // TODO profile and banner etc. missing from wasm?
                 return {
                     ...defaultUser,
@@ -484,6 +469,7 @@ class MultipassStore {
                             image: bannerPicture,
                             overlay: "",
                         },
+                        status: status,
                         status_message: identity === undefined ? "" : identity.status_message ?? "",
                     },
                     media: {
@@ -500,6 +486,63 @@ class MultipassStore {
         }
         return undefined
     }
+
+    private async getUserStatus(did: string): Promise<Status> {
+        let multipass = get(this.multipassWritable)
+        let status = Status.Offline
+        if (multipass) {
+            try {
+                let identityStatus = await multipass.identity_status(did)
+                const identityStatusMap: { [key in wasm.IdentityStatus]: Status } = {
+                    [wasm.IdentityStatus.Online]: Status.Online,
+                    [wasm.IdentityStatus.Away]: Status.Idle,
+                    [wasm.IdentityStatus.Busy]: Status.DoNotDisturb,
+                    [wasm.IdentityStatus.Offline]: Status.Offline,
+                  }
+                status = identityStatusMap[identityStatus] ?? Status.Offline
+            } catch (error) {
+                log.error(`Couldn't fetch status for ${did}: ${error}`)
+            }
+        }
+        return status
+    }
+
+    private async getUserProfilePicture(did: string): Promise<string> {
+        let multipass = get(this.multipassWritable)
+        let profilePicture = ""
+        if (multipass) {
+            try {
+                let identityProfilePicture = await multipass.identity_picture(did)
+                profilePicture = identityProfilePicture ? this.to_base64(identityProfilePicture.data()) : ""    
+            } catch (error) {
+                log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
+            }
+        }
+        return profilePicture
+    }
+
+    private async getUserBannerPicture(did: string): Promise<string> {
+        let multipass = get(this.multipassWritable)
+        let bannerPicture = ""
+        if (multipass) {
+            try {
+                let identityBannerPicture = await multipass.identity_banner(did)
+                bannerPicture = identityBannerPicture ? this.to_base64(identityBannerPicture.data()) : ""    
+            } catch (error) {
+                log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
+            }
+        }
+        return bannerPicture
+    }
+
+    private to_base64(data: Uint8Array) {
+        const binaryString = Array.from(data)
+            .map(byte => String.fromCharCode(byte))
+            .join('')
+        const base64String = btoa(binaryString)
+        const cleanedBase64String = base64String.replace('dataimage/jpegbase64', '')
+        return `data:image/jpeg;base64,${cleanedBase64String}`
+      }
 
     /**
      * Updates the identity state.
