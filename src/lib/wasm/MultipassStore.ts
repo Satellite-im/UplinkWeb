@@ -448,6 +448,16 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
+                let identityProfilePicture = await multipass.identity_picture(id)
+                let identityBannerPicture = await multipass.identity_banner(id) 
+                function to_b64(data: Uint8Array) {
+                    return btoa(
+                      new Uint8Array(data)
+                        .reduce((data, byte) => data + String.fromCharCode(byte), '')
+                    )
+                  }
+                let profilePicture = identityProfilePicture ? to_b64(identityProfilePicture.data()) : ""
+                let bannerPicture = identityBannerPicture ? to_b64(identityBannerPicture.data()) : ""
                 // TODO profile and banner etc. missing from wasm?
                 return {
                     ...defaultUser,
@@ -455,6 +465,17 @@ class MultipassStore {
                     name: identity === undefined ? id : identity.username,
                     profile: {
                         ...defaultProfileData,
+                        photo: {
+                            image: profilePicture,
+                            frame: {
+                                name: "",
+                                image: profilePicture,
+                            },
+                        },
+                        banner: {
+                            image: bannerPicture,
+                            overlay: "",
+                        },
                         status_message: identity === undefined ? "" : identity.status_message ?? "",
                     },
                     media: {
