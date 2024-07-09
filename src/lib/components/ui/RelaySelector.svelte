@@ -7,7 +7,6 @@
     import { get } from "svelte/store"
     import { _ } from "svelte-i18n"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { Sounds } from "../utils/Sounds"
 
     type onClose = () => {}
     export let close: onClose | undefined = undefined
@@ -121,7 +120,6 @@
                                 relayToAdd = ""
                                 adding = false
                                 editing = undefined
-                                Sounds.notification()
                             }}>
                             <Icon icon={Shape.XMark} />
                         </Button>

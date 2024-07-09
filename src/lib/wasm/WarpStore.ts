@@ -53,7 +53,6 @@ class Store {
      * @private
      */
     private async createIpfs(addresses?: string[]): Promise<wasm.WarpInstance> {
-        addresses = ["/ip4/127.0.0.1/tcp/4444/ws/p2p/12D3KooWKpRTmAiUX2bm8bDhNDETFcbQw9N3iRJCoXYndD4wWsRV"]
         let tesseract: wasm.Tesseract = await TesseractStoreInstance.getTesseract()
         if (addresses && addresses.length > 0) {
             return (await new wasm.WarpIpfs(wasm.Config.minimal_with_relay(addresses), tesseract)) as wasm.WarpInstance

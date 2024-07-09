@@ -15,6 +15,7 @@ export enum Sounds {
 }
 
 export type SoundOption = {
+    // If the file is a large file and thus should be streamed
     large?: boolean
     volume?: number
     loop?: boolean

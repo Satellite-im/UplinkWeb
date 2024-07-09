@@ -5,7 +5,7 @@ import { Store } from "../state/Store"
 import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
-import { ChatType, MessageAttachmentKind } from "$lib/enums"
+import { ChatType, MessageAttachmentKind, Route } from "$lib/enums"
 import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user, type FileProgress, type Attachment } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
@@ -13,10 +13,12 @@ import { create_cancellable_handler, type Cancellable } from "$lib/utils/Cancell
 import { parseJSValue } from "./EnumParser"
 import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
-import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
 import { imageFromData } from "./ConstellationStore"
-import { SoundHandler, Sounds as Sounds2, playSound } from "$lib/utils/SoundHandler"
-import { Sounds } from "$lib/components/utils/Sounds"
+import { Sounds, playSound } from "$lib/components/utils/SoundHandler"
+import { _ } from "svelte-i18n"
+import { SettingsStore } from "$lib/state"
+import { ToastMessage } from "$lib/state/ui/toast"
+import { page } from "$app/stores"
 
 const MAX_PINNED_MESSAGES = 100
 // Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
@@ -442,10 +444,13 @@ class RaygunStore {
                         if (message) {
                             let ping = mentions_user(message, get(Store.state.user).key)
                             ConversationStore.addMessage(conversation_id, message)
-                            playSound(Sounds2.Sample)
-                            Sounds.disconnect()
+                            let settings = get(SettingsStore.state)
+                            let notify = settings.notifications.messages && get(page).route.id !== Route.Chat
+                            if (ping || notify) {
+                                Store.addToastNotification(new ToastMessage("New Message", `${message.details.origin.name} sent you a message`, 2), settings.audio.messageSounds ? Sounds.Notification : undefined)
+                            }
                             //TODO move chat to top
-                            //TODO handle ping and notification
+                            //TODO handle ping
                         }
                         break
                     }
