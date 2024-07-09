@@ -448,16 +448,24 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
-                let identityProfilePicture = await multipass.identity_picture(id)
-                let identityBannerPicture = await multipass.identity_banner(id) 
-                function to_b64(data: Uint8Array) {
-                    return btoa(
-                      new Uint8Array(data)
-                        .reduce((data, byte) => data + String.fromCharCode(byte), '')
-                    )
-                  }
-                let profilePicture = identityProfilePicture ? to_b64(identityProfilePicture.data()) : ""
-                let bannerPicture = identityBannerPicture ? to_b64(identityBannerPicture.data()) : ""
+                let profilePicture = ""
+                let bannerPicture = ""
+                try {
+                    let identityProfilePicture = await multipass.identity_picture(id)
+                    let identityBannerPicture = await multipass.identity_banner(id) 
+                    function to_b64(data: Uint8Array) {
+                        const binaryString = Array.from(data)
+                        .map(byte => String.fromCharCode(byte))
+                        .join('')
+                        const base64String = btoa(binaryString)
+                        const cleanedBase64String = base64String.replace('dataimage/jpegbase64', '')
+                        return `data:image/jpeg;base64,${cleanedBase64String}`
+                      }
+                    profilePicture = identityProfilePicture ? to_b64(identityProfilePicture.data()) : ""
+                    bannerPicture = identityBannerPicture ? to_b64(identityBannerPicture.data()) : ""
+                } catch (error) {
+                    log.error(`Couldn't fetch profile picture for ${id}: ${error}`)
+                }
                 // TODO profile and banner etc. missing from wasm?
                 return {
                     ...defaultUser,
@@ -469,7 +477,7 @@ class MultipassStore {
                             image: profilePicture,
                             frame: {
                                 name: "",
-                                image: profilePicture,
+                                image: "",
                             },
                         },
                         banner: {
