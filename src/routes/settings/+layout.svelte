@@ -156,7 +156,7 @@
                     },
                     {
                         to: SettingsRoute.Gamepad,
-                        icon: Shape.Beaker,
+                        icon: Shape.Gamepad,
                         name: "Gamepad",
                     },
                 ])
