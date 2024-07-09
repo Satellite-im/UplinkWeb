@@ -1,4 +1,3 @@
-import { Sound, Sounds } from "$lib/components/utils/Sounds"
 import { ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
@@ -12,6 +11,7 @@ import { ToastMessage } from "./ui/toast"
 import { v4 as uuidv4 } from "uuid"
 import { Logger } from "$lib/utils/Logger"
 import { ConversationStore } from "./conversation"
+import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
 
 class GlobalStore {
     state: IState
@@ -142,12 +142,12 @@ class GlobalStore {
 
     updateMuted(muted: boolean) {
         this.state.devices.muted.set(muted)
-        if (get(SettingsStore.state).audio.controlSounds) Sounds.play(muted ? Sound.Off : Sound.On)
+        if (get(SettingsStore.state).audio.controlSounds) playSound(muted ? Sounds.Off : Sounds.On)
     }
 
     updateDeafened(deafened: boolean) {
         this.state.devices.deafened.set(deafened)
-        if (get(SettingsStore.state).audio.controlSounds) Sounds.play(deafened ? Sound.Off : Sound.On)
+        if (get(SettingsStore.state).audio.controlSounds) playSound(deafened ? Sounds.Off : Sounds.On)
     }
 
     updateFileOrder(newOrder: FileInfo[]) {
@@ -221,13 +221,16 @@ class GlobalStore {
         }
     }
 
-    addToastNotification(toast: ToastMessage) {
+    addToastNotification(toast: ToastMessage, sound?: Sounds) {
         let toasts = get(this.state.toasts)
         let id = uuidv4()
         let timeout = setTimeout(() => {
             this.removeToast(id)
         }, toast.remaining_time * 1000)
         this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
+        if (sound) {
+            playSound(sound)
+        }
     }
 
     pauseToastTimeout(id: string) {

@@ -5,7 +5,7 @@
     import Polling from "$lib/components/Polling.svelte"
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
-    import { Sound, Sounds } from "$lib/components/utils/Sounds"
+    import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import { AuthStore } from "$lib/state/auth"
@@ -61,13 +61,13 @@
                 log.info("todo")
                 break
             case KeybindAction.PushToTalk:
-                Sounds.play(Sound.Press)
+                playSound(Sounds.Press)
                 break
             case KeybindAction.PushToMute:
-                Sounds.play(Sound.Press)
+                playSound(Sounds.Press)
                 break
             case KeybindAction.PushToDeafen:
-                Sounds.play(Sound.Press)
+                playSound(Sounds.Press)
                 break
             default:
                 console.warn("unhandled keybind", keybind)
@@ -80,13 +80,13 @@
 
         switch (keybind.action) {
             case KeybindAction.PushToTalk:
-                Sounds.play(Sound.Release)
+                playSound(Sounds.Release)
                 break
             case KeybindAction.PushToMute:
-                Sounds.play(Sound.Release)
+                playSound(Sounds.Release)
                 break
             case KeybindAction.PushToDeafen:
-                Sounds.play(Sound.Release)
+                playSound(Sounds.Release)
                 break
             default:
                 log.warn(`unhandled keybind ${keybind}`)
