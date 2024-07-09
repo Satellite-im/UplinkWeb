@@ -54,3 +54,46 @@ jobs:
                   path: |
                       automated-tests/cypress/screenshots
                       automated-tests/cypress/videos
+
+    playwright-run:
+        timeout-minutes: 60
+        runs-on: macos-latest
+        steps:
+            - name: Checkout Uplink Web directory 🔖
+              uses: actions/checkout@v4
+
+            - name: Checkout Automated Tests directory 🔖
+              uses: actions/checkout@v4
+              with:
+                  repository: Satellite-im/automated-tests-web
+                  path: automated-tests
+
+            - name: Setup Node.js for Uplink Web 🔨
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install dependencies for Uplink Web 📦
+              run: npm install
+
+            - name: Install dependencies for Testing Repo 📦
+              working-directory: automated-tests
+              run: npm install
+
+            - name: Install Playwright Browsers
+              working-directory: automated-tests
+              run: npx playwright install --with-deps
+
+            - name: Run server for Uplink Web
+              run: npm run dev &
+
+            - name: Run Playwright tests
+              working-directory: automated-tests
+              run: npx playwright test
+
+            - uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: playwright-report
+                  path: automated-tests/playwright-report/
+                  retention-days: 5
