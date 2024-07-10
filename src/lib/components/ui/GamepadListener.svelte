@@ -1,10 +1,17 @@
 <script lang="ts">
-    import { Select, Text } from "$lib/elements"
+    import { Label, Select, Text } from "$lib/elements"
     import { createPersistentState } from "$lib/state"
     import { onMount, onDestroy } from "svelte"
     import { writable, get } from "svelte/store"
 
+    enum GamepadBrand {
+        Xbox = "Xbox",
+        Playstation = "Playstation",
+        Generic = "Generic",
+    }
+
     let gamepadIndex: number | null = null
+    let gamepadVendor: GamepadBrand = GamepadBrand.Generic
     let previousButtonStates: boolean[] = []
     let animationFrameId: number | null = null
     let mouseX = window.innerWidth / 2
@@ -57,6 +64,16 @@
         stopAnimationFrameLoop()
     })
 
+    const detectGamepadVendor = (id: string) => {
+        if (id.includes("Xbox")) {
+            return GamepadBrand.Xbox
+        } else if (id.includes("Playstaiton")) {
+            return GamepadBrand.Playstation
+        } else {
+            return GamepadBrand.Generic
+        }
+    }
+
     const startAnimationFrameLoop = () => {
         if (animationFrameId === null) {
             animationFrameId = requestAnimationFrame(update)
@@ -72,6 +89,7 @@
 
     const connectHandler = (event: GamepadEvent) => {
         gamepadIndex = event.gamepad.index
+        gamepadVendor = detectGamepadVendor(event.gamepad.id)
         previousButtonStates = new Array(event.gamepad.buttons.length).fill(false)
         buttonStates.set({})
         controllerConnected.set(true)
@@ -415,7 +433,7 @@
         if (gamepadIndex !== null) {
             const gamepad = navigator.getGamepads()[gamepadIndex]
             if (gamepad) {
-                controllerInfo.set(`${gamepad.id.split("(")[0]} (${gamepad.mapping})`)
+                controllerInfo.set(`${gamepad.id.split("(")[0]}`)
             }
         }
     }
@@ -423,7 +441,7 @@
 
 {#if gui}
     {#if $controllerInfo !== null}
-        <div>{$controllerInfo}</div>
+        <Label text={$controllerInfo} />
     {/if}
     <div class="controller-mappings">
         <div class="left-controls">
@@ -433,6 +451,7 @@
             {/each}
         </div>
         <div id="controller">
+            {gamepadVendor}
             {#if $controllerConnected}
                 <img src="/assets/controller/ps5/controller.png" id="bg" alt="controller" />
                 {#each Object.keys($buttonStates) as index}

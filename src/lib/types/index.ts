@@ -52,6 +52,19 @@ export type SimpleRoute = {
     icon: Shape
 }
 
+
+export let defaultProfileData = {
+    photo: { image: "", frame: { name: "", image: "" } },
+    banner: { image: "", overlay: "" },
+    status: Status.Offline,
+    status_message: "Unknown status message.",
+}
+
+export type Id = {
+    short: string
+}
+
+
 export type ProfilePicture = {
     image: string
     frame: Frame
@@ -67,17 +80,6 @@ export type ProfileData = {
     banner: BannerPicture
     status: Status
     status_message: string
-}
-
-export let defaultProfileData = {
-    photo: { image: "", frame: { name: "", image: "" } },
-    banner: { image: "", overlay: "" },
-    status: Status.Offline,
-    status_message: "Unknown status message.",
-}
-
-export type Id = {
-    short: string
 }
 
 export type MediaMeta = {
