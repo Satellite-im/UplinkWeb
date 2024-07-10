@@ -83,12 +83,10 @@
                             })
                         })
                     }
-                    chatsUIUpdated.push(chat)
                 }
+                chatsUIUpdated.push(chat)
             }
-            if (updateChats) {
-                UIStore.state.chats.set(chatsUIUpdated)
-            }
+            UIStore.state.chats.set(chatsUIUpdated)
         }
     }
 
