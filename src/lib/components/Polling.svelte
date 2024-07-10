@@ -26,9 +26,11 @@ async function updateChats() {
     let chatsUIUpdated: Chat[] = []
     let activeChat = get(Store.state.activeChat)
     if (chatsUI.length !== 0) {
-        for(let chat of chatsUI) {
+
+        for (let chat of chatsUI) {
             let usersUpdated: User[] = []
-            for(let user of chat.users) {
+
+            for (let user of chat.users) {
                 let friend = await MultipassStoreInstance.identity_from_did(user.key)
                 let userUpdated: User = {
                         ...user,
@@ -49,15 +51,24 @@ async function updateChats() {
                         }
                     }
                 }
+                if (!friend?.profile.photo.image) {
+                    userUpdated.profile.photo.image = user.profile.photo.image;
+                }
+                if (!friend?.profile.banner.image) {
+                    userUpdated.profile.banner.image = user.profile.banner.image;
+                }
                 usersUpdated.push(userUpdated)
             }
-            chat={
+    
+            chat = {
                 ...chat,
                 users: usersUpdated
             }
+
             if (activeChat.id === chat.id) {
                 Store.state.activeChat.set(chat)
             }
+
             chatsUIUpdated.push(chat)
         }
         UIStore.state.chats.set(chatsUIUpdated)
