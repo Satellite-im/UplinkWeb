@@ -12,7 +12,7 @@
     async function poll() {
         // add processes here.
         await MultipassStoreInstance.fetchAllFriendsAndRequests()
-        await updateUsersOnChats()
+        await updateUserOnChats()
         setTimeout(poll, rate)
     }
 
@@ -20,7 +20,7 @@
         poll()
     })
 
-    async function updateUsersOnChats() {
+    async function updateUserOnChats() {
         let chatsUI = get(UIStore.state.chats)
         let chatsUIUpdated: Chat[] = []
         let activeChat = get(Store.state.activeChat)
