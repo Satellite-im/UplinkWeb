@@ -1,24 +1,66 @@
 <script lang="ts">
     import { ConversationStore } from "$lib/state/conversation"
+    import { Store } from "$lib/state/Store.js"
     import { UIStore } from "$lib/state/ui"
+    import type { Chat, User } from "$lib/types"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { onMount } from "svelte"
+    import { get } from "svelte/store"
 
     export let rate: number = 5000
 
     async function poll() {
         // add processes here.
-        MultipassStoreInstance.fetchAllFriendsAndRequests()
-        let chats = await RaygunStoreInstance.listConversations()
-        chats.onSuccess((chats) => {
-            console.log("Chats", chats)
-            UIStore.state.chats.set(chats)
-        })
+        await MultipassStoreInstance.fetchAllFriendsAndRequests()
+        await updateChats()
         setTimeout(poll, rate)
     }
 
     onMount(() => {
         poll()
     })
+
+
+async function updateChats() {
+    let chatsUI=get(UIStore.state.chats)
+    let chatsUIUpdated: Chat[] = []
+    let activeChat = get(Store.state.activeChat)
+    if (chatsUI.length !== 0) {
+        for(let chat of chatsUI) {
+            let usersUpdated: User[] = []
+            for(let user of chat.users) {
+                let friend = await MultipassStoreInstance.identity_from_did(user.key)
+                let userUpdated: User = {
+                        ...user,
+                        name: friend?.name ?? user.name,
+                        media: {
+                        ...user.media
+                    },
+                    profile: {
+                        ...user.profile,
+                        status: friend?.profile.status ?? user.profile.status,
+                        banner: {
+                            ...user.profile.banner,
+                            image: friend?.profile.banner.image ?? user.profile.banner.image
+                        },
+                        photo: {
+                            ...user.profile.photo,
+                            image: friend?.profile.photo.image ?? user.profile.photo.image
+                        }
+                    }
+                }
+                usersUpdated.push(userUpdated)
+            }
+            chat={
+                ...chat,
+                users: usersUpdated
+            }
+            if (activeChat.id === chat.id) {
+                Store.state.activeChat.set(chat)
+            }
+            chatsUIUpdated.push(chat)
+        }
+        UIStore.state.chats.set(chatsUIUpdated)
+    }
+}
 </script>
