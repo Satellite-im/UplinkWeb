@@ -97,7 +97,7 @@ export function initLocale() {
                     },
                     create: {
                         title: "Account Creation",
-                        description: "We're going to create an account for you. On the next screen, you'll see a set of words. Screenshot this or write it down. This is the only way to backup your account.",
+                        description: "Let's get started! Begin by either creating a new account, or if you already have one we can import your existing account instead.",
                         new: "Create New Account",
                         import: "Import Account",
                     },
