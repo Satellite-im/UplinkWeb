@@ -84,7 +84,7 @@ class MultipassStore {
                     break
                 }
                 default: {
-                    log.error(`Unhandled message event: ${JSON.stringify(event)}`)
+                    log.error(`Unhandled message event: ${wasm.MultiPassEventKindEnum[event.kind]}`)
                     break
                 }
             }
