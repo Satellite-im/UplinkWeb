@@ -41,6 +41,7 @@
                         profile: {
                             ...user.profile,
                             status: friend?.profile.status ?? user.profile.status,
+                            status_message: friend?.profile.status_message ?? user.profile.status_message,
                             banner: {
                                 ...user.profile.banner,
                                 image: friend?.profile.banner.image ?? user.profile.banner.image
