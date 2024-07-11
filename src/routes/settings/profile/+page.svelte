@@ -91,7 +91,7 @@
         activityStatus = user.profile.status
     })
 
-    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
+    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
     let fileinput: HTMLElement
 
     const onFileSelected = async (e: any) => {
@@ -103,7 +103,7 @@
             if (compressedImage!.size <= MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE || quality <= 0.1) {
                 let reader = new FileReader()
                 reader.readAsDataURL(compressedImage!)
-                reader.onload = async (e) => {
+                reader.onload = async e => {
                     let imageString = e.target?.result?.toString()
                     await MultipassStoreInstance.updateBannerPicture(imageString || "")
                     Store.setBanner(imageString || "")
@@ -154,8 +154,13 @@
                     disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        if (changeList.username) await updateUsername(user.name)
-                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                         if (changeList.statusMessage) {
+                            await updateStatusMessage(statusMessage)
+                        }
+                        if (changeList.username) {
+                            await updateUsername(user.name)
+                        }
+                       
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
@@ -206,7 +211,7 @@
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture id={user.key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}
