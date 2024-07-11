@@ -1,6 +1,6 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
-    import { Route, Size } from "$lib/enums"
+    import { Route, Size, Status } from "$lib/enums"
     import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
@@ -16,8 +16,9 @@
 
     const timeAgo = new TimeAgo("en-US")
 
-    let photo = chat.users.length > 2 ? "todo" : chat.users[0].profile.photo.image
     $: chatName = chat.users.length > 2 ? chat.name : (chat.users[1]?.name ?? chat.users[0].name)
+    $: chatPhoto = chat.users.length > 2 ? "todo" : chat.users[1]?.profile.photo.image ?? chat.users[0].profile.photo.image
+    $: chatStatus = chat.users.length > 2 ? Status.Offline : chat.users[1]?.profile.status ?? chat.users[0].profile.status
 
     const dispatch = createEventDispatcher()
 
@@ -36,7 +37,7 @@
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 2}
-        <ProfilePicture typing={chat.activity} image={chat.users[1].profile.photo.image} status={chat.users[1].profile.status} size={Size.Medium} loading={loading} frame={chat.users[1].profile.photo.frame} />
+        <ProfilePicture typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={chat.users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={chat.users} />
     {/if}
