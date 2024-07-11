@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Select } from "$lib/elements"
+    import { Select, Text } from "$lib/elements"
     import { createPersistentState } from "$lib/state"
     import { onMount, onDestroy } from "svelte"
     import { writable, get } from "svelte/store"
@@ -436,8 +436,12 @@
             {#if $controllerConnected}
                 <img src="/assets/controller/ps5/controller.png" id="bg" alt="controller" />
                 {#each Object.keys($buttonStates) as index}
-                    {#if $buttonStates[index]}
-                        <img src={`/assets/controller/ps5/${actions[+index].toLowerCase()}.png`} class="button" alt="button" />
+                    {#if $buttonStates[parseInt(index)]}
+                        {#if actions[+index]}
+                            <img src={`/assets/controller/ps5/${actions[+index].toLowerCase()}.png`} class="button" alt="button" />
+                        {:else}
+                            <Text>Unknown button</Text>
+                        {/if}
                     {/if}
                 {/each}
                 <img src="/assets/controller/ps5/left-stick.png" class="joystick" id="left-joystick" style="transform: translate({$leftJoystick.x * 15}px, {$leftJoystick.y * 15}px);" alt="left joystick" />
