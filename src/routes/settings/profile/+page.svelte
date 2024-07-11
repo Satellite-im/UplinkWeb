@@ -154,8 +154,13 @@
                     disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        if (changeList.username) await updateUsername(user.name)
-                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                         if (changeList.statusMessage) {
+                            await updateStatusMessage(statusMessage)
+                        }
+                        if (changeList.username) {
+                            await updateUsername(user.name)
+                        }
+                       
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
@@ -294,7 +299,9 @@
                             { text: $_("user.status.idle"), value: "idle" },
                             { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
                         ]}
-                        on:change={v => {
+                        on:change={async v => {
+                            await MultipassStoreInstance.updateStatus(v.detail)
+                            Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                             switch (v.detail) {
                                 case "online":
                                     return Store.setActivityStatus(Status.Online)
@@ -305,8 +312,7 @@
                                 case "do-not-disturb":
                                     return Store.setActivityStatus(Status.DoNotDisturb)
                             }
-                            Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
-                        }}
+2                        }}
                         bind:selected={user.profile.status}>
                         {#if activityStatus === Status.Online}
                             <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />

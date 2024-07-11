@@ -22,7 +22,7 @@
     let identicon: string | HTMLElement = ""
 
     onMount(() => {
-        if (!image) {
+        if (!image || image.length < 16) {
             let identiconSize: number
 
             switch (size) {
