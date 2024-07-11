@@ -27,7 +27,7 @@
         {#if showDetails}
             <div class="details" in:fade={{ duration: animationDuration }}>
                 <div class="user">
-                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator size={Size.Smallest} />
+                    <ProfilePicture id={mock_users[1].key} image={mock_users[1].profile.photo.image} noIndicator size={Size.Smallest} />
                     <Text withShadow size={Size.Smaller}>{mock_users[1].name}</Text>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                     </Controls>
                 </div>
             {/if}
-            <ProfilePicture image={participant.profile.photo.image} size={Size.Larger} noIndicator highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
+            <ProfilePicture id={participant.key} image={participant.profile.photo.image} size={Size.Larger} noIndicator highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
         </div>
     {/if}
 </div>

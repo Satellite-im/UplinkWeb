@@ -37,7 +37,7 @@
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 2}
-        <ProfilePicture typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={chat.users[1].profile.photo.frame} />
+        <ProfilePicture id={chat.users[1].key} typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={chat.users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={chat.users} />
     {/if}
