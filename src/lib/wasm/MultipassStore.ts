@@ -59,6 +59,15 @@ class MultipassStore {
                 case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
                     if (get(SettingsStore.state).notifications.friends) {
                         let incoming = await this.identity_from_did(event.did)
+                        let count = 0
+                        while (incoming === undefined) {
+                            incoming = await this.identity_from_did(event.did)
+                            count++
+                            if (count > 15) {
+                                break;
+                            }
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
                         Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
                     }
                     await this.listIncomingFriendRequests()
