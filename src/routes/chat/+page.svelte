@@ -107,6 +107,9 @@
         pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
     })
 
+    $: chatName = activeChat.kind === ChatType.DirectMessage ? activeChat.users[1]?.name : (activeChat.name ?? activeChat.users[1]?.name)
+    $: statusMessage = activeChat.kind === ChatType.DirectMessage ? activeChat.users[1]?.profile?.status_message : activeChat.motd
+
     function dragEnter(event: DragEvent) {
         event.preventDefault()
         dragging_files++
@@ -355,9 +358,9 @@
             </div>
             <div slot="content">
                 {#if activeChat.users.length > 0}
-                    <Text singleLine>{activeChat.name.length ? activeChat.name : activeChat.users[1]?.name}</Text>
+                    <Text singleLine>{chatName}</Text>
                     <Text singleLine muted size={Size.Smaller}>
-                        {activeChat.motd.length ? activeChat.motd : activeChat.users[1]?.profile?.status_message}
+                        {statusMessage}
                     </Text>
                 {/if}
             </div>

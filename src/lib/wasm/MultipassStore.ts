@@ -562,7 +562,7 @@ class MultipassStore {
                 let identityProfilePicture = await multipass.identity_picture(did)
                 profilePicture = identityProfilePicture ? this.to_base64(identityProfilePicture.data()) : ""    
             } catch (error) {
-                log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
+                // log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
             }
         }
         return profilePicture
@@ -576,7 +576,7 @@ class MultipassStore {
                 let identityBannerPicture = await multipass.identity_banner(did)
                 bannerPicture = identityBannerPicture ? this.to_base64(identityBannerPicture.data()) : ""    
             } catch (error) {
-                log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
+                // log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
             }
         }
         return bannerPicture

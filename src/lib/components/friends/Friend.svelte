@@ -14,7 +14,7 @@
 </script>
 
 <div class="friend" data-cy="friend-{friend.name}">
-    <ProfilePicture hook="friend-profile-picture" size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
+    <ProfilePicture id={friend.key} hook="friend-profile-picture" size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
     <Text hook="friend-name" class="username" singleLine>
         {friend.name}
     </Text>

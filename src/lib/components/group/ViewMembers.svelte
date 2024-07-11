@@ -16,7 +16,7 @@
     <Label text={`${members.length} member(s)`} />
     {#each members as member}
         <div class="user">
-            <ProfilePicture image={member.profile.photo.image} noIndicator size={Size.Small} />
+            <ProfilePicture id={member.key} image={member.profile.photo.image} noIndicator size={Size.Small} />
             <div class="username">
                 <Text singleLine class="username">{member.name}</Text>
             </div>

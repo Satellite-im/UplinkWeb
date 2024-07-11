@@ -51,6 +51,11 @@
             name: "Keybinds",
         },
         {
+            to: SettingsRoute.Gamepad,
+            icon: Shape.Gamepad,
+            name: "Gamepad",
+        },
+        {
             to: SettingsRoute.Accessibility,
             icon: Shape.Eye,
             name: "Accessibility",
@@ -153,11 +158,6 @@
                         to: SettingsRoute.Realms,
                         icon: Shape.Beaker,
                         name: "Realms",
-                    },
-                    {
-                        to: SettingsRoute.Gamepad,
-                        icon: Shape.Beaker,
-                        name: "Gamepad",
                     },
                 ])
             }
