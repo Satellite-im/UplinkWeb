@@ -12,6 +12,7 @@ import { parseJSValue } from "./EnumParser"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { SettingsStore } from "$lib/state"
 import { Sounds } from "$lib/components/utils/SoundHandler"
+import { MAX_RETRY_COUNT, RETRY_DELAY } from "$lib/config"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -59,7 +60,20 @@ class MultipassStore {
                 case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
                     if (get(SettingsStore.state).notifications.friends) {
                         let incoming = await this.identity_from_did(event.did)
-                        Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                        let count = 0
+                        while (incoming === undefined) {
+                            incoming = await this.identity_from_did(event.did)
+                            count++
+                            if (count > MAX_RETRY_COUNT) {
+                                break;
+                            }
+                            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                        }
+                        if (incoming) {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                        } else {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `You received a new friend request.`, 2), Sounds.Notification)
+                        }
                     }
                     await this.listIncomingFriendRequests()
                     break
@@ -545,7 +559,7 @@ class MultipassStore {
                     [wasm.IdentityStatus.Away]: Status.Idle,
                     [wasm.IdentityStatus.Busy]: Status.DoNotDisturb,
                     [wasm.IdentityStatus.Offline]: Status.Offline,
-                  }
+                }
                 status = identityStatusMap[identityStatus] ?? Status.Offline
             } catch (error) {
                 log.error(`Couldn't fetch status for ${did}: ${error}`)
@@ -560,7 +574,7 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identityProfilePicture = await multipass.identity_picture(did)
-                profilePicture = identityProfilePicture ? this.to_base64(identityProfilePicture.data()) : ""    
+                profilePicture = identityProfilePicture ? this.to_base64(identityProfilePicture.data()) : ""
             } catch (error) {
                 // log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
             }
@@ -574,7 +588,7 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identityBannerPicture = await multipass.identity_banner(did)
-                bannerPicture = identityBannerPicture ? this.to_base64(identityBannerPicture.data()) : ""    
+                bannerPicture = identityBannerPicture ? this.to_base64(identityBannerPicture.data()) : ""
             } catch (error) {
                 // log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
             }
@@ -589,7 +603,7 @@ class MultipassStore {
         const base64String = btoa(binaryString)
         const cleanedBase64String = base64String.replace('dataimage/jpegbase64', '')
         return `data:image/jpeg;base64,${cleanedBase64String}`
-      }
+    }
 
     /**
      * Updates the identity state.
