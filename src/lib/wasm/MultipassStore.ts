@@ -48,7 +48,7 @@ class MultipassStore {
         log.info("Listening multipass events!")
         for await (const value of listener) {
             let event = value as wasm.MultiPassEventKind
-            log.info(`Handling multipass events: ${event.kind} with did ${event.did}`)
+            log.info(`Handling multipass events: ${wasm.MultiPassEventKindEnum[event.kind]} with did ${event.did}`)
             switch (event.kind) {
                 case wasm.MultiPassEventKindEnum.FriendRequestSent:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
@@ -84,7 +84,7 @@ class MultipassStore {
                     break
                 }
                 default: {
-                    log.error(`Unhandled message event: ${JSON.stringify(event)}`)
+                    log.error(`Unhandled message event: ${wasm.MultiPassEventKindEnum[event.kind]}`)
                     break
                 }
             }
