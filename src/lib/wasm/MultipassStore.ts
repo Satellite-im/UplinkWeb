@@ -96,13 +96,14 @@ class MultipassStore {
      * @param username - The username for the new identity.
      * @param statusMessage - The status message for the new identity.
      * @param passphrase - The passphrase for the new identity (optional).
+     * @returns A Result containing either a passphrase assigned to the identity or a failure with a WarpError.
      */
-    async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
+    async createIdentity(username: string, statusMessage: string): Promise<Result<WarpError, string>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                await multipass.create_identity(username, passphrase)
+                let id = await multipass.create_identity(username)
                 if (statusMessage.length > 0) {
                     if (statusMessage.length > MAX_STATUS_MESSAGE_LENGTH) {
                         log.warn(`Status message len is ${statusMessage.length}. Max is ${MAX_STATUS_MESSAGE_LENGTH}. Truncating to fit.`)
@@ -115,10 +116,13 @@ class MultipassStore {
                 Username: ${identity?.username()} \n 
                 StatusMessage: ${identity?.status_message()} \n
                 Did Key: ${identity?.did_key()} \n`)
+                return success(id.passphrase()!)
             } catch (error) {
                 log.error("Error creating identity: " + error)
+                return failure(handleErrors(error))
             }
         }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
     async fetchAllFriendsAndRequests() {
