@@ -53,9 +53,9 @@
     let loading = false
     let contentAsideOpen = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
-    $: activeChat = Store.state.activeChat
-    let isFavorite = Store.isFavorite($activeChat)
-    $: conversation = ConversationStore.getConversation($activeChat)
+    let activeChat: Chat = get(Store.state.activeChat)
+    let isFavorite = Store.isFavorite(activeChat)
+    let conversation = ConversationStore.getConversation(activeChat)
 
     const timeAgo = new TimeAgo("en-US")
 
@@ -88,26 +88,27 @@
 
     Store.state.user.subscribe(u => (own_user = u))
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
-    $: chats = UIStore.state.chats
+    let chats: Chat[] = get(UIStore.state.chats)
+    UIStore.state.chats.subscribe(c => (chats = c))
     Store.state.activeChat.subscribe(c => {
-        $activeChat = c
+        activeChat = c
         conversation = ConversationStore.getConversation(c)
-        isFavorite = get(Store.state.favorites).some(f => f.id === $activeChat.id)
+        isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
         contentAsideOpen = false
     })
     Store.state.favorites.subscribe(f => {
-        isFavorite = get(Store.state.favorites).some(f => f.id === $activeChat.id)
+        isFavorite = get(Store.state.favorites).some(f => f.id === activeChat.id)
     })
     ConversationStore.conversations.subscribe(_ => {
-        conversation = ConversationStore.getConversation($activeChat)
+        conversation = ConversationStore.getConversation(activeChat)
     })
-    let pendingMessages = Object.values(ConversationStore.getPendingMessages($activeChat))
+    let pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
     ConversationStore.pendingMsgConversations.subscribe(_ => {
-        pendingMessages = Object.values(ConversationStore.getPendingMessages($activeChat))
+        pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
     })
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $activeChat.users[1]?.name : ($activeChat.name ?? $activeChat.users[1]?.name)
-    $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $activeChat.users[1]?.profile?.status_message : $activeChat.motd
+    $: chatName = activeChat.kind === ChatType.DirectMessage ? activeChat.users[1]?.name : (activeChat.name ?? activeChat.users[1]?.name)
+    $: statusMessage = activeChat.kind === ChatType.DirectMessage ? activeChat.users[1]?.profile?.status_message : activeChat.motd
 
     function dragEnter(event: DragEvent) {
         event.preventDefault()
@@ -203,7 +204,7 @@
     }
 
     async function reactTo(message: string, emoji: string, toggle: boolean) {
-        let add = toggle ? !ConversationStore.hasReaction($activeChat, message, emoji) : true
+        let add = toggle ? !ConversationStore.hasReaction(activeChat, message, emoji) : true
         await RaygunStoreInstance.react(conversation!.id, message, add ? 0 : 1, emoji)
     }
 
@@ -273,7 +274,7 @@
             on:close={_ => {
                 showUsers = false
             }}>
-            <ViewMembers adminControls members={$activeChat.users} on:create={_ => (showUsers = false)} />
+            <ViewMembers adminControls members={activeChat.users} on:create={_ => (showUsers = false)} />
         </Modal>
     {/if}
 
@@ -308,7 +309,7 @@
             </Button>
         </div>
 
-        {#each $chats as chat}
+        {#each chats as chat}
             <ContextMenu
                 items={[
                     {
@@ -333,7 +334,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
@@ -341,22 +342,22 @@
     <div class="content">
         <Topbar>
             <div slot="before">
-                {#if $activeChat.users.length > 0}
-                    {#if $activeChat.users.length === 2}
+                {#if activeChat.users.length > 0}
+                    {#if activeChat.users.length === 2}
                         <ProfilePicture
-                            typing={$activeChat.activity}
-                            image={$activeChat.users[1]?.profile.photo.image}
-                            frame={$activeChat.users[2]?.profile.photo.frame}
-                            status={$activeChat.users[1]?.profile.status}
+                            typing={activeChat.activity}
+                            image={activeChat.users[1]?.profile.photo.image}
+                            frame={activeChat.users[2]?.profile.photo.frame}
+                            status={activeChat.users[1]?.profile.status}
                             size={Size.Medium}
                             loading={loading} />
                     {:else}
-                        <ProfilePictureMany users={$activeChat.users} on:click={_ => (showUsers = true)} />
+                        <ProfilePictureMany users={activeChat.users} on:click={_ => (showUsers = true)} />
                     {/if}
                 {/if}
             </div>
             <div slot="content">
-                {#if $activeChat.users.length > 0}
+                {#if activeChat.users.length > 0}
                     <Text singleLine>{chatName}</Text>
                     <Text singleLine muted size={Size.Smaller}>
                         {statusMessage}
@@ -365,22 +366,22 @@
             </div>
             <svelte:fragment slot="controls">
                 <CoinBalance balance={0.0} />
-                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button icon appearance={Appearance.Alt} disabled={activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
-                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button icon appearance={Appearance.Alt} disabled={activeChat.users.length === 0}>
                     <Icon icon={Shape.VideoCamera} />
                 </Button>
                 <Button
                     icon
-                    disabled={$activeChat.users.length === 0}
+                    disabled={activeChat.users.length === 0}
                     appearance={isFavorite ? Appearance.Primary : Appearance.Alt}
                     on:click={_ => {
-                        Store.toggleFavorite($activeChat)
+                        Store.toggleFavorite(activeChat)
                     }}>
                     <Icon icon={Shape.Heart} />
                 </Button>
-                {#if $activeChat.kind === ChatType.Group}
+                {#if activeChat.kind === ChatType.Group}
                     <Button
                         icon
                         appearance={showUsers ? Appearance.Primary : Appearance.Alt}
@@ -398,7 +399,7 @@
                         <Icon icon={Shape.Cog} />
                     </Button>
                 {/if}
-                {#if $activeChat.users.length === 1}
+                {#if activeChat.users.length === 1}
                     <Button
                         icon
                         appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt}
@@ -416,7 +417,7 @@
         {/if}
 
         <Conversation>
-            {#if $activeChat.users.length > 0}
+            {#if activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
                     {#each conversation.messages as group}
@@ -515,7 +516,7 @@
                                 position={idx === 0 ? MessagePosition.First : idx === pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                 on:abort={e => {
                                     if (Object.keys(get(pending.attachmentProgress)).length == 0) {
-                                        ConversationStore.removePendingMessages($activeChat.id, e.detail.message)
+                                        ConversationStore.removePendingMessages(activeChat.id, e.detail.message)
                                     }
                                 }}></PendingMessage>
                         {/each}
@@ -537,7 +538,7 @@
             <FileUploadPreview filesSelected={files} />
         {/if}
 
-        {#if $activeChat.users.length > 0}
+        {#if activeChat.users.length > 0}
             <Chatbar filesSelected={files} replyTo={replyTo} on:onsend={_ => (files = [])}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
@@ -571,7 +572,7 @@
     {#if contentAsideOpen}
         <!-- All aside menus should render from this element. Please display only one at a time. -->
         <div class="aside" transition:slide={{ duration: animationDuration, axis: "x" }}>
-            <Profile user={$activeChat.users[0]} />
+            <Profile user={activeChat.users[0]} />
         </div>
     {/if}
 </div>
