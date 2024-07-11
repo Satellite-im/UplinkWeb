@@ -84,7 +84,7 @@
             {#each searched_friends as [friend, chat]}
                 <div class="searchbar-entry" role="none" on:click={() => select_chat(chat, friend)}>
                     <div class="profile-picture-wrap">
-                        <ProfilePicture typing={is_friend_typing(friend)} image={friend.profile.photo.image} status={friend.profile.status} size={Size.Medium} loading={loading} frame={friend.profile.photo.frame} />
+                        <ProfilePicture id={friend.key} typing={is_friend_typing(friend)} image={friend.profile.photo.image} status={friend.profile.status} size={Size.Medium} loading={loading} frame={friend.profile.photo.frame} />
                     </div>
                     <span class="entry-title">
                         <span class="highlight-search-typed-chars">
@@ -133,7 +133,7 @@
                         {#each users as user}
                             <div class="searchbar-entry-group-user">
                                 <div class="profile-picture-wrap">
-                                    <ProfilePicture typing={is_friend_typing(user)} image={user.profile.photo.image} status={user.profile.status} size={Size.Medium} loading={loading} frame={user.profile.photo.frame} />
+                                    <ProfilePicture id={user.key} typing={is_friend_typing(user)} image={user.profile.photo.image} status={user.profile.status} size={Size.Medium} loading={loading} frame={user.profile.photo.frame} />
                                 </div>
                                 <span class="entry-title">
                                     <span class="highlight-search-typed-chars">

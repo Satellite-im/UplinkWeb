@@ -26,10 +26,10 @@
 
         let key = event.key.toWellFormed()
         if (event.altKey) {
-            if (event.code.startsWith('Key')) {
-                key = event.code.replace('Key', '')
-            } else if (event.code.startsWith('Digit')) {
-                key = event.code.replace('Digit', '')
+            if (event.code.startsWith("Key")) {
+                key = event.code.replace("Key", "")
+            } else if (event.code.startsWith("Digit")) {
+                key = event.code.replace("Digit", "")
             }
         }
 
