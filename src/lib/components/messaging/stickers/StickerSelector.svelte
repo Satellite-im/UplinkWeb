@@ -1,14 +1,14 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
     import Label from "$lib/elements/Label.svelte"
-    import defaultManifest from "./manifest.json"
+    import defaultManifest from "$lib/cdn.json"
     import { Icon, Input } from "$lib/elements"
     import { Shape } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import { writable } from "svelte/store"
     import Spacer from "$lib/elements/Spacer.svelte"
 
-    const stickers = defaultManifest
+    const stickers = defaultManifest.stickers
     const dispatch = createEventDispatcher()
     const searchQuery = writable("")
 

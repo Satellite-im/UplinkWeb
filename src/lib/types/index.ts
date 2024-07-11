@@ -11,6 +11,7 @@ export enum OperationState {
 
 export type Frame = {
     image: string
+    author?: string
     name: string
 }
 

@@ -5,6 +5,7 @@
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from "$lib/elements"
     import type { Frame } from "$lib/types"
+    let tempCDN: string = "https://cdn.deepspaceshipping.co"
 
     export let image: string = ""
     export let notifications: number = 0
@@ -64,7 +65,7 @@
         <Loader />
     {:else}
         {#if frame && frame.name}
-            <img data-cy="profile-image-frame" class="profile-image-frame" src={frame.image} alt="" />
+            <img data-cy="profile-image-frame" class="profile-image-frame" src={`${tempCDN}${frame.image}`} alt="" />
         {/if}
         {#if image}
             <img data-cy="profile-image" class="profile-image" src={image} alt="" />

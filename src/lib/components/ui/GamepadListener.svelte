@@ -11,7 +11,7 @@
     }
 
     let gamepadIndex: number | null = null
-    let gamepadVendor: GamepadBrand = GamepadBrand.Generic
+    const gamepadVendor = writable<GamepadBrand>(GamepadBrand.Generic)
     let previousButtonStates: boolean[] = []
     let animationFrameId: number | null = null
     let mouseX = window.innerWidth / 2
@@ -26,12 +26,12 @@
         1: "B",
         2: "X",
         3: "Y",
-        4: "LeftClick",
-        5: "RightClick",
-        6: "Forward",
-        7: "Back",
-        8: "LeftMenu",
-        9: "RightMenu",
+        4: "LeftBumper",
+        5: "RightBumper",
+        6: "LeftTrigger",
+        7: "RightTrigger",
+        8: "Select",
+        9: "Start",
         10: "Button10",
         11: "Button11",
         12: "ArrowUp",
@@ -51,6 +51,7 @@
     const hoveredElement = writable<Element | null>(null)
     const isScrolling = writable<boolean>(false)
     const controllerInfo = writable<string | null>(null)
+    const availableGamepads = writable<Gamepad[]>([])
 
     onMount(() => {
         window.addEventListener("gamepadconnected", connectHandler)
@@ -67,7 +68,7 @@
     const detectGamepadVendor = (id: string) => {
         if (id.includes("Xbox")) {
             return GamepadBrand.Xbox
-        } else if (id.includes("Playstaiton")) {
+        } else if (id.includes("Playstation")) {
             return GamepadBrand.Playstation
         } else {
             return GamepadBrand.Generic
@@ -88,22 +89,33 @@
     }
 
     const connectHandler = (event: GamepadEvent) => {
-        gamepadIndex = event.gamepad.index
-        gamepadVendor = detectGamepadVendor(event.gamepad.id)
-        previousButtonStates = new Array(event.gamepad.buttons.length).fill(false)
-        buttonStates.set({})
-        controllerConnected.set(true)
-        getControllerInfo()
-        startAnimationFrameLoop()
+        const gamepads = navigator.getGamepads()
+        availableGamepads.set(Array.from(gamepads).filter(Boolean) as Gamepad[])
+
+        // If no controller is selected, automatically select the newly connected controller
+        if (gamepadIndex === null) {
+            gamepadIndex = event.gamepad.index
+            gamepadVendor.set(detectGamepadVendor(event.gamepad.id))
+            previousButtonStates = new Array(event.gamepad.buttons.length).fill(false)
+            buttonStates.set({})
+            controllerConnected.set(true)
+            getControllerInfo()
+            startAnimationFrameLoop()
+        }
     }
 
-    const disconnectHandler = () => {
-        gamepadIndex = null
-        previousButtonStates = []
-        buttonStates.set({})
-        controllerConnected.set(false)
-        controllerInfo.set(null)
-        stopAnimationFrameLoop()
+    const disconnectHandler = (event: GamepadEvent) => {
+        const gamepads = navigator.getGamepads()
+        availableGamepads.set(Array.from(gamepads).filter(Boolean) as Gamepad[])
+
+        if (gamepadIndex === event.gamepad.index) {
+            gamepadIndex = null
+            previousButtonStates = []
+            buttonStates.set({})
+            controllerConnected.set(false)
+            controllerInfo.set(null)
+            stopAnimationFrameLoop()
+        }
     }
 
     const update = () => {
@@ -140,16 +152,16 @@
                 case "Enter":
                     activateElement()
                     break
-                case "Back":
+                case "LeftTrigger":
                     navigateBack()
                     break
-                case "LeftClick":
+                case "LeftBumper":
                     clickMouse()
                     break
-                case "RightClick":
+                case "RightBumper":
                     rightClickMouse()
                     break
-                case "Forward":
+                case "RightTrigger":
                     window.history.forward()
                     break
                 case "Space":
@@ -311,6 +323,8 @@
         })[key]
 
     const handleGamepadInput = (gamepad: Gamepad) => {
+        if (gamepad.index !== gamepadIndex) return // Ignore inputs from other controllers
+
         const newButtonStates: { [key: number]: boolean } = {}
         gamepad.buttons.forEach((button, index) => {
             newButtonStates[index] = button.pressed
@@ -429,11 +443,19 @@
         })
     }
 
+    const handleControllerSelectChange = (event: CustomEvent<string>) => {
+        gamepadIndex = parseInt(event.detail)
+        getControllerInfo()
+    }
+
     const getControllerInfo = () => {
         if (gamepadIndex !== null) {
             const gamepad = navigator.getGamepads()[gamepadIndex]
             if (gamepad) {
                 controllerInfo.set(`${gamepad.id.split("(")[0]}`)
+                gamepadVendor.set(detectGamepadVendor(gamepad.id))
+                previousButtonStates = new Array(gamepad.buttons.length).fill(false)
+                buttonStates.set({})
             }
         }
     }
@@ -443,6 +465,9 @@
     {#if $controllerInfo !== null}
         <Label text={$controllerInfo} />
     {/if}
+    {#if $availableGamepads.length > 0}
+        <Select options={$availableGamepads.map((gamepad, index) => ({ value: index.toString(), text: gamepad.id }))} on:change={handleControllerSelectChange} />
+    {/if}
     <div class="controller-mappings">
         <div class="left-controls">
             {#each [4, 7, 8, 12, 13, 14, 15, 10] as index}
@@ -451,22 +476,31 @@
             {/each}
         </div>
         <div id="controller">
-            {gamepadVendor}
             {#if $controllerConnected}
-                <img src="/assets/controller/ps5/controller.png" id="bg" alt="controller" />
+                <img src={`/assets/controller/${$gamepadVendor.toLocaleLowerCase()}/controller.svg`} id="bg" alt="controller" />
                 {#each Object.keys($buttonStates) as index}
                     {#if $buttonStates[parseInt(index)]}
                         {#if actions[+index]}
-                            <img src={`/assets/controller/ps5/${actions[+index].toLowerCase()}.png`} class="button" alt="button" />
+                            <img src={`/assets/controller/${$gamepadVendor.toLocaleLowerCase()}/${actions[+index].toLowerCase()}.svg`} class="button" alt="button" />
                         {:else}
                             <Text>Unknown button</Text>
                         {/if}
                     {/if}
                 {/each}
-                <img src="/assets/controller/ps5/left-stick.png" class="joystick" id="left-joystick" style="transform: translate({$leftJoystick.x * 15}px, {$leftJoystick.y * 15}px);" alt="left joystick" />
-                <img src="/assets/controller/ps5/right-stick.png" class="joystick" id="right-joystick" style="transform: translate({$rightJoystick.x * 15}px, {$rightJoystick.y * 15}px);" alt="right joystick" />
+                <img
+                    src={`/assets/controller/${$gamepadVendor.toLocaleLowerCase()}/left-stick.svg`}
+                    class="joystick"
+                    id="left-joystick"
+                    style="transform: translate({$leftJoystick.x * 15}px, {$leftJoystick.y * 15}px);"
+                    alt="left joystick" />
+                <img
+                    src={`/assets/controller/${$gamepadVendor.toLocaleLowerCase()}/right-stick.svg`}
+                    class="joystick"
+                    id="right-joystick"
+                    style="transform: translate({$rightJoystick.x * 15}px, {$rightJoystick.y * 15}px);"
+                    alt="right joystick" />
             {:else}
-                <img src="/assets/controller/ps5/controller_off.png" id="bg" alt="controller off" />
+                <img src={`/assets/controller/xbox/controller_off.svg`} id="bg" alt="controller off" />
             {/if}
         </div>
         <div class="right-controls">
@@ -506,7 +540,7 @@
         }
 
         #controller {
-            max-width: 600px;
+            width: 420px;
             position: relative;
 
             img.button,
