@@ -154,8 +154,13 @@
                     disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        if (changeList.username) await updateUsername(user.name)
-                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                         if (changeList.statusMessage) {
+                            await updateStatusMessage(statusMessage)
+                        }
+                        if (changeList.username) {
+                            await updateUsername(user.name)
+                        }
+                       
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
