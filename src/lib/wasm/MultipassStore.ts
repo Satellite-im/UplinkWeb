@@ -68,7 +68,11 @@ class MultipassStore {
                             }
                             await new Promise(resolve => setTimeout(resolve, 1000));
                         }
-                        Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                        if (incoming) {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                        } else {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `You received a new friend request.`, 2), Sounds.Notification)
+                        }
                     }
                     await this.listIncomingFriendRequests()
                     break
