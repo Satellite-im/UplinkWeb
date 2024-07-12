@@ -39,6 +39,10 @@
 
     async function updateProfilePicture(picture: string) {
         await MultipassStoreInstance.updateProfilePhoto(picture)
+        if (picture === "/0") {
+            Store.setPhoto("")
+            return
+        }
         Store.setPhoto(picture)
     }
 
@@ -83,6 +87,7 @@
 
     let user: User = get(Store.state.user)
     let activityStatus: Status = user.profile.status
+    console.log("user image: ", user.profile.photo.image)
 
     Store.state.user.subscribe(val => {
         user = val
@@ -199,7 +204,8 @@
             </div>
         </ContextMenu>
         <ContextMenu
-            items={[
+            items={
+            [
                 {
                     id: "clear-profile-picture",
                     icon: Shape.Trash,
