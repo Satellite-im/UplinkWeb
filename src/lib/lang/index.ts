@@ -158,6 +158,9 @@ export function initLocale() {
                     revert_plural: "Revert Keybinds",
                     revertDescription: "Revert keybinds to default.",
                 },
+                developer: {
+                    browserNotSupportedError: "Not supported on this browser.",
+                },
                 messages: {
                     convertToEmoji: "Convert to Emoji",
                     convertToEmojiDescription: "Convert smileys and other symbols like <3 to ❤️",
