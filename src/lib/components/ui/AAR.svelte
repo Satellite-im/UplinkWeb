@@ -8,7 +8,7 @@
     let currentArrow: string | null = null
     let timer: number = 10
     const timeIncrement: number = 0.5
-    let countdownInterval: number
+    let countdownInterval: any
     let gameOver: boolean = false
     let gameStarted: boolean = false
 
