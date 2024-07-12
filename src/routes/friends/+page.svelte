@@ -201,13 +201,13 @@
     <div class="content">
         <Topbar>
             <svelte:fragment slot="controls">
-                <Button hook="button-friends-all" appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
+                <Button hook="button-friends-all" appearance={tab === "all" ? Appearance.Primary : Appearance.Error} text={$_("friends.all")} on:click={_ => (tab = "all")}>
                     <Icon icon={Shape.Users} />
                 </Button>
-                <Button hook="button-friends-active" appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
+                <Button hook="button-friends-active" appearance={tab === "active" ? Appearance.Primary : Appearance.Error} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
                     <Icon icon={Shape.ArrowsLeftRight} />
                 </Button>
-                <Button hook="button-friends-blocked" appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")} hideTextOnMobile>
+                <Button hook="button-friends-blocked" appearance={tab === "blocked" ? Appearance.Primary : Appearance.Error} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")} hideTextOnMobile>
                     <Icon icon={Shape.NoSymbol} />
                 </Button>
             </svelte:fragment>
