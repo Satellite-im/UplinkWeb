@@ -16,7 +16,7 @@
 
     const timeAgo = new TimeAgo("en-US")
 
-    $: chatName = chat.users.length > 2 ? chat.name : (chat.users[1]?.name ?? chat.users[0].name)
+    $: chatName = chat.users.length > 2 ? chat.name : chat.users[1]?.name ?? chat.users[0].name
     $: chatPhoto = chat.users.length > 2 ? "todo" : chat.users[1]?.profile.photo.image ?? chat.users[0].profile.photo.image
     $: chatStatus = chat.users.length > 2 ? Status.Offline : chat.users[1]?.profile.status ?? chat.users[0].profile.status
 

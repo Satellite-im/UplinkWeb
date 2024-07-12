@@ -166,7 +166,7 @@ export let mock_messages: MessageGroup[] = [
                     {
                         kind: MessageAttachmentKind.STL,
                         name: "3DBenchy.stl",
-                        location: "/assets/3DBenchy.stl",
+                        location: "/assets/mock/3DBenchy.stl",
                         size: 1130000,
                     },
                 ],
@@ -187,26 +187,6 @@ export let mock_messages: MessageGroup[] = [
                         kind: MessageAttachmentKind.Audio,
                         name: "Sample.mp3",
                         location: "/assets/mp3/sample.mp3",
-                        size: 1130000,
-                    },
-                ],
-                pinned: false,
-            },
-            {
-                id: uuidv4(),
-                details: {
-                    at: new Date(),
-                    origin: mock_users[0],
-                    remote: false,
-                },
-                text: [],
-                inReplyTo: null,
-                reactions: {},
-                attachments: [
-                    {
-                        kind: MessageAttachmentKind.Video,
-                        name: "Launch.mp4",
-                        location: "/assets/mp4/sample.mp4",
                         size: 1130000,
                     },
                 ],
