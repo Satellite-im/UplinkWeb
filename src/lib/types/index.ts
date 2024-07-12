@@ -205,6 +205,7 @@ export type ContextItem = {
     id: string
     icon: Shape
     text: string
+    disabled?: boolean
     appearance: Appearance
     onClick: () => void
 }
