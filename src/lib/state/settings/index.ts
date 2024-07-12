@@ -35,6 +35,9 @@ export interface ISettingsState {
         messages: boolean
         settings: boolean
     }
+    gamepad: {
+        enabled: boolean
+    }
     devmode: boolean
 }
 

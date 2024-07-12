@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Label, Select, Text } from "$lib/elements"
+    import { Label, RangeSelector, Select, Text } from "$lib/elements"
     import { createPersistentState } from "$lib/state"
     import { onMount, onDestroy } from "svelte"
     import { writable, get } from "svelte/store"
@@ -68,10 +68,11 @@
     const detectGamepadVendor = (id: string) => {
         if (id.includes("Xbox")) {
             return GamepadBrand.Xbox
-        } else if (id.includes("Playstation")) {
+        } else if (id.includes("DualSense")) {
+            console.log("playstation")
             return GamepadBrand.Playstation
         } else {
-            return GamepadBrand.Generic
+            return GamepadBrand.Xbox
         }
     }
 
@@ -468,6 +469,13 @@
     {#if $availableGamepads.length > 0}
         <Select options={$availableGamepads.map((gamepad, index) => ({ value: index.toString(), text: gamepad.id }))} on:change={handleControllerSelectChange} />
     {/if}
+
+    <div id="mapping">
+        <label for="deadzone">Joystick Deadzone ({$deadzone})</label>
+        <RangeSelector min={0} max={3} bind:value={$deadzone} />
+        <label for="sensitivity">Pointer Sensitivity ({$pointerSensitivity})</label>
+        <RangeSelector min={1} max={50} bind:value={$pointerSensitivity} />
+    </div>
     <div class="controller-mappings">
         <div class="left-controls">
             {#each [4, 7, 8, 12, 13, 14, 15, 10] as index}
@@ -509,15 +517,6 @@
                 <Select options={Object.keys(actions).map(action => ({ value: actions[+action], text: actions[+action] }))} selected={$buttonMap[+index]} alt on:change={event => handleSelectChange(event, index.toString())} />
             {/each}
         </div>
-    </div>
-    <div id="mapping">
-        <h3>Tweak</h3>
-        <label for="deadzone">Joystick Deadzone</label>
-        <input type="range" id="deadzone" min="0" max="1" step="0.01" bind:value={$deadzone} />
-        <span>{$deadzone}</span>
-        <label for="sensitivity">Pointer Sensitivity</label>
-        <input type="range" id="sensitivity" min="1" max="20" step="1" bind:value={$pointerSensitivity} />
-        <span>{$pointerSensitivity}</span>
     </div>
 {/if}
 
