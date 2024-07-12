@@ -2,7 +2,7 @@
     import { onDestroy, onMount } from "svelte"
     import { writable } from "svelte/store"
     import { _ } from "svelte-i18n"
-    import { checkIfBrowserIsSafari } from "../utils/CheckBrowser"
+    import { checkIfBrowserIsSupported } from "../utils/CheckBrowser"
 
     interface MemoryStatus {
         usedJSHeapSize: number
@@ -14,7 +14,7 @@
         totalJSHeapSize: 0,
     })
 
-    let isSafariBrowser = checkIfBrowserIsSafari()
+    let isSupportedBrowser = checkIfBrowserIsSupported()
 
     let interval: any
     onMount(() => {
@@ -39,8 +39,7 @@
     })
 </script>
 
-{#if !isSafariBrowser}
-
+{#if isSupportedBrowser}
 <div class="memory-indicator">
     <div class="memory-bar">
         <div class="memory-level" style="width: {($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100}%;"></div>
