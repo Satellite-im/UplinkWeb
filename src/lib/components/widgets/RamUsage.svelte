@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte"
     import { writable } from "svelte/store"
+    import { _ } from "svelte-i18n"
+    import { checkIfBrowserIsSupported } from "../utils/CheckBrowser"
 
     interface MemoryStatus {
         usedJSHeapSize: number
@@ -12,11 +14,14 @@
         totalJSHeapSize: 0,
     })
 
+    let isSupportedBrowser = checkIfBrowserIsSupported()
+
     let interval: any
     onMount(() => {
         function updateMemoryInfo() {
             // @ts-ignore
             const memory = performance.memory
+            console.log("Memory: ", memory)
             if (memory) {
                 memoryStatus.set({
                     usedJSHeapSize: memory.usedJSHeapSize,
@@ -34,12 +39,18 @@
     })
 </script>
 
+{#if isSupportedBrowser}
 <div class="memory-indicator">
     <div class="memory-bar">
         <div class="memory-level" style="width: {($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100}%;"></div>
     </div>
     {(($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100).toFixed(0)}%
 </div>
+{:else}
+    <div>
+        {$_("settings.developer.browserNotSupportedError")}
+    </div>
+{/if}
 
 <style>
     .memory-indicator {
