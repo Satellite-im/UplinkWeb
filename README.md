@@ -34,6 +34,18 @@ npm run dev
 
 ---
 
+## Sending bitcoin (POC)
+
+1 - Install Unisat chrome extension
+
+2 - Go to Settings -> Network and select 'Bitcoin Testnet'
+
+3 - Get some free testnet btc from a faucet. For example: https://bitcoinfaucet.uo1.net/send.php
+
+4 - On another user in uplinkweb, update their profile status message to include `btc:<their-testnet-address>` for example: `btc:tb1pa94qy59l3cxuau4m2vxzlc4flj0yma2pkwz4kd5u6y2ygpdzrlwqescp06` They can find their testnet address in their Unisat. (or use the same unisat, but create a 2nd account)
+
+5 - Now in a conversation with them, when you open up their profile popup, if it detects an address in their status message, it will show a button to send 100 sat. Click it and the request will be forwarded to Unisat for you to approve the transation.
+
 ## Contributing
 
 All contributions are welcome! Please keep in mind we're still a relatively small team, and any work done to ensure contributions don't cause bugs or issues in the application is much appreciated.

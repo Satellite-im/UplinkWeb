@@ -6,6 +6,7 @@
     import type { User } from "$lib/types"
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
+    import { wallet } from "$lib/utils/Wallet"
 
     export let user: User | null = null
 
@@ -36,6 +37,14 @@
     <div class="section">
         <Label text="Status Message" />
         <Text>{user?.profile.status_message}</Text>
+    </div>
+    <div class="section">
+        <Label text="Send BTC" />
+        {#if user != null}
+            {#each wallet.scan_for_addr(user.profile.status_message) as address}
+                <Button on:click={async () => await wallet.btc.send(address, 100)}>{"send 100 sat to " + wallet.shorten_addr(address, 4)}</Button>
+            {/each}
+        {/if}
     </div>
     <div class="section">
         <Label text="Note" />
