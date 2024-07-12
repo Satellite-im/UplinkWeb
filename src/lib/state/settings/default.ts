@@ -102,5 +102,8 @@ export let defaultSettings = {
         messages: true,
         settings: true,
     },
+    gamepad: {
+        enabled: true
+    },
     devmode: false,
 }

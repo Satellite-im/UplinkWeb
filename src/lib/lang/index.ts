@@ -204,6 +204,10 @@ export function initLocale() {
                     name_exist: "Name already exists",
                     invalid_address: "Invalid address",
                 },
+                gamepad: {
+                    enabled: "Gamepad Enabled",
+                    enabledDescription: "Enable gamepad support for navigating the application with controllers."
+                }
             },
         },
     })
