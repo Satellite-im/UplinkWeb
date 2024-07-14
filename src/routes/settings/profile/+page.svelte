@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
+    import { Appearance, Integrations, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/Store"
-    import type { User } from "$lib/types"
+    import type { Integration, User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { get } from "svelte/store"
+    import { get, writable, type Writable } from "svelte/store"
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -18,6 +18,8 @@
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
     import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
+    import { INTEGRATIONS } from "$lib/config"
+    import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
 
     initLocale()
 
@@ -130,6 +132,24 @@
             await navigator.clipboard.writeText(`${userReference.key}`)
         }
     }
+
+    let placeholderIntegrations: Integration[] = [
+        {
+            kind: Integrations.BTC,
+            location: "tb1qcuqv9j89wcgaegkl88frzv6ygr9qt5wzu4napg",
+            meta: null,
+        },
+        {
+            kind: Integrations.Twitch,
+            location: "https://twitch.tv/SpaceMan",
+            meta: null,
+        },
+    ]
+
+    $: integrationOptions = Object.keys(INTEGRATIONS).map(int => ({ text: INTEGRATIONS[int].name, value: INTEGRATIONS[int].name }))
+
+    let selectedIntegration: Integration = { kind: Integrations.Generic, location: "", meta: "" }
+    let showEditIntegrations = writable(false)
 </script>
 
 <div id="page">
@@ -154,13 +174,13 @@
                     disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                         if (changeList.statusMessage) {
+                        if (changeList.statusMessage) {
                             await updateStatusMessage(statusMessage)
                         }
                         if (changeList.username) {
                             await updateUsername(user.name)
                         }
-                       
+
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
@@ -312,7 +332,8 @@
                                 case "do-not-disturb":
                                     return Store.setActivityStatus(Status.DoNotDisturb)
                             }
-2                        }}
+                            2
+                        }}
                         bind:selected={user.profile.status}>
                         {#if activityStatus === Status.Online}
                             <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
@@ -325,6 +346,52 @@
                         {/if}
                     </Select>
                 </SettingSection>
+            </div>
+
+            <div class="section integrations">
+                <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integraitons")} />
+                <Text>Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.</Text>
+                <div class="active">
+                    {#each placeholderIntegrations as integration}
+                        <IntegrationDisplay integration={integration} />
+                    {/each}
+                </div>
+
+                {#if $showEditIntegrations}
+                    <Label text="Add New" />
+
+                    <div class="add">
+                        <div class="left">
+                            <Label text="Platform" />
+                            <Select alt options={integrationOptions} bind:selected={selectedIntegration.kind}></Select>
+                        </div>
+                        <img class="integration-logo" src="/assets/brand/{selectedIntegration.kind}.png" alt="Platform Logo" />
+                        <div class="right">
+                            <Label text="Address" />
+                            <Input alt />
+                        </div>
+
+                        <Button text="Add">
+                            <Icon icon={Shape.Plus} />
+                        </Button>
+                        <Button
+                            text="Cancel"
+                            appearance={Appearance.Alt}
+                            on:click={_ => {
+                                showEditIntegrations.set(false)
+                            }}>
+                            <Icon icon={Shape.XMark} />
+                        </Button>
+                    </div>
+                {:else}
+                    <Button
+                        text="Add"
+                        on:click={_ => {
+                            showEditIntegrations.set(true)
+                        }}>
+                        <Icon icon={Shape.Plus} />
+                    </Button>
+                {/if}
             </div>
 
             <div class="section">
@@ -403,7 +470,7 @@
             .content {
                 display: inline-flex;
                 flex-direction: column;
-                gap: var(--gap);
+                gap: calc(var(--gap) * 2);
                 width: 100%;
             }
 
@@ -416,6 +483,41 @@
                 flex-wrap: wrap;
                 align-items: center;
                 flex: 1;
+            }
+
+            .add {
+                width: 100%;
+                flex: 1;
+                display: inline-flex;
+                gap: var(--gap);
+                align-items: flex-end;
+                background-color: var(--background-alt);
+                padding: var(--padding);
+                border-radius: var(--border-radius);
+                border: var(--border-width) solid var(--primary-color);
+
+                .integration-logo {
+                    width: var(--input-height);
+                    height: var(--input-height);
+                }
+
+                .right {
+                    flex: 1;
+                }
+            }
+
+            .integrations {
+                display: inline-flex;
+                flex-direction: column;
+                align-items: flex-start;
+
+                .active {
+                    flex: 1;
+                    display: inline-flex;
+                    flex-direction: column;
+                    width: 100%;
+                    gap: var(--gap);
+                }
             }
 
             .username-section {
