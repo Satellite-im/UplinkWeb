@@ -28,11 +28,6 @@
                 <Icon icon={Shape.ArrowRight} />
             </Button>
         {/if}
-        {#if editable}
-            <Button appearance={Appearance.Alt} icon>
-                <Icon icon={Shape.Pencil} />
-            </Button>
-        {/if}
     </div>
 </div>
 

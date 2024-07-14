@@ -133,7 +133,7 @@
         }
     }
 
-    let placeholderIntegrations: Integration[] = [
+    let placeholderIntegrations: Writable<Integration[]> = writable([
         {
             kind: Integrations.BTC,
             location: "tb1qcuqv9j89wcgaegkl88frzv6ygr9qt5wzu4napg",
@@ -144,12 +144,55 @@
             location: "https://twitch.tv/SpaceMan",
             meta: null,
         },
-    ]
-
-    $: integrationOptions = Object.keys(INTEGRATIONS).map(int => ({ text: INTEGRATIONS[int].name, value: INTEGRATIONS[int].name }))
+    ])
 
     let selectedIntegration: Integration = { kind: Integrations.Generic, location: "", meta: "" }
     let showEditIntegrations = writable(false)
+    let editIndex: number | null = null
+
+    function addIntegration() {
+        if (selectedIntegration.kind && selectedIntegration.location) {
+            placeholderIntegrations.update(integrations => [...integrations, { ...selectedIntegration }])
+            selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
+            showEditIntegrations.set(false)
+        }
+    }
+
+    function startEditingIntegration(index: number) {
+        editIndex = index
+        let integration = get(placeholderIntegrations)[index]
+        selectedIntegration = { ...integration }
+        showEditIntegrations.set(true)
+    }
+
+    function saveEditedIntegration() {
+        if (selectedIntegration.kind && selectedIntegration.location && editIndex !== null) {
+            placeholderIntegrations.update(integrations => {
+                integrations[editIndex] = { ...selectedIntegration }
+                return integrations
+            })
+            selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
+            editIndex = null
+            showEditIntegrations.set(false)
+        }
+    }
+
+    function removeIntegration(index: number) {
+        let removedIntegration = get(placeholderIntegrations)[index]
+        placeholderIntegrations.update(integrations => integrations.filter((_, i) => i !== index))
+
+        // Re-add the removed integration kind to the integration options if not already present
+        if (!integrationOptions.some(option => option.value === removedIntegration.kind)) {
+            integrationOptions = [...integrationOptions, { text: INTEGRATIONS[removedIntegration.kind].name, value: removedIntegration.kind }]
+        }
+    }
+
+    $: integrationOptions = [
+        ...Object.keys(INTEGRATIONS)
+            .map(int => ({ text: INTEGRATIONS[int].name, value: INTEGRATIONS[int].name }))
+            .filter(option => !get(placeholderIntegrations).some(integration => integration.kind === option.value)),
+        ...(editIndex !== null ? [{ text: INTEGRATIONS[selectedIntegration.kind].name, value: selectedIntegration.kind }] : []),
+    ]
 </script>
 
 <div id="page">
@@ -352,33 +395,43 @@
                 <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integraitons")} />
                 <Text>Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.</Text>
                 <div class="active">
-                    {#each placeholderIntegrations as integration}
-                        <IntegrationDisplay integration={integration} />
+                    {#each $placeholderIntegrations as integration, index}
+                        <div class="integration-item">
+                            <IntegrationDisplay integration={integration} />
+                            <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(index)}>
+                                <Icon icon={Shape.Pencil} />
+                            </Button>
+                            <Button appearance={Appearance.Error} icon on:click={() => removeIntegration(index)}>
+                                <Icon icon={Shape.XMark} />
+                            </Button>
+                        </div>
                     {/each}
                 </div>
 
                 {#if $showEditIntegrations}
-                    <Label text="Add New" />
+                    <Label text={editIndex !== null ? "Edit Integration" : "Add New"} />
 
                     <div class="add">
                         <div class="left">
                             <Label text="Platform" />
-                            <Select alt options={integrationOptions} bind:selected={selectedIntegration.kind}></Select>
+                            <Select alt options={integrationOptions} bind:selected={selectedIntegration.kind} />
                         </div>
                         <img class="integration-logo" src="/assets/brand/{selectedIntegration.kind}.png" alt="Platform Logo" />
                         <div class="right">
                             <Label text="Address" />
-                            <Input alt />
+                            <Input alt bind:value={selectedIntegration.location} />
                         </div>
 
-                        <Button text="Add">
-                            <Icon icon={Shape.Plus} />
+                        <Button text={editIndex !== null ? "Save" : "Add"} on:click={editIndex !== null ? saveEditedIntegration : addIntegration}>
+                            <Icon icon={editIndex !== null ? Shape.CheckMark : Shape.Plus} />
                         </Button>
                         <Button
                             text="Cancel"
                             appearance={Appearance.Alt}
                             on:click={_ => {
                                 showEditIntegrations.set(false)
+                                selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
+                                editIndex = null
                             }}>
                             <Icon icon={Shape.XMark} />
                         </Button>
@@ -511,6 +564,11 @@
                 flex-direction: column;
                 align-items: flex-start;
 
+                .integration-item {
+                    display: inline-flex;
+                    align-items: flex-end;
+                    gap: var(--gap);
+                }
                 .active {
                     flex: 1;
                     display: inline-flex;
