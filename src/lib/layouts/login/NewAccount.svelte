@@ -26,7 +26,7 @@
     </div>
     <div class="main">
         <div class="left">
-            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image="/assets/moon.png" />
+            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image="" />
         </div>
         <div class="right">
             <Label hook="label-new-account-username" text={$_("generic.username")} />

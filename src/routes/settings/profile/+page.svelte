@@ -6,7 +6,11 @@
     import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/Store"
+<<<<<<< HEAD
     import type { Integration, User } from "$lib/types"
+=======
+    import type { ContextItem, User } from "$lib/types"
+>>>>>>> 4aaceaa669a2b073f5e1cc668d53efd9a405ec9f
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
     import { get, writable, type Writable } from "svelte/store"
@@ -41,6 +45,10 @@
 
     async function updateProfilePicture(picture: string) {
         await MultipassStoreInstance.updateProfilePhoto(picture)
+        if (picture === "/0") {
+            Store.setPhoto("")
+            return
+        }
         Store.setPhoto(picture)
     }
 
@@ -265,13 +273,14 @@
         <ContextMenu
             items={[
                 {
-                    id: "clear-profile-picture",
-                    icon: Shape.Trash,
-                    text: "Delete Profile Picture",
-                    appearance: Appearance.Default,
-                    onClick: () => {
-                        updateProfilePicture("/0")
-                    },
+                id: "clear-profile-picture",
+                icon: Shape.Trash,
+                text: "Delete Profile Picture",
+                disabled: user.profile.photo.image === "",
+                appearance: Appearance.Default,
+                onClick: () => {
+                    updateProfilePicture("/0");
+                },
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
