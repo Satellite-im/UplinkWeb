@@ -189,6 +189,7 @@
 
     $: integrationOptions = [
         ...Object.keys(INTEGRATIONS)
+            // @ts-ignore
             .map(int => ({ text: INTEGRATIONS[int].name, value: INTEGRATIONS[int].name }))
             .filter(option => !get(placeholderIntegrations).some(integration => integration.kind === option.value)),
         ...(editIndex !== null ? [{ text: INTEGRATIONS[selectedIntegration.kind].name, value: selectedIntegration.kind }] : []),
@@ -392,8 +393,8 @@
             </div>
 
             <div class="section integrations">
-                <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integraitons")} />
-                <Text>Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.</Text>
+                <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
+                <Text>{$_("settings.profile.integration.description")}</Text>
                 <div class="active">
                     {#each $placeholderIntegrations as integration, index}
                         <div class="integration-item">

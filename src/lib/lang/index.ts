@@ -132,6 +132,10 @@ export function initLocale() {
                     update: "Profile Updated!",
                     copy_id: "Copy ID",
                     copy_did: "Copy DID",
+                    integration: {
+                        title: "Accounts",
+                        description: "Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card."
+                    }
                 },
                 notifications: {
                     enabled: "Enabled",
