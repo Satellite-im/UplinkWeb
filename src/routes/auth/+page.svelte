@@ -52,6 +52,7 @@
                     },
                     pass => {
                         phrase = pass.split(" ")
+                        AuthStore.setSeedPhrase(phrase)
                         currentPage = LoginPage.RecoveryCopy
                     }
                 )

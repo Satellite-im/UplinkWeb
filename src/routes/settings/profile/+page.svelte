@@ -75,7 +75,7 @@
         isValidUsernameToUpdate = false
     }
 
-    let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
+    let samplePhrase = get(AuthStore.state).seedPhrase!
 
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
