@@ -11,9 +11,7 @@
     import prettyBytes from "pretty-bytes"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu, ChatFilter } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    // import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
-    // import { Sortable } from "@shopify/draggable"
     import type { Chat, FileInfo } from "$lib/types"
     import { get, writable } from "svelte/store"
     import { Store } from "$lib/state/store"
@@ -231,7 +229,6 @@
                 if (folder.type === 'folder') {
                     folder.items = folder.items!.filter(i => i.id !== itemId)
                     folder.items = removeFromFolder(itemId, folder.items)
-                    
                 }
                 return folder
                 }).filter(folder => folder.id !== itemId)
@@ -261,7 +258,7 @@
         let newFolders = folders.map(folderStack => {
             const updatedFolderStack = insertIntoFolder(droppingItem.parentId!, droppingItem, currentFiles);
             return updatedFolderStack
-    });
+        });
 
         let newCurrentFiles: FileInfo[] = newFolders.flatMap(folderStack =>
             folderStack.flatMap(item => {
