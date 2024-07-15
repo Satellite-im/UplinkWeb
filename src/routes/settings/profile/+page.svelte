@@ -78,6 +78,7 @@
     let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
     let userReference: User = { ...get(Store.state.user) }
+    console.log("Profile Picture: ", userReference.profile.photo.image)
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
     onDestroy(() => {

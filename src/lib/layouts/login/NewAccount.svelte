@@ -9,12 +9,18 @@
     import { ToastMessage } from "$lib/state/ui/toast"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
     import { LoginPage } from "$lib/layouts/login"
+    import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
 
     export let page: LoginPage
     export let username = ""
     export let statusMessage = ""
+    export let profilePicture = ""
     let isValidUsername = false
     let isValidStatusMessage = true
+
+    async function updateProfilePicture(picture: string) {
+        profilePicture = picture
+    }
 
     initLocale()
 </script>
@@ -26,7 +32,13 @@
     </div>
     <div class="main">
         <div class="left">
-            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image="" />
+            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image={profilePicture} />
+            <FileUploadButton
+                icon
+                tooltip={$_("settings.profile.change_profile_photo")}
+                on:upload={async picture => {
+                    await updateProfilePicture(picture.detail)
+            }} />
         </div>
         <div class="right">
             <Label hook="label-new-account-username" text={$_("generic.username")} />
