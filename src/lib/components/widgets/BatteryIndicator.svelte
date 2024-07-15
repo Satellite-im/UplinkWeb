@@ -3,6 +3,8 @@
     import Icon from "$lib/elements/Icon.svelte"
     import { Shape } from "$lib/enums"
     import { writable } from "svelte/store"
+    import { _ } from "svelte-i18n"
+    import { checkIfBrowserIsSupported } from "../utils/CheckBrowser"
 
     interface BatteryStatus {
         charging: boolean
@@ -10,6 +12,7 @@
     }
 
     const batteryStatus = writable<BatteryStatus>({ charging: false, level: 0 })
+    let isSupportedBrowser = checkIfBrowserIsSupported()
 
     let updateStatus: () => void
 
@@ -21,6 +24,8 @@
                 charging: battery.charging,
                 level: battery.level,
             })
+
+            console.log("batteryStatus: ", batteryStatus)
 
             // Event listeners to update the battery status
             updateStatus = () => {
@@ -48,6 +53,7 @@
     })
 </script>
 
+{#if isSupportedBrowser}
 <div class="battery-indicator">
     <div class="battery-icon">
         <div class="battery-level" class:medium={$batteryStatus.level <= 0.5 && $batteryStatus.level > 0.2} class:low={$batteryStatus.level <= 0.2} style="width: {$batteryStatus.level * 100}%;"></div>
@@ -59,6 +65,11 @@
     {/if}
     {($batteryStatus.level * 100).toFixed()}%
 </div>
+{:else}
+    <div>
+        {$_("settings.developer.browserNotSupportedError")}
+    </div>
+{/if}
 
 <style lang="scss">
     .battery-indicator {
