@@ -400,32 +400,39 @@
         )
     }
 
-    async function renameItem(old_name: string, new_name: string) {
-        if (new_name === "") {
-            Store.addToastNotification(new ToastMessage("", "Invalid name provided", 2))
+    async function renameItem(oldName: string, newName: string, fileExtension: string = "") {
+        if (newName === "") {
+            Store.addToastNotification(new ToastMessage("", "Empty name provided", 2))
             return
         }
-        let result = await ConstellationStoreInstance.renameItem(old_name, new_name)
+        let result = await ConstellationStoreInstance.renameItem(fileExtension === "" ? `${oldName}` : `${oldName}.${fileExtension}`, 
+            fileExtension === "" ? `${newName}` : `${newName}.${fileExtension}`)
         result.fold(
             err => {
-                if (err === WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME) {
-                    currentFiles = currentFiles.map(file => {
-                        if (file.name === old_name) {
-                            file.name = old_name
-                            file.isRenaming = OperationState.Error
-                        }
+                currentFiles = currentFiles.map(file => {
+                    if (file.name === oldName) {
+                        file.isRenaming = OperationState.Error;
+                        Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2));
                         return file
-                    })
+                    }
+                    return file
+                })
+                if (err === WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME) {
+                    getCurrentDirectoryFiles()
+                    Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2));
                     return
                 }
+                getCurrentDirectoryFiles()
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
                 currentFiles = currentFiles.map(file => {
-                    if (file.name === old_name) {
-                        file.name = new_name
+                    if (file.name === oldName) {
+                        file.name = newName
                         file.isRenaming = OperationState.Success
                     }
+                    getCurrentDirectoryFiles()
+                    Store.addToastNotification(new ToastMessage("", `Successfully renamed "${oldName}" to "${newName}"`, 2));
                     return file
                 })
             }
@@ -647,7 +654,7 @@
                                     open(e)
                                 }}
                                 on:rename={async e => {
-                                    renameItem(item.name, e.detail)
+                                    renameItem(`${item.name}`, `${e.detail}`, `${item.extension}`)
                                 }}
                                 isRenaming={item.isRenaming}
                                 kind={FilesItemKind.File}
@@ -700,12 +707,12 @@
                                 info={item}
                                 on:rename={async e => {
                                     if (item.name === "" && e.detail !== "") {
-                                        const newName = e.detail
+                                        const newName = `${e.detail}`
                                         item.name = newName
                                         await createNewDirectory(item)
                                         item.isRenaming = OperationState.Success
                                     } else if (e.detail !== "") {
-                                        renameItem(item.name, e.detail)
+                                        renameItem(`${item.name}`, `${e.detail}`)
                                     }
                                 }}
                                 isRenaming={item.isRenaming} />
