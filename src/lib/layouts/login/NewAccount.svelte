@@ -32,7 +32,7 @@
     </div>
     <div class="main">
         <div class="left">
-            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image={profilePicture} />
+            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image={profilePicture} noIndicator/>
             <FileUploadButton
                 icon
                 tooltip={$_("settings.profile.change_profile_photo")}
@@ -119,6 +119,12 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+                :global(.button) {
+                    position: relative;
+                    bottom: calc(var(--padding-less) * -5.0);
+                    right: calc(var(--padding-less) * 4.2);
+                    z-index: 2;
+                }
             }
 
             .right {
