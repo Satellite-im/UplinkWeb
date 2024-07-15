@@ -4,18 +4,19 @@
     import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
+    import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { _ } from "svelte-i18n"
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu, ChatFilter } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { Plugins } from "@shopify/draggable"
+    // import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
-    import { Sortable } from "@shopify/draggable"
+    // import { Sortable } from "@shopify/draggable"
     import type { Chat, FileInfo } from "$lib/types"
     import { get, writable } from "svelte/store"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
@@ -72,7 +73,7 @@
             const newStack = [...stack, folder.items!]
             return newStack
         })
-        getCurrentDirectoryFiles()
+        // getCurrentDirectoryFiles()
     }
 
     async function goBack() {
@@ -197,11 +198,11 @@
                     }
                     return item.id === currArray[0].parentId
                 })
-                if (newFolders[i].length === 0) {
+                if (newFolders[i].length === 0 ) {
                     if (parentItem && parentItem.items) {
-                        currArray = [...parentItem.items]
+                            currArray = [...parentItem.items]
                     }
-                }
+                        }
                 if (parentItem && parentItem.items) {
                     newFolders[i] = [...parentItem.items]
                 }
@@ -217,20 +218,92 @@
         })
     }
 
-    let sortable: Sortable | undefined
+    function DropItemIntoFolder(droppingItem: FileInfo, parentId: string) {
 
-    function recreateSortable() {
-        if (sortable !== undefined) {
-            sortable.destroy()
-            sortable = undefined
-        } else {
-            initializeSortable()
+        function insertIntoFolder(
+            folderId: string,
+            item: FileInfo,
+            folders: FileInfo[]
+            ): FileInfo[] {
+
+            function removeFromFolder(itemId: string, folders: FileInfo[]): FileInfo[] {
+                return folders.map(folder => {
+                if (folder.type === 'folder') {
+                    folder.items = folder.items!.filter(i => i.id !== itemId);
+                    folder.items = removeFromFolder(itemId, folder.items);
+                    
+                }
+                return folder;
+                }).filter(folder => folder.id !== itemId);
+            }
+
+            function findFolderAndInsert(
+                folderId: string,
+                item: FileInfo,
+                folders: FileInfo[]
+            ): FileInfo[] {
+                return folders.map(folder => {
+                if (folder.id === folderId && folder.type === 'folder') {
+                    updateFilesFromFolder(folder)
+                    folder.items!.push(item);
+                    
+                    ConstellationStoreInstance.dropIntoFolder(item.name, folder.name)
+                } else if (folder.type === 'folder') {
+                    folder.items = findFolderAndInsert(folderId, item, folder.items!);
+                }
+                return folder;
+                });
+            }
+                const updatedFolders = removeFromFolder(item.id, folders);
+                return findFolderAndInsert(folderId, item, updatedFolders);
+            }
+
+    folderStackStore.update(folders => {
+        let newFolders = folders.map(folderStack => {
+            const updatedFolderStack = insertIntoFolder(droppingItem.parentId!, droppingItem, currentFiles);
+            // console.log("MAKE NEWQ HITS", updatedFolderStack);
+            return updatedFolderStack;
+    });
+
+        let newCurrentFiles: FileInfo[] = newFolders.flatMap(folderStack =>
+            folderStack.flatMap(item => {
+                const file = item.items?.find(file => file.id === droppingItem.parentId);
+                return file ? [file] : [item];
+            })
+        ).filter(file => file !== null) as FileInfo[];
+
+        currentFiles = newCurrentFiles;
+
+        for (let i = 1; i < newFolders.length; i++) {
+            let prevArray = newFolders[i - 1];
+            let currArray = newFolders[i];
+            const parentItem = prevArray.find(item => {
+                if (currArray.length === 0) {
+                    newFolders[i].push(droppingItem);
+                }
+                return item.id === currArray[0].parentId;
+            });
+
+            if (newFolders[i].length === 0) {
+                if (parentItem && parentItem.items) {
+                    currArray = [...parentItem.items];
+                }
+            }
+            if (parentItem && parentItem.items) {
+                newFolders[i] = [...parentItem.items];
+            }
+
+            const currentOpenFolders = openFolders;
+            const updatedOpenFolders = {
+                ...currentOpenFolders,
+                [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
+            };
+            Store.updateFolderTree(updatedOpenFolders);
         }
-    }
-
-    $: if (isContextMenuOpen || !isContextMenuOpen) {
-        recreateSortable()
-    }
+            Store.updateFileOrder(currentFiles)
+            return newFolders;
+    })
+}
 
     let folderClicked: FileInfo = {
         id: "",
@@ -242,64 +315,6 @@
         source: "",
         isRenaming: OperationState.Initial,
         items: [],
-    }
-
-    function initializeSortable() {
-        const dropzone = document.querySelector(".files") as HTMLElement
-        if (dropzone) {
-            sortable = new Sortable(dropzone, {
-                draggable: isContextMenuOpen ? "" : ".draggable-item",
-                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-            })
-
-            sortable.on("sortable:stop", event => {
-                const items = sortable!.getDraggableElementsForContainer(dropzone)
-                const newOrderIds = Array.from(items)
-                    .filter(child => child.getAttribute("data-id"))
-                    .map(child => child.getAttribute("data-id"))
-                currentFiles = newOrderIds.map(id => {
-                    const file = currentFiles.find(file => file.id === id)
-                    return file ? file : null
-                }) as FileInfo[]
-                Store.updateFileOrder(currentFiles)
-                ConstellationStoreInstance.setItemsOrders(currentFiles)
-            })
-
-            let lastClickTime = 0
-            let lastClickTarget: HTMLElement | null = null
-            function updateFilesFromFolder(folder: FileInfo): void {
-                if (folder.items && folder.items.length > 0) {
-                    Store.updateFileOrder(folder.items)
-                }
-            }
-            dropzone.addEventListener("mousedown", event => {
-                let target = event.target as HTMLElement
-                while (target && !target.classList.contains("draggable-item")) {
-                    target = target.parentElement as HTMLElement
-                }
-
-                const currentTime = Date.now()
-                if (lastClickTarget === target && currentTime - lastClickTime < 200) {
-                    if (lastClickTarget.classList.contains("folder-draggable")) {
-                        const targetId = target.dataset.id
-                        const targetFolder = currentFiles.find(item => item.id === targetId)
-                        if (targetFolder) {
-                            folderClicked = targetFolder
-                        }
-                        if (target) {
-                            const targetId = target.dataset.id
-                            const targetFolder = currentFiles.find(item => item.id === targetId)
-                            if (targetFolder) {
-                                updateFilesFromFolder(targetFolder)
-                                openFolder(targetFolder)
-                            }
-                        }
-                    }
-                }
-                lastClickTarget = target
-                lastClickTime = currentTime
-            })
-        }
     }
 
     function itemsToFileInfo(items: Item[]): FileInfo[] {
@@ -341,10 +356,73 @@
             currentFiles = Array.from(filesSet)
         })
     }
+    function updateFilesFromFolder(folder: FileInfo): void {
+        if (folder.items && folder.items.length > 0) {
+            Store.updateFileOrder(folder.items)
+        }
+    }
 
     onMount(() => {
-        initializeSortable()
         getCurrentDirectoryFiles()
+
+        let lastClickTime = 0
+        let lastClickTarget: HTMLElement | null = null
+        const dropzone = document.querySelector(".files") as HTMLElement
+        dropzone.addEventListener("mousedown", event => {
+        let target = event.target as HTMLElement
+        while (target && !target.classList.contains("draggable-item")) {
+            target = target.parentElement as HTMLElement
+        }
+
+        const currentTime = Date.now()
+        if (lastClickTarget === target && currentTime - lastClickTime < 200) {
+            if (lastClickTarget.classList.contains("folder-draggable")) {
+                const targetId = target.dataset.id
+                const targetFolder = currentFiles.find(item => item.id === targetId)
+                if (targetFolder) {
+                    folderClicked = targetFolder
+                }
+                if (target) {
+                    const targetId = target.dataset.id
+                    const targetFolder = currentFiles.find(item => item.id === targetId)
+                    if (targetFolder) {
+                        updateFilesFromFolder(targetFolder)
+                        openFolder(targetFolder)
+                    }
+                }
+            }
+        }
+        let draggedItemId: string | null = ""
+        let draggedElement: HTMLElement | null = null
+        let targetFolderId: string | null = null
+        document.addEventListener('dragstart', (event: DragEvent) => {
+        draggedElement = (event.target as HTMLElement).closest('.draggable-item');
+        })
+        document.addEventListener('dragover', (event: DragEvent) => {
+            event.preventDefault()
+        });
+        document.addEventListener('drop', (event: DragEvent) => {
+                const dropTargetElement = (event.target as HTMLElement).closest('.draggable-item');
+                if (dropTargetElement && draggedElement) {
+                    targetFolderId = dropTargetElement.getAttribute('data-id');
+                    const dragId = draggedElement.getAttribute('data-id');
+                    const draggedItem = currentFiles.find(item => item.id === dragId)
+                    if (draggedElement) {
+                        draggedItemId = draggedElement.getAttribute('data-id');
+                        if (targetFolderId && draggedItem) {
+                            if (targetFolderId !== draggedItem.id) {
+                                draggedItem.parentId = targetFolderId;
+                                DropItemIntoFolder(draggedItem, targetFolderId);
+                            }
+                        }
+                    }
+                    draggedElement = null;
+                }
+        });
+        lastClickTarget = target
+        lastClickTime = currentTime
+    })
+
     })
 
     onDestroy(() => {
@@ -439,14 +517,14 @@
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             blob => {
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement("a")
-                a.href = url
-                a.download = fileName
-                document.body.appendChild(a)
-                a.click()
-                document.body.removeChild(a)
-                URL.revokeObjectURL(url)
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = fileName
+                    document.body.appendChild(a)
+                    a.click()
+                    document.body.removeChild(a)
+                    URL.revokeObjectURL(url)
             }
         )
     }
@@ -490,12 +568,12 @@
         </Modal>
     {/if}
 
+    <!-- <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} /> -->
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>
             <Button
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
-                hook="button-sidebar-chats"
                 text={$_("chat.chat_plural")}
                 on:click={_ => {
                     activeTabRoute = "chats"
@@ -504,7 +582,6 @@
             </Button>
             <Button
                 appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
-                hook="button-sidebar-files"
                 text={$_("files.file_plural")}
                 on:click={_ => {
                     activeTabRoute = "files"
@@ -536,7 +613,7 @@
             {/each}
         {/if}
         {#if activeTabRoute === "files"}
-            <ul class="folderList" data-cy="folder-list">
+            <ul class="folderList">
                 {#each currentFiles as file}
                     <FolderItem file={file} openFolders={openFolders} toggleFolder={toggleFolder} />
                 {/each}
@@ -545,18 +622,25 @@
     </Sidebar>
     <div class="content">
         <Topbar>
-            <div slot="controls" class="before flex-column">
-                <Controls>
-                    <Button appearance={Appearance.Alt} text="Sync" disabled>
+            <div slot="before" class="before flex-column">
+                <Label text="Quick Actions" />
+                <div class="actions">
+                    <Button appearance={Appearance.Alt} text="Sync">
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Create Node" disabled hideTextOnMobile>
+                    <Button appearance={Appearance.Alt} text="Gift Space">
+                        <Icon icon={Shape.Gift} />
+                    </Button>
+                    <Button appearance={Appearance.Alt} text="Rent Space">
+                        <Icon size={Size.Large} icon={Shape.Starlight} />
+                    </Button>
+                    <Button appearance={Appearance.Alt} text="Create Node">
                         <Icon icon={Shape.Info} />
                     </Button>
-                </Controls>
+                </div>
             </div>
         </Topbar>
-        <Topbar hideSidebarToggle>
+        <Topbar>
             <div slot="before" class="before">
                 <button class="stat">
                     <Label text="Free Space" /><Text singleLine>
@@ -568,14 +652,23 @@
                         {prettyBytes(13223423884917234002)}
                     </Text>
                 </button>
+                <button class="stat">
+                    <Label text="Sync Size" /><Text singleLine>
+                        {prettyBytes(38481083182)}
+                    </Text>
+                </button>
+                <button class="stat">
+                    <Label text="Shuttle" /><Text singleLine>
+                        {prettyBytes(12345344)}
+                    </Text>
+                </button>
             </div>
             <svelte:fragment slot="controls">
-                <Button hook="button-new-folder" appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
+                <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
                 <Button
                     appearance={Appearance.Alt}
-                    hook="button-upload-file"
                     icon
                     tooltip={$_("files.upload")}
                     on:click={async () => {
@@ -583,12 +676,12 @@
                     }}>
                     <Icon icon={Shape.Plus} />
                 </Button>
-                <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
+                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
         <div class="folder-back">
-            <Button hook="button-folder-back" appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+            <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -597,7 +690,6 @@
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
                         <ContextMenu
-                            hook="context-menu-file"
                             on:close={_ => {
                                 isContextMenuOpen = false
                             }}
@@ -639,7 +731,6 @@
                             ]}>
                             <FileFolder
                                 itemId={item.id}
-                                hook="file-{item.name}"
                                 slot="content"
                                 let:open
                                 on:contextmenu={e => {
@@ -655,7 +746,7 @@
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
-                            hook="context-menu-folder"
+                            hook="context-menu-folder-{item.id}"
                             on:close={_ => {
                                 isContextMenuOpen = false
                             }}
@@ -689,7 +780,6 @@
                             ]}>
                             <FileFolder
                                 itemId={item.id}
-                                hook="folder-{item.name}"
                                 slot="content"
                                 let:open
                                 on:contextmenu={e => {
@@ -760,7 +850,6 @@
             flex: 1;
             overflow: hidden;
             width: 100%;
-            min-width: 0;
 
             .before {
                 gap: var(--gap-less);

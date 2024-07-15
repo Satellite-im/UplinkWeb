@@ -92,6 +92,31 @@ class ConstellationStore {
     }
 
     /**
+     * moves item/s from constellation.
+     * @returns A Result containing either the list of files or a WarpError.
+     */
+    async dropIntoFolder(fileName: string, toFolderName: string): Promise<Result<WarpError, void>> {
+        const constellation = get(this.constellationWritable)
+        // let secFil = fil.find_item(fileName)
+        // let currentDir = await constellation!.current_directory()
+        if (constellation) {
+            try {
+                console.log("HEREEERER", fileName, toFolderName)
+                const currentDir = constellation?.current_directory()
+                let fileToMove = currentDir.find_item(fileName).get_file()
+                let dirToMove = currentDir!.path()
+                let fil = constellation.move_item(fileToMove.name(), toFolderName)
+                console.log("fil", fil, currentDir)
+                return success(undefined)
+            } catch (error) {
+                log.error("Error getting current directory files: " + error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
+
+    /**
      * Deletes an item from the constellation.
      * @param file_name - The name of the item to be deleted.
      * @returns A Result containing either success or failure with a WarpError.
