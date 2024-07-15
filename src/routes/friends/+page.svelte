@@ -9,7 +9,7 @@
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
     import { Store } from "$lib/state/Store"
-    import { get } from "svelte/store"
+    import { get, writable, type Readable } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -27,7 +27,7 @@
     initLocale()
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
+    $: sidebarOpen = UIStore.state.sidebarOpen
     $: friends = Store.getUsers(Store.state.friends)
     $: blocked = Store.getUsers(Store.state.blocked)
     let incomingRequests: FriendRequest[] = Store.inboundRequests
@@ -132,9 +132,8 @@
         keys: ["name"],
     }
 
-    const fuse = new Fuse($friends, fuseOptions)
-    let searchResult = fuse.search("")
-
+    $: fuse = new Fuse($friends, fuseOptions)
+    $: searchResult = fuse.search("")
     $: if (searchString !== undefined) {
         searchResult = fuse.search(searchString)
     }
@@ -143,7 +142,6 @@
         incomingRequests = r.filter(r => r.direction === MessageDirection.Inbound)
         outgoingRequests = r.filter(r => r.direction === MessageDirection.Outbound)
     })
-    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
@@ -160,7 +158,7 @@
 </script>
 
 <div id="page">
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends}>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={$sidebarOpen} activeRoute={Route.Friends}>
         <!--
             <Button hook="button-marketplace" outline appearance={Appearance.Alt} text={$_("market.market")}>
                 <Icon icon={Shape.Shop} />
