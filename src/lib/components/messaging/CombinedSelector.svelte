@@ -25,7 +25,7 @@
         {:else if active.name == tabs[1].name}
             <GifSelector on:gif={e => dispatch("gif", e.detail)} />
         {:else}
-            <StickerSelector />
+            <StickerSelector on:sticker={e => dispatch("sticker", e.detail)} />
         {/if}
     </div>
     <footer>

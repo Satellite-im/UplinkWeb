@@ -1,6 +1,6 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
-    import { Route, Size } from "$lib/enums"
+    import { Route, Size, Status } from "$lib/enums"
     import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
@@ -18,8 +18,9 @@
 
     $: users = Store.getUsers(chat.users)
 
-    let photo = $users.length > 2 ? "todo" : $users[0].profile.photo.image
-    let name = $users.length > 2 ? chat.name : $users[1].name ?? $users[0].name
+    $: chatName = $users.length > 2 ? chat.name : $users[1]?.name ?? $users[0].name
+    $: chatPhoto = $users.length > 2 ? "todo" : $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
+    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
 
     const dispatch = createEventDispatcher()
 
@@ -38,14 +39,14 @@
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 2}
-        <ProfilePicture typing={chat.activity} image={$users[1].profile.photo.image} status={$users[1].profile.status} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
+        <ProfilePicture id={$users[1].key} typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={$users} />
     {/if}
     <div class="content">
         <div class="heading">
             <Text class="chat-user" singleLine loading={loading}>
-                {name}
+                {chatName}
             </Text>
             <div class="right">
                 <Text class="timestamp" loading={loading} size={Size.Smallest} muted>

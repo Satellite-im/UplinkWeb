@@ -12,6 +12,7 @@ import { parseJSValue } from "./EnumParser"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { SettingsStore } from "$lib/state"
 import { Sounds } from "$lib/components/utils/SoundHandler"
+import { MAX_RETRY_COUNT, RETRY_DELAY } from "$lib/config"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -48,7 +49,7 @@ class MultipassStore {
         log.info("Listening multipass events!")
         for await (const value of listener) {
             let event = value as wasm.MultiPassEventKind
-            log.info(`Handling multipass events: ${event.kind} with did ${event.did}`)
+            log.info(`Handling multipass events: ${wasm.MultiPassEventKindEnum[event.kind]} with did ${event.did}`)
             switch (event.kind) {
                 case wasm.MultiPassEventKindEnum.FriendRequestSent:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
@@ -59,7 +60,20 @@ class MultipassStore {
                 case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
                     if (get(SettingsStore.state).notifications.friends) {
                         let incoming = await this.identity_from_did(event.did)
-                        Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                        let count = 0
+                        while (incoming === undefined) {
+                            incoming = await this.identity_from_did(event.did)
+                            count++
+                            if (count > MAX_RETRY_COUNT) {
+                                break;
+                            }
+                            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                        }
+                        if (incoming) {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                        } else {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `You received a new friend request.`, 2), Sounds.Notification)
+                        }
                     }
                     await this.listIncomingFriendRequests()
                     break
@@ -84,7 +98,7 @@ class MultipassStore {
                     break
                 }
                 default: {
-                    log.error(`Unhandled message event: ${JSON.stringify(event)}`)
+                    log.error(`Unhandled message event: ${wasm.MultiPassEventKindEnum[event.kind]}`)
                     break
                 }
             }
@@ -96,13 +110,14 @@ class MultipassStore {
      * @param username - The username for the new identity.
      * @param statusMessage - The status message for the new identity.
      * @param passphrase - The passphrase for the new identity (optional).
+     * @returns A Result containing either a passphrase assigned to the identity or a failure with a WarpError.
      */
-    async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
+    async createIdentity(username: string, statusMessage: string): Promise<Result<WarpError, string>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                await multipass.create_identity(username, passphrase)
+                let id = await multipass.create_identity(username)
                 if (statusMessage.length > 0) {
                     if (statusMessage.length > MAX_STATUS_MESSAGE_LENGTH) {
                         log.warn(`Status message len is ${statusMessage.length}. Max is ${MAX_STATUS_MESSAGE_LENGTH}. Truncating to fit.`)
@@ -115,10 +130,13 @@ class MultipassStore {
                 Username: ${identity?.username()} \n 
                 StatusMessage: ${identity?.status_message()} \n
                 Did Key: ${identity?.did_key()} \n`)
+                return success(id.passphrase()!)
             } catch (error) {
                 log.error("Error creating identity: " + error)
+                return failure(handleErrors(error))
             }
         }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
     }
 
     async fetchAllFriendsAndRequests() {
@@ -562,7 +580,7 @@ class MultipassStore {
                 let identityProfilePicture = await multipass.identity_picture(did)
                 profilePicture = identityProfilePicture ? this.to_base64(identityProfilePicture.data()) : ""
             } catch (error) {
-                log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
+                // log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
             }
         }
         return profilePicture
@@ -576,7 +594,7 @@ class MultipassStore {
                 let identityBannerPicture = await multipass.identity_banner(did)
                 bannerPicture = identityBannerPicture ? this.to_base64(identityBannerPicture.data()) : ""
             } catch (error) {
-                log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
+                // log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
             }
         }
         return bannerPicture

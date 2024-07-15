@@ -6,7 +6,7 @@
     import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/Store"
-    import type { User } from "$lib/types"
+    import type { ContextItem, User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
     import { get } from "svelte/store"
@@ -39,6 +39,10 @@
 
     async function updateProfilePicture(picture: string) {
         await MultipassStoreInstance.updateProfilePhoto(picture)
+        if (picture === "/0") {
+            Store.setPhoto("")
+            return
+        }
         Store.setPhoto(picture)
     }
 
@@ -91,7 +95,7 @@
         activityStatus = user.profile.status
     })
 
-    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
+    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
     let fileinput: HTMLElement
 
     const onFileSelected = async (e: any) => {
@@ -103,7 +107,7 @@
             if (compressedImage!.size <= MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE || quality <= 0.1) {
                 let reader = new FileReader()
                 reader.readAsDataURL(compressedImage!)
-                reader.onload = async (e) => {
+                reader.onload = async e => {
                     let imageString = e.target?.result?.toString()
                     await MultipassStoreInstance.updateBannerPicture(imageString || "")
                     Store.setBanner(imageString || "")
@@ -154,8 +158,13 @@
                     disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        if (changeList.username) await updateUsername(user.name)
-                        if (changeList.statusMessage) await updateStatusMessage(statusMessage)
+                         if (changeList.statusMessage) {
+                            await updateStatusMessage(statusMessage)
+                        }
+                        if (changeList.username) {
+                            await updateUsername(user.name)
+                        }
+                       
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
@@ -196,17 +205,18 @@
         <ContextMenu
             items={[
                 {
-                    id: "clear-profile-picture",
-                    icon: Shape.Trash,
-                    text: "Delete Profile Picture",
-                    appearance: Appearance.Default,
-                    onClick: () => {
-                        updateProfilePicture("/0")
-                    },
+                id: "clear-profile-picture",
+                icon: Shape.Trash,
+                text: "Delete Profile Picture",
+                disabled: user.profile.photo.image === "",
+                appearance: Appearance.Default,
+                onClick: () => {
+                    updateProfilePicture("/0");
+                },
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture id={user.key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}

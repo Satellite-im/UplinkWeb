@@ -1,8 +1,11 @@
 <script lang="ts">
+    import jazzicon from "@metamask/jazzicon"
+    import { onMount } from "svelte"
+    import { createEventDispatcher } from "svelte"
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from "$lib/elements"
-    import { createEventDispatcher } from "svelte"
     import type { Frame } from "$lib/types"
+    let tempCDN: string = "https://cdn.deepspaceshipping.co"
 
     export let image: string = ""
     export let notifications: number = 0
@@ -14,6 +17,43 @@
     export let noIndicator: boolean = false
     export let frame: Frame = { name: "", image: "" }
     export let hook: string = ""
+    export let id: string = ""
+
+    let identicon: string | HTMLElement = ""
+
+    onMount(() => {
+        if (!image || image.length < 16) {
+            let identiconSize: number
+
+            switch (size) {
+                case Size.Smallest:
+                    identiconSize = 80
+                    break
+                case Size.Smaller:
+                    identiconSize = 100
+                    break
+                case Size.Small:
+                    identiconSize = 100
+                    break
+                case Size.Medium:
+                    identiconSize = 120
+                    break
+                case Size.Large:
+                    identiconSize = 150
+                    break
+                case Size.Larger:
+                    identiconSize = 180
+                    break
+                case Size.Largest:
+                    identiconSize = 200
+                    break
+                default:
+                    identiconSize = 100
+            }
+
+            identicon = jazzicon(identiconSize, id).outerHTML
+        }
+    })
 
     const dispatch = createEventDispatcher()
 </script>
@@ -25,9 +65,15 @@
         <Loader />
     {:else}
         {#if frame && frame.name}
-            <img data-cy="profile-image-frame" class="profile-image-frame" src={frame.image} alt="" />
+            <img data-cy="profile-image-frame" class="profile-image-frame" src={`${tempCDN}${frame.image}`} alt="" />
         {/if}
-        <img data-cy="profile-image" class="profile-image" src={image} alt="" />
+        {#if image}
+            <img data-cy="profile-image" class="profile-image" src={image} alt="" />
+        {:else}
+            <div class="identicon">
+                {@html identicon}
+            </div>
+        {/if}
     {/if}
     {#if typing}
         <div class="typing-indicator"></div>
@@ -53,6 +99,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
+        .identicon {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+        }
 
         .profile-image-frame {
             position: absolute;

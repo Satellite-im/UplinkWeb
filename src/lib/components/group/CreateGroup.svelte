@@ -47,7 +47,7 @@
         <div class="user-list">
             {#each recipients as recipient}
                 <div class="mini-user">
-                    <ProfilePicture size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
+                    <ProfilePicture id={recipient.key} size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
@@ -67,7 +67,7 @@
         <div class="user-selection-list {embedded ? 'embedded' : ''}">
             {#each $friends as recipient}
                 <button class="user" on:click={() => update_recipients(recipient)}>
-                    <ProfilePicture size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
+                    <ProfilePicture id={recipient.key} size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
                     <div class="info">
                         <Text singleLine size={Size.Medium}>
                             {recipient.name}

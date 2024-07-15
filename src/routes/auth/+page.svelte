@@ -40,24 +40,30 @@
             if (failed) return
             await WarpStore.initWarpInstances(addressed)
         }
+        if (username === "") return
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
         ownIdentity.fold(
-            (_: any) => {
+            async (_: any) => {
                 AuthStore.setStoredPin(pin)
-                currentPage = LoginPage.RecoveryCopy
-                //TODO generate phrase here
+                let pass = await MultipassStoreInstance.createIdentity(username, statusMessage)
+                pass.fold(
+                    (e: WarpError) => {
+                        log.error("Error creating identity: " + e)
+                    },
+                    pass => {
+                        phrase = pass.split(" ")
+                        currentPage = LoginPage.RecoveryCopy
+                    }
+                )
             },
-            (_: any) => {
+            async (_: any) => {
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 goto(Route.Pre)
             }
         )
     }
 
-    async function createAccount() {
-        if (username === "" || phrase.length === 0) return
-        // TODO use passphrase
-        await MultipassStoreInstance.createIdentity(username, statusMessage, undefined)
+    async function finalizeLogin() {
         let identity = await MultipassStoreInstance.getOwnIdentity()
         identity.fold(
             (e: WarpError) => {
@@ -85,7 +91,7 @@
             e.detail.done()
         }} />
 {:else if currentPage == LoginPage.RecoveryCopy}
-    <RecoveryCopy phrase={phrase} on:click={createAccount} />
+    <RecoveryCopy phrase={phrase} on:click={finalizeLogin} />
 {/if}
 
 <style lang="scss">

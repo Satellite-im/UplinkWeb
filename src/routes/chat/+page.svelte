@@ -58,6 +58,8 @@
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
 
     const timeAgo = new TimeAgo("en-US")
 
@@ -339,9 +341,9 @@
             </div>
             <div slot="content">
                 {#if $activeChat.users.length > 0}
-                    <Text singleLine>{$activeChat.name.length ? $activeChat.name : $users[$activeChat.users[1]]?.name}</Text>
+                    <Text singleLine>{chatName}</Text>
                     <Text singleLine muted size={Size.Smaller}>
-                        {$activeChat.motd.length ? $activeChat.motd : $users[$activeChat.users[1]]?.profile?.status_message}
+                        {statusMessage}
                     </Text>
                 {/if}
             </div>
