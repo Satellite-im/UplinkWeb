@@ -28,8 +28,8 @@
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
-    let friends: User[] = get(Store.state.friends)
-    let blocked: User[] = get(Store.state.blocked)
+    $: friends = Store.getUsers(Store.state.friends)
+    $: blocked = Store.getUsers(Store.state.blocked)
     let incomingRequests: FriendRequest[] = Store.inboundRequests
     let outgoingRequests: FriendRequest[] = Store.outboundRequests
     let isValidFriendDid: boolean = false
@@ -73,43 +73,43 @@
         isValidFriendDid = false
     }
 
-    let acceptRequest = async function (friendUser: User) {
-        let friendRequestAccepted = await MultipassStoreInstance.acceptFriendRequest(friendUser.key)
+    let acceptRequest = async function (friendUser: string) {
+        let friendRequestAccepted = await MultipassStoreInstance.acceptFriendRequest(friendUser)
         friendRequestAccepted.onSuccess(() => {
             Store.acceptRequest(friendUser)
         })
     }
 
-    let denyRequest = async function (friendUser: User) {
-        let friendRequestDenied = await MultipassStoreInstance.denyFriendRequest(friendUser.key)
+    let denyRequest = async function (friendUser: string) {
+        let friendRequestDenied = await MultipassStoreInstance.denyFriendRequest(friendUser)
         friendRequestDenied.onSuccess(() => {
             Store.denyRequest(friendUser)
         })
     }
 
-    let cancelRequest = async function (friendUser: User) {
-        let friendRequestCancelled = await MultipassStoreInstance.cancelFriendRequest(friendUser.key)
+    let cancelRequest = async function (friendUser: string) {
+        let friendRequestCancelled = await MultipassStoreInstance.cancelFriendRequest(friendUser)
         friendRequestCancelled.onSuccess(() => {
             Store.cancelRequest(friendUser)
         })
     }
 
-    let removeFriend = async function (friendUser: User) {
-        let friendRemoved = await MultipassStoreInstance.removeFriend(friendUser.key)
+    let removeFriend = async function (friendUser: string) {
+        let friendRemoved = await MultipassStoreInstance.removeFriend(friendUser)
         friendRemoved.onSuccess(() => {
             Store.removeFriend(friendUser)
         })
     }
 
-    let blockUser = async function (friendUser: User) {
-        let userBlocked = await MultipassStoreInstance.blockUser(friendUser.key)
+    let blockUser = async function (friendUser: string) {
+        let userBlocked = await MultipassStoreInstance.blockUser(friendUser)
         userBlocked.onSuccess(() => {
             Store.blockUser(friendUser)
         })
     }
 
-    let unblockUser = async function (friendUser: User) {
-        let userUnblocked = await MultipassStoreInstance.unblockUser(friendUser.key)
+    let unblockUser = async function (friendUser: string) {
+        let userUnblocked = await MultipassStoreInstance.unblockUser(friendUser)
         userUnblocked.onSuccess(() => {
             Store.unblockUser(friendUser)
         })
@@ -132,7 +132,7 @@
         keys: ["name"],
     }
 
-    const fuse = new Fuse(friends, fuseOptions)
+    const fuse = new Fuse($friends, fuseOptions)
     let searchResult = fuse.search("")
 
     $: if (searchString !== undefined) {
@@ -143,8 +143,6 @@
         incomingRequests = r.filter(r => r.direction === MessageDirection.Inbound)
         outgoingRequests = r.filter(r => r.direction === MessageDirection.Outbound)
     })
-    Store.state.friends.subscribe(f => (friends = f))
-    Store.state.blocked.subscribe(u => (blocked = u))
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe(sc => (chats = sc))
@@ -293,7 +291,7 @@
                                             appearance={Appearance.Alt}
                                             tooltip={$_("generic.remove")}
                                             on:click={_ => {
-                                                removeFriend(result.item)
+                                                removeFriend(result.item.key)
                                             }}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
@@ -303,7 +301,7 @@
                                             appearance={Appearance.Alt}
                                             tooltip={$_("friends.block")}
                                             on:click={_ => {
-                                                blockUser(result.item)
+                                                blockUser(result.item.key)
                                             }}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
@@ -316,10 +314,10 @@
                     </div>
                 {/if}
                 <div class="section column">
-                    {#each Object.keys(groupUsersAlphabetically(friends)).sort() as letter}
-                        {#if groupUsersAlphabetically(friends)[letter].length > 0}
+                    {#each Object.keys(groupUsersAlphabetically($friends)).sort() as letter}
+                        {#if groupUsersAlphabetically($friends)[letter].length > 0}
                             <Label hook="label-friend-list-{letter}" text={letter} />
-                            {#each groupUsersAlphabetically(friends)[letter] as friend}
+                            {#each groupUsersAlphabetically($friends)[letter] as friend}
                                 <Friend friend={friend}>
                                     <svelte:fragment slot="controls">
                                         <Button
@@ -340,10 +338,10 @@
                                             }}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>
-                                        <Button hook="button-friend-remove" icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => removeFriend(friend)}>
+                                        <Button hook="button-friend-remove" icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => removeFriend(friend.key)}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
-                                        <Button hook="button-friend-block" icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => blockUser(friend)}>
+                                        <Button hook="button-friend-block" icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => blockUser(friend.key)}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
                                     </svelte:fragment>
@@ -356,7 +354,7 @@
                 <div class="section column">
                     <Label hook="label-outgoing-requests" text={$_("friends.outgoing_requests")} />
                     {#each outgoingRequests as request}
-                        <Friend friend={request.to}>
+                        <Friend friend={get(Store.getUser(request.to))}>
                             <svelte:fragment slot="controls">
                                 <Button hook="button-friend-cancel" appearance={Appearance.Alt} text={$_("generic.cancel")} on:click={_ => cancelRequest(request.to)}>
                                     <Icon icon={Shape.NoSymbol} />
@@ -369,7 +367,7 @@
                     {/if}
                     <Label hook="label-incoming-requests" text={$_("friends.incoming_requests")} />
                     {#each incomingRequests as request}
-                        <Friend friend={request.from}>
+                        <Friend friend={get(Store.getUser(request.from))}>
                             <svelte:fragment slot="controls">
                                 <Button hook="button-friend-accept" appearance={Appearance.Success} text={$_("generic.accept")} on:click={_ => acceptRequest(request.from)}>
                                     <Icon icon={Shape.CheckMark} />
@@ -387,16 +385,16 @@
             {:else if tab === "blocked"}
                 <div class="section column">
                     <Label hook="label-blocked-users" text={$_("friends.blocked_users")} />
-                    {#each blocked as user}
+                    {#each $blocked as user}
                         <Friend friend={user}>
                             <svelte:fragment slot="controls">
-                                <Button hook="button-friend-unblock" appearance={Appearance.Alt} text={$_("friends.unblock")} on:click={_ => unblockUser(user)}>
+                                <Button hook="button-friend-unblock" appearance={Appearance.Alt} text={$_("friends.unblock")} on:click={_ => unblockUser(user.key)}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
-                    {#if blocked.length === 0}
+                    {#if $blocked.length === 0}
                         <Text hook="text-no-blocked-users">No users blocked.</Text>
                     {/if}
                 </div>

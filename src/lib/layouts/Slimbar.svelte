@@ -14,19 +14,16 @@
     import { Label } from "$lib/elements"
     import { goto } from "$app/navigation"
     import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
+    import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
 
     export let sidebarOpen: boolean = true
     export let activeRoute: Route = Route.Chat
-    let favorites: Chat[] = get(Store.state.favorites)
+    $: favorites = Store.state.favorites
 
     const dispatch = createEventDispatcher()
     function handleToggle() {
         dispatch("toggle", sidebarOpen)
     }
-
-    Store.state.favorites.subscribe(f => {
-        favorites = f
-    })
 </script>
 
 <div class="slimbar" data-cy="slimbar">
@@ -42,23 +39,25 @@
         <Button icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Beaker} />
         </Button>
-        {#if favorites.length}
+        {#if $favorites.length}
             <Label text="Faves" />
-            {#each favorites as favorite}
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <div
-                    class="fave"
-                    on:click={_ => {
-                        Store.setActiveChat(favorite)
-                        goto(Route.Chat)
-                    }}>
-                    {#if favorite.users.length === 2}
-                        <ProfilePicture typing={favorite.activity} image={favorite.users[0]?.profile.photo.image} status={favorite.users[0].profile.status} size={Size.Medium} />
-                    {:else}
-                        <ProfilePictureMany users={favorite.users} />
-                    {/if}
-                </div>
+            {#each $favorites as favorite}
+                <StoreResolver value={favorite.users} resolver={v => Store.getUsers(v)} let:resolved>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <div
+                        class="fave"
+                        on:click={_ => {
+                            Store.setActiveChat(favorite)
+                            goto(Route.Chat)
+                        }}>
+                        {#if favorite.users.length === 2}
+                            <ProfilePicture typing={favorite.activity} image={resolved[0]?.profile.photo.image} status={resolved[0].profile.status} size={Size.Medium} />
+                        {:else}
+                            <ProfilePictureMany users={resolved} />
+                        {/if}
+                    </div>
+                </StoreResolver>
             {/each}
         {/if}
 

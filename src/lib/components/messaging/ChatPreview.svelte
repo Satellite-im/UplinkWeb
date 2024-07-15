@@ -16,8 +16,10 @@
 
     const timeAgo = new TimeAgo("en-US")
 
-    let photo = chat.users.length > 2 ? "todo" : chat.users[0].profile.photo.image
-    let name = chat.users.length > 2 ? chat.name : chat.users[1].name ?? chat.users[0].name
+    $: users = Store.getUsers(chat.users)
+
+    let photo = $users.length > 2 ? "todo" : $users[0].profile.photo.image
+    let name = $users.length > 2 ? chat.name : $users[1].name ?? $users[0].name
 
     const dispatch = createEventDispatcher()
 
@@ -36,9 +38,9 @@
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 2}
-        <ProfilePicture typing={chat.activity} image={chat.users[1].profile.photo.image} status={chat.users[1].profile.status} size={Size.Medium} loading={loading} frame={chat.users[1].profile.photo.frame} />
+        <ProfilePicture typing={chat.activity} image={$users[1].profile.photo.image} status={$users[1].profile.status} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
     {:else}
-        <ProfilePictureMany users={chat.users} />
+        <ProfilePictureMany users={$users} />
     {/if}
     <div class="content">
         <div class="heading">
