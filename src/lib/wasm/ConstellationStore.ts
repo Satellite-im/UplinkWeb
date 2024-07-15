@@ -98,12 +98,12 @@ class ConstellationStore {
     async dropIntoFolder(fileName: string, toFolderName: string): Promise<Result<WarpError, void>> {
         const constellation = get(this.constellationWritable)
         // let secFil = fil.find_item(fileName)
-        // let currentDir = await constellation!.current_directory()
+        let currentDir = constellation!.current_directory()
         if (constellation) {
             try {
-                console.log("HEREEERER", fileName, toFolderName)
+                console.log("HEREEERER", fileName, currentDir.get_items())
                 //Error: Functionality is not yet implemented
-                constellation?.move_item(fileName, toFolderName)
+                currentDir.move_item_to(fileName, toFolderName)
 
                 // constellation?.current_directory().move_item_to(fileName, toFolderName)
                 // let fileToMove = currentDir.get_item(fileName).get_file()

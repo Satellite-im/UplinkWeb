@@ -196,11 +196,11 @@
                     }
                     return item.id === currArray[0].parentId
                 })
-                if (newFolders[i].length === 0 ) {
+                if (newFolders[i].length === 0) {
                     if (parentItem && parentItem.items) {
-                            currArray = [...parentItem.items]
+                        currArray = [...parentItem.items]
                     }
-                        }
+                }
                 if (parentItem && parentItem.items) {
                     newFolders[i] = [...parentItem.items]
                 }
@@ -217,88 +217,82 @@
     }
 
     function DropItemIntoFolder(droppingItem: FileInfo, parentId: string) {
-
-        function insertIntoFolder(
-            folderId: string,
-            item: FileInfo,
-            folders: FileInfo[]
-            ): FileInfo[] {
-
+        function insertIntoFolder(folderId: string, item: FileInfo, folders: FileInfo[]): FileInfo[] {
             function removeFromFolder(itemId: string, folders: FileInfo[]): FileInfo[] {
-                return folders.map(folder => {
-                if (folder.type === 'folder') {
-                    folder.items = folder.items!.filter(i => i.id !== itemId)
-                    folder.items = removeFromFolder(itemId, folder.items)
-                }
-                return folder
-                }).filter(folder => folder.id !== itemId)
+                return folders
+                    .map(folder => {
+                        if (folder.type === "folder") {
+                            folder.items = folder.items!.filter(i => i.id !== itemId)
+                            folder.items = removeFromFolder(itemId, folder.items)
+                        }
+                        return folder
+                    })
+                    .filter(folder => folder.id !== itemId)
             }
 
-            function findFolderAndInsert(
-                folderId: string,
-                item: FileInfo,
-                folders: FileInfo[]
-            ): FileInfo[] {
+            function findFolderAndInsert(folderId: string, item: FileInfo, folders: FileInfo[]): FileInfo[] {
                 return folders.map(folder => {
-                if (folder.id === folderId && folder.type === 'folder') {
-                    updateFilesFromFolder(folder)
-                    folder.items!.push(item)
-                    ConstellationStoreInstance.dropIntoFolder(item.name, folder.name)
-                } else if (folder.type === 'folder') {
-                    folder.items = findFolderAndInsert(folderId, item, folder.items!)
-                }
-                return folder
+                    if (folder.id === folderId && folder.type === "folder") {
+                        updateFilesFromFolder(folder)
+                        folder.items!.push(item)
+                        ConstellationStoreInstance.dropIntoFolder(item.name, $currentFolderIdStore)
+                    } else if (folder.type === "folder") {
+                        folder.items = findFolderAndInsert(folderId, item, folder.items!)
+                    }
+                    return folder
                 })
             }
-                const updatedFolders = removeFromFolder(item.id, folders)
-                return findFolderAndInsert(folderId, item, updatedFolders)
-            }
-
-    folderStackStore.update((folders: any[]) => {
-        let newFolders = folders.map(folderStack => {
-            const updatedFolderStack = insertIntoFolder(droppingItem.parentId!, droppingItem, currentFiles);
-            return updatedFolderStack
-        });
-
-        let newCurrentFiles: FileInfo[] = newFolders.flatMap(folderStack =>
-            folderStack.flatMap(item => {
-                const file = item.items?.find(file => file.id === droppingItem.parentId)
-                return file ? [file] : [item]
-            })
-        ).filter(file => file !== null) as FileInfo[]
-
-        currentFiles = newCurrentFiles
-
-        for (let i = 1; i < newFolders.length; i++) {
-            let prevArray = newFolders[i - 1]
-            let currArray = newFolders[i]
-            const parentItem = prevArray.find(item => {
-                if (currArray.length === 0) {
-                    newFolders[i].push(droppingItem)
-                }
-                return item.id === currArray[0].parentId
-            });
-
-            if (newFolders[i].length === 0) {
-                if (parentItem && parentItem.items) {
-                    currArray = [...parentItem.items]
-                }
-            }
-            if (parentItem && parentItem.items) {
-                newFolders[i] = [...parentItem.items]
-            }
-
-            const currentOpenFolders = openFolders
-            const updatedOpenFolders = {
-                ...currentOpenFolders,
-                [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
-            };
-            Store.updateFolderTree(updatedOpenFolders)
+            const updatedFolders = removeFromFolder(item.id, folders)
+            return findFolderAndInsert(folderId, item, updatedFolders)
         }
+
+        folderStackStore.update((folders: any[]) => {
+            let newFolders = folders.map(folderStack => {
+                const updatedFolderStack = insertIntoFolder(droppingItem.parentId!, droppingItem, currentFiles)
+                return updatedFolderStack
+            })
+
+            let newCurrentFiles: FileInfo[] = newFolders
+                .flatMap(folderStack =>
+                    folderStack.flatMap(item => {
+                        const file = item.items?.find(file => file.id === droppingItem.parentId)
+                        return file ? [file] : [item]
+                    })
+                )
+                .filter(file => file !== null) as FileInfo[]
+
+            currentFiles = newCurrentFiles
+
+            for (let i = 1; i < newFolders.length; i++) {
+                let prevArray = newFolders[i - 1]
+                let currArray = newFolders[i]
+                const parentItem = prevArray.find(item => {
+                    if (currArray.length === 0) {
+                        newFolders[i].push(droppingItem)
+                    }
+                    return item.id === currArray[0].parentId
+                })
+
+                if (newFolders[i].length === 0) {
+                    if (parentItem && parentItem.items) {
+                        currArray = [...parentItem.items]
+                    }
+                }
+                if (parentItem && parentItem.items) {
+                    newFolders[i] = [...parentItem.items]
+                }
+
+                const currentOpenFolders = openFolders
+                const updatedOpenFolders = {
+                    ...currentOpenFolders,
+                    [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
+                }
+                Store.updateFolderTree(updatedOpenFolders)
+            }
             Store.updateFileOrder(currentFiles)
             return newFolders
-    })
-}
+        })
+    }
 
     let folderClicked: FileInfo = {
         id: "",
@@ -364,46 +358,46 @@
         let lastClickTarget: HTMLElement | null = null
         const dropzone = document.querySelector(".files") as HTMLElement
         dropzone.addEventListener("mousedown", event => {
-        let target = event.target as HTMLElement
-        while (target && !target.classList.contains("draggable-item")) {
-            target = target.parentElement as HTMLElement
-        }
+            let target = event.target as HTMLElement
+            while (target && !target.classList.contains("draggable-item")) {
+                target = target.parentElement as HTMLElement
+            }
 
-        const currentTime = Date.now()
-        if (lastClickTarget === target && currentTime - lastClickTime < 200) {
-            if (lastClickTarget.classList.contains("folder-draggable")) {
-                const targetId = target.dataset.id
-                const targetFolder = currentFiles.find(item => item.id === targetId)
-                if (targetFolder) {
-                    folderClicked = targetFolder
-                }
-                if (target) {
+            const currentTime = Date.now()
+            if (lastClickTarget === target && currentTime - lastClickTime < 200) {
+                if (lastClickTarget.classList.contains("folder-draggable")) {
                     const targetId = target.dataset.id
                     const targetFolder = currentFiles.find(item => item.id === targetId)
                     if (targetFolder) {
-                        updateFilesFromFolder(targetFolder)
-                        openFolder(targetFolder)
+                        folderClicked = targetFolder
+                    }
+                    if (target) {
+                        const targetId = target.dataset.id
+                        const targetFolder = currentFiles.find(item => item.id === targetId)
+                        if (targetFolder) {
+                            updateFilesFromFolder(targetFolder)
+                            openFolder(targetFolder)
+                        }
                     }
                 }
             }
-        }
-        let draggedItemId: string | null = ""
-        let draggedElement: HTMLElement | null = null
-        let targetFolderId: string | null = null
-        document.addEventListener('dragstart', (event: DragEvent) => {
-        draggedElement = (event.target as HTMLElement).closest('.draggable-item')
-        })
-        document.addEventListener('dragover', (event: DragEvent) => {
-            event.preventDefault()
-        })
-        document.addEventListener('drop', (event: DragEvent) => {
-                const dropTargetElement = (event.target as HTMLElement).closest('.draggable-item')
+            let draggedItemId: string | null = ""
+            let draggedElement: HTMLElement | null = null
+            let targetFolderId: string | null = null
+            document.addEventListener("dragstart", (event: DragEvent) => {
+                draggedElement = (event.target as HTMLElement).closest(".draggable-item")
+            })
+            document.addEventListener("dragover", (event: DragEvent) => {
+                event.preventDefault()
+            })
+            document.addEventListener("drop", (event: DragEvent) => {
+                const dropTargetElement = (event.target as HTMLElement).closest(".draggable-item")
                 if (dropTargetElement && draggedElement) {
-                    targetFolderId = dropTargetElement.getAttribute('data-id')
-                    const dragId = draggedElement.getAttribute('data-id')
+                    targetFolderId = dropTargetElement.getAttribute("data-id")
+                    const dragId = draggedElement.getAttribute("data-id")
                     const draggedItem = currentFiles.find(item => item.id === dragId)
                     if (draggedElement) {
-                        draggedItemId = draggedElement.getAttribute('data-id')
+                        draggedItemId = draggedElement.getAttribute("data-id")
                         if (targetFolderId && draggedItem) {
                             if (targetFolderId !== draggedItem.id) {
                                 draggedItem.parentId = targetFolderId
@@ -413,11 +407,10 @@
                     }
                     draggedElement = null
                 }
+            })
+            lastClickTarget = target
+            lastClickTime = currentTime
         })
-        lastClickTarget = target
-        lastClickTime = currentTime
-    })
-
     })
 
     onDestroy(() => {
@@ -512,14 +505,14 @@
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             blob => {
-                    const url = URL.createObjectURL(blob)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = fileName
-                    document.body.appendChild(a)
-                    a.click()
-                    document.body.removeChild(a)
-                    URL.revokeObjectURL(url)
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement("a")
+                a.href = url
+                a.download = fileName
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
             }
         )
     }
@@ -535,17 +528,17 @@
 <div
     id="page"
     on:dragover|preventDefault
-    on:dragenter={(e: DragEvent) => {
+    on:dragenter={e => {
         dragEnter(e)
     }}
     on:dragleave={dragLeave}
-    on:drop={(e: DragEvent) => {
+    on:drop={e => {
         dragDrop(e)
     }}>
     <!-- Modals -->
     {#if previewImage}
         <Modal
-            on:close={(_: any) => {
+            on:close={_ => {
                 previewImage = null
             }}>
             <svelte:fragment slot="controls">
@@ -553,7 +546,7 @@
                     icon
                     small
                     appearance={Appearance.Alt}
-                    on:click={(_: any) => {
+                    on:click={_ => {
                         previewImage = null
                     }}>
                     <Icon icon={Shape.XMark} />
@@ -570,7 +563,7 @@
             <Button
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
                 text={$_("chat.chat_plural")}
-                on:click={(_: any) => {
+                on:click={_ => {
                     activeTabRoute = "chats"
                 }}>
                 <Icon icon={Shape.ChatBubble} />
@@ -578,7 +571,7 @@
             <Button
                 appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
                 text={$_("files.file_plural")}
-                on:click={(_: any) => {
+                on:click={_ => {
                     activeTabRoute = "files"
                 }}>
                 <Icon icon={Shape.Folder} />
@@ -671,7 +664,7 @@
                     }}>
                     <Icon icon={Shape.Plus} />
                 </Button>
-                <input style="display:none" multiple type="file" on:change={(e: Event) => onFileSelected(e)} bind:this={filesToUpload} />
+                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
@@ -685,7 +678,7 @@
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
                         <ContextMenu
-                            on:close={(_: any) => {
+                            on:close={_ => {
                                 isContextMenuOpen = false
                             }}
                             items={[
@@ -728,11 +721,11 @@
                                 itemId={item.id}
                                 slot="content"
                                 let:open
-                                on:contextmenu={(e: any) => {
+                                on:contextmenu={e => {
                                     isContextMenuOpen = true
                                     open(e)
                                 }}
-                                on:rename={async (e: { detail: string }) => {
+                                on:rename={async e => {
                                     renameItem(item.name, e.detail)
                                 }}
                                 isRenaming={item.isRenaming}
@@ -742,7 +735,7 @@
                     {:else if item.type === "folder"}
                         <ContextMenu
                             hook="context-menu-folder-{item.id}"
-                            on:close={(_: any) => {
+                            on:close={_ => {
                                 isContextMenuOpen = false
                             }}
                             items={[
@@ -777,13 +770,13 @@
                                 itemId={item.id}
                                 slot="content"
                                 let:open
-                                on:contextmenu={(e: any) => {
+                                on:contextmenu={e => {
                                     isContextMenuOpen = true
                                     open(e)
                                 }}
                                 kind={FilesItemKind.Folder}
                                 info={item}
-                                on:rename={async (e: { detail: string }) => {
+                                on:rename={async e => {
                                     if (item.name === "" && e.detail !== "") {
                                         const newName = e.detail
                                         item.name = newName
@@ -800,7 +793,7 @@
                             filesize={item.size}
                             name={item.name}
                             ImgSource={item.source}
-                            on:click={(_: any) => {
+                            on:click={_ => {
                                 previewImage = item.source
                             }} />
                     {/if}
