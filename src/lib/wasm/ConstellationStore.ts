@@ -102,11 +102,14 @@ class ConstellationStore {
         if (constellation) {
             try {
                 console.log("HEREEERER", fileName, toFolderName)
-                const currentDir = constellation?.current_directory()
-                let fileToMove = currentDir.find_item(fileName).get_file()
-                let dirToMove = currentDir!.path()
-                let fil = constellation.move_item(fileToMove.name(), toFolderName)
-                console.log("fil", fil, currentDir)
+                //Error: Functionality is not yet implemented
+                constellation?.move_item(fileName, toFolderName)
+
+                // constellation?.current_directory().move_item_to(fileName, toFolderName)
+                // let fileToMove = currentDir.get_item(fileName).get_file()
+                // let dirToMove = currentDir!.path()
+                // let fil = constellation.move_item(fileToMove.name(), toFolderName)
+                console.log("fil", "bottom")
                 return success(undefined)
             } catch (error) {
                 log.error("Error getting current directory files: " + error)
