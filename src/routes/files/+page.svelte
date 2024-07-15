@@ -179,7 +179,7 @@
                 return folder
             })
         }
-
+        //update
         folderStackStore.update((folders: any[]) => {
             let newFolders = folders.map((folderStack: FileInfo[]) => {
                 if (Array.isArray(folderStack)) {
