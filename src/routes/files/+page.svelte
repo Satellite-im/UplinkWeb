@@ -511,7 +511,7 @@
     {#if isDraggingFromLocal || isFadingOutDragDropOverlay}
         <div class="overlay {isFadingOutDragDropOverlay ? 'fade-out' : ''}">
             <div class="upload-box">
-                <p>Arrastando {filesCount} arquivos para upload</p>
+                <p>{filesCount > 1 ? $_('files.dragging_files').replace('{count}', filesCount.toString()) : $_('files.dragging_file')}</p>
             </div>
         </div>
     {/if}
