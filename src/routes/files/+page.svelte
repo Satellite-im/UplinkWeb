@@ -4,7 +4,6 @@
     import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import Slimbar from "$lib/layouts/Slimbar.svelte"
     import { _ } from "svelte-i18n"
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
@@ -71,7 +70,6 @@
             const newStack = [...stack, folder.items!]
             return newStack
         })
-        // getCurrentDirectoryFiles()
     }
 
     async function goBack() {
@@ -180,7 +178,6 @@
                 return folder
             })
         }
-        //update
         folderStackStore.update((folders: any[]) => {
             let newFolders = folders.map((folderStack: FileInfo[]) => {
                 if (Array.isArray(folderStack)) {
@@ -217,7 +214,7 @@
         })
     }
 
-    function DropItemIntoFolder(droppingItem: FileInfo, parentId: string) {
+    function dropItemIntoFolder(droppingItem: FileInfo, parentId: string) {
         function insertIntoFolder(folderId: string, item: FileInfo, folders: FileInfo[]): FileInfo[] {
             function removeFromFolder(itemId: string, folders: FileInfo[]): FileInfo[] {
                 return folders
@@ -406,7 +403,7 @@
                         if (targetFolderId && draggedItem) {
                             if (targetFolderId !== draggedItem.id) {
                                 draggedItem.parentId = targetFolderId
-                                DropItemIntoFolder(draggedItem, targetFolderId)
+                                dropItemIntoFolder(draggedItem, targetFolderId)
                             }
                         }
                     }
@@ -434,7 +431,6 @@
     function dragDrop(event: DragEvent) {
         event.preventDefault()
         dragging_files = 0
-        // upload files
     }
 
     function onSearchEnter() {
@@ -561,7 +557,6 @@
         </Modal>
     {/if}
 
-    <!-- <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Files} /> -->
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>

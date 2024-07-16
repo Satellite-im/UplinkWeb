@@ -103,7 +103,7 @@ class ConstellationStore {
                 currentDir.move_item_to(fileName, toFolderName)
                 return success(undefined)
             } catch (error) {
-                log.error("Error getting current directory files: " + error)
+                log.error("Error moving item to directory: " + error)
                 return failure(handleErrors(error))
             }
         }
