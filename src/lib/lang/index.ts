@@ -95,6 +95,12 @@ export function initLocale() {
                         set_status: "Set status message . . .",
                         create: "Create Account",
                     },
+                    create: {
+                        title: "Account Creation",
+                        description: "Let's get started! Begin by either creating a new account, or if you already have one we can import your existing account instead.",
+                        new: "Create New Account",
+                        import: "Import Account",
+                    },
                 },
             },
             user: {
@@ -124,7 +130,7 @@ export function initLocale() {
                     },
                     should_store: "Store recovery seed on account (disable for increased security, irreversible)",
                     update: "Profile Updated!",
-                    copy_id: "Copy id",
+                    copy_id: "Copy ID",
                     copy_did: "Copy DID",
                 },
                 notifications: {
@@ -152,6 +158,9 @@ export function initLocale() {
                     revert_plural: "Revert Keybinds",
                     revertDescription: "Revert keybinds to default.",
                 },
+                developer: {
+                    browserNotSupportedError: "Not supported on this browser.",
+                },
                 messages: {
                     convertToEmoji: "Convert to Emoji",
                     convertToEmojiDescription: "Convert smileys and other symbols like <3 to ❤️",
@@ -163,7 +172,9 @@ export function initLocale() {
                     compactMessaging: "Compact Messages",
                     compactMessagingDescription: "Compact messages to group messages closer together and display more on screen.",
                     quick: "Quick Chat",
-                    quickDescription: "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation."
+                    quickDescription: "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation.",
+                    showStatusWidgets: "Widget Panel",
+                    showStatusWidgetsDescription: "Enable the widget panel, which displays system information and other helpful data.",
                 },
                 preferences: {
                     appLanguage: "App Language",
@@ -193,6 +204,10 @@ export function initLocale() {
                     name_exist: "Name already exists",
                     invalid_address: "Invalid address",
                 },
+                gamepad: {
+                    enabled: "Gamepad Enabled",
+                    enabledDescription: "Enable gamepad support for navigating the application with controllers."
+                }
             },
         },
     })

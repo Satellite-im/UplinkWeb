@@ -103,13 +103,15 @@
 
     --shadow-depth: 1px;
     --min-scrollable-height: 200px;
+    --base-scrollable-height: 350px;
     --max-component-width: 600px;
-    --min-component-width: 250px;
+    --min-component-width: 300px;
 
     --context-width: 300px;
     --mini-user-width: 130px;
     --popup-width: 30rem;
     --popup-height: 20rem;
     --min-call-screen-height: 15rem;
-    --emoji-selector-height: 25rem;
+    --emoji-selector-height: 30rem;
+    --sticker-width: 8.5rem;
 }

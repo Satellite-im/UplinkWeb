@@ -12,6 +12,7 @@
     div.key {
         min-width: var(--input-height);
         height: var(--input-height);
+        text-transform: uppercase;
 
         > span {
             background-color: var(--alt-color);

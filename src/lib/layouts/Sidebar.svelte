@@ -5,8 +5,6 @@
     import { CallControls } from "$lib/components"
     import { Appearance, Route, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
-    import { slide } from "svelte/transition"
-    import { animationDuration } from "$lib/globals/animations"
     import { goto } from "$app/navigation"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
@@ -14,6 +12,8 @@
     import { Store } from "$lib/state/Store"
     import type { Call } from "$lib/types"
     import { Slimbar } from "."
+    import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
 
     initLocale()
 
@@ -23,6 +23,11 @@
     export let activeCall: Call | null = get(Store.state.activeCall)
 
     export let search: string = ""
+    let settings: ISettingsState = get(SettingsStore.state)
+    SettingsStore.state.subscribe((s: ISettingsState) => {
+        settings = s
+    })
+
     const dispatch = createEventDispatcher()
     function handleToggle() {
         dispatch("toggle", open)
@@ -55,6 +60,10 @@
             </div>
 
             <div class="sidebar-content">
+                {#if settings && settings.widgets && settings.widgets.show}
+                    <WidgetBar />
+                {/if}
+
                 <slot></slot>
             </div>
 

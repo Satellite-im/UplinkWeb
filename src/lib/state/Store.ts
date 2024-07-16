@@ -1,7 +1,5 @@
-import { Sound, Sounds } from "$lib/components/utils/Sounds"
 import { ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
-import { mock_messages } from "$lib/mock/messages"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
 import { get, writable } from "svelte/store"
@@ -12,6 +10,8 @@ import * as wasm from "warp-wasm"
 import { ToastMessage } from "./ui/toast"
 import { v4 as uuidv4 } from "uuid"
 import { Logger } from "$lib/utils/Logger"
+import { ConversationStore } from "./conversation"
+import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
 
 class GlobalStore {
     state: IState
@@ -142,12 +142,12 @@ class GlobalStore {
 
     updateMuted(muted: boolean) {
         this.state.devices.muted.set(muted)
-        if (get(SettingsStore.state).audio.controlSounds) Sounds.play(muted ? Sound.Off : Sound.On)
+        if (get(SettingsStore.state).audio.controlSounds) playSound(muted ? Sounds.Off : Sounds.On)
     }
 
     updateDeafened(deafened: boolean) {
         this.state.devices.deafened.set(deafened)
-        if (get(SettingsStore.state).audio.controlSounds) Sounds.play(deafened ? Sound.Off : Sound.On)
+        if (get(SettingsStore.state).audio.controlSounds) playSound(deafened ? Sounds.Off : Sounds.On)
     }
 
     updateFileOrder(newOrder: FileInfo[]) {
@@ -181,56 +181,18 @@ class GlobalStore {
         this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
     }
 
-    setFriends(friends: Array<any>) {
-        let friendsList: Array<User> = []
-        friends.forEach(friend => {
-            friendsList.push({
-                ...defaultUser,
-                name: friend,
-                key: friend,
-            })
-        })
-
-        this.state.friends.set(friendsList)
+    setFriends(friends: Array<User>) {
+        this.state.friends.set(friends)
     }
 
-    setFriendRequests(incomingFriendRequests: Array<any>, outgoingFriendRequests: Array<any>) {
-        let user = get(this.state.user)
-
-        const createFriendRequests = (friendRequests: Array<any>, direction: MessageDirection): FriendRequest[] => {
-            return friendRequests.map(friendDid => {
-                let friendUser: User = {
-                    ...defaultUser,
-                    name: friendDid,
-                    key: friendDid,
-                }
-                return {
-                    at: new Date(),
-                    from: direction === MessageDirection.Inbound ? friendUser : user,
-                    to: direction === MessageDirection.Inbound ? user : friendUser,
-                    direction: direction,
-                }
-            })
-        }
-
-        let incomingRequests = createFriendRequests(incomingFriendRequests, MessageDirection.Inbound)
-        let outgoingRequests = createFriendRequests(outgoingFriendRequests, MessageDirection.Outbound)
-
-        let allFriendRequests = new Set([...incomingRequests, ...outgoingRequests])
+    setFriendRequests(incomingFriendRequests: Array<FriendRequest>, outgoingFriendRequests: Array<FriendRequest>) {
+        let allFriendRequests = new Set([...incomingFriendRequests, ...outgoingFriendRequests])
 
         this.state.activeRequests.set(Array.from(allFriendRequests.values()))
     }
 
-    setBlockedUsers(blockedUsers: Array<any>) {
-        let blockedUsersList: Array<User> = []
-        blockedUsers.forEach(blockedUser => {
-            blockedUsersList.push({
-                ...defaultUser,
-                name: blockedUser,
-                key: blockedUser,
-            })
-        })
-        this.state.blocked.set(blockedUsersList)
+    setBlockedUsers(blockedUsers: Array<User>) {
+        this.state.blocked.set(blockedUsers)
     }
 
     cancelRequest(user: User) {
@@ -259,13 +221,16 @@ class GlobalStore {
         }
     }
 
-    addToastNotification(toast: ToastMessage) {
+    addToastNotification(toast: ToastMessage, sound?: Sounds) {
         let toasts = get(this.state.toasts)
         let id = uuidv4()
         let timeout = setTimeout(() => {
             this.removeToast(id)
         }, toast.remaining_time * 1000)
         this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
+        if (sound) {
+            playSound(sound)
+        }
     }
 
     pauseToastTimeout(id: string) {
@@ -332,6 +297,14 @@ class GlobalStore {
         this.state.friends.set(mock_users)
         this.state.blocked.set(blocked_users)
         this.state.favorites.set([activeChat])
+        ConversationStore.conversations.set(
+            mchatsMod.map(c => {
+                return {
+                    id: c.id,
+                    messages: [],
+                }
+            })
+        )
     }
 }
 

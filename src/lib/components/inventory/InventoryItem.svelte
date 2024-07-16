@@ -16,7 +16,11 @@
 </script>
 
 <div data-cy={hook} class="inventory-item {equipped ? 'equipped' : ''}">
-    <img src={preview} alt="" />
+    {#if empty}
+        <img src="/assets/frames/empty.png" alt="" class="preview" />
+    {:else}
+        <img src={preview} alt="" class="preview" />
+    {/if}
     <Text hook="inventory-item-name">{name}</Text>
     <Text hook="inventory-item-type" muted>{kind}</Text>
     {#if !noButton}
@@ -50,9 +54,9 @@
     {/if}
 </div>
 
-<style>
+<style lang="scss">
     .inventory-item {
-        width: var(--min-component-width);
+        width: fit-content;
         border: var(--border-width) solid var(--border-color);
         border-radius: var(--border-radius);
         display: inline-flex;
@@ -61,5 +65,9 @@
         justify-content: center;
         align-items: center;
         gap: var(--gap-less);
+
+        .preview {
+            max-width: 180px;
+        }
     }
 </style>

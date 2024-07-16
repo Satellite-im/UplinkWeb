@@ -1,4 +1,4 @@
-import { KeybindAction, Locale } from "$lib/enums"
+import { KeybindAction, KeybindState, Locale } from "$lib/enums"
 import type { Keybind } from "$lib/types"
 
 export let defaultKeybinds = [
@@ -6,51 +6,61 @@ export let defaultKeybinds = [
         action: KeybindAction.IncreaseFontSize,
         key: ".",
         modifiers: ["shift", "ctrl"],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.DecreaseFontSize,
         key: ",",
         modifiers: ["shift", "ctrl"],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.ToggleMute,
         key: "M",
         modifiers: ["shift", "ctrl"],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.ToggleDeafen,
         key: "D",
         modifiers: ["shift", "ctrl"],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.OpenInspector,
         key: "I",
         modifiers: ["shift", "ctrl"],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.ToggleDevmode,
         key: "~",
         modifiers: [],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.FocusUplink,
         key: "U",
         modifiers: ["shift", "ctrl"],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.PushToTalk,
         key: ".",
         modifiers: [],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.PushToMute,
         key: ".",
         modifiers: ["ctrl"],
+        state: KeybindState.Pressed,
     },
     {
         action: KeybindAction.PushToDeafen,
         key: ",",
         modifiers: [],
+        state: KeybindState.Pressed,
     },
 ]
 
@@ -61,6 +71,9 @@ export let defaultSettings = {
     activeRequests: [],
     blocked: [],
     files: [],
+    widgets: {
+        show: false,
+    },
     messaging: {
         convertEmoji: true,
         markdownSupport: true,
@@ -88,6 +101,9 @@ export let defaultSettings = {
         friends: true,
         messages: true,
         settings: true,
+    },
+    gamepad: {
+        enabled: true
     },
     devmode: false,
 }

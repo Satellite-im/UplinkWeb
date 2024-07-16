@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Shape } from "$lib/enums"
     import type { SimpleRoute } from "$lib/types"
+    import { createEventDispatcher } from "svelte"
     import PillTabs from "../ui/PillTabs.svelte"
     import EmojiSelector from "./emoji/EmojiSelector.svelte"
     import GifSelector from "./gif/GifSelector.svelte"
@@ -10,18 +11,21 @@
         { name: "Emojis", icon: Shape.Smile },
         { name: "GIFs", icon: Shape.Gif },
         { name: "Stickers", icon: Shape.Beaker },
+        //    { name: "Effects", icon: Shape.Effects },
     ]
-    export let active: SimpleRoute = { name: "Emoji", icon: Shape.Smile }
+    export let active: SimpleRoute = { name: "Emojis", icon: Shape.Smile }
+
+    const dispatch = createEventDispatcher()
 </script>
 
 <div id="combined-selector">
     <div class="body">
         {#if active.name == tabs[0].name}
-            <EmojiSelector />
+            <EmojiSelector on:emoji={e => dispatch("emoji", e.detail)} />
         {:else if active.name == tabs[1].name}
-            <GifSelector />
+            <GifSelector on:gif={e => dispatch("gif", e.detail)} />
         {:else}
-            <StickerSelector />
+            <StickerSelector on:sticker={e => dispatch("sticker", e.detail)} />
         {/if}
     </div>
     <footer>

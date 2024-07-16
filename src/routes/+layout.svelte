@@ -1,11 +1,13 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
+    import { page } from "$app/stores"
     import { Toasts } from "$lib/components"
-    import Key from "$lib/components/settings/Key.svelte"
+    import Polling from "$lib/components/Polling.svelte"
+    import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
-    import { Sound, Sounds } from "$lib/components/utils/Sounds"
+    import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
-    import { SettingsStore } from "$lib/state"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
     import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
@@ -23,6 +25,7 @@
     TimeAgo.addDefaultLocale(en)
 
     let keybinds: Keybind[]
+    let devmode: boolean = get(SettingsStore.state).devmode
     let color: string = get(UIStore.state.color)
     let fontSize: number = get(UIStore.state.fontSize)
     let font: Font = get(UIStore.state.font)
@@ -58,13 +61,13 @@
                 log.info("todo")
                 break
             case KeybindAction.PushToTalk:
-                Sounds.play(Sound.Press)
+                playSound(Sounds.Press)
                 break
             case KeybindAction.PushToMute:
-                Sounds.play(Sound.Press)
+                playSound(Sounds.Press)
                 break
             case KeybindAction.PushToDeafen:
-                Sounds.play(Sound.Press)
+                playSound(Sounds.Press)
                 break
             default:
                 console.warn("unhandled keybind", keybind)
@@ -77,13 +80,13 @@
 
         switch (keybind.action) {
             case KeybindAction.PushToTalk:
-                Sounds.play(Sound.Release)
+                playSound(Sounds.Release)
                 break
             case KeybindAction.PushToMute:
-                Sounds.play(Sound.Release)
+                playSound(Sounds.Release)
                 break
             case KeybindAction.PushToDeafen:
-                Sounds.play(Sound.Release)
+                playSound(Sounds.Release)
                 break
             default:
                 log.warn(`unhandled keybind ${keybind}`)
@@ -130,16 +133,22 @@
         style = buildStyle()
     })
 
-    SettingsStore.state.subscribe(settings => (keybinds = settings.keybinds))
+    SettingsStore.state.subscribe(settings => {
+        keybinds = settings.keybinds
+        devmode = settings.devmode
+    })
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     async function checkIfUserIsLogged() {
+        await TesseractStoreInstance.initTesseract()
         let authentication = await AuthStore.getAuthentication()
         if (authentication.pin === "") {
             log.info("No pin stored, redirecting to unlock")
             goto(Route.Unlock)
-        } else {
+        } else if ($page.route.id !== Route.Unlock) {
+            // We need to find a better way of handling it so the password doesnt get stored
+            // But for now: dont login if the user is on the login page
             log.info("Pin stored, unlocking")
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
@@ -149,8 +158,8 @@
             result.onSuccess(() => {
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
             })
-            if (authentication.stayLoggedIn) {
-                goto(Route.Chat)
+            if (!authentication.stayLoggedIn) {
+                goto(Route.Unlock)
             }
         }
     }
@@ -162,8 +171,12 @@
     {@html `<style>${style}</style>`}
     {@html `<style>${cssOverride}</style>`}
     <!-- <Titlebar /> -->
+    <Polling rate={5000} />
     <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
     <Toasts />
+    {#if devmode}
+        <GamepadListener />
+    {/if}
     <slot></slot>
 </div>
 

@@ -8,6 +8,7 @@
     import { onMount } from "svelte"
     import SimplePeer from "simple-peer"
     import { log } from "$lib/utils/Logger"
+    import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
 
     let loading: boolean = false
     let channel: string = "SHFDKLSDF"
@@ -47,8 +48,8 @@
             stream: localStream,
         })
 
-        peer.on("signal", (data: any) => {
-            log.info("SIGNAL", JSON.stringify(data))
+        peer.on("signal", (_data: any) => {
+            // log.info("SIGNAL", JSON.stringify(data))
             // Send this data to the remote peer via signaling server
         })
 

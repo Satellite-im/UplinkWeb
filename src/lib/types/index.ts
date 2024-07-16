@@ -11,6 +11,7 @@ export enum OperationState {
 
 export type Frame = {
     image: string
+    author?: string
     name: string
 }
 
@@ -48,9 +49,22 @@ export type ProfilePictureRequirements = {
 }
 
 export type SimpleRoute = {
-    name: string,
+    name: string
     icon: Shape
 }
+
+
+export let defaultProfileData = {
+    photo: { image: "", frame: { name: "", image: "" } },
+    banner: { image: "", overlay: "" },
+    status: Status.Offline,
+    status_message: "Unknown status message.",
+}
+
+export type Id = {
+    short: string
+}
+
 
 export type ProfilePicture = {
     image: string
@@ -67,17 +81,6 @@ export type ProfileData = {
     banner: BannerPicture
     status: Status
     status_message: string
-}
-
-export let defaultProfileData = {
-    photo: { image: "", frame: { name: "", image: "" } },
-    banner: { image: "", overlay: "" },
-    status: Status.Offline,
-    status_message: "Unknown status message.",
-}
-
-export type Id = {
-    short: string
 }
 
 export type MediaMeta = {
@@ -205,6 +208,7 @@ export type ContextItem = {
     id: string
     icon: Shape
     text: string
+    disabled?: boolean
     appearance: Appearance
     onClick: () => void
 }
@@ -278,7 +282,7 @@ export type FileProgress = {
     cancellation?: Cancellable
     // If true the progress has been finished
     done?: boolean
-    // Returns the error that occured during filetransfer if present
+    // Returns the error that occurred during filetransfer if present
     error?: string
 }
 
@@ -301,3 +305,30 @@ export type Keybind = {
     modifiers: string[]
     state: KeybindState
 }
+
+export type GiphyImage = {
+    url: string
+}
+
+export type GiphyGif = {
+    id: string
+    uniqueKey: string
+    images: {
+        fixed_height_small: GiphyImage
+    }
+    title: string
+    loaded?: boolean
+}
+
+export type Sticker = {
+    name: string
+    path: string
+}
+
+export type StickerCollection = {
+    name: string
+    author: string
+    assets: Sticker[]
+}
+
+export type StickerManifest = StickerCollection[]

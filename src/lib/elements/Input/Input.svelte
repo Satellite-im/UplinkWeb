@@ -1,10 +1,12 @@
 <script lang="ts">
+    import { InputRules } from "./inputRules"
     import { Appearance } from "../../enums/index"
     import { MarkdownEditor } from "markdown-editor"
     import "./markdown.scss"
     import { createEventDispatcher, onMount } from "svelte"
     import { EditorView } from "@codemirror/view"
     import { writable } from "svelte/store"
+    import Text from "../Text.svelte"
 
     export let placeholder: string = ""
     export let hook: string = ""
@@ -18,6 +20,30 @@
     export let centered: boolean = false
     export let rich: boolean = false
     export let autoFocus: boolean = false
+    export let rules: InputRules = new InputRules()
+
+    let errorMessage: string = ""
+
+    function isValidInput(): boolean {
+        if (rules.required && !value) {
+            errorMessage = "This field is required."
+            return false
+        }
+        if (value.length < rules.minLength) {
+            errorMessage = `Minimum length is ${rules.minLength} characters.`
+            return false
+        }
+        if (value.length > rules.maxLength) {
+            errorMessage = `Maximum length is ${rules.maxLength} characters.`
+            return false
+        }
+        if (rules.pattern && !rules.pattern.test(value)) {
+            errorMessage = "Invalid format."
+            return false
+        }
+        errorMessage = ""
+        return true
+    }
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -29,13 +55,15 @@
     const dispatch = createEventDispatcher()
     const writableValue = writable(value)
 
+    $: writableValue.set(value)
     $: value = $writableValue
 
     let onsend: any[] = []
+    let editor: MarkdownEditor
     if (rich) {
         onMount(() => {
             if (autoFocus) input.focus()
-            let editor = new MarkdownEditor(input, {
+            editor = new MarkdownEditor(input, {
                 keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
                 extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
@@ -58,6 +86,10 @@
         })
     }
 
+    $: if (rich && editor) {
+        editor.value($writableValue);
+    }
+
     export { clazz as class }
 
     const send = () => {
@@ -66,6 +98,8 @@
     }
 
     function onInput() {
+        let isValid = isValidInput()
+        dispatch("isValid", isValid)
         dispatch("input", value)
     }
 
@@ -78,10 +112,24 @@
             send()
         }
     }
+
+    function handleFocus(event: FocusEvent) {
+        const input = event.target as HTMLInputElement
+        requestAnimationFrame(() => {
+            input.select()
+
+            const mouseupListener = () => {
+                input.removeEventListener("mouseup", mouseupListener)
+                return false
+            }
+
+            input.addEventListener("mouseup", mouseupListener)
+        })
+    }
 </script>
 
 <div
-    class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}"
+    class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
     data-tooltip={tooltip}
     role="none"
     on:click={async _ => {
@@ -89,7 +137,7 @@
             await navigator.clipboard.writeText(`${value}`)
         }
     }}>
-    <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
+    <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''} {rich ? 'multiline' : ''}">
         <slot></slot>
         <input
             data-cy={hook}
@@ -97,6 +145,7 @@
             type="text"
             disabled={disabled}
             bind:this={input}
+            on:focus={handleFocus}
             bind:value={$writableValue}
             placeholder={placeholder}
             on:keydown={onKeyDown}
@@ -104,9 +153,13 @@
             on:blur={onBlur} />
     </div>
 </div>
+{#if errorMessage}
+    <Text appearance={Appearance.Warning}>{errorMessage}</Text>
+{/if}
 
 <style lang="scss">
     .input-group {
+        min-height: var(--input-height);
         height: var(--input-height);
         display: inline-flex;
         flex-direction: row;
@@ -122,6 +175,7 @@
             gap: var(--gap);
             align-items: center;
             width: fit-content;
+            min-height: var(--input-height);
             height: var(--input-height);
             transition: all var(--animation-speed);
             padding: 0 var(--padding);
@@ -130,6 +184,14 @@
             &.rounded {
                 border-radius: var(--border-radius-more);
             }
+
+            &.multiline {
+                height: fit-content;
+            }
+        }
+
+        &.multiline {
+            height: fit-content;
         }
 
         .input {

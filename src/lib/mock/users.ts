@@ -12,11 +12,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/moon.png",
-                frame: { name: "Water", image: "/assets/frames/water.png" },
+                image: "/assets/mock/moon.png",
+                frame: { name: "Far Too Epic", image: "/assets/frames/twine.png" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "/assets/mock/space.jpg",
                 overlay: "",
             },
             status: Status.Online,
@@ -37,11 +37,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/blue_marble.png",
+                image: "/assets/mock/blue_marble.png",
                 frame: { name: "", image: "" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "/assets/mock/space.jpg",
                 overlay: "",
             },
             status: Status.Online,
@@ -64,11 +64,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/saturn.png",
-                frame: { name: "Fire", image: "/assets/frames/fire.png" },
+                image: "/assets/mock/saturn.png",
+                frame: { name: "Robot", image: "/assets/frames/foxy.png" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "/assets/mock/space.jpg",
                 overlay: "",
             },
             status: Status.Online,
@@ -85,8 +85,8 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/pluto.png",
-                frame: { name: "Gold Ring", image: "/assets/frames/gold.png" },
+                image: "/assets/mock/pluto.png",
+                frame: { name: "", image: "" },
             },
             status: Status.Offline,
             status_message: "I am also testing a bunch of things a bunch of the time!",
@@ -106,11 +106,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/neptune.png",
-                frame: { name: "Mustache", image: "/assets/frames/mustache.png" },
+                image: "/assets/mock/neptune.png",
+                frame: { name: "", image: "" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "/assets/mock/space.jpg",
                 overlay: "",
             },
             status: Status.DoNotDisturb,
@@ -130,7 +130,7 @@ export const blocked_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/uranis.png",
+                image: "/assets/mock/uranis.png",
                 frame: { name: "", image: "" },
             },
             status: Status.DoNotDisturb,
@@ -149,7 +149,7 @@ export const fake_user_array: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/assets/neptune.png",
+                image: "/assets/mock/neptune.png",
                 frame: { name: "", image: "" },
             },
             banner: {

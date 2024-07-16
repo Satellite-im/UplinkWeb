@@ -23,7 +23,7 @@ export async function clearState() {
         sessionStorage.clear()
         const request = indexedDB.deleteDatabase(dbName)
 
-        request.onerror = (event) => {
+        request.onerror = event => {
             log.error(`Error deleting database ${dbName}. Event: ${event}`)
             reject(event)
         }

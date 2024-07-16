@@ -5,7 +5,7 @@ import { Store } from "../state/Store"
 import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
-import { ChatType, MessageAttachmentKind } from "$lib/enums"
+import { ChatType, MessageAttachmentKind, Route } from "$lib/enums"
 import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user, type FileProgress, type Attachment } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
@@ -13,40 +13,44 @@ import { create_cancellable_handler, type Cancellable } from "$lib/utils/Cancell
 import { parseJSValue } from "./EnumParser"
 import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
-import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
 import { imageFromData } from "./ConstellationStore"
+import { Sounds } from "$lib/components/utils/SoundHandler"
+import { _ } from "svelte-i18n"
+import { SettingsStore } from "$lib/state"
+import { ToastMessage } from "$lib/state/ui/toast"
+import { page } from "$app/stores"
 
 const MAX_PINNED_MESSAGES = 100
 // Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
-          type: "MostRecent"
-          amount: number
-      }
+        type: "MostRecent"
+        amount: number
+    }
     // fetch messages which occur earlier in time
     | {
-          type: "Earlier"
-          start_date: Date
-          limit: number
-      }
+        type: "Earlier"
+        start_date: Date
+        limit: number
+    }
     // fetch messages which occur later in time
     | {
-          type: "Later"
-          start_date: Date
-          limit: number
-      }
+        type: "Later"
+        start_date: Date
+        limit: number
+    }
     // fetch messages between given time
     | {
-          type: "Between"
-          from: Date
-          to: Date
-      }
+        type: "Between"
+        from: Date
+        to: Date
+    }
     // fetch half_size messages before and after center.
     | {
-          type: "Window"
-          start_date: Date
-          half_size: number
-      }
+        type: "Window"
+        start_date: Date
+        half_size: number
+    }
 
 export type FetchMessageResponse = {
     messages: Message[]
@@ -66,14 +70,14 @@ export type MultiSendMessageResult = {
 
 export type ConversationSettings =
     | {
-          direct: {}
-      }
+        direct: {}
+    }
     | {
-          group: {
-              members_can_add_participants: boolean
-              members_can_change_name: boolean
-          }
-      }
+        group: {
+            members_can_add_participants: boolean
+            members_can_change_name: boolean
+        }
+    }
 
 export type FileAttachment = {
     file: string
@@ -95,7 +99,6 @@ class RaygunStore {
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(r => {
             if (r) {
-                this.handleRaygunEvent(r)
                 let listeners = get(this.messageListeners)
                 if (Object.keys(listeners).length > 0) {
                     // Cancels current message event listeners
@@ -104,6 +107,9 @@ class RaygunStore {
                     }
                 }
                 this.initConversationHandlers(r)
+                // handleRaygunEvent must be called after initConversationHandlers
+                // this is because if 'raygun.raygun_subscribe' is called before 'raygun.list_conversations', it causes 'raygun.list_conversations' to hang. (reason currently unknown)
+                this.handleRaygunEvent(r)
             }
         })
     }
@@ -309,10 +315,10 @@ class RaygunStore {
         return await this.get(r => r.edit(conversation_id, message_id, message), "Error editing message")
     }
 
-    async downloadAttachment(conversation_id: string, message_id: string, file: string) {
+    async downloadAttachment(conversation_id: string, message_id: string, file: string, size?: number) {
         return await this.get(async r => {
             let result = await r.download_stream(conversation_id, message_id, file)
-            return this.createFileDownloadHandler(file, result)
+            return this.createFileDownloadHandler(file, result, size)
         }, `Error downloading attachment from ${conversation_id} for message ${message_id}`)
     }
 
@@ -402,8 +408,9 @@ class RaygunStore {
         let conversations: { inner: wasm.Conversation }[] = await raygun.list_conversations()
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations) {
-            let handler = await this.createConversationEventHandler(raygun, conversation.inner.id())
-            handlers[conversation.inner.id()] = handler
+            //typescript thinks id is a function, but in the browser it is not.
+            let handler = await this.createConversationEventHandler(raygun, conversation.inner.id)
+            handlers[conversation.inner.id] = handler
         }
         this.messageListeners.set(handlers)
     }
@@ -440,8 +447,13 @@ class RaygunStore {
                         if (message) {
                             let ping = mentions_user(message, get(Store.state.user).key)
                             ConversationStore.addMessage(conversation_id, message)
+                            let settings = get(SettingsStore.state)
+                            let notify = settings.notifications.messages && get(page).route.id !== Route.Chat
+                            if (ping || notify) {
+                                Store.addToastNotification(new ToastMessage("New Message", `${message.details.origin.name} sent you a message`, 2), settings.audio.messageSounds ? Sounds.Notification : undefined)
+                            }
                             //TODO move chat to top
-                            //TODO handle ping and notification
+                            //TODO handle ping
                         }
                         break
                     }
@@ -554,7 +566,7 @@ class RaygunStore {
         return messages
     }
 
-    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator) {
+    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator, _size?: number) {
         let listener = {
             [Symbol.asyncIterator]() {
                 return it
@@ -565,7 +577,7 @@ class RaygunStore {
             for await (const value of listener) {
                 data = [...data, ...value]
             }
-        } catch (_) {}
+        } catch (_) { }
         let blob = new Blob([new Uint8Array(data)])
         const elem = window.document.createElement("a")
         elem.href = window.URL.createObjectURL(blob)

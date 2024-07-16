@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Input } from "$lib/elements"
-    import { Shape, Size } from "$lib/enums"
+    import { Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
@@ -8,14 +8,12 @@
     import { get, writable } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
-    import { createEventDispatcher, type EventDispatcher } from "svelte"
+    import { createEventDispatcher } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { Message } from "$lib/types"
+    import type { GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
-    import EmojiSelector from "$lib/components/messaging/emoji/EmojiSelector.svelte"
-    import GifSelector from "$lib/components/messaging/gif/GifSelector.svelte"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
-    import { acos } from "three/examples/jsm/nodes/Nodes.js"
+    import { checkMobile } from "$lib/utils/Mobile"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
@@ -26,7 +24,8 @@
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message = writable("")
     let emojiSelectorOpen = writable(false)
-    let gifPickerOpen = writable(false)
+    let gifSelectorOpen = writable(false)
+    let stickerSelectorOpen = writable(false)
 
     async function sendMessage(text: string) {
         let attachments: FileAttachment[] = []
@@ -47,11 +46,23 @@
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
 
         result.onSuccess(res => {
-            ConversationStore.addPendingMessages(chat.id, res.message, txt, attachments)
+            ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         message.set("")
         replyTo = undefined
         dispatch("onsend")
+    }
+
+    function handleEmojiClick(emoji: string) {
+        emojiSelectorOpen.set(false)
+    }
+
+    function handleGif(gif: GiphyGif) {
+        gifSelectorOpen.set(false)
+    }
+
+    function handleSticker(gif: GiphyGif) {
+        stickerSelectorOpen.set(false)
     }
 </script>
 
@@ -65,18 +76,27 @@
     <slot></slot>
 
     <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiSelectorOpen}>
-        <CombinedSelector active={{ name: "Emoji", icon: Shape.Smile }} />
+        <CombinedSelector active={{ name: "Emojis", icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>
     </PopupButton>
 
-    <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifPickerOpen}>
-        <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} />
-        <div slot="icon" class="control">
-            <Icon icon={Shape.Gif} size={Size.Large} />
-        </div>
-    </PopupButton>
+    {#if !checkMobile()}
+        <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifSelectorOpen}>
+            <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:gif={e => handleGif(e.detail)} />
+            <div slot="icon" class="control">
+                <Icon icon={Shape.Gif} />
+            </div>
+        </PopupButton>
+
+        <PopupButton name="Stickers" class="emoji-popup" bind:open={$stickerSelectorOpen}>
+            <CombinedSelector active={{ name: "Stickers", icon: Shape.Sticker }} on:sticker={e => handleSticker(e.detail)} />
+            <div slot="icon" class="control">
+                <Icon icon={Shape.Sticker} />
+            </div>
+        </PopupButton>
+    {/if}
 
     <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
         <Icon icon={Shape.ChevronRight} />

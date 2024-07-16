@@ -1,0 +1,460 @@
+{
+    "stickers": [
+        {
+            "name": "Space Cat",
+            "author": "Team Satellite",
+            "assets": [
+                {
+                    "name": "Power Up",
+                    "path": "/stickers/space_cat/10.png"
+                },
+                {
+                    "name": "Huh?",
+                    "path": "/stickers/space_cat/8.png"
+                },
+                {
+                    "name": "Really!?",
+                    "path": "/stickers/space_cat/12.png"
+                },
+                {
+                    "name": "Hello",
+                    "path": "/stickers/space_cat/6.png"
+                },
+                {
+                    "name": "Deadlift",
+                    "path": "/stickers/space_cat/1.png"
+                },
+                {
+                    "name": "Hungry",
+                    "path": "/stickers/space_cat/2.png"
+                },
+                {
+                    "name": "Couch Potato",
+                    "path": "/stickers/space_cat/4.png"
+                },
+                {
+                    "name": "Calling",
+                    "path": "/stickers/space_cat/5.png"
+                },
+                {
+                    "name": "No",
+                    "path": "/stickers/space_cat/9.png"
+                },
+                {
+                    "name": "But How?",
+                    "path": "/stickers/space_cat/11.png"
+                },
+                {
+                    "name": "Angry Kick",
+                    "path": "/stickers/space_cat/13.png"
+                },
+                {
+                    "name": "Erm",
+                    "path": "/stickers/space_cat/14.png"
+                },
+                {
+                    "name": "Fit",
+                    "path": "/stickers/space_cat/15.png"
+                },
+                {
+                    "name": "Depression",
+                    "path": "/stickers/space_cat/16.png"
+                },
+                {
+                    "name": "Sadness",
+                    "path": "/stickers/space_cat/17.png"
+                },
+                {
+                    "name": "Furious",
+                    "path": "/stickers/space_cat/18.png"
+                }
+            ]
+        },
+        {
+            "name": "Bad Animals",
+            "author": "Team Satellite",
+            "assets": [
+                {
+                    "name": "Big Chillin'",
+                    "path": "/stickers/bad_animals/racoon_pool.png"
+                },
+                {
+                    "name": "Cappybara",
+                    "path": "/stickers/bad_animals/capybara.png"
+                },
+                {
+                    "name": "Cracked Out",
+                    "path": "/stickers/bad_animals/cracked.png"
+                },
+                {
+                    "name": "Crazy",
+                    "path": "/stickers/bad_animals/crazy_coyote.png"
+                },
+                {
+                    "name": "Blaze Up",
+                    "path": "/stickers/bad_animals/dope_cat.png"
+                },
+                {
+                    "name": "Eureka!",
+                    "path": "/stickers/bad_animals/eureka.png"
+                },
+                {
+                    "name": "Late Night",
+                    "path": "/stickers/bad_animals/late_night.png"
+                },
+                {
+                    "name": "Panda Pals",
+                    "path": "/stickers/bad_animals/panda_party.png"
+                },
+                {
+                    "name": "Judge Birdy",
+                    "path": "/stickers/bad_animals/peacock_judge.png"
+                },
+                {
+                    "name": "Math Hard",
+                    "path": "/stickers/bad_animals/math_hard.png"
+                },
+                {
+                    "name": "Wild Night",
+                    "path": "/stickers/bad_animals/party_sloth.png"
+                },
+                {
+                    "name": "Puke",
+                    "path": "/stickers/bad_animals/puke_fish.png"
+                },
+                {
+                    "name": "Dope",
+                    "path": "/stickers/bad_animals/dope_dog.png"
+                },
+                {
+                    "name": "PEV Ostrich",
+                    "path": "/stickers/bad_animals/rad_ostrich.png"
+                },
+                {
+                    "name": "Hauk Tuah",
+                    "path": "/stickers/bad_animals/llama_spit.png"
+                },
+                {
+                    "name": "Boxing Toads",
+                    "path": "/stickers/bad_animals/red_vs_blue.png"
+                },
+                {
+                    "name": "Meep Meep",
+                    "path": "/stickers/bad_animals/road_crack.png"
+                },
+                {
+                    "name": "Taxes",
+                    "path": "/stickers/bad_animals/taxes.png"
+                }
+            ]
+        },
+        {
+            "name": "Anime",
+            "author": "Team Satellite",
+            "assets": [
+                {
+                    "name": "Angry",
+                    "path": "/stickers/anime/angry.png"
+                },
+                {
+                    "name": "I Luv U",
+                    "path": "/stickers/anime/iloveu.png"
+                },
+                {
+                    "name": "Terrified",
+                    "path": "/stickers/anime/terrified.png"
+                },
+                {
+                    "name": "Shrug",
+                    "path": "/stickers/anime/shrug.png"
+                },
+                {
+                    "name": "Victory",
+                    "path": "/stickers/anime/victory.png"
+                },
+                {
+                    "name": "Hiding",
+                    "path": "/stickers/anime/hiding.png"
+                },
+                {
+                    "name": "SLEEP",
+                    "path": "/stickers/anime/gotobed.png"
+                },
+                {
+                    "name": "Hello",
+                    "path": "/stickers/anime/hello.png"
+                },
+                {
+                    "name": "NO",
+                    "path": "/stickers/anime/no.png"
+                },
+                {
+                    "name": "Awkward",
+                    "path": "/stickers/anime/uhhh.png"
+                },
+                {
+                    "name": "What??",
+                    "path": "/stickers/anime/what.png"
+                },
+                {
+                    "name": "Best Boi",
+                    "path": "/stickers/anime/bestboy.png"
+                },
+                {
+                    "name": "Joy",
+                    "path": "/stickers/anime/joy.png"
+                }
+            ]
+        },
+        {
+            "name": "Words",
+            "author": "Team Satellite",
+            "assets": [
+                {
+                    "name": "Love That",
+                    "path": "/stickers/words/love_that.png"
+                },
+                {
+                    "name": "Get On",
+                    "path": "/stickers/words/get_on.png"
+                },
+                {
+                    "name": "Good Night",
+                    "path": "/stickers/words/good_night.png"
+                },
+                {
+                    "name": "Good Morning",
+                    "path": "/stickers/words/good_morning.png"
+                },
+                {
+                    "name": "I Love You",
+                    "path": "/stickers/words/iloveu.png"
+                },
+                {
+                    "name": "Happy Friday",
+                    "path": "/stickers/words/happyfriday.png"
+                },
+                {
+                    "name": "Depression",
+                    "path": "/stickers/words/depression.png"
+                },
+                {
+                    "name": "F*ck Off",
+                    "path": "/stickers/words/fck_off.png"
+                },
+                {
+                    "name": "GG Next",
+                    "path": "/stickers/words/ggnext.png"
+                }
+            ]
+        },
+        {
+            "name": "Fishy Business",
+            "author": "Team Satellite",
+            "assets": [
+                {
+                    "name": "Stonks Bad",
+                    "path": "/stickers/fishy_business/stonkbad.png"
+                },
+                {
+                    "name": "Star Accountant",
+                    "path": "/stickers/fishy_business/accounting.png"
+                },
+                {
+                    "name": "On The Phone",
+                    "path": "/stickers/fishy_business/puffercall.png"
+                },
+                {
+                    "name": "Money Akakakakak",
+                    "path": "/stickers/fishy_business/akakakakak.png"
+                },
+                {
+                    "name": "On Holiday",
+                    "path": "/stickers/fishy_business/onholiday.png"
+                },
+                {
+                    "name": "Elevator",
+                    "path": "/stickers/fishy_business/elevator.png"
+                },
+                {
+                    "name": "Busy",
+                    "path": "/stickers/fishy_business/busy.png"
+                },
+                {
+                    "name": "Mondays",
+                    "path": "/stickers/fishy_business/mondays.png"
+                },
+                {
+                    "name": "Construction",
+                    "path": "/stickers/fishy_business/construction.png"
+                }
+            ]
+        },
+        {
+            "name": "The Garden",
+            "author": "Team Satellite",
+            "assets": [
+                {
+                    "name": "Moon Flower",
+                    "path": "/stickers/garden/vampire_flower.png"
+                },
+                {
+                    "name": "Trowely",
+                    "path": "/stickers/garden/trowely.png"
+                },
+                {
+                    "name": "Uh-huh.",
+                    "path": "/stickers/garden/uh_huh.png"
+                },
+                {
+                    "name": "Blehhhhhh",
+                    "path": "/stickers/garden/drool.png"
+                },
+                {
+                    "name": "Like A Rock",
+                    "path": "/stickers/garden/like_a_rock.png"
+                },
+                {
+                    "name": "SUCCULENT",
+                    "path": "/stickers/garden/sukka.png"
+                },
+                {
+                    "name": "MAD MOWER",
+                    "path": "/stickers/garden/angrymower.png"
+                },
+                {
+                    "name": "Wilted",
+                    "path": "/stickers/garden/wilted.png"
+                },
+                {
+                    "name": "Smelly",
+                    "path": "/stickers/garden/smelly.png"
+                }
+            ]
+        },
+        {
+            "name": "Sassy Toons",
+            "author": "Team Satellite",
+            "assets": [
+                {
+                    "name": "Whatever",
+                    "path": "/stickers/toon/whatever.png"
+                },
+                {
+                    "name": "Ban Hammer",
+                    "path": "/stickers/toon/banhammer.png"
+                },
+                {
+                    "name": "Okie Dokie",
+                    "path": "/stickers/toon/okiedokie.png"
+                },
+                {
+                    "name": "Heard Ya",
+                    "path": "/stickers/toon/heardyathefirsttime.png"
+                },
+                {
+                    "name": "Bot Alert",
+                    "path": "/stickers/toon/botalert.png"
+                }
+            ]
+        }
+    ],
+    "frames": {
+        "Satellite": [
+            {
+                "name": "Moon",
+                "author": "Kevin McComas",
+                "image": "/frames/moon.png"
+            },
+            {
+                "name": "Skull Dance",
+                "author": "Jeff Kristian",
+                "image": "/frames/skulls.png"
+            }
+        ],
+        "Moonlight": [
+            {
+                "name": "Kitsune",
+                "author": "Satellite.im",
+                "image": "/frames/kitsune.png"
+            },
+            {
+                "name": "Gamer Headset",
+                "author": "Satellite.im",
+                "image": "/frames/gamer_headset.png"
+            },
+            {
+                "name": "Doom",
+                "author": "Satellite.im",
+                "image": "/frames/doom.png"
+            },
+            {
+                "name": "Ice",
+                "author": "Satellite.im",
+                "image": "/frames/ice.png"
+            },
+            {
+                "name": "Elegant",
+                "author": "Satellite.im",
+                "image": "/frames/elegant.png"
+            }
+        ],
+        "AI Overlords": [
+            {
+                "name": "Foxy",
+                "author": "Satellite.im",
+                "image": "/frames/foxy.png"
+            },
+            {
+                "name": "Cat Ears",
+                "author": "Satellite.im",
+                "image": "/frames/cat.png"
+            },
+            {
+                "name": "Gems",
+                "author": "Satellite.im",
+                "image": "/frames/gems.png"
+            },
+            {
+                "name": "Dragonborn",
+                "author": "Satellite.im",
+                "image": "/frames/dragonborn.png"
+            },
+            {
+                "name": "Scale Friends",
+                "author": "Satellite.im",
+                "image": "/frames/scalefriends.png"
+            },
+            {
+                "name": "Magma",
+                "author": "Satellite.im",
+                "image": "/frames/magma.png"
+            },
+            {
+                "name": "Marble",
+                "author": "Satellite.im",
+                "image": "/frames/marble.png"
+            },
+            {
+                "name": "Nature",
+                "author": "Satellite.im",
+                "image": "/frames/nature.png"
+            },
+            {
+                "name": "Quaint",
+                "author": "Satellite.im",
+                "image": "/frames/quaint.png"
+            },
+            {
+                "name": "Robot",
+                "author": "Satellite.im",
+                "image": "/frames/robot.png"
+            },
+            {
+                "name": "Stone",
+                "author": "Satellite.im",
+                "image": "/frames/stone.png"
+            }
+        ]
+    }
+}

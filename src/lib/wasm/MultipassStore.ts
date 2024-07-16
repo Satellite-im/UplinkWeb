@@ -5,10 +5,14 @@ import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
-import { defaultProfileData, type User } from "$lib/types"
+import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
 import { Store } from "$lib/state/Store"
-import { MessageDirection } from "$lib/enums"
+import { MessageDirection, Status } from "$lib/enums"
 import { parseJSValue } from "./EnumParser"
+import { ToastMessage } from "$lib/state/ui/toast"
+import { SettingsStore } from "$lib/state"
+import { Sounds } from "$lib/components/utils/SoundHandler"
+import { MAX_RETRY_COUNT, RETRY_DELAY } from "$lib/config"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -44,48 +48,61 @@ class MultipassStore {
         }
         log.info("Listening multipass events!")
         for await (const value of listener) {
-            let event = parseJSValue(value)
-            log.info(`Handling multipass events: ${JSON.stringify(event)}`)
-            switch (value.kind) {
+            let event = value as wasm.MultiPassEventKind
+            log.info(`Handling multipass events: ${wasm.MultiPassEventKindEnum[event.kind]} with did ${event.did}`)
+            switch (event.kind) {
                 case wasm.MultiPassEventKindEnum.FriendRequestSent:
                 case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected:
-                    {
-                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
-                        Store.setFriendRequests(get(Store.state.activeRequests)
-                            .filter(r => r.direction === MessageDirection.Inbound), outgoingFriendRequests)
-                        break
+                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected: {
+                    await this.listOutgoingFriendRequests()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
+                    if (get(SettingsStore.state).notifications.friends) {
+                        let incoming = await this.identity_from_did(event.did)
+                        let count = 0
+                        while (incoming === undefined) {
+                            incoming = await this.identity_from_did(event.did)
+                            count++
+                            if (count > MAX_RETRY_COUNT) {
+                                break;
+                            }
+                            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                        }
+                        if (incoming) {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                        } else {
+                            Store.addToastNotification(new ToastMessage("New friend request.", `You received a new friend request.`, 2), Sounds.Notification)
+                        }
                     }
-                case wasm.MultiPassEventKindEnum.FriendRequestReceived:
+                    await this.listIncomingFriendRequests()
+                    break
+                }
                 case wasm.MultiPassEventKindEnum.IncomingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected:
-                    {
-                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
-                        Store.setFriendRequests(incomingFriendRequests, get(Store.state.activeRequests)
-                            .filter(r => r.direction === MessageDirection.Outbound))
-                        break
-                    }
-                case wasm.MultiPassEventKindEnum.FriendAdded:
-                    {
-                        let outgoingFriendRequests: Array<any> = await this.listOutgoingFriendRequests()
-                        let incomingFriendRequests: Array<any> = await this.listIncomingFriendRequests()
-                        let friends = await this.listFriends()
-                        Store.setFriendRequests(incomingFriendRequests, outgoingFriendRequests)
-                        Store.setFriends(friends)
-                        break
-                    }
-                case wasm.MultiPassEventKindEnum.FriendRemoved:
-                    {
-                        let friends = await this.listFriends()
-                        Store.setFriends(friends)
-                        break
-                    }
+                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected: {
+                    await this.listIncomingFriendRequests()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendAdded: {
+                    await this.listOutgoingFriendRequests()
+                    await this.listIncomingFriendRequests()
+                    await this.listFriends()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.FriendRemoved: {
+                    await this.listFriends()
+                    break
+                }
+                case wasm.MultiPassEventKindEnum.Blocked: {
+                    await this.listBlockedFriends()
+                    break
+                }
                 default: {
-                        log.error(`Unhandled message event: ${JSON.stringify(event)}`)
-                        break
-                    }
+                    log.error(`Unhandled message event: ${wasm.MultiPassEventKindEnum[event.kind]}`)
+                    break
+                }
             }
-          }
+        }
     }
 
     /**
@@ -93,13 +110,14 @@ class MultipassStore {
      * @param username - The username for the new identity.
      * @param statusMessage - The status message for the new identity.
      * @param passphrase - The passphrase for the new identity (optional).
+     * @returns A Result containing either a passphrase assigned to the identity or a failure with a WarpError.
      */
-    async createIdentity(username: string, statusMessage: string, passphrase: string | undefined): Promise<void> {
+    async createIdentity(username: string, statusMessage: string): Promise<Result<WarpError, string>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                await multipass.create_identity(username, passphrase)
+                let id = await multipass.create_identity(username)
                 if (statusMessage.length > 0) {
                     if (statusMessage.length > MAX_STATUS_MESSAGE_LENGTH) {
                         log.warn(`Status message len is ${statusMessage.length}. Max is ${MAX_STATUS_MESSAGE_LENGTH}. Truncating to fit.`)
@@ -112,8 +130,51 @@ class MultipassStore {
                 Username: ${identity?.username()} \n 
                 StatusMessage: ${identity?.status_message()} \n
                 Did Key: ${identity?.did_key()} \n`)
+                return success(id.passphrase()!)
             } catch (error) {
                 log.error("Error creating identity: " + error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.MULTIPASS_NOT_FOUND)
+    }
+
+    async fetchAllFriendsAndRequests() {
+        await this.listIncomingFriendRequests()
+        await this.listOutgoingFriendRequests()
+        await this.listBlockedFriends()
+        await this.listFriends()
+    }
+
+    /**
+     * Lists outgoing friend requests.
+     * @returns A list of outgoing friend requests or an empty array in case of error.
+     */
+    async listOutgoingFriendRequests() {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let outgoingFriendRequests: Array<any> = await multipass.list_outgoing_request()
+                let outgoingFriendRequestsUsers: Array<FriendRequest> = []
+                for (let i = 0; i < outgoingFriendRequests.length; i++) {
+                    let friendUser = await this.identity_from_did(outgoingFriendRequests[i])
+                    if (friendUser) {
+                        let friendRequest: FriendRequest = {
+                            direction: MessageDirection.Outbound,
+                            to: friendUser,
+                            from: get(Store.state.user),
+                            at: new Date(),
+                        }
+                        outgoingFriendRequestsUsers.push(friendRequest)
+                    }
+                }
+                Store.setFriendRequests(
+                    get(Store.state.activeRequests).filter(r => r.direction === MessageDirection.Inbound),
+                    outgoingFriendRequestsUsers
+                )
+            } catch (error) {
+                log.error("Error listing incoming friend requests: " + error)
             }
         }
     }
@@ -199,34 +260,31 @@ class MultipassStore {
      * Lists incoming friend requests.
      * @returns A list of incoming friend requests or an empty array in case of error.
      */
-    async listIncomingFriendRequests(): Promise<any> {
+    async listIncomingFriendRequests() {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                let friends = await multipass.list_incoming_request()
-                return friends
+                let incomingFriendRequests: Array<any> = await multipass.list_incoming_request()
+                let incomingFriendRequestsUsers: Array<FriendRequest> = []
+                for (let i = 0; i < incomingFriendRequests.length; i++) {
+                    let friendUser = await this.identity_from_did(incomingFriendRequests[i])
+                    if (friendUser) {
+                        let friendRequest: FriendRequest = {
+                            direction: MessageDirection.Inbound,
+                            to: get(Store.state.user),
+                            from: friendUser,
+                            at: new Date(),
+                        }
+                        incomingFriendRequestsUsers.push(friendRequest)
+                    }
+                }
+                Store.setFriendRequests(
+                    incomingFriendRequestsUsers,
+                    get(Store.state.activeRequests).filter(r => r.direction === MessageDirection.Outbound)
+                )
             } catch (error) {
                 log.error("Error listing incoming friend requests: " + error)
-                return []
-            }
-        }
-    }
-
-    /**
-     * Lists outgoing friend requests.
-     * @returns A list of outgoing friend requests or an empty array in case of error.
-     */
-    async listOutgoingFriendRequests(): Promise<any> {
-        const multipass = get(this.multipassWritable)
-
-        if (multipass) {
-            try {
-                let friends = await multipass.list_outgoing_request()
-                return friends
-            } catch (error) {
-                log.error("Error listing outgoing friend requests: " + error)
-                return []
             }
         }
     }
@@ -235,16 +293,22 @@ class MultipassStore {
      * Lists blocked friends.
      * @returns A list of blocked friends or an empty array in case of error.
      */
-    async listBlockedFriends(): Promise<any> {
+    async listBlockedFriends() {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                let blockedFriends = await multipass.block_list()
-                return blockedFriends
+                let blockedUsersAny: Array<any> = await multipass.block_list()
+                let blockedUsers: Array<User> = []
+                for (let i = 0; i < blockedUsersAny.length; i++) {
+                    let friendUser = await this.identity_from_did(blockedUsersAny[i])
+                    if (friendUser) {
+                        blockedUsers.push(friendUser)
+                    }
+                }
+                Store.setBlockedUsers(blockedUsers)
             } catch (error) {
                 log.error("Error listing blocked friends: " + error)
-                return []
             }
         }
     }
@@ -253,13 +317,20 @@ class MultipassStore {
      * Lists friends.
      * @returns A list of friends or an empty array in case of error.
      */
-    async listFriends(): Promise<any> {
+    async listFriends() {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                let friends = await multipass.list_friends()
-                return friends
+                let friendsAny: Array<any> = await multipass.list_friends()
+                let friendsUsers: Array<User> = []
+                for (let i = 0; i < friendsAny.length; i++) {
+                    let friendUser = await this.identity_from_did(friendsAny[i])
+                    if (friendUser) {
+                        friendsUsers.push(friendUser)
+                    }
+                }
+                Store.setFriends(friendsUsers)
             } catch (error) {
                 log.error("Error listing friends: " + error)
                 return []
@@ -399,22 +470,69 @@ class MultipassStore {
         }
     }
 
+    /**
+     * Updates the status.
+     * @param newStatus - The new status to be set.
+     */
+    async updateStatus(newStatus: string) {
+        const multipass = get(this.multipassWritable)
+        if (multipass) {
+            try {
+                let identityStatus: wasm.IdentityStatus
+                switch (newStatus) {
+                    case "online":
+                        identityStatus = wasm.IdentityStatus.Online
+                        break
+                    case "idle":
+                        identityStatus = wasm.IdentityStatus.Away
+                        break
+                    case "do-not-disturb":
+                        identityStatus = wasm.IdentityStatus.Busy
+                        break
+                    case "offline":
+                        identityStatus = wasm.IdentityStatus.Offline
+                        break
+                    default:
+                        identityStatus = wasm.IdentityStatus.Offline
+                        break
+                }
+                await multipass.set_identity_status(identityStatus)
+                console.log("Status updated: ", identityStatus)
+            } catch (error) {
+                log.error("Error updating status: " + error)
+            }
+        }
+    }
+
     async identity_from_did(id: string): Promise<User | undefined> {
         let multipass = get(this.multipassWritable)
         if (multipass) {
             try {
-                let identity = await multipass.get_identity(wasm.Identifier.DID, id)
-                let profile = {
-                    ...defaultProfileData,
-                }
+                let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
+                let profilePicture = await this.getUserProfilePicture(id)
+                let bannerPicture = await this.getUserBannerPicture(id)
+                let status = await this.getUserStatus(id)
                 // TODO profile and banner etc. missing from wasm?
                 return {
-                    id: {
-                        short: identity.short_id,
+                    ...defaultUser,
+                    key: identity === undefined ? id : identity.did_key,
+                    name: identity === undefined ? id : identity.username,
+                    profile: {
+                        ...defaultProfileData,
+                        photo: {
+                            image: profilePicture,
+                            frame: {
+                                name: "",
+                                image: "",
+                            },
+                        },
+                        banner: {
+                            image: bannerPicture,
+                            overlay: "",
+                        },
+                        status: status,
+                        status_message: identity === undefined ? "" : identity.status_message ?? "",
                     },
-                    key: identity.did_key,
-                    name: identity.username,
-                    profile: profile,
                     media: {
                         is_playing_audio: false,
                         is_streaming_video: false,
@@ -428,6 +546,63 @@ class MultipassStore {
             }
         }
         return undefined
+    }
+
+    private async getUserStatus(did: string): Promise<Status> {
+        let multipass = get(this.multipassWritable)
+        let status = Status.Offline
+        if (multipass) {
+            try {
+                let identityStatus = await multipass.identity_status(did)
+                const identityStatusMap: { [key in wasm.IdentityStatus]: Status } = {
+                    [wasm.IdentityStatus.Online]: Status.Online,
+                    [wasm.IdentityStatus.Away]: Status.Idle,
+                    [wasm.IdentityStatus.Busy]: Status.DoNotDisturb,
+                    [wasm.IdentityStatus.Offline]: Status.Offline,
+                }
+                status = identityStatusMap[identityStatus] ?? Status.Offline
+            } catch (error) {
+                log.error(`Couldn't fetch status for ${did}: ${error}`)
+            }
+        }
+        return status
+    }
+
+    private async getUserProfilePicture(did: string): Promise<string> {
+        let multipass = get(this.multipassWritable)
+        let profilePicture = ""
+        if (multipass) {
+            try {
+                let identityProfilePicture = await multipass.identity_picture(did)
+                profilePicture = identityProfilePicture ? this.to_base64(identityProfilePicture.data()) : ""
+            } catch (error) {
+                // log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
+            }
+        }
+        return profilePicture
+    }
+
+    private async getUserBannerPicture(did: string): Promise<string> {
+        let multipass = get(this.multipassWritable)
+        let bannerPicture = ""
+        if (multipass) {
+            try {
+                let identityBannerPicture = await multipass.identity_banner(did)
+                bannerPicture = identityBannerPicture ? this.to_base64(identityBannerPicture.data()) : ""
+            } catch (error) {
+                // log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
+            }
+        }
+        return bannerPicture
+    }
+
+    private to_base64(data: Uint8Array) {
+        const binaryString = Array.from(data)
+            .map(byte => String.fromCharCode(byte))
+            .join('')
+        const base64String = btoa(binaryString)
+        const cleanedBase64String = base64String.replace('dataimage/jpegbase64', '')
+        return `data:image/jpeg;base64,${cleanedBase64String}`
     }
 
     /**

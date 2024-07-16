@@ -8,14 +8,32 @@
 
     const dispatch = createEventDispatcher()
 
-    function handleKeyDown(event: KeyboardEvent) {
-        if (event.repeat) return // Prevents duplicate keypresses while holding a key down
+    interface Recording {
+        key: string
+        modifiers: string[]
+    }
 
-        let key = event.key
+    let isRecording = false
+
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.repeat) return
+
         let modifiers: string[] = []
 
         if (event.shiftKey) modifiers.push("shift")
         if (event.ctrlKey) modifiers.push("ctrl")
+        if (event.altKey) modifiers.push("alt")
+
+        let key = event.key.toWellFormed()
+        if (event.altKey) {
+            if (event.code.startsWith("Key")) {
+                key = event.code.replace("Key", "")
+            } else if (event.code.startsWith("Digit")) {
+                key = event.code.replace("Digit", "")
+            }
+        }
+
+        isRecording = true
 
         dispatch("event", { key, modifiers, state: KeybindState.Pressed })
 
@@ -27,6 +45,8 @@
     }
 
     function handleKeyUp(event: KeyboardEvent) {
+        if (!isRecording) return
+
         let key = event.key
         let modifiers: string[] = []
 
@@ -40,15 +60,15 @@
                 dispatch("match", keybind)
             }
         })
+
+        isRecording = false
     }
 
     onMount(() => {
         window.addEventListener("keydown", handleKeyDown)
-        window.addEventListener("keyup", handleKeyUp)
     })
 
     onDestroy(() => {
         window.removeEventListener("keydown", handleKeyDown)
-        window.removeEventListener("keyup", handleKeyUp)
     })
 </script>

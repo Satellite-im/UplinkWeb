@@ -21,21 +21,22 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: ["Hello, world!"],
                 inReplyTo: null,
-                reactions: [
-                    {
+                reactions: {
+                    "🔥": {
                         emoji: "🔥",
                         highlight: Appearance.Primary,
-                        count: 3,
+                        reactors: new Set([mock_users[0].key]),
                         description: ":fire: you and 2 users reacted.",
                     },
-                    {
+                    "🌎": {
                         emoji: "🌎",
                         highlight: Appearance.Default,
-                        count: 2,
+                        reactors: new Set([mock_users[0].key]),
                         description: ":earth: 2 users reacted.",
                     },
-                ],
+                },
                 attachments: [],
+                pinned: false,
             },
             {
                 id: uuidv4(),
@@ -46,7 +47,7 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: [],
                 inReplyTo: null,
-                reactions: [],
+                reactions: {},
                 attachments: [
                     {
                         kind: MessageAttachmentKind.Image,
@@ -61,6 +62,7 @@ export let mock_messages: MessageGroup[] = [
                         size: 284012384,
                     },
                 ],
+                pinned: false,
             },
             {
                 id: uuidv4(),
@@ -71,8 +73,29 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: ["This is another message"],
                 inReplyTo: null,
-                reactions: [],
+                reactions: {},
+                attachments: [
+                    {
+                        kind: MessageAttachmentKind.Text,
+                        name: "TextDocument.svelte",
+                        location: "remote",
+                        size: 35,
+                    }
+                ],
+                pinned: false,
+            },
+            {
+                id: uuidv4(),
+                details: {
+                    at: new Date(),
+                    origin: mock_users[0],
+                    remote: false,
+                },
+                text: ["This is another message"],
+                inReplyTo: null,
+                reactions: {},
                 attachments: [],
+                pinned: false,
             },
             {
                 id: uuidv4(),
@@ -83,8 +106,9 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: ["And one last message"],
                 inReplyTo: null,
-                reactions: [],
+                reactions: {},
                 attachments: [],
+                pinned: false,
             },
         ],
     },
@@ -104,20 +128,20 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: ["Hello humans.", "**woah** _it's_ __markdown__ ~~stuff~~."],
                 inReplyTo: null,
-                reactions: [
-                    {
+                reactions: {
+                    "👽": {
                         emoji: "👽",
                         highlight: Appearance.Default,
-                        count: 2,
+                        reactors: new Set([mock_users[0].key]),
                         description: ":alien: 2 users reacted.",
                     },
-                    {
+                    "👀": {
                         emoji: "👀",
                         highlight: Appearance.Default,
-                        count: 1,
+                        reactors: new Set([mock_users[0].key]),
                         description: ":eyes: 1 user reacted.",
                     },
-                ],
+                },
                 attachments: [
                     {
                         kind: MessageAttachmentKind.File,
@@ -126,6 +150,7 @@ export let mock_messages: MessageGroup[] = [
                         size: 284012384,
                     },
                 ],
+                pinned: false,
             },
             {
                 id: uuidv4(),
@@ -136,15 +161,16 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: [],
                 inReplyTo: null,
-                reactions: [],
+                reactions: {},
                 attachments: [
                     {
                         kind: MessageAttachmentKind.STL,
                         name: "3DBenchy.stl",
-                        location: "/assets/3DBenchy.stl",
+                        location: "/assets/mock/3DBenchy.stl",
                         size: 1130000,
                     },
                 ],
+                pinned: false,
             },
             {
                 id: uuidv4(),
@@ -155,7 +181,7 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: [],
                 inReplyTo: null,
-                reactions: [],
+                reactions: {},
                 attachments: [
                     {
                         kind: MessageAttachmentKind.Audio,
@@ -164,25 +190,7 @@ export let mock_messages: MessageGroup[] = [
                         size: 1130000,
                     },
                 ],
-            },
-            {
-                id: uuidv4(),
-                details: {
-                    at: new Date(),
-                    origin: mock_users[0],
-                    remote: false,
-                },
-                text: [],
-                inReplyTo: null,
-                reactions: [],
-                attachments: [
-                    {
-                        kind: MessageAttachmentKind.Video,
-                        name: "Launch.mp4",
-                        location: "/assets/mp4/sample.mp4",
-                        size: 1130000,
-                    },
-                ],
+                pinned: false,
             },
             {
                 id: uuidv4(),
@@ -193,8 +201,9 @@ export let mock_messages: MessageGroup[] = [
                 },
                 text: ["I am not an alien."],
                 inReplyTo: null,
-                reactions: [],
+                reactions: {},
                 attachments: [],
+                pinned: false,
             },
         ],
     },
@@ -223,11 +232,13 @@ export let mock_messages: MessageGroup[] = [
                     },
                     text: ["I am not an alien."],
                     inReplyTo: null,
-                    reactions: [],
+                    reactions: {},
                     attachments: [],
+                    pinned: false,
                 },
-                reactions: [],
+                reactions: {},
                 attachments: [],
+                pinned: false,
             },
         ],
     },
