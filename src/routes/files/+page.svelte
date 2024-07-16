@@ -153,6 +153,7 @@
             remotePath: "",
             name: "",
             source: "",
+            extension: "",
             isRenaming: OperationState.Loading,
             items: [],
             parentId: $currentFolderIdStore,
@@ -235,7 +236,11 @@
                     if (folder.id === folderId && folder.type === "folder") {
                         updateFilesFromFolder(folder)
                         folder.items!.push(item)
-                        ConstellationStoreInstance.dropIntoFolder(`${item.name}.${item.extension}`, folder.name)
+                        if (item.type === "folder" && folder.type === "folder") {
+                            ConstellationStoreInstance.dropIntoFolder(`${item.name}`, folder.name)
+                        } else {
+                            ConstellationStoreInstance.dropIntoFolder(`${item.name}.${item.extension}`, folder.name)
+                        }
                     } else if (folder.type === "folder") {
                         folder.items = findFolderAndInsert(folderId, item, folder.items!)
                     }
