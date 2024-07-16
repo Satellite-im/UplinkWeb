@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
-    import { Appearance, FilesItemKind, Route, Shape } from "$lib/enums"
+    import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
