@@ -237,7 +237,7 @@
                         updateFilesFromFolder(folder)
                         folder.items!.push(item)
                         if (item.type === "folder" && folder.type === "folder") {
-                            ConstellationStoreInstance.dropIntoFolder(`${item.name}`, folder.name)
+                            ConstellationStoreInstance.dropIntoFolder(item.name, folder.name)
                         } else {
                             ConstellationStoreInstance.dropIntoFolder(`${item.name}.${item.extension}`, folder.name)
                         }
