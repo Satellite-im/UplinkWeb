@@ -1,7 +1,7 @@
 import { ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
+import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame, type Integration } from "$lib/types"
 import { get, writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
@@ -61,29 +61,33 @@ class GlobalStore {
         this.state.user.update(u => (u = { ...u, name }))
     }
 
+    setIntegrations(integrations: Integration[]) {
+        this.state.user.update(u => (u = { ...u, integrations }))
+    }
+
     setStatusMessage(message: string) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status_message: message,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status_message: message,
+                },
+            })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status: status,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status: status,
+                },
+            })
         )
     }
 

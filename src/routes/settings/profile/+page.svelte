@@ -9,7 +9,7 @@
     import type { Integration, User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { get, writable, type Writable } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -137,26 +137,15 @@
         }
     }
 
-    let placeholderIntegrations: Writable<Integration[]> = writable([
-        {
-            kind: Integrations.BTC,
-            location: "tb1qcuqv9j89wcgaegkl88frzv6ygr9qt5wzu4napg",
-            meta: null,
-        },
-        {
-            kind: Integrations.Twitch,
-            location: "https://twitch.tv/SpaceMan",
-            meta: null,
-        },
-    ])
-
     let selectedIntegration: Integration = { kind: Integrations.Generic, location: "", meta: "" }
     let showEditIntegrations = writable(false)
     let editIndex: number | null = null
 
     function addIntegration() {
         if (selectedIntegration.kind && selectedIntegration.location) {
-            placeholderIntegrations.update(integrations => [...integrations, { ...selectedIntegration }])
+            let currentIntegrations = get(Store.state.user).integrations || []
+            const updatedIntegrations = [...currentIntegrations, { ...selectedIntegration }]
+            Store.setIntegrations(updatedIntegrations)
             selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
             showEditIntegrations.set(false)
         }
@@ -164,17 +153,16 @@
 
     function startEditingIntegration(index: number) {
         editIndex = index
-        let integration = get(placeholderIntegrations)[index]
+        let integration = get(Store.state.user).integrations[index]
         selectedIntegration = { ...integration }
         showEditIntegrations.set(true)
     }
 
     function saveEditedIntegration() {
         if (selectedIntegration.kind && selectedIntegration.location && editIndex !== null) {
-            placeholderIntegrations.update(integrations => {
-                integrations[editIndex] = { ...selectedIntegration }
-                return integrations
-            })
+            let currentIntegrations = get(Store.state.user).integrations || []
+            currentIntegrations[editIndex] = { ...selectedIntegration }
+            Store.setIntegrations(currentIntegrations)
             selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
             editIndex = null
             showEditIntegrations.set(false)
@@ -182,20 +170,15 @@
     }
 
     function removeIntegration(index: number) {
-        let removedIntegration = get(placeholderIntegrations)[index]
-        placeholderIntegrations.update(integrations => integrations.filter((_, i) => i !== index))
-
-        // Re-add the removed integration kind to the integration options if not already present
-        if (!integrationOptions.some(option => option.value === removedIntegration.kind)) {
-            integrationOptions = [...integrationOptions, { text: INTEGRATIONS[removedIntegration.kind].name, value: removedIntegration.kind }]
-        }
+        let currentIntegrations = get(Store.state.user).integrations || []
+        currentIntegrations.splice(index, 1)
+        Store.setIntegrations(currentIntegrations)
     }
 
     $: integrationOptions = [
         ...Object.keys(INTEGRATIONS)
-            // @ts-ignore
             .map(int => ({ text: INTEGRATIONS[int].name, value: INTEGRATIONS[int].name }))
-            .filter(option => !get(placeholderIntegrations).some(integration => integration.kind === option.value)),
+            .filter(option => !get(Store.state.user).integrations.some(integration => integration.kind === option.value)),
         ...(editIndex !== null ? [{ text: INTEGRATIONS[selectedIntegration.kind].name, value: selectedIntegration.kind }] : []),
     ]
 </script>
@@ -401,7 +384,7 @@
                 <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
                 <Text>{$_("settings.profile.integration.description")}</Text>
                 <div class="active">
-                    {#each $placeholderIntegrations as integration, index}
+                    {#each user.integrations as integration, index}
                         <div class="integration-item">
                             <IntegrationDisplay integration={integration} />
                             <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(index)}>
