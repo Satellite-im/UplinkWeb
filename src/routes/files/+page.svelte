@@ -539,11 +539,13 @@
     <!-- Modals -->
     {#if previewImage}
         <Modal
+            hook="preview-image-modal"
             on:close={_ => {
                 previewImage = null
             }}>
             <svelte:fragment slot="controls">
                 <Button
+                    hook="button-close-preview-image-modal"
                     icon
                     small
                     appearance={Appearance.Alt}
@@ -562,6 +564,7 @@
         <Controls>
             <Button
                 appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
+                hook="button-sidebar-chats"
                 text={$_("chat.chat_plural")}
                 on:click={_ => {
                     activeTabRoute = "chats"
@@ -570,6 +573,7 @@
             </Button>
             <Button
                 appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
+                hook="button-sidebar-files"
                 text={$_("files.file_plural")}
                 on:click={_ => {
                     activeTabRoute = "files"
@@ -580,6 +584,7 @@
         {#if activeTabRoute === "chats"}
             {#each chats as chat}
                 <ContextMenu
+                    hook="context-menu-sidebar-chat"
                     items={[
                         {
                             id: "hide",
@@ -601,7 +606,7 @@
             {/each}
         {/if}
         {#if activeTabRoute === "files"}
-            <ul class="folderList">
+            <ul class="folderList" data-cy="folder-list">
                 {#each currentFiles as file}
                     <FolderItem file={file} openFolders={openFolders} toggleFolder={toggleFolder} />
                 {/each}
@@ -652,11 +657,12 @@
                 </button>
             </div>
             <svelte:fragment slot="controls">
-                <Button appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
+                <Button hook="button-new-folder" appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
                     <Icon icon={Shape.FolderPlus} />
                 </Button>
                 <Button
                     appearance={Appearance.Alt}
+                    hook="button-upload-file"
                     icon
                     tooltip={$_("files.upload")}
                     on:click={async () => {
@@ -664,12 +670,12 @@
                     }}>
                     <Icon icon={Shape.Plus} />
                 </Button>
-                <input style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
+                <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
         <div class="folder-back">
-            <Button small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+            <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -678,6 +684,7 @@
                 <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                     {#if item.type === "file"}
                         <ContextMenu
+                            hook="context-menu-file"
                             on:close={_ => {
                                 isContextMenuOpen = false
                             }}
@@ -719,6 +726,7 @@
                             ]}>
                             <FileFolder
                                 itemId={item.id}
+                                hook="file-{item.name}"
                                 slot="content"
                                 let:open
                                 on:contextmenu={e => {
@@ -734,7 +742,7 @@
                         </ContextMenu>
                     {:else if item.type === "folder"}
                         <ContextMenu
-                            hook="context-menu-folder-{item.id}"
+                            hook="context-menu-folder"
                             on:close={_ => {
                                 isContextMenuOpen = false
                             }}
@@ -768,6 +776,7 @@
                             ]}>
                             <FileFolder
                                 itemId={item.id}
+                                hook="folder-{item.name}"
                                 slot="content"
                                 let:open
                                 on:contextmenu={e => {
