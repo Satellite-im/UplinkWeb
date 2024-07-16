@@ -456,7 +456,6 @@
 
     async function deleteItem(file_name: string) {
         let result = await ConstellationStoreInstance.deleteItem(file_name)
-        console.log(result)
         result.fold(
             err => {
                 // TODO(Lucas): Error not mapped yet
