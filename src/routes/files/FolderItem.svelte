@@ -40,7 +40,7 @@
 <li on:click={createClickHandler(file, false)}>
     <div class="tree">
         <Icon icon={folderOpenClosedIcon()} muted filled></Icon>
-        {file.name}
+        {file.extension === "" ? `${file.name}` : `${file.name}.${file.extension}`}
         {#if openFolders[file.id] && file.items && file.items.length > 0}
             <ul>
                 {#each file.items as item}
