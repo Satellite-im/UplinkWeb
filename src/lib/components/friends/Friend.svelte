@@ -9,7 +9,6 @@
 
     initLocale()
 
-
     export let friend: User = defaultUser
 </script>
 
