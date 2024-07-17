@@ -87,7 +87,7 @@
     }
 
     $: if (rich && editor) {
-        editor.value($writableValue);
+        editor.value($writableValue)
     }
 
     export { clazz as class }
