@@ -25,7 +25,6 @@
     import type { Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
-    import { log } from "$lib/utils/Logger"
 
     initLocale()
 
@@ -34,7 +33,6 @@
     let isContextMenuOpen: boolean = false
     let isDraggingFromLocal = false
     let filesCount = 0
-    let filesDraggingToUpload = []
     $: isFadingOutDragDropOverlay = false
 
     function toggleSidebar(): void {
@@ -343,7 +341,6 @@
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
             Store.state.files.set(Array.from(filesSet))
-            console.log("filesSet: ", filesSet)
             currentFiles = Array.from(filesSet)
         })
     }
