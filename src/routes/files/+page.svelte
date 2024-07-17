@@ -25,7 +25,6 @@
     import type { Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
-    import { log } from "$lib/utils/Logger"
 
     initLocale()
 
@@ -34,7 +33,6 @@
     let isContextMenuOpen: boolean = false
     let isDraggingFromLocal = false
     let filesCount = 0
-    let filesDraggingToUpload = []
     $: isFadingOutDragDropOverlay = false
 
     function toggleSidebar(): void {
@@ -386,10 +384,21 @@
         if (filesToUpload) {
             filesCount = filesToUpload.length
             for (let i = 0; i < filesCount; i++) {
-                const file = filesToUpload[i]
-                console.log("file: ", file)
+                let file = filesToUpload[i]
                 const stream = file.stream()
-                await uploadFilesFromDrop(file.name, stream, file.size)
+                const fileNameParts = file.name.split('.')
+                const baseName = fileNameParts.slice(0, -1).join('.')
+                const fileExtension = fileNameParts.slice(-1)[0]
+                let newFileName = file.name
+                let fileIndex = 1
+
+                currentFiles.forEach(fileUploaded => {
+                    if (`${fileUploaded.name}.${fileUploaded.extension}` === newFileName) {
+                        newFileName = `${baseName} (${fileIndex}).${fileExtension}`
+                        fileIndex++
+                    }
+                }) 
+                await uploadFilesFromDrop(newFileName, stream, file.size)
             }
         }
         getCurrentDirectoryFiles()
@@ -416,7 +425,19 @@
             for (let i = 0; i < target.files.length; i++) {
                 const file = target.files[i]
                 const stream = file.stream()
-                let result = await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
+                console.log("file: ", file)
+                const fileNameParts = file.name.split('.')
+                const baseName = fileNameParts.slice(0, -1).join('.')
+                const extension = fileNameParts.slice(-1)[0]
+                let newFileName = file.name
+                let fileIndex = 1
+                currentFiles.forEach(fileUploaded => {
+                    if (`${fileUploaded.name}.${fileUploaded.extension}` === newFileName) {
+                        newFileName = `${baseName} (${fileIndex}).${extension}`
+                        fileIndex++
+                    }
+                }) 
+                let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 2))
                 })
