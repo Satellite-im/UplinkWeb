@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations } from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
 import type { Writable } from "svelte/store"
 
@@ -97,6 +97,7 @@ export type User = {
     name: string
     profile: ProfileData
     media: MediaMeta
+    integrations: Integration[]
 }
 
 export let defaultUser: User = {
@@ -111,6 +112,7 @@ export let defaultUser: User = {
         is_streaming_video: false,
         is_playing_audio: false,
     },
+    integrations: []
 }
 
 export type ChatSettings = {
@@ -332,3 +334,9 @@ export type StickerCollection = {
 }
 
 export type StickerManifest = StickerCollection[]
+
+export type Integration = {
+    kind: Integrations,
+    location: string,
+    meta: any
+}

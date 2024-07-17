@@ -16,7 +16,7 @@
     <SettingSection hook="section-gamepad-enabled" name={$_("settings.gamepad.enabled")} description={$_("settings.gamepad.enabledDescription")}>
         <Switch
             hook="switch-gamepad-oenabled"
-            on={settings ? $settings.gamepad.enabled : true}
+            on={$settings && $settings.gamepad ? $settings.gamepad.enabled : true}
             on:toggle={on => {
                 SettingsStore.update({ ...$settings, gamepad: { ...$settings.gamepad, enabled: on.detail } })
             }} />
