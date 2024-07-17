@@ -451,7 +451,8 @@ class RaygunStore {
                             let settings = get(SettingsStore.state)
                             let notify = settings.notifications.messages && get(page).route.id !== Route.Chat
                             if (ping || notify) {
-                                Store.addToastNotification(new ToastMessage("New Message", `${message.details.origin.name} sent you a message`, 2), settings.audio.messageSounds ? Sounds.Notification : undefined)
+                                let user = get(Store.getUser(message.details.origin))
+                                Store.addToastNotification(new ToastMessage("New Message", `${user.name} sent you a message`, 2), settings.audio.messageSounds ? Sounds.Notification : undefined)
                             }
                             //TODO move chat to top
                             //TODO handle ping
@@ -506,8 +507,9 @@ class RaygunStore {
                         let recipient = await MultipassStoreInstance.identity_from_did(event.values["recipient"])
                         if (recipient) {
                             UIStore.mutateChat(conversation_id, c => {
-                                c.users = [...c.users, recipient]
+                                c.users = [...c.users, recipient.key]
                             })
+                            Store.updateUser(recipient)
                         }
                         break
                     }
@@ -515,7 +517,7 @@ class RaygunStore {
                         let conversation_id: string = event.values["conversation_id"]
                         let recipient = event.values["recipient"]
                         UIStore.mutateChat(conversation_id, c => {
-                            c.users = c.users.filter(u => u.key !== recipient)
+                            c.users = c.users.filter(u => u !== recipient)
                         })
                         break
                     }
@@ -684,13 +686,16 @@ class RaygunStore {
         if (!message) return null
         let user = get(Store.state.user)
         let remote = message.sender() !== user.key
-        let sender = remote ? (await MultipassStoreInstance.identity_from_did(message.sender()))! : user
+        if (remote) {
+            let sender = await MultipassStoreInstance.identity_from_did(message.sender())
+            if (sender) Store.updateUser(sender)
+        }
         let attachments: any[] = message.attachments()
         return {
             id: message.id(),
             details: {
                 at: message.date(),
-                origin: sender,
+                origin: message.sender(),
                 remote: remote,
             },
             text: message.lines(),
@@ -730,13 +735,12 @@ class RaygunStore {
         let setting = parseJSValue(chat.settings())
         let direct = setting.type === "direct"
         let msg = await this.getMessages(raygun, chat.id(), new MessageOptions())
-        let creator = chat.creator() ? await MultipassStoreInstance.identity_from_did(chat.creator()!) : undefined
-        let users = await Promise.all(
-            chat.recipients().map(async r => {
-                let rec = await MultipassStoreInstance.identity_from_did(r)
-                return rec ? rec : defaultUser
-            })
-        )
+        chat.recipients().forEach(async recipient => {
+            let user = await MultipassStoreInstance.identity_from_did(recipient)
+            if (user) {
+                Store.updateUser(user)
+            }
+        })
         return {
             ...defaultChat,
             id: chat.id(),
@@ -751,8 +755,8 @@ class RaygunStore {
                     allowAnyoneToModifyName: !direct && (setting.values["members_can_change_name"] as boolean),
                 },
             },
-            creator: creator,
-            users: users,
+            creator: chat.creator(),
+            users: chat.recipients(),
             last_message_at: msg.length > 0 ? msg[msg.length - 1].details.at : new Date(),
             last_message_preview: msg.length > 0 ? msg[msg.length - 1].text.join("\n") : "",
         }
