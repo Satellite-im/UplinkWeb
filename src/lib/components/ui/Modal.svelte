@@ -53,8 +53,8 @@
             align-items: center;
             justify-content: center;
             min-width: var(--min-component-width);
-            max-height: 100%;
-            max-width: 100%;
+            max-height: 80%;
+            max-width: 80%;
             width: fit-content;
             border-radius: var(--border-radius);
             background-color: var(--background-alt);
@@ -86,10 +86,13 @@
     @media only screen and (max-width: 600px) {
         .modal {
             .body {
-                max-width: 100%;
-
-                width: 100%;
-                left: 0;
+                // max-width: 80%;
+                display: flex;
+                justify-content: center; /* Horizontal center */
+                align-items: center; /* Vertical center */
+                // height: 100vh;
+                // max-height: 80%;
+                // left: 0;
             }
         }
     }

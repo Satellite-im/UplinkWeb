@@ -38,6 +38,7 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
+        width: 100%;
 
         footer {
             display: inline-flex;
