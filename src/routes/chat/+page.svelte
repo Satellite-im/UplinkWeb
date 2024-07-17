@@ -24,6 +24,7 @@
         ContextMenu,
         EmojiGroup,
     } from "$lib/components"
+    import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import { OperationState, type Chat, type User } from "$lib/types"
@@ -47,6 +48,7 @@
     import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
     import { imageFromData } from "$lib/wasm/ConstellationStore"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
+    import { get_valid_payment_request } from "$lib/utils/Wallet"
 
     initLocale()
 
@@ -68,6 +70,7 @@
         return timeAgo.format(date)
     }
 
+    let transact: boolean = false
     let previewImage: string | null
     let previewProfile: User | null
     let newGroup: boolean = false
@@ -107,7 +110,7 @@
         pendingMessages = Object.values(ConversationStore.getPendingMessages(activeChat))
     })
 
-    $: chatName = activeChat.kind === ChatType.DirectMessage ? activeChat.users[1]?.name : (activeChat.name ?? activeChat.users[1]?.name)
+    $: chatName = activeChat.kind === ChatType.DirectMessage ? activeChat.users[1]?.name : activeChat.name ?? activeChat.users[1]?.name
     $: statusMessage = activeChat.kind === ChatType.DirectMessage ? activeChat.users[1]?.profile?.status_message : activeChat.motd
 
     function dragEnter(event: DragEvent) {
@@ -233,6 +236,15 @@
         dragDrop(e)
     }}>
     <!-- Modals -->
+    {#if transact}
+        <Modal
+            on:close={_ => {
+                transact = false
+            }}>
+            <CreateTransaction onClose={() => (transact = false)} on:create={_ => (transact = false)} />
+        </Modal>
+    {/if}
+
     {#if previewImage}
         <Modal
             on:close={_ => {
@@ -366,6 +378,15 @@
             </div>
             <svelte:fragment slot="controls">
                 <CoinBalance balance={0.0} />
+                <Button
+                    icon
+                    appearance={transact ? Appearance.Primary : Appearance.Alt}
+                    disabled={activeChat.users.length === 0}
+                    on:click={_ => {
+                        transact = true
+                    }}>
+                    <Icon icon={Shape.SendCoin} />
+                </Button>
                 <Button icon appearance={Appearance.Alt} disabled={activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
@@ -458,7 +479,11 @@
                                                 <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                             {:else}
                                                 {#each message.text as line}
-                                                    <Text markdown={line} />
+                                                    {#if get_valid_payment_request(line) != undefined}
+                                                        <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
+                                                    {:else}
+                                                        <Text markdown={line} />
+                                                    {/if}
                                                 {/each}
 
                                                 {#if message.attachments.length > 0}

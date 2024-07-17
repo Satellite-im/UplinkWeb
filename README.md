@@ -34,6 +34,20 @@ npm run dev
 
 ---
 
+## Sending bitcoin (POC)
+
+1 - Install Unisat chrome extension
+
+2 - Go to Settings -> Network and select 'Bitcoin Testnet'
+
+3 - Get some free testnet btc from a faucet. For example: https://bitcoinfaucet.uo1.net/send.php
+
+4 - On another user in uplinkweb, open up the conversation and click the 'Create Payment Request' button on the top bar (coin exchange icon, next to the call button) They will also need Unisat installed.
+
+5 - Enter an amount and click the `Request` button. A clickable message will appear in the chat.
+
+6 - Go back to the other user and click the message and the request will be forwarded to Unisat for you to approve the transation.
+
 ## Contributing
 
 All contributions are welcome! Please keep in mind we're still a relatively small team, and any work done to ensure contributions don't cause bugs or issues in the application is much appreciated.
