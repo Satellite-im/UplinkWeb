@@ -46,7 +46,7 @@ npm run dev
 
 5 - Enter an amount and click the `Request` button. A clickable message will appear in the chat.
 
-6 - Go back to the other user and click the message and the request will be forwarded to Unisat for you to approve the transation.
+6 - Go back to the other user and click the message and the request will be forwarded to Unisat for you to approve the transaction.
 
 ## Contributing
 
