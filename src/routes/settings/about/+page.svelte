@@ -12,9 +12,9 @@
     let clicked: number = 0
 
     function increment() {
-        if (clicked < 10) {
+        if (clicked < 9) {
             clicked++
-        } else if (clicked >= 10) {
+        } else if (clicked === 9) {
             SettingsStore.toggleDevmode(true)
             goto("/settings/developer")
         }
