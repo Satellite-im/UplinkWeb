@@ -30,7 +30,7 @@
         return list.includes(recipient)
     }
 
-    let friends: User[] = get(Store.state.friends)
+    $: friends = Store.getUsers(Store.state.friends)
     const dispatch = createEventDispatcher()
     function onCreate() {
         name = ""
@@ -65,7 +65,7 @@
         </div>
         <Label hook="label-create-group-select-members" text="Select member(s)" />
         <div class="user-selection-list {embedded ? 'embedded' : ''}">
-            {#each friends as recipient}
+            {#each $friends as recipient}
                 <button class="user" on:click={() => update_recipients(recipient)}>
                     <ProfilePicture id={recipient.key} size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
                     <div class="info">
