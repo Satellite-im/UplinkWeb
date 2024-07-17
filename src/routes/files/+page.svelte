@@ -343,6 +343,7 @@
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
             Store.state.files.set(Array.from(filesSet))
+            console.log("filesSet: ", filesSet)
             currentFiles = Array.from(filesSet)
         })
     }
@@ -386,10 +387,21 @@
         if (filesToUpload) {
             filesCount = filesToUpload.length
             for (let i = 0; i < filesCount; i++) {
-                const file = filesToUpload[i]
-                console.log("file: ", file)
+                let file = filesToUpload[i]
                 const stream = file.stream()
-                await uploadFilesFromDrop(file.name, stream, file.size)
+                const fileNameParts = file.name.split('.')
+                const baseName = fileNameParts.slice(0, -1).join('.')
+                const extension = fileNameParts.slice(-1)[0]
+                let newFileName = file.name
+                let fileIndex = 1
+
+                currentFiles.forEach(fileUploaded => {
+                    if (`${fileUploaded.name}.${fileUploaded.extension}` === newFileName) {
+                        newFileName = `${baseName} (${fileIndex}).${extension}`
+                        fileIndex++
+                    }
+                }) 
+                await uploadFilesFromDrop(newFileName, stream, file.size)
             }
         }
         getCurrentDirectoryFiles()
@@ -416,7 +428,19 @@
             for (let i = 0; i < target.files.length; i++) {
                 const file = target.files[i]
                 const stream = file.stream()
-                let result = await ConstellationStoreInstance.uploadFilesFromStream(file.name, stream, file.size)
+                console.log("file: ", file)
+                const fileNameParts = file.name.split('.')
+                const baseName = fileNameParts.slice(0, -1).join('.')
+                const extension = fileNameParts.slice(-1)[0]
+                let newFileName = file.name
+                let fileIndex = 1
+                currentFiles.forEach(fileUploaded => {
+                    if (`${fileUploaded.name}.${fileUploaded.extension}` === newFileName) {
+                        newFileName = `${baseName} (${fileIndex}).${extension}`
+                        fileIndex++
+                    }
+                }) 
+                let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 2))
                 })
