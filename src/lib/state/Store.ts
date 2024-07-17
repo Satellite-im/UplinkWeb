@@ -2,7 +2,7 @@ import { ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame, type Integration } from "$lib/types"
-import { get, writable } from "svelte/store"
+import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
 import { UIStore } from "./ui"
@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from "uuid"
 import { Logger } from "$lib/utils/Logger"
 import { ConversationStore } from "./conversation"
 import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
+import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
 class GlobalStore {
     state: IState
@@ -35,6 +36,7 @@ class GlobalStore {
             files: createPersistentState("uplink.files", []),
             openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
             toasts: createPersistentState("uplink.toasts", {}),
+            userCache: writable({}),
         }
     }
 
@@ -109,7 +111,7 @@ class GlobalStore {
 
     getChatForUser(userID: string) {
         const chats = get(UIStore.state.chats)
-        return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u.key === userID))
+        return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
     }
 
     setActiveChat(chat: Chat) {
@@ -160,32 +162,33 @@ class GlobalStore {
     updateFolderTree(newFolderTree: Record<string, boolean>) {
         this.state.openFolders.set(newFolderTree)
     }
-    addFriend(user: User) {
+
+    addFriend(user: string) {
         const currentFriends = get(this.state.friends)
         const currentRequests = get(this.state.activeRequests)
         if (!currentFriends.includes(user)) {
             this.state.friends.set([...currentFriends, user])
-            this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
+            this.state.activeRequests.set(currentRequests.filter(request => request.to !== user && request.from !== user))
         }
     }
 
-    acceptRequest(user: User) {
+    acceptRequest(user: string) {
         const currentFriends = get(this.state.friends)
         const currentRequests = get(this.state.activeRequests)
 
-        if (!currentFriends.some(friend => friend.id === user.id)) {
+        if (!currentFriends.some(friend => friend === user)) {
             this.state.friends.set([...currentFriends, user])
         }
 
-        this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
+        this.state.activeRequests.set(currentRequests.filter(request => request.to !== user && request.from !== user))
     }
 
-    denyRequest(user: User) {
+    denyRequest(user: string) {
         const currentRequests = get(this.state.activeRequests)
-        this.state.activeRequests.set(currentRequests.filter(request => request.to.id !== user.id && request.from.id !== user.id))
+        this.state.activeRequests.set(currentRequests.filter(request => request.to !== user && request.from !== user))
     }
 
-    setFriends(friends: Array<User>) {
+    setFriends(friends: Array<string>) {
         this.state.friends.set(friends)
     }
 
@@ -195,27 +198,111 @@ class GlobalStore {
         this.state.activeRequests.set(Array.from(allFriendRequests.values()))
     }
 
-    setBlockedUsers(blockedUsers: Array<User>) {
+    setBlockedUsers(blockedUsers: Array<string>) {
         this.state.blocked.set(blockedUsers)
     }
 
-    cancelRequest(user: User) {
+    cancelRequest(user: string) {
         this.denyRequest(user)
     }
 
-    removeFriend(user: User) {
+    removeFriend(user: string) {
         let friendsList = get(this.state.friends)
-        this.state.friends.set(friendsList.filter(f => f.id !== user.id))
+        this.state.friends.set(friendsList.filter(f => f !== user))
     }
 
-    blockUser(user: User) {
+    blockUser(user: string) {
         this.removeFriend(user)
         this.state.blocked.set([...get(this.state.blocked), user])
     }
 
-    unblockUser(user: User) {
+    unblockUser(user: string) {
         let blocked = get(this.state.blocked)
-        this.state.blocked.set(blocked.filter(u => u.id !== user.id))
+        this.state.blocked.set(blocked.filter(u => u !== user))
+    }
+
+    /**
+     * Looksup the user in the cache. Fetching it from Multipass if not present.
+     * It returns a Readable so using it in a svelte component will automatically update the component whenever the data changes
+     * Example usage:
+     * $: user = Store.getUser(did)
+     * let name = $user.name
+     * @param did The did of the user to lookup
+     * @returns The looked up user in the cache
+     */
+    getUser(did: string): Readable<User> {
+        // Handle special cases like mock data or default user
+        if (did === defaultUser.key) return writable(defaultUser)
+        let mock = mock_users.find(user => user.key === did)
+        if (mock) return writable(mock)
+        // If its the own user return the own instance
+        if (did === get(this.state.user).key) return this.state.user
+        let cache = get(this.state.userCache)
+        let cached: Writable<User> = cache[did]
+        if (!cached) {
+            // The user is not in the cache so we fetch it from Multipass
+            // For that we return the default user that then gets updated with the result from Multipass
+            let create = writable(defaultUser)
+            MultipassStoreInstance.identity_from_did(did).then(fetched => {
+                if (fetched) create.set(fetched)
+            })
+            cache[did] = create
+            this.state.userCache.set(cache)
+        }
+        return cached
+    }
+
+    /**
+     * Returns a view of users with the given dids
+     * The view automatically updates whenever the data of the user in the cache changes
+     * @param dids A list if dids to lookup
+     * @returns The users matching the given dids
+     */
+    getUsers(dids: string[] | Readable<string[]>): Readable<User[]> {
+        // Check the type of the input
+        let check = (val: string[] | Readable<string[]>): val is Readable<string[]> => (<Readable<string[]>>dids).subscribe !== undefined
+        if (check(dids)) {
+            return derived(dids, ($resolved, set) => {
+                let users = derived(
+                    $resolved.map(did => this.getUser(did)),
+                    users => users
+                )
+                return users.subscribe(value => set(value))
+            })
+        }
+        return derived(
+            dids.map(did => this.getUser(did)),
+            users => users
+        )
+    }
+
+    /**
+     * Returns a subset of a user lookup with the given dids. This subset auto updates whenever the cache in Store updates
+     * @param dids A list if dids to lookup
+     * @returns The map of did -> User
+     */
+    getUsersLookup(dids: string[] | Readable<string[]>): Readable<{ [key: string]: User }> {
+        return derived(this.getUsers(dids), result => {
+            return result.reduce<{ [key: string]: User }>((acc, obj) => {
+                acc[obj.key] = obj
+                return acc
+            }, {})
+        })
+    }
+
+    /**
+     * Updates the usercache with the given user
+     */
+    updateUser(user: User) {
+        if (user.key === get(this.state.user).key) return
+        let cache = get(this.state.userCache)
+        let cached: Writable<User> = cache[user.key]
+        if (!cached) {
+            cache[user.key] = writable(user)
+        } else {
+            cached.set(user)
+        }
+        this.state.userCache.set(cache)
     }
 
     addFavorite(chat: Chat) {
@@ -298,8 +385,8 @@ class GlobalStore {
         this.state.activeChat.set(mchatsMod[0])
         UIStore.state.chats.set(mchatsMod)
         this.state.files.set(mock_files)
-        this.state.friends.set(mock_users)
-        this.state.blocked.set(blocked_users)
+        this.state.friends.set(mock_users.map(u => u.key))
+        this.state.blocked.set(blocked_users.map(u => u.key))
         this.state.favorites.set([activeChat])
         ConversationStore.conversations.set(
             mchatsMod.map(c => {
