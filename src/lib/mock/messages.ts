@@ -8,7 +8,7 @@ export let mock_messages: MessageGroup[] = [
     {
         details: {
             at: new Date(),
-            origin: mock_users[0],
+            origin: mock_users[0].key,
             remote: false,
         },
         messages: [
@@ -16,7 +16,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: ["Hello, world!"],
@@ -42,7 +42,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: [],
@@ -52,7 +52,7 @@ export let mock_messages: MessageGroup[] = [
                     {
                         kind: MessageAttachmentKind.Image,
                         name: "Library.avif",
-                        location: "/assets/library.avif",
+                        location: "/assets/mock/library.avif",
                         size: 1291235,
                     },
                     {
@@ -68,7 +68,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: ["This is another message"],
@@ -80,7 +80,7 @@ export let mock_messages: MessageGroup[] = [
                         name: "TextDocument.svelte",
                         location: "remote",
                         size: 35,
-                    }
+                    },
                 ],
                 pinned: false,
             },
@@ -88,7 +88,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: ["This is another message"],
@@ -101,7 +101,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: ["And one last message"],
@@ -115,7 +115,7 @@ export let mock_messages: MessageGroup[] = [
     {
         details: {
             at: new Date(),
-            origin: mock_users[1],
+            origin: mock_users[1].key,
             remote: true,
         },
         messages: [
@@ -123,7 +123,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[1],
+                    origin: mock_users[1].key,
                     remote: true,
                 },
                 text: ["Hello humans.", "**woah** _it's_ __markdown__ ~~stuff~~."],
@@ -156,7 +156,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: [],
@@ -176,7 +176,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: [],
@@ -196,7 +196,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[2],
+                    origin: mock_users[2].key,
                     remote: true,
                 },
                 text: ["I am not an alien."],
@@ -211,7 +211,7 @@ export let mock_messages: MessageGroup[] = [
     {
         details: {
             at: new Date(),
-            origin: mock_users[0],
+            origin: mock_users[0].key,
             remote: false,
         },
         messages: [
@@ -219,7 +219,7 @@ export let mock_messages: MessageGroup[] = [
                 id: uuidv4(),
                 details: {
                     at: new Date(),
-                    origin: mock_users[0],
+                    origin: mock_users[0].key,
                     remote: false,
                 },
                 text: ["Hmm, okay!"],
@@ -227,7 +227,7 @@ export let mock_messages: MessageGroup[] = [
                     id: uuidv4(),
                     details: {
                         at: new Date(),
-                        origin: mock_users[1],
+                        origin: mock_users[1].key,
                         remote: true,
                     },
                     text: ["I am not an alien."],
