@@ -391,13 +391,13 @@
                 const stream = file.stream()
                 const fileNameParts = file.name.split('.')
                 const baseName = fileNameParts.slice(0, -1).join('.')
-                const extension = fileNameParts.slice(-1)[0]
+                const fileExtension = fileNameParts.slice(-1)[0]
                 let newFileName = file.name
                 let fileIndex = 1
 
                 currentFiles.forEach(fileUploaded => {
                     if (`${fileUploaded.name}.${fileUploaded.extension}` === newFileName) {
-                        newFileName = `${baseName} (${fileIndex}).${extension}`
+                        newFileName = `${baseName} (${fileIndex}).${fileExtension}`
                         fileIndex++
                     }
                 }) 
