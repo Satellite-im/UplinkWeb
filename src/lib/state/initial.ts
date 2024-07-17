@@ -4,9 +4,9 @@ import type { ToastMessage } from "./ui/toast"
 
 export interface IState {
     user: Writable<User>
-    blocked: Writable<User[]>
+    blocked: Writable<string[]>
     activeRequests: Writable<FriendRequest[]>
-    friends: Writable<User[]>
+    friends: Writable<string[]>
     favorites: Writable<Chat[]>
     files: Writable<FileInfo[]>
     openFolders: Writable<Record<string, boolean>>
@@ -20,4 +20,7 @@ export interface IState {
     activeChat: Writable<Chat>
     activeCall: Writable<Call | null>
     toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
+    // A cache of all fetched user data
+    // We use a Writable<User> to also allow easy subscription to changes if only that user interests us
+    userCache: Writable<{ [key: string]: Writable<User> }>
 }
