@@ -117,7 +117,7 @@ export let mock_files: FileInfo[] = [
                                         type: "image",
                                         icon: Shape.Image,
                                         isRenaming: OperationState.Initial,
-                                        source: "/assets/library.avif",
+                                        source: "/assets/mock/library.avif",
                                         name: "Wildlife.png",
                                         size: 987654321,
                                         items: [
@@ -151,7 +151,7 @@ export let mock_files: FileInfo[] = [
                                                                     {
                                                                         id: "50",
                                                                         type: "image",
-                                                                        source: "/assets/library.avif",
+                                                                        source: "/assets/mock/library.avif",
                                                                         icon: Shape.Image,
                                                                         isRenaming: OperationState.Initial,
                                                                         name: "life.png",
@@ -207,7 +207,7 @@ export let mock_files: FileInfo[] = [
     {
         id: "22",
         type: "image",
-        source: "/assets/library.avif",
+        source: "/assets/mock/library.avif",
         icon: Shape.Image,
         isRenaming: OperationState.Initial,
         name: "Wildlife.png",
@@ -242,7 +242,7 @@ export let mock_files: FileInfo[] = [
                 type: "image",
                 icon: Shape.Image,
                 isRenaming: OperationState.Initial,
-                source: "/assets/library.avif",
+                source: "/assets/mock/library.avif",
                 name: "Wildlife.png",
                 size: 987654321,
                 items: [],
