@@ -149,17 +149,19 @@
         } else if ($page.route.id !== Route.Unlock) {
             // We need to find a better way of handling it so the password doesnt get stored
             // But for now: dont login if the user is on the login page
-            log.info("Pin stored, unlocking")
-            let addressed = Object.values(get(RelayStore.state))
-                .filter(r => r.active)
-                .map(r => r.address)
-            await WarpStore.initWarpInstances(addressed)
-            let result = await TesseractStoreInstance.unlock(authentication.pin)
-            result.onSuccess(() => {
-                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
-            })
-            if (!authentication.stayLoggedIn) {
+            let logged_in = get(AuthStore.loggedIn)
+            if (!authentication.stayLoggedIn && !logged_in) {
                 goto(Route.Unlock)
+            } else {
+                let addressed = Object.values(get(RelayStore.state))
+                    .filter(r => r.active)
+                    .map(r => r.address)
+                await WarpStore.initWarpInstances(addressed)
+                log.info("Pin stored, unlocking")
+                let result = await TesseractStoreInstance.unlock(authentication.pin)
+                result.onSuccess(() => {
+                    setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
+                })
             }
         }
     }

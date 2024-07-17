@@ -33,6 +33,7 @@
 
     async function logOut() {
         AuthStore.setStayLogged(false)
+        AuthStore.logIn(false)
         await TesseractStoreInstance.lock()
         goto(Route.Unlock)
     }
@@ -158,13 +159,13 @@
                     disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                         if (changeList.statusMessage) {
+                        if (changeList.statusMessage) {
                             await updateStatusMessage(statusMessage)
                         }
                         if (changeList.username) {
                             await updateUsername(user.name)
                         }
-                       
+
                         updatePendentItemsToSave()
                     }}>
                     <Icon icon={Shape.CheckMark} />
@@ -205,14 +206,14 @@
         <ContextMenu
             items={[
                 {
-                id: "clear-profile-picture",
-                icon: Shape.Trash,
-                text: "Delete Profile Picture",
-                disabled: user.profile.photo.image === "",
-                appearance: Appearance.Default,
-                onClick: () => {
-                    updateProfilePicture("/0");
-                },
+                    id: "clear-profile-picture",
+                    icon: Shape.Trash,
+                    text: "Delete Profile Picture",
+                    disabled: user.profile.photo.image === "",
+                    appearance: Appearance.Default,
+                    onClick: () => {
+                        updateProfilePicture("/0")
+                    },
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
@@ -317,7 +318,8 @@
                                 case "do-not-disturb":
                                     return Store.setActivityStatus(Status.DoNotDisturb)
                             }
-2                        }}
+                            2
+                        }}
                         bind:selected={user.profile.status}>
                         {#if activityStatus === Status.Online}
                             <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
