@@ -68,6 +68,9 @@ export function initLocale() {
                 new_folder: "New Folder",
                 upload: "Upload",
                 add_files: "Drop files to upload here",
+                dragging_file: "Dragging 1 file for upload",
+                dragging_files: "Dragging {count} files for upload"
+
             },
             payments: {
                 send_coin: "Send Coin",
