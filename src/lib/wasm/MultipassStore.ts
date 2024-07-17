@@ -162,11 +162,12 @@ class MultipassStore {
                     if (friendUser) {
                         let friendRequest: FriendRequest = {
                             direction: MessageDirection.Outbound,
-                            to: friendUser,
-                            from: get(Store.state.user),
+                            to: friendUser.key,
+                            from: get(Store.state.user).key,
                             at: new Date(),
                         }
                         outgoingFriendRequestsUsers.push(friendRequest)
+                        Store.updateUser(friendUser)
                     }
                 }
                 Store.setFriendRequests(
@@ -272,11 +273,12 @@ class MultipassStore {
                     if (friendUser) {
                         let friendRequest: FriendRequest = {
                             direction: MessageDirection.Inbound,
-                            to: get(Store.state.user),
-                            from: friendUser,
+                            to: get(Store.state.user).key,
+                            from: friendUser.key,
                             at: new Date(),
                         }
                         incomingFriendRequestsUsers.push(friendRequest)
+                        Store.updateUser(friendUser)
                     }
                 }
                 Store.setFriendRequests(
@@ -299,11 +301,12 @@ class MultipassStore {
         if (multipass) {
             try {
                 let blockedUsersAny: Array<any> = await multipass.block_list()
-                let blockedUsers: Array<User> = []
+                let blockedUsers: Array<string> = []
                 for (let i = 0; i < blockedUsersAny.length; i++) {
                     let friendUser = await this.identity_from_did(blockedUsersAny[i])
                     if (friendUser) {
-                        blockedUsers.push(friendUser)
+                        blockedUsers.push(friendUser.key)
+                        Store.updateUser(friendUser)
                     }
                 }
                 Store.setBlockedUsers(blockedUsers)
@@ -323,11 +326,12 @@ class MultipassStore {
         if (multipass) {
             try {
                 let friendsAny: Array<any> = await multipass.list_friends()
-                let friendsUsers: Array<User> = []
+                let friendsUsers: Array<string> = []
                 for (let i = 0; i < friendsAny.length; i++) {
                     let friendUser = await this.identity_from_did(friendsAny[i])
                     if (friendUser) {
-                        friendsUsers.push(friendUser)
+                        friendsUsers.push(friendUser.key)
+                        Store.updateUser(friendUser)
                     }
                 }
                 Store.setFriends(friendsUsers)
@@ -607,9 +611,9 @@ class MultipassStore {
     private to_base64(data: Uint8Array) {
         const binaryString = Array.from(data)
             .map(byte => String.fromCharCode(byte))
-            .join('')
+            .join("")
         const base64String = btoa(binaryString)
-        const cleanedBase64String = base64String.replace('dataimage/jpegbase64', '')
+        const cleanedBase64String = base64String.replace("dataimage/jpegbase64", "")
         return `data:image/jpeg;base64,${cleanedBase64String}`
     }
 

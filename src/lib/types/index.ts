@@ -135,10 +135,10 @@ export type Chat = {
     motd: string
     kind: ChatType
     settings: ChatSettings
-    creator?: User
+    creator?: string
     notifications: number
     activity: boolean
-    users: User[]
+    users: string[]
     typing_indicator: { [key: string]: Date }
     last_message_at: Date
     last_message_preview: string
@@ -159,7 +159,7 @@ export function hashChat(chat: Chat): string {
     const dataString =
         chat.name +
         chat.users
-            .map(user => user.name)
+            .map(user => user)
             .sort()
             .join("")
 
@@ -237,13 +237,13 @@ export type Attachment = {
 export type FriendRequest = {
     at: Date
     direction: MessageDirection
-    to: User
-    from: User
+    to: string
+    from: string
 }
 
 export type MessageDetails = {
     at: Date
-    origin: User
+    origin: string
     remote: boolean
 }
 
@@ -293,8 +293,8 @@ export type MessageGroup = {
 
 export type Transaction = {
     at: Date
-    to: User
-    from: User
+    to: string
+    from: string
     amount: number
     note: string
 }

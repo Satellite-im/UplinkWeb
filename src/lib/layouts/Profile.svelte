@@ -9,12 +9,11 @@
 
     export let user: User | null = null
 
-    let friends: User[] = get(Store.state.friends)
-    $: friends = get(Store.state.friends)
+    $: friends = Store.state.friends
     $: currentUserShortId = get(Store.state.user)?.id.short
 
     function isFriended(targetUser: User) {
-        return friends.some(friend => friend.id.short === targetUser.id.short)
+        return $friends.some(friend => friend === targetUser.key)
     }
 
     let note: string = user ? new Notes().get(user?.name) : ""
