@@ -23,9 +23,6 @@ export function createSessionState<T>(key: string, defaultState: T, serializer: 
     const state = writable(defaultState)
     let value = sessionStorage.getItem(key)
     if (value) state.set(deserializer(value))
-    state.subscribe(value => {
-        console.log("sessiong update ", value, serializer(value))
-        sessionStorage.setItem(key, serializer(value))
-    })
+    state.subscribe(value => sessionStorage.setItem(key, serializer(value)))
     return state
 }

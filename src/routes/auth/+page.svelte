@@ -18,6 +18,7 @@
     initLocale()
 
     function exist() {
+        TesseractStoreInstance.initTesseract()
         return TesseractStoreInstance.exists()
     }
 
