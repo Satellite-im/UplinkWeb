@@ -58,6 +58,11 @@ jobs:
     playwright-run:
         timeout-minutes: 60
         runs-on: macos-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
         steps:
             - name: Checkout Uplink Web directory 🔖
               uses: actions/checkout@v4
@@ -97,6 +102,7 @@ jobs:
             - uses: daun/playwright-report-summary@v3
               if: always()
               with:
+                  github-token: ${{ secrets.github_token }}
                   report-file: ./report.json
                   job-summary: false
                   comment-title: "Automated Test Results"
