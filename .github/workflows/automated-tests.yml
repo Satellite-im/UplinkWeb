@@ -91,20 +91,15 @@ jobs:
               working-directory: automated-tests
               run: npx playwright test
 
-            - name: Generate Markdown Summary for Test Results
-              if: always()
-              working-directory: automated-tests
-              run: npx playwright show-report --output markdown > summary.md
+            - name: Copy json report to root directory
+              run: cp ./automated-tests/playwright-report/report.json ./report.json
 
-            - name: Add Test Results to Summary
+            - uses: daun/playwright-report-summary@v3
               if: always()
-              uses: actions/github-script@v6
               with:
-                  script: |
-                      const fs = require('fs');
-                      const summary = fs.readFileSync('automated-tests/summary.md', 'utf8');
-                      github.summary.addRaw(summary);
-                      github.summary.write();
+                  report-file: ./report.json
+                  job-summary: false
+                  comment-title: "Automated Test Results"
 
             - uses: actions/upload-artifact@v4
               if: always()
