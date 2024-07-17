@@ -81,7 +81,6 @@
     let samplePhrase = get(AuthStore.state).seedPhrase!
 
     let userReference: User = { ...get(Store.state.user) }
-    console.log("Profile Picture: ", userReference.profile.photo.image)
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
     onDestroy(() => {
