@@ -25,12 +25,17 @@
     import type { Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
+    import { log } from "$lib/utils/Logger"
 
     initLocale()
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let isContextMenuOpen: boolean = false
+    let isDraggingFromLocal = false
+    let filesCount = 0
+    let filesDraggingToUpload = []
+    $: isFadingOutDragDropOverlay = false
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
@@ -354,16 +359,50 @@
     function dragEnter(event: DragEvent) {
         event.preventDefault()
         dragging_files++
+        isDraggingFromLocal = true
+        filesCount = event.dataTransfer?.items.length || 0
+        isFadingOutDragDropOverlay = false
     }
 
-    function dragLeave() {
+    function dragLeave(event: DragEvent) {
+        event.preventDefault()
         dragging_files--
+        if (dragging_files === 0) {
+            isDraggingFromLocal = false
+            isFadingOutDragDropOverlay = true
+            setTimeout(() => {
+                isFadingOutDragDropOverlay = false
+            }, 300)
+        }
     }
 
-    function dragDrop(event: DragEvent) {
+    async function dragDrop(event: DragEvent) {
         event.preventDefault()
         dragging_files = 0
-        // upload files
+        isFadingOutDragDropOverlay = true
+        let filesToUpload = event.dataTransfer?.files
+        isDraggingFromLocal = false
+        filesCount = 0
+        if (filesToUpload) {
+            filesCount = filesToUpload.length
+            for (let i = 0; i < filesCount; i++) {
+                const file = filesToUpload[i]
+                console.log("file: ", file)
+                const stream = file.stream()
+                await uploadFilesFromDrop(file.name, stream, file.size)
+            }
+        }
+        getCurrentDirectoryFiles()
+        setTimeout(() => {
+            isFadingOutDragDropOverlay = false
+        }, 300)
+    }
+
+    async function uploadFilesFromDrop(name: string, stream: ReadableStream, size: number) {
+        let result = await ConstellationStoreInstance.uploadFilesFromStream(name, stream, size)
+        result.onFailure(err => {
+            Store.addToastNotification(new ToastMessage("", err, 2))
+        })
     }
 
     function onSearchEnter() {
@@ -476,6 +515,13 @@
     on:drop={e => {
         dragDrop(e)
     }}>
+    {#if isDraggingFromLocal || isFadingOutDragDropOverlay}
+        <div class="overlay {isFadingOutDragDropOverlay ? 'fade-out' : ''}">
+            <div class="upload-box">
+                <p>{filesCount > 1 ? $_('files.dragging_files').replace('{count}', filesCount.toString()) : $_('files.dragging_file')}</p>
+            </div>
+        </div>
+    {/if}
     <!-- Modals -->
     {#if previewImage}
         <Modal
@@ -739,6 +785,53 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+
+            &.fade-out {
+                animation: fadeOut 0.3s backwards;
+            }
+        }
+
+        .upload-box {
+            background: var(--primary-color);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: scale(0.5);
+            animation: scaleUp 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+            opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+            opacity: 0;
+            }
+        }
+
+        @keyframes scaleUp {
+            to {
+            transform: scale(1);
+            }
+        }
 
         .stat {
             padding: 0 var(--padding-less);
