@@ -97,9 +97,9 @@ class ConstellationStore {
      */
     async dropIntoFolder(fileName: string, toFolderName: string): Promise<Result<WarpError, void>> {
         const constellation = get(this.constellationWritable)
-        let currentDir = constellation!.current_directory()
         if (constellation) {
             try {
+                let currentDir = constellation!.current_directory()
                 currentDir.move_item_to(fileName, toFolderName)
                 return success(undefined)
             } catch (error) {
