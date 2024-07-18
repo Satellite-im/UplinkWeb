@@ -243,7 +243,7 @@
         flex-direction: column;
         gap: 1rem;
         height: var(--emoji-selector-height);
-        // width: calc(var(--min-component-width) * 2);
+        max-width: calc(var(--min-component-width) * 2);
 
         .search-bar {
             position: sticky;

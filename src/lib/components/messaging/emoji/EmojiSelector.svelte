@@ -208,7 +208,7 @@
         display: flex;
         flex-direction: column;
         height: var(--emoji-selector-height);
-        width: calc(var(--emoji-selector-width) * 2);
+        max-width: calc(var(--min-component-width) * 2);
 
         .input-group {
             display: flex;
@@ -259,6 +259,7 @@
             overflow-y: scroll;
             overflow-x: hidden;
             padding-right: calc(var(--gap-less) * 0.5vw);
+            max-width: calc(var(--min-component-width) * 2);
 
             section {
                 margin-bottom: 1rem;
