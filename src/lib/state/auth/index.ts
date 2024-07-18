@@ -6,6 +6,7 @@ export type Authentication = {
     pin: string
     scramblePin: boolean
     stayLoggedIn: boolean
+    seedPhrase?: string[]
 }
 
 class Auth {
@@ -36,6 +37,13 @@ class Auth {
     setStayLogged(stayLoggedIn: boolean) {
         this.state.update(auth => {
             auth.stayLoggedIn = stayLoggedIn
+            return auth
+        })
+    }
+
+    setSeedPhrase(seedPhrase: string[]) {
+        this.state.update(auth => {
+            auth.seedPhrase = seedPhrase
             return auth
         })
     }
