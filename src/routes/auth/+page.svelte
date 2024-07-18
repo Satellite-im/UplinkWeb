@@ -25,6 +25,7 @@
     let currentPage: LoginPage = exist() ? LoginPage.Pin : LoginPage.EntryPoint
     let username: string = ""
     let statusMessage: string = ""
+    let profilePicture: string = ""
     let phrase: string[] = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
     async function auth(pin: string) {
@@ -46,13 +47,14 @@
             async (_: any) => {
                 if (username === "") return
                 AuthStore.setStoredPin(pin)
-                let pass = await MultipassStoreInstance.createIdentity(username, statusMessage)
+                let pass = await MultipassStoreInstance.createIdentity(username, statusMessage, profilePicture)
                 pass.fold(
                     (e: WarpError) => {
                         log.error("Error creating identity: " + e)
                     },
                     pass => {
                         phrase = pass.split(" ")
+                        AuthStore.setSeedPhrase(phrase)
                         currentPage = LoginPage.RecoveryCopy
                     }
                 )
@@ -74,6 +76,7 @@
             async (identity: Identity) => {
                 AuthStore.logIn(true)
                 Store.setUserFromIdentity(identity!)
+                Store.setPhoto(profilePicture)
                 await new Promise(resolve => setTimeout(resolve, 1000))
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 goto(Route.Chat)
@@ -85,7 +88,7 @@
 {#if currentPage == LoginPage.EntryPoint}
     <Entrypoint bind:page={currentPage} />
 {:else if currentPage == LoginPage.Username}
-    <NewAccount bind:page={currentPage} bind:username={username} bind:statusMessage={statusMessage} />
+    <NewAccount bind:page={currentPage} bind:username={username} bind:statusMessage={statusMessage} bind:profilePicture={profilePicture} />
 {:else if currentPage == LoginPage.Pin}
     <Unlock
         create={!exist()}

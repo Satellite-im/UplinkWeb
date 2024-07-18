@@ -58,6 +58,11 @@ jobs:
     playwright-run:
         timeout-minutes: 60
         runs-on: macos-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
         steps:
             - name: Checkout Uplink Web directory 🔖
               uses: actions/checkout@v4
@@ -90,6 +95,17 @@ jobs:
             - name: Run Playwright tests
               working-directory: automated-tests
               run: npx playwright test
+
+            - name: Copy json report to root directory
+              run: cp ./automated-tests/playwright-report/report.json ./report.json
+
+            - uses: daun/playwright-report-summary@v3
+              if: always()
+              with:
+                  github-token: ${{ secrets.github_token }}
+                  report-file: ./report.json
+                  job-summary: false
+                  comment-title: "Automated Test Results"
 
             - uses: actions/upload-artifact@v4
               if: always()

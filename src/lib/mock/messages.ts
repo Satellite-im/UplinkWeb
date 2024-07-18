@@ -52,7 +52,7 @@ export let mock_messages: MessageGroup[] = [
                     {
                         kind: MessageAttachmentKind.Image,
                         name: "Library.avif",
-                        location: "/assets/library.avif",
+                        location: "/assets/mock/library.avif",
                         size: 1291235,
                     },
                     {

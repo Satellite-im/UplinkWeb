@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
+    import { Appearance, Integrations, Route, Shape, Size, Status } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
     import { Store } from "$lib/state/Store"
-    import type { ContextItem, User } from "$lib/types"
+    import type { Integration, User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { get } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -18,6 +18,9 @@
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
     import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
+    import { INTEGRATIONS } from "$lib/config"
+    import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
+    import { SettingsStore } from "$lib/state"
 
     initLocale()
 
@@ -76,7 +79,7 @@
         isValidUsernameToUpdate = false
     }
 
-    let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
+    let samplePhrase = get(AuthStore.state).seedPhrase!
 
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
@@ -135,6 +138,52 @@
             await navigator.clipboard.writeText(`${userReference.key}`)
         }
     }
+
+    let selectedIntegration: Integration = { kind: Integrations.Generic, location: "", meta: "" }
+    let showEditIntegrations = writable(false)
+    let editIndex: number | null = null
+
+    function addIntegration() {
+        if (selectedIntegration.kind && selectedIntegration.location) {
+            let currentIntegrations = get(Store.state.user).integrations || []
+            const updatedIntegrations = [...currentIntegrations, { ...selectedIntegration }]
+            Store.setIntegrations(updatedIntegrations)
+            selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
+            showEditIntegrations.set(false)
+        }
+    }
+
+    function startEditingIntegration(index: number) {
+        editIndex = index
+        let integration = get(Store.state.user).integrations[index]
+        selectedIntegration = { ...integration }
+        showEditIntegrations.set(true)
+    }
+
+    function saveEditedIntegration() {
+        if (selectedIntegration.kind && selectedIntegration.location && editIndex !== null) {
+            let currentIntegrations = get(Store.state.user).integrations || []
+            currentIntegrations[editIndex] = { ...selectedIntegration }
+            Store.setIntegrations(currentIntegrations)
+            selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
+            editIndex = null
+            showEditIntegrations.set(false)
+        }
+    }
+
+    function removeIntegration(index: number) {
+        let currentIntegrations = get(Store.state.user).integrations || []
+        currentIntegrations.splice(index, 1)
+        Store.setIntegrations(currentIntegrations)
+    }
+
+    $: integrationOptions = [
+        ...Object.keys(INTEGRATIONS)
+            // @ts-ignore
+            .map(int => ({ text: INTEGRATIONS[int].name, value: INTEGRATIONS[int].name }))
+            .filter(option => !get(Store.state.user).integrations.some(integration => integration.kind === option.value)),
+        ...(editIndex !== null ? [{ text: INTEGRATIONS[selectedIntegration.kind].name, value: selectedIntegration.kind }] : []),
+    ]
 </script>
 
 <div id="page">
@@ -334,6 +383,64 @@
                 </SettingSection>
             </div>
 
+            {#if get(SettingsStore.state).devmode}
+                <div class="section integrations">
+                    <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
+                    <Text>{$_("settings.profile.integration.description")}</Text>
+                    <div class="active">
+                        {#each user.integrations as integration, index}
+                            <div class="integration-item">
+                                <IntegrationDisplay integration={integration} />
+                                <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(index)}>
+                                    <Icon icon={Shape.Pencil} />
+                                </Button>
+                                <Button appearance={Appearance.Error} icon on:click={() => removeIntegration(index)}>
+                                    <Icon icon={Shape.XMark} />
+                                </Button>
+                            </div>
+                        {/each}
+                    </div>
+
+                    {#if $showEditIntegrations}
+                        <Label text={editIndex !== null ? "Edit Integration" : "Add New"} />
+
+                        <div class="add">
+                            <div class="left">
+                                <Label text="Platform" />
+                                <Select alt options={integrationOptions} bind:selected={selectedIntegration.kind} />
+                            </div>
+                            <img class="integration-logo" src="/assets/brand/{selectedIntegration.kind}.png" alt="Platform Logo" />
+                            <div class="right">
+                                <Label text="Address" />
+                                <Input alt bind:value={selectedIntegration.location} />
+                            </div>
+
+                            <Button text={editIndex !== null ? "Save" : "Add"} on:click={editIndex !== null ? saveEditedIntegration : addIntegration}>
+                                <Icon icon={editIndex !== null ? Shape.CheckMark : Shape.Plus} />
+                            </Button>
+                            <Button
+                                text="Cancel"
+                                appearance={Appearance.Alt}
+                                on:click={_ => {
+                                    showEditIntegrations.set(false)
+                                    selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
+                                    editIndex = null
+                                }}>
+                                <Icon icon={Shape.XMark} />
+                            </Button>
+                        </div>
+                    {:else}
+                        <Button
+                            text="Add"
+                            on:click={_ => {
+                                showEditIntegrations.set(true)
+                            }}>
+                            <Icon icon={Shape.Plus} />
+                        </Button>
+                    {/if}
+                </div>
+            {/if}
+
             <div class="section">
                 <SettingSection hook="section-reveal-phrase" name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
                     <Button
@@ -410,7 +517,7 @@
             .content {
                 display: inline-flex;
                 flex-direction: column;
-                gap: var(--gap);
+                gap: calc(var(--gap) * 2);
                 width: 100%;
             }
 
@@ -423,6 +530,46 @@
                 flex-wrap: wrap;
                 align-items: center;
                 flex: 1;
+            }
+
+            .add {
+                width: 100%;
+                flex: 1;
+                display: inline-flex;
+                gap: var(--gap);
+                align-items: flex-end;
+                background-color: var(--background-alt);
+                padding: var(--padding);
+                border-radius: var(--border-radius);
+                border: var(--border-width) solid var(--primary-color);
+
+                .integration-logo {
+                    width: var(--input-height);
+                    height: var(--input-height);
+                }
+
+                .right {
+                    flex: 1;
+                }
+            }
+
+            .integrations {
+                display: inline-flex;
+                flex-direction: column;
+                align-items: flex-start;
+
+                .integration-item {
+                    display: inline-flex;
+                    align-items: flex-end;
+                    gap: var(--gap);
+                }
+                .active {
+                    flex: 1;
+                    display: inline-flex;
+                    flex-direction: column;
+                    width: 100%;
+                    gap: var(--gap);
+                }
             }
 
             .username-section {

@@ -112,7 +112,7 @@ class MultipassStore {
      * @param passphrase - The passphrase for the new identity (optional).
      * @returns A Result containing either a passphrase assigned to the identity or a failure with a WarpError.
      */
-    async createIdentity(username: string, statusMessage: string): Promise<Result<WarpError, string>> {
+    async createIdentity(username: string, statusMessage: string, profilePicture: string): Promise<Result<WarpError, string>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
@@ -124,6 +124,9 @@ class MultipassStore {
                         statusMessage = statusMessage.substring(0, MAX_STATUS_MESSAGE_LENGTH)
                     }
                     await this.updateStatusMessage(statusMessage)
+                }
+                if (profilePicture.length > 0) {
+                    await this.updateProfilePhoto(profilePicture)
                 }
                 const identity = get(this.identity)
                 log.info(`New account created. \n
