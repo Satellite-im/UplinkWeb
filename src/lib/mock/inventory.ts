@@ -84,5 +84,5 @@ export let mock_frames: Frame[] = [
     {
         image: "/assets/frames/gems.png",
         name: "Gems",
-    }
+    },
 ]

@@ -12,41 +12,41 @@ export const INTEGRATIONS = {
     [Integrations.Generic]: {
         name: Integrations.Generic,
         icon: Shape.Hashtag,
-        display: IntegrationDisplays.Text
+        display: IntegrationDisplays.Text,
     },
     [Integrations.BTC]: {
         name: Integrations.BTC,
         icon: Shape.Beaker,
-        display: IntegrationDisplays.WalletAddress
+        display: IntegrationDisplays.WalletAddress,
     },
     [Integrations.ETH]: {
         name: Integrations.ETH,
         icon: Shape.Beaker,
-        display: IntegrationDisplays.WalletAddress
+        display: IntegrationDisplays.WalletAddress,
     },
     [Integrations.SOL]: {
         name: Integrations.SOL,
         icon: Shape.Beaker,
-        display: IntegrationDisplays.WalletAddress
+        display: IntegrationDisplays.WalletAddress,
     },
     [Integrations.Twitch]: {
         name: Integrations.Twitch,
         icon: Shape.Beaker,
-        display: IntegrationDisplays.URL
+        display: IntegrationDisplays.URL,
     },
     [Integrations.YouTube]: {
         name: Integrations.YouTube,
         icon: Shape.Beaker,
-        display: IntegrationDisplays.URL
+        display: IntegrationDisplays.URL,
     },
     [Integrations.Steam]: {
         name: Integrations.Steam,
         icon: Shape.Beaker,
-        display: IntegrationDisplays.URL
+        display: IntegrationDisplays.URL,
     },
     [Integrations.Spotify]: {
         name: Integrations.Spotify,
         icon: Shape.Beaker,
-        display: IntegrationDisplays.URL
-    }
+        display: IntegrationDisplays.URL,
+    },
 }

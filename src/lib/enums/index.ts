@@ -177,12 +177,12 @@ export enum Integrations {
     Spotify = "Spotify",
     BTC = "Bitcoin",
     ETH = "Ethereum",
-    SOL = "Solana"
+    SOL = "Solana",
 }
 
 export enum IntegrationDisplays {
     Text,
     WalletAddress,
     URL,
-    ApplicationURI
+    ApplicationURI,
 }

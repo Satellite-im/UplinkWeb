@@ -53,7 +53,6 @@ export type SimpleRoute = {
     icon: Shape
 }
 
-
 export let defaultProfileData = {
     photo: { image: "", frame: { name: "", image: "" } },
     banner: { image: "", overlay: "" },
@@ -64,7 +63,6 @@ export let defaultProfileData = {
 export type Id = {
     short: string
 }
-
 
 export type ProfilePicture = {
     image: string
@@ -112,7 +110,7 @@ export let defaultUser: User = {
         is_streaming_video: false,
         is_playing_audio: false,
     },
-    integrations: []
+    integrations: [],
 }
 
 export type ChatSettings = {
@@ -336,7 +334,7 @@ export type StickerCollection = {
 export type StickerManifest = StickerCollection[]
 
 export type Integration = {
-    kind: Integrations,
-    location: string,
+    kind: Integrations
+    location: string
     meta: any
 }
