@@ -103,7 +103,7 @@ export let defaultSettings = {
         settings: true,
     },
     gamepad: {
-        enabled: true
+        enabled: true,
     },
     devmode: false,
 }

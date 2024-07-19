@@ -40,12 +40,12 @@
 </script>
 
 {#if isSupportedBrowser}
-<div class="memory-indicator">
-    <div class="memory-bar">
-        <div class="memory-level" style="width: {($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100}%;"></div>
+    <div class="memory-indicator">
+        <div class="memory-bar">
+            <div class="memory-level" style="width: {($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100}%;"></div>
+        </div>
+        {(($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100).toFixed(0)}%
     </div>
-    {(($memoryStatus.usedJSHeapSize / $memoryStatus.totalJSHeapSize) * 100).toFixed(0)}%
-</div>
 {:else}
     <div>
         {$_("settings.developer.browserNotSupportedError")}
