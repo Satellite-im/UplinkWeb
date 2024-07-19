@@ -141,12 +141,13 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     async function checkIfUserIsLogged() {
+        console.log("Checking if user is logged")
         await TesseractStoreInstance.initTesseract()
         let authentication = await AuthStore.getAuthentication()
         if (authentication.pin === "") {
             log.info("No pin stored, redirecting to unlock")
             goto(Route.Unlock)
-        } else if ($page.route.id !== Route.Unlock) {
+        } else if ($page.route.id !== Route.Unlock && !authentication.stayLoggedIn) {
             // We need to find a better way of handling it so the password doesnt get stored
             // But for now: dont login if the user is on the login page
             let logged_in = get(AuthStore.loggedIn)
@@ -163,6 +164,17 @@
                     setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 })
             }
+        } else if ($page.route.id === Route.Unlock && authentication.stayLoggedIn) {
+            log.info("Stay logged in, unlocking")
+            let addressed = Object.values(get(RelayStore.state))
+                .filter(r => r.active)
+                .map(r => r.address)
+            await WarpStore.initWarpInstances(addressed)
+            let result = await TesseractStoreInstance.unlock(authentication.pin)
+            result.onSuccess(() => {
+                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
+            })
+            goto(Route.Chat)
         }
     }
 
