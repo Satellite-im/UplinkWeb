@@ -410,7 +410,7 @@
     async function uploadFilesFromDrop(name: string, stream: ReadableStream, size: number) {
         let result = await ConstellationStoreInstance.uploadFilesFromStream(name, stream, size)
         result.onFailure(err => {
-            Store.addToastNotification(new ToastMessage("", err, 2))
+            Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
         })
     }
 
@@ -439,7 +439,7 @@
                 }) 
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
                 result.onFailure(err => {
-                    Store.addToastNotification(new ToastMessage("", err, 2))
+                    Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
                 })
             }
         }

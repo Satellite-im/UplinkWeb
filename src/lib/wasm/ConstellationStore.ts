@@ -49,6 +49,11 @@ class ConstellationStore {
      * @returns A Result containing either success or failure with a WarpError.
      */
     async uploadFilesFromStream(file_name: string, stream: ReadableStream<any>, total_size: number | undefined): Promise<Result<WarpError, void>> {
+        console.log("total_size: ", total_size)
+        if (total_size !== undefined && total_size > 104857600) {
+            console.log("ERROR: File size exceeded")
+            return failure(WarpError.FILE_SIZE_EXCEEDED)
+        }
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
