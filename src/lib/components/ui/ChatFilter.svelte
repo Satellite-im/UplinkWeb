@@ -9,27 +9,27 @@
     import { UIStore } from "$lib/state/ui"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { goto } from "$app/navigation"
+    import StoreResolver from "../utils/StoreResolver.svelte"
 
     initLocale()
 
     export let filter: string
 
     let loading = false
-    let chats: Chat[] = get(UIStore.state.chats)
-    let friends: User[] = get(Store.state.friends)
-    UIStore.state.chats.subscribe(c => (chats = c))
-    Store.state.friends.subscribe(f => (friends = f))
+    $: chats = UIStore.state.chats
+    $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
+    $: friends = Store.getUsers(Store.state.friends)
 
     let searched_chats: [Chat, string, User[]][] = []
     let searched_friends: [User, Chat | undefined][] = []
 
     export function filter_chat() {
         if (filter) {
-            searched_chats = chats
+            searched_chats = $chats
                 .filter(c => c.kind == ChatType.Group)
-                .map<[Chat, string, User[]]>(c => [c, get_chat_name(c), c.users.filter(u => u.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()))])
+                .map<[Chat, string, User[]]>(c => [c, get_chat_name(c), c.users.map(user => $userCache[user]).filter(u => u.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()))])
                 .filter(entry => entry[1].toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()) || entry[2].length > 0)
-            searched_friends = friends.filter(f => f.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase())).map(f => [f, chats.find(c => c.kind == ChatType.DirectMessage && c.users[0].id === f.id)])
+            searched_friends = $friends.filter(f => f.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase())).map(f => [f, $chats.find(c => c.kind == ChatType.DirectMessage && c.users[0] === f.key)])
         } else {
             searched_chats = []
             searched_friends = []
@@ -45,13 +45,16 @@
     }
 
     function is_friend_typing(friend: User) {
-        let dm = chats.find(c => c.kind === ChatType.DirectMessage && c.users[0].id === friend.id)
+        let dm = $chats.find(c => c.kind === ChatType.DirectMessage && c.users[0] === friend.key)
         return dm && dm.activity
     }
 
     function get_chat_name(chat: Chat): string {
         if (chat.name) return chat.name
-        return chat.users.map(u => u.name).join(", ")
+        return chat.users
+            .map(user => Store.getUser(user))
+            .map(u => get(u).name)
+            .join(", ")
     }
 
     async function select_chat(chat: Chat | undefined, user: User | undefined) {
@@ -109,9 +112,15 @@
                     <div class="group" role="none" on:click={() => select_chat(chat, undefined)}>
                         <div class="profile-picture-wrap">
                             {#if chat.users.length === 2}
-                                <ProfilePicture typing={chat.activity} image={chat.users[0].profile.photo.image} status={chat.users[0].profile.status} size={Size.Medium} loading={loading} frame={chat.users[0].profile.photo.frame} />
+                                <ProfilePicture
+                                    typing={chat.activity}
+                                    image={$userCache[chat.users[0]].profile.photo.image}
+                                    status={$userCache[chat.users[0]].profile.status}
+                                    size={Size.Medium}
+                                    loading={loading}
+                                    frame={$userCache[chat.users[0]].profile.photo.frame} />
                             {:else}
-                                <ProfilePictureMany users={chat.users} />
+                                <ProfilePictureMany users={chat.users.map(u => $userCache[u])} />
                             {/if}
                         </div>
                         {#if name.startsWith(filter.toLocaleLowerCase())}

@@ -168,3 +168,21 @@ export enum CommunityChannelKind {
     Files,
     Bot,
 }
+
+export enum Integrations {
+    Generic = "Generic",
+    Twitch = "Twitch.tv",
+    YouTube = "YouTube",
+    Steam = "Steam",
+    Spotify = "Spotify",
+    BTC = "Bitcoin",
+    ETH = "Ethereum",
+    SOL = "Solana",
+}
+
+export enum IntegrationDisplays {
+    Text,
+    WalletAddress,
+    URL,
+    ApplicationURI,
+}

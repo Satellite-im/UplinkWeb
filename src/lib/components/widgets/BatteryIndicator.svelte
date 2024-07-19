@@ -54,17 +54,17 @@
 </script>
 
 {#if isSupportedBrowser}
-<div class="battery-indicator">
-    <div class="battery-icon">
-        <div class="battery-level" class:medium={$batteryStatus.level <= 0.5 && $batteryStatus.level > 0.2} class:low={$batteryStatus.level <= 0.2} style="width: {$batteryStatus.level * 100}%;"></div>
-    </div>
-    {#if $batteryStatus.charging}
-        <div class="charge-indicator">
-            <Icon icon={Shape.LightningBolt} />
+    <div class="battery-indicator">
+        <div class="battery-icon">
+            <div class="battery-level" class:medium={$batteryStatus.level <= 0.5 && $batteryStatus.level > 0.2} class:low={$batteryStatus.level <= 0.2} style="width: {$batteryStatus.level * 100}%;"></div>
         </div>
-    {/if}
-    {($batteryStatus.level * 100).toFixed()}%
-</div>
+        {#if $batteryStatus.charging}
+            <div class="charge-indicator">
+                <Icon icon={Shape.LightningBolt} />
+            </div>
+        {/if}
+        {($batteryStatus.level * 100).toFixed()}%
+    </div>
 {:else}
     <div>
         {$_("settings.developer.browserNotSupportedError")}

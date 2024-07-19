@@ -13,14 +13,30 @@ class ExternalWallets {
     eth: Eth = new Eth()
 
     sol: Sol = new Sol()
+
+    scan_for_addr(str: string): string[] {
+        let addresses: string[] = []
+        let split = str.split(" ")
+        split.forEach(value => {
+            if (value.startsWith("btc:")) {
+                addresses.push(value.substring(4))
+            }
+        })
+        return addresses
+    }
+    shorten_addr(str: string, num_chars: number): string {
+        let start = str.substring(0, num_chars)
+        let end = str.substring(str.length - num_chars)
+        return start + ".." + end
+    }
 }
 
 class Btc {
     async get_accounts(): Promise<Account[]> {
-        const provider = await Wallet.request('getAccounts', {
-            purposes: [AddressPurpose.Payment]
-        });
-        if (provider.status !== 'success') {
+        const provider = await Wallet.request("getAccounts", {
+            purposes: [AddressPurpose.Payment],
+        })
+        if (provider.status !== "success") {
             console.error("failed to get accounts")
             return []
         }
@@ -39,7 +55,7 @@ class Btc {
                         amount: Number(amount),
                     },
                 ],
-            });
+            })
             console.log(response)
             if (response.status === "success") {
                 console.log("success")
@@ -58,13 +74,9 @@ class Btc {
     }
 }
 
-class Eth {
+class Eth {}
 
-}
-
-class Sol {
-
-}
+class Sol {}
 
 export class PayRequest {
     amount: number

@@ -68,6 +68,8 @@ export function initLocale() {
                 new_folder: "New Folder",
                 upload: "Upload",
                 add_files: "Drop files to upload here",
+                dragging_file: "Dragging 1 file for upload",
+                dragging_files: "Dragging {count} files for upload",
             },
             payments: {
                 send_coin: "Send Coin",
@@ -132,6 +134,10 @@ export function initLocale() {
                     update: "Profile Updated!",
                     copy_id: "Copy ID",
                     copy_did: "Copy DID",
+                    integration: {
+                        title: "Accounts",
+                        description: "Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.",
+                    },
                 },
                 notifications: {
                     enabled: "Enabled",
@@ -206,8 +212,8 @@ export function initLocale() {
                 },
                 gamepad: {
                     enabled: "Gamepad Enabled",
-                    enabledDescription: "Enable gamepad support for navigating the application with controllers."
-                }
+                    enabledDescription: "Enable gamepad support for navigating the application with controllers.",
+                },
             },
         },
     })

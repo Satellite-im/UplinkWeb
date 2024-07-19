@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations } from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
 import type { Writable } from "svelte/store"
 
@@ -53,7 +53,6 @@ export type SimpleRoute = {
     icon: Shape
 }
 
-
 export let defaultProfileData = {
     photo: { image: "", frame: { name: "", image: "" } },
     banner: { image: "", overlay: "" },
@@ -64,7 +63,6 @@ export let defaultProfileData = {
 export type Id = {
     short: string
 }
-
 
 export type ProfilePicture = {
     image: string
@@ -97,6 +95,7 @@ export type User = {
     name: string
     profile: ProfileData
     media: MediaMeta
+    integrations: Integration[]
 }
 
 export let defaultUser: User = {
@@ -111,6 +110,7 @@ export let defaultUser: User = {
         is_streaming_video: false,
         is_playing_audio: false,
     },
+    integrations: [],
 }
 
 export type ChatSettings = {
@@ -135,10 +135,10 @@ export type Chat = {
     motd: string
     kind: ChatType
     settings: ChatSettings
-    creator?: User
+    creator?: string
     notifications: number
     activity: boolean
-    users: User[]
+    users: string[]
     typing_indicator: { [key: string]: Date }
     last_message_at: Date
     last_message_preview: string
@@ -159,7 +159,7 @@ export function hashChat(chat: Chat): string {
     const dataString =
         chat.name +
         chat.users
-            .map(user => user.name)
+            .map(user => user)
             .sort()
             .join("")
 
@@ -237,13 +237,13 @@ export type Attachment = {
 export type FriendRequest = {
     at: Date
     direction: MessageDirection
-    to: User
-    from: User
+    to: string
+    from: string
 }
 
 export type MessageDetails = {
     at: Date
-    origin: User
+    origin: string
     remote: boolean
 }
 
@@ -293,8 +293,8 @@ export type MessageGroup = {
 
 export type Transaction = {
     at: Date
-    to: User
-    from: User
+    to: string
+    from: string
     amount: number
     note: string
 }
@@ -332,3 +332,9 @@ export type StickerCollection = {
 }
 
 export type StickerManifest = StickerCollection[]
+
+export type Integration = {
+    kind: Integrations
+    location: string
+    meta: any
+}

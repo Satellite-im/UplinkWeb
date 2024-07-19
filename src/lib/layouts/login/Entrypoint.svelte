@@ -59,8 +59,9 @@
         <Text hook="text-create-description">
             {$_("pages.auth.create.description")}
         </Text>
-        <Controls>
-            <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Success} />
+        <Spacer />
+        <Controls breakpoint={1000}>
+            <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} />
             <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} />
         </Controls>
     </div>
@@ -99,6 +100,14 @@
             flex-direction: column;
             width: 40%;
             gap: var(--gap);
+            background-color: var(--background-alt);
+            border-radius: var(--border-radius);
+            padding: var(--padding);
+            border: var(--border-width) solid var(--border-color);
+
+            .create-content {
+                text-align: center;
+            }
 
             :global(.controls) {
                 align-self: center;
