@@ -719,16 +719,6 @@
                         {prettyBytes(13223423884917234002)}
                     </Text>
                 </button>
-                <button class="stat">
-                    <Label text="Sync Size" /><Text singleLine>
-                        {prettyBytes(38481083182)}
-                    </Text>
-                </button>
-                <button class="stat">
-                    <Label text="Shuttle" /><Text singleLine>
-                        {prettyBytes(12345344)}
-                    </Text>
-                </button>
             </div>
             <svelte:fragment slot="controls">
                 <Button hook="button-new-folder" appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
