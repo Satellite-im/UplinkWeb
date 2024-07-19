@@ -92,6 +92,7 @@
 
     $: chats = UIStore.state.chats
     $: pendingMessages = Object.values(ConversationStore.getPendingMessages($activeChat))
+    $: activeCall = Store.state.activeCall
 
     function dragEnter(event: DragEvent) {
         event.preventDefault()
@@ -349,7 +350,13 @@
             </div>
             <svelte:fragment slot="controls">
                 <CoinBalance balance={0.0} />
-                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button
+                    icon
+                    appearance={Appearance.Alt}
+                    disabled={$activeChat.users.length === 0}
+                    on:click={_ => {
+                        Store.setActiveCall($activeChat)
+                    }}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
                 <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
@@ -395,7 +402,7 @@
             </svelte:fragment>
         </Topbar>
 
-        {#if get(Store.state.activeCall)}
+        {#if $activeCall && $activeCall.chat.id === $activeChat.id}
             <CallScreen />
         {/if}
 

@@ -11,10 +11,37 @@
     initLocale()
 
     export let loading: boolean = false
-    export let duration: Date = new Date()
+    export let duration: Date = get(Store.state.activeCall)?.startedAt || new Date()
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let settings: ISettingsState = get(SettingsStore.state)
+
+    let elapsedTime: string = "00:00:00"
+
+    function updateElapsedTime() {
+        const now = new Date()
+        const diff = now.getTime() - new Date(duration).getTime()
+
+        const hours = Math.floor(diff / (1000 * 60 * 60))
+            .toString()
+            .padStart(2, "0")
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+            .toString()
+            .padStart(2, "0")
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+            .toString()
+            .padStart(2, "0")
+
+        elapsedTime = `${hours}:${minutes}:${seconds}`
+    }
+
+    const interval = setInterval(updateElapsedTime, 1000)
+
+    // Cleanup interval on destroy
+    import { onDestroy } from "svelte"
+    onDestroy(() => {
+        clearInterval(interval)
+    })
 
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
@@ -26,7 +53,7 @@
         <div class="info">
             <Label text={$_("call.in_call")} />
             <Text appearance={Appearance.Success} loading={loading}>
-                {duration.toISOString().substring(11, 19)}
+                {elapsedTime}
             </Text>
         </div>
     {/if}
@@ -52,7 +79,14 @@
             }}>
             <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
         </Button>
-        <Button text={$_("call.end")} tooltip={$_("call.end")} appearance={Appearance.Error} loading={loading}>
+        <Button
+            text={$_("call.end")}
+            tooltip={$_("call.end")}
+            appearance={Appearance.Error}
+            loading={loading}
+            on:click={_ => {
+                Store.endCall()
+            }}>
             <Icon icon={Shape.PhoneXMark} />
         </Button>
     </Controls>

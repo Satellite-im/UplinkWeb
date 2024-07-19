@@ -70,26 +70,26 @@ class GlobalStore {
     setStatusMessage(message: string) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status_message: message,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status_message: message,
+                },
+            })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-                (u = {
-                    ...u,
-                    profile: {
-                        ...u.profile,
-                        status: status,
-                    },
-                })
+            (u = {
+                ...u,
+                profile: {
+                    ...u.profile,
+                    status: status,
+                },
+            })
         )
     }
 
@@ -161,6 +161,18 @@ class GlobalStore {
     }
     updateFolderTree(newFolderTree: Record<string, boolean>) {
         this.state.openFolders.set(newFolderTree)
+    }
+
+    setActiveCall(chat: Chat) {
+        this.state.activeCall.set({
+            chat: chat,
+            startedAt: new Date(),
+            inCall: true
+        })
+    }
+
+    endCall() {
+        this.state.activeCall.set(null)
     }
 
     addFriend(user: string) {
