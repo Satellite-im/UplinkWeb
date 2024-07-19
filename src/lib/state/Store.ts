@@ -70,26 +70,26 @@ class GlobalStore {
     setStatusMessage(message: string) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status_message: message,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status_message: message,
+                    },
+                })
         )
     }
 
     setActivityStatus(status: Status) {
         this.state.user.update(
             u =>
-            (u = {
-                ...u,
-                profile: {
-                    ...u.profile,
-                    status: status,
-                },
-            })
+                (u = {
+                    ...u,
+                    profile: {
+                        ...u.profile,
+                        status: status,
+                    },
+                })
         )
     }
 
@@ -248,6 +248,7 @@ class GlobalStore {
             })
             cache[did] = create
             this.state.userCache.set(cache)
+            return create
         }
         return cached
     }
