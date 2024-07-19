@@ -1,10 +1,14 @@
 <script lang="ts">
-    import jazzicon from "@metamask/jazzicon"
-    import { onMount } from "svelte"
+    import { onDestroy, onMount } from "svelte"
     import { createEventDispatcher } from "svelte"
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from "$lib/elements"
     import type { Frame } from "$lib/types"
+    import { createAvatar } from "@dicebear/core"
+    import { getIdenticonGenerator } from "$lib/utils/ProfileUtils"
+    import { get } from "svelte/store"
+    import { SettingsStore } from "$lib/state"
+
     let tempCDN: string = "https://cdn.deepspaceshipping.co"
 
     export let image: string = ""
@@ -19,9 +23,11 @@
     export let hook: string = ""
     export let id: string = ""
 
-    let identicon: string | HTMLElement = ""
+    let identiconSrc: string = ""
 
-    onMount(() => {
+    const updateIdenticon = () => {
+        let identiconStyle = get(SettingsStore.state).messaging.identiconStyle
+
         if (!image || image.length < 16) {
             let identiconSize: number
 
@@ -51,11 +57,35 @@
                     identiconSize = 100
             }
 
-            identicon = jazzicon(identiconSize, id).outerHTML
+            let generator = getIdenticonGenerator(identiconStyle)
+            // @ts-ignore
+            const svg = createAvatar(generator, {
+                seed: id,
+                size: identiconSize,
+                scale: 80,
+                backgroundType: ["solid"],
+            }).toString()
+
+            identiconSrc = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
         }
-    })
+    }
 
     const dispatch = createEventDispatcher()
+
+    onMount(() => {
+        updateIdenticon()
+    })
+
+    $: {
+        const unsubscribe = SettingsStore.state.subscribe(() => {
+            updateIdenticon()
+        })
+        onDestroy(() => {
+            unsubscribe()
+        })
+    }
+
+    $: id, updateIdenticon()
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -71,7 +101,7 @@
             <img data-cy="profile-image" class="profile-image" src={image} alt="" />
         {:else}
             <div class="identicon">
-                {@html identicon}
+                <img src={identiconSrc} alt="identicon" />
             </div>
         {/if}
     {/if}
@@ -187,7 +217,7 @@
             }
 
             &.offline {
-                background-color: var(--alt-color);
+                background-color: var (--alt-color);
             }
 
             &.do-not-disturb {
@@ -235,7 +265,7 @@
         }
 
         &.highlight-info {
-            border: var(--border-width-more) solid var(--info-color);
+            border: var(--border-width-more) solid var (--info-color);
         }
 
         &.highlight-warning {

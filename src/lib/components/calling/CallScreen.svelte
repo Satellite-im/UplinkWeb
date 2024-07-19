@@ -12,6 +12,8 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
+    import type { Chat } from "$lib/types"
+    import { UIStore } from "$lib/state/ui"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -22,6 +24,10 @@
 
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
+    export let chat: Chat
+
+    $: chats = UIStore.state.chats
+    $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
 
     Store.state.devices.muted.subscribe(state => {
         muted = state
@@ -33,19 +39,25 @@
 </script>
 
 <div id="call-screen" class={expanded ? "expanded" : ""}>
-    <Topbar simple>
-        <svelte:fragment slot="content">
-            <Text>Big Party Time</Text>
-            <Text muted size={Size.Smaller}>
-                ({mock_users.length}) users in the call
-            </Text>
-        </svelte:fragment>
-    </Topbar>
-    <div id="participants">
-        {#each mock_users as user}
-            <Participant participant={user} hasVideo={user.media.is_streaming_video} isMuted={user.media.is_muted} isDeafened={user.media.is_deafened} isTalking={user.media.is_playing_audio} />
-        {/each}
-    </div>
+    {#if chat}
+        <Topbar simple>
+            <svelte:fragment slot="content">
+                <Text muted size={Size.Smaller}>
+                    ({chat.users.length}) users in the call
+                </Text>
+            </svelte:fragment>
+        </Topbar>
+        <div id="participants">
+            {#each chat.users as user}
+                <Participant
+                    participant={$userCache[user]}
+                    hasVideo={$userCache[user].media.is_streaming_video}
+                    isMuted={$userCache[user].media.is_muted}
+                    isDeafened={$userCache[user].media.is_deafened}
+                    isTalking={$userCache[user].media.is_playing_audio} />
+            {/each}
+        </div>
+    {/if}
     <div class="toolbar">
         <Controls>
             <PopupButton
@@ -59,6 +71,9 @@
                 </svelte:fragment>
                 <CallSettings />
             </PopupButton>
+            <Button icon appearance={Appearance.Alt} outline tooltip={"Volume"} on:click={_ => {}}>
+                <Icon icon={Shape.SpeakerWaveMax} />
+            </Button>
         </Controls>
         <Controls>
             <Button
@@ -85,7 +100,7 @@
             <Button appearance={Appearance.Alt} icon tooltip="Enable Video">
                 <Icon icon={Shape.VideoCamera} />
             </Button>
-            <Button appearance={Appearance.Error} icon tooltip="End">
+            <Button appearance={Appearance.Error} icon tooltip="End" on:click={_ => Store.endCall()}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>
         </Controls>

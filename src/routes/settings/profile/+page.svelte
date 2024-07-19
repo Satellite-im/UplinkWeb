@@ -89,6 +89,7 @@
     })
 
     let user: User = get(Store.state.user)
+    let key: string = ""
     let activityStatus: Status = user.profile.status
 
     Store.state.user.subscribe(val => {
@@ -96,6 +97,7 @@
         userReference = { ...val }
         statusMessage = user.profile.status_message
         activityStatus = user.profile.status
+        key = user.key
     })
 
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
@@ -265,7 +267,7 @@
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture id={user.key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture id={key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}

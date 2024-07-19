@@ -199,6 +199,8 @@ export function initLocale() {
                     pick: "Pick",
                     customCss: "Custom CSS",
                     customCssDescription: "Add additional custom CSS to the application.",
+                    identiconStyle: "Default Profile Picture Style",
+                    identiconStyleDescription: "Change the style of the randomly generated profile pictures used when users haven't uploaded a profile picture yet."
                 },
                 licenses: {
                     description: "Both code and icons are under the MIT license.",

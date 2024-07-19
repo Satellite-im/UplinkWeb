@@ -186,3 +186,18 @@ export enum IntegrationDisplays {
     URL,
     ApplicationURI
 }
+
+export enum Identicon {
+    Identicon = "identicon",
+    Shapes = "shapes",
+    PixelArtNeutral = "pixelArtNeutral",
+    PixelArt = "pixelArt",
+    OpenPeeps = "openPeeps",
+    Notionists = "notionists",
+    Lorelei = "lorelei",
+    Icons = "icons",
+    Bots = "bottts",
+    BotsNeutral = "botttsNeutral",
+    Avataaars = "avataaars",
+    AvataaarsNeutral = "avataaarsNeutral"
+}

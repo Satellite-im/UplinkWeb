@@ -331,9 +331,10 @@
                         <ProfilePicture
                             typing={$activeChat.activity}
                             image={$users[$activeChat.users[1]]?.profile.photo.image}
-                            frame={$users[$activeChat.users[2]]?.profile.photo.frame}
+                            frame={$users[$activeChat.users[1]]?.profile.photo.frame}
                             status={$users[$activeChat.users[1]]?.profile.status}
                             size={Size.Medium}
+                            id={$users[$activeChat.users[1]]?.key}
                             loading={loading} />
                     {:else}
                         <ProfilePictureMany users={Object.values($users)} on:click={_ => (showUsers = true)} />
@@ -403,7 +404,7 @@
         </Topbar>
 
         {#if $activeCall && $activeCall.chat.id === $activeChat.id}
-            <CallScreen />
+            <CallScreen chat={$activeCall.chat} />
         {/if}
 
         <Conversation>

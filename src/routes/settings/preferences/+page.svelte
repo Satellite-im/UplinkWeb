@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, EmojiFont, Font, Shape } from "$lib/enums"
+    import { Appearance, EmojiFont, Font, Identicon, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { ColorSwatch } from "$lib/components"
@@ -10,12 +10,15 @@
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, type ISettingsState } from "$lib/state"
+    import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
 
     initLocale()
 
     let hex = get(UIStore.state.color)
     let font: Font = get(UIStore.state.font)
     let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
+    let identiconStyle: Identicon = get(SettingsStore.state).messaging.identiconStyle
+
     let cssOverride = get(UIStore.state.cssOverride)
     let fontSize = get(UIStore.state.fontSize)
 
@@ -30,6 +33,9 @@
     })
     UIStore.state.cssOverride.subscribe(css => {
         cssOverride = css
+    })
+    SettingsStore.state.subscribe(settings => {
+        identiconStyle = settings.messaging.identiconStyle
     })
 
     const availableFonts = [
@@ -49,6 +55,21 @@
         { text: Font.Merriweather, value: Font.Merriweather },
         { text: Font.PoiretOne, value: Font.PoiretOne },
         { text: Font.OpenDyslexic, value: Font.OpenDyslexic },
+    ]
+
+    const availableIdenticons = [
+        { text: Identicon.Avataaars, value: Identicon.Avataaars },
+        { text: Identicon.AvataaarsNeutral, value: Identicon.AvataaarsNeutral },
+        { text: Identicon.Bots, value: Identicon.Bots },
+        { text: Identicon.BotsNeutral, value: Identicon.BotsNeutral },
+        { text: Identicon.Icons, value: Identicon.Icons },
+        { text: Identicon.Identicon, value: Identicon.Identicon },
+        { text: Identicon.Lorelei, value: Identicon.Lorelei },
+        { text: Identicon.Notionists, value: Identicon.Notionists },
+        { text: Identicon.OpenPeeps, value: Identicon.OpenPeeps },
+        { text: Identicon.PixelArt, value: Identicon.PixelArt },
+        { text: Identicon.PixelArtNeutral, value: Identicon.PixelArtNeutral },
+        { text: Identicon.Shapes, value: Identicon.Shapes },
     ]
 
     const availableEmojiFonts = [
@@ -98,6 +119,19 @@
             alt
             on:change={v => {
                 UIStore.setEmojiFont(v.detail)
+            }} />
+        <Button hook="button-emoji-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+            <Icon icon={Shape.FolderOpen} />
+        </Button>
+    </SettingSection>
+    <SettingSection hook="section-identicon" name={$_("settings.preferences.identiconStyle")} description={$_("settings.preferences.identiconStyleDescription")}>
+        <ProfilePicture id={"0x0000000000000000000000000000000000000000"} />
+        <Select
+            selected={identiconStyle}
+            options={availableIdenticons}
+            alt
+            on:change={v => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, identiconStyle: v.detail } })
             }} />
         <Button hook="button-emoji-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
