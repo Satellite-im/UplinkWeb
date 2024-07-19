@@ -164,7 +164,7 @@
                     setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 })
             }
-        } else if (authentication.stayLoggedIn) {
+        } else if ($page.route.id === Route.Unlock && authentication.stayLoggedIn) {
             log.info("Stay logged in, unlocking")
             let addressed = Object.values(get(RelayStore.state))
                 .filter(r => r.active)
