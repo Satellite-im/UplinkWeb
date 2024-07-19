@@ -24,33 +24,33 @@ const MAX_PINNED_MESSAGES = 100
 // Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
-        type: "MostRecent"
-        amount: number
-    }
+          type: "MostRecent"
+          amount: number
+      }
     // fetch messages which occur earlier in time
     | {
-        type: "Earlier"
-        start_date: Date
-        limit: number
-    }
+          type: "Earlier"
+          start_date: Date
+          limit: number
+      }
     // fetch messages which occur later in time
     | {
-        type: "Later"
-        start_date: Date
-        limit: number
-    }
+          type: "Later"
+          start_date: Date
+          limit: number
+      }
     // fetch messages between given time
     | {
-        type: "Between"
-        from: Date
-        to: Date
-    }
+          type: "Between"
+          from: Date
+          to: Date
+      }
     // fetch half_size messages before and after center.
     | {
-        type: "Window"
-        start_date: Date
-        half_size: number
-    }
+          type: "Window"
+          start_date: Date
+          half_size: number
+      }
 
 export type FetchMessageResponse = {
     messages: Message[]
@@ -70,14 +70,14 @@ export type MultiSendMessageResult = {
 
 export type ConversationSettings =
     | {
-        direct: {}
-    }
+          direct: {}
+      }
     | {
-        group: {
-            members_can_add_participants: boolean
-            members_can_change_name: boolean
-        }
-    }
+          group: {
+              members_can_add_participants: boolean
+              members_can_change_name: boolean
+          }
+      }
 
 export type FileAttachment = {
     file: string
@@ -580,7 +580,7 @@ class RaygunStore {
             for await (const value of listener) {
                 data = [...data, ...value]
             }
-        } catch (_) { }
+        } catch (_) {}
         let blob = new Blob([new Uint8Array(data)])
         const elem = window.document.createElement("a")
         elem.href = window.URL.createObjectURL(blob)

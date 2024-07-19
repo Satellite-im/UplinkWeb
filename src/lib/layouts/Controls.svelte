@@ -1,5 +1,5 @@
 <script>
-     import { v4 as uuidv4 } from "uuid"
+    import { v4 as uuidv4 } from "uuid"
 
     export let breakpoint = 0
 
@@ -23,10 +23,8 @@
     let existingStyleToApplyBreakpoint = document.querySelector("style")
     if (existingStyleToApplyBreakpoint) {
         existingStyleToApplyBreakpoint.appendChild(document.createTextNode(dynamicStyle))
-    } 
-
+    }
 </script>
-
 
 <div id={id} class="controlsWithBreakpoint_{id}">
     <slot></slot>
@@ -34,9 +32,9 @@
 
 <style lang="scss">
     .controls {
-            display: inline-flex;
-            min-width: fit-content;
-            height: fit-content;
-            gap: var(--gap-less);
+        display: inline-flex;
+        min-width: fit-content;
+        height: fit-content;
+        gap: var(--gap-less);
     }
 </style>
