@@ -18,6 +18,7 @@
     initLocale()
 
     function exist() {
+        TesseractStoreInstance.initTesseract()
         return TesseractStoreInstance.exists()
     }
 
@@ -41,10 +42,10 @@
             if (failed) return
             await WarpStore.initWarpInstances(addressed)
         }
-        if (username === "") return
         let ownIdentity = await MultipassStoreInstance.getOwnIdentity()
         ownIdentity.fold(
             async (_: any) => {
+                if (username === "") return
                 AuthStore.setStoredPin(pin)
                 let pass = await MultipassStoreInstance.createIdentity(username, statusMessage, profilePicture)
                 pass.fold(
@@ -59,6 +60,7 @@
                 )
             },
             async (_: any) => {
+                AuthStore.logIn(true)
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 goto(Route.Pre)
             }
@@ -72,6 +74,7 @@
                 log.error("Error creating identity: " + e)
             },
             async (identity: Identity) => {
+                AuthStore.logIn(true)
                 Store.setUserFromIdentity(identity!)
                 Store.setPhoto(profilePicture)
                 await new Promise(resolve => setTimeout(resolve, 1000))
