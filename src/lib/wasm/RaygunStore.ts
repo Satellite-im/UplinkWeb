@@ -366,7 +366,7 @@ class RaygunStore {
                 return events
             },
         }
-
+        log.info("Listening raygun events!")
         for await (const value of listener) {
             let event = parseJSValue(value)
             log.info(`Handling conversation event: ${JSON.stringify(event)}`)
