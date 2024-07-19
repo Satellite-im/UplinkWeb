@@ -7,11 +7,17 @@ import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
 import { func } from "three/examples/jsm/nodes/Nodes.js"
 
+/// 100MB
+const MAX_FILE_SIZE = 104857600 
+const MAX_STORAGE_SIZE = 2 * 1024 * 1024 * 1024
+
 /**
  * A class that provides various methods to interact with a ConstellationBox.
  */
 class ConstellationStore {
     private constellationWritable: Writable<wasm.ConstellationBox | null>
+    public MAX_FILE_SIZE = 104857600
+    public MAX_STORAGE_SIZE = 2 * 1024 * 1024 * 1024
 
     /**
      * Creates an instance of ConstellationStore.
@@ -41,6 +47,21 @@ class ConstellationStore {
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 
+    async getStorageSize(): Promise<Result<WarpError, [number, number]>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                let maxSize =  constellation.max_size()
+                let currentSize =  constellation.current_size()
+                let freeSize = maxSize - currentSize
+                return success([maxSize, freeSize])
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
+
     /**
      * Uploads files from a stream to the constellation.
      * @param file_name - The name of the file to be uploaded.
@@ -50,8 +71,7 @@ class ConstellationStore {
      */
     async uploadFilesFromStream(file_name: string, stream: ReadableStream<any>, total_size: number | undefined): Promise<Result<WarpError, void>> {
         console.log("total_size: ", total_size)
-        if (total_size !== undefined && total_size > 104857600) {
-            console.log("ERROR: File size exceeded")
+        if (total_size !== undefined && total_size > MAX_FILE_SIZE) {
             return failure(WarpError.FILE_SIZE_EXCEEDED)
         }
         const constellation = get(this.constellationWritable)

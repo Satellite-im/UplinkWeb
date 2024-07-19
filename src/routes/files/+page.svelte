@@ -639,7 +639,7 @@
                 </button>
                 <button class="stat">
                     <Label text="Total Space" /><Text singleLine>
-                        {prettyBytes(13223423884917234002)}
+                        {prettyBytes(ConstellationStoreInstance.MAX_STORAGE_SIZE)}
                     </Text>
                 </button>
             </div>
