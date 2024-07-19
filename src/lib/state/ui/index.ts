@@ -67,6 +67,7 @@ class Store {
     }
 
     addSidebarChat(chat: Chat) {
+        console.log("Addgin ", chat)
         const currentchats = get(this.state.chats)
         if (!currentchats.some(c => c.id === chat.id)) {
             this.state.chats.set([chat, ...currentchats])

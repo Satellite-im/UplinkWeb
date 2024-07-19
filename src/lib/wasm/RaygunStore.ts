@@ -24,33 +24,33 @@ const MAX_PINNED_MESSAGES = 100
 // Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
-        type: "MostRecent"
-        amount: number
-    }
+          type: "MostRecent"
+          amount: number
+      }
     // fetch messages which occur earlier in time
     | {
-        type: "Earlier"
-        start_date: Date
-        limit: number
-    }
+          type: "Earlier"
+          start_date: Date
+          limit: number
+      }
     // fetch messages which occur later in time
     | {
-        type: "Later"
-        start_date: Date
-        limit: number
-    }
+          type: "Later"
+          start_date: Date
+          limit: number
+      }
     // fetch messages between given time
     | {
-        type: "Between"
-        from: Date
-        to: Date
-    }
+          type: "Between"
+          from: Date
+          to: Date
+      }
     // fetch half_size messages before and after center.
     | {
-        type: "Window"
-        start_date: Date
-        half_size: number
-    }
+          type: "Window"
+          start_date: Date
+          half_size: number
+      }
 
 export type FetchMessageResponse = {
     messages: Message[]
@@ -70,14 +70,14 @@ export type MultiSendMessageResult = {
 
 export type ConversationSettings =
     | {
-        direct: {}
-    }
+          direct: {}
+      }
     | {
-        group: {
-            members_can_add_participants: boolean
-            members_can_change_name: boolean
-        }
-    }
+          group: {
+              members_can_add_participants: boolean
+              members_can_change_name: boolean
+          }
+      }
 
 export type FileAttachment = {
     file: string
@@ -97,7 +97,8 @@ class RaygunStore {
     constructor(raygun: Writable<wasm.RayGunBox | null>) {
         this.raygunWritable = raygun
         this.messageListeners = writable({})
-        this.raygunWritable.subscribe(r => {
+        this.raygunWritable.subscribe(async r => {
+            await new Promise(f => setTimeout(f, 100))
             if (r) {
                 let listeners = get(this.messageListeners)
                 if (Object.keys(listeners).length > 0) {
@@ -174,8 +175,9 @@ class RaygunStore {
      */
     async deleteAllConversationsFor(recipient: string) {
         return this.get(async r => {
-            let convs = (await r.list_conversations()) as wasm.Conversation[]
+            let convs = await r.list_conversations()
             convs
+                .convs()
                 .filter(c => parseJSValue(c.settings()).type === "direct" && recipient in c.recipients())
                 .forEach(async conv => {
                     await this.get(r => r.delete(conv.id(), undefined), "Error deleting message")
@@ -189,8 +191,8 @@ class RaygunStore {
 
     async listConversations(): Promise<Result<WarpError, Chat[]>> {
         return this.get(async r => {
-            let convs: { inner: wasm.Conversation }[] = await r.list_conversations()
-            return await Promise.all(convs.map(c => this.convertWarpConversation(c.inner, r)))
+            let convs = await r.list_conversations()
+            return await Promise.all(convs.convs().map(c => this.convertWarpConversation(c, r)))
         }, `Error fetching conversations`)
     }
 
@@ -405,13 +407,11 @@ class RaygunStore {
     }
 
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
-        let conversations: wasm.Conversation[] = await raygun.list_conversations()
-        console.log("convs ", await raygun.list_conversations())
+        let conversations = await raygun.list_conversations()
         let handlers: { [key: string]: Cancellable } = {}
-        for (let conversation of conversations) {
-            //typescript thinks id is a function, but in the browser it is not.
-            let handler = await this.createConversationEventHandler(raygun, conversation.id)
-            handlers[conversation.id] = handler
+        for (let conversation of conversations.convs()) {
+            let handler = await this.createConversationEventHandler(raygun, conversation.id())
+            handlers[conversation.id()] = handler
         }
         this.messageListeners.set(handlers)
     }
@@ -563,7 +563,7 @@ class RaygunStore {
         let msgs = await raygun.get_messages(conversation_id, options)
         let messages: Message[] = []
         if (msgs.variant() === wasm.MessagesEnum.List) {
-            let warpMsgs = msgs.value() as wasm.Message[]
+            let warpMsgs = (msgs.value() as any[]).map(v => wasm.message_from({ ...Object.fromEntries(v) }))
             messages = (await Promise.all(warpMsgs.map(async msg => await this.convertWarpMessage(conversation_id, msg)))).filter((m: Message | null): m is Message => m !== null)
         }
         return messages
@@ -580,7 +580,7 @@ class RaygunStore {
             for await (const value of listener) {
                 data = [...data, ...value]
             }
-        } catch (_) { }
+        } catch (_) {}
         let blob = new Blob([new Uint8Array(data)])
         const elem = window.document.createElement("a")
         elem.href = window.URL.createObjectURL(blob)
