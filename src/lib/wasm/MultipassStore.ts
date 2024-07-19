@@ -65,9 +65,9 @@ class MultipassStore {
                             incoming = await this.identity_from_did(event.did)
                             count++
                             if (count > MAX_RETRY_COUNT) {
-                                break;
+                                break
                             }
-                            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
                         }
                         if (incoming) {
                             Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
@@ -581,11 +581,7 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identityProfilePicture = await multipass.identity_picture(did)
-                profilePicture = identityProfilePicture && identityProfilePicture.data 
-                ? (identityProfilePicture.data().length > 2 
-                    ? this.to_base64(identityProfilePicture.data()) 
-                    : "") 
-                : ""
+                profilePicture = identityProfilePicture && identityProfilePicture.data ? (identityProfilePicture.data().length > 2 ? this.to_base64(identityProfilePicture.data()) : "") : ""
             } catch (error) {
                 // log.error(`Couldn't fetch profile picture for ${did}: ${error}`)
             }
@@ -599,11 +595,7 @@ class MultipassStore {
         if (multipass) {
             try {
                 let identityBannerPicture = await multipass.identity_banner(did)
-                bannerPicture = identityBannerPicture && identityBannerPicture.data 
-                ? (identityBannerPicture.data().length > 2 
-                    ? this.to_base64(identityBannerPicture.data()) 
-                    : "") 
-                : ""
+                bannerPicture = identityBannerPicture && identityBannerPicture.data ? (identityBannerPicture.data().length > 2 ? this.to_base64(identityBannerPicture.data()) : "") : ""
             } catch (error) {
                 // log.error(`Couldn't fetch banner picture for ${did}: ${error}`)
             }

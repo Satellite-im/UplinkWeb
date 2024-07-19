@@ -71,8 +71,13 @@
     <div id="context-menu" data-cy={hook} bind:this={context} use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
         <slot name="items" close={onClose}></slot>
         {#each items as item}
-            <Button hook="context-menu-option-{item.text}"
-                class="item" appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance} disabled={item.disabled} text={item.text} on:click={e => handleItemClick(e, item)}>
+            <Button
+                hook="context-menu-option-{item.text}"
+                class="item"
+                appearance={item.appearance === Appearance.Default ? Appearance.Transparent : item.appearance}
+                disabled={item.disabled}
+                text={item.text}
+                on:click={e => handleItemClick(e, item)}>
                 <Icon icon={item.icon} />
             </Button>
         {/each}
