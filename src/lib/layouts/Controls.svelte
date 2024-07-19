@@ -23,10 +23,8 @@
     let existingStyleToApplyBreakpoint = document.querySelector("style")
     if (existingStyleToApplyBreakpoint) {
         existingStyleToApplyBreakpoint.appendChild(document.createTextNode(dynamicStyle))
-        console.log(existingStyleToApplyBreakpoint)
     } 
 
-    console.log(breakpoint)
 </script>
 
 
