@@ -174,7 +174,7 @@ class RaygunStore {
      */
     async deleteAllConversationsFor(recipient: string) {
         return this.get(async r => {
-            let convs = (await r.list_conversations()) as wasm.Conversation[]
+            let convs = (await r.list_conversations()).convs() as wasm.Conversation[]
             convs
                 .filter(c => parseJSValue(c.settings()).type === "direct" && recipient in c.recipients())
                 .forEach(async conv => {
@@ -189,8 +189,8 @@ class RaygunStore {
 
     async listConversations(): Promise<Result<WarpError, Chat[]>> {
         return this.get(async r => {
-            let convs: { inner: wasm.Conversation }[] = await r.list_conversations()
-            return await Promise.all(convs.map(c => this.convertWarpConversation(c.inner, r)))
+            let convs: wasm.Conversation[] = (await r.list_conversations()).convs()
+            return await Promise.all(convs.map(c => this.convertWarpConversation(c, r)))
         }, `Error fetching conversations`)
     }
 
@@ -405,13 +405,13 @@ class RaygunStore {
     }
 
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
-        let conversations: wasm.Conversation[] = await raygun.list_conversations()
-        console.log("convs ", await raygun.list_conversations())
+        let conversations: wasm.Conversation[] = (await raygun.list_conversations()).convs()
+        console.log("convs ", conversations)
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations) {
             //typescript thinks id is a function, but in the browser it is not.
-            let handler = await this.createConversationEventHandler(raygun, conversation.id)
-            handlers[conversation.id] = handler
+            let handler = await this.createConversationEventHandler(raygun, conversation.id())
+            handlers[conversation.id()] = handler
         }
         this.messageListeners.set(handlers)
     }
