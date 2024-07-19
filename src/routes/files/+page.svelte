@@ -386,8 +386,8 @@
             for (let i = 0; i < filesCount; i++) {
                 let file = filesToUpload[i]
                 const stream = file.stream()
-                const fileNameParts = file.name.split('.')
-                const baseName = fileNameParts.slice(0, -1).join('.')
+                const fileNameParts = file.name.split(".")
+                const baseName = fileNameParts.slice(0, -1).join(".")
                 const fileExtension = fileNameParts.slice(-1)[0]
                 let newFileName = file.name
                 let fileIndex = 1
@@ -397,7 +397,7 @@
                         newFileName = `${baseName} (${fileIndex}).${fileExtension}`
                         fileIndex++
                     }
-                }) 
+                })
                 await uploadFilesFromDrop(newFileName, stream, file.size)
             }
         }
@@ -426,8 +426,8 @@
                 const file = target.files[i]
                 const stream = file.stream()
                 console.log("file: ", file)
-                const fileNameParts = file.name.split('.')
-                const baseName = fileNameParts.slice(0, -1).join('.')
+                const fileNameParts = file.name.split(".")
+                const baseName = fileNameParts.slice(0, -1).join(".")
                 const extension = fileNameParts.slice(-1)[0]
                 let newFileName = file.name
                 let fileIndex = 1
@@ -436,7 +436,7 @@
                         newFileName = `${baseName} (${fileIndex}).${extension}`
                         fileIndex++
                     }
-                }) 
+                })
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
@@ -465,21 +465,20 @@
             Store.addToastNotification(new ToastMessage("", "Empty name provided", 2))
             return
         }
-        let result = await ConstellationStoreInstance.renameItem(fileExtension === "" ? `${oldName}` : `${oldName}.${fileExtension}`, 
-            fileExtension === "" ? `${newName}` : `${newName}.${fileExtension}`)
+        let result = await ConstellationStoreInstance.renameItem(fileExtension === "" ? `${oldName}` : `${oldName}.${fileExtension}`, fileExtension === "" ? `${newName}` : `${newName}.${fileExtension}`)
         result.fold(
             err => {
                 currentFiles = currentFiles.map(file => {
                     if (file.name === oldName) {
-                        file.isRenaming = OperationState.Error;
-                        Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2));
+                        file.isRenaming = OperationState.Error
+                        Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
                         return file
                     }
                     return file
                 })
                 if (err === WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME) {
                     getCurrentDirectoryFiles()
-                    Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2));
+                    Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
                     return
                 }
                 getCurrentDirectoryFiles()
@@ -492,7 +491,7 @@
                         file.isRenaming = OperationState.Success
                     }
                     getCurrentDirectoryFiles()
-                    Store.addToastNotification(new ToastMessage("", `Successfully renamed "${oldName}" to "${newName}"`, 2));
+                    Store.addToastNotification(new ToastMessage("", `Successfully renamed "${oldName}" to "${newName}"`, 2))
                     return file
                 })
             }
@@ -539,7 +538,7 @@
     {#if isDraggingFromLocal || isFadingOutDragDropOverlay}
         <div class="overlay {isFadingOutDragDropOverlay ? 'fade-out' : ''}">
             <div class="upload-box">
-                <p>{filesCount > 1 ? $_('files.dragging_files').replace('{count}', filesCount.toString()) : $_('files.dragging_file')}</p>
+                <p>{filesCount > 1 ? $_("files.dragging_files").replace("{count}", filesCount.toString()) : $_("files.dragging_file")}</p>
             </div>
         </div>
     {/if}
@@ -838,19 +837,19 @@
 
         @keyframes fadeIn {
             to {
-            opacity: 1;
+                opacity: 1;
             }
         }
 
         @keyframes fadeOut {
             to {
-            opacity: 0;
+                opacity: 0;
             }
         }
 
         @keyframes scaleUp {
             to {
-            transform: scale(1);
+                transform: scale(1);
             }
         }
 

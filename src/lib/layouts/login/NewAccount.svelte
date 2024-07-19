@@ -32,13 +32,13 @@
     </div>
     <div class="main">
         <div class="left">
-            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image={profilePicture} noIndicator/>
+            <ProfilePicture hook="profile-picture-new-account" size={Size.Large} image={profilePicture} noIndicator />
             <FileUploadButton
                 icon
                 tooltip={$_("settings.profile.change_profile_photo")}
                 on:upload={async picture => {
                     await updateProfilePicture(picture.detail)
-            }} />
+                }} />
         </div>
         <div class="right">
             <Label hook="label-new-account-username" text={$_("generic.username")} />
@@ -121,7 +121,7 @@
                 justify-content: center;
                 :global(.button) {
                     position: relative;
-                    bottom: calc(var(--padding-less) * -5.0);
+                    bottom: calc(var(--padding-less) * -5);
                     right: calc(var(--padding-less) * 4.2);
                     z-index: 2;
                 }
