@@ -36,6 +36,7 @@
 
     async function logOut() {
         AuthStore.setStayLogged(false)
+        AuthStore.logIn(false)
         await TesseractStoreInstance.lock()
         goto(Route.Unlock)
     }
