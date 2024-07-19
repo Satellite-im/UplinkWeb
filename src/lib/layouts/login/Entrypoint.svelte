@@ -60,7 +60,7 @@
             {$_("pages.auth.create.description")}
         </Text>
         <Spacer />
-        <Controls>
+        <Controls breakpoint={1000}>
             <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} />
             <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} />
         </Controls>
