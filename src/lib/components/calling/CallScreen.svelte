@@ -14,6 +14,7 @@
     import { _ } from "svelte-i18n"
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
+    import VolumeMixer from "./VolumeMixer.svelte"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -21,6 +22,7 @@
     }
 
     let showSettings = false
+    let showVolumeMixer = false
 
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
@@ -71,9 +73,21 @@
                 </svelte:fragment>
                 <CallSettings />
             </PopupButton>
-            <Button icon appearance={Appearance.Alt} outline tooltip={"Volume"} on:click={_ => {}}>
-                <Icon icon={Shape.SpeakerWaveMax} />
-            </Button>
+            <div class="relative">
+                {#if showVolumeMixer}
+                    <VolumeMixer participants={chat.users} />
+                {/if}
+                <Button
+                    tooltip="Volume Mixer"
+                    icon
+                    appearance={showVolumeMixer ? Appearance.Primary : Appearance.Alt}
+                    outline={!showVolumeMixer}
+                    on:click={_ => {
+                        showVolumeMixer = !showVolumeMixer
+                    }}>
+                    <Icon icon={Shape.SpeakerWave} />
+                </Button>
+            </div>
         </Controls>
         <Controls>
             <Button
@@ -140,6 +154,10 @@
             width: 100%;
             display: inline-flex;
             justify-content: space-between;
+        }
+
+        .relative {
+            position: relative;
         }
 
         #participants {
