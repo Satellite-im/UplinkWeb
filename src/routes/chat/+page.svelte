@@ -364,13 +364,13 @@
                 <Button
                     icon
                     appearance={transact ? Appearance.Primary : Appearance.Alt}
-                    disabled={activeChat.users.length === 0}
+                    disabled={$activeChat.users.length === 0}
                     on:click={_ => {
                         transact = true
                     }}>
                     <Icon icon={Shape.SendCoin} />
                 </Button>
-                <Button icon appearance={Appearance.Alt} disabled={activeChat.users.length === 0}>
+                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
                 <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
