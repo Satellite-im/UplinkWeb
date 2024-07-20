@@ -69,7 +69,7 @@
 
             <div class="popups">
                 {#if activeCall}
-                    <CallControls />
+                    <CallControls activeRoute={activeRoute} />
                 {/if}
             </div>
             <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />

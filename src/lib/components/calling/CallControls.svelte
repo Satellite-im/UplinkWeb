@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Text, Button, Icon, Label } from "$lib/elements"
-    import { Appearance, Route, Shape } from "$lib/enums"
+    import { Appearance, Route, SettingsRoute, Shape } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import Controls from "../../layouts/Controls.svelte"
@@ -11,11 +11,11 @@
     initLocale()
 
     export let loading: boolean = false
-    export let chat: Chat
     export let duration: Date = get(Store.state.activeCall)?.startedAt || new Date()
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let settings: ISettingsState = get(SettingsStore.state)
+    export let activeRoute: Route | SettingsRoute = Route.Chat
 
     let elapsedTime: string = "00:00:00"
 
@@ -40,7 +40,6 @@
 
     // Cleanup interval on destroy
     import { onDestroy } from "svelte"
-    import type { Chat } from "$lib/types"
     import { goto } from "$app/navigation"
     onDestroy(() => {
         clearInterval(interval)
@@ -51,12 +50,20 @@
     SettingsStore.state.subscribe(state => (settings = state))
 
     $: activeCall = Store.state.activeCall
+    $: activeChat = Store.state.activeChat
 </script>
 
 {#if $activeCall}
     <div class="call-controls">
         {#if settings?.audio?.callTimer}
-            <div class="info">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div
+                class="info"
+                on:click={_ => {
+                    Store.setActiveChat($activeCall.chat)
+                    goto(Route.Chat)
+                }}>
                 <Label text={$_("call.in_call")} />
                 <Text appearance={Appearance.Success} loading={loading}>
                     {elapsedTime}
@@ -86,16 +93,28 @@
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
             <Button
-                tooltip="Go"
+                tooltip="End"
                 icon
-                appearance={Appearance.Success}
+                appearance={Appearance.Error}
                 loading={loading}
                 on:click={_ => {
-                    Store.setActiveChat($activeCall.chat)
-                    goto(Route.Chat)
+                    Store.endCall()
                 }}>
-                <Icon icon={Shape.ArrowRight} />
+                <Icon icon={Shape.PhoneXMark} />
             </Button>
+            {#if $activeChat.id !== $activeCall.chat.id || activeRoute !== Route.Chat}
+                <Button
+                    tooltip="Go"
+                    icon
+                    appearance={Appearance.Success}
+                    loading={loading}
+                    on:click={_ => {
+                        Store.setActiveChat($activeCall.chat)
+                        goto(Route.Chat)
+                    }}>
+                    <Icon icon={Shape.ArrowRight} />
+                </Button>
+            {/if}
         </Controls>
     </div>
 {/if}

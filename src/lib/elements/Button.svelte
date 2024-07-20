@@ -239,13 +239,13 @@
         }
 
         &.small {
-            min-height: calc(var(--input-height) / 1.25);
-            max-height: calc(var(--input-height) / 1.25);
+            min-height: calc(var(--input-height) / 1.5);
+            max-height: calc(var(--input-height) / 1.5);
             &.icon {
-                min-width: calc(var(--input-height) / 1.75);
-                max-width: calc(var(--input-height) / 1.75);
-                max-height: calc(var(--input-height) / 1.75);
-                min-height: calc(var(--input-height) / 1.75);
+                min-width: calc(var(--input-height) / 1.5);
+                max-width: calc(var(--input-height) / 1.5);
+                max-height: calc(var(--input-height) / 1.5);
+                min-height: calc(var(--input-height) / 1.5);
             }
         }
 
