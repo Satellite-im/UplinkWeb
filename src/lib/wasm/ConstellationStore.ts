@@ -95,7 +95,7 @@ class ConstellationStore {
      * moves item/s from constellation.
      * @returns A Result containing either success or failure with a WarpError.
      */
-    async dropIntoFolder(fileName: string, toFolderName: string): Promise<Result<WarpError, void>> {
+    dropIntoFolder(fileName: string, toFolderName: string) {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
