@@ -10,7 +10,7 @@
     export let error: boolean = false
     export let loading: boolean = false
     export let scramble: boolean = false
-    export let stayLoggedIn: boolean = false
+    export let stayLoggedIn: boolean = true
     export let showSettings: boolean = false
     export let min: number = 4
     export let max: number = 6
