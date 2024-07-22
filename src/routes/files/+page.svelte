@@ -345,7 +345,10 @@
         })
     }
 
-    onMount(() => {
+    $: freeSpace = ConstellationStoreInstance.freeStorageSpace
+
+    onMount(async () => {
+        await ConstellationStoreInstance.getStorageFreeSpaceSize()
         initializeSortable()
         getCurrentDirectoryFiles()
     })
@@ -633,7 +636,7 @@
             <div slot="before" class="before">
                 <button class="stat">
                     <Label text="Free Space" /><Text singleLine>
-                        {prettyBytes(885312355333383)}
+                        {$freeSpace}
                     </Text>
                 </button>
                 <button class="stat">

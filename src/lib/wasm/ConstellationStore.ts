@@ -1,4 +1,4 @@
-import { get, type Writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
@@ -6,16 +6,14 @@ import { failure, success, type Result } from "$lib/utils/Result"
 import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
 import { func } from "three/examples/jsm/nodes/Nodes.js"
-
-/// 100MB
-const MAX_FILE_SIZE = 104857600 
-const MAX_STORAGE_SIZE = 2 * 1024 * 1024 * 1024
+import prettyBytes from "pretty-bytes"
 
 /**
  * A class that provides various methods to interact with a ConstellationBox.
  */
 class ConstellationStore {
     private constellationWritable: Writable<wasm.ConstellationBox | null>
+    public freeStorageSpace: Writable<string> = writable("Loading...")
     public MAX_FILE_SIZE = 104857600
     public MAX_STORAGE_SIZE = 2 * 1024 * 1024 * 1024
 
@@ -47,14 +45,16 @@ class ConstellationStore {
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 
-    async getStorageSize(): Promise<Result<WarpError, [number, number]>> {
+    getStorageFreeSpaceSize(): Result<WarpError, number> {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let maxSize =  constellation.max_size()
-                let currentSize =  constellation.current_size()
+                let maxSize = constellation.max_size()
+                this.MAX_STORAGE_SIZE = maxSize
+                let currentSize = constellation.current_size()
                 let freeSize = maxSize - currentSize
-                return success([maxSize, freeSize])
+                this.freeStorageSpace.set(prettyBytes(freeSize))
+                return success(freeSize)
             } catch (error) {
                 return failure(handleErrors(error))
             }
@@ -71,7 +71,7 @@ class ConstellationStore {
      */
     async uploadFilesFromStream(file_name: string, stream: ReadableStream<any>, total_size: number | undefined): Promise<Result<WarpError, void>> {
         console.log("total_size: ", total_size)
-        if (total_size !== undefined && total_size > MAX_FILE_SIZE) {
+        if (total_size !== undefined && total_size > this.MAX_FILE_SIZE) {
             return failure(WarpError.FILE_SIZE_EXCEEDED)
         }
         const constellation = get(this.constellationWritable)
@@ -89,6 +89,7 @@ class ConstellationStore {
                         break
                     }
                 }
+                this.getStorageFreeSpaceSize()
                 return success(undefined)
             } catch (error) {
                 log.error("Error uploading files from stream: " + error)
@@ -126,6 +127,7 @@ class ConstellationStore {
         if (constellation) {
             try {
                 await constellation.remove(file_name, true)
+                this.getStorageFreeSpaceSize()
                 return success(undefined)
             } catch (error) {
                 return failure(handleErrors(error))
