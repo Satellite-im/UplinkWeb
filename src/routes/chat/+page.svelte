@@ -48,6 +48,7 @@
     import { imageFromData } from "$lib/wasm/ConstellationStore"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
+    import Attention from "$lib/components/ui/Attention.svelte"
 
     initLocale()
 

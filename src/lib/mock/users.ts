@@ -1,4 +1,4 @@
-import { ChatType, Status } from "$lib/enums"
+import { ChatType, Integrations, Status } from "$lib/enums"
 import { defaultUser, type Chat, type User, hashChat, defaultChat } from "$lib/types"
 
 export const mock_users: Array<User> = [
@@ -38,7 +38,7 @@ export const mock_users: Array<User> = [
             ...defaultUser.profile,
             photo: {
                 image: "",
-                frame: { name: "", image: "" },
+                frame: { name: "Moon", image: "/frames/moon.png" },
             },
             banner: {
                 image: "",
@@ -53,6 +53,48 @@ export const mock_users: Array<User> = [
             is_muted: true,
             is_deafened: true,
         },
+        integrations: [
+            {
+                kind: Integrations.Twitch,
+                location: "https://twitch.tv/SpaceKev",
+                meta: null
+            },
+            {
+                kind: Integrations.Steam,
+                location: "https://steamcommunity.com/id/SpaceKev/",
+                meta: null
+            },
+            {
+                kind: Integrations.YouTube,
+                location: "https://youtube.com/c/SpaceKev/",
+                meta: null
+            },
+            {
+                kind: Integrations.Spotify,
+                location: "@SpaceKev",
+                meta: null
+            },
+            {
+                kind: Integrations.Generic,
+                location: "https://satellite.im",
+                meta: null
+            },
+            {
+                kind: Integrations.BTC,
+                location: "1cwI2h8ETSROxAihiRDB5QqfDc3EDxWsf0",
+                meta: null
+            },
+            {
+                kind: Integrations.ETH,
+                location: "0x0000000000000000000000000000000000000000",
+                meta: null
+            },
+            {
+                kind: Integrations.SOL,
+                location: "26AKqj1Au1jGrHFm7RXVJJeu7nsbqqin5Ff3vjPxM4QK",
+                meta: null
+            },
+        ]
     },
     {
         ...defaultUser,
@@ -158,7 +200,7 @@ export const fake_user_array: Array<User> = [
             },
             status: Status.Offline,
             status_message: "This user is not real.",
-        },
+        }
     },
 ]
 

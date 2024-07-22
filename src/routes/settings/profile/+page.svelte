@@ -21,6 +21,7 @@
     import { INTEGRATIONS } from "$lib/config"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { SettingsStore } from "$lib/state"
+    import { identityColor } from "$lib/utils/ProfileUtils"
 
     initLocale()
 
@@ -246,7 +247,7 @@
                 on:contextmenu={open}
                 class="profile-header"
                 data-cy="profile-banner"
-                style="background-image: url('{user.profile.banner.image}')"
+                style={`background-image: url(${user.profile.banner.image}); background-color: ${identityColor(user.key)};)`}
                 on:click={_ => {
                     fileinput.click()
                 }}>
