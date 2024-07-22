@@ -164,17 +164,6 @@
                     setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 })
             }
-        } else if ($page.route.id === Route.Unlock && authentication.stayLoggedIn) {
-            log.info("Stay logged in, unlocking")
-            let addressed = Object.values(get(RelayStore.state))
-                .filter(r => r.active)
-                .map(r => r.address)
-            await WarpStore.initWarpInstances(addressed)
-            let result = await TesseractStoreInstance.unlock(authentication.pin)
-            result.onSuccess(() => {
-                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
-            })
-            goto(Route.Chat)
         }
     }
 

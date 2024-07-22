@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Label } from "$lib/elements"
     import { Modal } from "$lib/components"
-    import { Appearance, Shape } from "$lib/enums"
+    import { Appearance, Route, Shape } from "$lib/enums"
 
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
@@ -12,10 +12,36 @@
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { Controls } from "$lib/layouts"
     import { LoginPage } from "$lib/layouts/login"
+    import { onMount } from "svelte"
+    import { RelayStore } from "$lib/state/wasm/relays"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { AuthStore } from "$lib/state/auth"
+    import { get } from "svelte/store"
+    import { WarpStore } from "$lib/wasm/WarpStore"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { goto } from "$app/navigation"
+    import { log } from "$lib/utils/Logger"
 
     initLocale()
 
     export let page: LoginPage
+
+    onMount(async () => {
+        let authentication = await AuthStore.getAuthentication()
+        await TesseractStoreInstance.initTesseract()
+        if (authentication.stayLoggedIn) {
+            let addressed = Object.values(get(RelayStore.state))
+                .filter(r => r.active)
+                .map(r => r.address)
+            await WarpStore.initWarpInstances(addressed)
+            log.info("Stay logged in is enabled, unlocking")
+            let result = await TesseractStoreInstance.unlock(authentication.pin)
+            result.onSuccess(() => {
+                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
+            })
+            goto(Route.Chat)
+        }
+    })
 
     let loading = false
 
