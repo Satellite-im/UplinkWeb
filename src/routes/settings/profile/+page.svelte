@@ -599,7 +599,7 @@
             .profile-picture-container {
                 position: absolute;
                 z-index: 2;
-                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 4 / 2));
+                top: calc(256px - (var(--profile-picture-size) * 4 / 2));
                 height: calc(var(--profile-picture-size) * 2);
                 margin-bottom: calc((var(--profile-picture-size) * 3) * -0.5);
                 :global(.button) {
@@ -611,7 +611,7 @@
             }
 
             .profile-header {
-                height: calc(var(--profile-width) / 1.5);
+                height: 256px;
                 background-color: var(--background-alt);
                 background-size: cover;
                 padding: var(--padding-less);
