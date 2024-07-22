@@ -92,7 +92,7 @@
     let browseFiles: boolean = false
 
     $: chats = UIStore.state.chats
-    $: pendingMessages = Object.values(ConversationStore.getPendingMessages($activeChat))
+    $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
     $: activeCall = Store.state.activeCall
 
     function dragEnter(event: DragEvent) {
@@ -506,10 +506,10 @@
                         </StoreResolver>
                     {/each}
                     <PendingMessageGroup>
-                        {#each pendingMessages as pending, idx}
+                        {#each $pendingMessages as pending, idx}
                             <PendingMessage
                                 message={pending}
-                                position={idx === 0 ? MessagePosition.First : idx === pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
+                                position={idx === 0 ? MessagePosition.First : idx === $pendingMessages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                 on:abort={e => {
                                     if (Object.keys(get(pending.attachmentProgress)).length == 0) {
                                         ConversationStore.removePendingMessages($activeChat.id, e.detail.message)
