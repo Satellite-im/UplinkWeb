@@ -110,6 +110,8 @@ class RaygunStore {
                 this.initConversationHandlers(r)
                 // handleRaygunEvent must be called after initConversationHandlers
                 // this is because if 'raygun.raygun_subscribe' is called before 'raygun.list_conversations', it causes 'raygun.list_conversations' to hang. (reason currently unknown)
+                // update: a delay is (also?) needed as otherwise raygun events are not received
+                await new Promise(f => setTimeout(f, 100))
                 this.handleRaygunEvent(r)
             }
         })
