@@ -79,20 +79,21 @@
 
 <style lang="scss">
     .sidebar-layout {
-        width: fit-content;
         display: inline-flex;
         flex-direction: row;
         border-right: var(--border-width) solid var(--border-color);
         max-height: 100vh;
         overflow-y: hidden;
+        width: fit-content;
 
         .sidebar {
             display: inline-flex;
             flex-direction: column;
             padding: var(--padding-less);
-            width: var(--sidebar-width);
+            width: 100%;
             gap: var(--gap);
             flex: 1;
+            // max-width: 100%; /* Optional: Set a max-width if needed */
         }
 
         .sidebar-content {
@@ -114,12 +115,19 @@
         }
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 600px) {
         .sidebar-layout {
-            min-width: 100%;
+            /* Adjust layout for smaller screens if needed */
         }
+
+        .sidebar {
+            width: 100%; /* Change to make it responsive */
+            min-width: 0; /* Ensure it can shrink */
+        }
+
         .sidebar-layout.closed {
             min-width: 0;
+
             :global(.slimbar) {
                 display: none;
             }
