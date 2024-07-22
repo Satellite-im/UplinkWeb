@@ -51,16 +51,13 @@ jobs:
 
             - name: Run Playwright tests
               working-directory: automated-tests
-              run: npx playwright test
-
-            - name: Copy json report to root directory
-              run: cp ./automated-tests/playwright-report/report.json ./report.json
+              run: PLAYWRIGHT_JSON_OUTPUT_NAME=results.json npx playwright test
 
             - uses: daun/playwright-report-summary@v3
               if: always()
               with:
                   github-token: ${{ secrets.github_token }}
-                  report-file: ./report.json
+                  report-file: ./automated-tests/report.json
                   job-summary: false
                   comment-title: "Automated Test Results"
 
