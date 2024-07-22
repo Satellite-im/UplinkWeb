@@ -21,7 +21,6 @@
         function updateMemoryInfo() {
             // @ts-ignore
             const memory = performance.memory
-            console.log("Memory: ", memory)
             if (memory) {
                 memoryStatus.set({
                     usedJSHeapSize: memory.usedJSHeapSize,

@@ -141,7 +141,6 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     async function checkIfUserIsLogged() {
-        console.log("Checking if user is logged")
         await TesseractStoreInstance.initTesseract()
         let authentication = await AuthStore.getAuthentication()
         if (authentication.pin === "") {

@@ -69,7 +69,6 @@
         if (id.includes("Xbox")) {
             return GamepadBrand.Xbox
         } else if (id.includes("DualSense")) {
-            console.log("playstation")
             return GamepadBrand.Playstation
         } else {
             return GamepadBrand.Xbox
