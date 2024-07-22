@@ -5,7 +5,7 @@
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { type Chat, type User } from "$lib/types"
     import { Store } from "$lib/state/Store"
-    import { derived, get } from "svelte/store"
+    import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { goto } from "$app/navigation"
