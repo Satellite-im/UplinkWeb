@@ -19,7 +19,7 @@ class Auth {
         this.state = createPersistentState<Authentication>("uplink.auth", {
             pin: "",
             scramblePin: false,
-            stayLoggedIn: false,
+            stayLoggedIn: true,
         })
         this.loggedIn = createSessionState(
             "uplink.auth.loggedIn",
