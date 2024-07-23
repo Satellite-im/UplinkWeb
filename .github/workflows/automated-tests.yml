@@ -12,49 +12,6 @@ on:
             - "README.md"
 
 jobs:
-    cypress-run:
-        runs-on: macos-latest
-        steps:
-            - name: Checkout Uplink Web directory 🔖
-              uses: actions/checkout@v4
-
-            - name: Checkout Automated Tests directory 🔖
-              uses: actions/checkout@v4
-              with:
-                  repository: Satellite-im/automated-tests-web
-                  path: automated-tests
-
-            - name: Setup Node.js for Uplink Web 🔨
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Install NPM dependencies for Uplink Web 📦
-              run: npm install
-
-            - name: Install NPM dependencies for Testing Repo 📦
-              working-directory: automated-tests
-              run: npm install
-
-            - name: Run server
-              run: npm run dev &
-
-            - name: Cypress run
-              uses: cypress-io/github-action@v6
-              with:
-                  wait-on: "http://localhost:5173/"
-                  working-directory: automated-tests
-                  browser: chrome
-
-            - name: Upload screenshots and videos from failed tests 📷
-              uses: actions/upload-artifact@v3
-              if: failure()
-              with:
-                  name: cypress-artifacts
-                  path: |
-                      automated-tests/cypress/screenshots
-                      automated-tests/cypress/videos
-
     playwright-run:
         timeout-minutes: 60
         runs-on: macos-latest

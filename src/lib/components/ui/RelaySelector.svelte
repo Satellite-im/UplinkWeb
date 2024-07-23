@@ -30,7 +30,8 @@
             WarpStore.initWarpInstances(
                 Object.values(relays)
                     .filter(r => r.active)
-                    .map(r => r.address)
+                    .map(r => r.address),
+                true
             )
         }
         changed = false

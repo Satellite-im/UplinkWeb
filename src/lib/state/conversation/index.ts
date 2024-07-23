@@ -1,5 +1,5 @@
 import type { MessageGroup, Chat, Message, PendingMessage, FileProgress } from "$lib/types"
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
 import { mock_messages } from "$lib/mock/messages"
@@ -217,8 +217,10 @@ class Conversations {
 
     getPendingMessages(chat: Chat | string) {
         let chatId = typeof chat === "string" ? chat : chat.id
-        let msgs = get(this.pendingMsgConversations)[chatId]
-        return msgs ? msgs : {}
+        return derived(this.pendingMsgConversations, res => {
+            let msgs = res[chatId]
+            return (msgs = msgs ? msgs : {})
+        })
     }
 
     addPendingMessages(chat: string, messageId: string, message: string[]) {

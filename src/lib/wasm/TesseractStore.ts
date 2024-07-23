@@ -39,7 +39,7 @@ class TesseractStore {
         try {
             if (tesseract) {
                 tesseract.unlock(passphrase)
-
+                if (!tesseract.is_unlock()) return failure(handleErrors(new Error("Attempt to unlock tesseract with wrong pin")))
                 log.info("Tesseract Unlocked: " + tesseract)
                 return success(undefined)
             }
@@ -80,6 +80,7 @@ export async function createTesseract(): Promise<wasm.Tesseract> {
     let tesseract = new wasm.Tesseract()
     tesseract.load_from_storage()
     tesseract.set_autosave()
+    tesseract.enable_key_check()
     return tesseract
 }
 

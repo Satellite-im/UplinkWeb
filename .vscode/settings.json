@@ -4,5 +4,6 @@
         "./yew/Cargo.toml"
     ],
     "html.format.indentInnerHtml": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
 }
