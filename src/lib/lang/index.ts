@@ -186,7 +186,7 @@ export function initLocale() {
                     appLanguage: "App Language",
                     appLanguageDescription: "Change language.",
                     font: "Font",
-                    fontDescription: "Change the font used in the application.",
+                    fontDescription: "Change the font used in the app.",
                     emojiFont: "Emoji",
                     emojiFontDescription: "Change the emoji font used in the app.",
                     fontScaling: "Font Scaling",
