@@ -360,7 +360,6 @@
                     disabled={$activeChat.users.length === 0}
                     appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
                     on:click={_ => {
-                        console.log($isFavorite)
                         Store.toggleFavorite($activeChat)
                     }}>
                     <Icon icon={Shape.Heart} />
