@@ -79,18 +79,18 @@
 
 <style lang="scss">
     .sidebar-layout {
+        width: fit-content;
         display: inline-flex;
         flex-direction: row;
         border-right: var(--border-width) solid var(--border-color);
         max-height: 100vh;
         overflow-y: hidden;
-        width: fit-content;
 
         .sidebar {
             display: inline-flex;
             flex-direction: column;
             padding: var(--padding-less);
-            width: 100%;
+            width: var(--sidebar-width);
             gap: var(--gap);
             flex: 1;
         }
@@ -115,16 +115,39 @@
     }
 
     @media (max-width: 800px) {
-        .sidebar-layout {
-            width: 100%;
-            min-width: 0;
+        .sidebar-layout.open {
+            min-width: 100%;
         }
-
+        .sidebar {
+            max-width: 90%;
+        }
         .sidebar-layout.closed {
             min-width: 0;
-
             :global(.slimbar) {
                 display: none;
+            }
+        }
+    }
+
+    @media (max-width: 450px) {
+        .sidebar {
+            max-width: 80%;
+        }
+        .sidebar-content {
+            max-width: 100%;
+            :global(.chat-preview) {
+                min-width: none;
+            }
+        }
+    }
+    @media (max-width: 400px) {
+        .sidebar {
+            max-width: 75%;
+        }
+        .sidebar-content {
+            max-width: 100%;
+            :global(.chat-preview) {
+                min-width: none;
             }
         }
     }
