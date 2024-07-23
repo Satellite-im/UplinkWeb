@@ -57,7 +57,7 @@ jobs:
               if: always()
               with:
                   github-token: ${{ secrets.github_token }}
-                  report-file: ./automated-tests/report.json
+                  report-file: ./automated-tests/playwright-report/report.json
                   job-summary: false
                   comment-title: "Automated Test Results"
 
