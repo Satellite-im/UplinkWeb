@@ -110,8 +110,6 @@ class RaygunStore {
                 this.initConversationHandlers(r)
                 // handleRaygunEvent must be called after initConversationHandlers
                 // this is because if 'raygun.raygun_subscribe' is called before 'raygun.list_conversations', it causes 'raygun.list_conversations' to hang. (reason currently unknown)
-                // update: a delay is (also?) needed as otherwise raygun events are not received
-                await new Promise(f => setTimeout(f, 100))
                 this.handleRaygunEvent(r)
             }
         })
@@ -362,7 +360,11 @@ class RaygunStore {
     }
 
     private async handleRaygunEvent(raygun: wasm.RayGunBox) {
-        let events = await raygun.raygun_subscribe()
+        let events
+        while (!events) {
+            // Have a buffer that aborts and retries in case #raygun_subscribe hangs
+            events = await Promise.race([raygun.raygun_subscribe(), new Promise(f => setTimeout(f, 100))])
+        }
         let listener = {
             [Symbol.asyncIterator]() {
                 return events
