@@ -79,18 +79,18 @@
 
 <style lang="scss">
     .sidebar-layout {
-        width: fit-content;
         display: inline-flex;
         flex-direction: row;
         border-right: var(--border-width) solid var(--border-color);
         max-height: 100vh;
         overflow-y: hidden;
+        width: fit-content;
 
         .sidebar {
             display: inline-flex;
             flex-direction: column;
             padding: var(--padding-less);
-            width: var(--sidebar-width);
+            width: 100%;
             gap: var(--gap);
             flex: 1;
         }
@@ -116,10 +116,13 @@
 
     @media (max-width: 800px) {
         .sidebar-layout {
-            min-width: 100%;
+            width: 100%;
+            min-width: 0;
         }
+
         .sidebar-layout.closed {
             min-width: 0;
+
             :global(.slimbar) {
                 display: none;
             }

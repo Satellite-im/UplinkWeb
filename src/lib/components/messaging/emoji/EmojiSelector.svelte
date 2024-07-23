@@ -332,9 +332,6 @@
             scroll-margin-top: 20px;
         }
     }
-    // #category-nav::-webkit-scrollbar {
-    //     margin-top: 5px;
-    // }
 
     @media only screen and (max-width: 600px) {
         #emoji-container {
@@ -346,8 +343,8 @@
                 width: 100%;
             }
             display: flex;
-            justify-content: center; /* Horizontal center */
-            align-items: center; /* Vertical center */
+            justify-content: center;
+            align-items: center;
         }
     }
 </style>
