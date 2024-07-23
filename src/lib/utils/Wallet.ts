@@ -78,4 +78,51 @@ class Eth {}
 
 class Sol {}
 
+export class PayRequest {
+    amount: number
+    asset: string
+    destination: string
+
+    constructor(amount: number, asset: string, destination: string) {
+        this.amount = amount
+        this.asset = asset
+        this.destination = destination
+    }
+    is_valid(): boolean {
+        if (!isNaN(this.amount) && isFinite(this.amount) && this.amount > 0) {
+            if (this.asset === "sat" && this.destination.length >= 26) {
+                return true
+            }
+        }
+        return false
+    }
+    to_cmd_string(): string {
+        return `/request ${this.amount} ${this.asset} ${this.destination}`
+    }
+    to_display_string(): string {
+        return `Send ${this.amount} ${this.asset} @ ${shorten_addr(this.destination, 6)}`
+    }
+    async execute() {
+        if (this.asset == "sat") {
+            await wallet.btc.send(this.destination, this.amount)
+        }
+    }
+}
+
+export function get_valid_payment_request(msg: string): PayRequest | undefined {
+    let parts = msg.split(" ")
+    if (parts.length === 4 && parts[0] === "/request") {
+        let request = new PayRequest(parseInt(parts[1]), parts[2], parts[3])
+        if (request.is_valid()) {
+            return request
+        }
+    }
+}
+
+export function shorten_addr(str: string, num_chars: number): string {
+    let start = str.substring(0, num_chars)
+    let end = str.substring(str.length - num_chars)
+    return start + ".." + end
+}
+
 export const wallet = new ExternalWallets()
