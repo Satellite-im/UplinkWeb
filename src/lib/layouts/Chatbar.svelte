@@ -33,7 +33,7 @@
             if (file) {
                 attachments.push({
                     file: file.name,
-                    attachment: file.stream(),
+                    attachment: [file.stream(), file.size],
                 })
             } else if (path) {
                 attachments.push({
