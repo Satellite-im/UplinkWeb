@@ -86,13 +86,9 @@
     @media only screen and (max-width: 600px) {
         .modal {
             .body {
-                // max-width: 80%;
                 display: flex;
-                justify-content: center; /* Horizontal center */
-                align-items: center; /* Vertical center */
-                // height: 100vh;
-                // max-height: 80%;
-                // left: 0;
+                justify-content: center;
+                align-items: center;
             }
         }
     }

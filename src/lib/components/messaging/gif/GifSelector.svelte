@@ -309,7 +309,7 @@
 
             @media (max-width: 600px) {
                 .gif {
-                    height: 100px; /* Adjust height as needed */
+                    height: 100px;
                     width: 100%;
                 }
             }
