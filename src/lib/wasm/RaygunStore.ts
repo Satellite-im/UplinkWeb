@@ -360,7 +360,11 @@ class RaygunStore {
     }
 
     private async handleRaygunEvent(raygun: wasm.RayGunBox) {
-        let events = await raygun.raygun_subscribe()
+        let events
+        while (!events) {
+            // Have a buffer that aborts and retries in case #raygun_subscribe hangs
+            events = await Promise.race([raygun.raygun_subscribe(), new Promise(f => setTimeout(f, 100))])
+        }
         let listener = {
             [Symbol.asyncIterator]() {
                 return events
