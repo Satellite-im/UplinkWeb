@@ -11,6 +11,7 @@ export enum WarpError {
     ITEM_ALREADY_EXIST_WITH_SAME_NAME = "Item with name already exists in current directory",
     ITEM_DOES_NOT_EXIST = "Item cannot be found or is invalid",
     GENERAL_ERROR = "An unknown error occurred",
+    FILE_SIZE_EXCEEDED = "File size exceeded. Maximum file size is 100MB",
     MULTIPASS_NOT_FOUND = "Multipass instance not found",
     CONSTELLATION_NOT_FOUND = "Constellation instance not found",
     RAYGUN_NOT_FOUND = "Raygun instance not found",
@@ -39,6 +40,8 @@ export function handleErrors(error: any): WarpError {
                 return WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME
             case message.includes(WarpError.ITEM_DOES_NOT_EXIST):
                 return WarpError.ITEM_DOES_NOT_EXIST
+            case message.includes(WarpError.FILE_SIZE_EXCEEDED):
+                return WarpError.FILE_SIZE_EXCEEDED
             default:
                 return WarpError.GENERAL_ERROR
         }

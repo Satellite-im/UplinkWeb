@@ -5,7 +5,6 @@
     import type { Integration } from "$lib/types"
 
     export let integration: Integration
-    export let editable: boolean = true
 
     let display = INTEGRATIONS[integration.kind].display
 </script>
@@ -14,6 +13,7 @@
     <Label text={integration.kind} />
 
     <div class="display">
+        <!-- svelte-ignore a11y-missing-attribute -->
         <img class="logo" src="/assets/brand/{integration.kind}.png" />
 
         {#if display === IntegrationDisplays.WalletAddress}
