@@ -15,6 +15,7 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
+    import { VoiceRTC } from "$lib/media/Voice"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -28,6 +29,20 @@
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
 
+    let permissionsGranted = false
+
+    const options = {
+        audio: true,
+        video: {
+            enabled: true,
+            selfie: true,
+        },
+    }
+    let rtc: VoiceRTC = new VoiceRTC("my-channel-id", options)
+    $: videoElement = rtc.localVideoEl
+    $: videoCurrent = rtc.localVideoCurrentSrc
+    let callStarted = false
+
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
 
@@ -38,6 +53,49 @@
     Store.state.devices.deafened.subscribe(state => {
         deafened = state
     })
+
+    const checkPermissions = async () => {
+        try {
+            const cameraPermission = await navigator.permissions.query({ name: "camera" as PermissionName })
+            const microphonePermission = await navigator.permissions.query({ name: "microphone" as PermissionName })
+
+            if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                permissionsGranted = true
+            } else {
+                permissionsGranted = false
+            }
+
+            cameraPermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
+            }
+
+            microphonePermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
+            }
+        } catch (err) {
+            console.error("Error checking permissions: ", err)
+        }
+    }
+
+    checkPermissions()
+
+    const requestPermissions = async () => {
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            permissionsGranted = true
+        } catch (err) {
+            console.error("Error requesting permissions: ", err)
+            permissionsGranted = false
+        }
+    }
 </script>
 
 <div id="call-screen" class={expanded ? "expanded" : ""}>
@@ -58,6 +116,17 @@
                     isDeafened={$userCache[user].media.is_deafened}
                     isTalking={$userCache[user].media.is_playing_audio} />
             {/each}
+            {#if callStarted}
+                <video bind:this={videoElement} width="400" height="400" autoplay={true}>
+                    <track kind="captions" src="" />
+                </video>
+                <br />
+
+                <!-- YOU FACE CAM HERE -->
+                <video bind:this={videoCurrent} width="400" height="400" autoplay={true}>
+                    <track kind="captions" src="" />
+                </video>
+            {/if}
         </div>
     {/if}
     <div class="toolbar">
@@ -66,7 +135,7 @@
                 name="Settings"
                 open={showSettings}
                 on:open={_ => {
-                    showSettings = true
+                    // showSettings = true
                 }}>
                 <svelte:fragment slot="icon">
                     <Icon icon={Shape.Cog} />
@@ -96,9 +165,17 @@
                 tooltip={$_("call.mute")}
                 on:click={_ => {
                     Store.updateMuted(!muted)
+                    console.log("Arriving here")
+                    let remoteUserDid = chat.users[1]
+                    rtc.makeVideoCall(remoteUserDid)
+                    callStarted = true
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
+            {#if !permissionsGranted}
+                <p>Please allow camera and microphone access to continue.</p>
+                <button on:click={requestPermissions}>Grant Permissions</button>
+            {/if}
             <Button
                 icon
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
