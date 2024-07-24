@@ -356,7 +356,10 @@
         }
     }
 
-    onMount(() => {
+    $: freeSpace = ConstellationStoreInstance.freeStorageSpace
+
+    onMount(async () => {
+        await ConstellationStoreInstance.getStorageFreeSpaceSize()
         getCurrentDirectoryFiles()
 
         let lastClickTime = 0
@@ -478,7 +481,7 @@
     async function uploadFilesFromDrop(name: string, stream: ReadableStream, size: number) {
         let result = await ConstellationStoreInstance.uploadFilesFromStream(name, stream, size)
         result.onFailure(err => {
-            Store.addToastNotification(new ToastMessage("", err, 2))
+            Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
         })
     }
 
@@ -507,7 +510,7 @@
                 })
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
                 result.onFailure(err => {
-                    Store.addToastNotification(new ToastMessage("", err, 2))
+                    Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
                 })
             }
         }
@@ -711,12 +714,12 @@
             <div slot="before" class="before">
                 <button class="stat">
                     <Label text="Free Space" /><Text singleLine>
-                        {prettyBytes(885312355333383)}
+                        {$freeSpace}
                     </Text>
                 </button>
                 <button class="stat">
                     <Label text="Total Space" /><Text singleLine>
-                        {prettyBytes(13223423884917234002)}
+                        {prettyBytes(ConstellationStoreInstance.MAX_STORAGE_SIZE)}
                     </Text>
                 </button>
             </div>
