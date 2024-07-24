@@ -100,6 +100,24 @@ class ConstellationStore {
     }
 
     /**
+     * moves item/s from constellation.
+     */
+    dropIntoFolder(fileName: string, toFolderName: string) {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                let currentDir = constellation!.current_directory()
+                currentDir.move_item_to(fileName, toFolderName)
+                return success(undefined)
+            } catch (error) {
+                log.error("Error moving item to directory: " + error)
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
+
+    /**
      * Retrieves the files in the current directory.
      * @returns A Result containing either the list of files or a WarpError.
      */
