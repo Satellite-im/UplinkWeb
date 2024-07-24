@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { goto } from "$app/navigation"
-    import { Route } from "$lib/enums"
+    import { page } from "$app/stores"
+    import { checkIfUserIsLogged } from "$lib/state/auth"
 
-    goto(Route.Unlock)
+    checkIfUserIsLogged($page.route.id, true)
 </script>
