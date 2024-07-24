@@ -52,8 +52,8 @@
                         <div class="integration" style={`border-color: ${getIntegrationColor(integration)};`}>
                             <img class="integration-logo" src="/assets/brand/{integration.kind}.png" alt="Platform Logo" />
                             <Text singleLine>{integration.location}</Text>
-                            <Button small icon appearance={Appearance.Alt}>
-                                <Icon icon={Shape.ArrowRight} />
+                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration)}>
+                                <Icon icon={Shape.Popout} />
                             </Button>
                         </div>
                     {/each}
@@ -84,12 +84,15 @@
 <style lang="scss">
     .profile {
         height: 100%;
+        max-height: 600px;
+        overflow-y: scroll;
         width: var(--profile-width);
         display: inline-flex;
         flex-direction: column;
         justify-content: flex-start;
         gap: var(--gap);
         padding: var(--padding);
+        margin-right: var(--gap-less);
 
         .section {
             display: inline-flex;
@@ -115,7 +118,7 @@
         }
 
         .profile-header {
-            height: 256px;
+            min-height: 256px;
             background-color: var(--background-alt);
             background-size: cover;
             padding: var(--padding-less);

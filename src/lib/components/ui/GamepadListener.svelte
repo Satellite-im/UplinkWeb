@@ -566,17 +566,4 @@
         pointer-events: none;
         transform-origin: center;
     }
-
-    #mapping {
-        margin-top: 20px;
-
-        label {
-            margin-right: 10px;
-        }
-
-        input[type="range"] {
-            margin-bottom: 10px;
-            width: 100%;
-        }
-    }
 </style>

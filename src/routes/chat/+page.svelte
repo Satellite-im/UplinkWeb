@@ -24,6 +24,7 @@
         ContextMenu,
         EmojiGroup,
     } from "$lib/components"
+    import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import { OperationState, type Chat, type User } from "$lib/types"
@@ -48,7 +49,7 @@
     import { imageFromData } from "$lib/wasm/ConstellationStore"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
-    import Attention from "$lib/components/ui/Attention.svelte"
+    import { get_valid_payment_request } from "$lib/utils/Wallet"
 
     initLocale()
 
@@ -59,7 +60,7 @@
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
 
     const timeAgo = new TimeAgo("en-US")
@@ -73,6 +74,7 @@
         return timeAgo.format(date)
     }
 
+    let transact: boolean = false
     let previewImage: string | null
     let previewProfile: User | null
     let newGroup: boolean = false
@@ -93,7 +95,6 @@
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
-    $: activeCall = Store.state.activeCall
 
     function dragEnter(event: DragEvent) {
         event.preventDefault()
@@ -218,6 +219,15 @@
         dragDrop(e)
     }}>
     <!-- Modals -->
+    {#if transact}
+        <Modal
+            on:close={_ => {
+                transact = false
+            }}>
+            <CreateTransaction onClose={() => (transact = false)} on:create={_ => (transact = false)} />
+        </Modal>
+    {/if}
+
     {#if previewImage}
         <Modal
             on:close={_ => {
@@ -332,10 +342,9 @@
                         <ProfilePicture
                             typing={$activeChat.activity}
                             image={$users[$activeChat.users[1]]?.profile.photo.image}
-                            frame={$users[$activeChat.users[1]]?.profile.photo.frame}
+                            frame={$users[$activeChat.users[2]]?.profile.photo.frame}
                             status={$users[$activeChat.users[1]]?.profile.status}
                             size={Size.Medium}
-                            id={$users[$activeChat.users[1]]?.key}
                             loading={loading} />
                     {:else}
                         <ProfilePictureMany users={Object.values($users)} on:click={_ => (showUsers = true)} />
@@ -354,11 +363,14 @@
                 <CoinBalance balance={0.0} />
                 <Button
                     icon
-                    appearance={Appearance.Alt}
+                    appearance={transact ? Appearance.Primary : Appearance.Alt}
                     disabled={$activeChat.users.length === 0}
                     on:click={_ => {
-                        Store.setActiveCall($activeChat)
+                        transact = true
                     }}>
+                    <Icon icon={Shape.SendCoin} />
+                </Button>
+                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
                 <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
@@ -367,7 +379,7 @@
                 <Button
                     icon
                     disabled={$activeChat.users.length === 0}
-                    appearance={isFavorite ? Appearance.Primary : Appearance.Alt}
+                    appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
                     on:click={_ => {
                         Store.toggleFavorite($activeChat)
                     }}>
@@ -404,8 +416,8 @@
             </svelte:fragment>
         </Topbar>
 
-        {#if $activeCall && $activeCall.chat.id === $activeChat.id}
-            <CallScreen chat={$activeCall.chat} />
+        {#if get(Store.state.activeCall)}
+            <CallScreen chat={$activeChat}/>
         {/if}
 
         <Conversation>
@@ -453,7 +465,11 @@
                                                     <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
-                                                        <Text markdown={line} />
+                                                        {#if get_valid_payment_request(line) != undefined}
+                                                            <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
+                                                        {:else}
+                                                            <Text markdown={line} />
+                                                        {/if}
                                                     {/each}
 
                                                     {#if message.attachments.length > 0}
