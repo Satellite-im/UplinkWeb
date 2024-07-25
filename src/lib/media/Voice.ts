@@ -26,13 +26,9 @@ export class VoiceRTC {
     }
 
     constructor(channel: string, options: VoiceRTCOptions) {
-        let userId = get(Store.state.user).key
-        const peerId = userId.replace("did:key:", "")
-        console.log("Local User Peer: ", peerId)
         this.channel = channel
-        this.localPeer = new Peer(peerId)
+        this.localPeer = new Peer()
         this.remotePeer = new Peer()
-        this.connectLocalPeer()
     }
 
     setVideoElements(localVideoEl: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
@@ -47,6 +43,10 @@ export class VoiceRTC {
     }
 
     connectLocalPeer() {
+        let userId = get(Store.state.user).key
+        const peerId = userId.replace("did:key:", "")
+        console.log("Local User Peer: ", peerId)
+        this.localPeer = new Peer(peerId)
         this.localPeer.on("open", id => {
             console.log("My peer ID is: " + id)
         })

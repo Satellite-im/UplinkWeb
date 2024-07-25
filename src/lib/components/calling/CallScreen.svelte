@@ -97,6 +97,7 @@
     let localVideoEl: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
     let callStarted = false
+
     onMount(() => {
         const options = {
             audio: true,
@@ -176,10 +177,6 @@
                 tooltip={$_("call.mute")}
                 on:click={_ => {
                     Store.updateMuted(!muted)
-                    console.log("Arriving here")
-                    let remoteUserDid = chat.users[1]
-                    rtc.makeVideoCall(remoteUserDid)
-                    callStarted = true
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -199,7 +196,17 @@
             <Button appearance={Appearance.Alt} icon tooltip="Stream">
                 <Icon icon={Shape.Stream} />
             </Button>
-            <Button appearance={Appearance.Alt} icon tooltip="Enable Video">
+            <Button
+                appearance={Appearance.Alt}
+                icon
+                tooltip="Enable Video"
+                on:click={_ => {
+                    console.log("Arriving here")
+                    rtc.connectLocalPeer()
+                    let remoteUserDid = chat.users[1]
+                    rtc.makeVideoCall(remoteUserDid)
+                    callStarted = true
+                }}>
                 <Icon icon={Shape.VideoCamera} />
             </Button>
             <Button appearance={Appearance.Error} icon tooltip="End" on:click={_ => Store.endCall()}>

@@ -373,7 +373,13 @@
                 <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
-                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button
+                    icon
+                    appearance={Appearance.Alt}
+                    disabled={$activeChat.users.length === 0}
+                    on:click={_ => {
+                        Store.setActiveCall($activeChat)
+                    }}>
                     <Icon icon={Shape.VideoCamera} />
                 </Button>
                 <Button
@@ -416,9 +422,6 @@
             </svelte:fragment>
         </Topbar>
         <CallScreen chat={$activeChat} />
-        {#if get(Store.state.activeCall)}
-            <CallScreen chat={$activeChat} />
-        {/if}
 
         <Conversation>
             {#if $activeChat.users.length > 0}
