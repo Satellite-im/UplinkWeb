@@ -34,7 +34,7 @@
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
     import CreateGroup from "$lib/components/group/CreateGroup.svelte"
-    import { ConversationStore } from "$lib/state/conversation"
+    import { ConversationStore, type ConversationMessages } from "$lib/state/conversation"
     import GroupSettings from "$lib/components/group/GroupSettings.svelte"
     import ViewMembers from "$lib/components/group/ViewMembers.svelte"
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
@@ -50,6 +50,7 @@
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
     import { get_valid_payment_request } from "$lib/utils/Wallet"
+    import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
 
     initLocale()
 
@@ -60,9 +61,9 @@
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
-
+    $: pinned = getPinned(conversation)
     const timeAgo = new TimeAgo("en-US")
 
     function toggleSidebar() {
@@ -80,6 +81,7 @@
     let newGroup: boolean = false
     let showUsers: boolean = false
     let showMarket: boolean = false
+    let withPinned: string | undefined = undefined
     let groupSettings: boolean = false
     let search_filter: string
     let search_component: ChatFilter
@@ -126,19 +128,29 @@
 
     function build_context_items(message: MessageType) {
         return [
-            {
-                id: "pin-message",
-                icon: Shape.Heart,
-                text: "Pin Message",
-                appearance: Appearance.Default,
-                onClick: async () => {
-                    await pin_message(message.id)
-                },
-            },
+            message.pinned
+                ? {
+                      id: "unpin-message",
+                      icon: Shape.HeartSlash,
+                      text: $_("messages.unpin"),
+                      appearance: Appearance.Default,
+                      onClick: async () => {
+                          await pin_message(message.id, false)
+                      },
+                  }
+                : {
+                      id: "pin-message",
+                      icon: Shape.Heart,
+                      text: $_("messages.pin"),
+                      appearance: Appearance.Default,
+                      onClick: async () => {
+                          await pin_message(message.id, true)
+                      },
+                  },
             {
                 id: "reply",
                 icon: Shape.ArrowLeft,
-                text: "Reply",
+                text: $_("messages.reply"),
                 appearance: Appearance.Default,
                 onClick: () => {
                     replyTo = message
@@ -147,7 +159,7 @@
             {
                 id: "copy",
                 icon: Shape.Clipboard,
-                text: "Copy",
+                text: $_("messages.copy"),
                 appearance: Appearance.Default,
                 onClick: () => {
                     copy(message.text.join("\n"))
@@ -158,7 +170,7 @@
                       {
                           id: "edit",
                           icon: Shape.Pencil,
-                          text: "Edit",
+                          text: $_("messages.edit"),
                           appearance: Appearance.Default,
                           onClick: () => {
                               editing_message = message.id
@@ -168,7 +180,7 @@
                       {
                           id: "delete",
                           icon: Shape.Trash,
-                          text: "Delete",
+                          text: $_("messages.delete"),
                           appearance: Appearance.Default,
                           onClick: async () => {
                               await delete_message(message.id)
@@ -194,8 +206,8 @@
         await RaygunStoreInstance.react(conversation!.id, message, add ? 0 : 1, emoji)
     }
 
-    async function pin_message(message: string) {
-        await RaygunStoreInstance.pin(conversation!.id, message, true)
+    async function pin_message(message: string, pin: boolean) {
+        await RaygunStoreInstance.pin(conversation!.id, message, pin)
     }
 
     async function copy(txt: string) {
@@ -204,6 +216,11 @@
 
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
+    }
+
+    function getPinned(conversation: ConversationMessages | undefined): MessageType[] {
+        if (!conversation) return []
+        return conversation!.messages.flatMap(g => g.messages.filter(m => m.pinned))
     }
 </script>
 
@@ -287,6 +304,17 @@
                 <div class="upload-text">{$_("chat.upload_files")}</div>
             </div>
         </div>
+    {/if}
+
+    {#if withPinned}
+        <Modal
+            noBackground={true}
+            direct={true}
+            on:close={_ => {
+                withPinned = undefined
+            }}>
+            <PinnedMessages chatID={$activeChat.id} messages={pinned} top={withPinned}></PinnedMessages>
+        </Modal>
     {/if}
 
     <!-- Sidebar -->
@@ -385,6 +413,17 @@
                     }}>
                     <Icon icon={Shape.Heart} />
                 </Button>
+                <Button
+                    icon
+                    disabled={$activeChat.users.length === 0}
+                    appearance={Appearance.Alt}
+                    on:click={_ => {
+                        let top = document.getElementsByClassName("topbar")[0]
+                        let height = top.getBoundingClientRect().height
+                        withPinned = `calc(${height}px + var(--padding-minimal))`
+                    }}>
+                    <Icon icon={Shape.Pin} />
+                </Button>
                 {#if $activeChat.kind === ChatType.Group}
                     <Button
                         icon
@@ -455,6 +494,8 @@
                                     {#if message.text.length > 0 || message.attachments.length > 0}
                                         <ContextMenu items={build_context_items(message)}>
                                             <Message
+                                                id={message.id}
+                                                pinned={message.pinned}
                                                 slot="content"
                                                 let:open
                                                 on:contextmenu={open}

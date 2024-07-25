@@ -150,7 +150,7 @@ export let mock_messages: MessageGroup[] = [
                         size: 284012384,
                     },
                 ],
-                pinned: false,
+                pinned: true,
             },
             {
                 id: uuidv4(),
@@ -238,7 +238,7 @@ export let mock_messages: MessageGroup[] = [
                 },
                 reactions: {},
                 attachments: [],
-                pinned: false,
+                pinned: true,
             },
         ],
     },
