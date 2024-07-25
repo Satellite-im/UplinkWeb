@@ -18,11 +18,6 @@ export class VoiceRTC {
     localStream: MediaStream | null = null
     localVideoEl: any
     localVideoCurrentSrc: any
-    renderLocalWebcam = (stream: MediaStream) => {
-        console.log(stream)
-        this.localVideoEl.srcObject = stream
-        this.localVideoEl.play()
-    }
 
     base64EncodeDid(did: string): string {
         return btoa(did)
@@ -32,23 +27,41 @@ export class VoiceRTC {
 
     constructor(channel: string, options: VoiceRTCOptions) {
         let userId = get(Store.state.user).key
-
-        const peerId = this.base64EncodeDid(userId)
-        console.log(peerId)
+        const peerId = userId.replace("did:key:", "")
+        console.log("Local User Peer: ", peerId)
         this.channel = channel
         this.localPeer = new Peer(peerId)
         this.remotePeer = new Peer()
-
         this.connectLocalPeer()
     }
 
+    setVideoElements(localVideoEl: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
+        this.localVideoEl = localVideoEl
+        this.localVideoCurrentSrc = localVideoCurrentSrc
+    }
+
+    renderLocalWebcam = (stream: MediaStream) => {
+        console.log(stream)
+        this.localVideoEl.srcObject = stream
+        this.localVideoEl.play()
+    }
+
     connectLocalPeer() {
+        this.localPeer.on("open", id => {
+            console.log("My peer ID is: " + id)
+        })
+
+        this.localPeer.on("error", id => {
+            console.log("error id " + id)
+        })
+
         this.localPeer.on("connection", conn => {
+            console.log("message....")
             conn.on("data", data => {
-                console.log("Received data:", data)
+                console.log("new data " + data)
             })
             conn.on("open", () => {
-                console.log("Connection opened")
+                console.log("new message")
             })
         })
 
@@ -94,7 +107,8 @@ export class VoiceRTC {
 
     async makeVideoCall(remotePeerId: string) {
         try {
-            let remotePeerIdEdited = this.base64EncodeDid(remotePeerId)
+            let remotePeerIdEdited = remotePeerId.replace("did:key:", "")
+            console.log("Remote user Peer: ", remotePeerIdEdited)
             var conn = this.localPeer.connect(remotePeerIdEdited)
             conn.on("data", data => {
                 console.log("new data " + data)

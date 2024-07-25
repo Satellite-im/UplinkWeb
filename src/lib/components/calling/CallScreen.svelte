@@ -16,6 +16,7 @@
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { VoiceRTC } from "$lib/media/Voice"
+    import { onMount } from "svelte"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -38,10 +39,6 @@
             selfie: true,
         },
     }
-    let rtc: VoiceRTC = new VoiceRTC(chat.id, options)
-    $: videoElement = rtc.localVideoEl
-    $: videoCurrent = rtc.localVideoCurrentSrc
-    let callStarted = false
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
@@ -96,6 +93,21 @@
             permissionsGranted = false
         }
     }
+    let rtc: VoiceRTC
+    let localVideoEl: HTMLVideoElement
+    let localVideoCurrentSrc: HTMLVideoElement
+    let callStarted = false
+    onMount(() => {
+        const options = {
+            audio: true,
+            video: {
+                enabled: true,
+                selfie: true,
+            },
+        }
+        rtc = new VoiceRTC("channel-id", options)
+        rtc.setVideoElements(localVideoEl, localVideoCurrentSrc)
+    })
 </script>
 
 <div id="call-screen" class={expanded ? "expanded" : ""}>
@@ -108,17 +120,7 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            {#if callStarted}
-                <video bind:this={videoElement} width="400" height="400" autoplay={true}>
-                    <track kind="captions" src="" />
-                </video>
-                <br />
-
-                <!-- YOU FACE CAM HERE -->
-                <video bind:this={videoCurrent} width="400" height="400" autoplay={true}>
-                    <track kind="captions" src="" />
-                </video>
-            {:else}
+            {#if !callStarted}
                 {#each chat.users as user}
                     <Participant
                         participant={$userCache[user]}
@@ -128,6 +130,13 @@
                         isTalking={$userCache[user].media.is_playing_audio} />
                 {/each}
             {/if}
+            <video bind:this={localVideoEl} class:hidden={!callStarted} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
+            <br />
+            <video bind:this={localVideoCurrentSrc} class:hidden={!callStarted} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
         </div>
     {/if}
     <div class="toolbar">
@@ -154,6 +163,7 @@
                     outline={!showVolumeMixer}
                     on:click={_ => {
                         showVolumeMixer = !showVolumeMixer
+                        rtc.connectLocalPeer()
                     }}>
                     <Icon icon={Shape.SpeakerWave} />
                 </Button>
