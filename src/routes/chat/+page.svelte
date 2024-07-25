@@ -93,8 +93,9 @@
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
     let calling: string = ""
+    let callingMessageId: string | undefined = undefined
 
-    $: activeCallInProgress = get(Store.state.activeCall) != undefined
+    $: activeCallInProgress = get(Store.state.activeCall) != undefined || get(Store.state.activeCall) != null
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
@@ -487,6 +488,8 @@
                                                                 on:click={() => {
                                                                     Store.setActiveCall($activeChat)
                                                                     activeCallInProgress = true
+                                                                    callingMessageId = message.id
+                                                                    delete_message(message.id)
                                                                 }}>
                                                                 <Text markdown={"Accept call?"} appearance={Appearance.Error} />
                                                             </Button>

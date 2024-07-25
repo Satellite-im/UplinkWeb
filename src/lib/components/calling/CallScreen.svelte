@@ -201,7 +201,6 @@
                 icon
                 tooltip="Enable Video"
                 on:click={_ => {
-                    console.log("Arriving here")
                     rtc.connectLocalPeer()
                     let remoteUserDid = chat.users[1]
                     rtc.makeVideoCall(remoteUserDid)
