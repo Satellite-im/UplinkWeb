@@ -61,6 +61,7 @@
             },
             async (_: any) => {
                 AuthStore.logIn(true)
+                AuthStore.setStoredPin(pin)
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 goto(Route.Pre)
             }

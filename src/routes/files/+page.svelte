@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
-    import { Appearance, FilesItemKind, Route, Shape } from "$lib/enums"
+    import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
     import { initLocale } from "$lib/lang"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
@@ -10,12 +10,10 @@
     import prettyBytes from "pretty-bytes"
     import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu, ChatFilter } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { Plugins } from "@shopify/draggable"
     import { onDestroy, onMount } from "svelte"
-    import { Sortable } from "@shopify/draggable"
     import type { Chat, FileInfo } from "$lib/types"
     import { get, writable } from "svelte/store"
-    import { Store } from "$lib/state/Store"
+    import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
@@ -51,7 +49,7 @@
         }
         Store.updateFolderTree(updatedOpenFolders)
     }
-    const unsubscribeopenFolders = Store.state.openFolders.subscribe(f => {
+    const unsubscribeopenFolders = Store.state.openFolders.subscribe((f: any) => {
         openFolders = f
     })
     let dragging_files = 0
@@ -64,28 +62,27 @@
     $: currentFiles = allFiles
 
     const folderStackStore = writable<FileInfo[][]>([allFiles])
-    folderStackStore.subscribe(folderStack => {
+    folderStackStore.subscribe((folderStack: string | any[]) => {
         currentFiles = folderStack[folderStack.length - 1]
     })
 
     async function openFolder(folder: FileInfo) {
         await ConstellationStoreInstance.openDirectory(folder.name)
         currentFolderIdStore.set(folder.id)
-        folderStackStore.update(stack => {
+        folderStackStore.update((stack: any) => {
             const newStack = [...stack, folder.items!]
             return newStack
         })
-        getCurrentDirectoryFiles()
     }
 
     async function goBack() {
         await ConstellationStoreInstance.goBack()
-        folderStackStore.update(stack => {
+        folderStackStore.update((stack: any[]) => {
             if (stack.length > 1) {
                 stack.pop()
             }
-            stack.forEach(sta => {
-                sta.forEach(files => {
+            stack.forEach((sta: any[]) => {
+                sta.forEach((files: { parentId: string }) => {
                     if (files.parentId === "") {
                         currentFolderIdStore.set("")
                     }
@@ -109,14 +106,14 @@
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
-                folderStackStore.update(folders => {
-                    const newFolders = folders.map(folderStack => {
+                folderStackStore.update((folders: any[]) => {
+                    const newFolders = folders.map((folderStack: any[]) => {
                         if (Array.isArray(folderStack)) {
                             return folderStack.map(file => {
                                 if (file.id === folder.id) {
                                     toggleFolder(folder.id)
-                                    Store.state.files.update(files => {
-                                        const exists = files.some(file => file.id === folder.id)
+                                    Store.state.files.update((files: any[]) => {
+                                        const exists = files.some((file: { id: string }) => file.id === folder.id)
                                         if (!exists) {
                                             return [...files, folder]
                                         }
@@ -137,8 +134,8 @@
     }
 
     function removeFolderFromStak(folder: FileInfo) {
-        folderStackStore.update(folders => {
-            const newFolders = folders.map(folderStack => {
+        folderStackStore.update((folders: any[]) => {
+            const newFolders = folders.map((folderStack: any[]) => {
                 if (Array.isArray(folderStack)) {
                     return folderStack.filter(file => file.id !== folder.id)
                 }
@@ -157,6 +154,7 @@
             remotePath: "",
             name: "",
             source: "",
+            extension: "",
             isRenaming: OperationState.Loading,
             items: [],
             parentId: $currentFolderIdStore,
@@ -183,9 +181,8 @@
                 return folder
             })
         }
-
-        folderStackStore.update(folders => {
-            let newFolders = folders.map(folderStack => {
+        folderStackStore.update((folders: any[]) => {
+            let newFolders = folders.map((folderStack: FileInfo[]) => {
                 if (Array.isArray(folderStack)) {
                     return insertIntoFolder(folderStack, $currentFolderIdStore)
                 }
@@ -194,7 +191,7 @@
             for (let i = 1; i < newFolders.length; i++) {
                 let prevArray = newFolders[i - 1]
                 let currArray = newFolders[i]
-                const parentItem = prevArray.find(item => {
+                const parentItem = prevArray.find((item: { id: any }) => {
                     if (currArray.length === 0) {
                         newFolders[i].push(createNewFolder)
                     }
@@ -220,19 +217,86 @@
         })
     }
 
-    let sortable: Sortable | undefined
+    function dropItemIntoFolder(droppingItem: FileInfo, parentId: string) {
+        function insertIntoFolder(folderId: string, item: FileInfo, folders: FileInfo[]): FileInfo[] {
+            function removeFromFolder(itemId: string, folders: FileInfo[]): FileInfo[] {
+                return folders
+                    .map(folder => {
+                        if (folder.type === "folder") {
+                            folder.items = folder.items!.filter(i => i.id !== itemId)
+                            folder.items = removeFromFolder(itemId, folder.items)
+                        }
+                        return folder
+                    })
+                    .filter(folder => folder.id !== itemId)
+            }
 
-    function recreateSortable() {
-        if (sortable !== undefined) {
-            sortable.destroy()
-            sortable = undefined
-        } else {
-            initializeSortable()
+            function findFolderAndInsert(folderId: string, item: FileInfo, folders: FileInfo[]): FileInfo[] {
+                return folders.map(folder => {
+                    if (folder.id === folderId && folder.type === "folder") {
+                        updateFilesFromFolder(folder)
+                        folder.items!.push(item)
+                        if (item.type === "folder" && folder.type === "folder") {
+                            ConstellationStoreInstance.dropIntoFolder(item.name, folder.name)
+                        } else {
+                            ConstellationStoreInstance.dropIntoFolder(`${item.name}.${item.extension}`, folder.name)
+                        }
+                    } else if (folder.type === "folder") {
+                        folder.items = findFolderAndInsert(folderId, item, folder.items!)
+                    }
+                    return folder
+                })
+            }
+            const updatedFolders = removeFromFolder(item.id, folders)
+            return findFolderAndInsert(folderId, item, updatedFolders)
         }
-    }
 
-    $: if (isContextMenuOpen || !isContextMenuOpen) {
-        recreateSortable()
+        folderStackStore.update((folders: any[]) => {
+            let newFolders = folders.map(folderStack => {
+                const updatedFolderStack = insertIntoFolder(droppingItem.parentId!, droppingItem, currentFiles)
+                return updatedFolderStack
+            })
+
+            let newCurrentFiles: FileInfo[] = newFolders
+                .flatMap(folderStack =>
+                    folderStack.flatMap(item => {
+                        const file = item.items?.find(file => file.id === droppingItem.parentId)
+                        return file ? [file] : [item]
+                    })
+                )
+                .filter(file => file !== null) as FileInfo[]
+
+            currentFiles = newCurrentFiles
+
+            for (let i = 1; i < newFolders.length; i++) {
+                let prevArray = newFolders[i - 1]
+                let currArray = newFolders[i]
+                const parentItem = prevArray.find(item => {
+                    if (currArray.length === 0) {
+                        newFolders[i].push(droppingItem)
+                    }
+                    return item.id === currArray[0].parentId
+                })
+
+                if (newFolders[i].length === 0) {
+                    if (parentItem && parentItem.items) {
+                        currArray = [...parentItem.items]
+                    }
+                }
+                if (parentItem && parentItem.items) {
+                    newFolders[i] = [...parentItem.items]
+                }
+
+                const currentOpenFolders = openFolders
+                const updatedOpenFolders = {
+                    ...currentOpenFolders,
+                    [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
+                }
+                Store.updateFolderTree(updatedOpenFolders)
+            }
+            Store.updateFileOrder(currentFiles)
+            return newFolders
+        })
     }
 
     let folderClicked: FileInfo = {
@@ -245,64 +309,6 @@
         source: "",
         isRenaming: OperationState.Initial,
         items: [],
-    }
-
-    function initializeSortable() {
-        const dropzone = document.querySelector(".files") as HTMLElement
-        if (dropzone) {
-            sortable = new Sortable(dropzone, {
-                draggable: isContextMenuOpen ? "" : ".draggable-item",
-                plugins: [Plugins.ResizeMirror, Plugins.SortAnimation],
-            })
-
-            sortable.on("sortable:stop", event => {
-                const items = sortable!.getDraggableElementsForContainer(dropzone)
-                const newOrderIds = Array.from(items)
-                    .filter(child => child.getAttribute("data-id"))
-                    .map(child => child.getAttribute("data-id"))
-                currentFiles = newOrderIds.map(id => {
-                    const file = currentFiles.find(file => file.id === id)
-                    return file ? file : null
-                }) as FileInfo[]
-                Store.updateFileOrder(currentFiles)
-                ConstellationStoreInstance.setItemsOrders(currentFiles)
-            })
-
-            let lastClickTime = 0
-            let lastClickTarget: HTMLElement | null = null
-            function updateFilesFromFolder(folder: FileInfo): void {
-                if (folder.items && folder.items.length > 0) {
-                    Store.updateFileOrder(folder.items)
-                }
-            }
-            dropzone.addEventListener("mousedown", event => {
-                let target = event.target as HTMLElement
-                while (target && !target.classList.contains("draggable-item")) {
-                    target = target.parentElement as HTMLElement
-                }
-
-                const currentTime = Date.now()
-                if (lastClickTarget === target && currentTime - lastClickTime < 200) {
-                    if (lastClickTarget.classList.contains("folder-draggable")) {
-                        const targetId = target.dataset.id
-                        const targetFolder = currentFiles.find(item => item.id === targetId)
-                        if (targetFolder) {
-                            folderClicked = targetFolder
-                        }
-                        if (target) {
-                            const targetId = target.dataset.id
-                            const targetFolder = currentFiles.find(item => item.id === targetId)
-                            if (targetFolder) {
-                                updateFilesFromFolder(targetFolder)
-                                openFolder(targetFolder)
-                            }
-                        }
-                    }
-                }
-                lastClickTarget = target
-                lastClickTime = currentTime
-            })
-        }
     }
 
     function itemsToFileInfo(items: Item[]): FileInfo[] {
@@ -344,13 +350,75 @@
             currentFiles = Array.from(filesSet)
         })
     }
+    function updateFilesFromFolder(folder: FileInfo): void {
+        if (folder.items && folder.items.length > 0) {
+            Store.updateFileOrder(folder.items)
+        }
+    }
 
     $: freeSpace = ConstellationStoreInstance.freeStorageSpace
 
     onMount(async () => {
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
-        initializeSortable()
         getCurrentDirectoryFiles()
+
+        let lastClickTime = 0
+        let lastClickTarget: HTMLElement | null = null
+        const dropzone = document.querySelector(".files") as HTMLElement
+        dropzone.addEventListener("mousedown", event => {
+            let target = event.target as HTMLElement
+            while (target && !target.classList.contains("draggable-item")) {
+                target = target.parentElement as HTMLElement
+            }
+
+            const currentTime = Date.now()
+            if (lastClickTarget === target && currentTime - lastClickTime < 200) {
+                if (lastClickTarget.classList.contains("folder-draggable")) {
+                    const targetId = target.dataset.id
+                    const targetFolder = currentFiles.find(item => item.id === targetId)
+                    if (targetFolder) {
+                        folderClicked = targetFolder
+                    }
+                    if (target) {
+                        const targetId = target.dataset.id
+                        const targetFolder = currentFiles.find(item => item.id === targetId)
+                        if (targetFolder) {
+                            updateFilesFromFolder(targetFolder)
+                            openFolder(targetFolder)
+                        }
+                    }
+                }
+            }
+            let draggedItemId: string | null = ""
+            let draggedElement: HTMLElement | null = null
+            let targetFolderId: string | null = null
+            document.addEventListener("dragstart", (event: DragEvent) => {
+                draggedElement = (event.target as HTMLElement).closest(".draggable-item")
+            })
+            document.addEventListener("dragover", (event: DragEvent) => {
+                event.preventDefault()
+            })
+            document.addEventListener("drop", (event: DragEvent) => {
+                const dropTargetElement = (event.target as HTMLElement).closest(".draggable-item")
+                if (dropTargetElement && draggedElement) {
+                    targetFolderId = dropTargetElement.getAttribute("data-id")
+                    const dragId = draggedElement.getAttribute("data-id")
+                    const draggedItem = currentFiles.find(item => item.id === dragId)
+                    if (draggedElement) {
+                        draggedItemId = draggedElement.getAttribute("data-id")
+                        if (targetFolderId && draggedItem) {
+                            if (targetFolderId !== draggedItem.id) {
+                                draggedItem.parentId = targetFolderId
+                                dropItemIntoFolder(draggedItem, targetFolderId)
+                            }
+                        }
+                    }
+                    draggedElement = null
+                }
+            })
+            lastClickTarget = target
+            lastClickTime = currentTime
+        })
     })
 
     onDestroy(() => {
@@ -519,11 +587,11 @@
         )
     }
 
-    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
+    UIStore.state.sidebarOpen.subscribe((s: boolean) => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
-    UIStore.state.chats.subscribe(sc => (chats = sc))
+    UIStore.state.chats.subscribe((sc: Chat[]) => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
-    Store.state.activeChat.subscribe(c => (activeChat = c))
+    Store.state.activeChat.subscribe((c: Chat) => (activeChat = c))
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -537,21 +605,23 @@
     on:drop={e => {
         dragDrop(e)
     }}>
-    {#if isDraggingFromLocal || isFadingOutDragDropOverlay}
+    <!-- {#if isDraggingFromLocal || isFadingOutDragDropOverlay}
         <div class="overlay {isFadingOutDragDropOverlay ? 'fade-out' : ''}">
             <div class="upload-box">
                 <p>{filesCount > 1 ? $_("files.dragging_files").replace("{count}", filesCount.toString()) : $_("files.dragging_file")}</p>
             </div>
         </div>
-    {/if}
+    {/if} -->
     <!-- Modals -->
     {#if previewImage}
         <Modal
+            hook="preview-image-modal"
             on:close={_ => {
                 previewImage = null
             }}>
             <svelte:fragment slot="controls">
                 <Button
+                    hook="button-close-preview-image-modal"
                     icon
                     small
                     appearance={Appearance.Alt}
@@ -590,6 +660,7 @@
         {#if activeTabRoute === "chats"}
             {#each chats as chat}
                 <ContextMenu
+                    hook="context-menu-sidebar-chat"
                     items={[
                         {
                             id: "hide",
@@ -620,18 +691,25 @@
     </Sidebar>
     <div class="content">
         <Topbar>
-            <div slot="controls" class="before flex-column">
-                <Controls>
-                    <Button appearance={Appearance.Alt} text="Sync" disabled>
+            <div slot="before" class="before flex-column">
+                <Label text="Quick Actions" />
+                <div class="actions">
+                    <Button appearance={Appearance.Alt} text="Sync">
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Create Node" disabled hideTextOnMobile>
+                    <Button appearance={Appearance.Alt} text="Gift Space">
+                        <Icon icon={Shape.Gift} />
+                    </Button>
+                    <Button appearance={Appearance.Alt} text="Rent Space">
+                        <Icon size={Size.Large} icon={Shape.Starlight} />
+                    </Button>
+                    <Button appearance={Appearance.Alt} text="Create Node">
                         <Icon icon={Shape.Info} />
                     </Button>
-                </Controls>
+                </div>
             </div>
         </Topbar>
-        <Topbar hideSidebarToggle>
+        <Topbar>
             <div slot="before" class="before">
                 <button class="stat">
                     <Label text="Free Space" /><Text singleLine>
@@ -663,7 +741,7 @@
             </svelte:fragment>
         </Topbar>
         <div class="folder-back">
-            <Button hook="button-folder-back" appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+            <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -882,7 +960,6 @@
             flex: 1;
             overflow: hidden;
             width: 100%;
-            min-width: 0;
 
             .before {
                 gap: var(--gap-less);
