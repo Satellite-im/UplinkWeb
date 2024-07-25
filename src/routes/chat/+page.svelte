@@ -92,6 +92,9 @@
     let fileUpload: FileInput
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
+    let calling: string = ""
+
+    $: activeCallInProgress = get(Store.state.activeCall) != undefined
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
@@ -379,6 +382,8 @@
                     disabled={$activeChat.users.length === 0}
                     on:click={_ => {
                         Store.setActiveCall($activeChat)
+                        calling = `Calling...\n ${$activeChat.users[0]}`
+                        activeCallInProgress = true
                     }}>
                     <Icon icon={Shape.VideoCamera} />
                 </Button>
@@ -421,7 +426,9 @@
                 {/if}
             </svelte:fragment>
         </Topbar>
-        <CallScreen chat={$activeChat} />
+        {#if activeCallInProgress}
+            <CallScreen chat={$activeChat} />
+        {/if}
 
         <Conversation>
             {#if $activeChat.users.length > 0}
@@ -472,6 +479,17 @@
                                                             <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
                                                         {:else}
                                                             <Text markdown={line} />
+                                                        {/if}
+
+                                                        {#if line.includes("Calling...") && message.details.origin !== $own_user.key}
+                                                            <!-- <CallScreen chat={$activeChat} /> -->
+                                                            <Button
+                                                                on:click={() => {
+                                                                    Store.setActiveCall($activeChat)
+                                                                    activeCallInProgress = true
+                                                                }}>
+                                                                <Text markdown={"Accept call?"} appearance={Appearance.Error} />
+                                                            </Button>
                                                         {/if}
                                                     {/each}
 
@@ -554,7 +572,7 @@
         {/if}
 
         {#if $activeChat.users.length > 0}
-            <Chatbar filesSelected={files} replyTo={replyTo} on:onsend={_ => (files = [])}>
+            <Chatbar filesSelected={files} replyTo={replyTo} calling={calling} on:onsend={_ => ((calling = ""), (files = []))}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     <ContextMenu
