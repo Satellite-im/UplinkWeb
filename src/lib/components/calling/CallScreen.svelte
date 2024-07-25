@@ -38,7 +38,7 @@
             selfie: true,
         },
     }
-    let rtc: VoiceRTC = new VoiceRTC("my-channel-id", options)
+    let rtc: VoiceRTC = new VoiceRTC(chat.id, options)
     $: videoElement = rtc.localVideoEl
     $: videoCurrent = rtc.localVideoCurrentSrc
     let callStarted = false
@@ -108,14 +108,6 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            {#each chat.users as user}
-                <Participant
-                    participant={$userCache[user]}
-                    hasVideo={$userCache[user].media.is_streaming_video}
-                    isMuted={$userCache[user].media.is_muted}
-                    isDeafened={$userCache[user].media.is_deafened}
-                    isTalking={$userCache[user].media.is_playing_audio} />
-            {/each}
             {#if callStarted}
                 <video bind:this={videoElement} width="400" height="400" autoplay={true}>
                     <track kind="captions" src="" />
@@ -126,6 +118,15 @@
                 <video bind:this={videoCurrent} width="400" height="400" autoplay={true}>
                     <track kind="captions" src="" />
                 </video>
+            {:else}
+                {#each chat.users as user}
+                    <Participant
+                        participant={$userCache[user]}
+                        hasVideo={$userCache[user].media.is_streaming_video}
+                        isMuted={$userCache[user].media.is_muted}
+                        isDeafened={$userCache[user].media.is_deafened}
+                        isTalking={$userCache[user].media.is_playing_audio} />
+                {/each}
             {/if}
         </div>
     {/if}
@@ -135,7 +136,7 @@
                 name="Settings"
                 open={showSettings}
                 on:open={_ => {
-                    // showSettings = true
+                    showSettings = true
                 }}>
                 <svelte:fragment slot="icon">
                     <Icon icon={Shape.Cog} />

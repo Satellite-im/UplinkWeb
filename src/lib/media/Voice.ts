@@ -27,7 +27,7 @@ export class VoiceRTC {
     base64EncodeDid(did: string): string {
         return btoa(did)
             .replace(/[^a-zA-Z0-9]/g, "")
-            .slice(0, 20) // Remove non-alphanumeric characters and limit length
+            .slice(0, 20)
     }
 
     constructor(channel: string, options: VoiceRTCOptions) {
@@ -39,25 +39,10 @@ export class VoiceRTC {
         this.localPeer = new Peer(peerId)
         this.remotePeer = new Peer()
 
-        // navigator.mediaDevices
-        //     .getUserMedia({
-        //         video: options.video.enabled ? { facingMode: options.video.selfie ? "user" : "environment" } : false,
-        //         audio: options.audio,
-        //     })
-        //     .then(stream => {
-        //         this.localStream = stream
-        //         this.localPeer.on("call", call => {
-        //             call.answer(stream)
-        //             call.on("stream", remoteStream => {
-        //                 this.remoteStream(remoteStream)
-        //             })
-        //         })
-        //         this.localPeer.on("open", id => {
-        //             console.log("Peer ID: " + id)
-        //         })
-        //     })
-        //     .catch(this.error)
+        this.connectLocalPeer()
+    }
 
+    connectLocalPeer() {
         this.localPeer.on("connection", conn => {
             conn.on("data", data => {
                 console.log("Received data:", data)
