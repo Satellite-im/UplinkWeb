@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from "$app/navigation"
     import { page } from "$app/stores"
     import { Toasts } from "$lib/components"
     import Polling from "$lib/components/Polling.svelte"
@@ -7,16 +6,12 @@
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
-    import { SettingsStore, type ISettingsState } from "$lib/state"
-    import { AuthStore } from "$lib/state/auth"
+    import { SettingsStore } from "$lib/state"
+    import { checkIfUserIsLogged } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
-    import { RelayStore } from "$lib/state/wasm/relays"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
-    import { WarpStore } from "$lib/wasm/WarpStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
@@ -140,45 +135,7 @@
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
-    async function checkIfUserIsLogged() {
-        console.log("Checking if user is logged")
-        await TesseractStoreInstance.initTesseract()
-        let authentication = await AuthStore.getAuthentication()
-        if (authentication.pin === "") {
-            log.info("No pin stored, redirecting to unlock")
-            goto(Route.Unlock)
-        } else if ($page.route.id !== Route.Unlock && !authentication.stayLoggedIn) {
-            // We need to find a better way of handling it so the password doesnt get stored
-            // But for now: dont login if the user is on the login page
-            let logged_in = get(AuthStore.loggedIn)
-            if (!authentication.stayLoggedIn && !logged_in) {
-                goto(Route.Unlock)
-            } else {
-                let addressed = Object.values(get(RelayStore.state))
-                    .filter(r => r.active)
-                    .map(r => r.address)
-                await WarpStore.initWarpInstances(addressed)
-                log.info("Pin stored, unlocking")
-                let result = await TesseractStoreInstance.unlock(authentication.pin)
-                result.onSuccess(() => {
-                    setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
-                })
-            }
-        } else if ($page.route.id === Route.Unlock && authentication.stayLoggedIn) {
-            log.info("Stay logged in, unlocking")
-            let addressed = Object.values(get(RelayStore.state))
-                .filter(r => r.active)
-                .map(r => r.address)
-            await WarpStore.initWarpInstances(addressed)
-            let result = await TesseractStoreInstance.unlock(authentication.pin)
-            result.onSuccess(() => {
-                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
-            })
-            goto(Route.Chat)
-        }
-    }
-
-    checkIfUserIsLogged()
+    checkIfUserIsLogged($page.route.id)
 </script>
 
 <div id="app">
