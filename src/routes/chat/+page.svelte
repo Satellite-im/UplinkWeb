@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { VoiceRTCMessageType } from "./../../lib/media/Voice"
+    import { VoiceRTC, VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
@@ -51,6 +51,7 @@
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
     import { get_valid_payment_request } from "$lib/utils/Wallet"
+    import { onMount } from "svelte"
 
     initLocale()
 
@@ -94,7 +95,6 @@
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
     let voiceRTCMessageType: string = VoiceRTCMessageType.None
-    let receivingCall: boolean = false
     let callingMessageId: string | undefined = undefined
 
     $: activeCallInProgress = get(Store.state.activeCall) != undefined || get(Store.state.activeCall) != null
@@ -212,11 +212,28 @@
         await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
     }
 
+    let voiceRTC: VoiceRTC
+
+    $: receivingCall = voiceRTC !== undefined && voiceRTC.incomingCall !== null
+
+    onMount(() => {
+        if ($activeChat && $activeChat.users.length > 0) {
+            voiceRTC = new VoiceRTC(`test-channel-id`, {
+                audio: true,
+                video: {
+                    enabled: true,
+                    selfie: true,
+                },
+            })
+        }
+    })
+
     async function end_call() {
         activeCallInProgress = false
         voiceRTCMessageType = VoiceRTCMessageType.EndingCall
         receivingCall = false
         Store.endCall()
+        voiceRTC.endCall()
     }
 
     $: {
@@ -269,13 +286,14 @@
             }}>
             <Button
                 appearance={Appearance.Success}
-                on:click={() => {
+                on:click={async () => {
                     receivingCall = false
                     Store.setActiveCall($activeChat)
                     activeCallInProgress = true
                     if (callingMessageId) {
                         delete_message(callingMessageId)
                     }
+                    await voiceRTC.acceptCall()
                 }}>
                 <Text markdown={"Accept call?"} />
             </Button>
@@ -452,6 +470,7 @@
                     disabled={$activeChat.users.length === 0}
                     on:click={_ => {
                         Store.setActiveCall($activeChat)
+                        voiceRTC.makeVideoCall($activeChat.users[1])
                         voiceRTCMessageType = VoiceRTCMessageType.Calling
                         activeCallInProgress = true
                     }}>
@@ -499,6 +518,7 @@
         {#if activeCallInProgress}
             <CallScreen
                 chat={$activeChat}
+                voiceRTC={voiceRTC}
                 on:onendcall={() => {
                     end_call()
                 }} />

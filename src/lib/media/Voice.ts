@@ -1,5 +1,6 @@
 import { Store } from "$lib/state/Store"
-import { Peer } from "peerjs"
+import { log } from "$lib/utils/Logger"
+import Peer, { MediaConnection } from "peerjs"
 import { get } from "svelte/store"
 
 export enum VoiceRTCMessageType {
@@ -19,18 +20,52 @@ type VoiceRTCOptions = {
 
 export class VoiceRTC {
     channel: string
-    localPeer: Peer
-    remotePeer: Peer
+    localPeer: Peer | null = null
+    remotePeer: Peer | null = null
     localStream: MediaStream | null = null
     localVideoEl: any
     localVideoCurrentSrc: any
     callOptions: VoiceRTCOptions
+    incomingCall: MediaConnection | null = null
 
     constructor(channel: string, options: VoiceRTCOptions) {
-        this.callOptions = options
+        this.callOptions = {
+            audio: options.audio,
+            video: {
+                enabled: options.video.enabled,
+                selfie: options.video.selfie,
+            },
+        }
         this.channel = channel
-        this.localPeer = new Peer()
-        this.remotePeer = new Peer()
+        this.setupPeerEvents()
+    }
+
+    private setupPeerEvents() {
+        let userId = get(Store.state.user).key
+        const peerId = userId.replace("did:key:", "")
+        console.log("Local User Peer: ", peerId)
+        this.localPeer = new Peer(peerId)
+
+        this.localPeer!.on("open", id => {
+            console.log("My peer ID is: " + id)
+        })
+
+        this.localPeer!.on("connection", conn => {
+            console.log("message....")
+            conn.on("data", data => {
+                console.log("new data " + data)
+            })
+            conn.on("open", () => {
+                console.log("new message")
+            })
+        })
+
+        this.localPeer!.on("call", async call => {
+            console.log("Incoming call from:", call.peer)
+            this.incomingCall = call
+        })
+
+        this.localPeer!.on("error", this.error)
     }
 
     turnOnOffCamera() {
@@ -52,112 +87,115 @@ export class VoiceRTC {
         this.localVideoCurrentSrc = localVideoCurrentSrc
     }
 
-    renderLocalWebcam = (stream: MediaStream) => {
-        console.log(stream)
-        this.localVideoEl.srcObject = stream
-        this.localVideoEl.play()
+    public async acceptCall() {
+        if (this.incomingCall) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: this.callOptions.video.enabled,
+                    audio: this.callOptions.audio,
+                })
+                this.localStream = stream
+                this.incomingCall.answer(stream)
+
+                if (this.localVideoCurrentSrc) {
+                    this.localVideoCurrentSrc.srcObject = stream
+                    this.localVideoCurrentSrc.play()
+                }
+
+                this.incomingCall.on("stream", remoteStream => {
+                    if (this.localVideoEl) {
+                        this.localVideoEl.srcObject = remoteStream
+                        this.localVideoEl.play()
+                    }
+                })
+
+                this.incomingCall.on("close", () => {
+                    console.log("Call closed")
+                })
+                this.incomingCall.on("error", err => {
+                    console.error("Call error:", err)
+                })
+
+                this.incomingCall = null
+            } catch (error) {
+                console.error("Error accepting call:", error)
+            }
+        } else {
+            console.log("No incoming call to accept")
+        }
     }
 
-    connectLocalPeer() {
-        let userId = get(Store.state.user).key
-        const peerId = userId.replace("did:key:", "")
-        console.log("Local User Peer: ", peerId)
-        this.localPeer = new Peer(peerId)
-        this.localPeer.on("open", id => {
-            console.log("My peer ID is: " + id)
-        })
+    async makeVideoCall(remotePeerId: string) {
+        try {
+            const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
+            console.log("Remote user Peer: ", remotePeerIdEdited)
 
-        this.localPeer.on("connection", conn => {
-            console.log("message....")
+            const conn = this.localPeer!.connect(remotePeerIdEdited)
+
             conn.on("data", data => {
                 console.log("new data " + data)
             })
             conn.on("open", () => {
-                console.log("new message")
-            })
-        })
-
-        this.localPeer.on("call", async call => {
-            await navigator.mediaDevices
-                .getUserMedia({
-                    video: true,
-                    audio: true,
-                })
-                .then(stream => {
-                    call.answer(stream)
-                    call.on("stream", this.renderLocalWebcam)
-                    this.localVideoCurrentSrc.srcObject = stream
-                    this.localVideoCurrentSrc.play()
-                })
-                .catch(err => console.log("err msg" + err))
-        })
-
-        this.localPeer.on("error", this.error)
-    }
-
-    // async makeVoiceCall(remotePeerId: string) {
-    //     if (this.localStream) {
-    //         const call = this.localPeer.call(remotePeerId, this.localStream)
-    //         call.on("stream", remoteStream => {
-    //             this.remoteStream(remoteStream)
-    //         })
-    //     } else {
-    //         console.error("Local stream not available")
-    //     }
-    // }
-
-    async makeVideoCall(remotePeerId: string) {
-        try {
-            this.connectLocalPeer()
-            let remotePeerIdEdited = remotePeerId.replace("did:key:", "")
-            console.log("Remote user Peer: ", remotePeerIdEdited)
-            var conn = this.localPeer.connect(remotePeerIdEdited)
-            conn.on("data", data => {
-                console.log("new data " + data)
-            })
-            conn.on("open", function () {
                 conn.send("hi")
             })
-            await navigator.mediaDevices
-                .getUserMedia({
-                    video: true,
-                    audio: true,
-                })
-                .then(stream => {
-                    let call = this.localPeer.call(remotePeerIdEdited, stream)
-                    this.localVideoCurrentSrc.srcObject = stream
-                    this.localVideoCurrentSrc.play()
-                    call.on("stream", this.renderLocalWebcam)
-                })
-                .catch(err => console.log("have error " + err))
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: this.callOptions.video.enabled,
+                audio: this.callOptions.audio,
+            })
+
+            const call = this.localPeer!.call(remotePeerIdEdited, stream)
+
+            this.localStream = stream
+
+            if (this.localVideoCurrentSrc) {
+                this.localVideoCurrentSrc.srcObject = stream
+                this.localVideoCurrentSrc.play()
+            }
+
+            call.on("stream", remoteStream => {
+                if (this.localVideoEl) {
+                    this.localVideoEl.srcObject = remoteStream
+                    this.localVideoEl.play()
+                }
+            })
+
+            call.on("close", () => {
+                console.log("Call closed")
+            })
+            call.on("error", err => {
+                console.error("Call error:", err)
+            })
         } catch (error) {
             console.error("Error accessing media devices:", error)
         }
     }
 
-    // get supported() {
-    //     return Peer.WEBRTC_SUPPORT
-    // }
+    endCall() {
+        // Stop and release all media tracks
+        if (this.localStream) {
+            this.localStream.getTracks().forEach(track => {
+                track.stop()
+            })
+            this.localStream = null
+        }
 
-    get local() {
-        return this.localPeer
-    }
+        // Close any active incoming calls
+        if (this.incomingCall) {
+            this.incomingCall.close()
+            this.incomingCall = null
+        }
 
-    get remote() {
-        return this.remotePeer
-    }
+        // Clear video elements
+        if (this.localVideoEl) {
+            this.localVideoEl.srcObject = null
+        }
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = null
+        }
 
-    setChannel(channel: string) {
-        this.channel = channel
-    }
-
-    connect() {
-        // stub for future implementation
-    }
-
-    remoteStream(_stream: MediaStream) {
-        // Implement this to handle the remote stream, e.g., attach it to a video element
-        console.log("Remote stream received:", _stream)
+        // Log and reset state
+        log.info("Call ended and resources cleaned up.")
     }
 
     error(error: Error) {

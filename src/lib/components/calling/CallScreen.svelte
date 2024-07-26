@@ -28,17 +28,10 @@
 
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
+    export let voiceRTC: VoiceRTC
     export let chat: Chat
 
     let permissionsGranted = false
-
-    const options = {
-        audio: true,
-        video: {
-            enabled: true,
-            selfie: true,
-        },
-    }
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
@@ -94,7 +87,6 @@
         }
     }
 
-    let rtc: VoiceRTC
     let localVideoEl: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
     let callStarted = false
@@ -102,15 +94,7 @@
     onMount(() => {
         checkPermissions()
 
-        const options = {
-            audio: true,
-            video: {
-                enabled: true,
-                selfie: true,
-            },
-        }
-        rtc = new VoiceRTC("channel-id", options)
-        rtc.setVideoElements(localVideoEl, localVideoCurrentSrc)
+        voiceRTC.setVideoElements(localVideoEl, localVideoCurrentSrc)
 
         if (!permissionsGranted) {
             requestPermissions()
@@ -203,8 +187,7 @@
                 icon
                 tooltip="Enable Video"
                 on:click={_ => {
-                    let remoteUserDid = chat.users[1]
-                    rtc.makeVideoCall(remoteUserDid)
+                    voiceRTC.turnOnOffCamera()
                     callStarted = true
                 }}>
                 <Icon icon={Shape.VideoCamera} />
