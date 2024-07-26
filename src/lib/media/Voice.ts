@@ -26,7 +26,11 @@ export class VoiceRTC {
     localVideoEl: any
     localVideoCurrentSrc: any
     callOptions: VoiceRTCOptions
-    incomingCall: MediaConnection | null = null
+    private _incomingCall: MediaConnection | null = null
+
+    get incomingCall(): MediaConnection | null {
+        return this._incomingCall
+    }
 
     constructor(channel: string, options: VoiceRTCOptions) {
         this.callOptions = {
@@ -62,7 +66,7 @@ export class VoiceRTC {
 
         this.localPeer!.on("call", async call => {
             console.log("Incoming call from:", call.peer)
-            this.incomingCall = call
+            this._incomingCall = call
         })
 
         this.localPeer!.on("error", this.error)
@@ -88,35 +92,36 @@ export class VoiceRTC {
     }
 
     public async acceptCall() {
-        if (this.incomingCall) {
+        if (this._incomingCall) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: this.callOptions.video.enabled,
                     audio: this.callOptions.audio,
                 })
                 this.localStream = stream
-                this.incomingCall.answer(stream)
+                this._incomingCall.answer(stream)
 
                 if (this.localVideoCurrentSrc) {
                     this.localVideoCurrentSrc.srcObject = stream
                     this.localVideoCurrentSrc.play()
                 }
 
-                this.incomingCall.on("stream", remoteStream => {
+                this._incomingCall.on("stream", remoteStream => {
                     if (this.localVideoEl) {
                         this.localVideoEl.srcObject = remoteStream
                         this.localVideoEl.play()
                     }
                 })
 
-                this.incomingCall.on("close", () => {
+                this._incomingCall.on("close", () => {
                     console.log("Call closed")
+                    this.endCall()
                 })
-                this.incomingCall.on("error", err => {
+                this._incomingCall.on("error", err => {
                     console.error("Call error:", err)
                 })
 
-                this.incomingCall = null
+                this._incomingCall = null
             } catch (error) {
                 console.error("Error accepting call:", error)
             }
@@ -135,6 +140,7 @@ export class VoiceRTC {
             conn.on("data", data => {
                 console.log("new data " + data)
             })
+
             conn.on("open", () => {
                 conn.send("hi")
             })
@@ -161,7 +167,7 @@ export class VoiceRTC {
             })
 
             call.on("close", () => {
-                console.log("Call closed")
+                console.log("Call closed by remote peer")
             })
             call.on("error", err => {
                 console.error("Call error:", err)
@@ -181,9 +187,9 @@ export class VoiceRTC {
         }
 
         // Close any active incoming calls
-        if (this.incomingCall) {
-            this.incomingCall.close()
-            this.incomingCall = null
+        if (this._incomingCall) {
+            this._incomingCall.close()
+            this._incomingCall = null
         }
 
         // Clear video elements

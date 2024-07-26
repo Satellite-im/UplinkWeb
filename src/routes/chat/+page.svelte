@@ -214,11 +214,16 @@
 
     let voiceRTC: VoiceRTC
 
-    $: receivingCall = voiceRTC !== undefined && voiceRTC.incomingCall !== null
+    let receivingCall: boolean = false
 
+    $: {
+        if (voiceRTC && $activeChat && $activeChat.users.length > 0) {
+            receivingCall = voiceRTC.incomingCall !== null
+        }
+    }
     onMount(() => {
         if ($activeChat && $activeChat.users.length > 0) {
-            voiceRTC = new VoiceRTC(`test-channel-id`, {
+            voiceRTC = new VoiceRTC(`${$activeChat.id}`, {
                 audio: true,
                 video: {
                     enabled: true,
@@ -234,36 +239,6 @@
         receivingCall = false
         Store.endCall()
         voiceRTC.endCall()
-    }
-
-    $: {
-        if (conversation && conversation.messages) {
-            processMessages()
-        }
-    }
-
-    async function processMessages() {
-        for (const group of conversation!.messages) {
-            for (const message of group.messages) {
-                if (message.text.length > 0 || message.attachments.length > 0) {
-                    for (const line of message.text) {
-                        if (line.includes(VoiceRTCMessageType.Calling)) {
-                            callingMessageId = message.id
-                        }
-                        if (line.includes(VoiceRTCMessageType.Calling) && message.details.origin !== $own_user.key) {
-                            receivingCall = true
-                            delete_message(message.id)
-                        }
-                        if (line.includes(VoiceRTCMessageType.EndingCall)) {
-                            end_call()
-                            if (message.details.origin !== $own_user.key) {
-                                delete_message(message.id)
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 </script>
 
