@@ -19,13 +19,6 @@
     initLocale()
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
-    export let calling: string = VoiceRTCMessageType.None
-
-    // $: if (calling !== VoiceRTCMessageType.None) {
-    //     console.log("Changing calling state in chatbar")
-    //     sendMessage(calling)
-    //     calling = VoiceRTCMessageType.None
-    // }
 
     const dispatch = createEventDispatcher()
 

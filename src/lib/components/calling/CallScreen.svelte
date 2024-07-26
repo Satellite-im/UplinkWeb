@@ -167,6 +167,7 @@
                 tooltip={$_("call.mute")}
                 on:click={_ => {
                     Store.updateMuted(!muted)
+                    voiceRTC.turnOnOffMicrophone()
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>

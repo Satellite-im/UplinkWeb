@@ -1,6 +1,6 @@
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
-import Peer, { MediaConnection } from "peerjs"
+import Peer, { DataConnection, MediaConnection } from "peerjs"
 import { get } from "svelte/store"
 
 export enum VoiceRTCMessageType {
@@ -26,6 +26,8 @@ export class VoiceRTC {
     localVideoEl: any
     localVideoCurrentSrc: any
     callOptions: VoiceRTCOptions
+    isReceivingCall: boolean = false
+    dataConnection: DataConnection | null = null
     private _incomingCall: MediaConnection | null = null
 
     get incomingCall(): MediaConnection | null {
@@ -47,29 +49,51 @@ export class VoiceRTC {
     private setupPeerEvents() {
         let userId = get(Store.state.user).key
         const peerId = userId.replace("did:key:", "")
-        console.log("Local User Peer: ", peerId)
         this.localPeer = new Peer(peerId)
 
         this.localPeer!.on("open", id => {
-            console.log("My peer ID is: " + id)
+            log.debug("My peer ID is: " + id)
         })
 
         this.localPeer!.on("connection", conn => {
-            console.log("message....")
+            this.isReceivingCall = true
             conn.on("data", data => {
-                console.log("new data " + data)
+                if (data === VoiceRTCMessageType.EndingCall) {
+                    this.endCall()
+                }
             })
             conn.on("open", () => {
-                console.log("new message")
+                console.log("Connection Opened!")
             })
         })
 
         this.localPeer!.on("call", async call => {
-            console.log("Incoming call from:", call.peer)
+            log.info(`Incoming call from: ${call.peer}`)
+            this.isReceivingCall = true
             this._incomingCall = call
+            this.handleIncomingCall(call)
         })
 
         this.localPeer!.on("error", this.error)
+    }
+
+    private handleIncomingCall(call: MediaConnection) {
+        call.on("stream", remoteStream => {
+            if (this.localVideoEl) {
+                this.localVideoEl.srcObject = remoteStream
+                this.localVideoEl.play()
+            }
+        })
+
+        call.on("close", () => {
+            console.log("Call closed by remote peer")
+            this.endCall()
+        })
+
+        call.on("error", err => {
+            console.error("Call error:", err)
+            this.endCall()
+        })
     }
 
     turnOnOffCamera() {
@@ -135,14 +159,14 @@ export class VoiceRTC {
             const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
             console.log("Remote user Peer: ", remotePeerIdEdited)
 
-            const conn = this.localPeer!.connect(remotePeerIdEdited)
+            this.dataConnection = this.localPeer!.connect(remotePeerIdEdited)
 
-            conn.on("data", data => {
+            this.dataConnection.on("data", data => {
                 console.log("new data " + data)
             })
 
-            conn.on("open", () => {
-                conn.send("hi")
+            this.dataConnection.on("open", () => {
+                this.dataConnection?.send("hi")
             })
 
             const stream = await navigator.mediaDevices.getUserMedia({
@@ -178,7 +202,7 @@ export class VoiceRTC {
     }
 
     endCall() {
-        // Stop and release all media tracks
+        this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
                 track.stop()
@@ -186,13 +210,11 @@ export class VoiceRTC {
             this.localStream = null
         }
 
-        // Close any active incoming calls
         if (this._incomingCall) {
             this._incomingCall.close()
             this._incomingCall = null
         }
 
-        // Clear video elements
         if (this.localVideoEl) {
             this.localVideoEl.srcObject = null
         }
@@ -200,7 +222,6 @@ export class VoiceRTC {
             this.localVideoCurrentSrc.srcObject = null
         }
 
-        // Log and reset state
         log.info("Call ended and resources cleaned up.")
     }
 

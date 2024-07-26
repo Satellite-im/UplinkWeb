@@ -97,8 +97,6 @@
     let voiceRTCMessageType: string = VoiceRTCMessageType.None
     let callingMessageId: string | undefined = undefined
 
-    $: activeCallInProgress = get(Store.state.activeCall) != undefined || get(Store.state.activeCall) != null
-
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
 
@@ -215,13 +213,16 @@
     let voiceRTC: VoiceRTC
 
     let receivingCall: boolean = false
+    $: activeCallInProgress = false
 
-    $: {
-        if (voiceRTC && $activeChat && $activeChat.users.length > 0) {
-            receivingCall = voiceRTC.incomingCall !== null
-        }
-    }
     onMount(() => {
+        setInterval(() => {
+            if (voiceRTC && receivingCall === false && voiceRTC.isReceivingCall === true) {
+                receivingCall = voiceRTC.isReceivingCall
+                voiceRTC.isReceivingCall = false
+            }
+        }, 1000)
+
         if ($activeChat && $activeChat.users.length > 0) {
             voiceRTC = new VoiceRTC(`${$activeChat.id}`, {
                 audio: true,
@@ -630,7 +631,7 @@
         {/if}
 
         {#if $activeChat.users.length > 0}
-            <Chatbar filesSelected={files} replyTo={replyTo} calling={voiceRTCMessageType} on:onsend={_ => (files = [])}>
+            <Chatbar filesSelected={files} replyTo={replyTo} on:onsend={_ => (files = [])}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     <ContextMenu
