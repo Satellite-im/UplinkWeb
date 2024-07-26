@@ -15,6 +15,8 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
+    import { VoiceRTC } from "$lib/media/Voice"
+    import { createEventDispatcher, onMount } from "svelte"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -26,7 +28,10 @@
 
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
+    export let voiceRTC: VoiceRTC
     export let chat: Chat
+
+    let permissionsGranted = false
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
@@ -37,6 +42,63 @@
 
     Store.state.devices.deafened.subscribe(state => {
         deafened = state
+    })
+
+    const dispatch = createEventDispatcher()
+
+    const checkPermissions = async () => {
+        try {
+            const cameraPermission = await navigator.permissions.query({ name: "camera" as PermissionName })
+            const microphonePermission = await navigator.permissions.query({ name: "microphone" as PermissionName })
+
+            if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                permissionsGranted = true
+            } else {
+                permissionsGranted = false
+            }
+
+            cameraPermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
+            }
+
+            microphonePermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
+            }
+        } catch (err) {
+            console.error("Error checking permissions: ", err)
+        }
+    }
+
+    const requestPermissions = async () => {
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            permissionsGranted = true
+        } catch (err) {
+            console.error("Error requesting permissions: ", err)
+            permissionsGranted = false
+        }
+    }
+
+    let localVideoEl: HTMLVideoElement
+    let localVideoCurrentSrc: HTMLVideoElement
+    let callStarted = false
+
+    onMount(() => {
+        checkPermissions()
+
+        voiceRTC.setVideoElements(localVideoEl, localVideoCurrentSrc)
+
+        if (!permissionsGranted) {
+            requestPermissions()
+        }
     })
 </script>
 
@@ -50,14 +112,23 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            {#each chat.users as user}
-                <Participant
-                    participant={$userCache[user]}
-                    hasVideo={$userCache[user].media.is_streaming_video}
-                    isMuted={$userCache[user].media.is_muted}
-                    isDeafened={$userCache[user].media.is_deafened}
-                    isTalking={$userCache[user].media.is_playing_audio} />
-            {/each}
+            {#if !callStarted}
+                {#each chat.users as user}
+                    <Participant
+                        participant={$userCache[user]}
+                        hasVideo={$userCache[user].media.is_streaming_video}
+                        isMuted={$userCache[user].media.is_muted}
+                        isDeafened={$userCache[user].media.is_deafened}
+                        isTalking={$userCache[user].media.is_playing_audio} />
+                {/each}
+            {/if}
+            <video bind:this={localVideoEl} class:hidden={!callStarted} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
+            <br />
+            <video bind:this={localVideoCurrentSrc} class:hidden={!callStarted} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
         </div>
     {/if}
     <div class="toolbar">
@@ -96,6 +167,7 @@
                 tooltip={$_("call.mute")}
                 on:click={_ => {
                     Store.updateMuted(!muted)
+                    voiceRTC.turnOnOffMicrophone()
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -111,10 +183,23 @@
             <Button appearance={Appearance.Alt} icon tooltip="Stream">
                 <Icon icon={Shape.Stream} />
             </Button>
-            <Button appearance={Appearance.Alt} icon tooltip="Enable Video">
+            <Button
+                appearance={Appearance.Alt}
+                icon
+                tooltip="Enable Video"
+                on:click={_ => {
+                    voiceRTC.turnOnOffCamera()
+                    callStarted = true
+                }}>
                 <Icon icon={Shape.VideoCamera} />
             </Button>
-            <Button appearance={Appearance.Error} icon tooltip="End" on:click={_ => Store.endCall()}>
+            <Button
+                appearance={Appearance.Error}
+                icon
+                tooltip="End"
+                on:click={_ => {
+                    dispatch("onendcall")
+                }}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>
         </Controls>

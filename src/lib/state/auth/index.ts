@@ -1,6 +1,13 @@
-import { type Writable } from "svelte/store"
+import { get, type Writable } from "svelte/store"
 import { createPersistentState, createSessionState } from "../db/persistedState"
 import { getStateFromDB } from "../db/dbOperations"
+import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+import { log } from "$lib/utils/Logger"
+import { Route } from "$lib/enums"
+import { goto } from "$app/navigation"
+import { RelayStore } from "../wasm/relays"
+import { WarpStore } from "$lib/wasm/WarpStore"
+import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
 export type Authentication = {
     pin: string
@@ -72,3 +79,31 @@ class Auth {
 }
 
 export const AuthStore = new Auth()
+
+export async function checkIfUserIsLogged(page: string | null, redirect?: boolean) {
+    console.log("Checking if user is logged")
+    await TesseractStoreInstance.initTesseract()
+    let authentication = await AuthStore.getAuthentication()
+    if (authentication.pin === "") {
+        log.info("No pin stored, redirecting to unlock")
+        goto(Route.Unlock)
+    } else if (page !== Route.Unlock) {
+        // We need to find a better way of handling it so the password doesnt get stored
+        // But for now: dont login if the user is on the login page
+        let logged_in = get(AuthStore.loggedIn)
+        if (!authentication.stayLoggedIn && !logged_in) {
+            goto(Route.Unlock)
+        } else {
+            let addressed = Object.values(get(RelayStore.state))
+                .filter(r => r.active)
+                .map(r => r.address)
+            await WarpStore.initWarpInstances(addressed)
+            log.info("Pin stored, unlocking")
+            let result = await TesseractStoreInstance.unlock(authentication.pin)
+            result.onSuccess(() => {
+                setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
+            })
+            if (redirect) goto(Route.Chat)
+        }
+    }
+}
