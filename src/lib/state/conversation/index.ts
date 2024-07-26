@@ -19,7 +19,7 @@ export type ConversationMessages = {
 class Conversations {
     /**
      * INTERNAL!
-     * This is synced with #conversationsN and purely for saving to DB as DB cannot directly save Writable
+     * This is synced with #conversations and purely for saving to DB as DB cannot directly save Writable
      */
     private conversationsDB: ConversationMessages[]
     private conversations: Writable<ConversationMessagesMap>
