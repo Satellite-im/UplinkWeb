@@ -7,6 +7,7 @@ import { Appearance } from "$lib/enums"
 import { Store } from "../Store"
 import { UIStore } from "../ui"
 import { bool } from "three/examples/jsm/nodes/Nodes.js"
+import { mchats } from "$lib/mock/users"
 
 type ConversationMessagesMap = { [id: string]: Writable<ConversationMessages> }
 
@@ -337,7 +338,7 @@ class Conversations {
     }
 
     async loadMockData() {
-        const firstChatId = this.conversationsDB[0].id
+        const firstChatId = mchats[0].id
         const initialData: Writable<ConversationMessages> = this.createConversation({
             id: firstChatId,
             messages: mock_messages,
