@@ -389,14 +389,7 @@ class GlobalStore {
         this.state.friends.set(mock_users.map(u => u.key))
         this.state.blocked.set(blocked_users.map(u => u.key))
         this.state.favorites.set([activeChat])
-        ConversationStore.conversations.set(
-            mchatsMod.map(c => {
-                return {
-                    id: c.id,
-                    messages: [],
-                }
-            })
-        )
+        ConversationStore.addConversations(mchatsMod.map(c => c.id))
     }
 }
 

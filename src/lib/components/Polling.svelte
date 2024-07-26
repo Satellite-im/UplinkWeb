@@ -76,7 +76,7 @@
 
                     if (activeChat.id === chat.id) {
                         Store.state.activeChat.set(chat)
-                        let conversation = ConversationStore.getConversation(activeChat)
+                        let conversation = get(ConversationStore.getConversation(activeChat))
                         conversation?.messages.forEach(message => {
                             message.messages.forEach(m => {
                                 m.details.origin = chat.users.find(u => u.key === m.details.origin.key) ?? m.details.origin

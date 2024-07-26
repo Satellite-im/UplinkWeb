@@ -60,7 +60,7 @@
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
 
     const timeAgo = new TimeAgo("en-US")
@@ -182,20 +182,20 @@
     async function edit_message(message: string, text: string) {
         editing_message = undefined
         editing_text = undefined
-        await RaygunStoreInstance.edit(conversation!.id, message, text.split("\n"))
+        await RaygunStoreInstance.edit($conversation!.id, message, text.split("\n"))
     }
 
     async function delete_message(message: string) {
-        await RaygunStoreInstance.delete(conversation!.id, message)
+        await RaygunStoreInstance.delete($conversation!.id, message)
     }
 
     async function reactTo(message: string, emoji: string, toggle: boolean) {
         let add = toggle ? !ConversationStore.hasReaction($activeChat, message, emoji) : true
-        await RaygunStoreInstance.react(conversation!.id, message, add ? 0 : 1, emoji)
+        await RaygunStoreInstance.react($conversation!.id, message, add ? 0 : 1, emoji)
     }
 
     async function pin_message(message: string) {
-        await RaygunStoreInstance.pin(conversation!.id, message, true)
+        await RaygunStoreInstance.pin($conversation!.id, message, true)
     }
 
     async function copy(txt: string) {
@@ -203,7 +203,7 @@
     }
 
     async function download_attachment(message: string, attachment: Attachment) {
-        await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
+        await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
 </script>
 
@@ -424,7 +424,7 @@
             {#if $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
-                    {#each conversation.messages as group}
+                    {#each $conversation.messages as group}
                         <StoreResolver value={group.details.origin} resolver={v => Store.getUser(v)} let:resolved>
                             <MessageGroup
                                 profilePictureRequirements={{
