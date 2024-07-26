@@ -14,15 +14,17 @@
     import { PopupButton } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
+    import { VoiceRTCMessageType } from "$lib/media/Voice"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
-    export let calling: string = ""
+    export let calling: string = VoiceRTCMessageType.None
 
-    $: if (calling !== "") {
+    $: if (calling !== VoiceRTCMessageType.None) {
+        console.log("Changing calling state in chatbar")
         sendMessage(calling)
-        calling = ""
+        calling = VoiceRTCMessageType.None
     }
 
     const dispatch = createEventDispatcher()

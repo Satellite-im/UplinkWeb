@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
@@ -92,7 +93,8 @@
     let fileUpload: FileInput
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
-    let calling: string = ""
+    let voiceRTCMessageType: string = VoiceRTCMessageType.None
+    let receivingCall: boolean = false
     let callingMessageId: string | undefined = undefined
 
     $: activeCallInProgress = get(Store.state.activeCall) != undefined || get(Store.state.activeCall) != null
@@ -209,6 +211,43 @@
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
     }
+
+    async function end_call() {
+        activeCallInProgress = false
+        voiceRTCMessageType = VoiceRTCMessageType.EndingCall
+        receivingCall = false
+        Store.endCall()
+    }
+
+    $: {
+        if (conversation && conversation.messages) {
+            processMessages()
+        }
+    }
+
+    async function processMessages() {
+        for (const group of conversation!.messages) {
+            for (const message of group.messages) {
+                if (message.text.length > 0 || message.attachments.length > 0) {
+                    for (const line of message.text) {
+                        if (line.includes(VoiceRTCMessageType.Calling)) {
+                            callingMessageId = message.id
+                        }
+                        if (line.includes(VoiceRTCMessageType.Calling) && message.details.origin !== $own_user.key) {
+                            receivingCall = true
+                            delete_message(message.id)
+                        }
+                        if (line.includes(VoiceRTCMessageType.EndingCall)) {
+                            end_call()
+                            if (message.details.origin !== $own_user.key) {
+                                delete_message(message.id)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -223,6 +262,36 @@
         dragDrop(e)
     }}>
     <!-- Modals -->
+    {#if receivingCall}
+        <Modal
+            on:close={_ => {
+                end_call()
+            }}>
+            <Button
+                appearance={Appearance.Success}
+                on:click={() => {
+                    receivingCall = false
+                    Store.setActiveCall($activeChat)
+                    activeCallInProgress = true
+                    if (callingMessageId) {
+                        delete_message(callingMessageId)
+                    }
+                }}>
+                <Text markdown={"Accept call?"} />
+            </Button>
+            <Button
+                appearance={Appearance.Error}
+                on:click={() => {
+                    receivingCall = false
+                    voiceRTCMessageType = VoiceRTCMessageType.EndingCall
+                    if (callingMessageId) {
+                        end_call()
+                    }
+                }}>
+                <Text markdown={"Deny call?"} />
+            </Button>
+        </Modal>
+    {/if}
     {#if transact}
         <Modal
             on:close={_ => {
@@ -383,7 +452,7 @@
                     disabled={$activeChat.users.length === 0}
                     on:click={_ => {
                         Store.setActiveCall($activeChat)
-                        calling = `Calling...\n ${$activeChat.users[0]}`
+                        voiceRTCMessageType = VoiceRTCMessageType.Calling
                         activeCallInProgress = true
                     }}>
                     <Icon icon={Shape.VideoCamera} />
@@ -428,7 +497,11 @@
             </svelte:fragment>
         </Topbar>
         {#if activeCallInProgress}
-            <CallScreen chat={$activeChat} />
+            <CallScreen
+                chat={$activeChat}
+                on:onendcall={() => {
+                    end_call()
+                }} />
         {/if}
 
         <Conversation>
@@ -478,21 +551,8 @@
                                                     {#each message.text as line}
                                                         {#if get_valid_payment_request(line) != undefined}
                                                             <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
-                                                        {:else}
+                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
                                                             <Text markdown={line} />
-                                                        {/if}
-
-                                                        {#if line.includes("Calling...") && message.details.origin !== $own_user.key}
-                                                            <!-- <CallScreen chat={$activeChat} /> -->
-                                                            <Button
-                                                                on:click={() => {
-                                                                    Store.setActiveCall($activeChat)
-                                                                    activeCallInProgress = true
-                                                                    callingMessageId = message.id
-                                                                    delete_message(message.id)
-                                                                }}>
-                                                                <Text markdown={"Accept call?"} appearance={Appearance.Error} />
-                                                            </Button>
                                                         {/if}
                                                     {/each}
 
@@ -575,7 +635,7 @@
         {/if}
 
         {#if $activeChat.users.length > 0}
-            <Chatbar filesSelected={files} replyTo={replyTo} calling={calling} on:onsend={_ => ((calling = ""), (files = []))}>
+            <Chatbar filesSelected={files} replyTo={replyTo} calling={voiceRTCMessageType} on:onsend={_ => (files = [])}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     <ContextMenu

@@ -1,7 +1,13 @@
 import { Store } from "$lib/state/Store"
-import { failure, success, type Result } from "$lib/utils/Result"
 import { Peer } from "peerjs"
 import { get } from "svelte/store"
+
+export enum VoiceRTCMessageType {
+    Calling = "CALLING_USER",
+    EndingCall = "ENDING_CALL",
+    IncomingCall = "INCOMING_CALL",
+    None = "NONE",
+}
 
 type VoiceRTCOptions = {
     audio: boolean
@@ -18,17 +24,27 @@ export class VoiceRTC {
     localStream: MediaStream | null = null
     localVideoEl: any
     localVideoCurrentSrc: any
-
-    base64EncodeDid(did: string): string {
-        return btoa(did)
-            .replace(/[^a-zA-Z0-9]/g, "")
-            .slice(0, 20)
-    }
+    callOptions: VoiceRTCOptions
 
     constructor(channel: string, options: VoiceRTCOptions) {
+        this.callOptions = options
         this.channel = channel
         this.localPeer = new Peer()
         this.remotePeer = new Peer()
+    }
+
+    turnOnOffCamera() {
+        this.callOptions.video.enabled = !this.callOptions.video.enabled
+        this.localStream?.getVideoTracks().forEach(track => {
+            track.enabled = !track.enabled
+        })
+    }
+
+    turnOnOffMicrophone() {
+        this.callOptions.audio = !this.callOptions.audio
+        this.localStream?.getAudioTracks().forEach(track => {
+            track.enabled = !track.enabled
+        })
     }
 
     setVideoElements(localVideoEl: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
@@ -49,10 +65,6 @@ export class VoiceRTC {
         this.localPeer = new Peer(peerId)
         this.localPeer.on("open", id => {
             console.log("My peer ID is: " + id)
-        })
-
-        this.localPeer.on("error", id => {
-            console.log("error id " + id)
         })
 
         this.localPeer.on("connection", conn => {
@@ -83,9 +95,9 @@ export class VoiceRTC {
         this.localPeer.on("error", this.error)
     }
 
-    // answerCall(call: Peer.MediaConnection) {
+    // async makeVoiceCall(remotePeerId: string) {
     //     if (this.localStream) {
-    //         call.answer(this.localStream)
+    //         const call = this.localPeer.call(remotePeerId, this.localStream)
     //         call.on("stream", remoteStream => {
     //             this.remoteStream(remoteStream)
     //         })
@@ -94,19 +106,9 @@ export class VoiceRTC {
     //     }
     // }
 
-    async makeVoiceCall(remotePeerId: string) {
-        if (this.localStream) {
-            const call = this.localPeer.call(remotePeerId, this.localStream)
-            call.on("stream", remoteStream => {
-                this.remoteStream(remoteStream)
-            })
-        } else {
-            console.error("Local stream not available")
-        }
-    }
-
     async makeVideoCall(remotePeerId: string) {
         try {
+            this.connectLocalPeer()
             let remotePeerIdEdited = remotePeerId.replace("did:key:", "")
             console.log("Remote user Peer: ", remotePeerIdEdited)
             var conn = this.localPeer.connect(remotePeerIdEdited)

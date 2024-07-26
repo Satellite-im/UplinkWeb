@@ -16,7 +16,7 @@
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { VoiceRTC } from "$lib/media/Voice"
-    import { onMount } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -51,6 +51,8 @@
         deafened = state
     })
 
+    const dispatch = createEventDispatcher()
+
     const checkPermissions = async () => {
         try {
             const cameraPermission = await navigator.permissions.query({ name: "camera" as PermissionName })
@@ -82,8 +84,6 @@
         }
     }
 
-    checkPermissions()
-
     const requestPermissions = async () => {
         try {
             await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -93,12 +93,15 @@
             permissionsGranted = false
         }
     }
+
     let rtc: VoiceRTC
     let localVideoEl: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
     let callStarted = false
 
     onMount(() => {
+        checkPermissions()
+
         const options = {
             audio: true,
             video: {
@@ -108,6 +111,10 @@
         }
         rtc = new VoiceRTC("channel-id", options)
         rtc.setVideoElements(localVideoEl, localVideoCurrentSrc)
+
+        if (!permissionsGranted) {
+            requestPermissions()
+        }
     })
 </script>
 
@@ -164,7 +171,6 @@
                     outline={!showVolumeMixer}
                     on:click={_ => {
                         showVolumeMixer = !showVolumeMixer
-                        rtc.connectLocalPeer()
                     }}>
                     <Icon icon={Shape.SpeakerWave} />
                 </Button>
@@ -180,10 +186,6 @@
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
-            {#if !permissionsGranted}
-                <p>Please allow camera and microphone access to continue.</p>
-                <button on:click={requestPermissions}>Grant Permissions</button>
-            {/if}
             <Button
                 icon
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
@@ -201,14 +203,19 @@
                 icon
                 tooltip="Enable Video"
                 on:click={_ => {
-                    rtc.connectLocalPeer()
                     let remoteUserDid = chat.users[1]
                     rtc.makeVideoCall(remoteUserDid)
                     callStarted = true
                 }}>
                 <Icon icon={Shape.VideoCamera} />
             </Button>
-            <Button appearance={Appearance.Error} icon tooltip="End" on:click={_ => Store.endCall()}>
+            <Button
+                appearance={Appearance.Error}
+                icon
+                tooltip="End"
+                on:click={_ => {
+                    dispatch("onendcall")
+                }}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>
         </Controls>
