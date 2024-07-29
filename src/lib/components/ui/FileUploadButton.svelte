@@ -32,7 +32,7 @@
 
     const onFileSelected = async (e: any) => {
         let image = e.target.files[0]
-        if (!image.type) {
+        if (!image.type || image.type == "image/heic") {
             image = await convertHeicToJpg(image)
         }
         let quality = 0.9
