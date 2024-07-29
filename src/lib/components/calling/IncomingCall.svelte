@@ -17,10 +17,8 @@
             if (VoiceRTCInstance.isReceivingCall) {
                 // callSound = playSound(Sounds.IncomingCall)
                 pending = true
-                pendingChatCall = VoiceRTCInstance.channel
                 let callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
                 if (callingChat) {
-                    chat = callingChat
                     user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
                 }
             } else {
@@ -28,7 +26,6 @@
             }
         }, 1000)
     })
-    let chat: Chat | undefined = undefined
     let user: User = defaultUser
 
     $: pending = VoiceRTCInstance.isReceivingCall
