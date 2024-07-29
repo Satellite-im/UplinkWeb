@@ -50,38 +50,23 @@
             const microphonePermission = await navigator.permissions.query({ name: "microphone" as PermissionName })
 
             if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                permissionsGranted = true
+                return true
             } else {
-                permissionsGranted = false
-            }
-
-            cameraPermission.onchange = () => {
-                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                    permissionsGranted = true
-                } else {
-                    permissionsGranted = false
-                }
-            }
-
-            microphonePermission.onchange = () => {
-                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                    permissionsGranted = true
-                } else {
-                    permissionsGranted = false
-                }
+                return false
             }
         } catch (err) {
             console.error("Error checking permissions: ", err)
+            return false
         }
     }
 
     const requestPermissions = async () => {
         try {
-            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            permissionsGranted = true
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            return stream
         } catch (err) {
             console.error("Error requesting permissions: ", err)
-            permissionsGranted = false
+            return null
         }
     }
 
@@ -89,14 +74,30 @@
     let localVideoCurrentSrc: HTMLVideoElement
     let callStarted = false
 
-    onMount(() => {
-        checkPermissions()
-
-        VoiceRTCInstance.setVideoElements(localVideoEl, localVideoCurrentSrc)
-
+    const setupLocalVideo = async () => {
+        const permissionsGranted = await checkPermissions()
         if (!permissionsGranted) {
-            requestPermissions()
+            const stream = await requestPermissions()
+            if (stream) {
+                VoiceRTCInstance.localStream = stream
+                localVideoEl.srcObject = stream
+                localVideoEl.play()
+            } else {
+                console.error("Permissions denied or error requesting permissions.")
+            }
+        } else {
+            const stream = await requestPermissions()
+            if (stream) {
+                VoiceRTCInstance.localStream = stream
+                localVideoEl.srcObject = stream
+                localVideoEl.play()
+            }
         }
+    }
+
+    onMount(() => {
+        VoiceRTCInstance.setVideoElements(localVideoEl, localVideoCurrentSrc)
+        setupLocalVideo()
     })
 </script>
 

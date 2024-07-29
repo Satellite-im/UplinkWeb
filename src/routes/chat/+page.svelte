@@ -219,6 +219,8 @@
             }
             if (get(Store.state.activeCall)) {
                 activeCallInProgress = true
+            } else {
+                activeCallInProgress = false
             }
         }, 1000)
     })
@@ -227,7 +229,6 @@
         activeCallInProgress = false
         receivingCall = false
         Store.endCall()
-        VoiceRTCInstance.endCall()
     }
 </script>
 

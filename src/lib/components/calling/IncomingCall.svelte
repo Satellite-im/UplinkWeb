@@ -15,18 +15,16 @@
     onMount(() => {
         setInterval(async () => {
             if (VoiceRTCInstance.isReceivingCall) {
-                callSound = playSound(Sounds.IncomingCall)
+                // callSound = playSound(Sounds.IncomingCall)
                 pending = true
                 pendingChatCall = VoiceRTCInstance.channel
-                let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
-                if (activeChat) {
-                    Store.setActiveCall(activeChat)
-                    chat = activeChat
-                    user = (await MultipassStoreInstance.identity_from_did(activeChat.users[1])) ?? defaultUser
+                let callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
+                if (callingChat) {
+                    chat = callingChat
+                    user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
                 }
             } else {
                 pending = false
-                callSound.stop()
             }
         }, 1000)
     })
@@ -50,6 +48,7 @@
                         appearance={Appearance.Success}
                         text="Answer"
                         on:click={async _ => {
+                            VoiceRTCInstance.isReceivingCall = false
                             let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
                             if (activeChat) {
                                 Store.setActiveCall(activeChat)
@@ -66,6 +65,7 @@
                         appearance={Appearance.Error}
                         text="End"
                         on:click={_ => {
+                            VoiceRTCInstance.isReceivingCall = false
                             pending = false
                             Store.denyCall()
                             callSound.stop()

@@ -83,10 +83,11 @@ class VoiceRTC {
             })
 
             conn.on("data", data => {
+                this.dataConnection = conn
                 if (data === VoiceRTCMessageType.EndingCall) {
+                    console.log("Receving message to end call")
                     this.endCall()
                 } else if (data === VoiceRTCMessageType.Calling) {
-                    // this.dataConnection = conn
                     // this.dataConnection.on("data", data => {
                     //     if (data === VoiceRTCMessageType.IncomingCall) {
                     //         this.isReceivingCall = true
@@ -119,12 +120,10 @@ class VoiceRTC {
 
         call.on("close", () => {
             console.log("Call closed by remote peer")
-            this.endCall()
         })
 
         call.on("error", err => {
             console.error("Call error:", err)
-            this.endCall()
         })
     }
 
@@ -150,6 +149,7 @@ class VoiceRTC {
     public async acceptCall() {
         if (this._incomingCall) {
             try {
+                this.isReceivingCall = false
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: this.callOptions.video.enabled,
                     audio: this.callOptions.audio,
@@ -169,10 +169,7 @@ class VoiceRTC {
                     }
                 })
 
-                this._incomingCall.on("close", () => {
-                    console.log("Call closed")
-                    this.endCall()
-                })
+                this._incomingCall.on("close", () => {})
                 this._incomingCall.on("error", err => {
                     console.error("Call error:", err)
                 })
@@ -199,6 +196,9 @@ class VoiceRTC {
 
             this.dataConnection.on("data", data => {
                 console.log("new data " + data)
+                if (data === VoiceRTCMessageType.EndingCall) {
+                    this.endCall()
+                }
             })
 
             this.dataConnection.on("open", () => {
@@ -239,7 +239,7 @@ class VoiceRTC {
 
     endCall() {
         this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
-
+        this.isReceivingCall = false
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
                 track.stop()
@@ -258,9 +258,9 @@ class VoiceRTC {
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = null
         }
+        Store.endCall()
 
         this.isReceivingCall = false
-        Store.state.activeCall.set(null)
         log.info("Call ended and resources cleaned up.")
     }
 
