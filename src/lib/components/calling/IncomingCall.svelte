@@ -32,7 +32,6 @@
     let user: User = defaultUser
 
     $: pending = VoiceRTCInstance.isReceivingCall
-    $: pendingChatCall = ""
 </script>
 
 {#if pending}
