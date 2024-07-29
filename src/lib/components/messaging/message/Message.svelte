@@ -1,12 +1,15 @@
 <script lang="ts">
-    import { MessagePosition } from "$lib/enums"
+    import Icon from "$lib/elements/Icon.svelte"
+    import { MessagePosition, Shape } from "$lib/enums"
     import { SettingsStore } from "$lib/state"
     import { get } from "svelte/store"
 
+    export let id: string = ""
     export let remote: boolean = false
     export let reply: boolean = false
     export let localSide: boolean = false
     export let morePadding: boolean = false
+    export let pinned = false
 
     export let position: MessagePosition = MessagePosition.Middle
 
@@ -14,7 +17,15 @@
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div on:contextmenu class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''} {compact ? 'compact' : ''}">
+<div
+    on:contextmenu
+    id={id !== "" ? `message-${id}` : undefined}
+    class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''} {compact ? 'compact' : ''}">
+    {#if pinned}
+        <div class="pin-indicator">
+            <Icon icon={Shape.Pin} />
+        </div>
+    {/if}
     <div class="content">
         <slot></slot>
     </div>
@@ -33,6 +44,16 @@
         display: inline-flex;
         gap: var(--gap);
         color: var(--color);
+        position: relative;
+
+        .pin-indicator {
+            position: absolute;
+            right: -6px;
+            top: -6px;
+            height: 12px;
+            width: 12px;
+            color: var(--text-color);
+        }
 
         .content {
             display: inline-flex;
