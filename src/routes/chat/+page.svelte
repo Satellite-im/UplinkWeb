@@ -334,6 +334,7 @@
 
         {#each $chats as chat}
             <ContextMenu
+                hook="context-menu-sidebar-chat"
                 items={[
                     {
                         id: "favorite",
@@ -496,7 +497,7 @@
                                         </StoreResolver>
                                     {/if}
                                     {#if message.text.length > 0 || message.attachments.length > 0}
-                                        <ContextMenu items={build_context_items(message)}>
+                                        <ContextMenu hook="context-menu-chat-message" items={build_context_items(message)}>
                                             <Message
                                                 id={message.id}
                                                 pinned={message.pinned}
@@ -600,6 +601,7 @@
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     <ContextMenu
+                        hook="context-menu-chat-add-attachment"
                         items={[
                             {
                                 id: "upload",
@@ -618,7 +620,7 @@
                                 onClick: () => {},
                             },
                         ]}>
-                        <Button slot="content" let:open on:click={open} on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
+                        <Button hook="button-chat-add-attachment" slot="content" let:open on:click={open} on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
                             <Icon icon={Shape.Plus} />
                         </Button>
                     </ContextMenu>

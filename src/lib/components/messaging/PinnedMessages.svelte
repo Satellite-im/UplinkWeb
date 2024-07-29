@@ -35,31 +35,31 @@
     }
 </script>
 
-<div class="pinned-messages-container" style="top:{top}">
-    <Label text={"Pinned Messages"}></Label>
+<div class="pinned-messages-container" data-cy="pinned-messages-container" style="top:{top}">
+    <Label hook="label-pinned-messages" text={"Pinned Messages"}></Label>
     {#if messages.length === 0}
-        <div class="pinned-empty">{$_("messages.pinnedNone")}</div>
+        <div data-cy="pinned-messages-empty" class="pinned-empty">{$_("messages.pinnedNone")}</div>
     {:else}
         <div class="pinned-messages">
             {#each messages as message}
                 <div class="pinned-message-wrap">
-                    <div class="pinned-message">
+                    <div class="pinned-message" data-cy="pinned-message">
                         <div class="pinned-content-container">
                             <div class="pinned-sender-container">
                                 <StoreResolver value={message.details.origin} resolver={v => Store.getUser(v)} let:resolved>
-                                    <ProfilePicture size={Size.Smaller} image={resolved.profile.photo.image} status={resolved.profile.status} highlight={Appearance.Default} notifications={0} />
+                                    <ProfilePicture hook="pinned-message-profile-picture" size={Size.Smaller} image={resolved.profile.photo.image} status={resolved.profile.status} highlight={Appearance.Default} notifications={0} />
                                     <div class="pinned-sender">
-                                        <p>{resolved.name}</p>
-                                        <p class="sender-time">{message.details.at.toLocaleString()}</p>
+                                        <p data-cy="pinned-message-sender">{resolved.name}</p>
+                                        <p data-cy="pinned-message-timestamp" class="sender-time">{message.details.at.toLocaleString()}</p>
                                     </div>
                                 </StoreResolver>
                                 <div class="pinned-button-container">
-                                    <Button class="pinned-buttons" text={$_("messages.pinnedGoto")} on:click={_ => scrollTo(message.id)}></Button>
-                                    <Button class="pinned-buttons" text={$_("messages.pinnedUnpin")} on:click={_ => unpin(message.id)}></Button>
+                                    <Button hook="pinned-message-button-go-to" class="pinned-buttons" text={$_("messages.pinnedGoto")} on:click={_ => scrollTo(message.id)}></Button>
+                                    <Button hook="pinned-message-button-unpin" class="pinned-buttons" text={$_("messages.pinnedUnpin")} on:click={_ => unpin(message.id)}></Button>
                                 </div>
                             </div>
                             {#each message.text as line}
-                                <Text markdown={line} />
+                                <Text hook="pinned-message-text" markdown={line} />
                             {/each}
                         </div>
                         {#if message.attachments.length > 0}

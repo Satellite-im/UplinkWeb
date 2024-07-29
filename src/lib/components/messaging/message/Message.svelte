@@ -20,13 +20,14 @@
 <div
     on:contextmenu
     id={id !== "" ? `message-${id}` : undefined}
+    data-cy="message-bubble-{remote ? 'remote' : 'local'}"
     class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''} {compact ? 'compact' : ''}">
     {#if pinned}
-        <div class="pin-indicator">
+        <div data-cy="message-pin-indicator" class="pin-indicator">
             <Icon icon={Shape.Pin} />
         </div>
     {/if}
-    <div class="content">
+    <div data-cy="message-bubble-content" class="content">
         <slot></slot>
     </div>
 </div>

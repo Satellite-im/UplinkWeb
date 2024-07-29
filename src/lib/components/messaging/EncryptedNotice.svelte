@@ -3,9 +3,9 @@
     import { Shape, Size } from "$lib/enums"
 </script>
 
-<div class="encrypted-notice">
+<div class="encrypted-notice" data-cy="chat-encrypted-notice">
     <Icon icon={Shape.Lock} />
-    <Text size={Size.Smaller}>Messages are secured by end-to-end encryption, sent over a peer-to-peer network.</Text>
+    <Text hook="chat-encrypted-text" size={Size.Smaller}>Messages are secured by end-to-end encryption, sent over a peer-to-peer network.</Text>
 </div>
 
 <style lang="scss">

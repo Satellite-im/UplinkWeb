@@ -40,19 +40,20 @@
             <Icon icon={Shape.Beaker} />
         </Button>
         {#if $favorites.length}
-            <Label text="Faves" />
+            <Label hook="label-favorites" text="Faves" />
             {#each $favorites as favorite}
                 <StoreResolver value={favorite.users} resolver={v => Store.getUsers(v)} let:resolved>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <div
                         class="fave"
+                        data-cy="favorite-circle"
                         on:click={_ => {
                             Store.setActiveChat(favorite)
                             goto(Route.Chat)
                         }}>
                         {#if favorite.users.length === 2}
-                            <ProfilePicture id={resolved[0]?.key} typing={favorite.activity} image={resolved[0]?.profile.photo.image} status={resolved[0].profile.status} size={Size.Medium} />
+                            <ProfilePicture hook="favorite-profile-picture" id={resolved[0]?.key} typing={favorite.activity} image={resolved[0]?.profile.photo.image} status={resolved[0].profile.status} size={Size.Medium} />
                         {:else}
                             <ProfilePictureMany users={resolved} />
                         {/if}
