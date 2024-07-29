@@ -1,25 +1,42 @@
 <script lang="ts">
     import { Button, Icon, Text, Spacer } from "$lib/elements"
-    import { Appearance, Shape, Size } from "$lib/enums"
+    import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { Controls } from "$lib/layouts"
-    import { defaultUser, type User } from "$lib/types"
+    import { defaultUser, type Chat, type User } from "$lib/types"
     import { onMount } from "svelte"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { goto } from "$app/navigation"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
-    export let user: User = defaultUser
     let callSound: SoundHandler
-    $: pending = Store.state.pendingCall
+    onMount(() => {
+        setInterval(async () => {
+            if (VoiceRTCInstance.isReceivingCall) {
+                callSound = playSound(Sounds.IncomingCall)
+                pending = true
+                pendingChatCall = VoiceRTCInstance.channel
+                let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
+                if (activeChat) {
+                    Store.setActiveCall(activeChat)
+                    chat = activeChat
+                    user = (await MultipassStoreInstance.identity_from_did(activeChat.users[1])) ?? defaultUser
+                }
+            } else {
+                pending = false
+                callSound.stop()
+            }
+        }, 1000)
+    })
+    let chat: Chat | undefined = undefined
+    let user: User = defaultUser
 
-    $: {
-        if ($pending) {
-            callSound = playSound(Sounds.IncomingCall)
-        }
-    }
+    $: pending = VoiceRTCInstance.isReceivingCall
 </script>
 
-{#if $pending}
+{#if pending}
     <div id="incoming-call">
         <div class="body">
             <div class="content">
@@ -31,9 +48,16 @@
                     <Button
                         appearance={Appearance.Success}
                         text="Answer"
-                        on:click={_ => {
+                        on:click={async _ => {
+                            let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
+                            if (activeChat) {
+                                Store.setActiveCall(activeChat)
+                            }
+                            goto(Route.Chat)
+                            pending = false
                             Store.acceptCall()
                             callSound.stop()
+                            await VoiceRTCInstance.acceptCall()
                         }}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
@@ -41,8 +65,10 @@
                         appearance={Appearance.Error}
                         text="End"
                         on:click={_ => {
+                            pending = false
                             Store.denyCall()
                             callSound.stop()
+                            VoiceRTCInstance.endCall()
                         }}>
                         <Icon icon={Shape.PhoneXMark} />
                     </Button>
