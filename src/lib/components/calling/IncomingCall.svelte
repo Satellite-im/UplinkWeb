@@ -12,6 +12,8 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
     let callSound: SoundHandler
+    let pending = false
+
     onMount(() => {
         setInterval(async () => {
             if (VoiceRTCInstance.isReceivingCall) {
@@ -21,14 +23,10 @@
                 if (callingChat) {
                     user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
                 }
-            } else {
-                pending = false
             }
         }, 1000)
     })
     let user: User = defaultUser
-
-    $: pending = VoiceRTCInstance.isReceivingCall
 </script>
 
 {#if pending}
@@ -44,7 +42,7 @@
                         appearance={Appearance.Success}
                         text="Answer"
                         on:click={async _ => {
-                            VoiceRTCInstance.isReceivingCall = false
+                            await VoiceRTCInstance.acceptCall()
                             let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
                             if (activeChat) {
                                 Store.setActiveCall(activeChat)
@@ -52,8 +50,7 @@
                             goto(Route.Chat)
                             pending = false
                             Store.acceptCall()
-                            callSound.stop()
-                            await VoiceRTCInstance.acceptCall()
+                            // callSound.stop()
                         }}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
@@ -61,10 +58,9 @@
                         appearance={Appearance.Error}
                         text="End"
                         on:click={_ => {
-                            VoiceRTCInstance.isReceivingCall = false
                             pending = false
                             Store.denyCall()
-                            callSound.stop()
+                            // callSound.stop()
                             VoiceRTCInstance.endCall()
                         }}>
                         <Icon icon={Shape.PhoneXMark} />
