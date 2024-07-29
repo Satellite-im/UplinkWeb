@@ -74,13 +74,16 @@ export let defaultSettings = {
     widgets: {
         show: false,
     },
+    calling: {
+        minimalCallingAlerts: false,
+    },
     messaging: {
         convertEmoji: true,
         markdownSupport: true,
         spamRejection: true,
         compact: false,
         quick: false,
-        identiconStyle: Identicon.BotsNeutral
+        identiconStyle: Identicon.BotsNeutral,
     },
     audio: {
         inputDevice: "Default",

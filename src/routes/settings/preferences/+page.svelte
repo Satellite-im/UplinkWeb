@@ -184,6 +184,14 @@
                 SettingsStore.update({ ...settings, widgets: { ...settings.widgets, show: on.detail } })
             }} />
     </SettingSection>
+    <SettingSection hook="section-minimal-call-alerts" name={$_("settings.calling.minimalCallingAlerts")} description={$_("settings.calling.minimalCallingAlertsDescription")}>
+        <Switch
+            hook="checkbox-minimal-call-alerts"
+            on={settings ? settings.calling.minimalCallingAlerts : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, calling: { ...(settings.calling || {}), minimalCallingAlerts: on.detail } })
+            }} />
+    </SettingSection>
     <SettingSection hook="section-custom-css" name={$_("settings.preferences.customCss")} description={$_("settings.preferences.customCssDescription")} fullWidth>
         <textarea
             data-cy="text-area-custom-css"

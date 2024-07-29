@@ -26,6 +26,9 @@ export interface ISettingsState {
         messageSounds: boolean
         callTimer: boolean
     }
+    calling: {
+        minimalCallingAlerts: boolean
+    }
     extensions: {}
     keybinds: Keybind[]
     accessibility: {

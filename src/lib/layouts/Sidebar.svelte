@@ -42,6 +42,8 @@
     }
 
     Store.state.activeCall.subscribe(c => (activeCall = c))
+
+    $: pending = Store.state.pendingCall
 </script>
 
 <div class="sidebar-layout {open ? 'open' : 'closed'}" data-cy="sidebar">
@@ -68,7 +70,7 @@
             </div>
 
             <div class="popups">
-                {#if activeCall}
+                {#if activeCall || $pending}
                     <CallControls activeRoute={activeRoute} />
                 {/if}
             </div>

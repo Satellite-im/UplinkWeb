@@ -415,6 +415,11 @@ class GlobalStore {
         return get(this.state.blocked)
     }
 
+    startMockCall() {
+        let chat = defaultChat
+        this.setPendingCall(chat, CallDirection.Inbound)
+    }
+
     loadMockData() {
         let mchatsMod = mchats
         let activeChat = mchatsMod[0]
