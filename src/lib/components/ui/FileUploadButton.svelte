@@ -16,10 +16,6 @@
 
     let avatar: string | undefined, fileinput: HTMLElement
 
-    // function getExtensionFromDataUrl(dataUrl: string): string | null {
-    //     const match = dataUrl.match(/data:image\/(.*?);/)
-    //     return match ? match[1] : null
-    // }
     async function convertHeicToJpg(file: File): Promise<File> {
         try {
             const conversionResult = await heic2any({
