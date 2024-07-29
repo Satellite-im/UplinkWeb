@@ -115,6 +115,15 @@ class GlobalStore {
         return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
     }
 
+    setActiveChatByID(chatID: string): Chat | undefined {
+        const chats = get(UIStore.state.chats)
+        const chat = chats.find(c => c.id === chatID)
+        if (chat) {
+            this.setActiveChat(chat)
+        }
+        return chat
+    }
+
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
 

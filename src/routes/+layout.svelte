@@ -137,12 +137,6 @@
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
-    $: pendingCall = VoiceRTCInstance.isReceivingCall
-
-    $: if (pendingCall) {
-        console.log("------> pending call")
-    }
-
     checkIfUserIsLogged($page.route.id)
 </script>
 

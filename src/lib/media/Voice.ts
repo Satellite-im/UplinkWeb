@@ -34,6 +34,10 @@ class VoiceRTC {
         return this._incomingCall
     }
 
+    setChannel(channel: string) {
+        this.channel = channel
+    }
+
     constructor(channel: string, options: VoiceRTCOptions) {
         log.info("Initializing VoiceRTC")
         this.callOptions = {
@@ -81,6 +85,16 @@ class VoiceRTC {
             conn.on("data", data => {
                 if (data === VoiceRTCMessageType.EndingCall) {
                     this.endCall()
+                } else if (data === VoiceRTCMessageType.Calling) {
+                    // this.dataConnection = conn
+                    // this.dataConnection.on("data", data => {
+                    //     if (data === VoiceRTCMessageType.IncomingCall) {
+                    //         this.isReceivingCall = true
+                    //     }
+                    // })
+                } else {
+                    this.channel = data as string
+                    console.log("Channel as Chat ID: ", this.channel)
                 }
             })
         })
@@ -172,9 +186,12 @@ class VoiceRTC {
         }
     }
 
-    async makeVideoCall(remotePeerId: string) {
+    async makeVideoCall(remotePeerId: string, chatID: string) {
         try {
+            this.channel = chatID
             this.dataConnection?.send(VoiceRTCMessageType.Calling)
+            this.dataConnection?.send(chatID)
+
             const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
             console.log("Remote user Peer: ", remotePeerIdEdited)
 
@@ -185,7 +202,7 @@ class VoiceRTC {
             })
 
             this.dataConnection.on("open", () => {
-                this.dataConnection?.send("hi")
+                this.dataConnection?.send(chatID)
             })
 
             const stream = await navigator.mediaDevices.getUserMedia({
@@ -222,6 +239,7 @@ class VoiceRTC {
 
     endCall() {
         this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
+
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
                 track.stop()

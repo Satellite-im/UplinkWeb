@@ -94,8 +94,6 @@
     let fileUpload: FileInput
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
-    let voiceRTCMessageType: string = VoiceRTCMessageType.None
-    let callingMessageId: string | undefined = undefined
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
@@ -219,22 +217,14 @@
                 receivingCall = VoiceRTCInstance.isReceivingCall
                 VoiceRTCInstance.isReceivingCall = false
             }
+            if (get(Store.state.activeCall)) {
+                activeCallInProgress = true
+            }
         }, 1000)
-
-        // if ($activeChat && $activeChat.users.length > 0) {
-        //     voiceRTC = new VoiceRTC(`${$activeChat.id}`, {
-        //         audio: true,
-        //         video: {
-        //             enabled: true,
-        //             selfie: true,
-        //         },
-        //     })
-        // }
     })
 
     async function end_call() {
         activeCallInProgress = false
-        voiceRTCMessageType = VoiceRTCMessageType.EndingCall
         receivingCall = false
         Store.endCall()
         VoiceRTCInstance.endCall()
@@ -253,37 +243,6 @@
         dragDrop(e)
     }}>
     <!-- Modals -->
-    {#if receivingCall}
-        <Modal
-            on:close={_ => {
-                end_call()
-            }}>
-            <Button
-                appearance={Appearance.Success}
-                on:click={async () => {
-                    receivingCall = false
-                    Store.setActiveCall($activeChat)
-                    activeCallInProgress = true
-                    if (callingMessageId) {
-                        delete_message(callingMessageId)
-                    }
-                    await VoiceRTCInstance.acceptCall()
-                }}>
-                <Text markdown={"Accept call?"} />
-            </Button>
-            <Button
-                appearance={Appearance.Error}
-                on:click={() => {
-                    receivingCall = false
-                    voiceRTCMessageType = VoiceRTCMessageType.EndingCall
-                    if (callingMessageId) {
-                        end_call()
-                    }
-                }}>
-                <Text markdown={"Deny call?"} />
-            </Button>
-        </Modal>
-    {/if}
     {#if transact}
         <Modal
             on:close={_ => {
@@ -442,10 +401,9 @@
                     icon
                     appearance={Appearance.Alt}
                     disabled={$activeChat.users.length === 0}
-                    on:click={_ => {
+                    on:click={async _ => {
                         Store.setActiveCall($activeChat)
-                        VoiceRTCInstance.makeVideoCall($activeChat.users[1])
-                        voiceRTCMessageType = VoiceRTCMessageType.Calling
+                        await VoiceRTCInstance.makeVideoCall($activeChat.users[1], $activeChat.id)
                         activeCallInProgress = true
                     }}>
                     <Icon icon={Shape.VideoCamera} />
