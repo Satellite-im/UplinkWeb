@@ -7,6 +7,8 @@
         dispatch("close", event)
     }
 
+    export let direct: boolean = false
+    export let noBackground: boolean = false
     export let padded: boolean = false
     export let withControls: boolean = false
     export let hook: string = ""
@@ -17,17 +19,23 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="modal" data-cy={hook} on:click={onClose}>
-    <div class="body {padded ? 'padded' : ''} {clazz}" on:click|stopPropagation>
-        {#if withControls}
-            <Controls>
-                <slot name="controls"></slot>
-            </Controls>
-        {/if}
+<div class="modal {noBackground ? '' : 'blurred'}" data-cy={hook} on:click={onClose}>
+    {#if direct}
         <div class="content">
             <slot></slot>
         </div>
-    </div>
+    {:else}
+        <div class="body {padded ? 'padded' : ''} {clazz}" on:click|stopPropagation>
+            {#if withControls}
+                <Controls>
+                    <slot name="controls"></slot>
+                </Controls>
+            {/if}
+            <div class="content">
+                <slot></slot>
+            </div>
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">
@@ -43,9 +51,11 @@
         left: 0;
         bottom: 0;
         right: 0;
-        background-color: var(--opaque-color);
-        backdrop-filter: blur(var(--blur-radius));
-        -webkit-backdrop-filter: blur(var(--blur-radius));
+        &.blurred {
+            background-color: var(--opaque-color);
+            backdrop-filter: blur(var(--blur-radius));
+            -webkit-backdrop-filter: blur(var(--blur-radius));
+        }
 
         .body {
             display: inline-flex;
