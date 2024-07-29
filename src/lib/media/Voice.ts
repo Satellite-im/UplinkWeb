@@ -18,7 +18,7 @@ type VoiceRTCOptions = {
     }
 }
 
-export class VoiceRTC {
+class VoiceRTC {
     channel: string
     localPeer: Peer | null = null
     remotePeer: Peer | null = null
@@ -35,6 +35,7 @@ export class VoiceRTC {
     }
 
     constructor(channel: string, options: VoiceRTCOptions) {
+        log.info("Initializing VoiceRTC")
         this.callOptions = {
             audio: options.audio,
             video: {
@@ -46,24 +47,41 @@ export class VoiceRTC {
         this.setupPeerEvents()
     }
 
-    private setupPeerEvents() {
+    private async setupPeerEvents() {
         let userId = get(Store.state.user).key
+        while (userId === "0x0") {
+            userId = get(Store.state.user).key
+            console.log("User ID: ", userId)
+            await new Promise(resolve => setTimeout(resolve, 500))
+        }
+
         const peerId = userId.replace("did:key:", "")
-        this.localPeer = new Peer(peerId)
+        if (this.localPeer) {
+            log.debug("Destroying existing peer")
+            this.localPeer.destroy()
+        }
+
+        try {
+            this.localPeer = new Peer(peerId)
+        } catch (error) {
+            log.error(`Error creating Peer: ${error}`)
+            this.localPeer?.destroy()
+            this.localPeer = new Peer(peerId)
+        }
 
         this.localPeer!.on("open", id => {
             log.debug("My peer ID is: " + id)
         })
 
         this.localPeer!.on("connection", conn => {
-            this.isReceivingCall = true
+            conn.on("open", () => {
+                console.log("Connection Opened!")
+            })
+
             conn.on("data", data => {
                 if (data === VoiceRTCMessageType.EndingCall) {
                     this.endCall()
                 }
-            })
-            conn.on("open", () => {
-                console.log("Connection Opened!")
             })
         })
 
@@ -156,6 +174,7 @@ export class VoiceRTC {
 
     async makeVideoCall(remotePeerId: string) {
         try {
+            this.dataConnection?.send(VoiceRTCMessageType.Calling)
             const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
             console.log("Remote user Peer: ", remotePeerIdEdited)
 
@@ -222,6 +241,8 @@ export class VoiceRTC {
             this.localVideoCurrentSrc.srcObject = null
         }
 
+        this.isReceivingCall = false
+        Store.state.activeCall.set(null)
         log.info("Call ended and resources cleaned up.")
     }
 
@@ -229,3 +250,11 @@ export class VoiceRTC {
         console.error("Error:", error)
     }
 }
+
+export const VoiceRTCInstance = new VoiceRTC("default", {
+    audio: true,
+    video: {
+        enabled: true,
+        selfie: true,
+    },
+})

@@ -15,8 +15,8 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { VoiceRTC } from "$lib/media/Voice"
     import { createEventDispatcher, onMount } from "svelte"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -28,7 +28,6 @@
 
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
-    export let voiceRTC: VoiceRTC
     export let chat: Chat
 
     let permissionsGranted = false
@@ -94,7 +93,7 @@
     onMount(() => {
         checkPermissions()
 
-        voiceRTC.setVideoElements(localVideoEl, localVideoCurrentSrc)
+        VoiceRTCInstance.setVideoElements(localVideoEl, localVideoCurrentSrc)
 
         if (!permissionsGranted) {
             requestPermissions()
@@ -167,7 +166,7 @@
                 tooltip={$_("call.mute")}
                 on:click={_ => {
                     Store.updateMuted(!muted)
-                    voiceRTC.turnOnOffMicrophone()
+                    VoiceRTCInstance.turnOnOffMicrophone()
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -188,7 +187,7 @@
                 icon
                 tooltip="Enable Video"
                 on:click={_ => {
-                    voiceRTC.turnOnOffCamera()
+                    VoiceRTCInstance.turnOnOffCamera()
                     callStarted = true
                 }}>
                 <Icon icon={Shape.VideoCamera} />
@@ -199,6 +198,7 @@
                 tooltip="End"
                 on:click={_ => {
                     dispatch("onendcall")
+                    VoiceRTCInstance.endCall()
                 }}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>

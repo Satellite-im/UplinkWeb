@@ -11,7 +11,7 @@
     export let user: User = defaultUser
     let callSound: SoundHandler
     onMount(() => {
-        callSound = playSound(Sounds.IncomingCall)
+        // callSound = playSound(Sounds.IncomingCall)
     })
     $: pending = Store.state.pendingCall
 </script>

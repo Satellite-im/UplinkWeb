@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { VoiceRTC, VoiceRTCMessageType } from "./../../lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
@@ -210,28 +210,26 @@
         await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
     }
 
-    let voiceRTC: VoiceRTC
-
     let receivingCall: boolean = false
     $: activeCallInProgress = false
 
     onMount(() => {
         setInterval(() => {
-            if (voiceRTC && receivingCall === false && voiceRTC.isReceivingCall === true) {
-                receivingCall = voiceRTC.isReceivingCall
-                voiceRTC.isReceivingCall = false
+            if (receivingCall === false && VoiceRTCInstance.isReceivingCall === true) {
+                receivingCall = VoiceRTCInstance.isReceivingCall
+                VoiceRTCInstance.isReceivingCall = false
             }
         }, 1000)
 
-        if ($activeChat && $activeChat.users.length > 0) {
-            voiceRTC = new VoiceRTC(`${$activeChat.id}`, {
-                audio: true,
-                video: {
-                    enabled: true,
-                    selfie: true,
-                },
-            })
-        }
+        // if ($activeChat && $activeChat.users.length > 0) {
+        //     voiceRTC = new VoiceRTC(`${$activeChat.id}`, {
+        //         audio: true,
+        //         video: {
+        //             enabled: true,
+        //             selfie: true,
+        //         },
+        //     })
+        // }
     })
 
     async function end_call() {
@@ -239,7 +237,7 @@
         voiceRTCMessageType = VoiceRTCMessageType.EndingCall
         receivingCall = false
         Store.endCall()
-        voiceRTC.endCall()
+        VoiceRTCInstance.endCall()
     }
 </script>
 
@@ -269,7 +267,7 @@
                     if (callingMessageId) {
                         delete_message(callingMessageId)
                     }
-                    await voiceRTC.acceptCall()
+                    await VoiceRTCInstance.acceptCall()
                 }}>
                 <Text markdown={"Accept call?"} />
             </Button>
@@ -446,7 +444,7 @@
                     disabled={$activeChat.users.length === 0}
                     on:click={_ => {
                         Store.setActiveCall($activeChat)
-                        voiceRTC.makeVideoCall($activeChat.users[1])
+                        VoiceRTCInstance.makeVideoCall($activeChat.users[1])
                         voiceRTCMessageType = VoiceRTCMessageType.Calling
                         activeCallInProgress = true
                     }}>
@@ -494,7 +492,6 @@
         {#if activeCallInProgress}
             <CallScreen
                 chat={$activeChat}
-                voiceRTC={voiceRTC}
                 on:onendcall={() => {
                     end_call()
                 }} />

@@ -7,6 +7,7 @@
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
@@ -135,6 +136,12 @@
     })
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
+
+    $: pendingCall = VoiceRTCInstance.isReceivingCall
+
+    $: if (pendingCall) {
+        console.log("------> pending call")
+    }
 
     checkIfUserIsLogged($page.route.id)
 </script>
