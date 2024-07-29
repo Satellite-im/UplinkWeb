@@ -50,6 +50,7 @@
                             goto(Route.Chat)
                             pending = false
                             Store.acceptCall()
+                            VoiceRTCInstance.isReceivingCall = false
                             // callSound.stop()
                         }}>
                         <Icon icon={Shape.PhoneCall} />
@@ -62,6 +63,7 @@
                             Store.denyCall()
                             // callSound.stop()
                             VoiceRTCInstance.endCall()
+                            VoiceRTCInstance.isReceivingCall = false
                         }}>
                         <Icon icon={Shape.PhoneXMark} />
                     </Button>
