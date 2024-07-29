@@ -5,6 +5,11 @@ export const enum ChatType {
     DirectMessage,
 }
 
+export const enum CallDirection {
+    Inbound,
+    Outbound,
+}
+
 export const enum Locale {
     EN_US = "English (US)",
     ES_MX = "Español (México)",
@@ -184,7 +189,7 @@ export enum IntegrationDisplays {
     Text,
     WalletAddress,
     URL,
-    ApplicationURI
+    ApplicationURI,
 }
 
 export enum Identicon {
@@ -199,5 +204,5 @@ export enum Identicon {
     Bots = "bottts",
     BotsNeutral = "botttsNeutral",
     Avataaars = "avataaars",
-    AvataaarsNeutral = "avataaarsNeutral"
+    AvataaarsNeutral = "avataaarsNeutral",
 }

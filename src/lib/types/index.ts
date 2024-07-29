@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations, CallDirection } from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
 import type { Writable } from "svelte/store"
 
@@ -202,6 +202,7 @@ export type Call = {
     startedAt: Date
     chat: Chat
     inCall: boolean
+    direction: CallDirection
 }
 
 export type ContextItem = {

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from "$app/stores"
     import { Toasts } from "$lib/components"
+    import IncomingCall from "$lib/components/calling/IncomingCall.svelte"
     import Polling from "$lib/components/Polling.svelte"
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
@@ -134,6 +135,7 @@
     })
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
+    $: pending = Store.state.pendingCall
 
     checkIfUserIsLogged($page.route.id)
 </script>
@@ -145,6 +147,9 @@
     <Polling rate={5000} />
     <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
     <Toasts />
+    {#if $pending}
+        <IncomingCall />
+    {/if}
     {#if devmode}
         <GamepadListener />
     {/if}

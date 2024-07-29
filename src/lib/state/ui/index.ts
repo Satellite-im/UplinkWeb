@@ -1,4 +1,4 @@
-import type { Chat } from "$lib/types"
+import type { Call, Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { EmojiFont, Font } from "$lib/enums"
