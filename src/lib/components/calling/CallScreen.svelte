@@ -4,6 +4,7 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import Controls from "$lib/layouts/Controls.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
+    import { mock_users } from "$lib/mock/users"
     import Participant from "./Participant.svelte"
     import Text from "$lib/elements/Text.svelte"
     import PopupButton from "../ui/PopupButton.svelte"
@@ -50,23 +51,38 @@
             const microphonePermission = await navigator.permissions.query({ name: "microphone" as PermissionName })
 
             if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                return true
+                permissionsGranted = true
             } else {
-                return false
+                permissionsGranted = false
+            }
+
+            cameraPermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
+            }
+
+            microphonePermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
             }
         } catch (err) {
             console.error("Error checking permissions: ", err)
-            return false
         }
     }
 
     const requestPermissions = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            return stream
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            permissionsGranted = true
         } catch (err) {
             console.error("Error requesting permissions: ", err)
-            return null
+            permissionsGranted = false
         }
     }
 
@@ -74,30 +90,13 @@
     let localVideoCurrentSrc: HTMLVideoElement
     let callStarted = false
 
-    const setupLocalVideo = async () => {
-        const permissionsGranted = await checkPermissions()
-        if (!permissionsGranted) {
-            const stream = await requestPermissions()
-            if (stream) {
-                VoiceRTCInstance.localStream = stream
-                localVideoEl.srcObject = stream
-                localVideoEl.play()
-            } else {
-                console.error("Permissions denied or error requesting permissions.")
-            }
-        } else {
-            const stream = await requestPermissions()
-            if (stream) {
-                VoiceRTCInstance.localStream = stream
-                localVideoEl.srcObject = stream
-                localVideoEl.play()
-            }
-        }
-    }
-
     onMount(() => {
+        checkPermissions()
+
+        if (!permissionsGranted) {
+            requestPermissions()
+        }
         VoiceRTCInstance.setVideoElements(localVideoEl, localVideoCurrentSrc)
-        setupLocalVideo()
     })
 </script>
 
