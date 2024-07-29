@@ -51,6 +51,7 @@ class GlobalStore {
                 status: Status.Online,
                 status_message: identity.status_message() || "",
             },
+            integrations: identity.metadata(),
         }
         this.state.user.update(u => (u = userFromIdentity))
     }
@@ -63,7 +64,7 @@ class GlobalStore {
         this.state.user.update(u => (u = { ...u, name }))
     }
 
-    setIntegrations(integrations: Integration[]) {
+    setIntegrations(integrations: Map<string, string>) {
         this.state.user.update(u => (u = { ...u, integrations }))
     }
 
