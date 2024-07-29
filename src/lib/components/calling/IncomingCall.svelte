@@ -13,38 +13,41 @@
     onMount(() => {
         callSound = playSound(Sounds.IncomingCall)
     })
+    $: pending = Store.state.pendingCall
 </script>
 
-<div id="incoming-call">
-    <div class="body">
-        <div class="content">
-            <ProfilePicture id={user.key} hook="friend-profile-picture" size={Size.Large} image={user.profile.photo.image} status={user.profile.status} />
-            <Text>{user.name}</Text>
-            <Text muted>{user.profile.status_message}</Text>
-            <Spacer />
-            <Controls>
-                <Button
-                    appearance={Appearance.Success}
-                    text="Answer"
-                    on:click={_ => {
-                        Store.acceptCall()
-                        callSound.stop()
-                    }}>
-                    <Icon icon={Shape.PhoneCall} />
-                </Button>
-                <Button
-                    appearance={Appearance.Error}
-                    text="End"
-                    on:click={_ => {
-                        Store.denyCall()
-                        callSound.stop()
-                    }}>
-                    <Icon icon={Shape.PhoneXMark} />
-                </Button>
-            </Controls>
+{#if $pending}
+    <div id="incoming-call">
+        <div class="body">
+            <div class="content">
+                <ProfilePicture id={user.key} hook="friend-profile-picture" size={Size.Large} image={user.profile.photo.image} status={user.profile.status} />
+                <Text>{user.name}</Text>
+                <Text muted>{user.profile.status_message}</Text>
+                <Spacer />
+                <Controls>
+                    <Button
+                        appearance={Appearance.Success}
+                        text="Answer"
+                        on:click={_ => {
+                            Store.acceptCall()
+                            callSound.stop()
+                        }}>
+                        <Icon icon={Shape.PhoneCall} />
+                    </Button>
+                    <Button
+                        appearance={Appearance.Error}
+                        text="End"
+                        on:click={_ => {
+                            Store.denyCall()
+                            callSound.stop()
+                        }}>
+                        <Icon icon={Shape.PhoneXMark} />
+                    </Button>
+                </Controls>
+            </div>
         </div>
     </div>
-</div>
+{/if}
 
 <style lang="scss">
     #incoming-call {

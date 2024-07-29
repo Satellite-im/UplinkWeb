@@ -135,7 +135,6 @@
     })
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
-    $: pending = Store.state.pendingCall
 
     checkIfUserIsLogged($page.route.id)
 </script>
@@ -147,12 +146,8 @@
     <Polling rate={5000} />
     <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
     <Toasts />
-    {#if $pending}
-        <IncomingCall />
-    {/if}
-    {#if devmode}
-        <GamepadListener />
-    {/if}
+    <IncomingCall />
+    <GamepadListener />
     <slot></slot>
 </div>
 
