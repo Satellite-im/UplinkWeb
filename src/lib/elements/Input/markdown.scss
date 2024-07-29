@@ -18,19 +18,17 @@
     .cm-scroller {
         overflow: hidden;
         overflow-y: scroll;
-        div:first-of-type {
-            display: inline-flex;
-        }
-
+        -ms-overflow-style: none;
+        scrollbar-width: none;
         font-family: unset;
         line-height: unset;
 
+        div:first-of-type {
+            display: inline-flex;
+        }
         &::-webkit-scrollbar {
             display: none;
         }
-
-        -ms-overflow-style: none;
-        scrollbar-width: none;
     }
 
     &.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
@@ -66,9 +64,7 @@
 .cm-docComment,
 .cm-blockquote {
     color: var(--color-bright);
-    background-color: color-mix(in srgb,
-            hsl(221, 20%, 75%) 70%,
-            transparent);
+    background-color: color-mix(in srgb, hsl(221, 20%, 75%) 70%, transparent);
 }
 
 .cm-blockquote {
