@@ -151,8 +151,17 @@ class VoiceRTC {
         if (this._incomingCall) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: this.callOptions.video.enabled,
-                    audio: this.callOptions.audio,
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        frameRate: { ideal: 30, max: 60 },
+                        facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                    },
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100,
+                    },
                 })
                 this.localStream = stream
                 this._incomingCall.answer(stream)
@@ -207,8 +216,17 @@ class VoiceRTC {
             })
 
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: this.callOptions.video.enabled,
-                audio: this.callOptions.audio,
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    frameRate: { ideal: 30, max: 60 },
+                    facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                },
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 44100,
+                },
             })
 
             const call = this.localPeer!.call(remotePeerIdEdited, stream)
