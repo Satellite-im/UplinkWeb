@@ -5,7 +5,7 @@
     const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
-<div class={`pending-message-group ${compact ? "compact" : ""}`}>
+<div data-cy="pending-message-group" class={`pending-message-group ${compact ? "compact" : ""}`}>
     <div class="flex">
         <slot></slot>
     </div>
