@@ -366,8 +366,9 @@
                     {#if $activeChat.users.length === 2}
                         <ProfilePicture
                             typing={$activeChat.activity}
+                            id={$users[$activeChat.users[1]]?.key}
                             image={$users[$activeChat.users[1]]?.profile.photo.image}
-                            frame={$users[$activeChat.users[2]]?.profile.photo.frame}
+                            frame={$users[$activeChat.users[1]]?.profile.photo.frame}
                             status={$users[$activeChat.users[1]]?.profile.status}
                             size={Size.Medium}
                             loading={loading} />

@@ -2,8 +2,9 @@
     import { Button, Icon, Text } from "$lib/elements"
     import { Appearance, Route, SettingsRoute } from "$lib/enums"
     import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
-    import type { NavRoute } from "$lib/types"
+    import type { FriendRequest, NavRoute } from "$lib/types"
     import { checkMobile } from "$lib/utils/Mobile"
     import { createEventDispatcher } from "svelte"
     import { get } from "svelte/store"
@@ -17,6 +18,8 @@
     SettingsStore.state.subscribe((s: ISettingsState) => {
         settings = s
     })
+
+    $: incomingRequests = Store.inboundRequests
 
     function overrides(route: NavRoute) {
         if (route.to === Route.Chat && settings.messaging.quick) {
@@ -37,6 +40,7 @@
         <div class="navigation-control {!icons ? 'fill' : ''}">
             <Button
                 hook="button-{route.name}"
+                badge={route.to === "/friends" ? (incomingRequests.length ? incomingRequests.length : 0) : 0}
                 fill={!icons}
                 tooltip={route.name}
                 icon={icons}

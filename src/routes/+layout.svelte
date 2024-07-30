@@ -14,9 +14,11 @@
     import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
+    import { onMount } from "svelte"
     import { get } from "svelte/store"
 
     TimeAgo.addDefaultLocale(en)
@@ -138,6 +140,10 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     checkIfUserIsLogged($page.route.id)
+
+    onMount(async () => {
+        await MultipassStoreInstance.fetchAllFriendsAndRequests()
+    })
 </script>
 
 <div id="app">

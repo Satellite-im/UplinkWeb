@@ -70,9 +70,7 @@
             </div>
 
             <div class="popups">
-                {#if activeCall || $pending}
-                    <CallControls activeRoute={activeRoute} />
-                {/if}
+                <CallControls activeRoute={activeRoute} />
             </div>
             <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />
         </div>
