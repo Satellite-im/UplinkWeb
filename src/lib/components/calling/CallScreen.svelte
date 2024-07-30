@@ -15,7 +15,7 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { createEventDispatcher, onMount } from "svelte"
+    import { afterUpdate, createEventDispatcher, onDestroy, onMount } from "svelte"
     import { VoiceRTCInstance } from "$lib/media/Voice"
 
     export let expanded: boolean = false
@@ -86,17 +86,34 @@
         }
     }
 
-    let localVideoEl: HTMLVideoElement
+    let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
     let callStarted = false
 
-    onMount(() => {
-        checkPermissions()
+    onMount(async () => {
+        console.log("CallScreen mounted")
+        await checkPermissions()
+        VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
         if (!permissionsGranted) {
             requestPermissions()
         }
-        VoiceRTCInstance.setVideoElements(localVideoEl, localVideoCurrentSrc)
+
+        setInterval(async () => {
+            if (VoiceRTCInstance.acceptedIncomingCall) {
+                console.log("Accepting incoming call")
+                VoiceRTCInstance.acceptedIncomingCall = false
+                await VoiceRTCInstance.acceptCall()
+            }
+        }, 1000)
+    })
+
+    afterUpdate(() => {
+        if (localVideoCurrentSrc) {
+            localVideoCurrentSrc.play().catch(error => {
+                console.error("Error playing local video:", error)
+            })
+        }
     })
 </script>
 
@@ -110,6 +127,13 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
+            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
+            <br />
+            <video bind:this={localVideoCurrentSrc} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
             {#if !callStarted}
                 {#each chat.users as user}
                     <Participant
@@ -120,13 +144,6 @@
                         isTalking={$userCache[user].media.is_playing_audio} />
                 {/each}
             {/if}
-            <video bind:this={localVideoEl} class:hidden={!callStarted} width="400" height="400" autoplay>
-                <track kind="captions" src="" />
-            </video>
-            <br />
-            <video bind:this={localVideoCurrentSrc} class:hidden={!callStarted} width="400" height="400" autoplay>
-                <track kind="captions" src="" />
-            </video>
         </div>
     {/if}
     <div class="toolbar">
@@ -187,7 +204,6 @@
                 tooltip="Enable Video"
                 on:click={_ => {
                     VoiceRTCInstance.turnOnOffCamera()
-                    callStarted = true
                 }}>
                 <Icon icon={Shape.VideoCamera} />
             </Button>

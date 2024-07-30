@@ -42,15 +42,15 @@
                         appearance={Appearance.Success}
                         text="Answer"
                         on:click={async _ => {
-                            await VoiceRTCInstance.acceptCall()
+                            Store.acceptCall()
                             let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
                             if (activeChat) {
                                 Store.setActiveCall(activeChat)
                             }
                             goto(Route.Chat)
                             pending = false
-                            Store.acceptCall()
                             VoiceRTCInstance.isReceivingCall = false
+                            await VoiceRTCInstance.acceptIncomingCall()
                             // callSound.stop()
                         }}>
                         <Icon icon={Shape.PhoneCall} />
