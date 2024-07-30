@@ -199,7 +199,7 @@
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
                 {:else}
-                    <Button hook="button-friends-active" appearance={Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
+                    <Button badge={incomingRequests.length} hook="button-friends-active" appearance={Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
                 {/if}
