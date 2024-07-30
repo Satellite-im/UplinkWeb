@@ -17,6 +17,7 @@
     export let hook: string = ""
     export let hideTextOnMobile: boolean = false
     export let color: string = ""
+    export let badge: number = 0
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -44,6 +45,9 @@
     disabled={disabled || loading}
     on:click
     on:contextmenu>
+    {#if badge > 0}
+        <span class="badge">{badge}</span>
+    {/if}
     {#if loading}
         <Loader />
     {:else}
@@ -68,12 +72,25 @@
         gap: var(--gap);
         display: inline-flex;
         justify-content: center;
+        position: relative;
         align-items: center;
         transition:
             background-color var(--animation-speed) var(--animation-style),
             color var(--animation-speed) var(--animation-style),
             border-color var(--animation-speed) var(--animation-style),
             all var(--animation-speed);
+
+        .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-color);
+            padding: 0 var(--padding-minimal);
+            color: var(--color);
+            border-radius: var(--border-radius-minimal);
+            font-size: var(--font-size-smaller);
+            transform: translate(50%, -50%);
+        }
 
         &.fill {
             flex: 1;
