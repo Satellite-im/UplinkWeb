@@ -66,16 +66,16 @@
     }
 </script>
 
-<div class="chatbar">
+<div class="chatbar" data-cy="chatbar">
     <Controls>
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:enter={_ => sendMessage($message)} />
+    <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:enter={_ => sendMessage($message)} />
 
     <slot></slot>
 
-    <PopupButton name="Emoji Picker" class="emoji-popup" bind:open={$emojiSelectorOpen}>
+    <PopupButton hook="button-chatbar-emoji-picker" name="Emoji Picker" class="emoji-popup" bind:open={$emojiSelectorOpen}>
         <CombinedSelector active={{ name: "Emojis", icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
@@ -83,14 +83,14 @@
     </PopupButton>
 
     {#if !checkMobile()}
-        <PopupButton name="GIF Search" class="emoji-popup" bind:open={$gifSelectorOpen}>
+        <PopupButton hook="button-chatbar-gif-picker" name="GIF Search" class="emoji-popup" bind:open={$gifSelectorOpen}>
             <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:gif={e => handleGif(e.detail)} />
             <div slot="icon" class="control">
                 <Icon icon={Shape.Gif} />
             </div>
         </PopupButton>
 
-        <PopupButton name="Stickers" class="emoji-popup" bind:open={$stickerSelectorOpen}>
+        <PopupButton hook="button-chatbar-sticker-picker" name="Stickers" class="emoji-popup" bind:open={$stickerSelectorOpen}>
             <CombinedSelector active={{ name: "Stickers", icon: Shape.Sticker }} on:sticker={e => handleSticker(e.detail)} />
             <div slot="icon" class="control">
                 <Icon icon={Shape.Sticker} />
@@ -98,7 +98,7 @@
         </PopupButton>
     {/if}
 
-    <Button icon tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
+    <Button hook="button-chatbar-send-message" icon tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
         <Icon icon={Shape.ChevronRight} />
     </Button>
 </div>
