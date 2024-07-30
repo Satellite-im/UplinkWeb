@@ -16,7 +16,7 @@
 
     onMount(() => {
         setInterval(async () => {
-            if (VoiceRTCInstance.isReceivingCall) {
+            if (VoiceRTCInstance.isReceivingCall && pending === false) {
                 // callSound = playSound(Sounds.IncomingCall)
                 pending = true
                 let callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
@@ -24,12 +24,12 @@
                     user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
                 }
             }
-        }, 1000)
+        }, 100)
     })
-    let user: User = defaultUser
+    let user: User | null = null
 </script>
 
-{#if pending}
+{#if pending && user}
     <div id="incoming-call">
         <div class="body">
             <div class="content">
