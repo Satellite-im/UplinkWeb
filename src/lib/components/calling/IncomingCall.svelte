@@ -12,29 +12,21 @@
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
     let callSound: SoundHandler
+    let pending = false
+
     onMount(() => {
         setInterval(async () => {
             if (VoiceRTCInstance.isReceivingCall) {
-                callSound = playSound(Sounds.IncomingCall)
+                // callSound = playSound(Sounds.IncomingCall)
                 pending = true
-                pendingChatCall = VoiceRTCInstance.channel
-                let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
-                if (activeChat) {
-                    Store.setActiveCall(activeChat)
-                    chat = activeChat
-                    user = (await MultipassStoreInstance.identity_from_did(activeChat.users[1])) ?? defaultUser
+                let callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
+                if (callingChat) {
+                    user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
                 }
-            } else {
-                pending = false
-                callSound.stop()
             }
         }, 1000)
     })
-    let chat: Chat | undefined = undefined
     let user: User = defaultUser
-
-    $: pending = VoiceRTCInstance.isReceivingCall
-    $: pendingChatCall = ""
 </script>
 
 {#if pending}
@@ -50,6 +42,7 @@
                         appearance={Appearance.Success}
                         text="Answer"
                         on:click={async _ => {
+                            await VoiceRTCInstance.acceptCall()
                             let activeChat = Store.setActiveChatByID(VoiceRTCInstance.channel)
                             if (activeChat) {
                                 Store.setActiveCall(activeChat)
@@ -57,8 +50,8 @@
                             goto(Route.Chat)
                             pending = false
                             Store.acceptCall()
-                            callSound.stop()
-                            await VoiceRTCInstance.acceptCall()
+                            VoiceRTCInstance.isReceivingCall = false
+                            // callSound.stop()
                         }}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
@@ -68,8 +61,9 @@
                         on:click={_ => {
                             pending = false
                             Store.denyCall()
-                            callSound.stop()
+                            // callSound.stop()
                             VoiceRTCInstance.endCall()
+                            VoiceRTCInstance.isReceivingCall = false
                         }}>
                         <Icon icon={Shape.PhoneXMark} />
                     </Button>

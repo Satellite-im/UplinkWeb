@@ -83,10 +83,11 @@ class VoiceRTC {
             })
 
             conn.on("data", data => {
-                if (data === VoiceRTCMessageType.EndingCall) {
+                this.dataConnection = conn
+                if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
+                    console.log("Receving message to end call")
                     this.endCall()
                 } else if (data === VoiceRTCMessageType.Calling) {
-                    // this.dataConnection = conn
                     // this.dataConnection.on("data", data => {
                     //     if (data === VoiceRTCMessageType.IncomingCall) {
                     //         this.isReceivingCall = true
@@ -111,6 +112,7 @@ class VoiceRTC {
 
     private handleIncomingCall(call: MediaConnection) {
         call.on("stream", remoteStream => {
+            console.log("3 ----> Remote stream received")
             if (this.localVideoEl) {
                 this.localVideoEl.srcObject = remoteStream
                 this.localVideoEl.play()
@@ -119,12 +121,10 @@ class VoiceRTC {
 
         call.on("close", () => {
             console.log("Call closed by remote peer")
-            this.endCall()
         })
 
         call.on("error", err => {
             console.error("Call error:", err)
-            this.endCall()
         })
     }
 
@@ -151,8 +151,17 @@ class VoiceRTC {
         if (this._incomingCall) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: this.callOptions.video.enabled,
-                    audio: this.callOptions.audio,
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        frameRate: { ideal: 30, max: 60 },
+                        facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                    },
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100,
+                    },
                 })
                 this.localStream = stream
                 this._incomingCall.answer(stream)
@@ -163,16 +172,14 @@ class VoiceRTC {
                 }
 
                 this._incomingCall.on("stream", remoteStream => {
+                    console.log("Remote stream received")
                     if (this.localVideoEl) {
                         this.localVideoEl.srcObject = remoteStream
                         this.localVideoEl.play()
                     }
                 })
 
-                this._incomingCall.on("close", () => {
-                    console.log("Call closed")
-                    this.endCall()
-                })
+                this._incomingCall.on("close", () => {})
                 this._incomingCall.on("error", err => {
                     console.error("Call error:", err)
                 })
@@ -199,6 +206,9 @@ class VoiceRTC {
 
             this.dataConnection.on("data", data => {
                 console.log("new data " + data)
+                if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
+                    this.endCall()
+                }
             })
 
             this.dataConnection.on("open", () => {
@@ -206,8 +216,17 @@ class VoiceRTC {
             })
 
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: this.callOptions.video.enabled,
-                audio: this.callOptions.audio,
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    frameRate: { ideal: 30, max: 60 },
+                    facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                },
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 44100,
+                },
             })
 
             const call = this.localPeer!.call(remotePeerIdEdited, stream)
@@ -220,6 +239,7 @@ class VoiceRTC {
             }
 
             call.on("stream", remoteStream => {
+                console.log("2 ----> Remote stream received")
                 if (this.localVideoEl) {
                     this.localVideoEl.srcObject = remoteStream
                     this.localVideoEl.play()
@@ -238,8 +258,8 @@ class VoiceRTC {
     }
 
     endCall() {
+        console.log("Ending call")
         this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
-
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
                 track.stop()
@@ -258,10 +278,9 @@ class VoiceRTC {
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = null
         }
-
-        this.isReceivingCall = false
-        Store.state.activeCall.set(null)
         log.info("Call ended and resources cleaned up.")
+        this.dataConnection?.send(VoiceRTCMessageType.None)
+        Store.endCall()
     }
 
     error(error: Error) {

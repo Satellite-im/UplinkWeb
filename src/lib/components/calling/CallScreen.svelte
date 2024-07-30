@@ -4,6 +4,7 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import Controls from "$lib/layouts/Controls.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
+    import { mock_users } from "$lib/mock/users"
     import Participant from "./Participant.svelte"
     import Text from "$lib/elements/Text.svelte"
     import PopupButton from "../ui/PopupButton.svelte"
@@ -92,11 +93,10 @@
     onMount(() => {
         checkPermissions()
 
-        VoiceRTCInstance.setVideoElements(localVideoEl, localVideoCurrentSrc)
-
         if (!permissionsGranted) {
             requestPermissions()
         }
+        VoiceRTCInstance.setVideoElements(localVideoEl, localVideoCurrentSrc)
     })
 </script>
 
