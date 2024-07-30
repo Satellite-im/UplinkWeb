@@ -1,12 +1,13 @@
 <script lang="ts">
     import { ProfilePicture } from "$lib/components"
     import { Button, Icon, Input, Label, Text } from "$lib/elements"
-    import { Appearance, Shape, Size } from "$lib/enums"
+    import { Appearance, Integrations, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
     import { wallet } from "$lib/utils/Wallet"
+    import { getIntegrationColor, identityColor, toIntegrationKind } from "$lib/utils/ProfileUtils"
 
     export let user: User | null = null
 
@@ -33,43 +34,87 @@
         <Label text="Username" />
         <Text size={Size.Large}>{user?.name}</Text>
     </div>
-    <div class="section">
-        <Label text="Status Message" />
-        <Text>{user?.profile.status_message}</Text>
-    </div>
-    <div class="section">
-        <Label text="Send BTC" />
-        {#if user != null}
-            {#each wallet.scan_for_addr(user.profile.status_message) as address}
-                <Button on:click={async () => await wallet.btc.send(address, 100)}>{"send 100 sat to " + wallet.shorten_addr(address, 4)}</Button>
-            {/each}
-        {/if}
-    </div>
-    <div class="section">
-        <Label text="Note" />
-        <Input
-            alt
-            placeholder="Set a note . . ."
-            value={note}
-            on:input={e => {
-                if (user) new Notes().set(user?.name, e.detail)
-            }} />
-    </div>
+    {#if user}
+        <div class="content">
+            <div class="section">
+                <Label text="Status Message" />
+                <Text>{user.profile.status_message}</Text>
+            </div>
+            <div class="section">
+                <Label text="Accounts" />
+                <div class="integrations">
+                    {#each user.integrations as [key, value]}
+                        <div class="integration" style={`border-color: ${getIntegrationColor(key)};`}>
+                            <img class="integration-logo" src="/assets/brand/{toIntegrationKind(key)}.png" alt="Platform Logo" />
+                            {#if toIntegrationKind(key) === Integrations.Generic}
+                                <Text singleLine>{`${key} :`}</Text>
+                                <Text singleLine>{value}</Text>
+                            {:else}
+                                <Text singleLine>{value}</Text>
+                            {/if}
+                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(key)}>
+                                <Icon icon={Shape.Popout} />
+                            </Button>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+            <div class="section">
+                <Label text="Send BTC" />
+                {#if user != null}
+                    {#each wallet.scan_for_addr(user.profile.status_message) as address}
+                        <Button on:click={async () => await wallet.btc.send(address, 100)}>{"send 100 sat to " + wallet.shorten_addr(address, 4)}</Button>
+                    {/each}
+                {/if}
+            </div>
+            <div class="section">
+                <Label text="Note" />
+                <Input
+                    alt
+                    placeholder="Set a note . . ."
+                    value={note}
+                    on:input={e => {
+                        if (user) new Notes().set(user?.name, e.detail)
+                    }} />
+            </div>
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">
     .profile {
         height: 100%;
+        max-height: 600px;
+        overflow-y: scroll;
         width: var(--profile-width);
         display: inline-flex;
         flex-direction: column;
         justify-content: flex-start;
         gap: var(--gap);
         padding: var(--padding);
+        margin-right: var(--gap-less);
 
         .section {
             display: inline-flex;
             flex-direction: column;
+            .integrations {
+                display: inline-flex;
+                flex-wrap: wrap;
+                gap: var(--gap-less);
+                .integration {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: var(--gap);
+                    border-radius: var(--border-radius);
+                    border: var(--border-width) solid var(--success-color);
+                    overflow: hidden;
+                    max-width: 200px;
+                    padding: var(--padding-minimal);
+                    .integration-logo {
+                        width: 25px;
+                    }
+                }
+            }
         }
 
         .profile-header {
@@ -88,6 +133,14 @@
             :global(.profile-picture) {
                 margin-bottom: -4rem;
             }
+        }
+
+        .content {
+            border-top: var(--border-width) solid var(--border-color);
+            padding-top: var(--gap);
+            display: inline-flex;
+            flex-direction: column;
+            gap: var(--gap);
         }
     }
 </style>

@@ -16,6 +16,7 @@
     export let fill: boolean = false
     export let hook: string = ""
     export let hideTextOnMobile: boolean = false
+    export let color: string = ""
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -37,6 +38,7 @@
     class="button {fill ? 'fill' : ''} {hideTextOnMobile ? 'hidden-text' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip
         ? 'tooltip ' + tooltipPositionClass()
         : ''} {small ? 'small' : ''} {clazz || ''}"
+    style={color.length ? `background-color: ${color}` : ""}
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}

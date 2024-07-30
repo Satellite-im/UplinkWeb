@@ -2,18 +2,12 @@
     import { INTEGRATIONS } from "$lib/config"
     import { Button, Icon, Input, Label } from "$lib/elements"
     import { Appearance, IntegrationDisplays, Integrations, Shape } from "$lib/enums"
+    import { toIntegrationKind } from "$lib/utils/ProfileUtils"
 
     export let key: string
     export let value: string
     export let editable: boolean = false
 
-    function toIntegrationKind(key: string) {
-        let integration_kind = Integrations[key as keyof typeof Integrations]
-        if (integration_kind === undefined) {
-            integration_kind = Integrations.Generic
-        }
-        return integration_kind
-    }
     function display(key: string) {
         return INTEGRATIONS[toIntegrationKind(key)].display
     }
@@ -23,7 +17,7 @@
     <Label text={key} />
 
     <div class="display">
-        <img class="logo" src="/assets/brand/{toIntegrationKind(key)}.png" />
+        <img alt={toIntegrationKind(key)} class="logo" src="/assets/brand/{toIntegrationKind(key)}.png" />
 
         {#if display(key) === IntegrationDisplays.Text}
             <Input value={key} disabled={!editable} />
