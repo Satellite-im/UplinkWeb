@@ -187,6 +187,12 @@ export class VoiceRTC {
                         this.remoteVideoElement.srcObject = remoteStream
                         this.remoteVideoElement.play()
                     }
+
+                    if (this.localVideoCurrentSrc) {
+                        console.log("Setting local video element")
+                        this.localVideoCurrentSrc.srcObject = this.localStream
+                        this.localVideoCurrentSrc.play()
+                    }
                 })
 
                 this._incomingCall.on("close", () => {})
