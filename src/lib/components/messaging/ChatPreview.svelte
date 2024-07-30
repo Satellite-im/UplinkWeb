@@ -31,6 +31,7 @@
 </script>
 
 <button
+    data-cy="chat-preview"
     class="chat-preview {cta ? 'cta' : ''}"
     on:contextmenu
     on:click={_ => {
@@ -39,17 +40,17 @@
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 2}
-        <ProfilePicture id={$users[1].key} typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
+        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={$users} />
     {/if}
     <div class="content">
         <div class="heading">
-            <Text class="chat-user" singleLine loading={loading}>
+            <Text hook="chat-preview-name" class="chat-user" singleLine loading={loading}>
                 {chatName}
             </Text>
             <div class="right">
-                <Text class="timestamp" loading={loading} size={Size.Smallest} muted>
+                <Text hook="chat-preview-timestamp" class="timestamp" loading={loading} size={Size.Smallest} muted>
                     {getTimeAgo(chat.last_message_at)}
                 </Text>
                 {#if !loading}
@@ -68,7 +69,7 @@
                 <Loader text small />
                 <Loader text small />
             {:else}
-                <Text size={Size.Small} loading={loading}>
+                <Text hook="chat-preview-last-message" size={Size.Small} loading={loading}>
                     {chat.last_message_preview || "No messages sent yet."}
                 </Text>
             {/if}

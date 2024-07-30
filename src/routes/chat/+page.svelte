@@ -334,6 +334,7 @@
 
         {#each $chats as chat}
             <ContextMenu
+                hook="context-menu-sidebar-chat"
                 items={[
                     {
                         id: "favorite",
@@ -368,6 +369,7 @@
                 {#if $activeChat.users.length > 0}
                     {#if $activeChat.users.length === 2}
                         <ProfilePicture
+                            hook="chat-topbar-profile-picture"
                             typing={$activeChat.activity}
                             image={$users[$activeChat.users[1]]?.profile.photo.image}
                             frame={$users[$activeChat.users[2]]?.profile.photo.frame}
@@ -381,8 +383,8 @@
             </div>
             <div slot="content">
                 {#if $activeChat.users.length > 0}
-                    <Text singleLine>{chatName}</Text>
-                    <Text singleLine muted size={Size.Smaller}>
+                    <Text hook="chat-topbar-username" singleLine>{chatName}</Text>
+                    <Text hook="chat-topbar-status" singleLine muted size={Size.Smaller}>
                         {statusMessage}
                     </Text>
                 {/if}
@@ -390,6 +392,7 @@
             <svelte:fragment slot="controls">
                 <CoinBalance balance={0.0} />
                 <Button
+                    hook="button-chat-transact"
                     icon
                     appearance={transact ? Appearance.Primary : Appearance.Alt}
                     disabled={$activeChat.users.length === 0}
@@ -398,14 +401,15 @@
                     }}>
                     <Icon icon={Shape.SendCoin} />
                 </Button>
-                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button hook="button-chat-call" icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
-                <Button icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button hook="button-chat-video" icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                     <Icon icon={Shape.VideoCamera} />
                 </Button>
                 <Button
                     icon
+                    hook="button-chat-favorite"
                     disabled={$activeChat.users.length === 0}
                     appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
                     on:click={_ => {
@@ -414,6 +418,7 @@
                     <Icon icon={Shape.Heart} />
                 </Button>
                 <Button
+                    hook="button-chat-pin"
                     icon
                     disabled={$activeChat.users.length === 0}
                     appearance={Appearance.Alt}
@@ -492,7 +497,7 @@
                                         </StoreResolver>
                                     {/if}
                                     {#if message.text.length > 0 || message.attachments.length > 0}
-                                        <ContextMenu items={build_context_items(message)}>
+                                        <ContextMenu hook="context-menu-chat-message" items={build_context_items(message)}>
                                             <Message
                                                 id={message.id}
                                                 pinned={message.pinned}
@@ -596,6 +601,7 @@
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     <ContextMenu
+                        hook="context-menu-chat-add-attachment"
                         items={[
                             {
                                 id: "upload",
@@ -614,7 +620,7 @@
                                 onClick: () => {},
                             },
                         ]}>
-                        <Button slot="content" let:open on:click={open} on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
+                        <Button hook="button-chat-add-attachment" slot="content" let:open on:click={open} on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
                             <Icon icon={Shape.Plus} />
                         </Button>
                     </ContextMenu>

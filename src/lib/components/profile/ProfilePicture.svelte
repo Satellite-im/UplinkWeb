@@ -79,7 +79,7 @@
         <div class="typing-indicator"></div>
     {/if}
     {#if !noIndicator}
-        <div class="status-indicator {status}"></div>
+        <div data-cy="status-indicator" class="status-indicator {status}"></div>
     {/if}
     {#if notifications > 0}
         <!-- svelte-ignore a11y-label-has-associated-control -->
