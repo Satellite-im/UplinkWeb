@@ -41,6 +41,7 @@
     // Cleanup interval on destroy
     import { onDestroy } from "svelte"
     import { goto } from "$app/navigation"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
     onDestroy(() => {
         clearInterval(interval)
     })
@@ -51,11 +52,12 @@
 
     $: activeCall = Store.state.activeCall
     $: activeChat = Store.state.activeChat
+    $: pending = settings.calling.minimalCallingAlerts && VoiceRTCInstance.isReceivingCall
 </script>
 
-{#if $activeCall}
-    <div class="call-controls">
-        {#if settings?.audio?.callTimer}
+{#if $activeCall || pending}
+    <div class={`call-controls ${pending ? "incoming" : ""}`}>
+        {#if settings?.audio?.callTimer && $activeCall}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div
@@ -71,51 +73,70 @@
             </div>
         {/if}
 
-        <Controls>
-            <Button
-                icon
-                appearance={muted ? Appearance.Error : Appearance.Alt}
-                tooltip={$_("call.mute")}
-                loading={loading}
-                on:click={_ => {
-                    Store.updateMuted(!muted)
-                }}>
-                <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
-            </Button>
-            <Button
-                icon
-                appearance={deafened ? Appearance.Error : Appearance.Alt}
-                tooltip={$_("call.deafen")}
-                loading={loading}
-                on:click={_ => {
-                    Store.updateDeafened(!deafened)
-                }}>
-                <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
-            </Button>
-            <Button
-                tooltip="End"
-                icon
-                appearance={Appearance.Error}
-                loading={loading}
-                on:click={_ => {
-                    Store.endCall()
-                }}>
-                <Icon icon={Shape.PhoneXMark} />
-            </Button>
-            {#if $activeChat.id !== $activeCall.chat.id || activeRoute !== Route.Chat}
+        {#if pending}
+            <Label text="Incoming Call..." />
+            <Controls>
+                <Button tooltip="Answer" text="Answer" appearance={Appearance.Success} loading={loading} on:click={_ => {}}>
+                    <Icon icon={Shape.PhoneCall} />
+                </Button>
                 <Button
-                    tooltip="Go"
-                    icon
-                    appearance={Appearance.Success}
+                    tooltip="End"
+                    text="Deny"
+                    appearance={Appearance.Error}
                     loading={loading}
                     on:click={_ => {
-                        Store.setActiveChat($activeCall.chat)
-                        goto(Route.Chat)
+                        Store.endCall()
                     }}>
-                    <Icon icon={Shape.ArrowRight} />
+                    <Icon icon={Shape.PhoneXMark} />
                 </Button>
-            {/if}
-        </Controls>
+            </Controls>
+        {:else if $activeCall}
+            <Controls>
+                <Button
+                    icon
+                    appearance={muted ? Appearance.Error : Appearance.Alt}
+                    tooltip={$_("call.mute")}
+                    loading={loading}
+                    on:click={_ => {
+                        Store.updateMuted(!muted)
+                    }}>
+                    <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
+                </Button>
+                <Button
+                    icon
+                    appearance={deafened ? Appearance.Error : Appearance.Alt}
+                    tooltip={$_("call.deafen")}
+                    loading={loading}
+                    on:click={_ => {
+                        Store.updateDeafened(!deafened)
+                    }}>
+                    <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
+                </Button>
+                <Button
+                    tooltip="End"
+                    icon
+                    appearance={Appearance.Error}
+                    loading={loading}
+                    on:click={_ => {
+                        Store.endCall()
+                    }}>
+                    <Icon icon={Shape.PhoneXMark} />
+                </Button>
+                {#if $activeChat.id !== $activeCall.chat.id || activeRoute !== Route.Chat}
+                    <Button
+                        tooltip="Go"
+                        icon
+                        appearance={Appearance.Success}
+                        loading={loading}
+                        on:click={_ => {
+                            Store.setActiveChat($activeCall.chat)
+                            goto(Route.Chat)
+                        }}>
+                        <Icon icon={Shape.ArrowRight} />
+                    </Button>
+                {/if}
+            </Controls>
+        {/if}
     </div>
 {/if}
 
@@ -130,6 +151,11 @@
         gap: var(--gap);
         min-width: var(--min-component-width);
         align-items: center;
+
+        &.incoming {
+            animation: pulse-success 1s infinite;
+            box-shadow: 0 0 0 2em transparent;
+        }
 
         .info {
             flex: 1;
