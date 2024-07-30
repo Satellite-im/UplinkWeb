@@ -226,6 +226,7 @@
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <ContextMenu
+            hook="context-menu-banner-picture"
             items={[
                 {
                     id: "clear-banner-picture",
@@ -252,6 +253,7 @@
             </div>
         </ContextMenu>
         <ContextMenu
+            hook="context-menu-profile-picture"
             items={[
                 {
                     id: "clear-profile-picture",
@@ -298,6 +300,7 @@
                             }} />
                     </div>
                     <ContextMenu
+                        hook="context-menu-copy-id"
                         items={[
                             {
                                 id: "copy-id",

@@ -20,21 +20,21 @@
     }
 </script>
 
-<div class="pending-file-embed">
+<div class="pending-file-embed" data-cy="pending-file-embed">
     <Icon icon={Shape.Document} size={Size.Larger} />
     <div class="body">
         <div class="details">
-            <Text>{fileInfo.name}</Text>
-            <Text size={Size.Smaller} singleLine>
+            <Text hook="pending-file-name">{fileInfo.name}</Text>
+            <Text hook="pending-file-size" size={Size.Smaller} singleLine>
                 {`${getSizeString(fileInfo)}`}
             </Text>
         </div>
         <div class={"upload-bar"}>
-            <div class={"upload-progress"} style="width: {getPercentage(fileInfo)}%" />
+            <div data-cy="pending-file-upload-progress" class={"upload-progress"} style="width: {getPercentage(fileInfo)}%" />
         </div>
         {#if fileInfo.error}
             <div class="controls">
-                <Button icon small tooltip="Delete" on:click={onCancel}>
+                <Button hook="button-pending-file-cancel" icon small tooltip="Delete" on:click={onCancel}>
                     <Icon icon={Shape.Trash} />
                 </Button>
             </div>
