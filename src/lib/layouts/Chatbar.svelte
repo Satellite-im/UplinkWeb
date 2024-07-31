@@ -14,6 +14,7 @@
     import { PopupButton } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
+    import { VoiceRTCMessageType } from "$lib/media/Voice"
 
     initLocale()
     export let replyTo: Message | undefined = undefined
@@ -128,6 +129,8 @@
                 bottom: var(--input-height);
                 top: var(--padding-less);
                 width: 100%;
+                align-self: center;
+                justify-self: center;
             }
         }
     }

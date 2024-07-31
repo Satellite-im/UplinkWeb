@@ -150,6 +150,10 @@ export function initLocale() {
                         description: "Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.",
                     },
                 },
+                calling: {
+                    minimalCallingAlerts: "Minimal Calling Alerts",
+                    minimalCallingAlertsDescription: "Instead of displaying a full screen alert when a call is incoming, with this mode enabled the call dialog will show within the sidebar.",
+                },
                 notifications: {
                     enabled: "Enabled",
                     enabledDescription: "Enable notifications for incoming calls, messages, and more.",
@@ -209,6 +213,8 @@ export function initLocale() {
                     pick: "Pick",
                     customCss: "Custom CSS",
                     customCssDescription: "Add additional custom CSS to the application.",
+                    identiconStyle: "Default Profile Picture Style",
+                    identiconStyleDescription: "Change the style of the randomly generated profile pictures used when users haven't uploaded a profile picture yet.",
                 },
                 licenses: {
                     description: "Both code and icons are under the MIT license.",

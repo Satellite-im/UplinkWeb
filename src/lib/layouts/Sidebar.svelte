@@ -42,6 +42,8 @@
     }
 
     Store.state.activeCall.subscribe(c => (activeCall = c))
+
+    $: pending = Store.state.pendingCall
 </script>
 
 <div class="sidebar-layout {open ? 'open' : 'closed'}" data-cy="sidebar">
@@ -68,9 +70,7 @@
             </div>
 
             <div class="popups">
-                {#if activeCall}
-                    <CallControls />
-                {/if}
+                <CallControls activeRoute={activeRoute} />
             </div>
             <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />
         </div>
@@ -115,13 +115,39 @@
     }
 
     @media (max-width: 800px) {
-        .sidebar-layout {
+        .sidebar-layout.open {
             min-width: 100%;
+        }
+        .sidebar {
+            max-width: 90%;
         }
         .sidebar-layout.closed {
             min-width: 0;
             :global(.slimbar) {
                 display: none;
+            }
+        }
+    }
+
+    @media (max-width: 450px) {
+        .sidebar {
+            max-width: 80%;
+        }
+        .sidebar-content {
+            max-width: 100%;
+            :global(.chat-preview) {
+                min-width: none;
+            }
+        }
+    }
+    @media (max-width: 400px) {
+        .sidebar {
+            max-width: 75%;
+        }
+        .sidebar-content {
+            max-width: 100%;
+            :global(.chat-preview) {
+                min-width: none;
             }
         }
     }

@@ -12,7 +12,7 @@
 
     export let position: MessagePosition = MessagePosition.Middle
 
-    let attachments = Object.values(get(message.attachmentProgress))
+    let attachments = get(message.attachmentProgress) ? Object.values(get(message.attachmentProgress)) : []
     message.attachmentProgress.subscribe(progresses => {
         attachments = Object.values(progresses)
     })

@@ -531,7 +531,6 @@ class MultipassStore {
                         break
                 }
                 await multipass.set_identity_status(identityStatus)
-                console.log("Status updated: ", identityStatus)
             } catch (error) {
                 log.error("Error updating status: " + error)
             }
