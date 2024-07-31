@@ -49,7 +49,7 @@
             <Icon icon={Shape.Beaker} />
         </Button>
     </SettingSection>
-    <SettingSection hook="section-about-latest-commit" name="Latest Commit" description="Latest commit hash.">
+    <SettingSection hook="section-about-latest-commit" name="Latest Commit" description="Latest commit hash. ">
         {#if $latestCommit}
             <div>{$latestCommit}</div>
         {:else}
