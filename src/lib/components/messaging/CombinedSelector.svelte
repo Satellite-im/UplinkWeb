@@ -39,6 +39,14 @@
         flex-direction: column;
         gap: var(--gap);
         width: 100%;
+        flex: 1;
+
+        .body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
 
         footer {
             display: inline-flex;

@@ -19,6 +19,7 @@ export interface IState {
     }
     activeChat: Writable<Chat>
     activeCall: Writable<Call | null>
+    pendingCall: Writable<Call | null>
     toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
     // A cache of all fetched user data
     // We use a Writable<User> to also allow easy subscription to changes if only that user interests us

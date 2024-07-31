@@ -327,4 +327,9 @@
             }
         }
     }
+    @media only screen and (max-width: 600px) {
+        .giphy-selector {
+            height: 100%;
+        }
+    }
 </style>

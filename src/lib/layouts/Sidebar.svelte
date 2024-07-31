@@ -42,6 +42,8 @@
     }
 
     Store.state.activeCall.subscribe(c => (activeCall = c))
+
+    $: pending = Store.state.pendingCall
 </script>
 
 <div class="sidebar-layout {open ? 'open' : 'closed'}" data-cy="sidebar">
@@ -68,9 +70,7 @@
             </div>
 
             <div class="popups">
-                {#if activeCall}
-                    <CallControls />
-                {/if}
+                <CallControls activeRoute={activeRoute} />
             </div>
             <Navigation icons routes={routes} activeRoute={activeRoute} on:navigate={e => goto(e.detail)} />
         </div>

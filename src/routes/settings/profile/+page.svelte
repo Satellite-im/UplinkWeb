@@ -21,6 +21,7 @@
     import { INTEGRATIONS } from "$lib/config"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { SettingsStore } from "$lib/state"
+    import { identityColor } from "$lib/utils/ProfileUtils"
 
     initLocale()
 
@@ -90,6 +91,7 @@
     })
 
     let user: User = get(Store.state.user)
+    let key: string = ""
     let activityStatus: Status = user.profile.status
 
     Store.state.user.subscribe(val => {
@@ -97,6 +99,7 @@
         userReference = { ...val }
         statusMessage = user.profile.status_message
         activityStatus = user.profile.status
+        key = user.key
     })
 
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
@@ -246,7 +249,7 @@
                 on:contextmenu={open}
                 class="profile-header"
                 data-cy="profile-banner"
-                style="background-image: url('{user.profile.banner.image}')"
+                style={`background-image: url(${user.profile.banner.image}); background-color: ${identityColor(user.key)};)`}
                 on:click={_ => {
                     fileinput.click()
                 }}>
@@ -268,7 +271,7 @@
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture id={user.key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture id={key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}
@@ -599,7 +602,7 @@
             .profile-picture-container {
                 position: absolute;
                 z-index: 2;
-                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 4 / 2));
+                top: calc(256px - (var(--profile-picture-size) * 4 / 2));
                 height: calc(var(--profile-picture-size) * 2);
                 margin-bottom: calc((var(--profile-picture-size) * 3) * -0.5);
                 :global(.button) {
@@ -611,7 +614,7 @@
             }
 
             .profile-header {
-                height: calc(var(--profile-width) / 1.5);
+                height: 256px;
                 background-color: var(--background-alt);
                 background-size: cover;
                 padding: var(--padding-less);

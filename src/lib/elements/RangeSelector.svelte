@@ -34,7 +34,7 @@
             &::-webkit-slider-thumb {
                 -webkit-appearance: none;
                 background: var(--color);
-                box-shadow: -210px 0 0 200px var(--primary-color);
+                box-shadow: -1210px 0 0 1200px var(--primary-color);
                 cursor: pointer;
                 height: calc(var(--slider-height) - var(--border-width));
                 width: calc(var(--slider-height) * 1.5);

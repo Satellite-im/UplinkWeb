@@ -1,4 +1,4 @@
-import { KeybindAction, KeybindState, Locale } from "$lib/enums"
+import { Identicon, KeybindAction, KeybindState, Locale } from "$lib/enums"
 import type { Keybind } from "$lib/types"
 
 export let defaultKeybinds = [
@@ -74,12 +74,16 @@ export let defaultSettings = {
     widgets: {
         show: false,
     },
+    calling: {
+        minimalCallingAlerts: false,
+    },
     messaging: {
         convertEmoji: true,
         markdownSupport: true,
         spamRejection: true,
         compact: false,
         quick: false,
+        identiconStyle: Identicon.BotsNeutral,
     },
     audio: {
         inputDevice: "Default",
