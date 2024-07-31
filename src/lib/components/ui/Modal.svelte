@@ -97,9 +97,19 @@
         .modal {
             .body {
                 max-width: 100%;
+                max-width: calc(100% - var(--padding) * 2);
+                /* width: 100%; */
+                /* height: 100%; */
+                top: var(--padding);
+                left: var(--padding);
+                right: var(--padding);
 
-                width: 100%;
-                left: 0;
+                .content {
+                    max-width: 100%;
+                    height: 100%;
+                    width: 100%;
+                    display: inline-flex;
+                }
             }
         }
     }

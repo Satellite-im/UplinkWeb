@@ -12,6 +12,11 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
+    import type { Chat } from "$lib/types"
+    import { UIStore } from "$lib/state/ui"
+    import VolumeMixer from "./VolumeMixer.svelte"
+    import { afterUpdate, createEventDispatcher, onDestroy, onMount } from "svelte"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -19,9 +24,16 @@
     }
 
     let showSettings = false
+    let showVolumeMixer = false
 
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
+    export let chat: Chat
+
+    let permissionsGranted = false
+
+    $: chats = UIStore.state.chats
+    $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
 
     Store.state.devices.muted.subscribe(state => {
         muted = state
@@ -30,22 +42,110 @@
     Store.state.devices.deafened.subscribe(state => {
         deafened = state
     })
+
+    const dispatch = createEventDispatcher()
+
+    const checkPermissions = async () => {
+        try {
+            const cameraPermission = await navigator.permissions.query({ name: "camera" as PermissionName })
+            const microphonePermission = await navigator.permissions.query({ name: "microphone" as PermissionName })
+
+            if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                permissionsGranted = true
+            } else {
+                permissionsGranted = false
+            }
+
+            cameraPermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
+            }
+
+            microphonePermission.onchange = () => {
+                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
+                    permissionsGranted = true
+                } else {
+                    permissionsGranted = false
+                }
+            }
+        } catch (err) {
+            console.error("Error checking permissions: ", err)
+        }
+    }
+
+    const requestPermissions = async () => {
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            permissionsGranted = true
+        } catch (err) {
+            console.error("Error requesting permissions: ", err)
+            permissionsGranted = false
+        }
+    }
+
+    let remoteVideoElement: HTMLVideoElement
+    let localVideoCurrentSrc: HTMLVideoElement
+    let callStarted = false
+
+    onMount(async () => {
+        console.log("CallScreen mounted")
+        await checkPermissions()
+        VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
+
+        if (!permissionsGranted) {
+            requestPermissions()
+        }
+
+        setInterval(async () => {
+            if (VoiceRTCInstance.acceptedIncomingCall) {
+                console.log("Accepting incoming call")
+                VoiceRTCInstance.acceptedIncomingCall = false
+                await VoiceRTCInstance.acceptCall()
+            }
+        }, 1000)
+    })
+
+    afterUpdate(() => {
+        if (localVideoCurrentSrc) {
+            localVideoCurrentSrc.play().catch(error => {
+                console.error("Error playing local video:", error)
+            })
+        }
+    })
 </script>
 
 <div id="call-screen" class={expanded ? "expanded" : ""}>
-    <Topbar simple>
-        <svelte:fragment slot="content">
-            <Text>Big Party Time</Text>
-            <Text muted size={Size.Smaller}>
-                ({mock_users.length}) users in the call
-            </Text>
-        </svelte:fragment>
-    </Topbar>
-    <div id="participants">
-        {#each mock_users as user}
-            <Participant participant={user} hasVideo={user.media.is_streaming_video} isMuted={user.media.is_muted} isDeafened={user.media.is_deafened} isTalking={user.media.is_playing_audio} />
-        {/each}
-    </div>
+    {#if chat}
+        <Topbar simple>
+            <svelte:fragment slot="content">
+                <Text muted size={Size.Smaller}>
+                    ({chat.users.length}) users in the call
+                </Text>
+            </svelte:fragment>
+        </Topbar>
+        <div id="participants">
+            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
+            <br />
+            <video bind:this={localVideoCurrentSrc} width="400" height="400" autoplay>
+                <track kind="captions" src="" />
+            </video>
+            {#if !callStarted}
+                {#each chat.users as user}
+                    <Participant
+                        participant={$userCache[user]}
+                        hasVideo={$userCache[user].media.is_streaming_video}
+                        isMuted={$userCache[user].media.is_muted}
+                        isDeafened={$userCache[user].media.is_deafened}
+                        isTalking={$userCache[user].media.is_playing_audio} />
+                {/each}
+            {/if}
+        </div>
+    {/if}
     <div class="toolbar">
         <Controls>
             <PopupButton
@@ -59,6 +159,21 @@
                 </svelte:fragment>
                 <CallSettings />
             </PopupButton>
+            <div class="relative">
+                {#if showVolumeMixer}
+                    <VolumeMixer participants={chat.users} />
+                {/if}
+                <Button
+                    tooltip="Volume Mixer"
+                    icon
+                    appearance={showVolumeMixer ? Appearance.Primary : Appearance.Alt}
+                    outline={!showVolumeMixer}
+                    on:click={_ => {
+                        showVolumeMixer = !showVolumeMixer
+                    }}>
+                    <Icon icon={Shape.SpeakerWave} />
+                </Button>
+            </div>
         </Controls>
         <Controls>
             <Button
@@ -67,6 +182,7 @@
                 tooltip={$_("call.mute")}
                 on:click={_ => {
                     Store.updateMuted(!muted)
+                    VoiceRTCInstance.turnOnOffMicrophone()
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -82,10 +198,23 @@
             <Button appearance={Appearance.Alt} icon tooltip="Stream">
                 <Icon icon={Shape.Stream} />
             </Button>
-            <Button appearance={Appearance.Alt} icon tooltip="Enable Video">
+            <Button
+                appearance={Appearance.Alt}
+                icon
+                tooltip="Enable Video"
+                on:click={_ => {
+                    VoiceRTCInstance.turnOnOffCamera()
+                }}>
                 <Icon icon={Shape.VideoCamera} />
             </Button>
-            <Button appearance={Appearance.Error} icon tooltip="End">
+            <Button
+                appearance={Appearance.Error}
+                icon
+                tooltip="End"
+                on:click={_ => {
+                    dispatch("onendcall")
+                    VoiceRTCInstance.endCall()
+                }}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>
         </Controls>
@@ -125,6 +254,10 @@
             width: 100%;
             display: inline-flex;
             justify-content: space-between;
+        }
+
+        .relative {
+            position: relative;
         }
 
         #participants {

@@ -158,4 +158,18 @@
             }
         }
     }
+
+    @media only screen and (max-width: 600px) {
+        .sticker-selector {
+            height: 100%;
+            .sidebar {
+                .collection-link {
+                    img {
+                        width: 32px;
+                        height: 32px;
+                    }
+                }
+            }
+        }
+    }
 </style>

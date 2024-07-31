@@ -1,20 +1,24 @@
 <script lang="ts">
     import { page } from "$app/stores"
     import { Toasts } from "$lib/components"
+    import IncomingCall from "$lib/components/calling/IncomingCall.svelte"
     import Polling from "$lib/components/Polling.svelte"
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
     import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
+    import { onMount } from "svelte"
     import { get } from "svelte/store"
 
     TimeAgo.addDefaultLocale(en)
@@ -136,6 +140,9 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     checkIfUserIsLogged($page.route.id)
+    onMount(async () => {
+        await MultipassStoreInstance.fetchAllFriendsAndRequests()
+    })
 </script>
 
 <div id="app">
@@ -145,9 +152,8 @@
     <Polling rate={5000} />
     <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
     <Toasts />
-    {#if devmode}
-        <GamepadListener />
-    {/if}
+    <IncomingCall />
+    <GamepadListener />
     <slot></slot>
 </div>
 

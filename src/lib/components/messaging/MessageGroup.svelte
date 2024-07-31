@@ -11,8 +11,8 @@
     export let subtext: string | null = ""
     export let profilePictureRequirements: ProfilePictureRequirements | null = null
     export let username: string = ""
-    const dispatch = createEventDispatcher()
 
+    const dispatch = createEventDispatcher()
     const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
@@ -20,6 +20,7 @@
     {#if profilePictureRequirements && remote}
         <div class="aside">
             <ProfilePicture
+                id={profilePictureRequirements.id}
                 hook="message-group-remote-profile-picture"
                 size={Size.Small}
                 image={profilePictureRequirements.image}
@@ -38,6 +39,7 @@
     {#if profilePictureRequirements && !remote}
         <div class="aside">
             <ProfilePicture
+                id={profilePictureRequirements.id}
                 hook="message-group-local-profile-picture"
                 size={Size.Small}
                 image={profilePictureRequirements.image}
