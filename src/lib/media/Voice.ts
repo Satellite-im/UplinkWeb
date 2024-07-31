@@ -18,21 +18,18 @@ type VoiceRTCOptions = {
     }
 }
 
-class VoiceRTC {
+export class VoiceRTC {
     channel: string
     localPeer: Peer | null = null
     remotePeer: Peer | null = null
     localStream: MediaStream | null = null
-    localVideoEl: any
+    remoteVideoElement: any
     localVideoCurrentSrc: any
     callOptions: VoiceRTCOptions
     isReceivingCall: boolean = false
+    acceptedIncomingCall: boolean = false
     dataConnection: DataConnection | null = null
     private _incomingCall: MediaConnection | null = null
-
-    get incomingCall(): MediaConnection | null {
-        return this._incomingCall
-    }
 
     setChannel(channel: string) {
         this.channel = channel
@@ -86,6 +83,7 @@ class VoiceRTC {
                 this.dataConnection = conn
                 if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
                     console.log("Receving message to end call")
+                    this.isReceivingCall = false
                     this.endCall()
                 } else if (data === VoiceRTCMessageType.Calling) {
                     // this.dataConnection.on("data", data => {
@@ -95,7 +93,6 @@ class VoiceRTC {
                     // })
                 } else {
                     this.channel = data as string
-                    console.log("Channel as Chat ID: ", this.channel)
                 }
             })
         })
@@ -112,10 +109,9 @@ class VoiceRTC {
 
     private handleIncomingCall(call: MediaConnection) {
         call.on("stream", remoteStream => {
-            console.log("3 ----> Remote stream received")
-            if (this.localVideoEl) {
-                this.localVideoEl.srcObject = remoteStream
-                this.localVideoEl.play()
+            if (this.remoteVideoElement) {
+                this.remoteVideoElement.srcObject = remoteStream
+                this.remoteVideoElement.play()
             }
         })
 
@@ -142,9 +138,18 @@ class VoiceRTC {
         })
     }
 
-    setVideoElements(localVideoEl: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
-        this.localVideoEl = localVideoEl
+    setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
+        this.remoteVideoElement = remoteVideoElement
         this.localVideoCurrentSrc = localVideoCurrentSrc
+        if (this.localVideoCurrentSrc) {
+            console.log("Setting local video element")
+            this.localVideoCurrentSrc.srcObject = this.localStream
+            this.localVideoCurrentSrc.play()
+        }
+    }
+
+    public async acceptIncomingCall() {
+        this.acceptedIncomingCall = true
     }
 
     public async acceptCall() {
@@ -152,30 +157,41 @@ class VoiceRTC {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        frameRate: { ideal: 30, max: 60 },
+                        aspectRatio: 16 / 9,
                         facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                        frameRate: 30,
+                        height: { ideal: 1080 },
+                        width: { ideal: 1920 },
                     },
                     audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        sampleRate: 44100,
+                        autoGainControl: false,
+                        channelCount: 2,
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        sampleRate: 48000,
+                        sampleSize: 16,
                     },
                 })
-                this.localStream = stream
-                this._incomingCall.answer(stream)
 
-                if (this.localVideoCurrentSrc) {
-                    this.localVideoCurrentSrc.srcObject = stream
-                    this.localVideoCurrentSrc.play()
-                }
+                this.localStream = stream
+
+                this._incomingCall.answer(this.localStream)
+
+                this.localStream?.getAudioTracks().forEach(track => {
+                    track.enabled = false
+                })
 
                 this._incomingCall.on("stream", remoteStream => {
                     console.log("Remote stream received")
-                    if (this.localVideoEl) {
-                        this.localVideoEl.srcObject = remoteStream
-                        this.localVideoEl.play()
+                    if (this.remoteVideoElement) {
+                        this.remoteVideoElement.srcObject = remoteStream
+                        this.remoteVideoElement.play()
+                    }
+
+                    if (this.localVideoCurrentSrc) {
+                        console.log("Setting local video element")
+                        this.localVideoCurrentSrc.srcObject = this.localStream
+                        this.localVideoCurrentSrc.play()
                     }
                 })
 
@@ -195,6 +211,7 @@ class VoiceRTC {
 
     async makeVideoCall(remotePeerId: string, chatID: string) {
         try {
+            console.log("Making call to: ", remotePeerId)
             this.channel = chatID
             this.dataConnection?.send(VoiceRTCMessageType.Calling)
             this.dataConnection?.send(chatID)
@@ -205,7 +222,6 @@ class VoiceRTC {
             this.dataConnection = this.localPeer!.connect(remotePeerIdEdited)
 
             this.dataConnection.on("data", data => {
-                console.log("new data " + data)
                 if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
                     this.endCall()
                 }
@@ -217,15 +233,19 @@ class VoiceRTC {
 
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    frameRate: { ideal: 30, max: 60 },
+                    aspectRatio: 16 / 9,
                     facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                    frameRate: 30,
+                    height: { ideal: 1080 },
+                    width: { ideal: 1920 },
                 },
                 audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    sampleRate: 44100,
+                    autoGainControl: false,
+                    channelCount: 2,
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    sampleRate: 48000,
+                    sampleSize: 16,
                 },
             })
 
@@ -233,16 +253,21 @@ class VoiceRTC {
 
             this.localStream = stream
 
-            if (this.localVideoCurrentSrc) {
-                this.localVideoCurrentSrc.srcObject = stream
-                this.localVideoCurrentSrc.play()
-            }
+            this.localStream?.getAudioTracks().forEach(track => {
+                track.enabled = false
+            })
 
             call.on("stream", remoteStream => {
-                console.log("2 ----> Remote stream received")
-                if (this.localVideoEl) {
-                    this.localVideoEl.srcObject = remoteStream
-                    this.localVideoEl.play()
+                if (this.remoteVideoElement) {
+                    console.log("Setting remote video element")
+                    this.remoteVideoElement.srcObject = remoteStream
+                    this.remoteVideoElement.play()
+                }
+
+                if (this.localVideoCurrentSrc) {
+                    console.log("Setting local video element")
+                    this.localVideoCurrentSrc.srcObject = this.localStream
+                    this.localVideoCurrentSrc.play()
                 }
             })
 
@@ -258,7 +283,6 @@ class VoiceRTC {
     }
 
     endCall() {
-        console.log("Ending call")
         this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
@@ -272,8 +296,8 @@ class VoiceRTC {
             this._incomingCall = null
         }
 
-        if (this.localVideoEl) {
-            this.localVideoEl.srcObject = null
+        if (this.remoteVideoElement) {
+            this.remoteVideoElement.srcObject = null
         }
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = null
@@ -281,6 +305,7 @@ class VoiceRTC {
         log.info("Call ended and resources cleaned up.")
         this.dataConnection?.send(VoiceRTCMessageType.None)
         Store.endCall()
+        this.setupPeerEvents()
     }
 
     error(error: Error) {
