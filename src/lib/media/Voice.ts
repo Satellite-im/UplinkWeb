@@ -93,10 +93,6 @@ export class VoiceRTC {
             console.log("Data received from user that received a call: ", data)
             switch (data) {
                 case VoiceRTCMessageType.EndingCall:
-                    if (this.isReceivingCall) {
-                        this.endCall()
-                    }
-
                     this.endCall()
                     break
                 case VoiceRTCMessageType.Calling:
@@ -133,6 +129,34 @@ export class VoiceRTC {
         this.acceptedIncomingCall = true
     }
 
+    private async improveAudioQuality() {
+        const audioContext = new window.AudioContext()
+        const source = audioContext.createMediaStreamSource(this.localStream!)
+        const destination = audioContext.createMediaStreamDestination()
+
+        const gainNode = audioContext.createGain()
+        const echoCancellation = audioContext.createBiquadFilter()
+        const noiseSuppression = audioContext.createBiquadFilter()
+
+        echoCancellation.type = "lowshelf"
+        echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
+        echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
+
+        noiseSuppression.type = "highpass"
+        noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
+        noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
+
+        source.connect(echoCancellation)
+        echoCancellation.connect(noiseSuppression)
+        noiseSuppression.connect(gainNode)
+        gainNode.connect(destination)
+
+        const processedStream = new MediaStream()
+        processedStream.addTrack(destination.stream.getAudioTracks()[0])
+        processedStream.addTrack(this.localStream!.getVideoTracks()[0])
+        this.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
+    }
+
     public async acceptCall() {
         this.localStream = await navigator.mediaDevices.getUserMedia({
             video: {
@@ -142,13 +166,22 @@ export class VoiceRTC {
                 height: { ideal: 1080 },
                 width: { ideal: 1920 },
             },
-            audio: true,
+            audio: {
+                echoCancellation: { ideal: true },
+                noiseSuppression: { ideal: true },
+                autoGainControl: { ideal: true },
+                sampleRate: 48000,
+                sampleSize: 16,
+                channelCount: 2,
+            },
         })
 
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = this.localStream
             this.localVideoCurrentSrc.play()
         }
+
+        await this.improveAudioQuality()
 
         this.activeCall!.answer(this.localStream)
 
@@ -183,6 +216,7 @@ export class VoiceRTC {
         })
 
         this.makingCall = true
+
         this.localStream = await navigator.mediaDevices.getUserMedia({
             video: {
                 aspectRatio: 16 / 9,
@@ -191,13 +225,22 @@ export class VoiceRTC {
                 height: { ideal: 1080 },
                 width: { ideal: 1920 },
             },
-            audio: true,
+            audio: {
+                echoCancellation: { ideal: true },
+                noiseSuppression: { ideal: true },
+                autoGainControl: { ideal: true },
+                sampleRate: 48000,
+                sampleSize: 16,
+                channelCount: 2,
+            },
         })
 
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = this.localStream
             this.localVideoCurrentSrc.play()
         }
+
+        await this.improveAudioQuality()
 
         const call = this.localPeer!.call(this.remotePeerId!, this.localStream)
 
