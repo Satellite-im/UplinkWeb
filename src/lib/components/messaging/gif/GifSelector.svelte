@@ -243,7 +243,7 @@
         flex-direction: column;
         gap: 1rem;
         height: var(--emoji-selector-height);
-        max-width: calc(var(--min-component-width) * 2);
+        width: calc(var(--min-component-width) * 2);
 
         .search-bar {
             position: sticky;
@@ -276,41 +276,34 @@
                 align-items: center;
                 justify-content: center;
                 position: relative;
-            }
 
-            .gif-container:hover .icon-container {
-                visibility: visible;
-            }
+                &:hover .icon-container {
+                    visibility: visible;
+                }
 
-            .icon-container {
-                position: absolute;
-                top: var(--gap-less);
-                left: var(--gap-less);
-                z-index: 3;
-            }
+                .icon-container {
+                    position: absolute;
+                    top: var(--gap-less);
+                    left: var(--gap-less);
+                    z-index: 3;
 
-            .icon-container:hover {
-                cursor: pointer;
-            }
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
 
-            .gif {
-                object-fit: fill;
-                cursor: pointer;
-                height: 133.33px;
-                width: 100%;
-                border: var(--border-width) solid var(--border-color);
-                border-radius: var(--border-radius-minimal);
-                transition: transform var(--animation-speed) ease;
-            }
-
-            .gif:hover {
-                transform: scale(1.05);
-            }
-
-            @media (max-width: 600px) {
                 .gif {
-                    height: 100px;
+                    object-fit: fill;
+                    cursor: pointer;
+                    height: 133.33px;
                     width: 100%;
+                    border: var(--border-width) solid var(--border-color);
+                    border-radius: var(--border-radius-minimal);
+                    transition: transform var(--animation-speed) ease;
+
+                    &:hover {
+                        transform: scale(1.05);
+                    }
                 }
             }
 
