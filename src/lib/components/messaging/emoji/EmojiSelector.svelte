@@ -5,7 +5,7 @@
     import { emojiList } from "./EmojiList"
     import Fuse from "fuse.js"
     import { _ } from "svelte-i18n"
-    import { createEventDispatcher, onMount, tick } from "svelte"
+    import { createEventDispatcher, tick } from "svelte"
     import { createPersistentState } from "$lib/state"
 
     interface Emoji {
@@ -106,32 +106,9 @@
     $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, selectedSkinTone)
 
     const emojiSize = createPersistentState("emoji.selectorsize", 44)
-
-    function adjustEmojiSize(containerWidth: number) {
-        const newSize = Math.max(16, Math.min(45, 45 - containerWidth / 50))
-        emojiSize.set(newSize)
-    }
-
-    let emojiContainer: HTMLDivElement
-
-    onMount(() => {
-        const resizeObserver = new ResizeObserver(entries => {
-            for (const entry of entries) {
-                adjustEmojiSize(entry.contentRect.width)
-            }
-        })
-
-        if (emojiContainer) {
-            resizeObserver.observe(emojiContainer)
-        }
-
-        return () => {
-            resizeObserver.disconnect()
-        }
-    })
 </script>
 
-<div id="emoji-container" bind:this={emojiContainer}>
+<div id="emoji-container">
     <div class="input-group">
         <Input alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
             <Icon icon={Shape.Search} />
@@ -208,7 +185,7 @@
         display: flex;
         flex-direction: column;
         height: var(--emoji-selector-height);
-        max-width: calc(var(--min-component-width) * 2);
+        width: calc(var(--min-component-width) * 2);
 
         .input-group {
             display: flex;
@@ -220,18 +197,18 @@
                 border: none;
                 background: transparent;
                 border-radius: 50%;
-                padding: 0 0 0 calc(var(--gap) * 0.5vw);
+                padding: 0 0 0 var(--gap);
             }
 
             .skin-tone-popup {
                 display: inline-flex;
                 position: absolute;
                 background: var(--alt-color);
-                border: calc(var(--border-width) * 0.1vw) solid var(--border-color);
-                border-radius: calc(var(--border-radius) * 0.1vw);
-                padding: calc(var(--padding-less) * 0.1vw);
+                border: var(--border-width) solid var(--border-color);
+                border-radius: var(--border-radius);
+                padding: var(--padding-less);
                 z-index: 10;
-                right: calc(var(--padding) * 0.1vw);
+                right: var(--padding);
 
                 .skin-tone {
                     font-size: 1.5rem;
@@ -240,7 +217,7 @@
                     border: none;
 
                     .emoji {
-                        font-size: calc(var(--input-height) * 0.1vw) !important;
+                        font-size: var(--input-height) !important;
                     }
                 }
             }
@@ -249,8 +226,8 @@
         .slider-container {
             display: flex;
             align-items: center;
-            gap: calc(var(--gap) * 0.5vw);
-            width: 20vw;
+            gap: var(--gap);
+            width: 200px;
             align-self: flex-end;
         }
 
@@ -258,8 +235,7 @@
             flex: 1;
             overflow-y: scroll;
             overflow-x: hidden;
-            padding-right: calc(var(--gap-less) * 0.5vw);
-            max-width: calc(var(--min-component-width) * 2);
+            padding-right: var(--gap-less);
 
             section {
                 margin-bottom: 1rem;
@@ -268,16 +244,14 @@
                     display: flex;
                     flex-wrap: wrap;
                     justify-content: space-between;
-                    gap: calc(var(--gap-less) * 0.5vw);
+                    gap: var(--gap-less);
 
                     .emoji {
-                        font-size: calc(var(--emoji-size) * 0.5vw);
-                        display: flex;
+                        font-size: var(--emoji-size);
                         cursor: pointer;
                         outline: none;
                         user-select: none;
                         position: relative;
-
                         transition:
                             transform 0.3s ease,
                             filter 0.3s ease;
@@ -310,41 +284,30 @@
         #category-nav {
             display: flex;
             overflow-x: auto;
-            padding: calc(var(--padding-less) * 0.5vw) 0;
+            padding: var(--padding-less) 0;
             box-sizing: border-box;
             white-space: nowrap;
-            gap: calc(var(--gap) * 0.5vw);
+            gap: var(--gap);
 
             .category-link {
-                padding: calc(var(--padding-minimal) * 2vw) calc(var(--padding) * 0.5vw);
-                margin-right: 10px;
+                padding: var(--padding-minimal) var(--padding);
                 text-decoration: none;
                 color: var(--text-color);
                 background: var(--alt-color);
-                border-radius: calc(var(--border-radius-more) * 0.5vw);
-                font-size: calc(var(--label-size) * 0.1vw);
+                border-radius: var(--border-radius-more);
+                font-size: var(--label-size);
 
                 &:hover {
                     background-color: var(--primary-color);
                 }
-                scroll-margin-top: 20px;
             }
-            scroll-margin-top: 20px;
         }
     }
 
     @media only screen and (max-width: 600px) {
         #emoji-container {
-            padding: 0.5rem;
-            .input-group,
-            .slider-container,
-            #emoji-selector,
-            #category-nav {
-                width: 100%;
-            }
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100%;
+            height: 100%;
         }
     }
 </style>
