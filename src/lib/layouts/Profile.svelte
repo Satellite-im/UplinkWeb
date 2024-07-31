@@ -50,7 +50,7 @@
                 <div class="integrations">
                     {#each user.integrations as integration}
                         <div class="integration" style={`border-color: ${getIntegrationColor(integration)};`}>
-                            <img class="integration-logo" src="/assets/brand/{integration.kind}.png" alt="Platform Logo" />
+                            <img class="integration-logo" src={toIntegrationIconSrc(integration.kind)} alt="Platform Logo" />
                             <Text singleLine>{integration.location}</Text>
                             <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration)}>
                                 <Icon icon={Shape.Popout} />

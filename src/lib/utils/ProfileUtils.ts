@@ -82,3 +82,15 @@ export function getIntegrationColor(integration: Integration) {
             return "#FF7F50"
     }
 }
+
+export function toIntegrationKind(key: string): Integrations {
+    let integration_kind = Integrations[key as keyof typeof Integrations]
+    if (integration_kind === undefined) {
+        integration_kind = Integrations.Generic
+    }
+    return integration_kind
+}
+
+export function toIntegrationIconSrc(key: string): string {
+    return `/assets/brand/${toIntegrationKind(key)}.png`
+}

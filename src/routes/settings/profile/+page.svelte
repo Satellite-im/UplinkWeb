@@ -21,7 +21,7 @@
     import { INTEGRATIONS } from "$lib/config"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { SettingsStore } from "$lib/state"
-    import { identityColor } from "$lib/utils/ProfileUtils"
+    import { identityColor, toIntegrationIconSrc } from "$lib/utils/ProfileUtils"
 
     initLocale()
 
@@ -90,8 +90,7 @@
         Store.setStatusMessage(userReference.profile.status_message)
     })
 
-    let user: User = get(Store.state.user)
-    Store.state.user.subscribe(u => (user = u))
+    $: user = get(Store.state.user)
     let key: string = ""
     let activityStatus: Status = user.profile.status
 
@@ -148,32 +147,25 @@
     let selectedKey: string
     let selectedKeyEditValue: string
 
-    function addIntegration() {
-        if (selectedKey !== "" && selectedKeyEditValue !== "") {
-            MultipassStoreInstance.setMetadata(selectedKey, selectedKeyEditValue)
-            showEditIntegrations.set(false)
-            selectedKey = ""
-            selectedKeyEditValue = ""
-        }
-    }
-
     function startEditingIntegration(key: string) {
         selectedKey = key
         selectedKind = toIntegrationKind(key)
         showEditIntegrations.set(true)
     }
 
-    function saveEditedIntegration() {
+    function setIntegration() {
         if (selectedKey !== "" && selectedKeyEditValue !== "") {
             MultipassStoreInstance.setMetadata(selectedKey, selectedKeyEditValue)
-            showEditIntegrations.set(false)
-            selectedKey = ""
-            selectedKeyEditValue = ""
+            resetSelection()
         }
     }
 
     function removeIntegration(key: string) {
         MultipassStoreInstance.removeMetadata(key)
+        resetSelection()
+    }
+
+    function resetSelection() {
         showEditIntegrations.set(false)
         selectedKey = ""
         selectedKeyEditValue = ""
@@ -406,12 +398,12 @@
                 </div>
 
                 {#if $showEditIntegrations}
-                    <Label text={user.integrations.has(selectedKey) ? "Edit Integration" : "Add New"} />
+                    <Label text={user.integrations.has(selectedKey) ? $_("settings.profile.integration.editIntegration") : $_("settings.profile.integration.addNew")} />
 
                     <div class="add">
                         <div class="left">
                             {#if !user.integrations.has(selectedKey)}
-                                <Label text="Platform" />
+                                <Label text={$_("generic.platform")} />
                                 <Select
                                     alt
                                     options={Object.entries(Integrations).map(([key, value]) => ({ value: key, text: value }))}
@@ -428,29 +420,27 @@
                                 <Input alt bind:value={selectedKey} disabled={user.integrations.has(selectedKey)} />
                             {/if}
                         </div>
-                        <img class="integration-logo" src="/assets/brand/{toIntegrationKind(selectedKey)}.png" alt="Platform Logo" />
+                        <img class="integration-logo" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
                         <div class="right">
-                            <Label text="Address" />
+                            <Label text={$_("generic.address")} />
                             <Input alt bind:value={selectedKeyEditValue} />
                         </div>
 
-                        <Button text={user.integrations.has(selectedKey) ? "Save" : "Add"} on:click={user.integrations.has(selectedKey) ? saveEditedIntegration : addIntegration}>
+                        <Button text={user.integrations.has(selectedKey) ? $_("generic.save") : $_("generic.add")} on:click={setIntegration}>
                             <Icon icon={user.integrations.has(selectedKey) ? Shape.CheckMark : Shape.Plus} />
                         </Button>
                         <Button
-                            text="Cancel"
+                            text={$_("generic.cancel")}
                             appearance={Appearance.Alt}
                             on:click={_ => {
-                                showEditIntegrations.set(false)
-                                selectedKey = ""
-                                selectedKeyEditValue = ""
+                                resetSelection()
                             }}>
                             <Icon icon={Shape.XMark} />
                         </Button>
                     </div>
                 {:else}
                     <Button
-                        text="Add"
+                        text={$_("generic.add")}
                         on:click={_ => {
                             showEditIntegrations.set(true)
                         }}>
