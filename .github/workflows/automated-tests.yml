@@ -10,6 +10,7 @@ on:
             - ".prettierrc.json"
             - "PULL_REQUEST_TEMPLATE.md"
             - "README.md"
+    workflow_dispatch:
 
 jobs:
     playwright-run:
