@@ -18,9 +18,7 @@
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
     import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
-    import { INTEGRATIONS } from "$lib/config"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
-    import { SettingsStore } from "$lib/state"
     import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
 
     initLocale()

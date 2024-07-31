@@ -1,5 +1,4 @@
 import { Identicon, Integrations } from "$lib/enums"
-import type { Integration } from "$lib/types"
 import { avataaars, avataaarsNeutral, bottts, botttsNeutral, icons, identicon, lorelei, notionists, openPeeps, pixelArt, pixelArtNeutral, shapes } from "@dicebear/collection"
 
 export function getIdenticonGenerator(identiconStyle: Identicon) {
