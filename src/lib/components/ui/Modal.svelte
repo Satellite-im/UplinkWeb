@@ -63,8 +63,8 @@
             align-items: center;
             justify-content: center;
             min-width: var(--min-component-width);
-            max-height: 80%;
-            max-width: 80%;
+            max-height: 100%;
+            max-width: 100%;
             width: fit-content;
             border-radius: var(--border-radius);
             background-color: var(--background-alt);
