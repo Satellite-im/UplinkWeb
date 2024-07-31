@@ -25,8 +25,8 @@ dd {
 }
 
 /* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-ul[role='list'],
-ol[role='list'] {
+ul[role="list"],
+ol[role="list"] {
     list-style: none;
 }
 
@@ -85,102 +85,102 @@ select {
 
 @font-face {
     font-family: "Poppins";
-    src: url('/assets/font/Poppins-Regular.ttf');
+    src: url("/assets/font/Poppins-Regular.ttf");
 }
 
 @font-face {
     font-family: "SpaceMono";
-    src: url('/assets/font/SpaceMono-Regular.ttf');
+    src: url("/assets/font/SpaceMono-Regular.ttf");
 }
 
 @font-face {
     font-family: "ChakraPetch";
-    src: url('/assets/font/ChakraPetch.ttf');
+    src: url("/assets/font/ChakraPetch.ttf");
 }
 
 @font-face {
     font-family: "Comfortaa";
-    src: url('/assets/font/Comfortaa.ttf');
+    src: url("/assets/font/Comfortaa.ttf");
 }
 
 @font-face {
     font-family: "Dosis";
-    src: url('/assets/font/Dosis.ttf');
+    src: url("/assets/font/Dosis.ttf");
 }
 
 @font-face {
     font-family: "MajorMono";
-    src: url('/assets/font/MajorMonoDisplay-Regular.ttf');
+    src: url("/assets/font/MajorMonoDisplay-Regular.ttf");
 }
 
 @font-face {
     font-family: "PixelifySans";
-    src: url('/assets/font/PixelifySans.ttf');
+    src: url("/assets/font/PixelifySans.ttf");
 }
 
 @font-face {
     font-family: "PoiretOne";
-    src: url('/assets/font/PoiretOne-Regular.ttf');
+    src: url("/assets/font/PoiretOne-Regular.ttf");
 }
 
 @font-face {
     font-family: "IBMPlexMono";
-    src: url('/assets/font/IBMPlexMono-Regular.ttf');
+    src: url("/assets/font/IBMPlexMono-Regular.ttf");
 }
 
 @font-face {
     font-family: "IndieFlower";
-    src: url('/assets/font/IndieFlower.ttf');
+    src: url("/assets/font/IndieFlower.ttf");
 }
 
 @font-face {
     font-family: "JosefinSans";
-    src: url('/assets/font/JosefinSans.ttf');
+    src: url("/assets/font/JosefinSans.ttf");
 }
 
 @font-face {
     font-family: "Noto";
-    src: url('/assets/font/NotoSans.ttf');
+    src: url("/assets/font/NotoSans.ttf");
 }
 
 @font-face {
     font-family: "SourceCodePro";
-    src: url('/assets/font/SourceCodePro.ttf');
+    src: url("/assets/font/SourceCodePro.ttf");
 }
 
 @font-face {
     font-family: "SpaceGrotesk";
-    src: url('/assets/font/SpaceGrotesk.ttf');
+    src: url("/assets/font/SpaceGrotesk.ttf");
 }
 
 @font-face {
     font-family: "OpenDyslexic";
-    src: url('/assets/font/OpenDyslexicAlta-Regular.otf');
+    src: url("/assets/font/OpenDyslexicAlta-Regular.otf");
 }
 
 @font-face {
     font-family: "OpenMoji";
-    src: url('/assets/emoji/OpenMoji.ttf');
+    src: url("/assets/emoji/OpenMoji.ttf");
 }
 
 @font-face {
     font-family: "Twemoji";
-    src: url('/assets/emoji/Twemoji.ttf');
+    src: url("/assets/emoji/Twemoji.ttf");
 }
 
 @font-face {
     font-family: "NotoEmoji";
-    src: url('/assets/emoji/NotoColorEmoji.ttf');
+    src: url("/assets/emoji/NotoColorEmoji.ttf");
 }
 
 @font-face {
     font-family: "Blobmoji";
-    src: url('/assets/emoji/Blobmoji.ttf');
+    src: url("/assets/emoji/Blobmoji.ttf");
 }
 
 @font-face {
     font-family: "Fluent";
-    src: url('/assets/emoji/Fluent.ttf');
+    src: url("/assets/emoji/Fluent.ttf");
 }
 
 strong {
@@ -248,7 +248,6 @@ body {
     min-width: fit-content;
     min-width: 100%;
 }
-
 
 .text-muted {
     color: var(--color-muted);
@@ -346,4 +345,10 @@ code {
 .emoji {
     font-size: var(--emoji-size);
     font-family: "Fluent";
+}
+
+@keyframes pulse-success {
+    0% {
+        box-shadow: 0 0 0 0 var(--success-color);
+    }
 }

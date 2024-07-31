@@ -2,6 +2,7 @@ import type { Keybind } from "$lib/types"
 import type { Locale } from "javascript-time-ago"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState, defaultSettings } from ".."
+import type { Identicon } from "$lib/enums"
 
 export interface ISettingsState {
     lang: Locale
@@ -14,6 +15,7 @@ export interface ISettingsState {
         spamRejection: boolean
         compact: boolean
         quick: boolean
+        identiconStyle: Identicon
     }
     audio: {
         inputDevice: string
@@ -23,6 +25,9 @@ export interface ISettingsState {
         controlSounds: boolean
         messageSounds: boolean
         callTimer: boolean
+    }
+    calling: {
+        minimalCallingAlerts: boolean
     }
     extensions: {}
     keybinds: Keybind[]

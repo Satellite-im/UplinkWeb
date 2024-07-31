@@ -1,23 +1,19 @@
 <script lang="ts">
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
-    import { ChatPreview, ContextMenu, Modal } from "$lib/components"
+    import { ChatPreview, ContextMenu } from "$lib/components"
     import { Sidebar, Topbar } from "$lib/layouts"
-    import { Appearance, MessageDirection, Route, Shape, Size, TooltipPosition } from "$lib/enums"
+    import { Appearance, Route, Shape, TooltipPosition } from "$lib/enums"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import type { Chat, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
     import { Store } from "$lib/state/Store"
-    import { get, writable, type Readable } from "svelte/store"
+    import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { defaultUser, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame } from "$lib/types"
-    import { onMount } from "svelte"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
-    import Key from "$lib/components/settings/Key.svelte"
-    import Toast from "$lib/elements/Toast.svelte"
     import { log } from "$lib/utils/Logger"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { ToastMessage } from "$lib/state/ui/toast"
@@ -30,8 +26,8 @@
     $: sidebarOpen = UIStore.state.sidebarOpen
     $: friends = Store.getUsers(Store.state.friends)
     $: blocked = Store.getUsers(Store.state.blocked)
-    let incomingRequests: FriendRequest[] = Store.inboundRequests
-    let outgoingRequests: FriendRequest[] = Store.outboundRequests
+    $: incomingRequests = Store.inboundRequests
+    $: outgoingRequests = Store.outboundRequests
     let isValidFriendDid: boolean = false
 
     let tab: string = "all"
@@ -115,10 +111,6 @@
         })
     }
 
-    onMount(async () => {
-        await MultipassStoreInstance.fetchAllFriendsAndRequests()
-    })
-
     let searchString: string = ""
 
     const fuseOptions = {
@@ -138,10 +130,6 @@
         searchResult = fuse.search(searchString)
     }
 
-    Store.state.activeRequests.subscribe(r => {
-        incomingRequests = r.filter(r => r.direction === MessageDirection.Inbound)
-        outgoingRequests = r.filter(r => r.direction === MessageDirection.Outbound)
-    })
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
@@ -207,11 +195,11 @@
                     </Button>
                 {/if}
                 {#if tab === "active"}
-                    <Button hook="button-friends-active" appearance={Appearance.Primary} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
+                    <Button badge={incomingRequests.length} hook="button-friends-active" appearance={Appearance.Primary} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
                 {:else}
-                    <Button hook="button-friends-active" appearance={Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
+                    <Button badge={incomingRequests.length} hook="button-friends-active" appearance={Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
                 {/if}

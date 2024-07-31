@@ -16,6 +16,11 @@ export type ConversationMessages = {
     messages: MessageGroup[]
 }
 
+export type Unreads = {
+    id: string
+    count: number
+}
+
 class Conversations {
     /**
      * INTERNAL!
@@ -25,10 +30,12 @@ class Conversations {
     private conversations: Writable<ConversationMessagesMap>
     // We use a new writable so they dont get saved to db
     pendingMsgConversations: Writable<{ [conversation: string]: { [id: string]: PendingMessage } }>
+    unreads: Writable<Unreads[]>
 
     constructor() {
         this.conversationsDB = []
         this.conversations = writable({})
+        this.unreads = writable([])
         this.pendingMsgConversations = writable({})
         this.loadConversations()
         this.conversations.subscribe(async convsStore => {
@@ -377,6 +384,29 @@ class Conversations {
         //         },
         //     },
         // })
+    }
+
+    addUnread(chat: string) {
+        const unreads = get(this.unreads)
+        const index = unreads.findIndex(u => u.id === chat)
+        if (index !== -1) {
+            unreads[index].count++
+        } else {
+            unreads.push({
+                id: chat,
+                count: 1,
+            })
+        }
+        this.unreads.set(unreads)
+    }
+
+    clearUnreads(chat: string) {
+        const unreads = get(this.unreads)
+        const index = unreads.findIndex(u => u.id === chat)
+        if (index !== -1) {
+            unreads[index].count = 0
+        }
+        this.unreads.set(unreads)
     }
 }
 

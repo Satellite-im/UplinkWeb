@@ -16,6 +16,8 @@
     export let fill: boolean = false
     export let hook: string = ""
     export let hideTextOnMobile: boolean = false
+    export let color: string = ""
+    export let badge: number = 0
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -37,11 +39,15 @@
     class="button {fill ? 'fill' : ''} {hideTextOnMobile ? 'hidden-text' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip
         ? 'tooltip ' + tooltipPositionClass()
         : ''} {small ? 'small' : ''} {clazz || ''}"
+    style={color.length ? `background-color: ${color}` : ""}
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click
     on:contextmenu>
+    {#if badge > 0}
+        <span class="badge">{badge}</span>
+    {/if}
     {#if loading}
         <Loader />
     {:else}
@@ -66,12 +72,25 @@
         gap: var(--gap);
         display: inline-flex;
         justify-content: center;
+        position: relative;
         align-items: center;
         transition:
             background-color var(--animation-speed) var(--animation-style),
             color var(--animation-speed) var(--animation-style),
             border-color var(--animation-speed) var(--animation-style),
             all var(--animation-speed);
+
+        .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-color);
+            padding: 0 var(--padding-minimal);
+            color: var(--color);
+            border-radius: var(--border-radius-minimal);
+            font-size: var(--font-size-smaller);
+            transform: translate(33%, -33%);
+        }
 
         &.fill {
             flex: 1;
@@ -239,13 +258,13 @@
         }
 
         &.small {
-            min-height: calc(var(--input-height) / 1.25);
-            max-height: calc(var(--input-height) / 1.25);
+            min-height: calc(var(--input-height) / 1.5);
+            max-height: calc(var(--input-height) / 1.5);
             &.icon {
-                min-width: calc(var(--input-height) / 1.75);
-                max-width: calc(var(--input-height) / 1.75);
-                max-height: calc(var(--input-height) / 1.75);
-                min-height: calc(var(--input-height) / 1.75);
+                min-width: calc(var(--input-height) / 1.5);
+                max-width: calc(var(--input-height) / 1.5);
+                max-height: calc(var(--input-height) / 1.5);
+                min-height: calc(var(--input-height) / 1.5);
             }
         }
 

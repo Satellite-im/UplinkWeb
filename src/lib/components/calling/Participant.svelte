@@ -23,7 +23,7 @@
 <div class="participant">
     {#if hasVideo}
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video class="{isMuted ? 'muted' : ''} {isDeafened ? 'deafened' : ''}" autoplay muted src="/assets/mp4/sample.mp4" on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}> </video>
+        <video class="{isMuted ? 'muted' : ''} {isDeafened ? 'deafened' : ''}" autoplay muted on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}> </video>
         {#if showDetails}
             <div class="details" in:fade={{ duration: animationDuration }}>
                 <div class="user">
@@ -54,12 +54,12 @@
                 <div class="state centered" in:fade={{ duration: animationDuration }}>
                     <Controls>
                         {#if isMuted}
-                            <Button appearance={Appearance.Alt} small icon>
+                            <Button appearance={Appearance.Alt} icon disabled>
                                 <Icon icon={Shape.MicrophoneSlash} />
                             </Button>
                         {/if}
                         {#if isDeafened}
-                            <Button appearance={Appearance.Alt} small icon>
+                            <Button appearance={Appearance.Alt} icon>
                                 <Icon icon={Shape.HeadphoneSlash} />
                             </Button>
                         {/if}

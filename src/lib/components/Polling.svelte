@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Status } from "$lib/enums"
     import { ConversationStore } from "$lib/state/conversation"
     import { Store } from "$lib/state/Store.js"
     import { UIStore } from "$lib/state/ui"
@@ -12,7 +13,6 @@
     async function poll() {
         // add processes here.
         await MultipassStoreInstance.fetchAllFriendsAndRequests()
-        await updateUserOnChats()
         setTimeout(poll, rate)
     }
 

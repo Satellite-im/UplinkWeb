@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
     import { initLocale } from "$lib/lang"
@@ -46,10 +47,10 @@
     import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
     import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
-    import { imageFromData } from "$lib/wasm/ConstellationStore"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
     import { get_valid_payment_request } from "$lib/utils/Wallet"
+    import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
 
     initLocale()
@@ -219,6 +220,29 @@
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
 
+    let receivingCall: boolean = false
+    $: activeCallInProgress = false
+
+    onMount(() => {
+        setInterval(() => {
+            if (receivingCall === false && VoiceRTCInstance.isReceivingCall === true) {
+                receivingCall = VoiceRTCInstance.isReceivingCall
+                VoiceRTCInstance.isReceivingCall = false
+            }
+            if (get(Store.state.activeCall)) {
+                activeCallInProgress = true
+            } else {
+                activeCallInProgress = false
+            }
+        }, 1000)
+    })
+
+    async function end_call() {
+        activeCallInProgress = false
+        receivingCall = false
+        Store.endCall()
+    }
+
     function getPinned(conversation: ConversationMessages | undefined): MessageType[] {
         if (!conversation) return []
         return conversation!.messages.flatMap(g => g.messages.filter(m => m.pinned))
@@ -372,8 +396,9 @@
                         <ProfilePicture
                             hook="chat-topbar-profile-picture"
                             typing={$activeChat.activity}
+                            id={$users[$activeChat.users[1]]?.key}
                             image={$users[$activeChat.users[1]]?.profile.photo.image}
-                            frame={$users[$activeChat.users[2]]?.profile.photo.frame}
+                            frame={$users[$activeChat.users[1]]?.profile.photo.frame}
                             status={$users[$activeChat.users[1]]?.profile.status}
                             size={Size.Medium}
                             loading={loading} />
@@ -405,7 +430,16 @@
                 <Button hook="button-chat-call" icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
-                <Button hook="button-chat-video" icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button
+                    icon
+                    hook="button-chat-video"
+                    appearance={Appearance.Alt}
+                    disabled={$activeChat.users.length === 0}
+                    on:click={async _ => {
+                        Store.setActiveCall($activeChat)
+                        await VoiceRTCInstance.makeVideoCall($activeChat.users[1], $activeChat.id)
+                        activeCallInProgress = true
+                    }}>
                     <Icon icon={Shape.VideoCamera} />
                 </Button>
                 <Button
@@ -460,9 +494,12 @@
                 {/if}
             </svelte:fragment>
         </Topbar>
-
-        {#if get(Store.state.activeCall)}
-            <CallScreen />
+        {#if activeCallInProgress}
+            <CallScreen
+                chat={$activeChat}
+                on:onendcall={() => {
+                    end_call()
+                }} />
         {/if}
 
         <Conversation>
@@ -478,6 +515,7 @@
                                     frame: resolved.profile.photo.frame,
                                     status: resolved.profile.status,
                                     highlight: Appearance.Default,
+                                    id: resolved.key,
                                 }}
                                 on:profileClick={_ => {
                                     previewProfile = resolved
@@ -514,7 +552,7 @@
                                                     {#each message.text as line}
                                                         {#if get_valid_payment_request(line) != undefined}
                                                             <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
-                                                        {:else}
+                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
                                                             <Text markdown={line} />
                                                         {/if}
                                                     {/each}

@@ -1,4 +1,4 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations } from "$lib/enums"
+import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations, CallDirection } from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
 import type { Writable } from "svelte/store"
 
@@ -41,6 +41,7 @@ export type Reaction = {
 }
 
 export type ProfilePictureRequirements = {
+    id: string | undefined
     image: string
     status: Status // TODO: Remove this
     notifications: number
@@ -133,6 +134,7 @@ export type Chat = {
     id: string
     name: string
     motd: string
+    unread: number
     kind: ChatType
     settings: ChatSettings
     creator?: string
@@ -179,6 +181,7 @@ export let defaultChat: Chat = {
     id: "",
     name: "",
     motd: "",
+    unread: 0,
     notifications: 0,
     kind: ChatType.DirectMessage,
     creator: undefined,
@@ -202,6 +205,7 @@ export type Call = {
     startedAt: Date
     chat: Chat
     inCall: boolean
+    direction: CallDirection
 }
 
 export type ContextItem = {
