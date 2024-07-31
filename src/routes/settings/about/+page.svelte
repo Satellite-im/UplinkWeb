@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from "svelte"
     import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { Appearance, Shape } from "$lib/enums"
@@ -6,10 +7,12 @@
     import { SettingSection } from "$lib/layouts"
     import { SettingsStore } from "$lib/state"
     import { goto } from "$app/navigation"
+    import { writable } from "svelte/store"
 
     initLocale()
 
     let clicked: number = 0
+    const latestCommit = writable<string | null>(null)
 
     function increment() {
         if (clicked < 9) {
@@ -19,6 +22,25 @@
             goto("/settings/developer")
         }
     }
+
+    async function fetchLatestCommit() {
+        try {
+            const response = await fetch("https://api.github.com/repos/Satellite-im/UplinkWeb/commits?sha=dev")
+            const data = await response.json()
+            if (Array.isArray(data) && data.length > 0 && data[0].sha) {
+                latestCommit.set(data[0].sha)
+            } else {
+                latestCommit.set("No commits found")
+            }
+        } catch (error) {
+            console.error("Error fetching latest commit:", error)
+            latestCommit.set("Error fetching commit")
+        }
+    }
+
+    onMount(() => {
+        fetchLatestCommit()
+    })
 </script>
 
 <div id="page">
@@ -45,6 +67,13 @@
         <Button hook="button-about-dev-mode" on:click={_ => increment()} icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Beaker} />
         </Button>
+    </SettingSection>
+    <SettingSection hook="section-about-latest-commit" name="Latest Commit" description="Latest commit hash from the dev branch.">
+        {#if $latestCommit}
+            <div>{$latestCommit}</div>
+        {:else}
+            <div>Loading...</div>
+        {/if}
     </SettingSection>
 </div>
 
