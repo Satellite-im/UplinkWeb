@@ -99,20 +99,13 @@
             requestPermissions()
         }
 
-        setInterval(async () => {
-            if (VoiceRTCInstance.acceptedIncomingCall) {
-                console.log("Accepting incoming call")
-                VoiceRTCInstance.acceptedIncomingCall = false
-                await VoiceRTCInstance.acceptCall()
+        if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
+            if (VoiceRTCInstance.makingCall) {
+                VoiceRTCInstance.makeVideoCall()
             }
-        }, 1000)
-    })
-
-    afterUpdate(() => {
-        if (localVideoCurrentSrc) {
-            localVideoCurrentSrc.play().catch(error => {
-                console.error("Error playing local video:", error)
-            })
+            if (VoiceRTCInstance.acceptedIncomingCall) {
+                VoiceRTCInstance.acceptCall()
+            }
         }
     })
 </script>
