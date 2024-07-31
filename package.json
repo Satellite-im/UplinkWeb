@@ -5,13 +5,14 @@
     "scripts": {
         "tauri": "tauri",
         "dev": "vite dev",
-        "build": "vite build",
+        "build": "prebuild-commit-hash && vite build",
         "preview": "vite preview --host 0.0.0.0 --port 80",
         "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
         "format": "prettier --write 'src/**/*.{css,html,js,svelte,ts}'",
-        "lint": "npm run format && npm run check"
-    },
+        "lint": "npm run format && npm run check",
+        "prebuild-commit-hash": "node scripts/get-commit-hash.js"
+      },
     "devDependencies": {
         "@castlenine/vite-remove-attribute": "^1.0.2",
         "@sveltejs/adapter-auto": "^3.0.0",
@@ -54,6 +55,7 @@
         "svelte-markdown": "^0.4.1",
         "three": "^0.163.0",
         "uuid": "^9.0.1",
+        "valibot": "^0.37.0",
         "vite-plugin-node-polyfills": "^0.21.0",
         "warp-wasm": "^1.3.1"
     }

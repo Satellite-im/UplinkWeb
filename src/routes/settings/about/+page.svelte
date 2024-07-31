@@ -12,7 +12,7 @@
     initLocale()
 
     let clicked: number = 0
-    const latestCommit = writable<string | null>(null)
+    const latestCommit = writable<string | null>(__COMMIT_HASH__ as string)
 
     function increment() {
         if (clicked < 9) {
@@ -22,25 +22,6 @@
             goto("/settings/developer")
         }
     }
-
-    async function fetchLatestCommit() {
-        try {
-            const response = await fetch("https://api.github.com/repos/Satellite-im/UplinkWeb/commits?sha=dev")
-            const data = await response.json()
-            if (Array.isArray(data) && data.length > 0 && data[0].sha) {
-                latestCommit.set(data[0].sha)
-            } else {
-                latestCommit.set("No commits found")
-            }
-        } catch (error) {
-            console.error("Error fetching latest commit:", error)
-            latestCommit.set("Error fetching commit")
-        }
-    }
-
-    onMount(() => {
-        fetchLatestCommit()
-    })
 </script>
 
 <div id="page">
