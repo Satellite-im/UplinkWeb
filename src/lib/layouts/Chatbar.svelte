@@ -129,6 +129,8 @@
                 bottom: var(--input-height);
                 top: var(--padding-less);
                 width: 100%;
+                align-self: center;
+                justify-self: center;
             }
         }
     }

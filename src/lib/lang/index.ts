@@ -28,6 +28,8 @@ export function initLocale() {
                 pending_changes: "Unsaved changes",
                 enable: "Enable",
                 enabled: "Enabled",
+                platform: "Platform",
+                address: "Address",
             },
             market: {
                 market: "Marketplace",
@@ -148,6 +150,8 @@ export function initLocale() {
                     integration: {
                         title: "Accounts",
                         description: "Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.",
+                        editIntegration: "Edit Integration",
+                        addNew: "Add New",
                     },
                 },
                 calling: {
