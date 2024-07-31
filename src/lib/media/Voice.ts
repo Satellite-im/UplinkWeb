@@ -162,6 +162,7 @@ export class VoiceRTC {
 
     public async makeVideoCall() {
         this.dataConnection = this.localPeer!.connect(this.remotePeerId!)
+
         this.dataConnection.send(VoiceRTCMessageType.Calling)
         this.dataConnection.send(this.channel)
 

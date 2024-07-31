@@ -11,7 +11,7 @@
     import { goto } from "$app/navigation"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
-    let callSound: SoundHandler
+    let callSound: SoundHandler | undefined = undefined
     let pending = false
     let user: User = defaultUser
     let interval: NodeJS.Timeout
@@ -19,14 +19,19 @@
     onMount(() => {
         interval = setInterval(async () => {
             if (VoiceRTCInstance.isReceivingCall) {
-                // callSound = playSound(Sounds.IncomingCall)
+                if (callSound === null || callSound === undefined) {
+                    callSound = playSound(Sounds.IncomingCall)
+                    callSound.play()
+                }
                 pending = true
                 const callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
                 if (callingChat) {
                     user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
                 }
-            } else if (!VoiceRTCInstance.isReceivingCall) {
+            } else if (!VoiceRTCInstance.isReceivingCall && !VoiceRTCInstance.makingCall) {
                 pending = false
+                callSound?.stop()
+                callSound = undefined
             }
         }, 500)
     })
@@ -45,13 +50,15 @@
         pending = false
         VoiceRTCInstance.isReceivingCall = false
         await VoiceRTCInstance.acceptIncomingCall()
-        // callSound.stop()
+        callSound?.stop()
+        callSound = undefined
     }
 
     function endCall() {
         pending = false
         Store.denyCall()
-        // callSound.stop()
+        callSound?.stop()
+        callSound = undefined
         VoiceRTCInstance.endCall()
         VoiceRTCInstance.isReceivingCall = false
     }
