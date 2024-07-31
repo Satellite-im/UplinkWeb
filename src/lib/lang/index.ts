@@ -48,6 +48,17 @@ export function initLocale() {
                 send: "Send",
                 upload_files: "Upload files to chat",
             },
+            messages: {
+                pin: "Pin Message",
+                unpin: "Unpin Message",
+                reply: "Reply",
+                copy: "Copy",
+                edit: "Edit",
+                delete: "Delete",
+                pinnedGoto: "Go to",
+                pinnedUnpin: "Unpin",
+                pinnedNone: "There are no pinned messages in this chat",
+            },
             friends: {
                 copy_did: "Copy ID",
                 block: "Block",

@@ -16,11 +16,12 @@
     const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
-<div class={`message-group ${compact ? "compact" : ""}`}>
+<div data-cy="message-group-{remote ? 'remote' : 'local'}" class={`message-group ${compact ? "compact" : ""}`}>
     {#if profilePictureRequirements && remote}
         <div class="aside">
             <ProfilePicture
                 id={profilePictureRequirements.id}
+                hook="message-group-remote-profile-picture"
                 size={Size.Small}
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
@@ -31,7 +32,7 @@
     {/if}
     <div class="flex">
         {#if username && username.length}
-            <Label class="username-{remote ? 'remote' : 'local'}" text={username} />
+            <Label hook="message-group-username" class="username-{remote ? 'remote' : 'local'}" text={username} />
         {/if}
         <slot></slot>
     </div>
@@ -39,6 +40,7 @@
         <div class="aside">
             <ProfilePicture
                 id={profilePictureRequirements.id}
+                hook="message-group-local-profile-picture"
                 size={Size.Small}
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
@@ -50,7 +52,7 @@
     {/if}
 
     {#if subtext}
-        <span class="subtext {remote ? 'remote' : 'local'}">{subtext}</span>
+        <span data-cy="message-group-timestamp" class="subtext {remote ? 'remote' : 'local'}">{subtext}</span>
     {/if}
 </div>
 

@@ -8,9 +8,10 @@
     export let emojiPick: (emoji: string) => void
 </script>
 
-<div class="emoji-group">
+<div class="emoji-group" data-cy="emoji-group">
     {#each emojis as emoji}
         <Button
+            hook="button-emoji-{emoji}"
             class="emoji"
             appearance={Appearance.Alt}
             text={emoji}
@@ -20,6 +21,7 @@
             }} />
     {/each}
     <Button
+        hook="button-emoji-picker"
         class="emoji-picker"
         appearance={Appearance.Alt}
         on:click={e => {

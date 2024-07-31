@@ -218,7 +218,7 @@
         <div class="body">
             {#if tab === "all"}
                 <Label hook="label-add-someone" text={$_("friends.add_someone")} />
-                <div class="section">
+                <div class="section" data-cy="friends-section-all">
                     <Input
                         hook="input-add-friend"
                         alt
@@ -355,7 +355,7 @@
                     {/each}
                 </div>
             {:else if tab === "active"}
-                <div class="section column">
+                <div class="section column" data-cy="friends-section-requests">
                     <Label hook="label-outgoing-requests" text={$_("friends.outgoing_requests")} />
                     {#each outgoingRequests as request}
                         <Friend friend={get(Store.getUser(request.to))}>
@@ -387,7 +387,7 @@
                     {/if}
                 </div>
             {:else if tab === "blocked"}
-                <div class="section column">
+                <div class="section column" data-cy="friends-section-blocked">
                     <Label hook="label-blocked-users" text={$_("friends.blocked_users")} />
                     {#each $blocked as user}
                         <Friend friend={user}>

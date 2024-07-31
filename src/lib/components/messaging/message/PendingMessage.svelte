@@ -32,10 +32,10 @@
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div on:contextmenu class="pending-message {position} {morePadding ? 'more-padding' : ''} {compact ? 'compact' : ''}">
+<div on:contextmenu data-cy="pending-message" class="pending-message {position} {morePadding ? 'more-padding' : ''} {compact ? 'compact' : ''}">
     <div class="content">
         {#each message.message.text as line}
-            <Text markdown={line} />
+            <Text hook="pending-message-text" markdown={line} />
         {/each}
         {#if attachments.length > 0}
             {#each attachments as progress}
