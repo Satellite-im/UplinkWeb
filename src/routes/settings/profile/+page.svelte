@@ -21,7 +21,7 @@
     import { INTEGRATIONS } from "$lib/config"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { SettingsStore } from "$lib/state"
-    import { identityColor, toIntegrationIconSrc } from "$lib/utils/ProfileUtils"
+    import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
 
     initLocale()
 
@@ -147,8 +147,9 @@
     let selectedKey: string
     let selectedKeyEditValue: string
 
-    function startEditingIntegration(key: string) {
+    function startEditingIntegration(key: string, value: string) {
         selectedKey = key
+        selectedKeyEditValue = value
         selectedKind = toIntegrationKind(key)
         showEditIntegrations.set(true)
     }
@@ -169,14 +170,6 @@
         showEditIntegrations.set(false)
         selectedKey = ""
         selectedKeyEditValue = ""
-    }
-
-    function toIntegrationKind(key: string) {
-        let integration_kind = Integrations[key as keyof typeof Integrations]
-        if (integration_kind === undefined) {
-            integration_kind = Integrations.Generic
-        }
-        return integration_kind
     }
 </script>
 
@@ -387,7 +380,7 @@
                     {#each $user.integrations as [key, value]}
                         <div class="integration-item">
                             <IntegrationDisplay key={key} value={value} />
-                            <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(key)}>
+                            <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(key, value)}>
                                 <Icon icon={Shape.Pencil} />
                             </Button>
                             <Button appearance={Appearance.Error} icon on:click={() => removeIntegration(key)}>
@@ -442,7 +435,7 @@
                     <Button
                         text={$_("generic.add")}
                         on:click={_ => {
-                            showEditIntegrations.set(true)
+                            startEditingIntegration("", "")
                         }}>
                         <Icon icon={Shape.Plus} />
                     </Button>
