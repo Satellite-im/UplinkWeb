@@ -62,8 +62,8 @@ export function identityColor(key: string): string {
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
 
-export function getIntegrationColor(integration: Integration) {
-    switch (integration.kind) {
+export function getIntegrationColor(key: string): string {
+    switch (toIntegrationKind(key)) {
         case Integrations.BTC:
             return "#F7931A"
         case Integrations.ETH:

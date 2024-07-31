@@ -90,12 +90,12 @@
         Store.setStatusMessage(userReference.profile.status_message)
     })
 
-    $: user = get(Store.state.user)
+    $: user = Store.state.user
     let key: string = ""
-    let activityStatus: Status = user.profile.status
+    let activityStatus: Status = Status.Offline
 
     Store.state.user.subscribe(val => {
-        user = val
+        let user = val
         userReference = { ...val }
         statusMessage = user.profile.status_message
         activityStatus = user.profile.status
@@ -206,7 +206,7 @@
                             await updateStatusMessage(statusMessage)
                         }
                         if (changeList.username) {
-                            await updateUsername(user.name)
+                            await updateUsername($user.name)
                         }
 
                         updatePendentItemsToSave()
@@ -240,7 +240,7 @@
                 on:contextmenu={open}
                 class="profile-header"
                 data-cy="profile-banner"
-                style={`background-image: url(${user.profile.banner.image}); background-color: ${identityColor(user.key)};)`}
+                style={`background-image: url(${$user.profile.banner.image}); background-color: ${identityColor($user.key)};)`}
                 on:click={_ => {
                     fileinput.click()
                 }}>
@@ -254,7 +254,7 @@
                     id: "clear-profile-picture",
                     icon: Shape.Trash,
                     text: "Delete Profile Picture",
-                    disabled: user.profile.photo.image === "",
+                    disabled: $user.profile.photo.image === "",
                     appearance: Appearance.Default,
                     onClick: () => {
                         updateProfilePicture("/0")
@@ -262,7 +262,7 @@
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture id={key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture id={key} image={$user.profile.photo.image} size={Size.Larger} status={$user.profile.status} frame={$user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}
@@ -279,14 +279,14 @@
                         <Input
                             hook="input-settings-profile-username"
                             alt
-                            bind:value={user.name}
+                            bind:value={$user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
                             on:isValid={e => {
                                 isValidUsernameToUpdate = e.detail
                             }}
                             rules={CommonInputRules.username}
                             on:enter={async _ => {
-                                await updateUsername(user.name)
+                                await updateUsername($user.name)
                                 updatePendentItemsToSave()
                             }}
                             on:input={_ => {
@@ -313,7 +313,7 @@
                             },
                         ]}>
                         <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
-                            <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
+                            <Input hook="input-settings-profile-short-id" alt value={$user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
                         </div>
@@ -344,7 +344,7 @@
             <div class="section">
                 <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
                     <Select
-                        hook="selector-current-status-{user.profile.status}"
+                        hook="selector-current-status-{$user.profile.status}"
                         options={[
                             { text: $_("user.status.online"), value: "online" },
                             { text: $_("user.status.offline"), value: "offline" },
@@ -366,7 +366,7 @@
                             }
                             2
                         }}
-                        bind:selected={user.profile.status}>
+                        bind:selected={$user.profile.status}>
                         {#if activityStatus === Status.Online}
                             <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
                         {:else if activityStatus === Status.Idle}
@@ -384,7 +384,7 @@
                 <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
                 <Text>{$_("settings.profile.integration.description")}</Text>
                 <div class="active">
-                    {#each user.integrations as [key, value]}
+                    {#each $user.integrations as [key, value]}
                         <div class="integration-item">
                             <IntegrationDisplay key={key} value={value} />
                             <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(key)}>
@@ -398,11 +398,11 @@
                 </div>
 
                 {#if $showEditIntegrations}
-                    <Label text={user.integrations.has(selectedKey) ? $_("settings.profile.integration.editIntegration") : $_("settings.profile.integration.addNew")} />
+                    <Label text={$user.integrations.has(selectedKey) ? $_("settings.profile.integration.editIntegration") : $_("settings.profile.integration.addNew")} />
 
                     <div class="add">
                         <div class="left">
-                            {#if !user.integrations.has(selectedKey)}
+                            {#if !$user.integrations.has(selectedKey)}
                                 <Label text={$_("generic.platform")} />
                                 <Select
                                     alt
@@ -417,7 +417,7 @@
                                     }} />
                             {/if}
                             {#if selectedKind === Integrations.Generic}
-                                <Input alt bind:value={selectedKey} disabled={user.integrations.has(selectedKey)} />
+                                <Input alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
                             {/if}
                         </div>
                         <img class="integration-logo" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
@@ -426,8 +426,8 @@
                             <Input alt bind:value={selectedKeyEditValue} />
                         </div>
 
-                        <Button text={user.integrations.has(selectedKey) ? $_("generic.save") : $_("generic.add")} on:click={setIntegration}>
-                            <Icon icon={user.integrations.has(selectedKey) ? Shape.CheckMark : Shape.Plus} />
+                        <Button text={$user.integrations.has(selectedKey) ? $_("generic.save") : $_("generic.add")} on:click={setIntegration}>
+                            <Icon icon={$user.integrations.has(selectedKey) ? Shape.CheckMark : Shape.Plus} />
                         </Button>
                         <Button
                             text={$_("generic.cancel")}

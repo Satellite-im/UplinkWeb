@@ -7,7 +7,7 @@
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
     import { wallet } from "$lib/utils/Wallet"
-    import { getIntegrationColor, identityColor } from "$lib/utils/ProfileUtils"
+    import { getIntegrationColor, identityColor, toIntegrationIconSrc } from "$lib/utils/ProfileUtils"
 
     export let user: User | null = null
 
@@ -48,11 +48,11 @@
             <div class="section">
                 <Label text="Accounts" />
                 <div class="integrations">
-                    {#each user.integrations as integration}
-                        <div class="integration" style={`border-color: ${getIntegrationColor(integration)};`}>
-                            <img class="integration-logo" src={toIntegrationIconSrc(integration.kind)} alt="Platform Logo" />
-                            <Text singleLine>{integration.location}</Text>
-                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration)}>
+                    {#each user.integrations as [key, value]}
+                        <div class="integration" style={`border-color: ${getIntegrationColor(key)};`}>
+                            <img class="integration-logo" src={toIntegrationIconSrc(key)} alt="Platform Logo" />
+                            <Text singleLine>{value}</Text>
+                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(key)}>
                                 <Icon icon={Shape.Popout} />
                             </Button>
                         </div>
