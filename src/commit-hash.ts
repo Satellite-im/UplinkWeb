@@ -1,1 +1,1 @@
-export const COMMIT_HASH = '746abadd15509759f65d14d74fa24eccb14c6199';
+export const COMMIT_HASH = '44e6d75ac3c7d557bd331dfcc7e8ac5b1e62b6ff';
