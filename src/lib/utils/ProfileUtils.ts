@@ -1,10 +1,6 @@
 import { Identicon, Integrations } from "$lib/enums"
 import type { Integration } from "$lib/types"
-import {
-    avataaars, avataaarsNeutral, bottts, botttsNeutral,
-    icons, identicon, lorelei, notionists, openPeeps, pixelArt,
-    pixelArtNeutral, shapes
-} from "@dicebear/collection"
+import { avataaars, avataaarsNeutral, bottts, botttsNeutral, icons, identicon, lorelei, notionists, openPeeps, pixelArt, pixelArtNeutral, shapes } from "@dicebear/collection"
 
 export function getIdenticonGenerator(identiconStyle: Identicon) {
     switch (identiconStyle) {
@@ -60,12 +56,11 @@ export function identityColor(key: string): string {
 
     const toHex = (num: number) => {
         const hex = num.toString(16)
-        return hex.length === 1 ? '0' + hex : hex
-    };
+        return hex.length === 1 ? "0" + hex : hex
+    }
 
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
-
 
 export function getIntegrationColor(integration: Integration) {
     switch (integration.kind) {
