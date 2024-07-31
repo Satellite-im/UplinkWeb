@@ -89,7 +89,7 @@
             color: var(--color);
             border-radius: var(--border-radius-minimal);
             font-size: var(--font-size-smaller);
-            transform: translate(50%, -50%);
+            transform: translate(33%, -33%);
         }
 
         &.fill {

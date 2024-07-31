@@ -57,44 +57,44 @@ export const mock_users: Array<User> = [
             {
                 kind: Integrations.Twitch,
                 location: "https://twitch.tv/SpaceKev",
-                meta: null
+                meta: null,
             },
             {
                 kind: Integrations.Steam,
                 location: "https://steamcommunity.com/id/SpaceKev/",
-                meta: null
+                meta: null,
             },
             {
                 kind: Integrations.YouTube,
                 location: "https://youtube.com/c/SpaceKev/",
-                meta: null
+                meta: null,
             },
             {
                 kind: Integrations.Spotify,
                 location: "@SpaceKev",
-                meta: null
+                meta: null,
             },
             {
                 kind: Integrations.Generic,
                 location: "https://satellite.im",
-                meta: null
+                meta: null,
             },
             {
                 kind: Integrations.BTC,
                 location: "1cwI2h8ETSROxAihiRDB5QqfDc3EDxWsf0",
-                meta: null
+                meta: null,
             },
             {
                 kind: Integrations.ETH,
                 location: "0x0000000000000000000000000000000000000000",
-                meta: null
+                meta: null,
             },
             {
                 kind: Integrations.SOL,
                 location: "26AKqj1Au1jGrHFm7RXVJJeu7nsbqqin5Ff3vjPxM4QK",
-                meta: null
+                meta: null,
             },
-        ]
+        ],
     },
     {
         ...defaultUser,
@@ -200,7 +200,7 @@ export const fake_user_array: Array<User> = [
             },
             status: Status.Offline,
             status_message: "This user is not real.",
-        }
+        },
     },
 ]
 
@@ -256,7 +256,7 @@ let mock_chats: Chat[] = [
         name: "",
         motd: "",
         activity: false,
-        notifications: 0,
+        notifications: 13,
         users: [defaultUser.key, mock_users[3].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",

@@ -1,4 +1,4 @@
-import type { Call, Chat } from "$lib/types"
+import type { Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { EmojiFont, Font } from "$lib/enums"
@@ -90,6 +90,31 @@ class Store {
                 MainStore.state.activeChat.set(active)
             }
         }
+    }
+
+    addNotification(conversationId: string) {
+        if (get(MainStore.state.activeChat).id !== conversationId) {
+            this.mutateChat(conversationId, chat => {
+                chat.notifications++
+            })
+        }
+    }
+
+    clearNotifications(conversationId: string) {
+        this.mutateChat(conversationId, chat => {
+            chat.notifications = 0
+        })
+    }
+
+    getNotifications(conversationId: string) {
+        return get(this.state.chats).find(c => c.id === conversationId)?.notifications || 0
+    }
+
+    getTotalNotifications() {
+        return get(this.state.chats).reduce((acc, chat) => {
+            console.log("chat", chat)
+            return acc + chat.notifications
+        }, 0)
     }
 }
 

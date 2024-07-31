@@ -41,6 +41,7 @@ export type Reaction = {
 }
 
 export type ProfilePictureRequirements = {
+    id: string | undefined
     image: string
     status: Status // TODO: Remove this
     notifications: number
@@ -133,6 +134,7 @@ export type Chat = {
     id: string
     name: string
     motd: string
+    unread: number
     kind: ChatType
     settings: ChatSettings
     creator?: string
@@ -179,6 +181,7 @@ export let defaultChat: Chat = {
     id: "",
     name: "",
     motd: "",
+    unread: 0,
     notifications: 0,
     kind: ChatType.DirectMessage,
     creator: undefined,

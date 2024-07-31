@@ -470,6 +470,7 @@
                                     frame: resolved.profile.photo.frame,
                                     status: resolved.profile.status,
                                     highlight: Appearance.Default,
+                                    id: resolved.key,
                                 }}
                                 on:profileClick={_ => {
                                     previewProfile = resolved

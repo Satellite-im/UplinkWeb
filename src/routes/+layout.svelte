@@ -140,7 +140,6 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     checkIfUserIsLogged($page.route.id)
-
     onMount(async () => {
         await MultipassStoreInstance.fetchAllFriendsAndRequests()
     })
