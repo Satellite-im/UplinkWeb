@@ -2,7 +2,7 @@
     import { goto } from "$app/navigation"
     import { page } from "$app/stores"
     import { Route, SettingsRoute, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
@@ -18,71 +18,69 @@
         {
             to: SettingsRoute.Profile,
             icon: Shape.Profile,
-            name: "Profile",
+            name: $_("settings.profile.name"),
         },
         {
             to: SettingsRoute.Inventory,
             icon: Shape.Inventory,
-            name: "Inventory",
+            name: $_("settings.inventory.name"),
         },
         {
             to: SettingsRoute.Preferences,
             icon: Shape.Brush,
-            name: "Customization",
+            name: $_("settings.customization.name"),
         },
         {
             to: SettingsRoute.Messages,
             icon: Shape.ChatBubble,
-            name: "Messages",
+            name: $_("settings.messages.name"),
         },
         {
             to: SettingsRoute.AudioVideo,
             icon: Shape.Speaker,
-            name: "Audio & Video",
+            name: $_("settings.audio.name"),
         },
         {
             to: SettingsRoute.Extensions,
             icon: Shape.Beaker,
-            name: "Extensions",
+            name: $_("settings.extensions.name"),
         },
         {
             to: SettingsRoute.Keybinds,
             icon: Shape.Keybind,
-            name: "Keybinds",
+            name: $_("settings.keybinds.name"),
         },
         {
             to: SettingsRoute.Gamepad,
             icon: Shape.Gamepad,
-            name: "Gamepad",
+            name: $_("settings.gamepad.name"),
         },
         {
             to: SettingsRoute.Accessibility,
             icon: Shape.Eye,
-            name: "Accessibility",
+            name: $_("settings.accessibility.name"),
         },
         {
             to: SettingsRoute.Notifications,
             icon: Shape.BellAlert,
-            name: "Notifications",
+            name: $_("settings.notifications.name"),
         },
         {
             to: SettingsRoute.Network,
             icon: Shape.Relay,
-            name: "Network",
+            name: $_("settings.network.name"),
         },
         {
             to: SettingsRoute.About,
             icon: Shape.Info,
-            name: "About",
+            name: $_("settings.about.name"),
         },
         {
             to: SettingsRoute.Licenses,
             icon: Shape.Document,
-            name: "Licenses",
+            name: $_("settings.licenses.name"),
         },
     ])
-
-    initLocale()
 
     let loading = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -152,12 +150,12 @@
                     {
                         to: SettingsRoute.Developer,
                         icon: Shape.Code,
-                        name: "Developer",
+                        name: $_("settings.developer.name"),
                     },
                     {
                         to: SettingsRoute.Realms,
                         icon: Shape.Beaker,
-                        name: "Realms",
+                        name: $_("settings.realms.name"),
                     },
                 ])
             }

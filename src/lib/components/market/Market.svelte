@@ -5,6 +5,7 @@
     import Text from "$lib/elements/Text.svelte"
     import Sidebar from "$lib/layouts/market/Sidebar.svelte"
     import MarketNav from "./MarketNav.svelte"
+    import { _ } from "svelte-i18n"
 
     const dispatch = createEventDispatcher()
     function onClose() {
@@ -16,7 +17,7 @@
     <div id="market">
         <Topbar>
             <svelte:fragment slot="content">
-                <Text class="title" noWrap>Uplink Marketplace</Text>
+                <Text class="title" noWrap>{$_("market.label")}</Text>
             </svelte:fragment>
         </Topbar>
         <div class="content">

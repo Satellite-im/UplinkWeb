@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Appearance, Route } from "$lib/enums"
@@ -14,7 +13,6 @@
     import { get } from "svelte/store"
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     import AAR from "$lib/components/ui/AAR.svelte"
-    initLocale()
 
     let settings = get(log.settings)
     log.settings.subscribe(s => {
@@ -24,17 +22,17 @@
 
 <div id="page">
     <WidgetBar />
-    <SettingSection hook="section-devmode" name="Devmode" description="Disable devmode.">
+    <SettingSection hook="section-devmode" name={$_("settings.about.devMode")} description={$_("settings.developer.disable")}>
         <Button
             hook="button-exit-devmode"
             appearance={Appearance.Alt}
             on:click={_ => {
                 goto("/settings/about")
                 SettingsStore.toggleDevmode(false)
-            }}>Exit Devmode</Button>
+            }}>{$_("settings.developer.disableButton")}</Button>
     </SettingSection>
 
-    <SettingSection hook="section-load-mock" name="Load Mock" description="Loads mock data into state.">
+    <SettingSection hook="section-load-mock" name={$_("settings.developer.loadMock")} description={$_("settings.developer.loadMockDescription")}>
         <Button
             hook="button-load-mock"
             appearance={Appearance.Alt}
@@ -43,11 +41,11 @@
                 ConversationStore.loadMockData()
                 InventoryStore.loadMockData()
             }}>
-            Load Mock Data
+            {$_("settings.developer.loadMockButton")}
         </Button>
     </SettingSection>
 
-    <SettingSection hook="section-clear-state" name="Clear State" description="Reset the application state.">
+    <SettingSection hook="section-clear-state" name={$_("settings.developer.clearState")} description={$_("settings.developer.clearStateDescription")}>
         <Button
             hook="button-clear-state"
             appearance={Appearance.Alt}
@@ -60,14 +58,14 @@
                         }, 500)
                     })
                     .catch(error => log.error(`Error deleting database: ${error}`))
-            }}>Clear State</Button>
+            }}>{$_("settings.developer.clearStateButton")}</Button>
     </SettingSection>
 
-    <SettingSection hook="section-test-voice" name="Test Voice" description="Dev Voice">
-        <Button hook="button-test-voice" appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>Voice Dev</Button>
+    <SettingSection hook="section-test-voice" name={$_("settings.developer.testVoice")} description={$_("settings.developer.testVoiceDesciption")}>
+        <Button hook="button-test-voice" appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>{$_("settings.developer.testVoiceButton")}</Button>
     </SettingSection>
 
-    <SettingSection hook="section-logger-level" name="Logger Level" description="Set the logging level">
+    <SettingSection hook="section-logger-level" name={$_("settings.developer.loggerLevel")} description={$_("settings.developer.loggerLevelDescription")}>
         <Select
             hook="selector-current-logger-level-{settings.level}"
             options={[

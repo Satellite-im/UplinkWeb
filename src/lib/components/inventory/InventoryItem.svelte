@@ -2,6 +2,7 @@
     import { Text, Icon, Button } from "$lib/elements"
     import { Appearance, InventoryKind, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
+    import { _ } from "svelte-i18n"
 
     export let name: string = ""
     export let preview: string = ""
@@ -26,7 +27,7 @@
     {#if !noButton}
         <Button
             hook="inventory-item-button"
-            text={equipped ? "Equipped" : "Equip"}
+            text={equipped ? $_("inventory.equipped") : $_("inventory.equip")}
             fill
             on:click={() => {
                 dispatch("apply")
@@ -42,7 +43,7 @@
     {#if unequip}
         <Button
             hook="button-unequip-inventory"
-            text={empty ? "No Frame" : "Unequip"}
+            text={empty ? $_("inventory.noFrame") : $_("inventory.unequip")}
             fill
             on:click={() => {
                 dispatch("apply")

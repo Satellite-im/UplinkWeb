@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Appearance, Integrations, Route, Shape, Size, Status } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
@@ -21,8 +21,6 @@
     import { INTEGRATIONS } from "$lib/config"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { SettingsStore } from "$lib/state"
-
-    initLocale()
 
     let loading = true
     let showSeed = false
@@ -232,7 +230,7 @@
                 {
                     id: "clear-banner-picture",
                     icon: Shape.Trash,
-                    text: "Delete Banner Picture",
+                    text: $_("settings.profile.deleteBanner"),
                     appearance: Appearance.Default,
                     onClick: async () => {
                         await MultipassStoreInstance.updateBannerPicture("/0")
@@ -259,7 +257,7 @@
                 {
                     id: "clear-profile-picture",
                     icon: Shape.Trash,
-                    text: "Delete Profile Picture",
+                    text: $_("settings.profile.deleteProfile"),
                     disabled: user.profile.photo.image === "",
                     appearance: Appearance.Default,
                     onClick: () => {
@@ -414,15 +412,15 @@
                             </div>
                             <img class="integration-logo" src="/assets/brand/{selectedIntegration.kind}.png" alt="Platform Logo" />
                             <div class="right">
-                                <Label text="Address" />
+                                <Label text={$_("settings.profile.address")} />
                                 <Input alt bind:value={selectedIntegration.location} />
                             </div>
 
-                            <Button text={editIndex !== null ? "Save" : "Add"} on:click={editIndex !== null ? saveEditedIntegration : addIntegration}>
+                            <Button text={editIndex !== null ? $_("generic.save") : $_("generic.add")} on:click={editIndex !== null ? saveEditedIntegration : addIntegration}>
                                 <Icon icon={editIndex !== null ? Shape.CheckMark : Shape.Plus} />
                             </Button>
                             <Button
-                                text="Cancel"
+                                text={$_("generic.cancel")}
                                 appearance={Appearance.Alt}
                                 on:click={_ => {
                                     showEditIntegrations.set(false)
@@ -434,7 +432,7 @@
                         </div>
                     {:else}
                         <Button
-                            text="Add"
+                            text={$_("generic.add")}
                             on:click={_ => {
                                 showEditIntegrations.set(true)
                             }}>

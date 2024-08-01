@@ -169,7 +169,7 @@
             <hr class="divider" />
             <div class="flex-row setting">
                 <Switch hook="switch-stay-unlocked" on={stayLoggedIn} on:toggle={handleStayLoggedIn} />
-                <Label text="Stay unlocked?" hook="label-stay-unlocked" />
+                <Label text={$_("pages.auth.unlock.stayUnlocked")} hook="label-stay-unlocked" />
             </div>
         </div>
     </div>

@@ -1,14 +1,12 @@
 <script lang="ts">
     import { Text, Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import Controls from "../../layouts/Controls.svelte"
     import { get } from "svelte/store"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import { Store } from "$lib/state/Store"
-
-    initLocale()
 
     export let loading: boolean = false
     export let duration: Date = new Date()

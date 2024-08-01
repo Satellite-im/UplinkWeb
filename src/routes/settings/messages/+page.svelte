@@ -1,12 +1,9 @@
 <script lang="ts">
-    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Switch } from "$lib/elements"
     import { get } from "svelte/store"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-
-    initLocale()
 
     let settings: ISettingsState = get(SettingsStore.state)
     SettingsStore.state.subscribe((s: ISettingsState) => {

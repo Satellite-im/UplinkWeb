@@ -2,7 +2,7 @@
     import { Button, Icon } from "$lib/elements"
     import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
-    import { initLocale } from "$lib/lang"
+
     import Sidebar from "$lib/layouts/Sidebar.svelte"
     import { _ } from "svelte-i18n"
     import Text from "$lib/elements/Text.svelte"
@@ -13,7 +13,6 @@
     import { onDestroy, onMount } from "svelte"
     import type { Chat, FileInfo } from "$lib/types"
     import { get, writable } from "svelte/store"
-    import { Store } from "$lib/state/store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
@@ -23,8 +22,7 @@
     import type { Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
-
-    initLocale()
+    import { Store } from "$lib/state/Store"
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -666,14 +664,14 @@
                         {
                             id: "hide",
                             icon: Shape.EyeSlash,
-                            text: "Hide",
+                            text: $_("chat.hide"),
                             appearance: Appearance.Default,
                             onClick: () => UIStore.removeSidebarChat(chat),
                         },
                         {
                             id: "mark_read",
                             icon: Shape.CheckMark,
-                            text: "Mark Read",
+                            text: $_("chat.markRead"),
                             appearance: Appearance.Default,
                             onClick: () => {},
                         },
@@ -693,18 +691,18 @@
     <div class="content">
         <Topbar>
             <div slot="before" class="before flex-column">
-                <Label text="Quick Actions" />
+                <Label text={$_("files.quickActions")} />
                 <div class="actions">
-                    <Button appearance={Appearance.Alt} text="Sync">
+                    <Button appearance={Appearance.Alt} text={$_("files.sync")}>
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Gift Space">
+                    <Button appearance={Appearance.Alt} text={$_("files.giftSpace")}>
                         <Icon icon={Shape.Gift} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Rent Space">
+                    <Button appearance={Appearance.Alt} text={$_("files.rentSpace")}>
                         <Icon size={Size.Large} icon={Shape.Starlight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text="Create Node">
+                    <Button appearance={Appearance.Alt} text={$_("files.createNode")}>
                         <Icon icon={Shape.Info} />
                     </Button>
                 </div>
@@ -713,12 +711,12 @@
         <Topbar>
             <div slot="before" class="before">
                 <button class="stat">
-                    <Label text="Free Space" /><Text singleLine>
+                    <Label text={$_("files.freeSpace")} /><Text singleLine>
                         {$freeSpace}
                     </Text>
                 </button>
                 <button class="stat">
-                    <Label text="Total Space" /><Text singleLine>
+                    <Label text={$_("files.totalSpace")} /><Text singleLine>
                         {prettyBytes(ConstellationStoreInstance.MAX_STORAGE_SIZE)}
                     </Text>
                 </button>
@@ -742,7 +740,7 @@
             </svelte:fragment>
         </Topbar>
         <div class="folder-back">
-            <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>Go Back</Button>
+            <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>{$_("controls.go_back")}</Button>
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -759,7 +757,7 @@
                                 {
                                     id: `rename-${item.id}`,
                                     icon: Shape.Pencil,
-                                    text: "Rename",
+                                    text: $_("files.rename"),
                                     appearance: Appearance.Default,
                                     onClick: async () => {
                                         currentFiles = currentFiles.map(file => {
@@ -775,7 +773,7 @@
                                 {
                                     id: "download-" + item.id,
                                     icon: Shape.ArrowDown,
-                                    text: "Download",
+                                    text: $_("files.download"),
                                     appearance: Appearance.Default,
                                     onClick: async () => {
                                         downloadFile(`/${item.name}.${item.extension}`)
@@ -784,7 +782,7 @@
                                 {
                                     id: "delete-" + item.id,
                                     icon: Shape.Trash,
-                                    text: "Delete",
+                                    text: $_("generic.delete"),
                                     appearance: Appearance.Error,
                                     onClick: () => {
                                         deleteItem(`/${item.name}.${item.extension}`)
@@ -817,7 +815,7 @@
                                 {
                                     id: "delete-" + item.id,
                                     icon: Shape.XMark,
-                                    text: "Delete",
+                                    text: $_("generic.delete"),
                                     appearance: Appearance.Default,
                                     onClick: () => {
                                         // TODO(Lucas): Delete item not working for folders yet
@@ -827,7 +825,7 @@
                                 {
                                     id: "rename-" + item.id,
                                     icon: Shape.Pencil,
-                                    text: "Rename",
+                                    text: $_("files.rename"),
                                     appearance: Appearance.Default,
                                     onClick: async () => {
                                         currentFiles = currentFiles.map(file => {

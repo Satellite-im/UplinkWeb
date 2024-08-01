@@ -5,6 +5,7 @@
     import prettyBytes from "pretty-bytes"
     import { Button, Icon } from "$lib/elements"
     import { Controls } from "$lib/layouts"
+    import { _ } from "svelte-i18n"
 
     export let filesize: number = 0
     export let source: string = ""
@@ -36,7 +37,7 @@
         </div>
     {/if}
     <Controls>
-        <Button icon small tooltip="Download" on:click={download} appearance={Appearance.Transparent}>
+        <Button icon small tooltip={$_("files.download")} on:click={download} appearance={Appearance.Transparent}>
             <Icon icon={Shape.Download} />
         </Button>
     </Controls>

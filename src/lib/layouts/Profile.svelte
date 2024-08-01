@@ -7,6 +7,7 @@
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
     import { wallet } from "$lib/utils/Wallet"
+    import { _ } from "svelte-i18n"
 
     export let user: User | null = null
 
@@ -25,16 +26,16 @@
         <ProfilePicture id={user?.key} image={user?.profile.photo.image} size={Size.Large} status={user?.profile.status} frame={user?.profile.photo.frame} />
     </div>
     {#if user && user.id.short !== currentUserShortId}
-        <Button outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? "You're friends" : "Add Friend"}>
+        <Button outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? $_("settings.profile.friended") : $_("settings.profile.addFriend")}>
             <Icon icon={isFriended(user) ? Shape.CheckMark : Shape.Plus} />
         </Button>
     {/if}
     <div class="section">
-        <Label text="Username" />
+        <Label text={$_("generic.username")} />
         <Text size={Size.Large}>{user?.name}</Text>
     </div>
     <div class="section">
-        <Label text="Status Message" />
+        <Label text={$_("generic.status_message")} />
         <Text>{user?.profile.status_message}</Text>
     </div>
     <div class="section">
@@ -46,10 +47,10 @@
         {/if}
     </div>
     <div class="section">
-        <Label text="Note" />
+        <Label text={$_("settings.profile.note")} />
         <Input
             alt
-            placeholder="Set a note . . ."
+            placeholder={$_("settings.profile.setNote")}
             value={note}
             on:input={e => {
                 if (user) new Notes().set(user?.name, e.detail)

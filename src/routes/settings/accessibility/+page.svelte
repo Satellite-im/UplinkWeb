@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { Switch } from "$lib/elements"
     import { SettingSection } from "$lib/layouts"
@@ -7,8 +6,6 @@
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
-
-    initLocale()
 
     let font: Font = get(UIStore.state.font)
 </script>

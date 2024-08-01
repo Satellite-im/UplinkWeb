@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Appearance, EmojiFont, Font, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { ColorSwatch } from "$lib/components"
     import { SettingSection } from "$lib/layouts"
@@ -10,8 +10,6 @@
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-
-    initLocale()
 
     let hex = get(UIStore.state.color)
     let font: Font = get(UIStore.state.font)
