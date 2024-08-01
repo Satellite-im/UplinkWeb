@@ -20,7 +20,6 @@ export interface ISettingsState {
     audio: {
         inputDevice: string
         outputDevice: string
-        echoCancellation: boolean
         interfaceSounds: boolean
         controlSounds: boolean
         messageSounds: boolean
@@ -28,6 +27,12 @@ export interface ISettingsState {
     }
     calling: {
         minimalCallingAlerts: boolean
+        echoCancellation: boolean
+        noiseSuppression: boolean
+        automaticGainControl: boolean
+        bitrate: number
+        sampleSize: number
+        channels: number
     }
     extensions: {}
     keybinds: Keybind[]
