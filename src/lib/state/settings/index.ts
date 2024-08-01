@@ -64,6 +64,30 @@ class Store {
         this.state.set(settings)
     }
 
+    setEchoCancellation(state: boolean) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, echoCancellation: state } }))
+    }
+
+    setNoiseSuppression(state: boolean) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, noiseSuppression: state } }))
+    }
+
+    setAutomaticGainControl(state: boolean) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, automaticGainControl: state } }))
+    }
+
+    setBitrate(bitrate: number) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, bitrate } }))
+    }
+
+    setSampleSize(sampleSize: number) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, sampleSize } }))
+    }
+
+    setChannels(channels: number) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, channels } }))
+    }
+
     toggleDevmode(state: boolean) {
         this.state.set({ ...get(this.state), devmode: state })
     }

@@ -2,17 +2,38 @@
     import Select from "$lib/elements/Select.svelte"
     import Switch from "$lib/elements/Switch.svelte"
     import { SettingSection } from "$lib/layouts"
+    import { SettingsStore } from "$lib/state"
+
+    $: settings = SettingsStore.state
+    $: echoCancellation = $settings.calling.echoCancellation || true
+    $: automaticGainControl = $settings.calling.automaticGainControl || true
+    $: noiseSuppression = $settings.calling.noiseSuppression || true
+    $: channels = $settings.calling.channels || 2
+    $: bitrate = $settings.calling.bitrate || 64000
+    $: sampleSize = $settings.calling.sampleSize || 16
 </script>
 
 <div class="call-settings">
     <SettingSection name="Echo Cancellation" description="Cancel out feedback from your microphone.">
-        <Switch on />
+        <Switch
+            on={echoCancellation}
+            on:toggle={e => {
+                SettingsStore.setEchoCancellation(e.detail)
+            }} />
     </SettingSection>
     <SettingSection name="Auto Gain Control" description="Automatically adjust microphone gain.">
-        <Switch on />
+        <Switch
+            on={automaticGainControl}
+            on:toggle={e => {
+                SettingsStore.setAutomaticGainControl(e.detail)
+            }} />
     </SettingSection>
     <SettingSection name="Noise Suppression" description="Automatically try to remove background noise.">
-        <Switch on />
+        <Switch
+            on={noiseSuppression}
+            on:toggle={e => {
+                SettingsStore.setNoiseSuppression(e.detail)
+            }} />
     </SettingSection>
     <SettingSection name="Channels" description="Sets the number of audio channels to be used.">
         <Select
@@ -22,6 +43,10 @@
                 { text: "5.1 Surround", value: "6" },
                 { text: "7.1 Surround", value: "8" },
             ]}
+            selected={channels.toString()}
+            on:change={e => {
+                SettingsStore.setChannels(parseInt(e.detail))
+            }}
             alt />
     </SettingSection>
     <SettingSection name="Bitrate" description="Bitrate at which your stream is broadcast.">
@@ -37,6 +62,10 @@
                 { text: "96 KHz", value: "96000" },
                 { text: "128 Kbps", value: "128000" },
             ]}
+            selected={bitrate.toString()}
+            on:change={e => {
+                SettingsStore.setBitrate(parseInt(e.detail))
+            }}
             alt />
     </SettingSection>
     <SettingSection name="Sample Size" description="Bitrate at which your stream is broadcast.">
@@ -47,6 +76,10 @@
                 { text: "64", value: "64" },
                 { text: "128", value: "128" },
             ]}
+            selected={sampleSize.toString()}
+            on:change={e => {
+                SettingsStore.setSampleSize(parseInt(e.detail))
+            }}
             alt />
     </SettingSection>
 </div>
