@@ -108,6 +108,11 @@
                 VoiceRTCInstance.acceptCall()
                 callStarted = true
             }
+            const videoElement = document.getElementById("remote-user-video")! as HTMLVideoElement
+            videoElement.volume = 0.1
+
+            const localVideoElement = document.getElementById("local-user-video")! as HTMLVideoElement
+            localVideoElement.volume = 0.1
         }
     })
 </script>
@@ -122,11 +127,11 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" muted={true} autoplay>
+            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" volume={0} autoplay>
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video bind:this={localVideoCurrentSrc} width="400" height="400" muted={true} autoplay>
+            <video id="local-user-video" bind:this={localVideoCurrentSrc} width="400" height="400" volume={0} autoplay>
                 <track kind="captions" src="" />
             </video>
             {#if !callStarted}

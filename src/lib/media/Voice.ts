@@ -129,57 +129,43 @@ export class VoiceRTC {
         this.acceptedIncomingCall = true
     }
 
-    async improveAudioQuality() {
+    private async improveAudioQuality() {
         const audioContext = new window.AudioContext()
         const source = audioContext.createMediaStreamSource(this.localStream!)
         const destination = audioContext.createMediaStreamDestination()
 
-        // Gain control for overall volume adjustment
         const gainNode = audioContext.createGain()
-        gainNode.gain.setValueAtTime(0.01, audioContext.currentTime) // Adjust gain as needed
-
-        // Echo cancellation (lowshelf filter)
         const echoCancellation = audioContext.createBiquadFilter()
-        echoCancellation.type = "lowshelf"
-        echoCancellation.frequency.setValueAtTime(800, audioContext.currentTime) // Adjust frequency as needed
-        echoCancellation.gain.setValueAtTime(-90, audioContext.currentTime) // Adjust gain as needed
-
-        // Noise suppression (highpass filter)
         const noiseSuppression = audioContext.createBiquadFilter()
+
+        echoCancellation.type = "lowshelf"
+        echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
+        echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
+
         noiseSuppression.type = "highpass"
-        noiseSuppression.frequency.setValueAtTime(100, audioContext.currentTime) // Adjust frequency as needed
-        // noiseSuppression.gain.setValueAtTime(-0, audioContext.currentTime) // Adjust gain as needed
+        noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
+        noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
 
-        const notchFilter = audioContext.createBiquadFilter()
-        notchFilter.type = "notch"
-        notchFilter.frequency.setValueAtTime(1000, audioContext.currentTime) // Frequência alvo para eliminar
-        notchFilter.Q.setValueAtTime(20, audioContext.currentTime) // Qualidade do filtro
-
-        const compressor = audioContext.createDynamicsCompressor()
-        compressor.threshold.setValueAtTime(-50, audioContext.currentTime) // Ajuste o limiar conforme necessário
-        compressor.knee.setValueAtTime(40, audioContext.currentTime) // Ajuste o knee conforme necessário
-        compressor.ratio.setValueAtTime(12, audioContext.currentTime) // Ajuste a razão conforme necessário
-        compressor.attack.setValueAtTime(0, audioContext.currentTime) // Ajuste o ataque conforme necessário
-        compressor.release.setValueAtTime(0.25, audioContext.currentTime)
-
-        // Connect audio processing nodes
         source.connect(echoCancellation)
-        echoCancellation.connect(notchFilter)
-        notchFilter.connect(noiseSuppression)
+        echoCancellation.connect(noiseSuppression)
         noiseSuppression.connect(gainNode)
         gainNode.connect(destination)
 
-        // Create a new processed media stream
         const processedStream = new MediaStream()
         processedStream.addTrack(destination.stream.getAudioTracks()[0])
-
-        // Replace the local stream with the processed one
-        this.localStream = processedStream
+        processedStream.addTrack(this.localStream!.getVideoTracks()[0])
+        this.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
     }
 
     public async acceptCall() {
         this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: false,
+            video: {
+                aspectRatio: 16 / 9,
+                facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                frameRate: 30,
+                height: { ideal: 1080 },
+                width: { ideal: 1920 },
+            },
             audio: {
                 echoCancellation: { ideal: true },
                 noiseSuppression: { ideal: true },
@@ -232,7 +218,13 @@ export class VoiceRTC {
         this.makingCall = true
 
         this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: false,
+            video: {
+                aspectRatio: 16 / 9,
+                facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                frameRate: 30,
+                height: { ideal: 1080 },
+                width: { ideal: 1920 },
+            },
             audio: {
                 echoCancellation: { ideal: true },
                 noiseSuppression: { ideal: true },
@@ -247,6 +239,10 @@ export class VoiceRTC {
             this.localVideoCurrentSrc.srcObject = this.localStream
             this.localVideoCurrentSrc.play()
         }
+
+        // this.localStream.getVideoTracks().forEach(track => {
+        //     track.
+        // })
 
         await this.improveAudioQuality()
 
