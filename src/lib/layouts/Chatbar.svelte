@@ -56,6 +56,7 @@
 
     function handleEmojiClick(emoji: string) {
         emojiSelectorOpen.set(false)
+        message.set($message + emoji)
     }
 
     function handleGif(gif: GiphyGif) {
