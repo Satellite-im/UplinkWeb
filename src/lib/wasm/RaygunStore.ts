@@ -399,8 +399,7 @@ class RaygunStore {
 
                     // Update stores
                     UIStore.removeSidebarChat(conversationId)
-                    let conversations = get(ConversationStore.conversations)
-                    ConversationStore.conversations.set(conversations.filter(c => c.id !== conversationId))
+                    ConversationStore.removeConversation(conversationId)
                     if (get(Store.state.activeChat).id === conversationId) {
                         Store.clearActiveChat()
                     }
