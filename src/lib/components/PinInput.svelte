@@ -72,9 +72,12 @@
             updatePinValue(key)
         } else if (key === 'Enter') {
             event.preventDefault()
+        // Check if the pin value meets the minimum length requirement
+        if (pinValue.length >= min) {
             submitPinValue()
         }
     }
+}
 
     onMount(() => {
         window.addEventListener("keydown", handleKeyDown)
