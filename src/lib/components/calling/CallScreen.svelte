@@ -122,11 +122,11 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" autoplay>
+            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" muted={true} autoplay>
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video bind:this={localVideoCurrentSrc} width="400" height="400" autoplay>
+            <video bind:this={localVideoCurrentSrc} width="400" height="400" muted={true} autoplay>
                 <track kind="captions" src="" />
             </video>
             {#if !callStarted}
