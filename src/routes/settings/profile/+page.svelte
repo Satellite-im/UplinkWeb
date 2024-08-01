@@ -617,6 +617,7 @@
                 height: 256px;
                 background-color: var(--background-alt);
                 background-size: cover;
+                background-position: center;
                 padding: var(--padding-less);
                 width: 100%;
                 z-index: 1;

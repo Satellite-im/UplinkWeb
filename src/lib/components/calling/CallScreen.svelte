@@ -25,6 +25,7 @@
 
     let showSettings = false
     let showVolumeMixer = false
+    let showCallSettings = false
 
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
@@ -105,6 +106,7 @@
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 VoiceRTCInstance.acceptCall()
+                callStarted = true
             }
         }
     })
@@ -141,17 +143,21 @@
     {/if}
     <div class="toolbar">
         <Controls>
-            <PopupButton
-                name="Settings"
-                open={showSettings}
-                on:open={_ => {
-                    showSettings = true
-                }}>
-                <svelte:fragment slot="icon">
+            <div class="relative">
+                {#if showCallSettings}
+                    <CallSettings />
+                {/if}
+                <Button
+                    tooltip="Settings"
+                    icon
+                    appearance={showCallSettings ? Appearance.Primary : Appearance.Alt}
+                    outline={!showCallSettings}
+                    on:click={_ => {
+                        showCallSettings = !showCallSettings
+                    }}>
                     <Icon icon={Shape.Cog} />
-                </svelte:fragment>
-                <CallSettings />
-            </PopupButton>
+                </Button>
+            </div>
             <div class="relative">
                 {#if showVolumeMixer}
                     <VolumeMixer participants={chat.users} />
