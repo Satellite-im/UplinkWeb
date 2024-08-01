@@ -471,7 +471,7 @@
     {/if}
 
     <div id="mapping">
-        <label for="deadzone">{$_("settings.gamepad.joystick", { values: { number: $deadzone } })}</label>
+        <label for="deadzone">{$_("settings.gamepad.deadzone", { values: { number: $deadzone } })}</label>
         <RangeSelector min={0} max={3} bind:value={$deadzone} />
         <label for="sensitivity">{$_("settings.gamepad.pointer", { values: { number: $pointerSensitivity } })}</label>
         <RangeSelector min={1} max={50} bind:value={$pointerSensitivity} />

@@ -283,7 +283,9 @@
             "copy_did": "Copy DID",
             "integration": {
                 "title": "Accounts",
-                "description": "Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card."
+                "description": "Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.",
+                "editIntegration": "Edit Integration",
+                "addNew": "Add New"
             },
             "friended": "You're friends",
             "addFriend": "Add Friend",
@@ -293,6 +295,10 @@
             "deleteBanner": "Delete Banner Picture",
             "deleteProfile": "Delete Profile Picture",
             "address": "Address"
+        },
+        "calling": {
+            "minimalCallingAlerts": "Minimal Calling Alerts",
+            "minimalCallingAlertsDescription": "Instead of displaying a full screen alert when a call is incoming, with this mode enabled the call dialog will show within the sidebar."
         },
         "notifications": {
             "name": "Notifications",
@@ -400,7 +406,9 @@
             "primaryColorDescription": "Change the primary color of the app.",
             "pick": "Pick",
             "customCss": "Custom CSS",
-            "customCssDescription": "Add additional custom CSS to the application."
+            "customCssDescription": "Add additional custom CSS to the application.",
+            "identiconStyle": "Default Profile Picture Style",
+            "identiconStyleDescription": "Change the style of the randomly generated profile pictures used when users haven't uploaded a profile picture yet."
         },
         "licenses": {
             "name": "Licenses",
