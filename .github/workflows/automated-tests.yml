@@ -90,6 +90,11 @@ jobs:
         if: always()
         needs: playwright-run
         runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
         steps:
             - name: Download Allure results artifact
               uses: actions/download-artifact@v4
@@ -146,6 +151,11 @@ jobs:
     remove-label:
         needs: [playwright-run, generate-report]
         runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
 
         steps:
             - name: Checkout directory 🔖
