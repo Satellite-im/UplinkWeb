@@ -108,11 +108,6 @@
                 VoiceRTCInstance.acceptCall()
                 callStarted = true
             }
-            // const videoElement = document.getElementById("remote-user-video")! as HTMLVideoElement
-            // videoElement.volume = 0.1
-
-            // const localVideoElement = document.getElementById("local-user-video")! as HTMLVideoElement
-            // localVideoElement.volume = 0.1
         }
     })
 </script>

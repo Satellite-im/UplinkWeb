@@ -240,10 +240,6 @@ export class VoiceRTC {
             this.localVideoCurrentSrc.play()
         }
 
-        // this.localStream.getVideoTracks().forEach(track => {
-        //     track.
-        // })
-
         await this.improveAudioQuality()
 
         const call = this.localPeer!.call(this.remotePeerId!, this.localStream)
