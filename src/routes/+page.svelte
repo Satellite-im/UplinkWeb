@@ -4,3 +4,4 @@
 
     checkIfUserIsLogged($page.route.id, true)
 </script>
+ 
