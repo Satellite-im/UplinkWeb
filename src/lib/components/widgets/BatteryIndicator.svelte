@@ -25,8 +25,6 @@
                 level: battery.level,
             })
 
-            console.log("batteryStatus: ", batteryStatus)
-
             // Event listeners to update the battery status
             updateStatus = () => {
                 batteryStatus.set({

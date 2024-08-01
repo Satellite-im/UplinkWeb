@@ -10,6 +10,7 @@ on:
             - ".prettierrc.json"
             - "PULL_REQUEST_TEMPLATE.md"
             - "README.md"
+    workflow_dispatch:
 
 jobs:
     playwright-run:
@@ -67,3 +68,110 @@ jobs:
                   name: playwright-report
                   path: automated-tests/playwright-report/
                   retention-days: 5
+
+            - name: Upload Allure results as artifact
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: allure-results
+                  path: automated-tests/allure-results
+                  retention-days: 5
+
+            - name: Add label if any of build jobs failed
+              if: failure()
+              uses: buildsville/add-remove-label@v2.0.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  labels: |
+                      Failed Automated Test
+                  type: add
+
+    generate-report:
+        if: always()
+        needs: playwright-run
+        runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
+        steps:
+            - name: Download Allure results artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: allure-results
+                  path: automated-tests/allure
+
+            - name: Get Allure history
+              uses: actions/checkout@v4
+              if: always()
+              continue-on-error: true
+              with:
+                  repository: Satellite-im/test-reports
+                  ref: gh-pages
+                  path: gh-pages
+
+            - name: Generate Allure Report
+              if: always()
+              uses: simple-elf/allure-report-action@master
+              with:
+                  gh_pages: gh-pages
+                  allure_results: automated-tests/allure
+                  allure_report: allure-report
+                  allure_history: allure-history
+                  keep_reports: 100
+
+            - name: Deploy report to Github Pages
+              if: success()
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+                  external_repository: Satellite-im/test-reports
+                  publish_branch: gh-pages
+                  publish_dir: allure-history
+
+            - name: Comment PR with Allure test results
+              if: always() && github.event_name == 'pull_request'
+              uses: mshick/add-pr-comment@v2
+              with:
+                  message: |
+                      Playwright test execution is complete! You can find the test results report [here](https://satellite-im.github.io/test-reports/${{ github.run_number }})
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Add label if any of build jobs failed
+              if: failure()
+              uses: buildsville/add-remove-label@v2.0.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  labels: |
+                      Failed Automated Test
+                  type: add
+
+    remove-label:
+        needs: [playwright-run, generate-report]
+        runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
+
+        steps:
+            - name: Checkout directory 🔖
+              uses: actions/checkout@v4
+
+            - name: Delete artifacts required on failed execution
+              uses: geekyeggo/delete-artifact@v2
+              with:
+                  name: |
+                      playwright-report
+                      allure-results
+
+            - name: Remove label if all test jobs succeeded
+              uses: buildsville/add-remove-label@v2.0.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  labels: |
+                      Failed Automated Test
+                  type: remove

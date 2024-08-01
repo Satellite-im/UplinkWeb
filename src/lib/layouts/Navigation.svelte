@@ -2,10 +2,11 @@
     import { Button, Icon, Text } from "$lib/elements"
     import { Appearance, Route, SettingsRoute } from "$lib/enums"
     import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
-    import type { NavRoute } from "$lib/types"
+    import type { FriendRequest, NavRoute } from "$lib/types"
     import { checkMobile } from "$lib/utils/Mobile"
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, onDestroy } from "svelte"
     import { get } from "svelte/store"
 
     export let routes: NavRoute[] = []
@@ -18,6 +19,44 @@
         settings = s
     })
 
+    let incomingRequests: FriendRequest[] = []
+    let totalUnreads: number = 0
+    let badgeCounts: Record<string, number> = {}
+
+    const dispatch = createEventDispatcher()
+
+    // Subscribe to stores and update local state
+    const unsubscribeStore = Store.state.activeRequests.subscribe(() => {
+        incomingRequests = Store.inboundRequests
+        updateBadgeCounts()
+    })
+
+    const unsubscribeUIStore = UIStore.state.chats.subscribe(() => {
+        totalUnreads = UIStore.getTotalNotifications()
+        updateBadgeCounts()
+    })
+
+    function updateBadgeCounts() {
+        badgeCounts = {}
+        for (const route of routes) {
+            badgeCounts[route.to] = calculateBadgeCount(route.to)
+        }
+    }
+
+    function calculateBadgeCount(route: string): number {
+        if (route === "/friends") {
+            return incomingRequests.length
+        } else if (route === "/chat") {
+            return totalUnreads
+        }
+        return 0
+    }
+
+    function handleNavigate(route: NavRoute) {
+        if (checkMobile() && !overrides(route)) UIStore.state.sidebarOpen.set(false)
+        dispatch("navigate", route.to.toString())
+    }
+
     function overrides(route: NavRoute) {
         if (route.to === Route.Chat && settings.messaging.quick) {
             return true
@@ -25,11 +64,11 @@
         if (route.to === Route.Settings) return true
     }
 
-    const dispatch = createEventDispatcher()
-    function handleNavigate(route: NavRoute) {
-        if (checkMobile() && !overrides(route)) UIStore.state.sidebarOpen.set(false)
-        dispatch("navigate", route.to.toString())
-    }
+    // Clean up subscriptions when component is destroyed
+    onDestroy(() => {
+        unsubscribeStore()
+        unsubscribeUIStore()
+    })
 </script>
 
 <div class="navigation {vertical ? 'vertical' : 'horizontal'} {icons ? 'icons' : ''}">
@@ -37,12 +76,13 @@
         <div class="navigation-control {!icons ? 'fill' : ''}">
             <Button
                 hook="button-{route.name}"
+                badge={badgeCounts[route.to]}
                 fill={!icons}
                 tooltip={route.name}
                 icon={icons}
                 outline={activeRoute !== route.to && !icons}
                 appearance={activeRoute === route.to ? Appearance.Primary : Appearance.Alt}
-                on:click={_ => handleNavigate(route)}>
+                on:click={() => handleNavigate(route)}>
                 <Icon icon={route.icon} />
                 {#if !icons}
                     <Text>{route.name}</Text>

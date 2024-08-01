@@ -65,6 +65,14 @@
         <Button hook="button-test-voice" appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>{$_("settings.developer.testVoiceButton")}</Button>
     </SettingSection>
 
+    <SettingSection hook="section-test-call" name="Mock Incoming Call" description="Start a mock call.">
+        <Button hook="button-test-call" appearance={Appearance.Alt} on:click={_ => {}}>Start Mock Call</Button>
+    </SettingSection>
+
+    <SettingSection hook="section-test-call" name="Mock Incoming Call" description="Start a mock call.">
+        <Button hook="button-test-call" appearance={Appearance.Alt} on:click={_ => {}}>Start Mock Call</Button>
+    </SettingSection>
+
     <SettingSection hook="section-logger-level" name={$_("settings.developer.loggerLevel")} description={$_("settings.developer.loggerLevelDescription")}>
         <Select
             hook="selector-current-logger-level-{settings.level}"

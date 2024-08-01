@@ -1,4 +1,4 @@
-import { ChatType, MessageDirection, Status } from "$lib/enums"
+import { CallDirection, ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame, type Integration } from "$lib/types"
@@ -20,6 +20,7 @@ class GlobalStore {
     constructor() {
         this.state = {
             activeCall: writable(null),
+            pendingCall: writable(null),
             user: createPersistentState("uplink.user", defaultUser),
             activeChat: createPersistentState("uplink.activeChat", defaultChat),
             devices: {
@@ -51,6 +52,7 @@ class GlobalStore {
                 status: Status.Online,
                 status_message: identity.status_message() || "",
             },
+            integrations: identity.metadata(),
         }
         this.state.user.update(u => (u = userFromIdentity))
     }
@@ -63,7 +65,7 @@ class GlobalStore {
         this.state.user.update(u => (u = { ...u, name }))
     }
 
-    setIntegrations(integrations: Integration[]) {
+    setIntegrations(integrations: Map<string, string>) {
         this.state.user.update(u => (u = { ...u, integrations }))
     }
 
@@ -114,6 +116,20 @@ class GlobalStore {
         return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
     }
 
+    getCallingChat(chatID: string) {
+        const chats = get(UIStore.state.chats)
+        return chats.find(c => c.id === chatID)
+    }
+
+    setActiveChatByID(chatID: string): Chat | undefined {
+        const chats = get(UIStore.state.chats)
+        const chat = chats.find(c => c.id === chatID)
+        if (chat) {
+            this.setActiveChat(chat)
+        }
+        return chat
+    }
+
     setActiveChat(chat: Chat) {
         this.state.activeChat.set(chat)
 
@@ -161,6 +177,43 @@ class GlobalStore {
     }
     updateFolderTree(newFolderTree: Record<string, boolean>) {
         this.state.openFolders.set(newFolderTree)
+    }
+
+    setPendingCall(chat: Chat, direction: CallDirection) {
+        this.state.pendingCall.set({
+            chat: chat,
+            startedAt: new Date(),
+            inCall: true,
+            direction,
+        })
+    }
+
+    setActiveCall(chat: Chat, direction: CallDirection = CallDirection.Inbound) {
+        this.state.activeCall.set({
+            chat: chat,
+            startedAt: new Date(),
+            inCall: true,
+            direction,
+        })
+    }
+
+    acceptCall() {
+        this.state.activeCall.update(call => {
+            if (call) {
+                call.inCall = true
+                return call
+            }
+            return call
+        })
+        this.state.pendingCall.set(null)
+    }
+
+    denyCall() {
+        this.state.pendingCall.set(null)
+    }
+
+    endCall() {
+        this.state.activeCall.set(null)
     }
 
     addFriend(user: string) {
@@ -375,6 +428,11 @@ class GlobalStore {
 
     get blockedUsers() {
         return get(this.state.blocked)
+    }
+
+    startMockCall() {
+        let chat = defaultChat
+        this.setPendingCall(chat, CallDirection.Inbound)
     }
 
     loadMockData() {

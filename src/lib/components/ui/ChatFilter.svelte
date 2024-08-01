@@ -116,6 +116,7 @@
                                     status={$userCache[chat.users[0]].profile.status}
                                     size={Size.Medium}
                                     loading={loading}
+                                    id={$userCache[chat.users[0]].key}
                                     frame={$userCache[chat.users[0]].profile.photo.frame} />
                             {:else}
                                 <ProfilePictureMany users={chat.users.map(u => $userCache[u])} />

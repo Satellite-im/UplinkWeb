@@ -494,7 +494,6 @@
             for (let i = 0; i < target.files.length; i++) {
                 const file = target.files[i]
                 const stream = file.stream()
-                console.log("file: ", file)
                 const fileNameParts = file.name.split(".")
                 const baseName = fileNameParts.slice(0, -1).join(".")
                 const extension = fileNameParts.slice(-1)[0]

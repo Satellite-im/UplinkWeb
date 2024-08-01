@@ -70,7 +70,6 @@
         if (id.includes("Xbox")) {
             return GamepadBrand.Xbox
         } else if (id.includes("DualSense")) {
-            console.log("playstation")
             return GamepadBrand.Playstation
         } else {
             return GamepadBrand.Xbox
@@ -567,18 +566,5 @@
         border-radius: 50%;
         pointer-events: none;
         transform-origin: center;
-    }
-
-    #mapping {
-        margin-top: 20px;
-
-        label {
-            margin-right: 10px;
-        }
-
-        input[type="range"] {
-            margin-bottom: 10px;
-            width: 100%;
-        }
     }
 </style>

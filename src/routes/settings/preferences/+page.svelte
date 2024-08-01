@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, EmojiFont, Font, Shape } from "$lib/enums"
+    import { Appearance, EmojiFont, Font, Identicon, Shape } from "$lib/enums"
 
     import { _ } from "svelte-i18n"
     import { ColorSwatch } from "$lib/components"
@@ -10,10 +10,13 @@
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, type ISettingsState } from "$lib/state"
+    import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
 
     let hex = get(UIStore.state.color)
     let font: Font = get(UIStore.state.font)
     let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
+    let identiconStyle: Identicon = get(SettingsStore.state).messaging.identiconStyle
+
     let cssOverride = get(UIStore.state.cssOverride)
     let fontSize = get(UIStore.state.fontSize)
 
@@ -28,6 +31,9 @@
     })
     UIStore.state.cssOverride.subscribe(css => {
         cssOverride = css
+    })
+    SettingsStore.state.subscribe(settings => {
+        identiconStyle = settings.messaging.identiconStyle
     })
 
     const availableFonts = [
@@ -47,6 +53,21 @@
         { text: Font.Merriweather, value: Font.Merriweather },
         { text: Font.PoiretOne, value: Font.PoiretOne },
         { text: Font.OpenDyslexic, value: Font.OpenDyslexic },
+    ]
+
+    const availableIdenticons = [
+        { text: Identicon.Avataaars, value: Identicon.Avataaars },
+        { text: Identicon.AvataaarsNeutral, value: Identicon.AvataaarsNeutral },
+        { text: Identicon.Bots, value: Identicon.Bots },
+        { text: Identicon.BotsNeutral, value: Identicon.BotsNeutral },
+        { text: Identicon.Icons, value: Identicon.Icons },
+        { text: Identicon.Identicon, value: Identicon.Identicon },
+        { text: Identicon.Lorelei, value: Identicon.Lorelei },
+        { text: Identicon.Notionists, value: Identicon.Notionists },
+        { text: Identicon.OpenPeeps, value: Identicon.OpenPeeps },
+        { text: Identicon.PixelArt, value: Identicon.PixelArt },
+        { text: Identicon.PixelArtNeutral, value: Identicon.PixelArtNeutral },
+        { text: Identicon.Shapes, value: Identicon.Shapes },
     ]
 
     const availableEmojiFonts = [
@@ -101,6 +122,19 @@
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>
+    <SettingSection hook="section-identicon" name={$_("settings.preferences.identiconStyle")} description={$_("settings.preferences.identiconStyleDescription")}>
+        <ProfilePicture id={"0x0000000000000000000000000000000000000000"} />
+        <Select
+            selected={identiconStyle}
+            options={availableIdenticons}
+            alt
+            on:change={v => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, identiconStyle: v.detail } })
+            }} />
+        <Button hook="button-emoji-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+            <Icon icon={Shape.FolderOpen} />
+        </Button>
+    </SettingSection>
     <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
         <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
             <Icon icon={Shape.Minus} />
@@ -146,6 +180,14 @@
             on={settings ? settings.widgets.show : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, widgets: { ...settings.widgets, show: on.detail } })
+            }} />
+    </SettingSection>
+    <SettingSection hook="section-minimal-call-alerts" name={$_("settings.calling.minimalCallingAlerts")} description={$_("settings.calling.minimalCallingAlertsDescription")}>
+        <Switch
+            hook="checkbox-minimal-call-alerts"
+            on={settings ? settings.calling.minimalCallingAlerts : true}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, calling: { ...(settings.calling || {}), minimalCallingAlerts: on.detail } })
             }} />
     </SettingSection>
     <SettingSection hook="section-custom-css" name={$_("settings.preferences.customCss")} description={$_("settings.preferences.customCssDescription")} fullWidth>
