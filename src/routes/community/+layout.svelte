@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Appearance, CommunityChannelKind, Route, Shape, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { Sidebar } from "$lib/layouts"
     import { ImageEmbed, Modal } from "$lib/components"
@@ -14,8 +14,6 @@
     import Button from "$lib/elements/Button.svelte"
     import ChannelGroup from "$lib/components/community/channel/ChannelGroup.svelte"
     import Spacer from "$lib/elements/Spacer.svelte"
-
-    initLocale()
 
     let loading = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)

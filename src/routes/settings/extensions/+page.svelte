@@ -2,29 +2,27 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import UnderConstruction from "$lib/elements/UnderConstruction.svelte"
-
-    initLocale()
 </script>
 
 <div id="page">
     <Controls>
-        <Button hook="button-installed" text="Installed" appearance={Appearance.Alt}>
+        <Button hook="button-installed" text={$_("settings.extensions.installed")} appearance={Appearance.Alt}>
             <Icon icon={Shape.CheckMark} />
         </Button>
-        <Button hook="button-explore" text="Explore" appearance={Appearance.Alt} outline hideTextOnMobile>
+        <Button hook="button-explore" text={$_("settings.extensions.explore")} appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Beaker} />
         </Button>
-        <Button hook="button-settings" text="Settings" appearance={Appearance.Alt} outline hideTextOnMobile>
+        <Button hook="button-settings" text={$_("settings.extensions.settings")} appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Cog} />
         </Button>
     </Controls>
 
     <div class="content">
         <UnderConstruction />
-        <Label hook="label-no-extensions-installed" text="No extensions installed." />
+        <Label hook="label-no-extensions-installed" text={$_("settings.extensions.none")} />
     </div>
 </div>
 

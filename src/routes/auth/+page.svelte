@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation"
     import { Route } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { Entrypoint, NewAccount, LoginPage, RecoveryCopy, Unlock } from "$lib/layouts/login"
     import { AuthStore } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
@@ -14,8 +14,6 @@
     import { WarpStore } from "$lib/wasm/WarpStore"
     import { get } from "svelte/store"
     import type { Identity } from "warp-wasm"
-
-    initLocale()
 
     function exist() {
         TesseractStoreInstance.initTesseract()

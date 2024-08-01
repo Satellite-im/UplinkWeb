@@ -94,21 +94,21 @@
 </script>
 
 <div class="relay-selector">
-    <Label hook="label-relay" text={$_("settings.relay.title")} />
+    <Label hook="label-relay" text={$_("settings.network.relay.title")} />
     <div class="relay-content">
         {#if adding || editing}
             <Modal hook="modal-relay-add">
                 <div class="relay-add-modal">
-                    <Label hook="label-relay-name" text={$_("settings.relay.name")} />
+                    <Label hook="label-relay-name" text={$_("settings.network.relay.name")} />
                     <Input hook="input-relay-name" bind:value={nameToAdd}></Input>
                     {#if nameToAdd !== "" && !verifyName(nameToAdd)}
-                        <div class="error">{$_("settings.relay.name_exist")}</div>
+                        <div class="error">{$_("settings.network.relay.name_exist")}</div>
                     {/if}
-                    <Label hook="label-relay-address" text={$_("settings.relay.address")} />
+                    <Label hook="label-relay-address" text={$_("settings.network.relay.address")} />
 
                     <Input hook="input-relay-address" bind:value={relayToAdd} on:enter={add}></Input>
                     {#if relayToAdd !== "" && !verifyAddress(relayToAdd)}
-                        <div class="error">{$_("settings.relay.invalid_address")}</div>
+                        <div class="error">{$_("settings.network.relay.invalid_address")}</div>
                     {/if}
                     <Controls>
                         <Button
@@ -135,11 +135,11 @@
             <div class="relay-entry">
                 <div class="relay-info">
                     <div>
-                        <Label hook="label-relay-name" text="Name" />
+                        <Label hook="label-relay-name" text={$_("settings.network.relay.name")} />
                         <Input hook="input-relay-name" value={name} disabled copyOnInteract />
                     </div>
                     <div>
-                        <Label hook="label-relay-address" text="Address" />
+                        <Label hook="label-relay-address" text={$_("settings.network.relay.address")} />
                         <Input hook="input-relay-address" value={relay.address} disabled copyOnInteract />
                     </div>
                 </div>

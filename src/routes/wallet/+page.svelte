@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { Sidebar } from "$lib/layouts"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import Label from "$lib/elements/Label.svelte"
     import { Transaction } from "$lib/components"
@@ -19,7 +19,6 @@
     import { UIStore } from "$lib/state/ui"
 
     // Initialize locale
-    initLocale()
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -33,7 +32,7 @@
 
 <div id="page">
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Wallet}>
-        <Label text="New Payment" />
+        <Label text={$_("payments.newPayment")} />
         <NewPayment recipients={mock_users} embedded />
     </Sidebar>
     <div class="content">
@@ -42,21 +41,21 @@
                 <ProfilePicture id={mock_users[0].key} image={mock_users[0]?.profile.photo.image} size={Size.Large} status={mock_users[0]?.profile.status} />
 
                 <div class="profile-details">
-                    <Label text="Username" />
+                    <Label text={$_("generic.username")} />
                     <Text>{mock_users[0].name}</Text>
-                    <Label text="Payment ID" />
+                    <Label text={$_("payments.paymentID")} />
                     <Input alt disabled value={`${mock_users[0].name}#${mock_users[0].id.short}`} />
                 </div>
             </div>
 
             <div id="current-balance">
-                <Label text="Balance"></Label>
+                <Label text={$_("payments.balance")}></Label>
                 <Text size={Size.Large}>{balance}</Text>
             </div>
         </div>
 
         <div id="recent-transactions">
-            <Label text="Recent Transactions" />
+            <Label text={$_("payments.recentTransaction")} />
             <div class="transacitons">
                 <TransactionContainer>
                     {#each recent_transactions as transaction}
@@ -64,7 +63,7 @@
                     {/each}
                 </TransactionContainer>
                 <Controls>
-                    <Button text="Load More" appearance={Appearance.Alt}>
+                    <Button text={$_("payments.loadMore")} appearance={Appearance.Alt}>
                         <Icon icon={Shape.ArrowDown} />
                     </Button>
                 </Controls>
@@ -72,7 +71,7 @@
         </div>
         <div id="transactions">
             <div id="payments-in">
-                <Label text="Coin In" />
+                <Label text={$_("payments.coinIn")} />
                 <div class="transacitons">
                     <TransactionContainer>
                         {#each transactions_in as transaction}
@@ -80,14 +79,14 @@
                         {/each}
                     </TransactionContainer>
                     <Controls>
-                        <Button text="Load More" appearance={Appearance.Alt}>
+                        <Button text={$_("payments.loadMore")} appearance={Appearance.Alt}>
                             <Icon icon={Shape.ArrowDown} />
                         </Button>
                     </Controls>
                 </div>
             </div>
             <div id="payments-out">
-                <Label text="Coin Out" />
+                <Label text={$_("payments.coinOut")} />
                 <div class="transacitons">
                     <TransactionContainer>
                         {#each transactions_out as transaction}
@@ -95,7 +94,7 @@
                         {/each}
                     </TransactionContainer>
                     <Controls>
-                        <Button text="Load More" appearance={Appearance.Alt}>
+                        <Button text={$_("payments.loadMore")} appearance={Appearance.Alt}>
                             <Icon icon={Shape.ArrowDown} />
                         </Button>
                     </Controls>

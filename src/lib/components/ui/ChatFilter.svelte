@@ -1,6 +1,6 @@
 <script lang="ts">
     import { ChatType, Route, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { type Chat, type User } from "$lib/types"
@@ -10,8 +10,6 @@
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { goto } from "$app/navigation"
     import StoreResolver from "../utils/StoreResolver.svelte"
-
-    initLocale()
 
     export let filter: string
 

@@ -3,7 +3,6 @@
     import { Modal } from "$lib/components"
     import { Appearance, Shape } from "$lib/enums"
 
-    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { Text, Button, Icon } from "$lib/elements"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
@@ -12,8 +11,6 @@
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { Controls } from "$lib/layouts"
     import { LoginPage } from "$lib/layouts/login"
-
-    initLocale()
 
     export let page: LoginPage
 
@@ -37,7 +34,7 @@
                     <Text hook="select-profile-user-name" class="username">{mock_users[2].name}</Text>
                 </div>
                 <Spacer />
-                <Button hook="button-create-new-profile" text="Create new profile" appearance={Appearance.Alt}>
+                <Button hook="button-create-new-profile" text={$_("pages.auth.create.profile")} appearance={Appearance.Alt}>
                     <Icon icon={Shape.Plus} />
                 </Button>
             </div>
@@ -68,10 +65,10 @@
 
     <div class="unlock-controls">
         <Controls>
-            <Button tooltip="Change User" hook="button-change-user" icon on:click={_ => (showAccounts = true)} appearance={Appearance.Alt}>
+            <Button tooltip={$_("pages.auth.changeUser")} hook="button-change-user" icon on:click={_ => (showAccounts = true)} appearance={Appearance.Alt}>
                 <Icon icon={Shape.Profile} />
             </Button>
-            <Button tooltip="Configure Relay" hook="button-configure-relay" icon on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt}>
+            <Button tooltip={$_("pages.auth.relay")} hook="button-configure-relay" icon on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt}>
                 <Icon icon={Shape.Relay} />
             </Button>
         </Controls>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Appearance, Integrations, Route, Shape, Size, Status } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
@@ -20,8 +20,6 @@
     import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
-
-    initLocale()
 
     let loading = true
     let showSeed = false
@@ -217,7 +215,7 @@
                 {
                     id: "clear-banner-picture",
                     icon: Shape.Trash,
-                    text: "Delete Banner Picture",
+                    text: $_("settings.profile.deleteBanner"),
                     appearance: Appearance.Default,
                     onClick: async () => {
                         await MultipassStoreInstance.updateBannerPicture("/0")
@@ -244,7 +242,7 @@
                 {
                     id: "clear-profile-picture",
                     icon: Shape.Trash,
-                    text: "Delete Profile Picture",
+                    text: $_("settings.profile.deleteProfile"),
                     disabled: $user.profile.photo.image === "",
                     appearance: Appearance.Default,
                     onClick: () => {
