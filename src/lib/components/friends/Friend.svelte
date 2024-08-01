@@ -3,11 +3,9 @@
     import { defaultUser, type User } from "$lib/types"
     import { ProfilePicture } from ".."
     import Controls from "$lib/layouts/Controls.svelte"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { Size } from "$lib/enums"
-
-    initLocale()
 
     export let friend: User = defaultUser
 </script>

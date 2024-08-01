@@ -1,10 +1,9 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
 
-    initLocale()
     export let filesSelected: [File?, string?][] = []
     function removeFile(file: File | string) {
         filesSelected = filesSelected.filter(([f, p]) => f !== file && p !== file)

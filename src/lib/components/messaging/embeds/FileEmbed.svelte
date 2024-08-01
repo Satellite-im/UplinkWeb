@@ -7,6 +7,7 @@
     import { OperationState, type FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher } from "svelte"
+    import { _ } from "svelte-i18n"
 
     const dispatch = createEventDispatcher()
 
@@ -36,13 +37,13 @@
             </Text>
         </div>
         <Controls>
-            <Button icon tooltip="Download" on:click={download}>
+            <Button icon tooltip={$_("files.download")} on:click={download}>
                 <Icon icon={Shape.Download} />
             </Button>
-            <Button icon appearance={Appearance.Alt} tooltip="Share">
+            <Button icon appearance={Appearance.Alt} tooltip={$_("files.share")}>
                 <Icon icon={Shape.Share} />
             </Button>
-            <Button appearance={Appearance.Alt} text="Add to Files">
+            <Button appearance={Appearance.Alt} text={$_("files.addFiles")}>
                 <Icon icon={Shape.Plus} />
             </Button>
         </Controls>

@@ -4,14 +4,15 @@
     import { Appearance, Shape } from "$lib/enums"
     import Chatbar from "$lib/layouts/Chatbar.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
+    import { _ } from "svelte-i18n"
 </script>
 
 <div id="community">
     <Topbar>
         <div slot="before">
             <div class="topbar-details">
-                <Text>Satellite Community - General</Text>
-                <Label text="Message of the day" />
+                <Text>{$_("community.title")}</Text>
+                <Label text={$_("community.titleSub")} />
             </div>
         </div>
         <svelte:fragment slot="controls">

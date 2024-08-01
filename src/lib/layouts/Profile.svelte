@@ -7,6 +7,7 @@
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
     import { wallet } from "$lib/utils/Wallet"
+    import { _ } from "svelte-i18n"
     import { getIntegrationColor, identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
 
     export let user: User | null = null
@@ -27,12 +28,12 @@
 
         <div class="details">
             <div class="left">
-                <Label text="Username" />
+                <Label text={$_("generic.username")} />
                 <Text size={Size.Large}>{user?.name}</Text>
             </div>
             <div class="right">
                 {#if user && user.id.short !== currentUserShortId}
-                    <Button outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? "You're friends" : "Add Friend"}>
+                    <Button outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? $_("settings.profile.friended") : $_("settings.profile.addFriend")}>
                         <Icon icon={isFriended(user) ? Shape.CheckMark : Shape.Plus} />
                     </Button>
                 {/if}
@@ -42,11 +43,11 @@
     {#if user}
         <div class="content">
             <div class="section">
-                <Label text="Status Message" />
+                <Label text={$_("generic.status_message")} />
                 <Text>{user.profile.status_message}</Text>
             </div>
             <div class="section">
-                <Label text="Accounts" />
+                <Label text={$_("settings.profile.integration.title")} />
                 <div class="integrations">
                     {#each user.integrations as [key, value]}
                         <div class="integration" style={`border-color: ${getIntegrationColor(key)};`}>
@@ -73,10 +74,10 @@
                 {/if}
             </div>
             <div class="section">
-                <Label text="Note" />
+                <Label text={$_("settings.profile.note")} />
                 <Input
                     alt
-                    placeholder="Set a note . . ."
+                    placeholder={$_("settings.profile.setNote")}
                     value={note}
                     on:input={e => {
                         if (user) new Notes().set(user?.name, e.detail)

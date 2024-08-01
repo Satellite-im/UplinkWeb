@@ -149,7 +149,7 @@
     <div class="toolbar">
         <Controls>
             <PopupButton
-                name="Settings"
+                name={$_("generic.settings")}
                 open={showSettings}
                 on:open={_ => {
                     showSettings = true
@@ -195,13 +195,13 @@
                 }}>
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
-            <Button appearance={Appearance.Alt} icon tooltip="Stream">
+            <Button appearance={Appearance.Alt} icon tooltip={$_("call.stream")}>
                 <Icon icon={Shape.Stream} />
             </Button>
             <Button
                 appearance={Appearance.Alt}
                 icon
-                tooltip="Enable Video"
+                tooltip={$_("call.video")}
                 on:click={_ => {
                     VoiceRTCInstance.turnOnOffCamera()
                 }}>
@@ -210,7 +210,7 @@
             <Button
                 appearance={Appearance.Error}
                 icon
-                tooltip="End"
+                tooltip={$_("call.end")}
                 on:click={_ => {
                     dispatch("onendcall")
                     VoiceRTCInstance.endCall()
@@ -219,14 +219,14 @@
             </Button>
         </Controls>
         <Controls>
-            <Button appearance={Appearance.Alt} icon outline tooltip={expanded ? "Less Space" : "More Space"} on:click={toggleExanded}>
+            <Button appearance={Appearance.Alt} icon outline tooltip={expanded ? $_("call.collapse") : $_("call.expand")} on:click={toggleExanded}>
                 {#if expanded}
                     <Icon icon={Shape.ChevronsUp} />
                 {:else}
                     <Icon icon={Shape.ChevronsDown} />
                 {/if}
             </Button>
-            <Button appearance={Appearance.Alt} icon outline tooltip="Fullscreen">
+            <Button appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")}>
                 <Icon icon={Shape.ArrowsOut} />
             </Button>
         </Controls>

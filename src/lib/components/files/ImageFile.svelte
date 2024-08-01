@@ -3,13 +3,14 @@
     import prettyBytes from "pretty-bytes"
     import { Size } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
+    import { _ } from "svelte-i18n"
 
     const dispatch = createEventDispatcher()
     function onClick(event: MouseEvent) {
         dispatch("click", event)
     }
     export let ImgSource: string = ""
-    export let name: string = "UNKNOWN"
+    export let name: string = $_("files.unknown")
     export let filesize: number = 9821239
 </script>
 

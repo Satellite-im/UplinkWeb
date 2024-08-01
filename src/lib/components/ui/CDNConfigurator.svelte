@@ -2,6 +2,7 @@
     import { DEFAULT_CDN } from "$lib/config"
     import { Button, Icon, Input, Label, UnderConstruction } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
+    import { _ } from "svelte-i18n"
 
     export let address: string = DEFAULT_CDN.address
     export let name: string = DEFAULT_CDN.name
@@ -12,11 +13,11 @@
 
     <Label hook="label-cdn" text="CDN URL" />
     <div class="cdn-content">
-        <Input placeholder="Name ..." bind:value={name} disabled />
-        <Input highlight={Appearance.Success} placeholder="Address ..." bind:value={address} disabled>
+        <Input placeholder={$_("settings.network.cdn.namePlaceholder")} bind:value={name} disabled />
+        <Input highlight={Appearance.Success} placeholder={$_("settings.network.cdn.addressPlaceholder")} bind:value={address} disabled>
             <Icon icon={Shape.Lock} />
         </Input>
-        <Button appearance={Appearance.Alt} text="Save">
+        <Button appearance={Appearance.Alt} text={$_("generic.save")}>
             <Icon icon={Shape.CheckMark} />
         </Button>
     </div>

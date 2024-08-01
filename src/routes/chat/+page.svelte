@@ -2,7 +2,7 @@
     import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import TimeAgo from "javascript-time-ago"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
@@ -52,8 +52,6 @@
     import { get_valid_payment_request } from "$lib/utils/Wallet"
     import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
-
-    initLocale()
 
     let loading = false
     let contentAsideOpen = false
@@ -160,7 +158,7 @@
             {
                 id: "copy",
                 icon: Shape.Clipboard,
-                text: $_("messages.copy"),
+                text: $_("generic.copy"),
                 appearance: Appearance.Default,
                 onClick: () => {
                     copy(message.text.join("\n"))
@@ -181,7 +179,7 @@
                       {
                           id: "delete",
                           icon: Shape.Trash,
-                          text: $_("messages.delete"),
+                          text: $_("generic.delete"),
                           appearance: Appearance.Default,
                           onClick: async () => {
                               await delete_message(message.id)
@@ -363,21 +361,21 @@
                     {
                         id: "favorite",
                         icon: Shape.Heart,
-                        text: "Favorite",
+                        text: $_("chat.favorite"),
                         appearance: Appearance.Default,
                         onClick: () => Store.toggleFavorite(chat),
                     },
                     {
                         id: "hide",
                         icon: Shape.EyeSlash,
-                        text: "Hide",
+                        text: $_("chat.gide"),
                         appearance: Appearance.Default,
                         onClick: () => UIStore.removeSidebarChat(chat),
                     },
                     {
                         id: "mark_read",
                         icon: Shape.CheckMark,
-                        text: "Mark Read",
+                        text: $_("chat.markRead"),
                         appearance: Appearance.Default,
                         onClick: () => {},
                     },
@@ -621,8 +619,8 @@
             {:else}
                 <div class="add-someone" data-cy="section-add-someone">
                     <img src="/assets/mascot/better_with_friends.webp" class="better-with-friends" alt="Better with friends!" />
-                    <Text>Let's get something started!</Text>
-                    <Text muted centered>You don't have any active chats yet, click the button below to head to the friends page to start one.</Text>
+                    <Text>{$_("chat.getStarted")}</Text>
+                    <Text muted centered>{$_("chat.noChat")}</Text>
                     <Button hook="button-add-friends" appearance={Appearance.Primary} text="Add Friends" on:click={_ => goto(Route.Friends)}>
                         <Icon icon={Shape.Users} />
                     </Button>
@@ -644,7 +642,7 @@
                             {
                                 id: "upload",
                                 icon: Shape.ArrowUp,
-                                text: "Upload",
+                                text: $_("files.upload"),
                                 appearance: Appearance.Default,
                                 onClick: () => {
                                     fileUpload.click()
@@ -653,7 +651,7 @@
                             {
                                 id: "from_files",
                                 icon: Shape.Eye,
-                                text: "Browse Files",
+                                text: $_("files.browse"),
                                 appearance: Appearance.Default,
                                 onClick: () => {},
                             },

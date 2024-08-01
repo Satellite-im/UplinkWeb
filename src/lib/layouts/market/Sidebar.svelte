@@ -4,13 +4,11 @@
     import { createEventDispatcher } from "svelte"
     import { slide } from "svelte/transition"
     import { animationDuration } from "$lib/globals/animations"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import type { Call } from "$lib/types"
-
-    initLocale()
 
     export let open: boolean = true
     export let activeCall: Call | null = get(Store.state.activeCall)

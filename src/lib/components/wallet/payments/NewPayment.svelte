@@ -4,6 +4,7 @@
     import { ProfilePicture, ProgressBar } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
+    import { _ } from "svelte-i18n"
 
     export let recipients: Array<User> = []
     export let embedded: boolean = false
@@ -31,10 +32,10 @@
         <input class="custom-input" type="number" min="0.01" step="0.01" value="0.00" placeholder="0.00" max="999,999.99" />
     </div>
     <div class="payment-note">
-        <Input alt placeholder="Add a note..." class="flex" />
+        <Input alt placeholder={$_("payments.notePlaceholder")} class="flex" />
     </div>
     <div class="select-recipient">
-        <Label text="Recipients:" />
+        <Label text={$_("payments.recipients")} />
         <div class="recipient-list">
             {#each selected_recipients as recipient}
                 <div class="mini-recipient">
@@ -46,7 +47,7 @@
                 </div>
             {/each}
         </div>
-        <Label text="Select recipient(s)" />
+        <Label text={$_("payments.selectRecipients")} />
         <div class="recipient-selection-list {embedded ? 'embedded' : ''}">
             {#each recipients as recipient}
                 <button class="recipient" on:click={() => update_recipients(recipient)}>
@@ -65,11 +66,11 @@
         </div>
     </div>
     <div class="payment-controls">
-        <ProgressBar label={`Hold for ${3} seconds...`} />
+        <ProgressBar label={$_("generic.hold", { values: { number: 3 } })} />
 
         <div class="buttons">
-            <Button appearance={Appearance.Success} text="Confirm" outline class="flex" />
-            <Button appearance={Appearance.Alt} text="Cancel" class="flex" />
+            <Button appearance={Appearance.Success} text={$_("generic.confirm")} outline class="flex" />
+            <Button appearance={Appearance.Alt} text={$_("generic.cancel")} class="flex" />
         </div>
     </div>
     <!--

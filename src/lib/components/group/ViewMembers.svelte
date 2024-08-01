@@ -7,13 +7,14 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import Label from "$lib/elements/Label.svelte"
+    import { _ } from "svelte-i18n"
 
     export let members: User[] = []
     export let adminControls: boolean = false
 </script>
 
 <div class="members">
-    <Label text={`${members.length} member(s)`} />
+    <Label text={$_("chat.group.amount", { values: { amount: members.length } })} />
     {#each members as member}
         <div class="user">
             <ProfilePicture id={member.key} image={member.profile.photo.image} noIndicator size={Size.Small} />
@@ -22,7 +23,7 @@
             </div>
             {#if adminControls}
                 <Controls>
-                    <Button small icon appearance={Appearance.Alt} tooltip="Remove">
+                    <Button small icon appearance={Appearance.Alt} tooltip={$_("generic.remove")}>
                         <Icon icon={Shape.XMark} />
                     </Button>
                 </Controls>

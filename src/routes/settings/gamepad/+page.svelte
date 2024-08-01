@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { Spacer, Switch } from "$lib/elements"
     import { SettingSection } from "$lib/layouts"
@@ -7,7 +6,6 @@
     import { AAR } from "$lib/components"
     import Text from "$lib/elements/Text.svelte"
     import { SettingsStore } from "$lib/state"
-    initLocale()
 
     $: settings = SettingsStore.state
 </script>
@@ -23,7 +21,7 @@
     </SettingSection>
     <GamepadListener gui />
     <Spacer />
-    <Text>Everything working? Test it out below.</Text>
+    <Text>{$_("settings.gamepad.testDescription")}</Text>
     <AAR />
 </div>
 

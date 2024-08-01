@@ -1,0 +1,443 @@
+{
+    "generic": {
+        "uplink": "Uplink",
+        "accept": "Accept",
+        "deny": "Deny",
+        "add": "Add",
+        "remove": "Remove",
+        "save": "Save",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "undo": "Undo",
+        "copy": "Copy",
+        "delete": "Delete",
+        "loading": "Loading",
+        "username": "Username",
+        "status_message": "Status Message",
+        "enter_pin": "Enter Pin",
+        "placeholder": "Type something ...",
+        "search_placeholder": "Search ...",
+        "no_results": "No results found.",
+        "search_results": "Search results",
+        "openFolder": "Open Folder",
+        "profiles": "Profiles",
+        "users": "Users",
+        "groups": "Groups",
+        "pending_changes": "Unsaved changes",
+        "enable": "Enable",
+        "enabled": "Enabled",
+        "settings": "Settings",
+        "hold": "Hold for {number} seconds...",
+        "underConstruction": "Under Construction",
+        "faves": "Faves",
+        "initializing": "Initializing...",
+        "platform": "Platform",
+        "address": "Address"
+    },
+    "market": {
+        "market": "Marketplace",
+        "label": "Uplink Marketplace",
+        "bundles": "Bundles & Packs",
+        "filter": "Filter",
+        "staff": "Staff & Picks",
+        "recentUpdated": "Recently Updated",
+        "mostDownloaded": "Most Downloaded",
+        "newlyAdded": "Newly Added",
+        "categories": "Categories",
+        "communityUpgrades": "Community Upgrades",
+        "extensions": "Extensions",
+        "themes": "Themes",
+        "stickers": "Stickers & Emotes",
+        "sound": "Sound & Fonts",
+        "bots": "Bots & Moderation"
+    },
+    "inventory": {
+        "equip": "Equip",
+        "equipped": "Equipped",
+        "unequip": "Unequip",
+        "noFrame": "No Frame"
+    },
+    "call": {
+        "end": "End",
+        "mute": "Mute",
+        "deafen": "Deafen",
+        "stream": "Stream",
+        "video": "Enable Video",
+        "in_call": "In Call",
+        "settings": "Call Settings",
+        "collapse": "Less Space",
+        "expand": "More Space",
+        "fullscreen": "Fullscreen"
+    },
+    "chat": {
+        "chat": "Chat",
+        "chat_plural": "Chats",
+        "create": "Create Chat",
+        "add_attachment": "Add attachment",
+        "emoji": "Emoji",
+        "emojiPicker": "Emoji Picker",
+        "gifSearch": "GIF Search",
+        "send": "Send",
+        "stickers": "Stickers",
+        "upload_files": "Upload files to chat",
+        "encrypted": "Messages are secured by end-to-end encryption, sent over a peer-to-peer network.",
+        "favorite": "Favorite",
+        "hide": "Hide",
+        "markRead": "Mark Read",
+        "getStarted": "Let's get something started!",
+        "noChat": "You don't have any active chats yet, click the button below to head to the friends page to start one.",
+        "group": {
+            "name": "Group name:",
+            "members": "Group members:",
+            "amount": "{amount} member(s)",
+            "select": "Select member(s)",
+            "create": "Create Group",
+            "settings": {
+                "name": "Name",
+                "name.placeholder": "Group Name",
+                "description": "Description",
+                "description.placeholder": "Group description goes here",
+                "add": "Add Members",
+                "add.description": "Allow anyone to add members to the group",
+                "details": "Change Details",
+                "details.description": "Allow anyone to change the name and motd of the group",
+                "photo": "Change Photo",
+                "photo.description": "Allow anyone to change the group photo"
+            }
+        }
+    },
+    "community": {
+        "title": "Satellite Community - General",
+        "titleSub": "Message of the day",
+        "channels": {
+            "default": "Default"
+        }
+    },
+    "messages": {
+        "pin": "Pin Message",
+        "unpin": "Unpin Message",
+        "reply": "Reply",
+        "edit": "Edit",
+        "pinnedGoto": "Go to",
+        "pinnedUnpin": "Unpin",
+        "pinnedNone": "There are no pinned messages in this chat"
+    },
+    "friends": {
+        "copy_did": "Copy ID",
+        "block": "Block",
+        "blocked": "Blocked",
+        "blocked_users": "Blocked Users",
+        "unblock": "Unblock",
+        "all": "All",
+        "active": "Active",
+        "add": "Add",
+        "add_someone": "Add Someone",
+        "search_friends_placeholder": "Search friends",
+        "find_placeholder": "Find Username#xxxxxx ...",
+        "incoming_requests": "Incoming Requests",
+        "outgoing_requests": "Outgoing Requests",
+        "noOutgoing": "No outbound requests.",
+        "noIncoming": "No inbound requests.",
+        "noBlocked": "No users blocked."
+    },
+    "files": {
+        "file_plural": "Files",
+        "new_folder": "New Folder",
+        "upload": "Upload",
+        "browse": "Browse Files",
+        "add_files": "Drop files to upload here",
+        "dragging_file": "Dragging 1 file for upload",
+        "dragging_files": "Dragging {count} files for upload",
+        "unknown": "UNKNOWN",
+        "download": "Download",
+        "rename": "Rename",
+        "share": "Share",
+        "addFiles": "Add to Files",
+        "quickActions": "Quick Actions",
+        "sync": "Sync",
+        "giftSpace": "Gift Space",
+        "rentSpace": "Rent Space",
+        "createNode": "Create Node",
+        "freeSpace": "Free Space",
+        "totalSpace": "Total Space"
+    },
+    "payments": {
+        "send_coin": "Send Coin",
+        "amount": "Amount",
+        "from": "From",
+        "to": "To",
+        "note": "Note",
+        "date": "Date",
+        "create": "Create Payment Request",
+        "network": "Network: {network}",
+        "assetType": "Asset type: {type}",
+        "assetName": "Asset name: {name}",
+        "request": "Request",
+        "notePlaceholder": "Add a note...",
+        "recipients": "Recipients:",
+        "selectRecipients": "Select recipient(s)",
+        "newPayment": "New Payment",
+        "paymentID": "Payment ID",
+        "balance": "Balance",
+        "recentTransaction": "Recent Transactions",
+        "loadMore": "Load More",
+        "coinIn": "Coin In",
+        "coinOut": "Coin Out"
+    },
+    "controls": {
+        "go_back": "Go Back"
+    },
+    "pages": {
+        "auth": {
+            "changeUser": "Change User",
+            "relay": "Configure Relay",
+            "unlock": {
+                "enter_pin": "Enter your pin to unlock.",
+                "choose_pin": "Choose a new pin.",
+                "scramble_pin": "Scramble keypad?",
+                "stayUnlocked": "Stay unlocked?"
+            },
+            "recovery": {
+                "title": "Backup your seed!",
+                "save_warning": "Please ensure you write down this message with all words recorded in the order they appear. It can be helpful to write down the numbers along with the words.",
+                "download": "Download Backup",
+                "next_step": "Saved It, Next Step"
+            },
+            "new_account": {
+                "title": "Make It Yours",
+                "subtext": "Let's set up your new account. Please choose a username below.",
+                "enter_username": "Enter a username . . .",
+                "set_status": "Set status message . . .",
+                "create": "Create Account",
+                "setUsername": "Select a username to proceed."
+            },
+            "create": {
+                "title": "Account Creation",
+                "description": "Let's get started! Begin by either creating a new account, or if you already have one we can import your existing account instead.",
+                "new": "Create New Account",
+                "import": "Import Account",
+                "profile": "Create new profile"
+            }
+        }
+    },
+    "user": {
+        "status": {
+            "label": "Status",
+            "online": "Online",
+            "offline": "Offline",
+            "idle": "Idle",
+            "do_not_disturb": "Do Not Disturb"
+        },
+        "status_message": "Status message",
+        "set_status_message": "Set a status message",
+        "set_status": "Set status appearance"
+    },
+    "settings": {
+        "about": {
+            "name": "About",
+            "version": "Version",
+            "checkUpdate": "Check for Update",
+            "website": "Website",
+            "websiteDescription": "Open a new browser window to our official website.",
+            "openWebsite": "Open Website",
+            "openSource": "Open Source Code",
+            "openSourceDescription": "Open a new browser window to our open source repository.",
+            "madeIn": "Made In",
+            "madeInDescription": "Our team is all over the world with different backgrounds and different day-to-day lives all working on a common goal to build this app.",
+            "devMode": "Dev Mode",
+            "devModeDescription": "Click 10 times to enable developer settings."
+        },
+        "inventory": {
+            "name": "Inventory",
+            "frame": "Frame",
+            "frames": "Frames",
+            "equippedItems": "Equipped Items",
+            "overlays": "Profile Overlays"
+        },
+        "customization": {
+            "name": "Customization"
+        },
+        "extensions": {
+            "name": "Extensions",
+            "installed": "Installed",
+            "explore": "Explore",
+            "settings": "Settings",
+            "none": "No extensions installed."
+        },
+        "profile": {
+            "name": "Profile",
+            "log_out": {
+                "label": "Log Out",
+                "description": "Log out of the current account and return to the unlock page."
+            },
+            "change_profile_photo": "Change profile photo",
+            "reveal_phrase": {
+                "label": "Reveal recovery phrase",
+                "description": "Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.",
+                "show": "Reveal Phrase",
+                "hide": "Hide Phrase"
+            },
+            "should_store": "Store recovery seed on account (disable for increased security, irreversible)",
+            "update": "Profile Updated!",
+            "copy_id": "Copy ID",
+            "copy_did": "Copy DID",
+            "integration": {
+                "title": "Accounts",
+                "description": "Share more ways for others to connect and contribute to you. Link your accounts below and they will display on your profile card.",
+                "editIntegration": "Edit Integration",
+                "addNew": "Add New"
+            },
+            "friended": "You're friends",
+            "addFriend": "Add Friend",
+            "sendPayment": "Send BTC",
+            "note": "Note",
+            "setNote": "Set a note . . .",
+            "deleteBanner": "Delete Banner Picture",
+            "deleteProfile": "Delete Profile Picture",
+            "address": "Address"
+        },
+        "calling": {
+            "minimalCallingAlerts": "Minimal Calling Alerts",
+            "minimalCallingAlertsDescription": "Instead of displaying a full screen alert when a call is incoming, with this mode enabled the call dialog will show within the sidebar."
+        },
+        "notifications": {
+            "name": "Notifications",
+            "enabled": "Enabled",
+            "enabledDescription": "Enable notifications for incoming calls, messages, and more.",
+            "friends": "Friends",
+            "messages": "Messages",
+            "friendsDescription": "Enable notifications for friend requests.",
+            "messagesDescription": "Enable notifications for incoming messages.",
+            "settingsDescription": "Enable notifications for updates and important alerts."
+        },
+        "accessibility": {
+            "name": "Accessibility",
+            "openDyslexic": "Open Dyslexic",
+            "openDyslexicDescription": "Open Dyslexic may help some users who suffer from dyslexia, it's a custom font you can enable."
+        },
+        "audio": {
+            "name": "Audio & Video",
+            "outputDevice": "Output Device",
+            "outputDeviceDescription": "Select your output device, this is usually your headphones or speakers.",
+            "inputDevice": "Input Device",
+            "inputDeviceDescription": "Select your input device, this is usually your microphone.",
+            "test": "Test",
+            "videoDevice": "Video Device",
+            "videoDeviceDescription": "Select your video device, this is usually your webcam.",
+            "echoCancellation": "Echo Cancellation",
+            "echoCancellationDescription": "Helps minimize feedback from your headphones/speakers into your microphone.",
+            "interfaceSounds": "Interface Sounds",
+            "interfaceSoundsDescription": "Play sounds when interacting with UI elements.",
+            "controlSounds": "Control Sounds",
+            "controlSoundsDescription": "When enabled you will hear a sound when turning controls on or off, such as muting and unmuting.",
+            "messageSounds": "Message Sounds",
+            "messageSoundsDescription": "Play a notification sound when a new message is received.",
+            "callTimer": "Call Timer",
+            "callTimerDescription": "Show the duration of an active call in the UI.",
+            "testVideo": "Test Video"
+        },
+        "keybinds": {
+            "name": "Keybinds",
+            "banner": "Global keybinds are disabled while on this page.",
+            "recordKeybind": "Record Keybind",
+            "recordedKeys": "Recorded Keys",
+            "instructions": "Press any combination of keys while on this page, then select the action you'd like to bind to this keyboard combo. Custom shortcuts will override default shortcuts. Not all actions have default shortcuts.",
+            "pressAKey": "Press Key",
+            "action": "Action",
+            "revert": "Revert",
+            "revert_plural": "Revert Keybinds",
+            "revertDescription": "Revert keybinds to default."
+        },
+        "realms": {
+            "name": "Realms",
+            "description1": "Realms let you choose how Uplink works behind the scenes.",
+            "description2": "You can join or change a realm at any time but please be aware that you must be on the same realm as someone to have a direct message conversation with them. If you want to meet up with lots of people from all different realms you can create a community!"
+        },
+        "developer": {
+            "name": "Developer",
+            "disable": "Disable devmode.",
+            "disableButton": "Exit Devmode",
+            "loadMock": "Load Mock",
+            "loadMockDescription": "Loads mock data into state.",
+            "loadMockButton": "Load Mock Data",
+            "clearState": "Clear State",
+            "clearStateDescription": "Reset the application state.",
+            "clearStateButton": "Clear State",
+            "testVoice": "Test Voice",
+            "testVoiceDescription": "Dev Voice",
+            "testVoiceButton": "Voice Dev",
+            "loggerLevel": "Logger Level",
+            "loggerLevelDescription": "Set the logging level",
+            "browserNotSupportedError": "Not supported on this browser.",
+            "voice": {
+                "channel": "Channel",
+                "setChannel": "Set Channel",
+                "localStream": "Local Stream",
+                "remoteStream": "Remote Stream"
+            }
+        },
+        "messages": {
+            "name": "Messages",
+            "convertToEmoji": "Convert to Emoji",
+            "convertToEmojiDescription": "Convert smileys and other symbols like <3 to ❤️",
+            "markdownSupport": "Markdown Support",
+            "markdownSupportDescription": "Enabled the rendering of Markdown within messaging.",
+            "spamRejection": "Spam/Bot Detection & Rejection",
+            "spamRejectionDescription": "Enabled the automatic rejection of messages from known spam bots or scammers. This uses a public ledger that we reserve privately for 30 days to prevent bots from detecting they have been blocked too quickly.",
+            "compactMessaging": "Compact Messages",
+            "compactMessagingDescription": "Compact messages to group messages closer together and display more on screen.",
+            "quick": "Quick Chat",
+            "quickDescription": "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation.",
+            "showStatusWidgets": "Widget Panel",
+            "showStatusWidgetsDescription": "Enable the widget panel, which displays system information and other helpful data."
+        },
+        "preferences": {
+            "appLanguage": "App Language",
+            "appLanguageDescription": "Change language.",
+            "font": "Font",
+            "fontDescription": "Change the font used in the app.",
+            "emojiFont": "Emoji",
+            "emojiFontDescription": "Change the emoji font used in the app.",
+            "fontScaling": "Font Scaling",
+            "fontScalingDescription": "Scale the font size up or down to your liking.",
+            "theme": "Theme",
+            "themeDescription": "Change the theme of the app.",
+            "primaryColor": "Primary Color",
+            "primaryColorDescription": "Change the primary color of the app.",
+            "pick": "Pick",
+            "customCss": "Custom CSS",
+            "customCssDescription": "Add additional custom CSS to the application.",
+            "identiconStyle": "Default Profile Picture Style",
+            "identiconStyleDescription": "Change the style of the randomly generated profile pictures used when users haven't uploaded a profile picture yet."
+        },
+        "licenses": {
+            "name": "Licenses",
+            "description": "Both code and icons are under the MIT license.",
+            "view": "View License"
+        },
+        "gamepad": {
+            "name": "Gamepad",
+            "enabled": "Gamepad Enabled",
+            "enabledDescription": "Enable gamepad support for navigating the application with controllers.",
+            "deadzone": "Joystick Deadzone ({number})",
+            "pointer": "Pointer Sensitivity ({number})",
+            "button": "Button {index} {name}",
+            "unknownButton": "Unknown Button",
+            "testDescription": "Everything working? Test it out below."
+        },
+        "network": {
+            "name": "Network",
+            "cdn": {
+                "namePlaceholder": "Name ...",
+                "addressPlaceholder": "Address ..."
+            },
+            "relay": {
+                "title": "Relay config",
+                "name": "Relay name",
+                "address": "Address",
+                "name_exist": "Name already exists",
+                "invalid_address": "Invalid address"
+            }
+        }
+    }
+}

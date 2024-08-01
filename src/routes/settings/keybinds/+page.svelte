@@ -3,14 +3,12 @@
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Button, Icon, Label, Select, Spacer, Text } from "$lib/elements"
     import { Appearance, KeybindAction, KeybindState, Shape, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { SettingSection } from "$lib/layouts"
     import { defaultKeybinds, SettingsStore, type ISettingsState } from "$lib/state"
     import type { Keybind } from "$lib/types"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
-
-    initLocale()
 
     let settings: ISettingsState = get(SettingsStore.state)
     let keybinds: Keybind[] = defaultKeybinds
@@ -92,7 +90,7 @@
     <Text hook="text-keybind-instructions">{$_("settings.keybinds.instructions")}</Text>
     <div data-cy="section-new-keybind" class="new-keybind">
         <div class="recorded-keys">
-            <Label hook="label-keybind-recorded-keys" text="Recorded Keys"></Label>
+            <Label hook="label-keybind-recorded-keys" text={$_("settings.keybinds.recordedKeys")}></Label>
             <div class="binding">
                 {#if keyboardRecording.key}
                     {#each keyboardRecording.modifiers as modifier}

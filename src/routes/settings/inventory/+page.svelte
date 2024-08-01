@@ -2,14 +2,12 @@
     import InventoryItem from "$lib/components/inventory/InventoryItem.svelte"
     import Label from "$lib/elements/Label.svelte"
     import { InventoryKind } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
     import defaultManifest from "$lib/cdn.json"
-
-    initLocale()
 
     const tempCDN = "https://cdn.deepspaceshipping.co"
 
@@ -20,10 +18,10 @@
 
 <div id="page">
     <div class="equipped">
-        <Label hook="label-inventory-equipped-items" text="Equipped Items" />
+        <Label hook="label-inventory-equipped-items" text={$_("settings.inventory.equippedItems")} />
         <div class="items">
             <div class="item">
-                <Label hook="label-inventory-frame" text="Frame" />
+                <Label hook="label-inventory-frame" text={$_("settings.inventory.frame")} />
                 <InventoryItem
                     hook="inventory-profile-picture-frame"
                     equipped={true}
@@ -40,7 +38,7 @@
             </div>
         </div>
     </div>
-    <Label hook="label-inventory-frames" text="Frames" />
+    <Label hook="label-inventory-frames" text={$_("settings.inventory.frames")} />
     <div class="frames">
         {#each Object.entries(frames) as [category, frameList]}
             <div class="frame-section">
@@ -62,7 +60,7 @@
             </div>
         {/each}
     </div>
-    <Label hook="label-profile-overlays" text="Profile Overlays" />
+    <Label hook="label-profile-overlays" text={$_("settings.inventory.overlays")} />
 </div>
 
 <style lang="scss">

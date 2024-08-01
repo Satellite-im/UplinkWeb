@@ -3,10 +3,11 @@
     import Text from "$lib/elements/Text.svelte"
     import { CommunityChannelKind, Shape } from "$lib/enums"
     import type { CommunityChannel } from "$lib/types"
+    import { _ } from "svelte-i18n"
 
     export let channel: CommunityChannel = {
         icon: Shape.Hashtag,
-        name: "Default",
+        name: $_("community.channel.default"),
         kind: CommunityChannelKind.Text,
     }
 </script>

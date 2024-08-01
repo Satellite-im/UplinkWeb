@@ -2,7 +2,7 @@
     import Text from "$lib/elements/Text.svelte"
     import { FileEmbed, ImageEmbed, STLViewer, ProfilePicture } from "$lib/components"
     import { Appearance, MessageAttachmentKind, Shape, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { OperationState, type Attachment, type Message } from "$lib/types"
     import { _ } from "svelte-i18n"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
@@ -14,7 +14,6 @@
     import Label from "$lib/elements/Label.svelte"
     import Button from "$lib/elements/Button.svelte"
 
-    initLocale()
     export let chatID: string
     export let messages: Message[]
     export let top: number | string = "var(--padding)"

@@ -1,13 +1,11 @@
 <script lang="ts">
     import { Switch } from "$lib/elements"
-    import { initLocale } from "$lib/lang"
+
     import { SettingSection } from "$lib/layouts"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
-
-    initLocale()
 
     let settings: ISettingsState = get(SettingsStore.state)
     SettingsStore.state.subscribe((s: ISettingsState) => {
@@ -40,7 +38,7 @@
                 SettingsStore.update({ ...settings, notifications: { ...settings.notifications, messages: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection hook="section-notifications-settings" name={$_("settings.notifications.settings")} description={$_("settings.notifications.settingsDescription")}>
+    <SettingSection hook="section-notifications-settings" name={$_("generic.settings")} description={$_("settings.notifications.settingsDescription")}>
         <Switch
             hook="switch-notifications-settings"
             on={settings ? settings.notifications.settings : true}
