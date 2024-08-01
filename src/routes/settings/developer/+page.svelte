@@ -61,7 +61,7 @@
             }}>{$_("settings.developer.clearStateButton")}</Button>
     </SettingSection>
 
-    <SettingSection hook="section-test-voice" name={$_("settings.developer.testVoice")} description={$_("settings.developer.testVoiceDesciption")}>
+    <SettingSection hook="section-test-voice" name={$_("settings.developer.testVoice")} description={$_("settings.developer.testVoiceDescription")}>
         <Button hook="button-test-voice" appearance={Appearance.Alt} on:click={_ => goto("/developer/debug/voice")}>{$_("settings.developer.testVoiceButton")}</Button>
     </SettingSection>
 

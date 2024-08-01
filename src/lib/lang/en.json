@@ -312,9 +312,9 @@
         "audio": {
             "name": "Audio & Video",
             "outputDevice": "Output Device",
-            "outputDeviceDescription": "Select your input device, this is usually your microphone.",
+            "outputDeviceDescription": "Select your output device, this is usually your headphones or speakers.",
             "inputDevice": "Input Device",
-            "inputDeviceDescription": "Select your output device, this is usually your headphones or speakers.",
+            "inputDeviceDescription": "Select your input device, this is usually your microphone.",
             "test": "Test",
             "videoDevice": "Video Device",
             "videoDeviceDescription": "Select your video device, this is usually your webcam.",
