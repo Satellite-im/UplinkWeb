@@ -219,26 +219,20 @@
         await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
     }
 
-    let receivingCall: boolean = false
     $: activeCallInProgress = false
 
     onMount(() => {
         setInterval(() => {
-            if (receivingCall === false && VoiceRTCInstance.isReceivingCall === true) {
-                receivingCall = VoiceRTCInstance.isReceivingCall
-                VoiceRTCInstance.isReceivingCall = false
-            }
-            if (get(Store.state.activeCall)) {
+            if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
             } else {
                 activeCallInProgress = false
             }
-        }, 1000)
+        }, 500)
     })
 
     async function end_call() {
         activeCallInProgress = false
-        receivingCall = false
         Store.endCall()
     }
 
@@ -436,7 +430,7 @@
                     disabled={$activeChat.users.length === 0}
                     on:click={async _ => {
                         Store.setActiveCall($activeChat)
-                        await VoiceRTCInstance.makeVideoCall($activeChat.users[1], $activeChat.id)
+                        await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
                         activeCallInProgress = true
                     }}>
                     <Icon icon={Shape.VideoCamera} />

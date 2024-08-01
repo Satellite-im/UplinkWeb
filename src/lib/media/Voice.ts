@@ -1,6 +1,7 @@
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
+import { t } from "svelte-i18n"
 import { get } from "svelte/store"
 
 export enum VoiceRTCMessageType {
@@ -21,38 +22,33 @@ type VoiceRTCOptions = {
 export class VoiceRTC {
     channel: string
     localPeer: Peer | null = null
-    remotePeer: Peer | null = null
     localStream: MediaStream | null = null
-    remoteVideoElement: any
-    localVideoCurrentSrc: any
+    remoteStream: MediaStream | null = null
+    remoteVideoElement: HTMLVideoElement | null = null
+    localVideoCurrentSrc: HTMLVideoElement | null = null
+    remotePeerId: string | null = null
+    activeCall: MediaConnection | null = null
     callOptions: VoiceRTCOptions
-    isReceivingCall: boolean = false
-    acceptedIncomingCall: boolean = false
+    isReceivingCall = false
+    makingCall = false
+    acceptedIncomingCall = false
     dataConnection: DataConnection | null = null
-    private _incomingCall: MediaConnection | null = null
-
-    setChannel(channel: string) {
-        this.channel = channel
-    }
 
     constructor(channel: string, options: VoiceRTCOptions) {
         log.info("Initializing VoiceRTC")
-        this.callOptions = {
-            audio: options.audio,
-            video: {
-                enabled: options.video.enabled,
-                selfie: options.video.selfie,
-            },
-        }
         this.channel = channel
+        this.callOptions = { ...options }
         this.setupPeerEvents()
+    }
+
+    setChannel(channel: string) {
+        this.channel = channel
     }
 
     private async setupPeerEvents() {
         let userId = get(Store.state.user).key
         while (userId === "0x0") {
             userId = get(Store.state.user).key
-            console.log("User ID: ", userId)
             await new Promise(resolve => setTimeout(resolve, 500))
         }
 
@@ -60,6 +56,7 @@ export class VoiceRTC {
         if (this.localPeer) {
             log.debug("Destroying existing peer")
             this.localPeer.destroy()
+            this.localPeer = null
         }
 
         try {
@@ -67,60 +64,45 @@ export class VoiceRTC {
         } catch (error) {
             log.error(`Error creating Peer: ${error}`)
             this.localPeer?.destroy()
+            this.localPeer = null
             this.localPeer = new Peer(peerId)
         }
 
         this.localPeer!.on("open", id => {
-            log.debug("My peer ID is: " + id)
+            log.debug(`My peer ID is: ${id}`)
         })
 
-        this.localPeer!.on("connection", conn => {
-            conn.on("open", () => {
-                console.log("Connection Opened!")
-            })
-
-            conn.on("data", data => {
-                this.dataConnection = conn
-                if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
-                    console.log("Receving message to end call")
-                    this.isReceivingCall = false
-                    this.endCall()
-                } else if (data === VoiceRTCMessageType.Calling) {
-                    // this.dataConnection.on("data", data => {
-                    //     if (data === VoiceRTCMessageType.IncomingCall) {
-                    //         this.isReceivingCall = true
-                    //     }
-                    // })
-                } else {
-                    this.channel = data as string
-                }
-            })
-        })
-
+        this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
         this.localPeer!.on("call", async call => {
-            log.info(`Incoming call from: ${call.peer}`)
-            this.isReceivingCall = true
-            this._incomingCall = call
-            this.handleIncomingCall(call)
+            this.activeCall = call
+            if (!this.makingCall) {
+                this.isReceivingCall = true
+            }
+            console.log("Incoming call", this.isReceivingCall)
         })
-
-        this.localPeer!.on("error", this.error)
+        this.localPeer!.on("error", this.handleError.bind(this))
     }
 
-    private handleIncomingCall(call: MediaConnection) {
-        call.on("stream", remoteStream => {
-            if (this.remoteVideoElement) {
-                this.remoteVideoElement.srcObject = remoteStream
-                this.remoteVideoElement.play()
+    private handlePeerConnection(conn: DataConnection) {
+        this.dataConnection = conn
+        conn.on("open", () => {
+            log.debug("Connection between peers established")
+        })
+
+        conn.on("data", data => {
+            console.log("Data received from user that received a call: ", data)
+            switch (data) {
+                case VoiceRTCMessageType.EndingCall:
+                    this.endCall()
+                    break
+                case VoiceRTCMessageType.Calling:
+                    this.isReceivingCall = true
+                    break
+                case VoiceRTCMessageType.None:
+                    break
+                default:
+                    this.channel = data as string
             }
-        })
-
-        call.on("close", () => {
-            console.log("Call closed by remote peer")
-        })
-
-        call.on("error", err => {
-            console.error("Call error:", err)
         })
     }
 
@@ -141,175 +123,173 @@ export class VoiceRTC {
     setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
         this.remoteVideoElement = remoteVideoElement
         this.localVideoCurrentSrc = localVideoCurrentSrc
-        if (this.localVideoCurrentSrc) {
-            console.log("Setting local video element")
-            this.localVideoCurrentSrc.srcObject = this.localStream
-            this.localVideoCurrentSrc.play()
-        }
     }
 
     public async acceptIncomingCall() {
         this.acceptedIncomingCall = true
     }
 
-    public async acceptCall() {
-        if (this._incomingCall) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        aspectRatio: 16 / 9,
-                        facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                        frameRate: 30,
-                        height: { ideal: 1080 },
-                        width: { ideal: 1920 },
-                    },
-                    audio: {
-                        autoGainControl: false,
-                        channelCount: 2,
-                        echoCancellation: false,
-                        noiseSuppression: false,
-                        sampleRate: 48000,
-                        sampleSize: 16,
-                    },
-                })
+    private async improveAudioQuality() {
+        const audioContext = new window.AudioContext()
+        const source = audioContext.createMediaStreamSource(this.localStream!)
+        const destination = audioContext.createMediaStreamDestination()
 
-                this.localStream = stream
+        const gainNode = audioContext.createGain()
+        const echoCancellation = audioContext.createBiquadFilter()
+        const noiseSuppression = audioContext.createBiquadFilter()
 
-                this._incomingCall.answer(this.localStream)
+        echoCancellation.type = "lowshelf"
+        echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
+        echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
 
-                this.localStream?.getAudioTracks().forEach(track => {
-                    track.enabled = false
-                })
+        noiseSuppression.type = "highpass"
+        noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
+        noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
 
-                this._incomingCall.on("stream", remoteStream => {
-                    console.log("Remote stream received")
-                    if (this.remoteVideoElement) {
-                        this.remoteVideoElement.srcObject = remoteStream
-                        this.remoteVideoElement.play()
-                    }
+        source.connect(echoCancellation)
+        echoCancellation.connect(noiseSuppression)
+        noiseSuppression.connect(gainNode)
+        gainNode.connect(destination)
 
-                    if (this.localVideoCurrentSrc) {
-                        console.log("Setting local video element")
-                        this.localVideoCurrentSrc.srcObject = this.localStream
-                        this.localVideoCurrentSrc.play()
-                    }
-                })
-
-                this._incomingCall.on("close", () => {})
-                this._incomingCall.on("error", err => {
-                    console.error("Call error:", err)
-                })
-
-                this._incomingCall = null
-            } catch (error) {
-                console.error("Error accepting call:", error)
-            }
-        } else {
-            console.log("No incoming call to accept")
-        }
+        const processedStream = new MediaStream()
+        processedStream.addTrack(destination.stream.getAudioTracks()[0])
+        processedStream.addTrack(this.localStream!.getVideoTracks()[0])
+        this.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
     }
 
-    async makeVideoCall(remotePeerId: string, chatID: string) {
-        try {
-            console.log("Making call to: ", remotePeerId)
-            this.channel = chatID
-            this.dataConnection?.send(VoiceRTCMessageType.Calling)
-            this.dataConnection?.send(chatID)
+    public async acceptCall() {
+        this.localStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                aspectRatio: 16 / 9,
+                facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                frameRate: 30,
+                height: { ideal: 1080 },
+                width: { ideal: 1920 },
+            },
+            audio: {
+                echoCancellation: { ideal: true },
+                noiseSuppression: { ideal: true },
+                autoGainControl: { ideal: true },
+                sampleRate: 48000,
+                sampleSize: 16,
+                channelCount: 2,
+            },
+        })
 
-            const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
-            console.log("Remote user Peer: ", remotePeerIdEdited)
-
-            this.dataConnection = this.localPeer!.connect(remotePeerIdEdited)
-
-            this.dataConnection.on("data", data => {
-                if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
-                    this.endCall()
-                }
-            })
-
-            this.dataConnection.on("open", () => {
-                this.dataConnection?.send(chatID)
-            })
-
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    aspectRatio: 16 / 9,
-                    facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                    frameRate: 30,
-                    height: { ideal: 1080 },
-                    width: { ideal: 1920 },
-                },
-                audio: {
-                    autoGainControl: false,
-                    channelCount: 2,
-                    echoCancellation: false,
-                    noiseSuppression: false,
-                    sampleRate: 48000,
-                    sampleSize: 16,
-                },
-            })
-
-            const call = this.localPeer!.call(remotePeerIdEdited, stream)
-
-            this.localStream = stream
-
-            this.localStream?.getAudioTracks().forEach(track => {
-                track.enabled = false
-            })
-
-            call.on("stream", remoteStream => {
-                if (this.remoteVideoElement) {
-                    console.log("Setting remote video element")
-                    this.remoteVideoElement.srcObject = remoteStream
-                    this.remoteVideoElement.play()
-                }
-
-                if (this.localVideoCurrentSrc) {
-                    console.log("Setting local video element")
-                    this.localVideoCurrentSrc.srcObject = this.localStream
-                    this.localVideoCurrentSrc.play()
-                }
-            })
-
-            call.on("close", () => {
-                console.log("Call closed by remote peer")
-            })
-            call.on("error", err => {
-                console.error("Call error:", err)
-            })
-        } catch (error) {
-            console.error("Error accessing media devices:", error)
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = this.localStream
+            this.localVideoCurrentSrc.play()
         }
+
+        await this.improveAudioQuality()
+
+        this.activeCall!.answer(this.localStream)
+
+        this.activeCall!.on("stream", remoteStream => {
+            if (this.remoteVideoElement) {
+                this.remoteVideoElement.srcObject = remoteStream
+                this.remoteVideoElement.play()
+            }
+        })
+    }
+
+    public async makeVideoCall() {
+        this.dataConnection = this.localPeer!.connect(this.remotePeerId!)
+
+        this.dataConnection.send(VoiceRTCMessageType.Calling)
+        this.dataConnection.send(this.channel)
+
+        this.dataConnection.on("data", data => {
+            console.log("Data received from user that made call: ", data)
+            switch (data) {
+                case VoiceRTCMessageType.EndingCall:
+                    this.endCall()
+                    break
+                case VoiceRTCMessageType.Calling:
+                    this.isReceivingCall = true
+                    break
+                case VoiceRTCMessageType.None:
+                    break
+                default:
+                    this.channel = data as string
+            }
+        })
+
+        this.makingCall = true
+
+        this.localStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                aspectRatio: 16 / 9,
+                facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                frameRate: 30,
+                height: { ideal: 1080 },
+                width: { ideal: 1920 },
+            },
+            audio: {
+                echoCancellation: { ideal: true },
+                noiseSuppression: { ideal: true },
+                autoGainControl: { ideal: true },
+                sampleRate: 48000,
+                sampleSize: 16,
+                channelCount: 2,
+            },
+        })
+
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = this.localStream
+            this.localVideoCurrentSrc.play()
+        }
+
+        await this.improveAudioQuality()
+
+        const call = this.localPeer!.call(this.remotePeerId!, this.localStream)
+
+        call.on("stream", remoteStream => {
+            if (this.remoteVideoElement) {
+                this.remoteVideoElement.srcObject = remoteStream
+                this.remoteVideoElement.play()
+            }
+        })
+    }
+
+    async startToMakeACall(remotePeerId: string, chatID: string) {
+        this.channel = chatID
+        const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
+        this.remotePeerId = remotePeerIdEdited
+        this.makingCall = true
     }
 
     endCall() {
-        this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
-        if (this.localStream) {
-            this.localStream.getTracks().forEach(track => {
-                track.stop()
-            })
-            this.localStream = null
-        }
+        this.dataConnection!.send(VoiceRTCMessageType.EndingCall)
+        this.localStream?.getTracks().forEach(track => track.stop())
+        this.localStream = null
+        this.makingCall = false
+        this.acceptedIncomingCall = false
+        this.isReceivingCall = false
 
-        if (this._incomingCall) {
-            this._incomingCall.close()
-            this._incomingCall = null
-        }
+        this.remoteStream?.getTracks().forEach(track => track.stop())
+        this.remoteStream = null
+
+        this.activeCall?.close()
+        this.activeCall = null
 
         if (this.remoteVideoElement) {
+            this.remoteVideoElement.pause()
             this.remoteVideoElement.srcObject = null
+            this.remoteVideoElement = null
         }
         if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.pause()
             this.localVideoCurrentSrc.srcObject = null
+            this.localVideoCurrentSrc = null
         }
+
         log.info("Call ended and resources cleaned up.")
-        this.dataConnection?.send(VoiceRTCMessageType.None)
-        Store.endCall()
         this.setupPeerEvents()
     }
 
-    error(error: Error) {
-        console.error("Error:", error)
+    handleError(error: Error) {
+        log.error(`Error: ${error}`)
     }
 }
 
