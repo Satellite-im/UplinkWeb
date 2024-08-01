@@ -1,9 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte"
     import { Appearance, Shape } from "$lib/enums"
-
     import { Button, Icon, Spacer, Loader, Switch, Label } from "$lib/elements"
-
     import { _ } from "svelte-i18n"
     import { AuthStore } from "$lib/state/auth"
 
@@ -60,19 +58,26 @@
     function onSubmit(pin: string) {
         dispatch("submit", pin)
     }
+
     // Placeholder for submit action
     const submitPinValue = () => {
         onSubmit(pinValue)
         clearPinValue()
     }
 
-    function handleKeyDown(event: { key: any }) {
+    function handleKeyDown(event: KeyboardEvent) {
         const key = event.key
         // Check if the key is a digit
-        if (!isNaN(key) && key !== " ") {
+        if (!isNaN(Number(key)) && key !== " ") {
             updatePinValue(key)
+        } else if (key === 'Enter') {
+            event.preventDefault()
+        // Check if the pin value meets the minimum length requirement
+        if (pinValue.length >= min) {
+            submitPinValue()
         }
     }
+}
 
     onMount(() => {
         window.addEventListener("keydown", handleKeyDown)

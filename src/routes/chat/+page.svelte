@@ -62,7 +62,7 @@
     $: users = Store.getUsersLookup($activeChat.users)
     $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
-    $: pinned = getPinned(conversation)
+    $: pinned = getPinned($conversation)
     const timeAgo = new TimeAgo("en-US")
 
     function toggleSidebar() {
@@ -193,20 +193,20 @@
     async function edit_message(message: string, text: string) {
         editing_message = undefined
         editing_text = undefined
-        await RaygunStoreInstance.edit(conversation!.id, message, text.split("\n"))
+        await RaygunStoreInstance.edit($conversation!.id, message, text.split("\n"))
     }
 
     async function delete_message(message: string) {
-        await RaygunStoreInstance.delete(conversation!.id, message)
+        await RaygunStoreInstance.delete($conversation!.id, message)
     }
 
     async function reactTo(message: string, emoji: string, toggle: boolean) {
         let add = toggle ? !ConversationStore.hasReaction($activeChat, message, emoji) : true
-        await RaygunStoreInstance.react(conversation!.id, message, add ? 0 : 1, emoji)
+        await RaygunStoreInstance.react($conversation!.id, message, add ? 0 : 1, emoji)
     }
 
     async function pin_message(message: string, pin: boolean) {
-        await RaygunStoreInstance.pin(conversation!.id, message, pin)
+        await RaygunStoreInstance.pin($conversation!.id, message, pin)
     }
 
     async function copy(txt: string) {
@@ -214,7 +214,7 @@
     }
 
     async function download_attachment(message: string, attachment: Attachment) {
-        await RaygunStoreInstance.downloadAttachment(conversation!.id, message, attachment.name, attachment.size)
+        await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
 
     let receivingCall: boolean = false
@@ -503,7 +503,7 @@
             {#if $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
-                    {#each conversation.messages as group}
+                    {#each $conversation.messages as group}
                         <StoreResolver value={group.details.origin} resolver={v => Store.getUser(v)} let:resolved>
                             <MessageGroup
                                 profilePictureRequirements={{
