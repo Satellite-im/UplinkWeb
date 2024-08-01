@@ -30,7 +30,9 @@
         "hold": "Hold for {number} seconds...",
         "underConstruction": "Under Construction",
         "faves": "Faves",
-        "initializing": "Initializing..."
+        "initializing": "Initializing...",
+        "platform": "Platform",
+        "address": "Address"
     },
     "market": {
         "market": "Marketplace",
