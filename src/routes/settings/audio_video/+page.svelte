@@ -184,9 +184,9 @@
     <SettingSection hook="section-echo-cancellation" name={$_("settings.audio.echoCancellation")} description={$_("settings.audio.echoCancellationDescription")}>
         <Switch
             hook="switch-echo-cancellation"
-            on={settings ? settings.audio.echoCancellation : true}
+            on={settings ? settings.calling.echoCancellation : true}
             on:toggle={on => {
-                SettingsStore.update({ ...settings, audio: { ...settings.audio, echoCancellation: on.detail } })
+                SettingsStore.update({ ...settings, calling: { ...settings.calling, echoCancellation: on.detail } })
             }} />
     </SettingSection>
     <SettingSection hook="section-interface-sounds" name={$_("settings.audio.interfaceSounds")} description={$_("settings.audio.interfaceSoundsDescription")}>
