@@ -7,12 +7,13 @@ import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
 import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
 import { Store } from "$lib/state/Store"
-import { MessageDirection, Status } from "$lib/enums"
+import { MessageDirection, Route, Status } from "$lib/enums"
 import { parseJSValue } from "./EnumParser"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { SettingsStore } from "$lib/state"
 import { Sounds } from "$lib/components/utils/SoundHandler"
 import { MAX_RETRY_COUNT, RETRY_DELAY } from "$lib/config"
+import { goto } from "$app/navigation"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -70,9 +71,19 @@ class MultipassStore {
                             await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
                         }
                         if (incoming) {
-                            Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                            Store.addToastNotification(
+                                new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2, undefined, undefined, () => {
+                                    goto(Route.Friends, { state: { tab: "active" } })
+                                }),
+                                Sounds.Notification
+                            )
                         } else {
-                            Store.addToastNotification(new ToastMessage("New friend request.", `You received a new friend request.`, 2), Sounds.Notification)
+                            Store.addToastNotification(
+                                new ToastMessage("New friend request.", `You received a new friend request.`, 2, undefined, undefined, () => {
+                                    goto(Route.Friends, { state: { tab: "active" } })
+                                }),
+                                Sounds.Notification
+                            )
                         }
                     }
                     await this.listIncomingFriendRequests()

@@ -18,8 +18,7 @@
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
-
-    // Initialize locale
+    import { page } from "$app/stores"
 
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
@@ -29,7 +28,14 @@
     $: outgoingRequests = Store.outboundRequests
     let isValidFriendDid: boolean = false
 
-    let tab: string = "all"
+    let tab: "all" | "active" | "blocked" = "all"
+
+    $: {
+        let state = $page.state as any
+        if (state.tab) {
+            tab = state.tab
+        }
+    }
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
