@@ -464,23 +464,28 @@
 
 {#if gui}
     {#if $controllerInfo !== null}
-        <Label text={$controllerInfo} />
+        <Label hook="label-gamepad-controller-info" text={$controllerInfo} />
     {/if}
     {#if $availableGamepads.length > 0}
         <Select options={$availableGamepads.map((gamepad, index) => ({ value: index.toString(), text: gamepad.id }))} on:change={handleControllerSelectChange} />
     {/if}
 
     <div id="mapping">
-        <label for="deadzone">{$_("settings.gamepad.deadzone", { values: { number: $deadzone } })}</label>
+        <label data-cy="label-gamepad-deadzone" for="deadzone">{$_("settings.gamepad.deadzone", { values: { number: $deadzone } })}</label>
         <RangeSelector min={0} max={3} bind:value={$deadzone} />
-        <label for="sensitivity">{$_("settings.gamepad.pointer", { values: { number: $pointerSensitivity } })}</label>
+        <label data-cy="label-gamepad-pointer" for="sensitivity">{$_("settings.gamepad.pointer", { values: { number: $pointerSensitivity } })}</label>
         <RangeSelector min={1} max={50} bind:value={$pointerSensitivity} />
     </div>
-    <div class="controller-mappings">
-        <div class="left-controls">
+    <div class="controller-mappings" data-cy="gamepad-mappings">
+        <div class="left-controls" data-cy="gamepad-mappings-left-controls">
             {#each [4, 7, 8, 12, 13, 14, 15, 10] as index}
-                <label for="button-{index}">{$_("settings.gamepad.button", { values: { index: index, name: $buttonMap[+index] } })}</label>
-                <Select options={Object.keys(actions).map(action => ({ value: actions[+action], text: actions[+action] }))} selected={$buttonMap[+index]} alt on:change={event => handleSelectChange(event, index.toString())} />
+                <label data-cy="label-gamepad-left-control-item" for="button-{index}">{$_("settings.gamepad.button", { values: { index: index, name: $buttonMap[+index] } })}</label>
+                <Select
+                    hook="selector-gamepad-left-control-item"
+                    options={Object.keys(actions).map(action => ({ value: actions[+action], text: actions[+action] }))}
+                    selected={$buttonMap[+index]}
+                    alt
+                    on:change={event => handleSelectChange(event, index.toString())} />
             {/each}
         </div>
         <div id="controller">
@@ -511,10 +516,15 @@
                 <img src={`/assets/controller/xbox/controller_off.svg`} id="bg" alt="controller off" />
             {/if}
         </div>
-        <div class="right-controls">
+        <div class="right-controls" data-cy="gamepad-mappings-right-controls">
             {#each [5, 6, 0, 1, 2, 3, 9, 11] as index}
-                <label for="button-{index}">{$_("settings.gamepad.button", { values: { index: index, name: $buttonMap[+index] } })}</label>
-                <Select options={Object.keys(actions).map(action => ({ value: actions[+action], text: actions[+action] }))} selected={$buttonMap[+index]} alt on:change={event => handleSelectChange(event, index.toString())} />
+                <label data-cy="label-gamepad-right-control-item" for="button-{index}">{$_("settings.gamepad.button", { values: { index: index, name: $buttonMap[+index] } })}</label>
+                <Select
+                    hook="selector-gamepad-right-control-item"
+                    options={Object.keys(actions).map(action => ({ value: actions[+action], text: actions[+action] }))}
+                    selected={$buttonMap[+index]}
+                    alt
+                    on:change={event => handleSelectChange(event, index.toString())} />
             {/each}
         </div>
     </div>
