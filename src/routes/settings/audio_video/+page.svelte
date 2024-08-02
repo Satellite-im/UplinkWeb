@@ -36,8 +36,8 @@
     Store.state.devices.input.subscribe(d => {
         selectedInput = d
     })
-    Store.state.devices.input.subscribe(d => {
-        selectedInput = d
+    Store.state.devices.video.subscribe(d => {
+        selectedVideoInput = d
     })
 
     let settings: ISettingsState = get(SettingsStore.state)
@@ -174,6 +174,7 @@
             options={videoInputOptions}
             alt
             on:change={v => {
+                console.log("Video input device:", v.detail)
                 Store.setVideoInputDevice(v.detail)
             }} />
     </SettingSection>

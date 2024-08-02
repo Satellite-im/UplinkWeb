@@ -1,17 +1,28 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
     import { Shape } from "$lib/enums"
+    import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
+    import { get } from "svelte/store"
 
     export let audioInput: string | undefined
     export let videoInput: string | undefined
 
     let video: HTMLVideoElement
 
+    Store.state.devices.video.subscribe(d => {
+        startVideoTest()
+    })
+
     async function startVideoTest() {
+        videoInput = get(Store.state.devices.video)
         const constraints = {
-            audio: { deviceId: audioInput },
-            video: { deviceId: videoInput },
+            audio: {
+                deviceId: audioInput ? { exact: audioInput } : undefined,
+            },
+            video: {
+                deviceId: videoInput ? { exact: videoInput } : undefined,
+            },
         }
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -20,6 +31,11 @@
         }
         try {
             const stream = await navigator.mediaDevices.getUserMedia(constraints)
+            navigator.mediaDevices.enumerateDevices().then(devices => {
+                devices.forEach(device => {
+                    console.log(`${device.kind}: ${device.label} id = ${device.deviceId}`)
+                })
+            })
             video.srcObject = stream
             video.play()
         } catch (err) {
