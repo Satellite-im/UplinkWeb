@@ -222,7 +222,7 @@
                 on:click={_ => {
                     updateCameraEnabled()
                 }}>
-                <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.EyeSlash} />
+                <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.VideoCameraSlash} />
             </Button>
             <Button
                 appearance={Appearance.Error}
