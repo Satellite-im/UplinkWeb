@@ -217,6 +217,14 @@
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
 
+    Store.state.activeCall.subscribe(call => {
+        if (call) {
+            activeCallInProgress = true
+        } else {
+            activeCallInProgress = false
+        }
+    })
+
     $: activeCallInProgress = false
 
     onMount(() => {
@@ -228,11 +236,6 @@
             }
         }, 500)
     })
-
-    async function end_call() {
-        activeCallInProgress = false
-        Store.endCall()
-    }
 
     function getPinned(conversation: ConversationMessages | undefined): MessageType[] {
         if (!conversation) return []
@@ -486,11 +489,7 @@
             </svelte:fragment>
         </Topbar>
         {#if activeCallInProgress}
-            <CallScreen
-                chat={$activeChat}
-                on:onendcall={() => {
-                    end_call()
-                }} />
+            <CallScreen chat={$activeChat} />
         {/if}
 
         <Conversation>

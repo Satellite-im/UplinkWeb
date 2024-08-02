@@ -52,7 +52,6 @@ export class VoiceRTC {
             userId = get(Store.state.user).key
             await new Promise(resolve => setTimeout(resolve, 500))
         }
-
         const peerId = userId.replace("did:key:", "")
         if (this.localPeer) {
             log.debug("Destroying existing peer")
@@ -159,38 +158,9 @@ export class VoiceRTC {
     }
 
     public async acceptCall() {
-        let videoInputDevice = get(Store.state.devices.video)
-        let audioInputDevice = get(Store.state.devices.input)
-        let settingsStore = get(SettingsStore.state)
+        await this.updateLocalStream()
 
-        this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                aspectRatio: 16 / 9,
-                facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                frameRate: 30,
-                height: { ideal: 1080 },
-                width: { ideal: 1920 },
-                deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
-            },
-            audio: {
-                echoCancellation: settingsStore.calling.echoCancellation,
-                noiseSuppression: settingsStore.calling.noiseSuppression,
-                autoGainControl: settingsStore.calling.automaticGainControl,
-                sampleRate: settingsStore.calling.bitrate,
-                sampleSize: settingsStore.calling.sampleSize,
-                channelCount: settingsStore.calling.channels,
-                deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
-            },
-        })
-
-        if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = this.localStream
-            this.localVideoCurrentSrc.play()
-        }
-
-        await this.improveAudioQuality()
-
-        this.activeCall!.answer(this.localStream)
+        this.activeCall!.answer(this.localStream!)
 
         this.activeCall!.on("stream", remoteStream => {
             if (this.remoteVideoElement) {
@@ -200,7 +170,27 @@ export class VoiceRTC {
         })
     }
 
+    private async ensurePeerConnected() {
+        let userId = get(Store.state.user).key
+        while (userId === "0x0") {
+            userId = get(Store.state.user).key
+            await new Promise(resolve => setTimeout(resolve, 500))
+        }
+        const peerId = userId.replace("did:key:", "")
+        if (this.localPeer) {
+            if (this.localPeer.destroyed) {
+                log.debug("Creating a new peer since the old one was destroyed")
+                this.localPeer = new Peer(peerId)
+                this.setupPeerEvents()
+            } else if (this.localPeer.disconnected) {
+                this.localPeer.reconnect()
+            }
+        }
+    }
+
     public async makeVideoCall() {
+        await this.ensurePeerConnected()
+
         this.dataConnection = this.localPeer!.connect(this.remotePeerId!)
 
         this.dataConnection.send(VoiceRTCMessageType.Calling)
@@ -224,38 +214,9 @@ export class VoiceRTC {
 
         this.makingCall = true
 
-        let videoInputDevice = get(Store.state.devices.video)
-        let audioInputDevice = get(Store.state.devices.input)
-        let settingsStore = get(SettingsStore.state)
+        await this.updateLocalStream()
 
-        this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                aspectRatio: 16 / 9,
-                facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                frameRate: 30,
-                height: { ideal: 1080 },
-                width: { ideal: 1920 },
-                deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
-            },
-            audio: {
-                echoCancellation: settingsStore.calling.echoCancellation,
-                noiseSuppression: settingsStore.calling.noiseSuppression,
-                autoGainControl: settingsStore.calling.automaticGainControl,
-                sampleRate: settingsStore.calling.bitrate,
-                sampleSize: settingsStore.calling.sampleSize,
-                channelCount: settingsStore.calling.channels,
-                deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
-            },
-        })
-
-        if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = this.localStream
-            this.localVideoCurrentSrc.play()
-        }
-
-        await this.improveAudioQuality()
-
-        const call = this.localPeer!.call(this.remotePeerId!, this.localStream)
+        const call = this.localPeer!.call(this.remotePeerId!, this.localStream!)
 
         call.on("stream", remoteStream => {
             if (this.remoteVideoElement) {

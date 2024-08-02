@@ -232,7 +232,7 @@
                 icon
                 tooltip={$_("call.end")}
                 on:click={_ => {
-                    dispatch("onendcall")
+                    Store.endCall()
                     VoiceRTCInstance.endCall()
                 }}>
                 <Icon icon={Shape.PhoneXMark} />

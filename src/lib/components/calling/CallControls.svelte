@@ -117,6 +117,7 @@
                     loading={loading}
                     on:click={_ => {
                         Store.endCall()
+                        VoiceRTCInstance.endCall()
                     }}>
                     <Icon icon={Shape.PhoneXMark} />
                 </Button>
@@ -128,6 +129,7 @@
                         loading={loading}
                         on:click={_ => {
                             Store.setActiveChat($activeCall.chat)
+                            Store.setActiveCall($activeCall.chat)
                             goto(Route.Chat)
                         }}>
                         <Icon icon={Shape.ArrowRight} />
