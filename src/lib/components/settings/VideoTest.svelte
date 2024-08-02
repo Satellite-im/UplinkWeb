@@ -30,7 +30,7 @@
 
 <div class="video-preview">
     <!-- svelte-ignore a11y-media-has-caption -->
-    <video data-cy="test-video-preview" autoplay id="test" bind:this={video}> </video>
+    <video data-cy="test-video-preview" autoplay id="test" bind:this={video} muted> </video>
     <Button hook="button-test-video" text={$_("settings.audio.testVideo")} on:click={_ => startVideoTest()}>
         <Icon icon={Shape.Beaker}></Icon>
     </Button>
