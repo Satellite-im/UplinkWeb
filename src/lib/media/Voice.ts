@@ -53,18 +53,15 @@ export class VoiceRTC {
             await new Promise(resolve => setTimeout(resolve, 500))
         }
         const peerId = userId.replace("did:key:", "")
-        if (this.localPeer) {
-            log.debug("Destroying existing peer")
-            this.localPeer.destroy()
-            this.localPeer = null
-        }
 
-        try {
-            this.localPeer = new Peer(peerId)
-        } catch (error) {
-            log.error(`Error creating Peer: ${error}`)
-            this.localPeer?.destroy()
-            this.localPeer = null
+        if (this.localPeer) {
+            if (this.localPeer.destroyed) {
+                log.debug("Creating a new peer since the old one was destroyed")
+                this.localPeer = new Peer(peerId)
+            } else if (this.localPeer.disconnected) {
+                this.localPeer.reconnect()
+            }
+        } else {
             this.localPeer = new Peer(peerId)
         }
 
@@ -170,26 +167,8 @@ export class VoiceRTC {
         })
     }
 
-    private async ensurePeerConnected() {
-        let userId = get(Store.state.user).key
-        while (userId === "0x0") {
-            userId = get(Store.state.user).key
-            await new Promise(resolve => setTimeout(resolve, 500))
-        }
-        const peerId = userId.replace("did:key:", "")
-        if (this.localPeer) {
-            if (this.localPeer.destroyed) {
-                log.debug("Creating a new peer since the old one was destroyed")
-                this.localPeer = new Peer(peerId)
-                this.setupPeerEvents()
-            } else if (this.localPeer.disconnected) {
-                this.localPeer.reconnect()
-            }
-        }
-    }
-
     public async makeVideoCall() {
-        await this.ensurePeerConnected()
+        await this.setupPeerEvents()
 
         this.dataConnection = this.localPeer!.connect(this.remotePeerId!)
 
@@ -248,12 +227,12 @@ export class VoiceRTC {
                 deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
             },
             audio: {
-                echoCancellation: settingsStore.calling.echoCancellation,
-                noiseSuppression: settingsStore.calling.noiseSuppression,
-                autoGainControl: settingsStore.calling.automaticGainControl,
-                sampleRate: settingsStore.calling.bitrate,
-                sampleSize: settingsStore.calling.sampleSize,
-                channelCount: settingsStore.calling.channels,
+                echoCancellation: settingsStore.calling.echoCancellation ?? true,
+                noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
+                autoGainControl: settingsStore.calling.automaticGainControl ?? true,
+                sampleRate: settingsStore.calling.bitrate ?? 48000,
+                sampleSize: settingsStore.calling.sampleSize ?? 16,
+                channelCount: settingsStore.calling.channels ?? 2,
                 deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
             },
         })
@@ -279,6 +258,17 @@ export class VoiceRTC {
 
         this.activeCall?.close()
         this.activeCall = null
+
+        if (this.localPeer) {
+            this.localPeer?.disconnect()
+            this.localPeer?.destroy()
+            this.localPeer = null
+        }
+
+        if (this.dataConnection) {
+            this.dataConnection.close()
+            this.dataConnection = null
+        }
 
         if (this.remoteVideoElement) {
             this.remoteVideoElement.pause()
