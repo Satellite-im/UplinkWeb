@@ -8,6 +8,7 @@
     import prettyBytes from "pretty-bytes"
     import Icon from "$lib/elements/Icon.svelte"
     import { Button } from "$lib/elements"
+    import { _ } from "svelte-i18n"
 
     export let url: string = ""
     export let wireframe: boolean = false
@@ -82,7 +83,7 @@
     <div bind:this={container} class="stl-container"></div>
     <div class="details">
         <Text size={Size.Smaller}>{name} ({prettyBytes(filesize)})</Text>
-        <Button text="Download" appearance={Appearance.Alt}>
+        <Button text={$_("files.download")} appearance={Appearance.Alt}>
             <Icon icon={Shape.ArrowDown} />
         </Button>
     </div>

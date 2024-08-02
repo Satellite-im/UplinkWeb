@@ -4,11 +4,9 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Text, Title } from "$lib/elements"
     import { Appearance, Route, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { createEventDispatcher } from "svelte"
-
-    initLocale()
 
     const dispatch = createEventDispatcher()
 

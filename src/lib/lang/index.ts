@@ -1,4 +1,4 @@
-import { dictionary, locale } from "svelte-i18n"
+import { register, init, getLocaleFromNavigator, dictionary } from "svelte-i18n"
 
 export function initLocale() {
     dictionary.set({
@@ -234,6 +234,11 @@ export function initLocale() {
             },
         },
     })
-
-    locale.set("en")
 }
+
+register("en", () => import("./en.json"))
+
+init({
+    fallbackLocale: "en",
+    initialLocale: getLocaleFromNavigator(),
+})

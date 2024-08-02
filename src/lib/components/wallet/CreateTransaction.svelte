@@ -5,6 +5,7 @@
     import { PayRequest, wallet } from "$lib/utils/Wallet"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { get } from "svelte/store"
+    import { _ } from "svelte-i18n"
 
     export let onClose
 
@@ -27,16 +28,16 @@
 </script>
 
 <div>
-    <h1>Create Payment Request</h1>
-    <div>Amount: <input type="number" on:input={handleInput} pattern="[0-9]" /></div>
+    <h1>{$_("payments.create") + ":"}</h1>
+    <div>{$_("payments.amount") + ":"} <input type="number" on:input={handleInput} pattern="[0-9]" /></div>
 
-    <div>Network: btc</div>
-    <div>Asset type: native</div>
-    <div>Asset name: sat</div>
+    <div>{$_("payments.network", { values: { network: "btc" } })}</div>
+    <div>{$_("payments.assetType", { values: { type: "native" } })}</div>
+    <div>{$_("payments.assetName", { values: { name: "sat" } })}</div>
     <Button
         disabled={!payment_request.is_valid()}
         on:click={async () => {
             await sendMessage(payment_request.to_cmd_string())
             onClose()
-        }}>Request</Button>
+        }}>{$_("payments.request")}</Button>
 </div>

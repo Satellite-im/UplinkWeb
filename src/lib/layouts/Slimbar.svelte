@@ -15,6 +15,7 @@
     import { goto } from "$app/navigation"
     import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
+    import { _ } from "svelte-i18n"
 
     export let sidebarOpen: boolean = true
     export let activeRoute: Route = Route.Chat
@@ -40,7 +41,7 @@
             <Icon icon={Shape.Beaker} />
         </Button>
         {#if $favorites.length}
-            <Label hook="label-favorites" text="Faves" />
+            <Label hook="label-favorites" text={$_("generic.faves")} />
             {#each $favorites as favorite}
                 <StoreResolver value={favorite.users} resolver={v => Store.getUsers(v)} let:resolved>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->

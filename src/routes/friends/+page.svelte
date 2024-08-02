@@ -3,7 +3,7 @@
     import { ChatPreview, ContextMenu } from "$lib/components"
     import { Sidebar, Topbar } from "$lib/layouts"
     import { Appearance, Route, Shape, TooltipPosition } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import type { Chat, User } from "$lib/types"
     import Fuse from "fuse.js"
@@ -20,7 +20,6 @@
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
 
     // Initialize locale
-    initLocale()
 
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
@@ -166,14 +165,14 @@
                     {
                         id: "hide",
                         icon: Shape.EyeSlash,
-                        text: "Hide",
+                        text: $_("chat.hide"),
                         appearance: Appearance.Default,
                         onClick: () => UIStore.removeSidebarChat(chat),
                     },
                     {
                         id: "mark_read",
                         icon: Shape.CheckMark,
-                        text: "Mark Read",
+                        text: $_("chat.markRead"),
                         appearance: Appearance.Default,
                         onClick: () => {},
                     },
@@ -367,7 +366,7 @@
                         </Friend>
                     {/each}
                     {#if outgoingRequests.length === 0}
-                        <Text hook="text-no-outbound-requests">No outbound requests.</Text>
+                        <Text hook="text-no-outbound-requests">{$_("friends.noOutgoing")}</Text>
                     {/if}
                     <Label hook="label-incoming-requests" text={$_("friends.incoming_requests")} />
                     {#each incomingRequests as request}
@@ -383,7 +382,7 @@
                         </Friend>
                     {/each}
                     {#if incomingRequests.length === 0}
-                        <Text hook="text-no-incoming-requests">No inbound requests.</Text>
+                        <Text hook="text-no-incoming-requests">{$_("friends.noIncoming")}</Text>
                     {/if}
                 </div>
             {:else if tab === "blocked"}
@@ -399,7 +398,7 @@
                         </Friend>
                     {/each}
                     {#if $blocked.length === 0}
-                        <Text hook="text-no-blocked-users">No users blocked.</Text>
+                        <Text hook="text-no-blocked-users">{$_("friends.noBlocked")}</Text>
                     {/if}
                 </div>
             {/if}

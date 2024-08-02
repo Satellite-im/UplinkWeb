@@ -6,7 +6,7 @@
     import { Appearance, Route, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
     import { goto } from "$app/navigation"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
@@ -14,8 +14,6 @@
     import { Slimbar } from "."
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-
-    initLocale()
 
     export let activeRoute: Route = Route.Chat
     export let open: boolean = true

@@ -8,6 +8,7 @@
     import { onMount } from "svelte"
     import { log } from "$lib/utils/Logger"
     import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
+    import { _ } from "svelte-i18n"
 
     let loading: boolean = false
     let channel: string = "SHFDKLSDF"
@@ -77,23 +78,23 @@
 <div id="page">
     <Sidebar loading={loading} on:toggle={() => UIStore.toggleSidebar()} open={sidebarOpen} activeRoute={Route.Friends}></Sidebar>
     <div class="content">
-        <Label text="Channel" />
+        <Label text={$_("settings.developer.voice.channel")} />
         <div class="row">
             <Input
                 bind:value={channel}
                 on:input={_ => {
                     /* Add logic if needed */
                 }} />
-            <Button text="Set Channel"></Button>
+            <Button text={$_("settings.developer.voice.setChannel")}></Button>
         </div>
 
         <div class="participants">
             <div class="local">
-                <Label text="Local Stream" />
+                <Label text={$_("settings.developer.voice.localStream")} />
                 <Stream stream={localStream} />
             </div>
             <div class="remote">
-                <Label text="Remote Stream" />
+                <Label text={$_("settings.developer.voice.remoteStream")} />
                 <Stream stream={remoteStream} />
             </div>
         </div>

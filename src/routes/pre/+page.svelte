@@ -3,6 +3,7 @@
     import { Text } from "$lib/elements"
     import Logo from "$lib/elements/Logo.svelte"
     import { goto } from "$app/navigation"
+    import { _ } from "svelte-i18n"
 
     let stepLabels: string[] = ["Fetching your friends from space.", "Aligning multiple satellites.", "Spinning up warp drives.", "Initializing forward shields for maximum safety.", "Almost ready, finalizing."]
     let step: number = 0
@@ -23,7 +24,7 @@
 
 <div id="page">
     <Logo />
-    <Text size={Size.Small}>Initializing...</Text>
+    <Text size={Size.Small}>{$_("generic.initializing")}</Text>
     <Text>{stepLabels[step]}</Text>
 </div>
 

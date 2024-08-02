@@ -3,6 +3,7 @@
     import { createPersistentState } from "$lib/state"
     import { onMount, onDestroy } from "svelte"
     import { writable, get } from "svelte/store"
+    import { _, number } from "svelte-i18n"
 
     enum GamepadBrand {
         Xbox = "Xbox",
@@ -470,15 +471,15 @@
     {/if}
 
     <div id="mapping">
-        <label for="deadzone">Joystick Deadzone ({$deadzone})</label>
+        <label for="deadzone">{$_("settings.gamepad.deadzone", { values: { number: $deadzone } })}</label>
         <RangeSelector min={0} max={3} bind:value={$deadzone} />
-        <label for="sensitivity">Pointer Sensitivity ({$pointerSensitivity})</label>
+        <label for="sensitivity">{$_("settings.gamepad.pointer", { values: { number: $pointerSensitivity } })}</label>
         <RangeSelector min={1} max={50} bind:value={$pointerSensitivity} />
     </div>
     <div class="controller-mappings">
         <div class="left-controls">
             {#each [4, 7, 8, 12, 13, 14, 15, 10] as index}
-                <label for="button-{index}">Button {index} ({$buttonMap[+index]})</label>
+                <label for="button-{index}">{$_("settings.gamepad.button", { values: { index: index, name: $buttonMap[+index] } })}</label>
                 <Select options={Object.keys(actions).map(action => ({ value: actions[+action], text: actions[+action] }))} selected={$buttonMap[+index]} alt on:change={event => handleSelectChange(event, index.toString())} />
             {/each}
         </div>
@@ -490,7 +491,7 @@
                         {#if actions[+index]}
                             <img src={`/assets/controller/${$gamepadVendor.toLocaleLowerCase()}/${actions[+index].toLowerCase()}.svg`} class="button" alt="button" />
                         {:else}
-                            <Text>Unknown button</Text>
+                            <Text>{$_("settings.gamepad.unknownButton")}</Text>
                         {/if}
                     {/if}
                 {/each}
@@ -512,7 +513,7 @@
         </div>
         <div class="right-controls">
             {#each [5, 6, 0, 1, 2, 3, 9, 11] as index}
-                <label for="button-{index}">Button {index} ({$buttonMap[+index]})</label>
+                <label for="button-{index}">{$_("settings.gamepad.button", { values: { index: index, name: $buttonMap[+index] } })}</label>
                 <Select options={Object.keys(actions).map(action => ({ value: actions[+action], text: actions[+action] }))} selected={$buttonMap[+index]} alt on:change={event => handleSelectChange(event, index.toString())} />
             {/each}
         </div>

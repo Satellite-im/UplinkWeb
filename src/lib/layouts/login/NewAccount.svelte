@@ -3,13 +3,14 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Input, Label, Spacer, Text, Title } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import { Store } from "$lib/state/Store"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
     import { LoginPage } from "$lib/layouts/login"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
+    import { get } from "svelte/store"
 
     export let page: LoginPage
     export let username = ""
@@ -17,12 +18,11 @@
     export let profilePicture = ""
     let isValidUsername = false
     let isValidStatusMessage = true
+    let toastUsername = $_("pages.auth.new_account.setUsername")
 
     async function updateProfilePicture(picture: string) {
         profilePicture = picture
     }
-
-    initLocale()
 </script>
 
 <div id="auth-recover">
@@ -79,7 +79,7 @@
             disabled={!isValidUsername || !isValidStatusMessage}
             on:click={async _ => {
                 if (username === "") {
-                    Store.addToastNotification(new ToastMessage("", "Select a username to proceed.", 2))
+                    Store.addToastNotification(new ToastMessage("", toastUsername, 2))
                     return
                 }
                 if (isValidUsername && isValidStatusMessage) {

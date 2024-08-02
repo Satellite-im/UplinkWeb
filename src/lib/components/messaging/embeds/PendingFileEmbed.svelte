@@ -5,6 +5,7 @@
     import { Shape, Size } from "$lib/enums"
     import { type FileProgress } from "$lib/types"
     import prettyBytes from "pretty-bytes"
+    import { _ } from "svelte-i18n"
 
     export let fileInfo: FileProgress
     export let onCancel: () => void = () => {}
@@ -34,7 +35,7 @@
         </div>
         {#if fileInfo.error}
             <div class="controls">
-                <Button hook="button-pending-file-cancel" icon small tooltip="Delete" on:click={onCancel}>
+                <Button hook="button-pending-file-cancel" icon small tooltip={$_("generic.download")} on:click={onCancel}>
                     <Icon icon={Shape.Trash} />
                 </Button>
             </div>

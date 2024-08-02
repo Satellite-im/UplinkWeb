@@ -4,7 +4,7 @@
     import { ProfilePicture } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
-    import { get } from "svelte/store"
+    import { _ } from "svelte-i18n"
     import { Store } from "$lib/state/Store"
     import Controls from "$lib/layouts/Controls.svelte"
     import { createEventDispatcher } from "svelte"
@@ -41,9 +41,9 @@
 
 <div class="new-chat" data-cy="modal-create-group-chat">
     <div class="select-user">
-        <Label hook="label-create-group-name" text="Group Name:" />
+        <Label hook="label-create-group-name" text={$_("chat.group.name")} />
         <Input hook="input-create-group-name" alt bind:value={name} />
-        <Label hook="label-create-group-members" text="Group Members:" />
+        <Label hook="label-create-group-members" text={$_("chat.group.members")} />
         <div class="user-list">
             {#each recipients as recipient}
                 <div class="mini-user">
@@ -63,7 +63,7 @@
                 </div>
             {/each}
         </div>
-        <Label hook="label-create-group-select-members" text="Select member(s)" />
+        <Label hook="label-create-group-select-members" text={$_("chat.group.select")} />
         <div class="user-selection-list {embedded ? 'embedded' : ''}">
             {#each $friends as recipient}
                 <button class="user" on:click={() => update_recipients(recipient)}>
@@ -83,7 +83,7 @@
         <Controls>
             <Button
                 hook="button-create-group"
-                text="Create Group"
+                text={$_("chat.group.create")}
                 fill
                 on:click={async _ => {
                     let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
