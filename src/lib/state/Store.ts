@@ -418,12 +418,12 @@ class GlobalStore {
         return get(this.state.favorites).some(f => f.id === chat.id)
     }
 
-    get outboundRequests() {
-        return get(this.state.activeRequests).filter((r: FriendRequest) => r.direction === MessageDirection.Outbound)
+    outboundRequests(requests: FriendRequest[]) {
+        return requests.filter((r: FriendRequest) => r.direction === MessageDirection.Outbound)
     }
 
-    get inboundRequests() {
-        return get(this.state.activeRequests).filter((r: FriendRequest) => r.direction === MessageDirection.Inbound)
+    inboundRequests(requests: FriendRequest[]) {
+        return requests.filter((r: FriendRequest) => r.direction === MessageDirection.Inbound)
     }
 
     get blockedUsers() {
