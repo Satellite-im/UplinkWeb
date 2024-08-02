@@ -125,7 +125,7 @@
     <SettingSection hook="section-identicon" name={$_("settings.preferences.identiconStyle")} description={$_("settings.preferences.identiconStyleDescription")}>
         <ProfilePicture hook="identicon-profile-picture" id={"0x0000000000000000000000000000000000000000"} />
         <Select
-            hook="selector-current-emoji-font-{identiconStyle.toLowerCase()}"
+            hook="selector-current-identicon-{identiconStyle.toLowerCase()}"
             selected={identiconStyle}
             options={availableIdenticons}
             alt
