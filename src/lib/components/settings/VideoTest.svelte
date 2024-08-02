@@ -9,10 +9,31 @@
     export let videoInput: string | undefined
 
     let video: HTMLVideoElement
+    let stream: MediaStream
 
     Store.state.devices.video.subscribe(d => {
-        startVideoTest()
+        videoInput = d
+        switchCamera(videoInput)
     })
+
+    async function switchCamera(selectedVideoDeviceId: string) {
+        try {
+            const videoConstraints = {
+                deviceId: selectedVideoDeviceId ? { exact: selectedVideoDeviceId } : undefined,
+            }
+
+            const newStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints })
+            const videoTrack = newStream.getVideoTracks()[0]
+            const sender = stream.getVideoTracks()[0]
+
+            stream.removeTrack(sender)
+            stream.addTrack(videoTrack)
+
+            video.srcObject = stream
+        } catch (err) {
+            console.error(`Error: ${err}`)
+        }
+    }
 
     async function startVideoTest() {
         videoInput = get(Store.state.devices.video)
@@ -30,7 +51,7 @@
             return
         }
         try {
-            const stream = await navigator.mediaDevices.getUserMedia(constraints)
+            stream = await navigator.mediaDevices.getUserMedia(constraints)
             navigator.mediaDevices.enumerateDevices().then(devices => {
                 devices.forEach(device => {
                     console.log(`${device.kind}: ${device.label} id = ${device.deviceId}`)

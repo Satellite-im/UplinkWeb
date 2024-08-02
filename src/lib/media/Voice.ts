@@ -158,6 +158,8 @@ export class VoiceRTC {
     }
 
     public async acceptCall() {
+        let videoInputDevice = get(Store.state.devices.video)
+        let audioInputDevice = get(Store.state.devices.input)
         this.localStream = await navigator.mediaDevices.getUserMedia({
             video: {
                 aspectRatio: 16 / 9,
@@ -165,6 +167,7 @@ export class VoiceRTC {
                 frameRate: 30,
                 height: { ideal: 1080 },
                 width: { ideal: 1920 },
+                deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
             },
             audio: {
                 echoCancellation: { ideal: true },
@@ -173,6 +176,7 @@ export class VoiceRTC {
                 sampleRate: 48000,
                 sampleSize: 16,
                 channelCount: 2,
+                deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
             },
         })
 
