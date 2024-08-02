@@ -15,6 +15,7 @@ export interface IState {
         deafened: Writable<boolean>
         input: Writable<string>
         output: Writable<string>
+        cameraEnabled: Writable<boolean>
         video: Writable<string>
     }
     activeChat: Writable<Chat>

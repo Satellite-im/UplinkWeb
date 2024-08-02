@@ -27,7 +27,9 @@
     let showVolumeMixer = false
     let showCallSettings = false
 
-    export let muted: boolean = get(Store.state.devices.muted)
+    let muted: boolean = get(Store.state.devices.muted)
+    let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
+
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
 
@@ -40,9 +42,23 @@
         muted = state
     })
 
+    Store.state.devices.cameraEnabled.subscribe(state => {
+        cameraEnabled = state
+    })
+
     Store.state.devices.deafened.subscribe(state => {
         deafened = state
     })
+
+    function updateMuted() {
+        Store.updateMuted(!muted)
+        VoiceRTCInstance.turnOnOffMicrophone()
+    }
+
+    function updateCameraEnabled() {
+        Store.updateCameraEnabled(!cameraEnabled)
+        VoiceRTCInstance.turnOnOffCamera()
+    }
 
     const dispatch = createEventDispatcher()
 
@@ -100,6 +116,7 @@
             requestPermissions()
         }
 
+        /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
             if (VoiceRTCInstance.makingCall) {
                 VoiceRTCInstance.makeVideoCall()
@@ -109,6 +126,8 @@
                 callStarted = true
             }
         }
+        Store.updateMuted(VoiceRTCInstance.callOptions.audio)
+        Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
     })
 </script>
 
@@ -126,7 +145,7 @@
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video id="local-user-video" bind:this={localVideoCurrentSrc} width="400" height="400" muted={true} autoplay>
+            <video id="local-user-video" bind:this={localVideoCurrentSrc} width="400" height="400" muted autoplay>
                 <track kind="captions" src="" />
             </video>
             {#if !callStarted}
@@ -178,10 +197,9 @@
             <Button
                 icon
                 appearance={muted ? Appearance.Error : Appearance.Alt}
-                tooltip={$_("call.mute")}
+                tooltip={muted ? $_("call.unmute") : $_("call.mute")}
                 on:click={_ => {
-                    Store.updateMuted(!muted)
-                    VoiceRTCInstance.turnOnOffMicrophone()
+                    updateMuted()
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -198,13 +216,13 @@
                 <Icon icon={Shape.Stream} />
             </Button>
             <Button
-                appearance={Appearance.Alt}
+                appearance={cameraEnabled ? Appearance.Alt : Appearance.Error}
                 icon
-                tooltip={$_("call.video")}
+                tooltip={cameraEnabled ? $_("call.disable_video") : $_("call.enable_video")}
                 on:click={_ => {
-                    VoiceRTCInstance.turnOnOffCamera()
+                    updateCameraEnabled()
                 }}>
-                <Icon icon={Shape.VideoCamera} />
+                <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.EyeSlash} />
             </Button>
             <Button
                 appearance={Appearance.Error}
