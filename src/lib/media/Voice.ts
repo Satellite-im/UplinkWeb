@@ -1,3 +1,4 @@
+import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
@@ -160,6 +161,8 @@ export class VoiceRTC {
     public async acceptCall() {
         let videoInputDevice = get(Store.state.devices.video)
         let audioInputDevice = get(Store.state.devices.input)
+        let settingsStore = get(SettingsStore.state)
+
         this.localStream = await navigator.mediaDevices.getUserMedia({
             video: {
                 aspectRatio: 16 / 9,
@@ -170,12 +173,12 @@ export class VoiceRTC {
                 deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
             },
             audio: {
-                echoCancellation: { ideal: true },
-                noiseSuppression: { ideal: true },
-                autoGainControl: { ideal: true },
-                sampleRate: 48000,
-                sampleSize: 16,
-                channelCount: 2,
+                echoCancellation: settingsStore.calling.echoCancellation,
+                noiseSuppression: settingsStore.calling.noiseSuppression,
+                autoGainControl: settingsStore.calling.automaticGainControl,
+                sampleRate: settingsStore.calling.bitrate,
+                sampleSize: settingsStore.calling.sampleSize,
+                channelCount: settingsStore.calling.channels,
                 deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
             },
         })
@@ -221,6 +224,10 @@ export class VoiceRTC {
 
         this.makingCall = true
 
+        let videoInputDevice = get(Store.state.devices.video)
+        let audioInputDevice = get(Store.state.devices.input)
+        let settingsStore = get(SettingsStore.state)
+
         this.localStream = await navigator.mediaDevices.getUserMedia({
             video: {
                 aspectRatio: 16 / 9,
@@ -228,14 +235,16 @@ export class VoiceRTC {
                 frameRate: 30,
                 height: { ideal: 1080 },
                 width: { ideal: 1920 },
+                deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
             },
             audio: {
-                echoCancellation: { ideal: true },
-                noiseSuppression: { ideal: true },
-                autoGainControl: { ideal: true },
-                sampleRate: 48000,
-                sampleSize: 16,
-                channelCount: 2,
+                echoCancellation: settingsStore.calling.echoCancellation,
+                noiseSuppression: settingsStore.calling.noiseSuppression,
+                autoGainControl: settingsStore.calling.automaticGainControl,
+                sampleRate: settingsStore.calling.bitrate,
+                sampleSize: settingsStore.calling.sampleSize,
+                channelCount: settingsStore.calling.channels,
+                deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
             },
         })
 
@@ -261,6 +270,39 @@ export class VoiceRTC {
         const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
         this.remotePeerId = remotePeerIdEdited
         this.makingCall = true
+    }
+
+    async updateLocalStream() {
+        let videoInputDevice = get(Store.state.devices.video)
+        let audioInputDevice = get(Store.state.devices.input)
+        let settingsStore = get(SettingsStore.state)
+
+        this.localStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                aspectRatio: 16 / 9,
+                facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                frameRate: 30,
+                height: { ideal: 1080 },
+                width: { ideal: 1920 },
+                deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
+            },
+            audio: {
+                echoCancellation: settingsStore.calling.echoCancellation,
+                noiseSuppression: settingsStore.calling.noiseSuppression,
+                autoGainControl: settingsStore.calling.automaticGainControl,
+                sampleRate: settingsStore.calling.bitrate,
+                sampleSize: settingsStore.calling.sampleSize,
+                channelCount: settingsStore.calling.channels,
+                deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
+            },
+        })
+
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = this.localStream
+            this.localVideoCurrentSrc.play()
+        }
+
+        await this.improveAudioQuality()
     }
 
     endCall() {

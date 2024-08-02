@@ -164,7 +164,10 @@
         <Controls>
             <div class="relative">
                 {#if showCallSettings}
-                    <CallSettings />
+                    <CallSettings
+                        on:change={e => {
+                            VoiceRTCInstance.updateLocalStream()
+                        }} />
                 {/if}
                 <Button
                     tooltip="Settings"

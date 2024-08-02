@@ -1,8 +1,30 @@
-<script>
+<script lang="ts">
     import Select from "$lib/elements/Select.svelte"
     import Switch from "$lib/elements/Switch.svelte"
     import { SettingSection } from "$lib/layouts"
     import { SettingsStore } from "$lib/state"
+    import { Store } from "$lib/state/Store"
+    import { createEventDispatcher, onMount } from "svelte"
+    import { _ } from "svelte-i18n"
+
+    let inputDevices: MediaDeviceInfo[] = []
+    let videoInputDevices: MediaDeviceInfo[] = []
+    let selectedVideoInput: string = "default"
+    Store.state.devices.video.subscribe(d => {
+        selectedVideoInput = d
+    })
+
+    let dispatch = createEventDispatcher()
+
+    onMount(async () => {
+        let devices = await navigator.mediaDevices.enumerateDevices()
+        inputDevices = devices.filter(device => device.kind === "audioinput")
+        videoInputDevices = devices.filter(device => device.kind === "videoinput")
+    })
+
+    function onChange() {
+        dispatch("change")
+    }
 
     $: settings = SettingsStore.state
     $: echoCancellation = $settings.calling.echoCancellation || true
@@ -11,14 +33,27 @@
     $: channels = $settings.calling.channels || 2
     $: bitrate = $settings.calling.bitrate || 64000
     $: sampleSize = $settings.calling.sampleSize || 16
+    $: videoInputOptions = inputDevices.length > 0 ? videoInputDevices.map(d => ({ text: d.label, value: d.deviceId })) : [{ text: "Default", value: "Default" }]
 </script>
 
 <div class="call-settings">
+    <SettingSection hook="section-video-device" name={$_("settings.audio.videoDevice")} description={$_("settings.audio.videoDeviceDescription")}>
+        <Select
+            hook="selector-video-device"
+            selected={selectedVideoInput}
+            options={videoInputOptions}
+            alt
+            on:change={v => {
+                Store.setVideoInputDevice(v.detail)
+                onChange()
+            }} />
+    </SettingSection>
     <SettingSection name="Echo Cancellation" description="Cancel out feedback from your microphone.">
         <Switch
             on={echoCancellation}
             on:toggle={e => {
                 SettingsStore.setEchoCancellation(e.detail)
+                onChange()
             }} />
     </SettingSection>
     <SettingSection name="Auto Gain Control" description="Automatically adjust microphone gain.">
@@ -26,6 +61,7 @@
             on={automaticGainControl}
             on:toggle={e => {
                 SettingsStore.setAutomaticGainControl(e.detail)
+                onChange()
             }} />
     </SettingSection>
     <SettingSection name="Noise Suppression" description="Automatically try to remove background noise.">
@@ -33,6 +69,7 @@
             on={noiseSuppression}
             on:toggle={e => {
                 SettingsStore.setNoiseSuppression(e.detail)
+                onChange()
             }} />
     </SettingSection>
     <SettingSection name="Channels" description="Sets the number of audio channels to be used.">
@@ -46,6 +83,7 @@
             selected={channels.toString()}
             on:change={e => {
                 SettingsStore.setChannels(parseInt(e.detail))
+                onChange()
             }}
             alt />
     </SettingSection>
@@ -65,6 +103,7 @@
             selected={bitrate.toString()}
             on:change={e => {
                 SettingsStore.setBitrate(parseInt(e.detail))
+                onChange()
             }}
             alt />
     </SettingSection>
@@ -79,6 +118,7 @@
             selected={sampleSize.toString()}
             on:change={e => {
                 SettingsStore.setSampleSize(parseInt(e.detail))
+                onChange()
             }}
             alt />
     </SettingSection>
