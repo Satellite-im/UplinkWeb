@@ -8,3 +8,4 @@ yew/target
 build
 node_modules
 .svelte-kit
+src/commit-hash.ts
