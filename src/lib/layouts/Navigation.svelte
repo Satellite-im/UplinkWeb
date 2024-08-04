@@ -26,8 +26,8 @@
     const dispatch = createEventDispatcher()
 
     // Subscribe to stores and update local state
-    const unsubscribeStore = Store.state.activeRequests.subscribe(() => {
-        incomingRequests = Store.inboundRequests
+    const unsubscribeStore = Store.state.activeRequests.subscribe(r => {
+        incomingRequests = Store.inboundRequests(r)
         updateBadgeCounts()
     })
 
