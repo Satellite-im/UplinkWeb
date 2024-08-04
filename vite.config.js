@@ -2,11 +2,20 @@ import { sveltekit } from "@sveltejs/kit/vite"
 import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
 import removeAttribute from "@castlenine/vite-remove-attribute"
-import { resolve } from 'path';
-import path from "node:path"
+import path from "path"
+import { execSync } from 'child_process'
 
+// Function to get the latest Git commit hash
+function getCommitHash() {
+    try {
+        return execSync('git rev-parse HEAD').toString().trim()
+    } catch (error) {
+        console.error('Error fetching commit hash:', error)
+        return 'unknown'
+    }
+}
 
-const IS_PRODUCTION = process.env.NODE_ENV == "production"
+const IS_PRODUCTION = process.env.NODE_ENV === "production"
 
 export default defineConfig({
     resolve: {
@@ -34,4 +43,7 @@ export default defineConfig({
             },
         },
     },
+    define: {
+        __COMMIT_HASH__: JSON.stringify(getCommitHash())
+    }
 })
