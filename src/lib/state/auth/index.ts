@@ -81,7 +81,7 @@ class Auth {
 export const AuthStore = new Auth()
 
 export async function checkIfUserIsLogged(page: string | null, redirect?: boolean) {
-    console.log("Checking if user is logged")
+    log.debug("Checking if user is logged")
     await TesseractStoreInstance.initTesseract()
     let authentication = await AuthStore.getAuthentication()
     if (authentication.pin === "") {
