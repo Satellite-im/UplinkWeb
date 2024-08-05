@@ -61,7 +61,7 @@
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned(conversation)
     const timeAgo = new TimeAgo("en-US")

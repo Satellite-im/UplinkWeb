@@ -132,6 +132,8 @@
         keys: ["name"],
     }
 
+    $: chats = UIStore.state.chats
+
     $: fuse = new Fuse($friends, fuseOptions)
     $: searchResult = fuse.search("")
     $: if (searchString !== undefined) {
@@ -142,8 +144,6 @@
         incomingRequests = r.filter(r => r.direction === MessageDirection.Inbound)
         outgoingRequests = r.filter(r => r.direction === MessageDirection.Outbound)
     })
-    let chats: Chat[] = get(UIStore.state.chats)
-    UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe(c => (activeChat = c))
 
@@ -171,7 +171,7 @@
             </Button>
         </div>
 
-        {#each chats as chat}
+        {#each $chats as chat}
             <ContextMenu
                 hook="context-menu-sidebar-chat"
                 items={[
