@@ -23,6 +23,7 @@
     import { _, locale } from "svelte-i18n"
     import { initializeLocale } from "$lib/lang/index"
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
+    import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -163,6 +164,7 @@
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
         <Toasts />
         <IncomingCall />
+        <VideoPreview show />
         <GamepadListener />
         <slot></slot>
     </div>
