@@ -17,6 +17,10 @@
             document.addEventListener("mousemove", onMouseMove)
             document.addEventListener("mouseup", onMouseUp)
 
+            video.addEventListener("dblclick", () => {
+                // TODO: Go to call
+            })
+
             function onMouseMove(event: any) {
                 let newLeft = event.clientX - offsetX
                 let newTop = event.clientY - offsetY
