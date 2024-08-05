@@ -151,7 +151,6 @@
     let isLocaleSet = false
 
     $: if ($locale) {
-        console.log("locale set")
         isLocaleSet = true
     }
 </script>
