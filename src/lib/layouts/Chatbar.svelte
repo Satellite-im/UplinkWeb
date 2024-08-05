@@ -26,6 +26,7 @@
     let emojiSelectorOpen = writable(false)
     let gifSelectorOpen = writable(false)
     let stickerSelectorOpen = writable(false)
+    let user = get(Store.state.user)
 
     async function sendMessage(text: string) {
         let attachments: FileAttachment[] = []
@@ -43,6 +44,10 @@
         })
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
+        console.log(chat, "charbar chat", attachments)
+        chat.last_message_sent_by_user = user.key
+        chat.last_message_has_attachment = attachments.length ? "true" : "false"
+
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
 
         result.onSuccess(res => {

@@ -142,6 +142,8 @@ export type Chat = {
     typing_indicator: { [key: string]: Date }
     last_message_at: Date
     last_message_preview: string
+    last_message_has_attachment: string
+    last_message_sent_by_user: string
 }
 
 export type CommunityChannel = {
@@ -196,6 +198,8 @@ export let defaultChat: Chat = {
     typing_indicator: {},
     last_message_at: new Date(),
     last_message_preview: "",
+    last_message_has_attachment: "",
+    last_message_sent_by_user: "",
 }
 
 export type Call = {

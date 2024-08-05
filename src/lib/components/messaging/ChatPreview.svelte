@@ -1,13 +1,14 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
     import { Route, Size, Status } from "$lib/enums"
-    import type { Chat } from "$lib/types"
+    import type { Chat, User } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
     import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
+    import { get } from "svelte/store"
 
     export let chat: Chat
     export let cta: boolean = false
@@ -16,17 +17,52 @@
 
     const timeAgo = new TimeAgo("en-US")
 
-    $: users = Store.getUsers(chat.users)
+    let user: User
+    $: users = get(Store.getUsers(chat.users))
+    $: getPreviewText = getPreviewTextFunction()
+    let chats: Chat
+    Store.state.activeChat.subscribe(value => {
+        chats = value
+        user = get(Store.state.user)
+        getPreviewText = getPreviewTextFunction()
+    })
 
-    $: chatName = $users.length > 2 ? chat.name : $users[1]?.name ?? $users[0].name
-    $: chatPhoto = $users.length > 2 ? "todo" : $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
-    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
+    $: chatName = users.length > 2 ? chat.name : (users[1]?.name ?? users[0].name)
+    $: chatPhoto = users.length > 2 ? "todo" : (users[1]?.profile.photo.image ?? users[0].profile.photo.image)
+    $: chatStatus = users.length > 2 ? Status.Offline : (users[1]?.profile.status ?? users[0].profile.status)
 
     const dispatch = createEventDispatcher()
 
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
+    }
+    function getPreviewTextFunction() {
+        console.log("chatpreviefe", user, chats, chats.last_message_sent_by_user, user.key)
+        // console.log("check chats var catch", chats.last_message_preview, chats.last_message_has_attachment)
+        if (chats.last_message_preview === "" && chats.last_message_has_attachment === "true" && chats.last_message_sent_by_user !== user.key) {
+            // console.log("attachment catch user on lyh", user)
+            return "New Attachment Received"
+        } else if (chats.last_message_preview !== "" && chats.last_message_has_attachment === "false" && chats.last_message_sent_by_user !== user.key) {
+            // console.log("mess catch", chats.last_message_preview, chats)
+            return chats.last_message_preview
+        } else if (chats.last_message_preview !== "" && chats.last_message_sent_by_user === user.key) {
+            // console.log("mess catch", chats.last_message_preview, chats)
+            return "Message Sent"
+        } else if (chats.last_message_preview !== "" && !chats.last_message_sent_by_user) {
+            // console.log("mess catch", chats.last_message_preview, chats)
+            return chats.last_message_preview
+        }
+        // else if (chats.last_message_sent_by_user !== user.key && chats.last_message_has_attachment && chats.last_message_preview !== "") {
+        //     return chats.last_message_preview
+        // } else if (chats.last_message_sent_by_user === user.key && chats.last_message_has_attachment && chats.last_message_preview === "") {
+        //     return "Attachment sent"
+        // } else if (chats.last_message_sent_by_user === user.key && chats.last_message_preview !== "") {
+        //     return "Message Sent"
+        // }
+        else {
+            return ""
+        }
     }
 </script>
 
@@ -40,9 +76,9 @@
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 2}
-        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
+        <ProfilePicture hook="chat-preview-picture" id={users[1].key} typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={users[1].profile.photo.frame} />
     {:else}
-        <ProfilePictureMany users={$users} />
+        <ProfilePictureMany users={users} />
     {/if}
     <div class="content">
         <div class="heading">
@@ -70,7 +106,7 @@
                 <Loader text small />
             {:else}
                 <Text hook="chat-preview-last-message" size={Size.Small} loading={loading}>
-                    {chat.last_message_preview || "No messages sent yet."}
+                    {getPreviewText}
                 </Text>
             {/if}
         </p>
