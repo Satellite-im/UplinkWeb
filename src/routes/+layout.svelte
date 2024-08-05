@@ -163,7 +163,7 @@
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
         <Toasts />
         <IncomingCall />
-        <!-- <VideoPreview show /> -->
+        <VideoPreview />
         <GamepadListener />
         <slot></slot>
     </div>

@@ -242,6 +242,7 @@ export class VoiceRTC {
         this.activeCall!.on("stream", remoteStream => {
             if (this.remoteVideoElement) {
                 this.remoteVideoElement.srcObject = remoteStream
+                this.remoteStream = remoteStream
                 this.remoteVideoElement.play()
             }
         })
@@ -277,6 +278,7 @@ export class VoiceRTC {
         call.on("stream", remoteStream => {
             if (this.remoteVideoElement) {
                 this.remoteVideoElement.srcObject = remoteStream
+                this.remoteStream = remoteStream
                 this.remoteVideoElement.play()
             }
         })

@@ -1,10 +1,60 @@
 <script lang="ts">
+    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { Store } from "$lib/state/Store"
     import { onMount } from "svelte"
+    import { page } from "$app/stores"
+    import { Route } from "$lib/enums"
+    import { get } from "svelte/store"
 
     export let show: boolean = false
     let previewVideo: HTMLDivElement
+    let remoteVideoElement: HTMLVideoElement
+
+    Store.state.activeChat.subscribe(async activeChat => {
+        if (activeChat.id !== VoiceRTCInstance.channel && get(Store.state.activeCall)) {
+            show = true
+            if (VoiceRTCInstance.remoteVideoElement) {
+                remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+                remoteVideoElement.play()
+            }
+        }
+
+        if (activeChat.id === VoiceRTCInstance.channel) {
+            show = false
+            remoteVideoElement.pause()
+            remoteVideoElement.srcObject = null
+        }
+    })
+
+    Store.state.activeCall.subscribe(async activeCall => {
+        if ($page.route.id !== Route.Chat && get(Store.state.activeCall)) {
+            show = true
+            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.play()
+        }
+
+        if (!activeCall) {
+            show = false
+            remoteVideoElement.pause()
+            remoteVideoElement.srcObject = null
+        }
+    })
 
     onMount(() => {
+        setInterval(() => {
+            if (VoiceRTCInstance.remoteVideoElement && $page.route.id !== Route.Chat && get(Store.state.activeCall)) {
+                show = true
+                remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+                remoteVideoElement.play()
+            }
+
+            if ($page.route.id === Route.Chat && get(Store.state.activeChat).id === VoiceRTCInstance.channel) {
+                show = false
+                remoteVideoElement.pause()
+                remoteVideoElement.srcObject = null
+            }
+        }, 1000)
+
         const video = previewVideo
 
         video.addEventListener("mousedown", onMouseDown)
@@ -62,13 +112,25 @@
     })
 </script>
 
-{#if show}
-    <div id="video-preview" class="video-preview">
-        <div id="preview-video" bind:this={previewVideo}></div>
+<div id="video-preview" class={show ? "video-preview" : "hidden"}>
+    <div id="preview-video" bind:this={previewVideo}>
+        <video id="remote-user-float-video" bind:this={remoteVideoElement} width={400} height={400} autoplay>
+            <track kind="captions" src="" />
+        </video>
     </div>
-{/if}
+</div>
 
 <style lang="scss">
+    .hidden {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        z-index: -10;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
     #video-preview {
         position: fixed;
         top: 0;

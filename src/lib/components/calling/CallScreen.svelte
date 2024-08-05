@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { createEventDispatcher, onMount } from "svelte"
+    import { onMount } from "svelte"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
@@ -66,8 +66,6 @@
         Store.updateCameraEnabled(!cameraEnabled)
         VoiceRTCInstance.turnOnOffCamera()
     }
-
-    const dispatch = createEventDispatcher()
 
     const checkPermissions = async () => {
         try {
