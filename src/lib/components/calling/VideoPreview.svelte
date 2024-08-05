@@ -142,6 +142,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
 
         #preview-video {
             width: 400px;
@@ -155,13 +156,11 @@
             cursor: grab;
             pointer-events: all;
             transition: transform 0.3s ease;
-            margin: var(--gap);
-
-            &.snap-animation {
-                transition:
-                    left 0.3s ease,
-                    top 0.3s ease;
-            }
+            margin: var(--padding);
+            display: inline-flex;
+            justify-content: center;
+            overflow: hidden;
+            align-items: center;
         }
     }
 </style>
