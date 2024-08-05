@@ -74,8 +74,7 @@
             },
             async (identity: Identity) => {
                 AuthStore.logIn(true)
-                Store.setUserFromIdentity(identity!)
-                Store.setPhoto(profilePicture)
+                Store.setUserFromIdentity(identity!, profilePicture)
                 await new Promise(resolve => setTimeout(resolve, 1000))
                 setTimeout(() => MultipassStoreInstance.initMultipassListener(), 1000)
                 goto(Route.Chat)
