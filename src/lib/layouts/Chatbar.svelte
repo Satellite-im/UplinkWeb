@@ -44,7 +44,7 @@
         })
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
-        console.log(chat, "charbar chat", attachments)
+        console.log(user, "charbar chat", attachments)
         chat.last_message_sent_by_user = user.key
         chat.last_message_has_attachment = attachments.length ? "true" : "false"
 
@@ -55,6 +55,7 @@
         })
         message.set("")
         replyTo = undefined
+        console.log(result)
         dispatch("onsend")
     }
 

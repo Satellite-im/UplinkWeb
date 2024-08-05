@@ -38,7 +38,7 @@
         return timeAgo.format(date)
     }
     function getPreviewTextFunction() {
-        console.log("chatpreviefe", user, chats, chats.last_message_sent_by_user, user.key)
+        console.log("chatpreviefe", user, chat, chats, user.key)
         // console.log("check chats var catch", chats.last_message_preview, chats.last_message_has_attachment)
         if (chats.last_message_preview === "" && chats.last_message_has_attachment === "true" && chats.last_message_sent_by_user !== user.key) {
             // console.log("attachment catch user on lyh", user)
