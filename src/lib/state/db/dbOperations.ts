@@ -1,26 +1,36 @@
 import { log } from "$lib/utils/Logger"
 
 const storeName = "stateStore"
+const dbName = "UplinkAppState"
 
-export async function initDB() {
-    return new Promise<IDBDatabase>((resolve, _) => {
-        const request = indexedDB.open("UplinkAppState", 1)
-        request.onupgradeneeded = _ => {
+export async function initDB(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 1)
+
+        request.onupgradeneeded = event => {
             const db = request.result
             if (!db.objectStoreNames.contains(storeName)) {
                 db.createObjectStore(storeName, { keyPath: "key" })
             }
         }
-        request.onsuccess = _ => resolve(request.result)
+
+        request.onsuccess = () => {
+            resolve(request.result)
+        }
+
+        request.onerror = event => {
+            log.error(`Error opening database ${dbName}. Event: ${event}`)
+            reject(event)
+        }
     })
 }
 
-export async function clearState() {
-    return new Promise(async (resolve, reject) => {
+export async function clearState(): Promise<string> {
+    return new Promise((resolve, reject) => {
         log.debug("Clearing state from DB")
-        const dbName = "UplinkAppState"
         localStorage.clear()
         sessionStorage.clear()
+
         const request = indexedDB.deleteDatabase(dbName)
 
         request.onerror = event => {
@@ -32,27 +42,54 @@ export async function clearState() {
             log.warn(`Database ${dbName} deletion blocked`)
         }
 
-        resolve(dbName)
+        request.onsuccess = () => {
+            resolve(dbName)
+        }
     })
 }
 
 export async function getStateFromDB<T>(key: string, defaultState: T): Promise<T> {
-    const db = await initDB()
-    return new Promise<T>(resolve => {
-        const transaction = db.transaction([storeName], "readonly")
-        const objectStore = transaction.objectStore(storeName)
-        const request = objectStore.get(key)
-        request.onsuccess = () => resolve(request.result?.value ?? defaultState)
-    })
+    try {
+        const db = await initDB()
+        return new Promise<T>((resolve, reject) => {
+            const transaction = db.transaction([storeName], "readonly")
+            const objectStore = transaction.objectStore(storeName)
+            const request = objectStore.get(key)
+
+            request.onsuccess = () => {
+                resolve(request.result?.value ?? defaultState)
+            }
+
+            request.onerror = event => {
+                log.error(`Error getting state from DB. Event: ${event}`)
+                reject(defaultState)
+            }
+        })
+    } catch (error) {
+        log.error(`Error initializing DB for getting state. Error: ${error}`)
+        return defaultState
+    }
 }
 
 export async function setStateToDB<T>(key: string, state: T): Promise<void> {
-    const db = await initDB()
-    return new Promise<void>((resolve, reject) => {
-        const transaction = db.transaction([storeName], "readwrite")
-        const objectStore = transaction.objectStore(storeName)
-        const request = objectStore.put({ key, value: state })
-        request.onsuccess = () => resolve()
-        request.onerror = () => reject("Error writing to DB")
-    })
+    try {
+        const db = await initDB()
+        return new Promise<void>((resolve, reject) => {
+            const transaction = db.transaction([storeName], "readwrite")
+            const objectStore = transaction.objectStore(storeName)
+            const request = objectStore.put({ key, value: state })
+
+            request.onsuccess = () => {
+                resolve()
+            }
+
+            request.onerror = event => {
+                log.error(`Error setting state to DB. Event: ${event}`)
+                reject("Error writing to DB")
+            }
+        })
+    } catch (error) {
+        log.error(`Error initializing DB for setting state. Error: ${error}`)
+        throw new Error("Error writing to DB")
+    }
 }
