@@ -13,7 +13,7 @@
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { onDestroy } from "svelte"
+    import { onDestroy, onMount } from "svelte"
     import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
@@ -81,6 +81,11 @@
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
+    onMount(() => {
+        userReference = { ...get(Store.state.user) }
+        statusMessage = { ...get(Store.state.user) }.profile.status_message
+    })
+
     onDestroy(() => {
         Store.setUsername(userReference.name)
         Store.setStatusMessage(userReference.profile.status_message)
@@ -92,7 +97,6 @@
 
     Store.state.user.subscribe(val => {
         let user = val
-        userReference = { ...val }
         statusMessage = user.profile.status_message
         activityStatus = user.profile.status
         key = user.key
