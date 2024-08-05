@@ -32,7 +32,11 @@ class MultipassStore {
     initMultipassListener() {
         this.multipassWritable.subscribe(async multipass => {
             if (multipass) {
-                this.handleMultipassEvents(multipass)
+                try {
+                    this.handleMultipassEvents(multipass)
+                } catch (error) {
+                    log.error("Error handling multipass events: " + error)
+                }
             } else {
                 log.error("Multipass or tesseract not found")
             }
@@ -40,68 +44,69 @@ class MultipassStore {
     }
 
     private async handleMultipassEvents(multipass: wasm.MultiPassBox) {
-        let events = await multipass.multipass_subscribe()
-        let listener = {
-            [Symbol.asyncIterator]() {
-                return events
-            },
-        }
-        log.info("Listening multipass events!")
-        for await (const value of listener) {
-            let event = value as wasm.MultiPassEventKind
-            log.info(`Handling multipass events: ${wasm.MultiPassEventKindEnum[event.kind]} with did ${event.did}`)
-            switch (event.kind) {
-                case wasm.MultiPassEventKindEnum.FriendRequestSent:
-                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected: {
-                    await this.listOutgoingFriendRequests()
-                    break
-                }
-                case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
-                    if (get(SettingsStore.state).notifications.friends) {
-                        let incoming = await this.identity_from_did(event.did)
-                        let count = 0
-                        while (incoming === undefined) {
-                            incoming = await this.identity_from_did(event.did)
-                            count++
-                            if (count > MAX_RETRY_COUNT) {
-                                break
-                            }
-                            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
-                        }
-                        if (incoming) {
-                            Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
-                        } else {
-                            Store.addToastNotification(new ToastMessage("New friend request.", `You received a new friend request.`, 2), Sounds.Notification)
-                        }
+        try {
+            let events = await multipass.multipass_subscribe()
+            let listener = {
+                [Symbol.asyncIterator]() {
+                    return events
+                },
+            }
+            log.info("Listening to multipass events!")
+            for await (const value of listener) {
+                let event = value as wasm.MultiPassEventKind
+                log.info(`Handling multipass events: ${wasm.MultiPassEventKindEnum[event.kind]} with did ${event.did}`)
+                switch (event.kind) {
+                    case wasm.MultiPassEventKindEnum.FriendRequestSent:
+                    case wasm.MultiPassEventKindEnum.OutgoingFriendRequestClosed:
+                    case wasm.MultiPassEventKindEnum.OutgoingFriendRequestRejected: {
+                        await this.listOutgoingFriendRequests()
+                        break
                     }
-                    await this.listIncomingFriendRequests()
-                    break
-                }
-                case wasm.MultiPassEventKindEnum.IncomingFriendRequestClosed:
-                case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected: {
-                    await this.listIncomingFriendRequests()
-                    break
-                }
-                case wasm.MultiPassEventKindEnum.FriendAdded: {
-                    await this.listOutgoingFriendRequests()
-                    await this.listIncomingFriendRequests()
-                    await this.listFriends()
-                    break
-                }
-                case wasm.MultiPassEventKindEnum.FriendRemoved: {
-                    await this.listFriends()
-                    break
-                }
-                case wasm.MultiPassEventKindEnum.Blocked: {
-                    await this.listBlockedFriends()
-                    break
-                }
-                default: {
-                    log.error(`Unhandled message event: ${wasm.MultiPassEventKindEnum[event.kind]}`)
-                    break
+                    case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
+                        if (get(SettingsStore.state).notifications.friends) {
+                            let incoming = await this.identity_from_did(event.did)
+                            let count = 0
+                            while (incoming === undefined && count < MAX_RETRY_COUNT) {
+                                incoming = await this.identity_from_did(event.did)
+                                count++
+                                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
+                            }
+                            if (incoming) {
+                                Store.addToastNotification(new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2), Sounds.Notification)
+                            } else {
+                                Store.addToastNotification(new ToastMessage("New friend request.", `You received a new friend request.`, 2), Sounds.Notification)
+                            }
+                        }
+                        await this.listIncomingFriendRequests()
+                        break
+                    }
+                    case wasm.MultiPassEventKindEnum.IncomingFriendRequestClosed:
+                    case wasm.MultiPassEventKindEnum.IncomingFriendRequestRejected: {
+                        await this.listIncomingFriendRequests()
+                        break
+                    }
+                    case wasm.MultiPassEventKindEnum.FriendAdded: {
+                        await this.listOutgoingFriendRequests()
+                        await this.listIncomingFriendRequests()
+                        await this.listFriends()
+                        break
+                    }
+                    case wasm.MultiPassEventKindEnum.FriendRemoved: {
+                        await this.listFriends()
+                        break
+                    }
+                    case wasm.MultiPassEventKindEnum.Blocked: {
+                        await this.listBlockedFriends()
+                        break
+                    }
+                    default: {
+                        log.error(`Unhandled message event: ${wasm.MultiPassEventKindEnum[event.kind]}`)
+                        break
+                    }
                 }
             }
+        } catch (error) {
+            log.error("Error handling multipass events: " + error)
         }
     }
 
@@ -340,7 +345,6 @@ class MultipassStore {
                 Store.setFriends(friendsUsers)
             } catch (error) {
                 log.error("Error listing friends: " + error)
-                return []
             }
         }
     }
@@ -545,7 +549,6 @@ class MultipassStore {
                 let profilePicture = await this.getUserProfilePicture(id)
                 let bannerPicture = await this.getUserBannerPicture(id)
                 let status = await this.getUserStatus(id)
-                // TODO profile and banner etc. missing from wasm?
                 return {
                     ...defaultUser,
                     key: identity === undefined ? id : identity.did_key,
@@ -576,7 +579,7 @@ class MultipassStore {
                     },
                 }
             } catch (error) {
-                log.error(`Coultn't fetch identity ${id}: ${error}`)
+                log.error(`Couldn't fetch identity ${id}: ${error}`)
             }
         }
         return undefined
