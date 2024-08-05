@@ -213,29 +213,36 @@ export class VoiceRTC {
     }
 
     async updateLocalStream() {
-        let videoInputDevice = get(Store.state.devices.video)
-        let audioInputDevice = get(Store.state.devices.input)
-        let settingsStore = get(SettingsStore.state)
+        try {
+            let videoInputDevice = get(Store.state.devices.video)
+            let audioInputDevice = get(Store.state.devices.input)
+            let settingsStore = get(SettingsStore.state)
 
-        this.localStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                aspectRatio: 16 / 9,
-                facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                frameRate: 30,
-                height: { ideal: 1080 },
-                width: { ideal: 1920 },
-                deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
-            },
-            audio: {
-                echoCancellation: settingsStore.calling.echoCancellation ?? true,
-                noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
-                autoGainControl: settingsStore.calling.automaticGainControl ?? true,
-                sampleRate: settingsStore.calling.bitrate ?? 48000,
-                sampleSize: settingsStore.calling.sampleSize ?? 16,
-                channelCount: settingsStore.calling.channels ?? 2,
-                deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
-            },
-        })
+            this.localStream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    aspectRatio: 16 / 9,
+                    facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                    frameRate: 30,
+                    height: { ideal: 1080 },
+                    width: { ideal: 1920 },
+                    deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
+                },
+                audio: {
+                    echoCancellation: settingsStore.calling.echoCancellation ?? true,
+                    noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
+                    autoGainControl: settingsStore.calling.automaticGainControl ?? true,
+                    sampleRate: settingsStore.calling.bitrate ?? 48000,
+                    sampleSize: settingsStore.calling.sampleSize ?? 16,
+                    channelCount: settingsStore.calling.channels ?? 2,
+                    deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
+                },
+            })
+        } catch (_) {
+            this.localStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true,
+            })
+        }
 
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = this.localStream

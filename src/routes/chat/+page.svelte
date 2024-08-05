@@ -216,6 +216,7 @@
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
+    let activeCallInProgress = false
 
     Store.state.activeCall.subscribe(call => {
         if (call) {
@@ -224,8 +225,6 @@
             activeCallInProgress = false
         }
     })
-
-    $: activeCallInProgress = false
 
     onMount(() => {
         setInterval(() => {
