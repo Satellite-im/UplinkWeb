@@ -143,9 +143,8 @@
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
     onMount(async () => {
-        await initializeLocale()
-        await MultipassStoreInstance.fetchAllFriendsAndRequests()
         await checkIfUserIsLogged($page.route.id)
+        await initializeLocale()
     })
 
     let isLocaleSet = false
