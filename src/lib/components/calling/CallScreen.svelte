@@ -4,10 +4,8 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import Controls from "$lib/layouts/Controls.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
-    import { mock_users } from "$lib/mock/users"
     import Participant from "./Participant.svelte"
     import Text from "$lib/elements/Text.svelte"
-    import PopupButton from "../ui/PopupButton.svelte"
     import CallSettings from "./CallSettings.svelte"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
@@ -15,8 +13,9 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { afterUpdate, createEventDispatcher, onDestroy, onMount } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -37,6 +36,8 @@
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
+    $: otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+    $: userCallOptions = VoiceRTCInstance.callOptions
 
     Store.state.devices.muted.subscribe(state => {
         muted = state
@@ -48,6 +49,12 @@
 
     Store.state.devices.deafened.subscribe(state => {
         deafened = state
+    })
+
+    Store.state.activeCall.subscribe(state => {
+        log.debug(`Active call state changed: ${state}`)
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
     })
 
     function updateMuted() {
@@ -141,23 +148,31 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" autoplay>
+            <video id="remote-user-video" bind:this={remoteVideoElement} width={otherUserSettingsInCall?.videoEnabled ? 400 : 0} height={otherUserSettingsInCall?.videoEnabled ? 400 : 0} autoplay>
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video id="local-user-video" bind:this={localVideoCurrentSrc} width="400" height="400" muted autoplay>
+            <video id="local-user-video" bind:this={localVideoCurrentSrc} width={userCallOptions.video.enabled ? 400 : 0} height={userCallOptions.video.enabled ? 400 : 0} muted autoplay>
                 <track kind="captions" src="" />
             </video>
-            {#if !callStarted}
-                {#each chat.users as user}
+            {#each chat.users as user}
+                {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant
                         participant={$userCache[user]}
                         hasVideo={$userCache[user].media.is_streaming_video}
                         isMuted={$userCache[user].media.is_muted}
                         isDeafened={$userCache[user].media.is_deafened}
                         isTalking={$userCache[user].media.is_playing_audio} />
-                {/each}
-            {/if}
+                {/if}
+                {#if $userCache[user].key !== get(Store.state.user).key && !otherUserSettingsInCall?.videoEnabled}
+                    <Participant
+                        participant={$userCache[user]}
+                        hasVideo={$userCache[user].media.is_streaming_video}
+                        isMuted={$userCache[user].media.is_muted}
+                        isDeafened={$userCache[user].media.is_deafened}
+                        isTalking={$userCache[user].media.is_playing_audio} />
+                {/if}
+            {/each}
         </div>
     {/if}
     <div class="toolbar">
