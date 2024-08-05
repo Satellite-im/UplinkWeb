@@ -12,8 +12,13 @@
 
     async function poll() {
         // add processes here.
+        updateTypingIndicators()
         await MultipassStoreInstance.fetchAllFriendsAndRequests()
         setTimeout(poll, rate)
+    }
+
+    async function updateTypingIndicators() {
+        UIStore.updateTypingIndicators()
     }
 
     onMount(() => {
