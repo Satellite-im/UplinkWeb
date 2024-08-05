@@ -24,8 +24,9 @@
     $: sidebarOpen = UIStore.state.sidebarOpen
     $: friends = Store.getUsers(Store.state.friends)
     $: blocked = Store.getUsers(Store.state.blocked)
-    $: incomingRequests = Store.inboundRequests
-    $: outgoingRequests = Store.outboundRequests
+    $: activeRequests = Store.state.activeRequests
+    $: incomingRequests = Store.inboundRequests($activeRequests)
+    $: outgoingRequests = Store.outboundRequests($activeRequests)
     let isValidFriendDid: boolean = false
 
     let tab: "all" | "active" | "blocked" = "all"

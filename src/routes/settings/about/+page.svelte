@@ -1,12 +1,15 @@
 <script lang="ts">
+    import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
     import { Appearance, Shape } from "$lib/enums"
     import { Button, Icon } from "$lib/elements"
     import { SettingSection } from "$lib/layouts"
     import { SettingsStore } from "$lib/state"
     import { goto } from "$app/navigation"
+    import { writable } from "svelte/store"
 
     let clicked: number = 0
+    const latestCommit = writable<string | null>(__COMMIT_HASH__ as string)
 
     function increment() {
         if (clicked < 9) {
@@ -42,6 +45,13 @@
         <Button hook="button-about-dev-mode" on:click={_ => increment()} icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Beaker} />
         </Button>
+    </SettingSection>
+    <SettingSection hook="section-about-latest-commit" name="Latest Commit" description="Latest commit hash.">
+        {#if $latestCommit}
+            <div>{$latestCommit}</div>
+        {:else}
+            <div>Loading...</div>
+        {/if}
     </SettingSection>
 </div>
 
