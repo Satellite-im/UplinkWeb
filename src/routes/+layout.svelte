@@ -20,6 +20,9 @@
     import en from "javascript-time-ago/locale/en"
     import { onMount } from "svelte"
     import { get } from "svelte/store"
+    import { _, locale } from "svelte-i18n"
+    import { initializeLocale } from "$lib/lang/index"
+    import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -139,23 +142,33 @@
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
-    checkIfUserIsLogged($page.route.id)
     onMount(async () => {
+        await initializeLocale()
         await MultipassStoreInstance.fetchAllFriendsAndRequests()
+        await checkIfUserIsLogged($page.route.id)
     })
+
+    let isLocaleSet = false
+
+    $: if ($locale) {
+        isLocaleSet = true
+    }
 </script>
 
-<div id="app">
-    {@html `<style>${style}</style>`}
-    {@html `<style>${cssOverride}</style>`}
-    <!-- <Titlebar /> -->
-    <Polling rate={5000} />
-    <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
-    <Toasts />
-    <IncomingCall />
-    <GamepadListener />
-    <slot></slot>
-</div>
+{#if isLocaleSet}
+    <div id="app">
+        {@html `<style>${style}</style>`}
+        {@html `<style>${cssOverride}</style>`}
+        <Polling rate={5000} />
+        <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
+        <Toasts />
+        <IncomingCall />
+        <GamepadListener />
+        <slot></slot>
+    </div>
+{:else}
+    <CircularProgressIndicator />
+{/if}
 
 <style lang="scss">
     #app {
