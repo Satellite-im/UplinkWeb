@@ -96,7 +96,7 @@ export type User = {
     name: string
     profile: ProfileData
     media: MediaMeta
-    integrations: Integration[]
+    integrations: Map<string, string>
 }
 
 export let defaultUser: User = {
@@ -111,7 +111,7 @@ export let defaultUser: User = {
         is_streaming_video: false,
         is_playing_audio: false,
     },
-    integrations: [],
+    integrations: new Map<string, string>(),
 }
 
 export type ChatSettings = {
