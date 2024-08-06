@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { onMount } from "svelte"
+    import { onDestroy, onMount } from "svelte"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
@@ -39,19 +39,19 @@
     $: otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
     $: userCallOptions = VoiceRTCInstance.callOptions
 
-    Store.state.devices.muted.subscribe(state => {
+    let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
     })
 
-    Store.state.devices.cameraEnabled.subscribe(state => {
+    let subscribeTwo = Store.state.devices.cameraEnabled.subscribe(state => {
         cameraEnabled = state
     })
 
-    Store.state.devices.deafened.subscribe(state => {
+    let subscribeThree = Store.state.devices.deafened.subscribe(state => {
         deafened = state
     })
 
-    Store.state.activeCall.subscribe(state => {
+    let subscribeFour = Store.state.activeCall.subscribe(state => {
         log.debug(`Active call state changed: ${state}`)
         otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
@@ -137,6 +137,13 @@
             remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
             remoteVideoElement.play()
         }
+    })
+
+    onDestroy(() => {
+        subscribeOne()
+        subscribeTwo()
+        subscribeThree()
+        subscribeFour()
     })
 </script>
 

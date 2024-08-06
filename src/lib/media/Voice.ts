@@ -76,12 +76,22 @@ export class VoiceRTC {
         if (this.localPeer) {
             if (this.localPeer.destroyed) {
                 log.debug("Creating a new peer since the old one was destroyed")
-                this.localPeer = new Peer(peerId)
+                this.localPeer = new Peer(peerId, {
+                    host: "peer.deepspaceshipping.co",
+                    port: 9000,
+                    path: "/",
+                    secure: false,
+                })
             } else if (this.localPeer.disconnected) {
                 this.localPeer.reconnect()
             }
         } else {
-            this.localPeer = new Peer(peerId)
+            this.localPeer = new Peer(peerId, {
+                host: "peer.deepspaceshipping.co",
+                port: 9000,
+                path: "/",
+                secure: false,
+            })
         }
 
         this.localPeer!.on("open", id => {
@@ -94,7 +104,7 @@ export class VoiceRTC {
             if (!this.makingCall) {
                 this.isReceivingCall = true
             }
-            console.log("Incoming call", this.isReceivingCall)
+            log.debug(`Incoming call: ${this.isReceivingCall}`)
         })
         this.localPeer!.on("error", this.handleError.bind(this))
     }
@@ -132,6 +142,7 @@ export class VoiceRTC {
                 }
                 this.remoteVoiceUser = dataReceived.userInfo
                 this.channel = dataReceived.channel
+                Store.setActiveCall(Store.getCallingChat(this.channel)!)
                 break
             case VoiceRTCMessageType.AcceptedCall:
             case VoiceRTCMessageType.IncomingCall:
@@ -249,39 +260,47 @@ export class VoiceRTC {
     }
 
     public async makeVideoCall() {
-        await this.setupPeerEvents()
+        try {
+            await this.setupPeerEvents()
 
-        this.dataConnection = this.localPeer!.connect(this.remotePeerId!)
+            this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
+                reliable: true,
+            })
 
-        this.dataConnection.send({
-            type: VoiceRTCMessageType.Calling,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
-            },
-        })
+            console.log("Data connection established: ", this.dataConnection)
 
-        this.dataConnection.on("data", data => {
-            let dataReceived = data as VoiceMessage
-            console.log("Data received from user that made call: ", dataReceived)
-            this.handleWithDataReceived(dataReceived)
-        })
+            this.dataConnection.send({
+                type: VoiceRTCMessageType.Calling,
+                channel: this.channel,
+                userInfo: {
+                    did: this.localPeer!.id,
+                    videoEnabled: this.callOptions.video.enabled,
+                    audioEnabled: this.callOptions.audio,
+                },
+            })
 
-        this.makingCall = true
+            this.dataConnection.on("data", data => {
+                let dataReceived = data as VoiceMessage
+                console.log("Data received from user that made call: ", dataReceived)
+                this.handleWithDataReceived(dataReceived)
+            })
 
-        await this.updateLocalStream()
+            this.makingCall = true
 
-        const call = this.localPeer!.call(this.remotePeerId!, this.localStream!)
+            await this.updateLocalStream()
 
-        call.on("stream", remoteStream => {
-            if (this.remoteVideoElement) {
-                this.remoteVideoElement.srcObject = remoteStream
-                this.remoteStream = remoteStream
-                this.remoteVideoElement.play()
-            }
-        })
+            const call = this.localPeer!.call(this.remotePeerId!, this.localStream!, {})
+
+            call.on("stream", remoteStream => {
+                if (this.remoteVideoElement) {
+                    this.remoteVideoElement.srcObject = remoteStream
+                    this.remoteStream = remoteStream
+                    this.remoteVideoElement.play()
+                }
+            })
+        } catch (error) {
+            console.error("Error making call: ", error)
+        }
     }
 
     async startToMakeACall(remotePeerId: string, chatID: string) {

@@ -143,6 +143,8 @@
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
+    console.log("Arriving here on +layout")
+
     onMount(async () => {
         await checkIfUserIsLogged($page.route.id)
         await initializeLocale()

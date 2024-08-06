@@ -27,13 +27,16 @@
     })
 
     Store.state.activeCall.subscribe(async activeCall => {
-        if ($page.route.id !== Route.Chat && get(Store.state.activeCall)) {
+        console.log("Arriving here on VideoPreview", $page.route.id, get(Store.state.activeCall), VoiceRTCInstance.isReceivingCall)
+        if ($page.route.id !== Route.Chat && get(Store.state.activeCall) && !VoiceRTCInstance.isReceivingCall) {
             show = true
             remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
             remoteVideoElement.play()
-        }
-
-        if (!activeCall) {
+        } else if (!activeCall && remoteVideoElement) {
+            show = false
+            remoteVideoElement.pause()
+            remoteVideoElement.srcObject = null
+        } else if ($page.route.id === Route.Chat && get(Store.state.activeChat).id === VoiceRTCInstance.channel) {
             show = false
             remoteVideoElement.pause()
             remoteVideoElement.srcObject = null
@@ -41,20 +44,6 @@
     })
 
     onMount(() => {
-        setInterval(() => {
-            if (VoiceRTCInstance.remoteVideoElement && $page.route.id !== Route.Chat && get(Store.state.activeCall)) {
-                show = true
-                remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
-                remoteVideoElement.play()
-            }
-
-            if ($page.route.id === Route.Chat && get(Store.state.activeChat).id === VoiceRTCInstance.channel) {
-                show = false
-                remoteVideoElement.pause()
-                remoteVideoElement.srcObject = null
-            }
-        }, 1000)
-
         const video = previewVideo
 
         video.addEventListener("mousedown", onMouseDown)

@@ -16,28 +16,23 @@
     let user: User = defaultUser
     let interval: NodeJS.Timeout
 
-    onMount(() => {
-        interval = setInterval(async () => {
-            if (VoiceRTCInstance.isReceivingCall) {
-                if (callSound === null || callSound === undefined) {
-                    callSound = playSound(Sounds.IncomingCall)
-                    callSound.play()
-                }
-                pending = true
-                const callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
-                if (callingChat) {
-                    user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
-                }
-            } else if (!VoiceRTCInstance.isReceivingCall && !VoiceRTCInstance.makingCall) {
-                pending = false
-                callSound?.stop()
-                callSound = undefined
+    Store.state.activeCall.subscribe(async _ => {
+        console.log("Arriving here on IncomingCall")
+        if (VoiceRTCInstance.isReceivingCall) {
+            if (callSound === null || callSound === undefined) {
+                callSound = playSound(Sounds.IncomingCall)
+                callSound.play()
             }
-        }, 500)
-    })
-
-    onDestroy(() => {
-        clearInterval(interval)
+            pending = true
+            const callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
+            if (callingChat) {
+                user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
+            }
+        } else if (!VoiceRTCInstance.isReceivingCall && !VoiceRTCInstance.makingCall) {
+            pending = false
+            callSound?.stop()
+            callSound = undefined
+        }
     })
 
     async function answerCall() {
