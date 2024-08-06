@@ -6,9 +6,9 @@
 </script>
 
 <div id="page">
-    <Label text={$_("settings.realms.name")} />
-    <Text>{$_("settings.realms.description1")}</Text>
-    <Text>
+    <Label hook="label-settings-realms" text={$_("settings.realms.name")} />
+    <Text hook="text-settings-realms-description-1">{$_("settings.realms.description1")}</Text>
+    <Text hook="text-settings-realms-description-2">
         {$_("settings.realms.description2")}
     </Text>
 </div>

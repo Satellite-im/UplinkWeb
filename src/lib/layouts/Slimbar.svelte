@@ -54,7 +54,7 @@
                             goto(Route.Chat)
                         }}>
                         {#if favorite.users.length === 2}
-                            <ProfilePicture hook="favorite-profile-picture" id={resolved[0]?.key} typing={favorite.activity} image={resolved[0]?.profile.photo.image} status={resolved[0].profile.status} size={Size.Medium} />
+                            <ProfilePicture hook="favorite-profile-picture" id={resolved[1]?.key} typing={favorite.activity} image={resolved[1]?.profile.photo.image} status={resolved[1].profile.status} size={Size.Medium} />
                         {:else}
                             <ProfilePictureMany users={resolved} />
                         {/if}

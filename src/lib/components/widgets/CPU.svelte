@@ -21,9 +21,9 @@
     })
 </script>
 
-<div class="cpu-indicator">
+<div data-cy="cpu-indicator" class="cpu-indicator">
     <Icon icon={Shape.CPU} />
-    <Text>
+    <Text hook="cpu-indicator-value">
         {$cpuStatus.cores} core
     </Text>
 </div>
