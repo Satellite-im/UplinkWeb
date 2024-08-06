@@ -81,21 +81,22 @@
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
-    onDestroy(() => {
-        Store.setUsername(userReference.name)
-        Store.setStatusMessage(userReference.profile.status_message)
-    })
-
     $: user = Store.state.user
     let key: string = ""
     let activityStatus: Status = Status.Offline
 
-    Store.state.user.subscribe(val => {
+    const userSub = Store.state.user.subscribe(val => {
         let user = val
         userReference = { ...val }
         statusMessage = user.profile.status_message
         activityStatus = user.profile.status
         key = user.key
+    })
+
+    onDestroy(() => {
+        Store.setUsername(userReference.name)
+        Store.setStatusMessage(userReference.profile.status_message)
+        userSub()
     })
 
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
