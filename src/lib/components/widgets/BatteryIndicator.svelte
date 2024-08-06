@@ -53,8 +53,8 @@
 </script>
 
 {#if isSupportedBrowser}
-    <div class="battery-indicator">
-        <div class="battery-icon">
+    <div data-cy="battery-indicator" class="battery-indicator">
+        <div data-cy="battery-indicator-icon" class="battery-icon">
             <div class="battery-level" class:medium={$batteryStatus.level <= 0.5 && $batteryStatus.level > 0.2} class:low={$batteryStatus.level <= 0.2} style="width: {$batteryStatus.level * 100}%;"></div>
         </div>
         {#if $batteryStatus.charging}
@@ -65,7 +65,7 @@
         {($batteryStatus.level * 100).toFixed()}%
     </div>
 {:else}
-    <div>
+    <div data-cy="battery-indicator-not-supported-error">
         {$_("settings.developer.browserNotSupportedError")}
     </div>
 {/if}

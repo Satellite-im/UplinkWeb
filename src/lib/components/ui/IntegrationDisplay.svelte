@@ -9,22 +9,28 @@
     let display = INTEGRATIONS[integration.kind].display
 </script>
 
-<div class="integration">
-    <Label text={integration.kind} />
+<div class="integration" data-cy="account-integrations-item">
+    <Label hook="label-account-integrations-item" text={key} />
 
     <div class="display">
-        <!-- svelte-ignore a11y-missing-attribute -->
-        <img class="logo" src="/assets/brand/{integration.kind}.png" />
+        <img data-cy="account-integration-item-logo" class="logo" alt="logo" src={toIntegrationIconSrc(key)} />
 
-        {#if display === IntegrationDisplays.WalletAddress}
-            <Input value={integration.location} />
-            <Button appearance={Appearance.Alt} icon>
+        {#if display(key) === IntegrationDisplays.Text}
+            <Input hook="input-platform-account-integration-item" value={key} disabled={!editable} />
+            <Input hook="input-address-account-integration-item" value={value} disabled={!editable} />
+            <Button hook="button-account-integration-item" appearance={Appearance.Alt} icon>
                 <Icon icon={Shape.Clipboard} />
             </Button>
         {/if}
-        {#if display === IntegrationDisplays.URL}
-            <Input value={integration.location} />
-            <Button appearance={Appearance.Alt} icon>
+        {#if display(key) === IntegrationDisplays.WalletAddress}
+            <Input hook="input-account-integration-item" value={value} disabled={!editable} />
+            <Button hook="button-account-integration-item" appearance={Appearance.Alt} icon>
+                <Icon icon={Shape.Clipboard} />
+            </Button>
+        {/if}
+        {#if display(key) === IntegrationDisplays.URL}
+            <Input hook="input-account-integration-item" value={value} disabled={!editable} />
+            <Button hook="button-account-integration-item" appearance={Appearance.Alt} icon>
                 <Icon icon={Shape.ArrowRight} />
             </Button>
         {/if}

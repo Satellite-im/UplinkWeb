@@ -55,11 +55,14 @@
 
     let loading = false
     let contentAsideOpen = false
+
     $: sidebarOpen = UIStore.state.sidebarOpen
     $: activeChat = Store.state.activeChat
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
+    $: loading = get(UIStore.state.chats).length > 0 && $users[$activeChat.users[1]]?.name === undefined
+
     $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
@@ -382,116 +385,125 @@
     </Sidebar>
 
     <div class="content">
-        <Topbar>
-            <div slot="before">
-                {#if $activeChat.users.length > 0}
-                    {#if $activeChat.users.length === 2}
-                        <ProfilePicture
-                            hook="chat-topbar-profile-picture"
-                            typing={$activeChat.activity}
-                            id={$users[$activeChat.users[1]]?.key}
-                            image={$users[$activeChat.users[1]]?.profile.photo.image}
-                            frame={$users[$activeChat.users[1]]?.profile.photo.frame}
-                            status={$users[$activeChat.users[1]]?.profile.status}
-                            size={Size.Medium}
-                            loading={loading} />
-                    {:else}
-                        <ProfilePictureMany users={Object.values($users)} on:click={_ => (showUsers = true)} />
+        {#if $activeChat.users.length > 0}
+            <Topbar>
+                <div slot="before">
+                    {#if $activeChat.users.length > 0}
+                        {#if $activeChat.users.length === 2}
+                            <ProfilePicture
+                                hook="chat-topbar-profile-picture"
+                                typing={$activeChat.activity}
+                                id={$users[$activeChat.users[1]]?.key}
+                                image={$users[$activeChat.users[1]]?.profile.photo.image}
+                                frame={$users[$activeChat.users[1]]?.profile.photo.frame}
+                                status={$users[$activeChat.users[1]]?.profile.status}
+                                size={Size.Medium}
+                                loading={loading} />
+                        {:else}
+                            <ProfilePictureMany users={Object.values($users)} on:click={_ => (showUsers = true)} />
+                        {/if}
                     {/if}
-                {/if}
-            </div>
-            <div slot="content">
-                {#if $activeChat.users.length > 0}
-                    <Text hook="chat-topbar-username" singleLine>{chatName}</Text>
-                    <Text hook="chat-topbar-status" singleLine muted size={Size.Smaller}>
-                        {statusMessage}
-                    </Text>
-                {/if}
-            </div>
-            <svelte:fragment slot="controls">
-                <CoinBalance balance={0.0} />
-                <Button
-                    hook="button-chat-transact"
-                    icon
-                    appearance={transact ? Appearance.Primary : Appearance.Alt}
-                    disabled={$activeChat.users.length === 0}
-                    on:click={_ => {
-                        transact = true
-                    }}>
-                    <Icon icon={Shape.SendCoin} />
-                </Button>
-                <Button hook="button-chat-call" icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
-                    <Icon icon={Shape.PhoneCall} />
-                </Button>
-                <Button
-                    icon
-                    hook="button-chat-video"
-                    appearance={Appearance.Alt}
-                    disabled={$activeChat.users.length === 0}
-                    on:click={async _ => {
-                        Store.setActiveCall($activeChat)
-                        await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
-                        activeCallInProgress = true
-                    }}>
-                    <Icon icon={Shape.VideoCamera} />
-                </Button>
-                <Button
-                    icon
-                    hook="button-chat-favorite"
-                    disabled={$activeChat.users.length === 0}
-                    appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
-                    on:click={_ => {
-                        Store.toggleFavorite($activeChat)
-                    }}>
-                    <Icon icon={Shape.Heart} />
-                </Button>
-                <Button
-                    hook="button-chat-pin"
-                    icon
-                    disabled={$activeChat.users.length === 0}
-                    appearance={Appearance.Alt}
-                    on:click={_ => {
-                        let top = document.getElementsByClassName("topbar")[0]
-                        let height = top.getBoundingClientRect().height
-                        withPinned = `calc(${height}px + var(--padding-minimal))`
-                    }}>
-                    <Icon icon={Shape.Pin} />
-                </Button>
-                {#if $activeChat.kind === ChatType.Group}
+                </div>
+                <div slot="content">
+                    {#if $activeChat.users.length > 0}
+                        <Text hook="chat-topbar-username" class="min-text" singleLine loading={loading}>{chatName}</Text>
+                        <Text hook="chat-topbar-status" class="min-text" singleLine muted size={Size.Smaller} loading={loading}>
+                            {statusMessage}
+                        </Text>
+                    {/if}
+                </div>
+                <svelte:fragment slot="controls">
+                    <CoinBalance balance={0.0} />
                     <Button
+                        hook="button-chat-transact"
                         icon
-                        appearance={showUsers ? Appearance.Primary : Appearance.Alt}
+                        appearance={transact ? Appearance.Primary : Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        loading={loading}
                         on:click={_ => {
-                            showUsers = true
+                            transact = true
                         }}>
-                        <Icon icon={Shape.Users} />
+                        <Icon icon={Shape.SendCoin} />
+                    </Button>
+                    <Button hook="button-chat-call" loading={loading} icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                        <Icon icon={Shape.PhoneCall} />
                     </Button>
                     <Button
                         icon
-                        appearance={groupSettings ? Appearance.Primary : Appearance.Alt}
-                        on:click={_ => {
-                            groupSettings = true
+                        hook="button-chat-video"
+                        appearance={Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        loading={loading}
+                        on:click={async _ => {
+                            Store.setActiveCall($activeChat)
+                            await VoiceRTCInstance.makeVideoCall()
+                            activeCallInProgress = true
                         }}>
-                        <Icon icon={Shape.Cog} />
+                        <Icon icon={Shape.VideoCamera} />
                     </Button>
-                {/if}
-                {#if $activeChat.users.length === 1}
                     <Button
                         icon
-                        appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt}
+                        hook="button-chat-favorite"
+                        disabled={$activeChat.users.length === 0}
+                        loading={loading}
+                        appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
                         on:click={_ => {
-                            contentAsideOpen = !contentAsideOpen
+                            Store.toggleFavorite($activeChat)
                         }}>
-                        <Icon icon={Shape.Profile} />
+                        <Icon icon={Shape.Heart} />
                     </Button>
-                {/if}
-            </svelte:fragment>
-        </Topbar>
+                    <Button
+                        hook="button-chat-pin"
+                        icon
+                        disabled={$activeChat.users.length === 0}
+                        loading={loading}
+                        appearance={Appearance.Alt}
+                        on:click={_ => {
+                            let top = document.getElementsByClassName("topbar")[0]
+                            let height = top.getBoundingClientRect().height
+                            withPinned = `calc(${height}px + var(--padding-minimal))`
+                        }}>
+                        <Icon icon={Shape.Pin} />
+                    </Button>
+                    {#if $activeChat.kind === ChatType.Group}
+                        <Button
+                            icon
+                            appearance={showUsers ? Appearance.Primary : Appearance.Alt}
+                            loading={loading}
+                            on:click={_ => {
+                                showUsers = true
+                            }}>
+                            <Icon icon={Shape.Users} />
+                        </Button>
+                        <Button
+                            icon
+                            appearance={groupSettings ? Appearance.Primary : Appearance.Alt}
+                            loading={loading}
+                            on:click={_ => {
+                                groupSettings = true
+                            }}>
+                            <Icon icon={Shape.Cog} />
+                        </Button>
+                    {/if}
+                    {#if $activeChat.users.length === 1}
+                        <Button
+                            icon
+                            appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt}
+                            loading={loading}
+                            on:click={_ => {
+                                contentAsideOpen = !contentAsideOpen
+                            }}>
+                            <Icon icon={Shape.Profile} />
+                        </Button>
+                    {/if}
+                </svelte:fragment>
+            </Topbar>
+        {/if}
         {#if activeCallInProgress}
             <CallScreen chat={$activeChat} />
         {/if}
 
-        <Conversation>
+        <Conversation loading={loading}>
             {#if $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}

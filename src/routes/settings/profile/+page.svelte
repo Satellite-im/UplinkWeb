@@ -83,21 +83,21 @@
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
-    onDestroy(() => {
-        Store.setUsername(userReference.name)
-        Store.setStatusMessage(userReference.profile.status_message)
-    })
-
-    let user: User = get(Store.state.user)
+    $: user = Store.state.user
     let key: string = ""
     let activityStatus: Status = user.profile.status
 
-    Store.state.user.subscribe(val => {
-        user = val
-        userReference = { ...val }
+    const userSub = Store.state.user.subscribe(val => {
+        let user = val
         statusMessage = user.profile.status_message
         activityStatus = user.profile.status
         key = user.key
+    })
+
+    onDestroy(() => {
+        Store.setUsername(userReference.name)
+        Store.setStatusMessage(userReference.profile.status_message)
+        userSub()
     })
 
     let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
@@ -387,63 +387,77 @@
                 </SettingSection>
             </div>
 
-            {#if get(SettingsStore.state).devmode}
-                <div class="section integrations">
-                    <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
-                    <Text>{$_("settings.profile.integration.description")}</Text>
-                    <div class="active">
-                        {#each user.integrations as integration, index}
-                            <div class="integration-item">
-                                <IntegrationDisplay integration={integration} />
-                                <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(index)}>
-                                    <Icon icon={Shape.Pencil} />
-                                </Button>
-                                <Button appearance={Appearance.Error} icon on:click={() => removeIntegration(index)}>
-                                    <Icon icon={Shape.XMark} />
-                                </Button>
-                            </div>
-                        {/each}
-                    </div>
-
-                    {#if $showEditIntegrations}
-                        <Label text={editIndex !== null ? "Edit Integration" : "Add New"} />
-
-                        <div class="add">
-                            <div class="left">
-                                <Label text="Platform" />
-                                <Select alt options={integrationOptions} bind:selected={selectedIntegration.kind} />
-                            </div>
-                            <img class="integration-logo" src="/assets/brand/{selectedIntegration.kind}.png" alt="Platform Logo" />
-                            <div class="right">
-                                <Label text="Address" />
-                                <Input alt bind:value={selectedIntegration.location} />
-                            </div>
-
-                            <Button text={editIndex !== null ? "Save" : "Add"} on:click={editIndex !== null ? saveEditedIntegration : addIntegration}>
-                                <Icon icon={editIndex !== null ? Shape.CheckMark : Shape.Plus} />
+            <div class="section integrations" data-cy="section-account-integrations">
+                <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
+                <Text hook="text-settings-profile-integrations">{$_("settings.profile.integration.description")}</Text>
+                <div class="active">
+                    {#each $user.integrations as [key, value]}
+                        <div class="integration-item">
+                            <IntegrationDisplay key={key} value={value} />
+                            <Button hook="button-account-integrations-item-edit" appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(key, value)}>
+                                <Icon icon={Shape.Pencil} />
                             </Button>
-                            <Button
-                                text="Cancel"
-                                appearance={Appearance.Alt}
-                                on:click={_ => {
-                                    showEditIntegrations.set(false)
-                                    selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
-                                    editIndex = null
-                                }}>
+                            <Button hook="button-account-integrations-item-delete" appearance={Appearance.Error} icon on:click={() => removeIntegration(key)}>
                                 <Icon icon={Shape.XMark} />
                             </Button>
                         </div>
-                    {:else}
+                    {/each}
+                </div>
+
+                {#if $showEditIntegrations}
+                    <Label hook="label-account-integrations-new" text={$user.integrations.has(selectedKey) ? $_("settings.profile.integration.editIntegration") : $_("settings.profile.integration.addNew")} />
+
+                    <div class="add">
+                        <div class="left">
+                            {#if !$user.integrations.has(selectedKey)}
+                                <Label hook="label-account-integrations-new-platform" text={$_("generic.platform")} />
+                                <Select
+                                    hook="selector-account-integrations-new-platform"
+                                    alt
+                                    options={Object.entries(Integrations).map(([key, value]) => ({ value: key, text: value }))}
+                                    bind:selected={selectedKind}
+                                    on:change={e => {
+                                        if (e.detail === Integrations.Generic) {
+                                            selectedKey = ""
+                                        } else {
+                                            selectedKey = selectedKind
+                                        }
+                                    }} />
+                            {/if}
+                            {#if selectedKind === Integrations.Generic}
+                                <Input hook="input-account-integrations-new-generic" alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
+                            {/if}
+                        </div>
+                        <img class="integration-logo" data-cy="logo-account-integrations-new" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
+                        <div class="right">
+                            <Label hook="label-account-integration-new-address" text={$_("generic.address")} />
+                            <Input hook="input-account-integrations-new-address" alt bind:value={selectedKeyEditValue} />
+                        </div>
+
+                        <Button hook="button-account-integrations-new-add" text={$user.integrations.has(selectedKey) ? $_("generic.save") : $_("generic.add")} on:click={setIntegration}>
+                            <Icon icon={$user.integrations.has(selectedKey) ? Shape.CheckMark : Shape.Plus} />
+                        </Button>
                         <Button
-                            text="Add"
+                            hook="button-account-integrations-new-cancel"
+                            text={$_("generic.cancel")}
+                            appearance={Appearance.Alt}
                             on:click={_ => {
                                 showEditIntegrations.set(true)
                             }}>
                             <Icon icon={Shape.Plus} />
                         </Button>
-                    {/if}
-                </div>
-            {/if}
+                    </div>
+                {:else}
+                    <Button
+                        hook="button-integrations-add"
+                        text={$_("generic.add")}
+                        on:click={_ => {
+                            startEditingIntegration("")
+                        }}>
+                        <Icon icon={Shape.Plus} />
+                    </Button>
+                {/if}
+            </div>
 
             <div class="section">
                 <SettingSection hook="section-reveal-phrase" name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
