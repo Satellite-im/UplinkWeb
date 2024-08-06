@@ -1,10 +1,5 @@
 import { Identicon, Integrations } from "$lib/enums"
-import type { Integration } from "$lib/types"
-import {
-    avataaars, avataaarsNeutral, bottts, botttsNeutral,
-    icons, identicon, lorelei, notionists, openPeeps, pixelArt,
-    pixelArtNeutral, shapes
-} from "@dicebear/collection"
+import { avataaars, avataaarsNeutral, bottts, botttsNeutral, icons, identicon, lorelei, notionists, openPeeps, pixelArt, pixelArtNeutral, shapes } from "@dicebear/collection"
 
 export function getIdenticonGenerator(identiconStyle: Identicon) {
     switch (identiconStyle) {
@@ -60,15 +55,14 @@ export function identityColor(key: string): string {
 
     const toHex = (num: number) => {
         const hex = num.toString(16)
-        return hex.length === 1 ? '0' + hex : hex
-    };
+        return hex.length === 1 ? "0" + hex : hex
+    }
 
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
 
-
-export function getIntegrationColor(integration: Integration) {
-    switch (integration.kind) {
+export function getIntegrationColor(key: string): string {
+    switch (toIntegrationKind(key)) {
         case Integrations.BTC:
             return "#F7931A"
         case Integrations.ETH:
@@ -86,4 +80,16 @@ export function getIntegrationColor(integration: Integration) {
         default:
             return "#FF7F50"
     }
+}
+
+export function toIntegrationKind(key: string): Integrations {
+    let integration_kind = Integrations[key as keyof typeof Integrations]
+    if (integration_kind === undefined) {
+        integration_kind = Integrations.Generic
+    }
+    return integration_kind
+}
+
+export function toIntegrationIconSrc(key: string): string {
+    return `/assets/brand/${toIntegrationKind(key)}.png`
 }
