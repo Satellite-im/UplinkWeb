@@ -41,7 +41,7 @@ class GlobalStore {
         }
     }
 
-    setUserFromIdentity(identity: wasm.Identity) {
+    setUserFromIdentity(identity: wasm.Identity, photo?: string, banner?: string) {
         let userFromIdentity: User = {
             ...defaultUser,
             id: { short: identity.short_id() },
@@ -49,6 +49,8 @@ class GlobalStore {
             key: identity.did_key(),
             profile: {
                 ...defaultUser.profile,
+                photo: { ...defaultUser.profile.photo, image: photo ? photo : "" },
+                banner: { ...defaultUser.profile.banner, image: banner ? banner : "" },
                 status: Status.Online,
                 status_message: identity.status_message() || "",
             },

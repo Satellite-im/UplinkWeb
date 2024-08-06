@@ -5,17 +5,17 @@
     import RamUsage from "./RamUsage.svelte"
 </script>
 
-<div id="widget-bar">
+<div id="widget-bar" data-cy="widget-bar">
     <div class="item">
-        <Label text="Battery" />
+        <Label hook="label-widget-bar-battery" text="Battery" />
         <BatteryIndicator />
     </div>
     <div class="item">
-        <Label text="Ram" />
+        <Label hook="label-widget-bar-ram" text="Ram" />
         <RamUsage />
     </div>
     <div class="item">
-        <Label text="CPU" />
+        <Label hook="label-widget-bar-cpu" text="CPU" />
         <CpuUsage />
     </div>
 </div>

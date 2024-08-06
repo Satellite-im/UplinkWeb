@@ -663,8 +663,10 @@ class MultipassStore {
         if (multipass) {
             try {
                 const updated_identity = await multipass.identity()
+                let profilePicture = await this.getUserProfilePicture(updated_identity.did_key())
+                let bannerPicture = await this.getUserBannerPicture(updated_identity.did_key())
                 this.identity.update(() => updated_identity)
-                Store.setUserFromIdentity(updated_identity)
+                Store.setUserFromIdentity(updated_identity, profilePicture, bannerPicture)
                 log.info(`Identity updated\n 
                   Username: ${updated_identity.username()} \n
                   StatusMessage: ${updated_identity.status_message()} \n`)
