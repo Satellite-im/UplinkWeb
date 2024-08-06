@@ -20,7 +20,7 @@
         min-width: 0;
         width: 100%;
         min-height: var(--icon-size);
-        background-color: var(--color);
+        background-color: var(--alt-color);
         opacity: 0.25;
         margin: 0.125rem;
         border-radius: var(--border-radius-minimal);
