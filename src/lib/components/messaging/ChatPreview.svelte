@@ -19,7 +19,7 @@
 
     let user: User
     $: users = get(Store.getUsers(chat.users))
-    $: getPreviewText = getPreviewTextFunction()
+    $: getPreviewText = ""
     Store.state.activeChat.subscribe(_ => {
         user = get(Store.state.user)
         getPreviewText = getPreviewTextFunction()
@@ -36,12 +36,12 @@
         return timeAgo.format(date)
     }
     function getPreviewTextFunction() {
-        console.log("chatpreviefe", user, chat, chat, user.key)
+        console.log("chatpreviefe", user, chat)
         // console.log("check chats var catch", chats.last_message_preview, chats.last_message_has_attachment)
-        if (chat.last_message_preview === "" && chat.last_message_has_attachment === "true" && chat.last_message_sent_by_user !== user.key) {
+        if (chat.last_message_preview === "" && chat.last_message_has_attachment === "true" && chat.last_message_sent_by_user === user.key) {
             // console.log("attachment catch user on lyh", user)
             return "New Attachment Received"
-        } else if (chat.last_message_preview !== "" && chat.last_message_has_attachment === "false" && chat.last_message_sent_by_user !== user.key) {
+        } else if (chat.last_message_preview !== "" && chat.last_message_has_attachment === "" && chat.last_message_sent_by_user === user.key) {
             // console.log("mess catch", chats.last_message_preview, chats)
             return chat.last_message_preview
         } else if (chat.last_message_preview !== "" && chat.last_message_sent_by_user === user.key) {

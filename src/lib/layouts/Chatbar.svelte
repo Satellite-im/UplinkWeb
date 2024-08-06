@@ -44,18 +44,18 @@
         })
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
-        console.log(user, "charbar chat", attachments)
+        console.log(user, "charbar chat", get(Store.state.activeChat))
         chat.last_message_sent_by_user = user.key
         chat.last_message_has_attachment = attachments.length ? "true" : "false"
 
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
 
         result.onSuccess(res => {
+            console.log(res, chat)
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         message.set("")
         replyTo = undefined
-        console.log(result)
         dispatch("onsend")
     }
 
