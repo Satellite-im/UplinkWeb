@@ -47,11 +47,11 @@
     {/if}
     <div class="content">
         <div class="heading">
-            <Text hook="chat-preview-name" class="chat-user" singleLine loading={loading}>
+            <Text hook="chat-preview-name" class="chat-user min-text" singleLine loading={loading}>
                 {chatName}
             </Text>
             <div class="right">
-                <Text hook="chat-preview-timestamp" class="timestamp" loading={loading} size={Size.Smallest} muted>
+                <Text hook="chat-preview-timestamp" class="timestamp min-text" loading={loading} size={Size.Smallest} muted>
                     {getTimeAgo(chat.last_message_at)}
                 </Text>
                 {#if !loading}
@@ -125,6 +125,11 @@
                     display: inline-flex;
                     gap: var(--gap);
                     align-items: center;
+                }
+
+                :global(.chat-user),
+                :global(.timestamp) {
+                    min-width: 50px;
                 }
 
                 .unreads {

@@ -10,6 +10,7 @@
     let scrollContainer: Element
 
     let showScrollToBottom: boolean = false
+    export let loading: boolean = false
 
     const scrollToBottom = (node: Element) => {
         node.scrollTop = node.scrollHeight
