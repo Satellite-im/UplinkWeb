@@ -18,10 +18,8 @@
     import { AuthStore } from "$lib/state/auth"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
     import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
-    import { INTEGRATIONS } from "$lib/config"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
-    import { SettingsStore } from "$lib/state"
-    import { identityColor } from "$lib/utils/ProfileUtils"
+    import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
 
     let loading = true
     let showSeed = false
@@ -85,10 +83,11 @@
 
     $: user = Store.state.user
     let key: string = ""
-    let activityStatus: Status = user.profile.status
+    let activityStatus: Status = Status.Offline
 
     const userSub = Store.state.user.subscribe(val => {
         let user = val
+        userReference = { ...val }
         statusMessage = user.profile.status_message
         activityStatus = user.profile.status
         key = user.key
@@ -140,51 +139,35 @@
         }
     }
 
-    let selectedIntegration: Integration = { kind: Integrations.Generic, location: "", meta: "" }
     let showEditIntegrations = writable(false)
-    let editIndex: number | null = null
+    let selectedKind = Integrations.Generic
+    let selectedKey: string
+    let selectedKeyEditValue: string
 
-    function addIntegration() {
-        if (selectedIntegration.kind && selectedIntegration.location) {
-            let currentIntegrations = get(Store.state.user).integrations || []
-            const updatedIntegrations = [...currentIntegrations, { ...selectedIntegration }]
-            Store.setIntegrations(updatedIntegrations)
-            selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
-            showEditIntegrations.set(false)
-        }
-    }
-
-    function startEditingIntegration(index: number) {
-        editIndex = index
-        let integration = get(Store.state.user).integrations[index]
-        selectedIntegration = { ...integration }
+    function startEditingIntegration(key: string, value: string) {
+        selectedKey = key
+        selectedKeyEditValue = value
+        selectedKind = toIntegrationKind(key)
         showEditIntegrations.set(true)
     }
 
-    function saveEditedIntegration() {
-        if (selectedIntegration.kind && selectedIntegration.location && editIndex !== null) {
-            let currentIntegrations = get(Store.state.user).integrations || []
-            currentIntegrations[editIndex] = { ...selectedIntegration }
-            Store.setIntegrations(currentIntegrations)
-            selectedIntegration = { kind: Integrations.Generic, location: "", meta: "" }
-            editIndex = null
-            showEditIntegrations.set(false)
+    function setIntegration() {
+        if (selectedKey !== "" && selectedKeyEditValue !== "") {
+            MultipassStoreInstance.setMetadata(selectedKey, selectedKeyEditValue)
+            resetSelection()
         }
     }
 
-    function removeIntegration(index: number) {
-        let currentIntegrations = get(Store.state.user).integrations || []
-        currentIntegrations.splice(index, 1)
-        Store.setIntegrations(currentIntegrations)
+    function removeIntegration(key: string) {
+        MultipassStoreInstance.removeMetadata(key)
+        resetSelection()
     }
 
-    $: integrationOptions = [
-        ...Object.keys(INTEGRATIONS)
-            // @ts-ignore
-            .map(int => ({ text: INTEGRATIONS[int].name, value: INTEGRATIONS[int].name }))
-            .filter(option => !get(Store.state.user).integrations.some(integration => integration.kind === option.value)),
-        ...(editIndex !== null ? [{ text: INTEGRATIONS[selectedIntegration.kind].name, value: selectedIntegration.kind }] : []),
-    ]
+    function resetSelection() {
+        showEditIntegrations.set(false)
+        selectedKey = ""
+        selectedKeyEditValue = ""
+    }
 </script>
 
 <div id="page">
@@ -213,7 +196,7 @@
                             await updateStatusMessage(statusMessage)
                         }
                         if (changeList.username) {
-                            await updateUsername(user.name)
+                            await updateUsername($user.name)
                         }
 
                         updatePendentItemsToSave()
@@ -247,7 +230,7 @@
                 on:contextmenu={open}
                 class="profile-header"
                 data-cy="profile-banner"
-                style={`background-image: url(${user.profile.banner.image}); background-color: ${identityColor(user.key)};)`}
+                style={`background-image: url(${$user.profile.banner.image}); background-color: ${identityColor($user.key)};)`}
                 on:click={_ => {
                     fileinput.click()
                 }}>
@@ -261,7 +244,7 @@
                     id: "clear-profile-picture",
                     icon: Shape.Trash,
                     text: $_("settings.profile.deleteProfile"),
-                    disabled: user.profile.photo.image === "",
+                    disabled: $user.profile.photo.image === "",
                     appearance: Appearance.Default,
                     onClick: () => {
                         updateProfilePicture("/0")
@@ -269,7 +252,7 @@
                 },
             ]}>
             <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
-                <ProfilePicture id={key} image={user.profile.photo.image} size={Size.Larger} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
+                <ProfilePicture id={key} image={$user.profile.photo.image} size={Size.Larger} status={$user.profile.status} frame={$user.profile.photo.frame} noIndicator />
                 <FileUploadButton
                     icon
                     tooltip={$_("settings.profile.change_profile_photo")}
@@ -286,14 +269,14 @@
                         <Input
                             hook="input-settings-profile-username"
                             alt
-                            bind:value={user.name}
+                            bind:value={$user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
                             on:isValid={e => {
                                 isValidUsernameToUpdate = e.detail
                             }}
                             rules={CommonInputRules.username}
                             on:enter={async _ => {
-                                await updateUsername(user.name)
+                                await updateUsername($user.name)
                                 updatePendentItemsToSave()
                             }}
                             on:input={_ => {
@@ -320,7 +303,7 @@
                             },
                         ]}>
                         <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
-                            <Input hook="input-settings-profile-short-id" alt value={user.id.short} disabled copyOnInteract>
+                            <Input hook="input-settings-profile-short-id" alt value={$user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
                         </div>
@@ -351,7 +334,7 @@
             <div class="section">
                 <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
                     <Select
-                        hook="selector-current-status-{user.profile.status}"
+                        hook="selector-current-status-{$user.profile.status}"
                         options={[
                             { text: $_("user.status.online"), value: "online" },
                             { text: $_("user.status.offline"), value: "offline" },
@@ -373,7 +356,7 @@
                             }
                             2
                         }}
-                        bind:selected={user.profile.status}>
+                        bind:selected={$user.profile.status}>
                         {#if activityStatus === Status.Online}
                             <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
                         {:else if activityStatus === Status.Idle}
@@ -442,9 +425,9 @@
                             text={$_("generic.cancel")}
                             appearance={Appearance.Alt}
                             on:click={_ => {
-                                showEditIntegrations.set(true)
+                                resetSelection()
                             }}>
-                            <Icon icon={Shape.Plus} />
+                            <Icon icon={Shape.XMark} />
                         </Button>
                     </div>
                 {:else}
@@ -452,7 +435,7 @@
                         hook="button-integrations-add"
                         text={$_("generic.add")}
                         on:click={_ => {
-                            startEditingIntegration("")
+                            startEditingIntegration("", "")
                         }}>
                         <Icon icon={Shape.Plus} />
                     </Button>
@@ -629,7 +612,6 @@
                 height: 256px;
                 background-color: var(--background-alt);
                 background-size: cover;
-                background-position: center;
                 padding: var(--padding-less);
                 width: 100%;
                 z-index: 1;
