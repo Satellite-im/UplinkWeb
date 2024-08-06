@@ -166,7 +166,6 @@ export class TypingIndicator {
      * Add a user indicating the user is typing
      */
     add(user: string) {
-        console.log("user typing ", user)
         this.typingIndicator[user] = new Date()
         this._size = Object.keys(this.typingIndicator).length
     }
@@ -211,7 +210,6 @@ export class TypingIndicator {
             return obj
         }, {})
         this._size = updated.length
-        console.log("users typing ", this._size)
         return old_len != this._size
     }
 
