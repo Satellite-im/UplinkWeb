@@ -56,12 +56,15 @@
 
     let loading = false
     let contentAsideOpen = false
+
     $: sidebarOpen = UIStore.state.sidebarOpen
     $: activeChat = Store.state.activeChat
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: loading = $users[$activeChat.users[1]]?.name === undefined
+
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
     const timeAgo = new TimeAgo("en-US")
@@ -411,8 +414,8 @@
             </div>
             <div slot="content">
                 {#if $activeChat.users.length > 0}
-                    <Text hook="chat-topbar-username" singleLine>{chatName}</Text>
-                    <Text hook="chat-topbar-status" singleLine muted size={Size.Smaller}>
+                    <Text hook="chat-topbar-username" class="min-text" singleLine loading={loading}>{chatName}</Text>
+                    <Text hook="chat-topbar-status" class="min-text" singleLine muted size={Size.Smaller} loading={loading}>
                         {statusMessage}
                     </Text>
                 {/if}
@@ -424,12 +427,13 @@
                     icon
                     appearance={transact ? Appearance.Primary : Appearance.Alt}
                     disabled={$activeChat.users.length === 0}
+                    loading={loading}
                     on:click={_ => {
                         transact = true
                     }}>
                     <Icon icon={Shape.SendCoin} />
                 </Button>
-                <Button hook="button-chat-call" icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                <Button hook="button-chat-call" loading={loading} icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
                 <Button
@@ -437,6 +441,7 @@
                     hook="button-chat-video"
                     appearance={Appearance.Alt}
                     disabled={$activeChat.users.length === 0}
+                    loading={loading}
                     on:click={async _ => {
                         Store.setActiveCall($activeChat)
                         await VoiceRTCInstance.makeVideoCall($activeChat.users[1], $activeChat.id)
@@ -448,6 +453,7 @@
                     icon
                     hook="button-chat-favorite"
                     disabled={$activeChat.users.length === 0}
+                    loading={loading}
                     appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
                     on:click={_ => {
                         Store.toggleFavorite($activeChat)
@@ -458,6 +464,7 @@
                     hook="button-chat-pin"
                     icon
                     disabled={$activeChat.users.length === 0}
+                    loading={loading}
                     appearance={Appearance.Alt}
                     on:click={_ => {
                         let top = document.getElementsByClassName("topbar")[0]
@@ -470,6 +477,7 @@
                     <Button
                         icon
                         appearance={showUsers ? Appearance.Primary : Appearance.Alt}
+                        loading={loading}
                         on:click={_ => {
                             showUsers = true
                         }}>
@@ -478,6 +486,7 @@
                     <Button
                         icon
                         appearance={groupSettings ? Appearance.Primary : Appearance.Alt}
+                        loading={loading}
                         on:click={_ => {
                             groupSettings = true
                         }}>
@@ -488,6 +497,7 @@
                     <Button
                         icon
                         appearance={contentAsideOpen ? Appearance.Primary : Appearance.Alt}
+                        loading={loading}
                         on:click={_ => {
                             contentAsideOpen = !contentAsideOpen
                         }}>
@@ -504,7 +514,7 @@
                 }} />
         {/if}
 
-        <Conversation>
+        <Conversation loading={loading}>
             {#if $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
