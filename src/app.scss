@@ -352,3 +352,9 @@ code {
         box-shadow: 0 0 0 0 var(--success-color);
     }
 }
+
+.min-text {
+    min-width: 50px;
+    width: 100%;
+    max-width: 250px !important;
+}
