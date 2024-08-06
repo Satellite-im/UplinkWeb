@@ -641,6 +641,7 @@
             <Chatbar
                 filesSelected={files}
                 replyTo={replyTo}
+                typing={$activeChat.typing_indicator.users().map(u => $users[u])}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
                     typing()
