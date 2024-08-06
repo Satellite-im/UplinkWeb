@@ -30,6 +30,9 @@
     })
 
     onMount(() => {
+        // setTimeout(() => {
+        //     loading = false
+        // }, 3000)
         setTimeout(() => {
             scrollToBottom(scrollContainer)
         }, 250)
