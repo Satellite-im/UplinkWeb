@@ -8,8 +8,8 @@
     }
 </script>
 
-<div class="range-selector">
-    <input type="range" min={min} max={max} value={value} class="range" on:input={handleChange} />
+<div class="range-selector" data-cy="range-selector">
+    <input data-cy="range-selector-input" type="range" min={min} max={max} value={value} class="range" on:input={handleChange} />
 </div>
 
 <style lang="scss">

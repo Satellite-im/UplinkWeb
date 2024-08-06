@@ -12,15 +12,16 @@
     export let chat: Chat
     export let cta: boolean = false
     export let simpleUnreads: boolean = false
-    export let loading: boolean = false
+    export let loading: boolean
 
     const timeAgo = new TimeAgo("en-US")
 
     $: users = Store.getUsers(chat.users)
 
-    $: chatName = $users.length > 2 ? chat.name : $users[1]?.name ?? $users[0].name
-    $: chatPhoto = $users.length > 2 ? "todo" : $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
-    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
+    $: chatName = $users.length > 2 ? chat.name : ($users[1]?.name ?? $users[0].name)
+    $: loading = chatName === "Unknown User"
+    $: chatPhoto = $users.length > 2 ? "todo" : ($users[1]?.profile.photo.image ?? $users[0].profile.photo.image)
+    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
 
     const dispatch = createEventDispatcher()
 
@@ -46,11 +47,11 @@
     {/if}
     <div class="content">
         <div class="heading">
-            <Text hook="chat-preview-name" class="chat-user" singleLine loading={loading}>
+            <Text hook="chat-preview-name" class="chat-user min-text" singleLine loading={loading}>
                 {chatName}
             </Text>
             <div class="right">
-                <Text hook="chat-preview-timestamp" class="timestamp" loading={loading} size={Size.Smallest} muted>
+                <Text hook="chat-preview-timestamp" class="timestamp min-text" loading={loading} size={Size.Smallest} muted>
                     {getTimeAgo(chat.last_message_at)}
                 </Text>
                 {#if !loading}
@@ -124,6 +125,11 @@
                     display: inline-flex;
                     gap: var(--gap);
                     align-items: center;
+                }
+
+                :global(.chat-user),
+                :global(.timestamp) {
+                    min-width: 50px;
                 }
 
                 .unreads {
