@@ -452,6 +452,33 @@ class MultipassStore {
     }
 
     /**
+     * Creates or updates a metadata key/value.
+     * @param key - The key for the metadata.
+     * @param value - The value for the metadata.
+     */
+    async setMetadata(key: string, value: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            await multipass.update_identity(wasm.IdentityUpdate.AddMetadataKey, [key, value])
+            await this._updateIdentity()
+        }
+    }
+
+    /**
+     * Removes a metadata key.
+     * @param key - The key for the metadata.
+     */
+    async removeMetadata(key: string) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            await multipass.update_identity(wasm.IdentityUpdate.RemoveMetadataKey, key)
+            await this._updateIdentity()
+        }
+    }
+
+    /**
      * Updates the profile photo.
      * @param newPictureBase64 - The new profile photo in base64 format.
      */
@@ -542,6 +569,7 @@ class MultipassStore {
                         status: status,
                         status_message: identity === undefined ? "" : identity.status_message ?? "",
                     },
+                    integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
                     media: {
                         is_playing_audio: false,
                         is_streaming_video: false,
