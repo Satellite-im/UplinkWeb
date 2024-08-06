@@ -370,17 +370,17 @@
                 </SettingSection>
             </div>
 
-            <div class="section integrations">
+            <div class="section integrations" data-cy="section-account-integrations">
                 <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
-                <Text>{$_("settings.profile.integration.description")}</Text>
+                <Text hook="text-settings-profile-integrations">{$_("settings.profile.integration.description")}</Text>
                 <div class="active">
                     {#each $user.integrations as [key, value]}
                         <div class="integration-item">
                             <IntegrationDisplay key={key} value={value} />
-                            <Button appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(key, value)}>
+                            <Button hook="button-account-integrations-item-edit" appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(key, value)}>
                                 <Icon icon={Shape.Pencil} />
                             </Button>
-                            <Button appearance={Appearance.Error} icon on:click={() => removeIntegration(key)}>
+                            <Button hook="button-account-integrations-item-delete" appearance={Appearance.Error} icon on:click={() => removeIntegration(key)}>
                                 <Icon icon={Shape.XMark} />
                             </Button>
                         </div>
@@ -388,13 +388,14 @@
                 </div>
 
                 {#if $showEditIntegrations}
-                    <Label text={$user.integrations.has(selectedKey) ? $_("settings.profile.integration.editIntegration") : $_("settings.profile.integration.addNew")} />
+                    <Label hook="label-account-integrations-new" text={$user.integrations.has(selectedKey) ? $_("settings.profile.integration.editIntegration") : $_("settings.profile.integration.addNew")} />
 
                     <div class="add">
                         <div class="left">
                             {#if !$user.integrations.has(selectedKey)}
-                                <Label text={$_("generic.platform")} />
+                                <Label hook="label-account-integrations-new-platform" text={$_("generic.platform")} />
                                 <Select
+                                    hook="selector-account-integrations-new-platform"
                                     alt
                                     options={Object.entries(Integrations).map(([key, value]) => ({ value: key, text: value }))}
                                     bind:selected={selectedKind}
@@ -407,19 +408,20 @@
                                     }} />
                             {/if}
                             {#if selectedKind === Integrations.Generic}
-                                <Input alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
+                                <Input hook="input-account-integrations-new-generic" alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
                             {/if}
                         </div>
-                        <img class="integration-logo" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
+                        <img class="integration-logo" data-cy="logo-account-integrations-new" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
                         <div class="right">
-                            <Label text={$_("generic.address")} />
-                            <Input alt bind:value={selectedKeyEditValue} />
+                            <Label hook="label-account-integration-new-address" text={$_("generic.address")} />
+                            <Input hook="input-account-integrations-new-address" alt bind:value={selectedKeyEditValue} />
                         </div>
 
-                        <Button text={$user.integrations.has(selectedKey) ? $_("generic.save") : $_("generic.add")} on:click={setIntegration}>
+                        <Button hook="button-account-integrations-new-add" text={$user.integrations.has(selectedKey) ? $_("generic.save") : $_("generic.add")} on:click={setIntegration}>
                             <Icon icon={$user.integrations.has(selectedKey) ? Shape.CheckMark : Shape.Plus} />
                         </Button>
                         <Button
+                            hook="button-account-integrations-new-cancel"
                             text={$_("generic.cancel")}
                             appearance={Appearance.Alt}
                             on:click={_ => {
@@ -430,6 +432,7 @@
                     </div>
                 {:else}
                     <Button
+                        hook="button-integrations-add"
                         text={$_("generic.add")}
                         on:click={_ => {
                             startEditingIntegration("", "")

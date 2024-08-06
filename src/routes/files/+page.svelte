@@ -690,18 +690,18 @@
     <div class="content">
         <Topbar>
             <div slot="before" class="before flex-column">
-                <Label text={$_("files.quickActions")} />
+                <Label hook="label-quick-actions" text={$_("files.quickActions")} />
                 <div class="actions">
-                    <Button appearance={Appearance.Alt} text={$_("files.sync")}>
+                    <Button hook="button-files-sync" appearance={Appearance.Alt} text={$_("files.sync")}>
                         <Icon icon={Shape.ArrowsLeftRight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text={$_("files.giftSpace")}>
+                    <Button hook="button-files-gift-space" appearance={Appearance.Alt} text={$_("files.giftSpace")}>
                         <Icon icon={Shape.Gift} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text={$_("files.rentSpace")}>
+                    <Button hook="button-files-rent-space" appearance={Appearance.Alt} text={$_("files.rentSpace")}>
                         <Icon size={Size.Large} icon={Shape.Starlight} />
                     </Button>
-                    <Button appearance={Appearance.Alt} text={$_("files.createNode")}>
+                    <Button hook="button-files-create-node" appearance={Appearance.Alt} text={$_("files.createNode")}>
                         <Icon icon={Shape.Info} />
                     </Button>
                 </div>
@@ -710,12 +710,12 @@
         <Topbar>
             <div slot="before" class="before">
                 <button class="stat">
-                    <Label text={$_("files.freeSpace")} /><Text singleLine>
+                    <Label hook="label-files-free-space" text={$_("files.freeSpace")} /><Text hook="text-files-free-space" singleLine>
                         {$freeSpace}
                     </Text>
                 </button>
                 <button class="stat">
-                    <Label text={$_("files.totalSpace")} /><Text singleLine>
+                    <Label hook="label-files-total-space" text={$_("files.totalSpace")} /><Text hook="text-files-total-space" singleLine>
                         {prettyBytes(ConstellationStoreInstance.MAX_STORAGE_SIZE)}
                     </Text>
                 </button>

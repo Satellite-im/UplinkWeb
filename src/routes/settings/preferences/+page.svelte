@@ -109,7 +109,7 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-emoji-font" name={$_("settings.preferences.emojiFont")} description={$_("settings.preferences.emojiFontDescription")}>
-        <span class="emoji">{randomEmoji}</span>
+        <span data-cy="emoji-font-random-emoji" class="emoji">{randomEmoji}</span>
         <Select
             hook="selector-current-emoji-font-{emojiFont.toLowerCase()}"
             selected={emojiFont}
@@ -123,15 +123,16 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-identicon" name={$_("settings.preferences.identiconStyle")} description={$_("settings.preferences.identiconStyleDescription")}>
-        <ProfilePicture id={"0x0000000000000000000000000000000000000000"} />
+        <ProfilePicture hook="identicon-profile-picture" id={"0x0000000000000000000000000000000000000000"} />
         <Select
+            hook="selector-current-identicon-{identiconStyle.toLowerCase()}"
             selected={identiconStyle}
             options={availableIdenticons}
             alt
             on:change={v => {
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, identiconStyle: v.detail } })
             }} />
-        <Button hook="button-emoji-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+        <Button hook="button-identicon-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
     </SettingSection>
@@ -174,9 +175,9 @@
         <ColorSwatch name="Apple Valley" color="#0a8560" />
         <ColorSwatch name="Pencil Lead" color="#3c424d" />
     </SettingSection>
-    <SettingSection hook="section-convert-to-emoji" name={$_("settings.messages.showStatusWidgets")} description={$_("settings.messages.showStatusWidgetsDescription")}>
+    <SettingSection hook="section-widget-panel" name={$_("settings.messages.showStatusWidgets")} description={$_("settings.messages.showStatusWidgetsDescription")}>
         <Switch
-            hook="checkbox-show-widgets"
+            hook="switch-show-widgets"
             on={settings ? settings.widgets.show : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, widgets: { ...settings.widgets, show: on.detail } })
@@ -184,7 +185,7 @@
     </SettingSection>
     <SettingSection hook="section-minimal-call-alerts" name={$_("settings.calling.minimalCallingAlerts")} description={$_("settings.calling.minimalCallingAlertsDescription")}>
         <Switch
-            hook="checkbox-minimal-call-alerts"
+            hook="switch-minimal-call-alerts"
             on={settings ? settings.calling.minimalCallingAlerts : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, calling: { ...(settings.calling || {}), minimalCallingAlerts: on.detail } })

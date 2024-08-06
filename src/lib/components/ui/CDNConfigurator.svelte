@@ -13,11 +13,11 @@
 
     <Label hook="label-cdn" text="CDN URL" />
     <div class="cdn-content">
-        <Input placeholder={$_("settings.network.cdn.namePlaceholder")} bind:value={name} disabled />
-        <Input highlight={Appearance.Success} placeholder={$_("settings.network.cdn.addressPlaceholder")} bind:value={address} disabled>
+        <Input hook="input-cdn-name" placeholder={$_("settings.network.cdn.namePlaceholder")} bind:value={name} disabled />
+        <Input hook="input-cdn-address" highlight={Appearance.Success} placeholder={$_("settings.network.cdn.addressPlaceholder")} bind:value={address} disabled>
             <Icon icon={Shape.Lock} />
         </Input>
-        <Button appearance={Appearance.Alt} text={$_("generic.save")}>
+        <Button hook="button-cdn-save" appearance={Appearance.Alt} text={$_("generic.save")}>
             <Icon icon={Shape.CheckMark} />
         </Button>
     </div>
