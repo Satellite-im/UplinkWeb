@@ -173,7 +173,6 @@
     <Text appearance={Appearance.Warning}>{errorMessage}</Text>
 {/if}
 
-
 <style lang="scss">
     .input-group {
         min-height: var(--input-height);
