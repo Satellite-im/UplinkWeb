@@ -6,7 +6,6 @@ import { mock_messages } from "$lib/mock/messages"
 import { Appearance } from "$lib/enums"
 import { Store } from "../Store"
 import { UIStore } from "../ui"
-import { bool } from "three/examples/jsm/nodes/Nodes.js"
 import { mchats } from "$lib/mock/users"
 
 type ConversationMessagesMap = { [id: string]: Writable<ConversationMessages> }
