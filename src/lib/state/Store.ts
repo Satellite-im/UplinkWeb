@@ -36,7 +36,7 @@ class GlobalStore {
             favorites: createPersistentState("uplink.favorites", []),
             files: createPersistentState("uplink.files", []),
             openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
-            toasts: createPersistentState("uplink.toasts", {}),
+            toasts: writable({}),
             userCache: writable({}),
         }
     }
