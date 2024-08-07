@@ -18,6 +18,14 @@
 
     let showAccounts = false
     let showConfigureRelay = false
+
+     // Add a boolean variable to control the visibility of the button
+     let showButton: boolean = true
+
+     // Function to toggle the visibility of the button (if needed)
+     function toggleButtonVisibility() {
+        showButton = !showButton
+}
 </script>
 
 <div id="auth-create">
@@ -59,7 +67,9 @@
         <Spacer />
         <Controls breakpoint={1000}>
             <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} />
-            <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} />
+        {#if showButton}
+            <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={() => (showConfigureRelay = true)} appearance={Appearance.Alt} />
+        {/if}        
         </Controls>
     </div>
 
