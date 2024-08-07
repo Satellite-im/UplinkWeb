@@ -38,26 +38,20 @@
 
     // Validate input function
     function isValidInput(): boolean {
-        console.log("Validated Value:", value)
-        console.log("Validated Value Length:", value.length)
-
         if (rules.required && !value) {
             errorMessage = "This field is required."
             return false
         }
         if (value.length < rules.minLength) {
             errorMessage = `Minimum length is ${rules.minLength} characters.`
-            console.log("Error: Minimum length not met")
             return false
         }
         if (value.length > rules.maxLength) {
             errorMessage = `Maximum length is ${rules.maxLength} characters.`
-            console.log("Error: Maximum length exceeded")
             return false
         }
         if (rules.pattern && !rules.pattern.test(value)) {
             errorMessage = "Invalid format."
-            console.log("Error: Pattern not matched")
             return false
         }
         errorMessage = ""
@@ -72,9 +66,7 @@
 
     // Handle input event
     function handleInput(event) {
-        value = event.target.value;
-        console.log("Immediate Value:", value)
-        console.log("Immediate Value Length:", value.length)
+        value = event.target.value
         debouncedValidateInput()
     }
 
@@ -82,10 +74,8 @@
     function handlePaste(event) {
         setTimeout(() => {
             value = event.target.value
-            console.log("Pasted Value:", value)
-            console.log("Pasted Value Length:", value.length)
-            debouncedValidateInput();
-        }, 0);  // Delay to ensure the pasted value is updated
+            debouncedValidateInput()
+        }, 0)  // Delay to ensure the pasted value is updated
     }
 
     // Handle input change
