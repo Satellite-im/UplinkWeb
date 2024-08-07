@@ -91,7 +91,6 @@
     let callStarted = false
 
     onMount(async () => {
-        console.log("CallScreen mounted")
         await checkPermissions()
         VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
@@ -101,7 +100,6 @@
 
         setInterval(async () => {
             if (VoiceRTCInstance.acceptedIncomingCall) {
-                console.log("Accepting incoming call")
                 VoiceRTCInstance.acceptedIncomingCall = false
                 await VoiceRTCInstance.acceptCall()
             }

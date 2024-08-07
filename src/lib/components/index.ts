@@ -37,3 +37,5 @@ export { default as Channel } from "$lib/components/community/channel/Channel.sv
 export { default as Toasts } from "$lib/components/ui/Toasts.svelte"
 export { default as AAR } from "$lib/components/ui/AAR.svelte"
 export { default as IntegrationDisplay } from "$lib/components/ui/IntegrationDisplay.svelte"
+export { default as KeyboardListener } from "$lib/components/ui/KeyboardListener.svelte"
+export { default as MouseListener } from "$lib/components/ui/MouseListener.svelte"
