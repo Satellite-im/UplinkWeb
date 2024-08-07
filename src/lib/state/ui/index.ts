@@ -121,7 +121,6 @@ class Store {
 
     getTotalNotifications() {
         return get(this.state.chats).reduce((acc, chat) => {
-            console.log("chat", chat)
             return acc + chat.notifications
         }, 0)
     }

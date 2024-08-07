@@ -23,6 +23,7 @@
     import { _, locale } from "svelte-i18n"
     import { initializeLocale } from "$lib/lang/index"
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
+    import MouseListener from "$lib/components/ui/MouseListener.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -160,6 +161,7 @@
         {@html `<style>${cssOverride}</style>`}
         <Polling rate={5000} />
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
+        <MouseListener on:clicked={() => {}} />
         <Toasts />
         <IncomingCall />
         <GamepadListener />

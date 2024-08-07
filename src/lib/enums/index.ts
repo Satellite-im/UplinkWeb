@@ -153,6 +153,14 @@ export const enum KeybindState {
     Released,
 }
 
+export enum MouseButtons {
+    LeftClick = 0,
+    MiddleClick = 1,
+    RightClick = 2,
+    BackButton = 3,
+    ForwardButton = 4,
+}
+
 export enum MessageDirection {
     Inbound,
     Outbound,
