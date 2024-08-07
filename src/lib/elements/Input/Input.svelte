@@ -24,19 +24,6 @@
 
     let errorMessage: string = ""
 
-    // Create dispatcher
-    const dispatch = createEventDispatcher()
-
-    // Debounce function
-    function debounce(func, wait) {
-        let timeout
-        return function(...args) {
-            clearTimeout(timeout)
-            timeout = setTimeout(() => func.apply(this, args), wait)
-        }
-    }
-
-    // Validate input function
     function isValidInput(): boolean {
         if (rules.required && !value) {
             errorMessage = "This field is required."
@@ -58,73 +45,44 @@
         return true
     }
 
-    // Debounced validation function
-    const debouncedValidateInput = debounce(() => {
-        let isValid = isValidInput()
-        dispatch("isValid", isValid)
-    }, 300);
-
-    // Handle input event
-    function handleInput(event) {
-        value = event.target.value
-        debouncedValidateInput()
+    // Debounce function for minimal change
+    function debounce(func, wait) {
+        let timeout
+        return function(...args) {
+            clearTimeout(timeout)
+            timeout = setTimeout(() => func.apply(this, args), wait)
+        }
     }
 
-    // Handle paste event
-    function handlePaste(event) {
-        setTimeout(() => {
-            value = event.target.value
-            debouncedValidateInput()
-        }, 0)  // Delay to ensure the pasted value is updated
-    }
-
-    // Handle input change
-    function onInput() {
+    // Debounced input handling
+    const debouncedOnInput = debounce(() => {
         let isValid = isValidInput()
         dispatch("isValid", isValid)
         dispatch("input", value)
+    }, 300);
+
+    if (copyOnInteract) {
+        tooltip = "Copy"
+        disabled = true
     }
 
-    function onBlur() {
-        dispatch("blur");
-    }
+    let clazz = ""
+    let input: HTMLElement
+    const dispatch = createEventDispatcher()
+    const writableValue = writable(value)
 
-    function onKeyDown(event: KeyboardEvent) {
-        if (event.code === "Enter") {
-            send();
-        }
-    }
+    $: writableValue.set(value)
+    $: value = $writableValue
 
-    function handleFocus(event: FocusEvent) {
-        const input = event.target as HTMLInputElement;
-        requestAnimationFrame(() => {
-            input.select();
-
-            const mouseupListener = () => {
-                input.removeEventListener("mouseup", mouseupListener);
-                return false;
-            };
-
-            input.addEventListener("mouseup", mouseupListener);
-        });
-    }
-
-    let inputElement
+    let onsend: any[] = []
     let editor: MarkdownEditor
-    let writableValue = writable(value)
-
-    onMount(() => {
-        if (inputElement) {
-            inputElement.addEventListener('input', handleInput)
-            inputElement.addEventListener('paste', handlePaste)
-        }
-
-        if (rich) {
-            if (autoFocus && inputElement) inputElement.focus()
-            editor = new MarkdownEditor(inputElement, {
+    if (rich) {
+        onMount(() => {
+            if (autoFocus) input.focus()
+            editor = new MarkdownEditor(input, {
                 keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
-                extensions: [EditorView.editorAttributes.of({ class: inputElement.classList.toString() })],
+                extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
             })
             // Init editor with initial value
             editor.value(value)
@@ -134,16 +92,16 @@
             })
             if (autoFocus) editor.codemirror.focus()
             // @ts-ignore
-            editor.updatePlaceholder(inputElement.placeholder)
+            editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
                 writableValue.set(val)
-                onInput()
+                debouncedOnInput()  // Update to use debounced function
             })
             onsend.push(() => {
                 editor.value("")
             })
-        }
-    })
+        })
+    }
 
     $: if (rich && editor) {
         editor.value($writableValue)
@@ -156,13 +114,33 @@
         onsend.forEach(e => e())
     }
 
-    let onsend: any[] = []
-    let clazz = ""
+    function onInput() {
+        // Debounce on the input event
+        debouncedOnInput()
+    }
 
-    // Handle tooltip and disable state based on interaction
-    if (copyOnInteract) {
-        tooltip = "Copy"
-        disabled = true
+    function onBlur() {
+        dispatch("blur")
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+        if (event.code === "Enter") {
+            send()
+        }
+    }
+
+    function handleFocus(event: FocusEvent) {
+        const input = event.target as HTMLInputElement
+        requestAnimationFrame(() => {
+            input.select()
+
+            const mouseupListener = () => {
+                input.removeEventListener("mouseup", mouseupListener)
+                return false
+            }
+
+            input.addEventListener("mouseup", mouseupListener)
+        })
     }
 </script>
 
@@ -182,7 +160,7 @@
             class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
             type="text"
             disabled={disabled}
-            bind:this={inputElement}
+            bind:this={input}
             on:focus={handleFocus}
             bind:value={$writableValue}
             placeholder={placeholder}
@@ -191,10 +169,10 @@
             on:blur={onBlur} />
     </div>
 </div>
-
 {#if errorMessage}
     <Text appearance={Appearance.Warning}>{errorMessage}</Text>
 {/if}
+
 
 <style lang="scss">
     .input-group {
