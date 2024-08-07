@@ -30,23 +30,25 @@
 
     async function sendMessage(text: string) {
         let attachments: FileAttachment[] = []
-        filesSelected.forEach(([file, path]) => {
+        for (const [file, path] of filesSelected) {
             if (file) {
+                const fileStream = await file.stream() // Supondo que file.stream() seja uma operação assíncrona
                 attachments.push({
                     file: file.name,
-                    attachment: [file.stream(), file.size],
+                    attachment: [fileStream, file.size],
                 })
             } else if (path) {
                 attachments.push({
                     file: path,
                 })
             }
-        })
+        }
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
         console.log(user, "charbar chat", get(Store.state.activeChat))
+        chat.last_message_has_attachment = Array.isArray(attachments) && attachments.length ? "true" : "false"
+        console.log("welkjrheklhfkhsdklhfgk", chat.last_message_has_attachment, attachments)
         chat.last_message_sent_by_user = user.key
-        chat.last_message_has_attachment = attachments.length ? "true" : "false"
 
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
 

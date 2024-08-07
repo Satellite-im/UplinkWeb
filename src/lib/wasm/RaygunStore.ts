@@ -739,12 +739,14 @@ class RaygunStore {
         let setting = parseJSValue(chat.settings())
         let direct = setting.type === "direct"
         let msg = await this.getMessages(raygun, chat.id(), new MessageOptions())
+        let user = get(Store.state.user)
         chat.recipients().forEach(async recipient => {
             let user = await MultipassStoreInstance.identity_from_did(recipient)
             if (user) {
                 Store.updateUser(user)
             }
         })
+        console.log("c onvo on warp", msg.length > 0 && msg[msg.length - 1].attachments.length > 0 ? "true" : "false")
         return {
             ...defaultChat,
             id: chat.id(),
@@ -762,7 +764,9 @@ class RaygunStore {
             creator: chat.creator(),
             users: chat.recipients(),
             last_message_at: msg.length > 0 ? msg[msg.length - 1].details.at : new Date(),
+            last_message_has_attachment: msg.length > 0 && msg[msg.length - 1].attachments.length > 0 ? "true" : "false",
             last_message_preview: msg.length > 0 ? msg[msg.length - 1].text.join("\n") : "",
+            last_message_sent_by_user: user.key,
         }
     }
 }
