@@ -24,49 +24,117 @@
 
     let errorMessage: string = ""
 
+    // Create dispatcher
+    const dispatch = createEventDispatcher()
+
+    // Debounce function
+    function debounce(func, wait) {
+        let timeout
+        return function(...args) {
+            clearTimeout(timeout)
+            timeout = setTimeout(() => func.apply(this, args), wait)
+        };
+    }
+
+    // Validate input function
     function isValidInput(): boolean {
+        console.log("Validated Value:", value)
+        console.log("Validated Value Length:", value.length)
+
         if (rules.required && !value) {
             errorMessage = "This field is required."
             return false
         }
         if (value.length < rules.minLength) {
             errorMessage = `Minimum length is ${rules.minLength} characters.`
+            console.log("Error: Minimum length not met")
             return false
         }
         if (value.length > rules.maxLength) {
             errorMessage = `Maximum length is ${rules.maxLength} characters.`
+            console.log("Error: Maximum length exceeded")
             return false
         }
         if (rules.pattern && !rules.pattern.test(value)) {
             errorMessage = "Invalid format."
+            console.log("Error: Pattern not matched")
             return false
         }
         errorMessage = ""
         return true
     }
 
-    if (copyOnInteract) {
-        tooltip = "Copy"
-        disabled = true
+    // Debounced validation function
+    const debouncedValidateInput = debounce(() => {
+        let isValid = isValidInput()
+        dispatch("isValid", isValid)
+    }, 300);
+
+    // Handle input event
+    function handleInput(event) {
+        value = event.target.value;
+        console.log("Immediate Value:", value)
+        console.log("Immediate Value Length:", value.length)
+        debouncedValidateInput()
     }
 
-    let clazz = ""
-    let input: HTMLElement
-    const dispatch = createEventDispatcher()
-    const writableValue = writable(value)
+    // Handle paste event
+    function handlePaste(event) {
+        setTimeout(() => {
+            value = event.target.value
+            console.log("Pasted Value:", value)
+            console.log("Pasted Value Length:", value.length)
+            debouncedValidateInput();
+        }, 0);  // Delay to ensure the pasted value is updated
+    }
 
-    $: writableValue.set(value)
-    $: value = $writableValue
+    // Handle input change
+    function onInput() {
+        let isValid = isValidInput()
+        dispatch("isValid", isValid)
+        dispatch("input", value)
+    }
 
-    let onsend: any[] = []
+    function onBlur() {
+        dispatch("blur");
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+        if (event.code === "Enter") {
+            send();
+        }
+    }
+
+    function handleFocus(event: FocusEvent) {
+        const input = event.target as HTMLInputElement;
+        requestAnimationFrame(() => {
+            input.select();
+
+            const mouseupListener = () => {
+                input.removeEventListener("mouseup", mouseupListener);
+                return false;
+            };
+
+            input.addEventListener("mouseup", mouseupListener);
+        });
+    }
+
+    let inputElement
     let editor: MarkdownEditor
-    if (rich) {
-        onMount(() => {
-            if (autoFocus) input.focus()
-            editor = new MarkdownEditor(input, {
+    let writableValue = writable(value)
+
+    onMount(() => {
+        if (inputElement) {
+            inputElement.addEventListener('input', handleInput)
+            inputElement.addEventListener('paste', handlePaste)
+        }
+
+        if (rich) {
+            if (autoFocus && inputElement) inputElement.focus()
+            editor = new MarkdownEditor(inputElement, {
                 keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
-                extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
+                extensions: [EditorView.editorAttributes.of({ class: inputElement.classList.toString() })],
             })
             // Init editor with initial value
             editor.value(value)
@@ -76,15 +144,15 @@
             })
             if (autoFocus) editor.codemirror.focus()
             // @ts-ignore
-            editor.updatePlaceholder(input.placeholder)
+            editor.updatePlaceholder(inputElement.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
                 writableValue.set(val)
             })
             onsend.push(() => {
                 editor.value("")
             })
-        })
-    }
+        }
+    })
 
     $: if (rich && editor) {
         editor.value($writableValue)
@@ -97,34 +165,13 @@
         onsend.forEach(e => e())
     }
 
-    function onInput() {
-        let isValid = isValidInput()
-        dispatch("isValid", isValid)
-        dispatch("input", value)
-    }
+    let onsend: any[] = []
+    let clazz = ""
 
-    function onBlur() {
-        dispatch("blur")
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-        if (event.code === "Enter") {
-            send()
-        }
-    }
-
-    function handleFocus(event: FocusEvent) {
-        const input = event.target as HTMLInputElement
-        requestAnimationFrame(() => {
-            input.select()
-
-            const mouseupListener = () => {
-                input.removeEventListener("mouseup", mouseupListener)
-                return false
-            }
-
-            input.addEventListener("mouseup", mouseupListener)
-        })
+    // Handle tooltip and disable state based on interaction
+    if (copyOnInteract) {
+        tooltip = "Copy"
+        disabled = true
     }
 </script>
 
@@ -132,7 +179,7 @@
     class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
     data-tooltip={tooltip}
     role="none"
-    on:click={async _ => {
+    on:click={async () => {
         if (copyOnInteract) {
             await navigator.clipboard.writeText(`${value}`)
         }
@@ -144,7 +191,7 @@
             class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
             type="text"
             disabled={disabled}
-            bind:this={input}
+            bind:this={inputElement}
             on:focus={handleFocus}
             bind:value={$writableValue}
             placeholder={placeholder}
@@ -153,6 +200,7 @@
             on:blur={onBlur} />
     </div>
 </div>
+
 {#if errorMessage}
     <Text appearance={Appearance.Warning}>{errorMessage}</Text>
 {/if}
