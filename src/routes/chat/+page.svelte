@@ -367,7 +367,7 @@
                     {
                         id: "hide",
                         icon: Shape.EyeSlash,
-                        text: $_("chat.gide"),
+                        text: $_("chat.hide"),
                         appearance: Appearance.Default,
                         onClick: () => UIStore.removeSidebarChat(chat),
                     },
