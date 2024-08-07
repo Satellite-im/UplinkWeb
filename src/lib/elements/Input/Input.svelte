@@ -169,7 +169,7 @@
     class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
     data-tooltip={tooltip}
     role="none"
-    on:click={async () => {
+    on:click={async _ => {
         if (copyOnInteract) {
             await navigator.clipboard.writeText(`${value}`)
         }
