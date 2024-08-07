@@ -82,7 +82,7 @@ export class VoiceRTC {
             conn.on("data", data => {
                 this.dataConnection = conn
                 if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
-                    console.log("Receving message to end call")
+                    console.log("Receiving message to end call")
                     this.isReceivingCall = false
                     this.endCall()
                 } else if (data === VoiceRTCMessageType.Calling) {
