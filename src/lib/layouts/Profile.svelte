@@ -65,7 +65,8 @@
                     {/each}
                 </div>
             </div>
-            <div class="section">
+<!--
+          <div class="section">
                 <Label text="Send BTC" />
                 {#if user != null}
                     {#each wallet.scan_for_addr(user.profile.status_message) as address}
@@ -73,6 +74,7 @@
                     {/each}
                 {/if}
             </div>
+-->
             <div class="section">
                 <Label text={$_("settings.profile.note")} />
                 <Input
