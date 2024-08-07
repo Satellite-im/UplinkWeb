@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { UIStore } from "$lib/state/ui"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onMount } from "svelte"
 
