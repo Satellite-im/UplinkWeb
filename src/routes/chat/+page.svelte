@@ -52,6 +52,7 @@
     import { get_valid_payment_request } from "$lib/utils/Wallet"
     import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
+    import { MessageEvent } from "warp-wasm"
 
     let loading = false
     let contentAsideOpen = false
@@ -218,6 +219,10 @@
 
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
+    }
+
+    async function typing() {
+        await RaygunStoreInstance.sendEvent($activeChat.id, MessageEvent.Typing)
     }
 
     let receivingCall: boolean = false
@@ -396,7 +401,7 @@
                         {#if $activeChat.users.length === 2}
                             <ProfilePicture
                                 hook="chat-topbar-profile-picture"
-                                typing={$activeChat.activity}
+                                typing={$activeChat.typing_indicator.size > 0}
                                 id={$users[$activeChat.users[1]]?.key}
                                 image={$users[$activeChat.users[1]]?.profile.photo.image}
                                 frame={$users[$activeChat.users[1]]?.profile.photo.frame}
@@ -645,7 +650,14 @@
         {/if}
 
         {#if $activeChat.users.length > 0}
-            <Chatbar filesSelected={files} replyTo={replyTo} on:onsend={_ => (files = [])}>
+            <Chatbar
+                filesSelected={files}
+                replyTo={replyTo}
+                typing={$activeChat.typing_indicator.users().map(u => $users[u])}
+                on:onsend={_ => (files = [])}
+                on:input={_ => {
+                    typing()
+                }}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     <ContextMenu
