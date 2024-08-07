@@ -19,6 +19,7 @@ import { _ } from "svelte-i18n"
 import { SettingsStore } from "$lib/state"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { page } from "$app/stores"
+import { goto } from "$app/navigation"
 
 const MAX_PINNED_MESSAGES = 100
 // Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
@@ -455,7 +456,16 @@ class RaygunStore {
                             let notify = settings.notifications.messages && get(page).route.id !== Route.Chat
                             if (ping || notify) {
                                 let user = get(Store.getUser(message.details.origin))
-                                Store.addToastNotification(new ToastMessage("New Message", `${user.name} sent you a message`, 2), settings.audio.messageSounds ? Sounds.Notification : undefined)
+                                Store.addToastNotification(
+                                    new ToastMessage("New Message", `${user.name} sent you a message`, 2, undefined, undefined, () => {
+                                        let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
+                                        if (chat) {
+                                            Store.setActiveChat(chat)
+                                            goto(Route.Chat)
+                                        }
+                                    }),
+                                    settings.audio.messageSounds ? Sounds.Notification : undefined
+                                )
                             }
                             //TODO move chat to top
                             //TODO handle ping

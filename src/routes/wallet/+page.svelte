@@ -18,8 +18,6 @@
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
 
-    // Initialize locale
-
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
 
