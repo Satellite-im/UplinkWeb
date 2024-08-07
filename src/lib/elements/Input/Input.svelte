@@ -137,6 +137,7 @@
             editor.updatePlaceholder(inputElement.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
                 writableValue.set(val)
+                onInput()
             })
             onsend.push(() => {
                 editor.value("")
