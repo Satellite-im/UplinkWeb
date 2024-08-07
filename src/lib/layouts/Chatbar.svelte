@@ -143,6 +143,7 @@
                 position: absolute;
                 display: flex;
                 gap: var(--gap-less);
+                padding-left: var(--padding);
                 .dots {
                     display: flex;
                     gap: var(--gap-less);
