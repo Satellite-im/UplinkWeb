@@ -416,11 +416,14 @@
                                         }
                                     }} />
                             {/if}
-                            {#if selectedKind === Integrations.Generic}
-                                <Input hook="input-account-integrations-new-generic" alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
-                            {/if}
                         </div>
                         <img class="integration-logo" data-cy="logo-account-integrations-new" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
+                        {#if selectedKind === Integrations.Generic}
+                            <div class="label">
+                                <Label hook="label-account-integration-new-address" text={$_("generic.label")} />
+                                <Input hook="input-account-integrations-new-generic" alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
+                            </div>
+                        {/if}
                         <div class="right">
                             <Label hook="label-account-integration-new-address" text={$_("generic.address")} />
                             <Input hook="input-account-integrations-new-address" alt bind:value={selectedKeyEditValue} />
