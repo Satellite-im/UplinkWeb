@@ -1,5 +1,5 @@
 import { ChatType, Integrations, Status } from "$lib/enums"
-import { defaultUser, type Chat, type User, hashChat, defaultChat, TypingIndicator } from "$lib/types"
+import { defaultUser, type Chat, type User, hashChat, defaultChat } from "$lib/types"
 
 export const mock_users: Array<User> = [
     {
@@ -212,6 +212,7 @@ let mock_chats: Chat[] = [
         motd: "A place for people who love RC",
         kind: ChatType.Group,
         notifications: 0,
+        activity: false,
         users: [mock_users[0].key, mock_users[1].key, mock_users[3].key],
         last_message_at: new Date(),
         last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
@@ -222,6 +223,7 @@ let mock_chats: Chat[] = [
         name: "",
         motd: "",
         notifications: 4,
+        activity: false,
         users: [defaultUser.key, mock_users[0].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -232,7 +234,7 @@ let mock_chats: Chat[] = [
         name: "",
         motd: "",
         notifications: 2,
-        typing_indicator: mockIndicator(mock_users[1].key),
+        activity: true,
         users: [defaultUser.key, mock_users[1].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -242,6 +244,7 @@ let mock_chats: Chat[] = [
         id: "s12",
         name: "",
         motd: "",
+        activity: false,
         notifications: 0,
         users: [defaultUser.key, mock_users[2].key],
         last_message_at: new Date(),
@@ -252,6 +255,7 @@ let mock_chats: Chat[] = [
         id: "12s",
         name: "",
         motd: "",
+        activity: false,
         notifications: 13,
         users: [defaultUser.key, mock_users[3].key],
         last_message_at: new Date(),
@@ -262,18 +266,13 @@ let mock_chats: Chat[] = [
         id: "as5",
         name: "",
         motd: "",
+        activity: false,
         notifications: 0,
         users: [defaultUser.key, mock_users[4].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
 ]
-
-function mockIndicator(user: string): TypingIndicator {
-    let indicator = new TypingIndicator()
-    indicator.add(user)
-    return indicator
-}
 
 mock_chats[0].id = hashChat(mock_chats[0])
 mock_chats[1].id = hashChat(mock_chats[1])
