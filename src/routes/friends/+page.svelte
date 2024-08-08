@@ -448,12 +448,15 @@
                     padding: var(--padding);
                     border-radius: var(--border-radius);
                 }
+                .friends-section {
+                    padding-top: 15px;
+                    overflow-y: scroll;
+                }
 
                 .section {
                     display: inline-flex;
                     gap: var(--gap);
                     padding-bottom: var(--gap);
-                    // padding-top: var(--gap);
 
                     &.column {
                         flex-direction: column;
