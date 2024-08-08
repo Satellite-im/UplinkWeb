@@ -110,7 +110,6 @@
 
     let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
-    let callStarted = false
 
     onMount(async () => {
         console.log("CallScreen mounted")
@@ -124,11 +123,10 @@
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
             if (VoiceRTCInstance.makingCall) {
-                VoiceRTCInstance.makeVideoCall()
+                await VoiceRTCInstance.makeVideoCall()
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
-                VoiceRTCInstance.acceptCall()
-                callStarted = true
+                await VoiceRTCInstance.acceptCall()
             }
         }
         Store.updateMuted(VoiceRTCInstance.callOptions.audio)

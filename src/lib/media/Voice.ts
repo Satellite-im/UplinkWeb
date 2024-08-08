@@ -1,3 +1,4 @@
+import { CallDirection } from "$lib/enums"
 import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
@@ -73,19 +74,7 @@ export class VoiceRTC {
         }
         const peerId = userId.replace("did:key:", "")
 
-        if (this.localPeer) {
-            if (this.localPeer.destroyed) {
-                log.debug("Creating a new peer since the old one was destroyed")
-                this.localPeer = new Peer(peerId, {
-                    host: "peer.deepspaceshipping.co",
-                    port: 9000,
-                    path: "/",
-                    secure: false,
-                })
-            } else if (this.localPeer.disconnected) {
-                this.localPeer.reconnect()
-            }
-        } else {
+        if (this.localPeer === null) {
             this.localPeer = new Peer(peerId, {
                 host: "peer.deepspaceshipping.co",
                 port: 9000,
@@ -101,8 +90,10 @@ export class VoiceRTC {
         this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
         this.localPeer!.on("call", async call => {
             this.activeCall = call
+            this.channel = call.metadata.channel
             if (!this.makingCall) {
                 this.isReceivingCall = true
+                Store.setPendingCall(Store.getCallingChat(this.channel)!, CallDirection.Inbound)
             }
             log.debug(`Incoming call: ${this.isReceivingCall}`)
         })
@@ -111,6 +102,11 @@ export class VoiceRTC {
 
     private handlePeerConnection(conn: DataConnection) {
         this.dataConnection = conn
+
+        conn.on("open", () => {
+            log.debug("Connection between peers established")
+        })
+
         this.dataConnection?.send({
             type: VoiceRTCMessageType.IncomingCall,
             channel: this.channel,
@@ -119,9 +115,6 @@ export class VoiceRTC {
                 videoEnabled: this.callOptions.video.enabled,
                 audioEnabled: this.callOptions.audio,
             },
-        })
-        conn.on("open", () => {
-            log.debug("Connection between peers established")
         })
 
         conn.on("data", data => {
@@ -142,7 +135,6 @@ export class VoiceRTC {
                 }
                 this.remoteVoiceUser = dataReceived.userInfo
                 this.channel = dataReceived.channel
-                Store.setActiveCall(Store.getCallingChat(this.channel)!)
                 break
             case VoiceRTCMessageType.AcceptedCall:
             case VoiceRTCMessageType.IncomingCall:
@@ -250,11 +242,11 @@ export class VoiceRTC {
 
         this.activeCall!.answer(this.localStream!)
 
-        this.activeCall!.on("stream", remoteStream => {
+        this.activeCall!.on("stream", async remoteStream => {
             if (this.remoteVideoElement) {
                 this.remoteVideoElement.srcObject = remoteStream
                 this.remoteStream = remoteStream
-                this.remoteVideoElement.play()
+                await this.remoteVideoElement.play()
             }
         })
     }
@@ -289,13 +281,22 @@ export class VoiceRTC {
 
             await this.updateLocalStream()
 
-            const call = this.localPeer!.call(this.remotePeerId!, this.localStream!, {})
+            const call = this.localPeer!.call(this.remotePeerId!, this.localStream!, {
+                metadata: {
+                    channel: this.channel,
+                    userInfo: {
+                        did: this.localPeer!.id,
+                        videoEnabled: this.callOptions.video.enabled,
+                        audioEnabled: this.callOptions.audio,
+                    },
+                },
+            })
 
-            call.on("stream", remoteStream => {
+            call.on("stream", async remoteStream => {
                 if (this.remoteVideoElement) {
                     this.remoteVideoElement.srcObject = remoteStream
                     this.remoteStream = remoteStream
-                    this.remoteVideoElement.play()
+                    await this.remoteVideoElement.play()
                 }
             })
         } catch (error) {
@@ -357,14 +358,14 @@ export class VoiceRTC {
 
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = this.localStream
-            this.localVideoCurrentSrc.play()
+            await this.localVideoCurrentSrc.play()
         }
 
         await this.improveAudioQuality()
     }
 
     endCall() {
-        this.dataConnection!.send({
+        this.dataConnection?.send({
             type: VoiceRTCMessageType.EndingCall,
             channel: this.channel,
             userInfo: {
@@ -373,6 +374,8 @@ export class VoiceRTC {
                 audioEnabled: this.callOptions.audio,
             },
         })
+
+        this.channel = ""
         this.localStream?.getTracks().forEach(track => track.stop())
         this.localStream = null
         this.makingCall = false
@@ -382,13 +385,9 @@ export class VoiceRTC {
         this.remoteStream?.getTracks().forEach(track => track.stop())
         this.remoteStream = null
 
-        this.activeCall?.close()
-        this.activeCall = null
-
-        if (this.localPeer) {
-            this.localPeer?.disconnect()
-            this.localPeer?.destroy()
-            this.localPeer = null
+        if (this.activeCall) {
+            this.activeCall.close()
+            this.activeCall = null
         }
 
         if (this.dataConnection) {
@@ -407,6 +406,11 @@ export class VoiceRTC {
             this.localVideoCurrentSrc.pause()
             this.localVideoCurrentSrc.srcObject = null
             this.localVideoCurrentSrc = null
+        }
+
+        if (get(Store.state.activeCall)) {
+            Store.endCall()
+            Store.denyCall()
         }
 
         log.info("Call ended and resources cleaned up.")
