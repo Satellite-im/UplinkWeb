@@ -323,7 +323,8 @@
                         {/if}
                     </div>
                 {/if}
-                <div class="section column">
+                <!-- <div class="friends-section"> -->
+                <div class="friends-section section column">
                     {#each Object.keys(groupUsersAlphabetically($friends)).sort() as letter}
                         {#if groupUsersAlphabetically($friends)[letter].length > 0}
                             <Label hook="label-friend-list-{letter}" text={letter} />
@@ -360,6 +361,7 @@
                         {/if}
                     {/each}
                 </div>
+                <!-- </div> -->
             {:else if tab === "active"}
                 <div class="section column" data-cy="friends-section-requests">
                     <Label hook="label-outgoing-requests" text={$_("friends.outgoing_requests")} />
@@ -448,16 +450,20 @@
                     padding: var(--padding);
                     border-radius: var(--border-radius);
                 }
+                .friends-section {
+                    padding-top: 15px;
+                    overflow-y: scroll;
+                }
+
                 .section {
                     display: inline-flex;
                     gap: var(--gap);
                     padding-bottom: var(--gap);
+                    // padding-top: var(--gap);
 
                     &.column {
                         flex-direction: column;
-                        min-height: var(--min-scroll-height);
-                        overflow-y: scroll;
-                        overflow-x: hidden;
+                        min-height: var(--min-scroll-height) + var(--gap);
                         padding-right: var(--padding);
                     }
                 }
