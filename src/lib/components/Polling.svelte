@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { UIStore } from "$lib/state/ui"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onMount } from "svelte"
 
@@ -8,6 +9,7 @@
 
     async function poll() {
         // add processes here.
+        updateTypingIndicators()
         await MultipassStoreInstance.fetchAllFriendsAndRequests()
 
         // Increase the interval exponentially until it reaches the provided rate
@@ -16,6 +18,10 @@
         }
 
         setTimeout(poll, currentInterval)
+    }
+
+    async function updateTypingIndicators() {
+        UIStore.updateTypingIndicators()
     }
 
     onMount(() => {

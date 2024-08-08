@@ -87,6 +87,9 @@
         "markRead": "Mark Read",
         "getStarted": "Let's get something started!",
         "noChat": "You don't have any active chats yet, click the button below to head to the friends page to start one.",
+        "multiple-typing": "Multiple users are typing",
+        "user-typing": "{user} is typing",
+        "users-typing": "{users} are typing",
         "group": {
             "name": "Group name:",
             "members": "Group members:",
