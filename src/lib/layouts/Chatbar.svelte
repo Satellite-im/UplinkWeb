@@ -66,9 +66,9 @@
     }
 
     function formatTyping() {
-        if (typing.length > 3) {
+        if (typing && typing.length > 3) {
             return $_("chat.users-multiple-typing")
-        } else if (typing.length == 1) {
+        } else if (typing && typing.length == 1) {
             return $_("chat.user-typing", { values: { user: typing[0].name } })
         }
         let users = typing.map(u => u.name).join(", ")
@@ -83,7 +83,7 @@
 
     <div class="input-component">
         <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:enter={_ => sendMessage($message)} on:input />
-        {#if typing.length > 0}
+        {#if typing && typing.length > 0}
             <div class="typing-indicator">
                 {formatTyping()}
                 <div class="dots">
