@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "tauri": "tauri",
-        "start-peerjs": "npx peerjs --port 9000 --key peerjs --path /",
+        "start-peerjs": "peerjs --port 9000 --key peerjs --path /",
         "start-vite": "vite dev",
         "dev": "npm-run-all --parallel start-peerjs start-vite",
         "build": "npm run write-commit-hash && vite build",
