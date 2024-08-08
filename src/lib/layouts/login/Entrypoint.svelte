@@ -20,7 +20,7 @@
     let showConfigureRelay = false
 
      // Add a boolean variable to control the visibility of the button
-     let showButton: boolean = true
+     let showButton: boolean = false
 
      // Function to toggle the visibility of the button (if needed)
      function toggleButtonVisibility() {
