@@ -97,7 +97,7 @@
     <slot></slot>
 
     <PopupButton hook="button-chatbar-emoji-picker" name={$_("chat.emojiPicker")} class="emoji-popup" bind:open={$emojiSelectorOpen}>
-        <CombinedSelector active={{ name: $_("chat.emoji"), icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} />
+        <CombinedSelector active={{ name: "Emojis", icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>
