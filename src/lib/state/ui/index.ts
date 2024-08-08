@@ -1,9 +1,8 @@
-import { TypingIndicator, type Chat } from "$lib/types"
+import type { Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { EmojiFont, Font } from "$lib/enums"
 import { Store as MainStore } from "../Store"
-import { mchats } from "$lib/mock/users"
 
 export interface IUIState {
     color: Writable<string>
@@ -26,15 +25,7 @@ class Store {
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
             sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),
-            chats: createPersistentState("uplink.ui.chats", [], {
-                deserializer: (c: Chat[]) => {
-                    // The typing indicator is read as an {}. Init it properly here
-                    for (let ch of c) {
-                        ch.typing_indicator = new TypingIndicator()
-                    }
-                    return c
-                },
-            }),
+            chats: createPersistentState("uplink.ui.chats", []),
         }
     }
 
@@ -121,24 +112,8 @@ class Store {
 
     getTotalNotifications() {
         return get(this.state.chats).reduce((acc, chat) => {
-            console.log("chat", chat)
             return acc + chat.notifications
         }, 0)
-    }
-
-    updateTypingIndicators() {
-        let mocks = mchats.map(c => c.id)
-        let chats = get(this.state.chats)
-        let update = false
-        for (let chat of chats) {
-            if (chat.id in mocks) continue
-            if (chat.typing_indicator.update()) {
-                update = true
-            }
-        }
-        if (update) {
-            this.state.chats.update(c => c)
-        }
     }
 }
 
