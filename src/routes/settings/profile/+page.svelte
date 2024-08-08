@@ -31,6 +31,18 @@
         if (loading) setTimeout(() => (loading = false), 200)
     }
 
+    function handleCopyClick() {
+        const seedPhrase = samplePhrase.join(' ')
+        copyToClipboard(seedPhrase)
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('Text copied to clipboard')
+        }).catch(err => {
+            console.error('Failed to copy text: ', err)
+        })
+    }
     async function logOut() {
         AuthStore.setStayLogged(false)
         AuthStore.logIn(false)
@@ -471,8 +483,7 @@
                         <OrderedPhrase number={i + 1} word={word} loading={loading} />
                     {/each}
                     <div class="full-width flex-end">
-                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")}>
-                            <Icon icon={Shape.Clipboard} />
+                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")} on:click={handleCopyClick}>                            <Icon icon={Shape.Clipboard} />
                         </Button>
                     </div>
                 {/if}
