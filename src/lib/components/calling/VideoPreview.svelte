@@ -27,7 +27,6 @@
     })
 
     Store.state.activeCall.subscribe(async activeCall => {
-        console.log("Arriving here on VideoPreview", $page.route.id, get(Store.state.activeCall), VoiceRTCInstance.isReceivingCall)
         if ($page.route.id !== Route.Chat && get(Store.state.activeCall) && !VoiceRTCInstance.isReceivingCall) {
             show = true
             remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!

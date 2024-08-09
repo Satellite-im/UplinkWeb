@@ -47,7 +47,11 @@ export class VoiceRTC {
     remoteVideoElement: HTMLVideoElement | null = null
     localVideoCurrentSrc: HTMLVideoElement | null = null
     remotePeerId: string | null = null
-    remoteVoiceUser: VoiceRTCUser | null = null
+    remoteVoiceUser: VoiceRTCUser = {
+        did: "",
+        videoEnabled: false,
+        audioEnabled: false,
+    }
     activeCall: MediaConnection | null = null
     callOptions: VoiceRTCOptions
     isReceivingCall = false
@@ -101,6 +105,12 @@ export class VoiceRTC {
     }
 
     private handlePeerConnection(conn: DataConnection) {
+        this.remoteVoiceUser = {
+            did: conn.metadata.did,
+            videoEnabled: conn.metadata.videoEnabled,
+            audioEnabled: conn.metadata.audioEnabled,
+        }
+
         this.dataConnection = conn
 
         conn.on("open", () => {
@@ -119,7 +129,7 @@ export class VoiceRTC {
 
         conn.on("data", data => {
             let dataReceived = data as VoiceMessage
-            console.log("Data received from user that received a call: ", dataReceived)
+            log.debug(`Data received from user that received a call: ${dataReceived}`)
             this.handleWithDataReceived(dataReceived)
         })
     }
@@ -246,7 +256,9 @@ export class VoiceRTC {
             if (this.remoteVideoElement) {
                 this.remoteVideoElement.srcObject = remoteStream
                 this.remoteStream = remoteStream
-                await this.remoteVideoElement.play()
+                if (this.remoteVideoElement.readyState >= 2) {
+                    await this.remoteVideoElement.play()
+                }
             }
         })
     }
@@ -257,6 +269,11 @@ export class VoiceRTC {
 
             this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
                 reliable: true,
+                metadata: {
+                    did: this.localPeer!.id,
+                    videoEnabled: this.callOptions.video.enabled,
+                    audioEnabled: this.callOptions.audio,
+                },
             })
 
             console.log("Data connection established: ", this.dataConnection)
@@ -277,8 +294,6 @@ export class VoiceRTC {
                 this.handleWithDataReceived(dataReceived)
             })
 
-            this.makingCall = true
-
             await this.updateLocalStream()
 
             const call = this.localPeer!.call(this.remotePeerId!, this.localStream!, {
@@ -296,9 +311,12 @@ export class VoiceRTC {
                 if (this.remoteVideoElement) {
                     this.remoteVideoElement.srcObject = remoteStream
                     this.remoteStream = remoteStream
-                    await this.remoteVideoElement.play()
+                    if (this.remoteVideoElement.readyState >= 2) {
+                        await this.remoteVideoElement.play()
+                    }
                 }
             })
+            Store.setActiveCall(Store.getCallingChat(this.channel)!)
         } catch (error) {
             console.error("Error making call: ", error)
         }
@@ -395,7 +413,11 @@ export class VoiceRTC {
             this.dataConnection = null
         }
 
-        this.remoteVoiceUser = null
+        this.remoteVoiceUser = {
+            did: "",
+            videoEnabled: false,
+            audioEnabled: false,
+        }
 
         if (this.remoteVideoElement) {
             this.remoteVideoElement.pause()
