@@ -95,7 +95,7 @@
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
                 writableValue.set(val)
-                debouncedOnInput()  // Update to use debounced function
+                debouncedOnInput()
             })
             onsend.push(() => {
                 editor.value("")
