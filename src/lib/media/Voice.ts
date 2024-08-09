@@ -200,9 +200,10 @@ export class VoiceRTC {
         })
     }
 
-    setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
+    async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
         this.remoteVideoElement = remoteVideoElement
         this.localVideoCurrentSrc = localVideoCurrentSrc
+        new Promise(resolve => setTimeout(resolve, 500))
     }
 
     public async acceptIncomingCall() {
@@ -290,7 +291,7 @@ export class VoiceRTC {
 
             this.dataConnection.on("data", data => {
                 let dataReceived = data as VoiceMessage
-                console.log("Data received from user that made call: ", dataReceived)
+                log.debug(`Data received from user that made call: ${dataReceived}`)
                 this.handleWithDataReceived(dataReceived)
             })
 

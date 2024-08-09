@@ -114,7 +114,7 @@
     onMount(async () => {
         console.log("CallScreen mounted")
         await checkPermissions()
-        VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
+        await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
         if (!permissionsGranted) {
             requestPermissions()
@@ -122,7 +122,7 @@
 
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
-            if (VoiceRTCInstance.makingCall) {
+            if (VoiceRTCInstance.makingCall && VoiceRTCInstance.remoteVoiceUser.did === "") {
                 await VoiceRTCInstance.makeVideoCall()
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
@@ -134,6 +134,9 @@
         if (VoiceRTCInstance.remoteVideoElement) {
             remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
             remoteVideoElement.play()
+        }
+        if (VoiceRTCInstance.localVideoCurrentSrc) {
+            await VoiceRTCInstance.updateLocalStream()
         }
     })
 
