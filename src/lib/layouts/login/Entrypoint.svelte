@@ -18,7 +18,6 @@
 
     let showAccounts = false
     let showConfigureRelay = false
-
 </script>
 
 <div id="auth-create">
@@ -39,12 +38,6 @@
                     <Icon icon={Shape.Plus} />
                 </Button>
             </div>
-        </Modal>
-    {/if}
-
-    {#if showConfigureRelay}
-        <Modal hook="modal-select-relay" on:close={_ => (showConfigureRelay = false)} padded>
-            <RelaySelector />
         </Modal>
     {/if}
 
