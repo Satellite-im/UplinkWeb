@@ -41,6 +41,12 @@
         </Modal>
     {/if}
 
+{#if showConfigureRelay}
+        <Modal hook="modal-select-relay" on:close={_ => (showConfigureRelay = false)} padded>
+            <RelaySelector />
+        </Modal>
+    {/if}
+
     <div class="create-content">
         {#if loading}
             <Label text={$_("generic.loading")} />
@@ -52,10 +58,7 @@
         </Text>
         <Spacer />
         <Controls breakpoint={1000}>
-            <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} />
-        {#if showButton}
-            <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={() => (showConfigureRelay = true)} appearance={Appearance.Alt} />
-        {/if}        
+            <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} />   
         </Controls>
     </div>
 
