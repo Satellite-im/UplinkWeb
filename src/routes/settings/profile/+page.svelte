@@ -38,7 +38,7 @@
 
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
-            console.log('Text copied to clipboard')
+            log.info('Text copied to clipboard')
         }).catch(err => {
             log.info('Failed to copy text: ', err)
         })
