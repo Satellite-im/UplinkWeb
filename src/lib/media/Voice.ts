@@ -79,12 +79,7 @@ export class VoiceRTC {
         const peerId = userId.replace("did:key:", "")
 
         if (this.localPeer === null) {
-            this.localPeer = new Peer(peerId, {
-                host: "peer.deepspaceshipping.co",
-                port: 9000,
-                path: "/",
-                secure: false,
-            })
+            this.localPeer = new Peer(peerId)
         }
 
         this.localPeer!.on("open", id => {
