@@ -53,6 +53,7 @@
     import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
     import { MessageEvent } from "warp-wasm"
+    import { debounce } from "$lib/utils/Functions"
 
     let loading = false
     let contentAsideOpen = false
@@ -656,7 +657,7 @@
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
-                    typing()
+                    debounce(() => typing(), 500)
                 }}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
