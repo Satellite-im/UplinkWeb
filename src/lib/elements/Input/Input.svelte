@@ -53,7 +53,6 @@
         }
     }
 
-    // Debounced input handling
     const debouncedOnInput = debounce(() => {
         let isValid = isValidInput()
         dispatch("isValid", isValid)
