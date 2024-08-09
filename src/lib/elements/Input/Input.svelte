@@ -115,7 +115,6 @@
     }
 
     function onInput() {
-        // Debounce on the input event
         debouncedOnInput()
     }
 
