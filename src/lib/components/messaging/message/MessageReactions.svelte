@@ -1,14 +1,16 @@
 <script lang="ts">
+    import { Store } from "$lib/state/Store"
     import type { Reaction } from "$lib/types"
 
     export let reactions: Array<Reaction> = []
     export let remote: boolean = false
     export let onClick: (emoji: string) => void
+    $: own = Store.state.user
 </script>
 
 <div class="message-reactions {remote ? 'remote' : 'local'}">
     {#each reactions as reaction}
-        <div role="none" class="reaction highlight-{reaction.highlight.toLowerCase()}" on:click={_ => onClick(reaction.emoji)}>
+        <div role="none" class="reaction highlight-{reaction.highlight.toLowerCase()} {reaction.reactors.has($own.key) ? 'reacted' : ''}" on:click={_ => onClick(reaction.emoji)}>
             <div class="reaction-hover">
                 <span class="emoji">{reaction.emoji}</span> <span class="description">{reaction.description}</span>
             </div>
@@ -43,6 +45,10 @@
             align-items: center;
             user-select: none;
             gap: var(--gap);
+
+            &.reacted {
+                border: var(--border-width) solid var(--color);
+            }
 
             .reaction-emoji {
                 font-size: calc(var(--emoji-size) / 1.65);

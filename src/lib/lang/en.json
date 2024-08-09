@@ -32,7 +32,8 @@
         "faves": "Faves",
         "initializing": "Initializing...",
         "platform": "Platform",
-        "address": "Address"
+        "address": "Address",
+        "label": "Label"
     },
     "market": {
         "market": "Marketplace",

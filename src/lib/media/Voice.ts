@@ -52,7 +52,6 @@ export class VoiceRTC {
         let userId = get(Store.state.user).key
         while (userId === "0x0") {
             userId = get(Store.state.user).key
-            console.log("User ID: ", userId)
             await new Promise(resolve => setTimeout(resolve, 500))
         }
 
@@ -75,14 +74,11 @@ export class VoiceRTC {
         })
 
         this.localPeer!.on("connection", conn => {
-            conn.on("open", () => {
-                console.log("Connection Opened!")
-            })
+            conn.on("open", () => {})
 
             conn.on("data", data => {
                 this.dataConnection = conn
                 if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
-                    console.log("Receving message to end call")
                     this.isReceivingCall = false
                     this.endCall()
                 } else if (data === VoiceRTCMessageType.Calling) {
@@ -115,9 +111,7 @@ export class VoiceRTC {
             }
         })
 
-        call.on("close", () => {
-            console.log("Call closed by remote peer")
-        })
+        call.on("close", () => {})
 
         call.on("error", err => {
             console.error("Call error:", err)
@@ -142,7 +136,6 @@ export class VoiceRTC {
         this.remoteVideoElement = remoteVideoElement
         this.localVideoCurrentSrc = localVideoCurrentSrc
         if (this.localVideoCurrentSrc) {
-            console.log("Setting local video element")
             this.localVideoCurrentSrc.srcObject = this.localStream
             this.localVideoCurrentSrc.play()
         }
@@ -182,14 +175,12 @@ export class VoiceRTC {
                 })
 
                 this._incomingCall.on("stream", remoteStream => {
-                    console.log("Remote stream received")
                     if (this.remoteVideoElement) {
                         this.remoteVideoElement.srcObject = remoteStream
                         this.remoteVideoElement.play()
                     }
 
                     if (this.localVideoCurrentSrc) {
-                        console.log("Setting local video element")
                         this.localVideoCurrentSrc.srcObject = this.localStream
                         this.localVideoCurrentSrc.play()
                     }
@@ -204,20 +195,16 @@ export class VoiceRTC {
             } catch (error) {
                 console.error("Error accepting call:", error)
             }
-        } else {
-            console.log("No incoming call to accept")
         }
     }
 
     async makeVideoCall(remotePeerId: string, chatID: string) {
         try {
-            console.log("Making call to: ", remotePeerId)
             this.channel = chatID
             this.dataConnection?.send(VoiceRTCMessageType.Calling)
             this.dataConnection?.send(chatID)
 
             const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
-            console.log("Remote user Peer: ", remotePeerIdEdited)
 
             this.dataConnection = this.localPeer!.connect(remotePeerIdEdited)
 
@@ -259,21 +246,17 @@ export class VoiceRTC {
 
             call.on("stream", remoteStream => {
                 if (this.remoteVideoElement) {
-                    console.log("Setting remote video element")
                     this.remoteVideoElement.srcObject = remoteStream
                     this.remoteVideoElement.play()
                 }
 
                 if (this.localVideoCurrentSrc) {
-                    console.log("Setting local video element")
                     this.localVideoCurrentSrc.srcObject = this.localStream
                     this.localVideoCurrentSrc.play()
                 }
             })
 
-            call.on("close", () => {
-                console.log("Call closed by remote peer")
-            })
+            call.on("close", () => {})
             call.on("error", err => {
                 console.error("Call error:", err)
             })
