@@ -45,7 +45,6 @@
         return true
     }
 
-    // Debounce function for minimal change
     function debounce(func, wait) {
         let timeout
         return function(...args) {
