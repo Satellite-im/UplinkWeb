@@ -110,7 +110,6 @@ export class VoiceRTC {
                 this.remoteVideoElement.play()
             }
         })
-    
         call.on("close", () => {})
     
         call.on("error", err => {
