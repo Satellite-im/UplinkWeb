@@ -111,7 +111,6 @@ export class VoiceRTC {
             }
         })
         call.on("close", () => {})
-    
         call.on("error", err => {
             console.error("Call error:", err)
         })
