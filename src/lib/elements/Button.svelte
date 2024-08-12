@@ -135,7 +135,7 @@
             &:before {
                 content: attr(data-tooltip);
                 position: absolute;
-                bottom: calc(100% + var(--gap));
+                bottom: calc(90% + var(--gap));
                 white-space: nowrap;
                 width: fit-content;
                 padding: var(--padding-minimal) var(--padding-less);
@@ -146,7 +146,7 @@
                 text-align: center;
                 opacity: 0;
                 pointer-events: none;
-                z-index: 2;
+                z-index: 3;
                 transition: all var(--animation-speed);
                 background-color: var(--opaque-color);
                 backdrop-filter: blur(var(--blur-radius));
