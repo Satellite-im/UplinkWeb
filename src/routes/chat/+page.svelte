@@ -435,9 +435,19 @@
                         }}>
                         <Icon icon={Shape.SendCoin} />
                     </Button>
-                    <Button hook="button-chat-call" loading={loading} icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
-                        <Icon icon={Shape.PhoneCall} />
-                    </Button>
+                    <Button 
+                    hook="button-chat-call" 
+                    loading={loading} 
+                    icon 
+                    appearance={Appearance.Alt} 
+                    disabled={$activeChat.users.length === 0}
+                    on:click={async _ => {
+                        Store.setActiveCall($activeChat)
+                        await VoiceRTCInstance.makeAudioCall($activeChat.users[1], $activeChat.id)
+                        activeCallInProgress = true
+                    }}>
+                    <Icon icon={Shape.PhoneCall} />
+                </Button>                
                     <Button
                         icon
                         hook="button-chat-video"

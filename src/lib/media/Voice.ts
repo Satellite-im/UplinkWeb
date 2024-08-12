@@ -105,18 +105,19 @@ export class VoiceRTC {
 
     private handleIncomingCall(call: MediaConnection) {
         call.on("stream", remoteStream => {
-            if (this.remoteVideoElement) {
+            if (this.callOptions.video.enabled && this.remoteVideoElement) {
                 this.remoteVideoElement.srcObject = remoteStream
                 this.remoteVideoElement.play()
             }
         })
-
+    
         call.on("close", () => {})
-
+    
         call.on("error", err => {
             console.error("Call error:", err)
         })
     }
+    
 
     turnOnOffCamera() {
         this.callOptions.video.enabled = !this.callOptions.video.enabled
@@ -149,13 +150,13 @@ export class VoiceRTC {
         if (this._incomingCall) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
+                    video: this.callOptions.video.enabled ? {
                         aspectRatio: 16 / 9,
                         facingMode: this.callOptions.video.selfie ? "user" : "environment",
                         frameRate: 30,
                         height: { ideal: 1080 },
                         width: { ideal: 1920 },
-                    },
+                    } : false, // Disable video if not enabled
                     audio: {
                         autoGainControl: false,
                         channelCount: 2,
@@ -165,38 +166,35 @@ export class VoiceRTC {
                         sampleSize: 16,
                     },
                 })
-
+    
                 this.localStream = stream
-
+    
                 this._incomingCall.answer(this.localStream)
-
-                this.localStream?.getAudioTracks().forEach(track => {
-                    track.enabled = false
-                })
-
+    
+                if (this.callOptions.video.enabled && this.localVideoCurrentSrc) {
+                    this.localVideoCurrentSrc.srcObject = this.localStream
+                    this.localVideoCurrentSrc.play()
+                }
+    
                 this._incomingCall.on("stream", remoteStream => {
-                    if (this.remoteVideoElement) {
+                    if (this.callOptions.video.enabled && this.remoteVideoElement) {
                         this.remoteVideoElement.srcObject = remoteStream
                         this.remoteVideoElement.play()
                     }
-
-                    if (this.localVideoCurrentSrc) {
-                        this.localVideoCurrentSrc.srcObject = this.localStream
-                        this.localVideoCurrentSrc.play()
-                    }
                 })
-
+    
                 this._incomingCall.on("close", () => {})
                 this._incomingCall.on("error", err => {
                     console.error("Call error:", err)
                 })
-
+    
                 this._incomingCall = null
             } catch (error) {
                 console.error("Error accepting call:", error)
             }
         }
     }
+    
 
     async makeVideoCall(remotePeerId: string, chatID: string) {
         try {
@@ -265,6 +263,60 @@ export class VoiceRTC {
         }
     }
 
+    async makeAudioCall(remotePeerId: string, chatID: string) {
+        try {
+            this.channel = chatID
+            this.dataConnection?.send(VoiceRTCMessageType.Calling)
+            this.dataConnection?.send(chatID)
+    
+            const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
+    
+            this.dataConnection = this.localPeer!.connect(remotePeerIdEdited)
+    
+            this.dataConnection.on("data", data => {
+                if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
+                    this.endCall()
+                }
+            })
+    
+            this.dataConnection.on("open", () => {
+                this.dataConnection?.send(chatID)
+            })
+    
+            // Request only the audio stream with no video constraints
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    autoGainControl: false,
+                    channelCount: 2,
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    sampleRate: 48000,
+                    sampleSize: 16,
+                },
+                video: false, // Explicitly disable video
+            })
+    
+            const call = this.localPeer!.call(remotePeerIdEdited, stream)
+    
+            this.localStream = stream
+    
+            call.on("stream", remoteStream => {
+                if (this.remoteVideoElement) {
+                    this.remoteVideoElement.srcObject = remoteStream
+                    this.remoteVideoElement.play()
+                }
+            })
+    
+            call.on("close", () => {})
+            call.on("error", err => {
+                console.error("Call error:", err)
+            })
+        } catch (error) {
+            console.error("Error accessing media devices:", error)
+        }
+    }
+    
+    
     endCall() {
         this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
         if (this.localStream) {
@@ -299,7 +351,7 @@ export class VoiceRTC {
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: true,
     video: {
-        enabled: true,
-        selfie: true,
+        enabled: false, // Set video to false for audio-only scenarios
+        selfie: false,  // This can be omitted if video is disabled
     },
 })
