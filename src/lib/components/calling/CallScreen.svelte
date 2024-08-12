@@ -4,10 +4,8 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import Controls from "$lib/layouts/Controls.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
-    import { mock_users } from "$lib/mock/users"
     import Participant from "./Participant.svelte"
     import Text from "$lib/elements/Text.svelte"
-    import PopupButton from "../ui/PopupButton.svelte"
     import CallSettings from "./CallSettings.svelte"
     import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
@@ -15,8 +13,9 @@
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { afterUpdate, createEventDispatcher, onDestroy, onMount } from "svelte"
+    import { onDestroy, onMount } from "svelte"
     import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -25,8 +24,11 @@
 
     let showSettings = false
     let showVolumeMixer = false
+    let showCallSettings = false
 
-    export let muted: boolean = get(Store.state.devices.muted)
+    let muted: boolean = VoiceRTCInstance.callOptions.audio
+    let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
+
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
 
@@ -34,16 +36,35 @@
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
+    $: otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+    $: userCallOptions = VoiceRTCInstance.callOptions
 
-    Store.state.devices.muted.subscribe(state => {
+    let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
     })
 
-    Store.state.devices.deafened.subscribe(state => {
+    let subscribeTwo = Store.state.devices.cameraEnabled.subscribe(state => {
+        cameraEnabled = state
+    })
+
+    let subscribeThree = Store.state.devices.deafened.subscribe(state => {
         deafened = state
     })
 
-    const dispatch = createEventDispatcher()
+    let subscribeFour = Store.state.activeCall.subscribe(state => {
+        log.debug(`Active call state changed: ${state}`)
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
+    })
+
+    function updateMuted() {
+        VoiceRTCInstance.turnOnOffMicrophone()
+    }
+
+    function updateCameraEnabled() {
+        Store.updateCameraEnabled(!cameraEnabled)
+        VoiceRTCInstance.turnOnOffCamera()
+    }
 
     const checkPermissions = async () => {
         try {
@@ -88,30 +109,42 @@
 
     let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
-    let callStarted = false
 
     onMount(async () => {
         await checkPermissions()
-        VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
+        await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
         if (!permissionsGranted) {
             requestPermissions()
         }
 
-        setInterval(async () => {
+        /// HACK: To make sure the video elements are loaded before we start the call
+        if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
+            if (VoiceRTCInstance.makingCall && VoiceRTCInstance.remoteVoiceUser.did === "") {
+                await VoiceRTCInstance.makeVideoCall()
+            }
             if (VoiceRTCInstance.acceptedIncomingCall) {
-                VoiceRTCInstance.acceptedIncomingCall = false
                 await VoiceRTCInstance.acceptCall()
             }
-        }, 1000)
+        }
+        Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
+        Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
+        if (VoiceRTCInstance.remoteVideoElement) {
+            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.play()
+        }
+        if (VoiceRTCInstance.localVideoCurrentSrc) {
+            await VoiceRTCInstance.updateLocalStream()
+        }
+        console.log("Audio Enabled: ", VoiceRTCInstance.callOptions.audio)
+        // Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
     })
 
-    afterUpdate(() => {
-        if (localVideoCurrentSrc) {
-            localVideoCurrentSrc.play().catch(error => {
-                console.error("Error playing local video:", error)
-            })
-        }
+    onDestroy(() => {
+        subscribeOne()
+        subscribeTwo()
+        subscribeThree()
+        subscribeFour()
     })
 </script>
 
@@ -125,38 +158,53 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video id="remote-user-video" bind:this={remoteVideoElement} width="400" height="400" autoplay>
+            <video id="remote-user-video" bind:this={remoteVideoElement} width={otherUserSettingsInCall?.videoEnabled ? 400 : 0} height={otherUserSettingsInCall?.videoEnabled ? 400 : 0} autoplay>
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video bind:this={localVideoCurrentSrc} width="400" height="400" autoplay>
+            <video id="local-user-video" bind:this={localVideoCurrentSrc} width={userCallOptions.video.enabled ? 400 : 0} height={userCallOptions.video.enabled ? 400 : 0} muted autoplay>
                 <track kind="captions" src="" />
             </video>
-            {#if !callStarted}
-                {#each chat.users as user}
+            {#each chat.users as user}
+                {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant
                         participant={$userCache[user]}
                         hasVideo={$userCache[user].media.is_streaming_video}
                         isMuted={$userCache[user].media.is_muted}
                         isDeafened={$userCache[user].media.is_deafened}
                         isTalking={$userCache[user].media.is_playing_audio} />
-                {/each}
-            {/if}
+                {/if}
+                {#if $userCache[user].key !== get(Store.state.user).key && !otherUserSettingsInCall?.videoEnabled}
+                    <Participant
+                        participant={$userCache[user]}
+                        hasVideo={$userCache[user].media.is_streaming_video}
+                        isMuted={$userCache[user].media.is_muted}
+                        isDeafened={$userCache[user].media.is_deafened}
+                        isTalking={$userCache[user].media.is_playing_audio} />
+                {/if}
+            {/each}
         </div>
     {/if}
     <div class="toolbar">
         <Controls>
-            <PopupButton
-                name={$_("generic.settings")}
-                open={showSettings}
-                on:open={_ => {
-                    showSettings = true
-                }}>
-                <svelte:fragment slot="icon">
+            <div class="relative">
+                {#if showCallSettings}
+                    <CallSettings
+                        on:change={e => {
+                            VoiceRTCInstance.updateLocalStream()
+                        }} />
+                {/if}
+                <Button
+                    tooltip="Settings"
+                    icon
+                    appearance={showCallSettings ? Appearance.Primary : Appearance.Alt}
+                    outline={!showCallSettings}
+                    on:click={_ => {
+                        showCallSettings = !showCallSettings
+                    }}>
                     <Icon icon={Shape.Cog} />
-                </svelte:fragment>
-                <CallSettings />
-            </PopupButton>
+                </Button>
+            </div>
             <div class="relative">
                 {#if showVolumeMixer}
                     <VolumeMixer participants={chat.users} />
@@ -177,10 +225,9 @@
             <Button
                 icon
                 appearance={muted ? Appearance.Error : Appearance.Alt}
-                tooltip={$_("call.mute")}
+                tooltip={muted ? $_("call.unmute") : $_("call.mute")}
                 on:click={_ => {
-                    Store.updateMuted(!muted)
-                    VoiceRTCInstance.turnOnOffMicrophone()
+                    updateMuted()
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -189,7 +236,7 @@
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
                 tooltip={$_("call.deafen")}
                 on:click={_ => {
-                    Store.updateDeafened(!deafened)
+                    VoiceRTCInstance.turnOnOffDeafened()
                 }}>
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
@@ -197,20 +244,20 @@
                 <Icon icon={Shape.Stream} />
             </Button>
             <Button
-                appearance={Appearance.Alt}
+                appearance={cameraEnabled ? Appearance.Alt : Appearance.Error}
                 icon
-                tooltip={$_("call.video")}
+                tooltip={cameraEnabled ? $_("call.disable_video") : $_("call.enable_video")}
                 on:click={_ => {
-                    VoiceRTCInstance.turnOnOffCamera()
+                    updateCameraEnabled()
                 }}>
-                <Icon icon={Shape.VideoCamera} />
+                <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.VideoCameraSlash} />
             </Button>
             <Button
                 appearance={Appearance.Error}
                 icon
                 tooltip={$_("call.end")}
                 on:click={_ => {
-                    dispatch("onendcall")
+                    Store.endCall()
                     VoiceRTCInstance.endCall()
                 }}>
                 <Icon icon={Shape.PhoneXMark} />

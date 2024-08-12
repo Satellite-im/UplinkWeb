@@ -31,6 +31,7 @@ class GlobalStore {
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
                 video: createPersistentState("uplink.devices.videoInput", "default"),
+                cameraEnabled: createPersistentState("uplink.devices.cameraEnabled", false),
                 output: createPersistentState("uplink.devices.output", "default"),
                 muted: createPersistentState("uplink.devices.muted", false),
                 deafened: createPersistentState("uplink.devices.deafened", false),
@@ -59,7 +60,6 @@ class GlobalStore {
                 status: Status.Online,
                 status_message: identity.status_message() || "",
             },
-            integrations: identity.metadata(),
         }
         this.state.user.update(u => (u = userFromIdentity))
     }
@@ -167,6 +167,11 @@ class GlobalStore {
 
     setOutputDevice(device: string) {
         this.state.devices.output.set(device)
+    }
+
+    updateCameraEnabled(enabled: boolean) {
+        this.state.devices.cameraEnabled.set(enabled)
+        if (get(SettingsStore.state).audio.controlSounds) playSound(enabled ? Sounds.Off : Sounds.On)
     }
 
     updateMuted(muted: boolean) {

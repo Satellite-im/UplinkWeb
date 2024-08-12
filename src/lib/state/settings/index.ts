@@ -20,7 +20,6 @@ export interface ISettingsState {
     audio: {
         inputDevice: string
         outputDevice: string
-        echoCancellation: boolean
         interfaceSounds: boolean
         controlSounds: boolean
         messageSounds: boolean
@@ -28,6 +27,12 @@ export interface ISettingsState {
     }
     calling: {
         minimalCallingAlerts: boolean
+        echoCancellation: boolean
+        noiseSuppression: boolean
+        automaticGainControl: boolean
+        bitrate: number
+        sampleSize: number
+        channels: number
     }
     extensions: {}
     keybinds: Keybind[]
@@ -57,6 +62,30 @@ class Store {
 
     update(settings: ISettingsState) {
         this.state.set(settings)
+    }
+
+    setEchoCancellation(state: boolean) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, echoCancellation: state } }))
+    }
+
+    setNoiseSuppression(state: boolean) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, noiseSuppression: state } }))
+    }
+
+    setAutomaticGainControl(state: boolean) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, automaticGainControl: state } }))
+    }
+
+    setBitrate(bitrate: number) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, bitrate } }))
+    }
+
+    setSampleSize(sampleSize: number) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, sampleSize } }))
+    }
+
+    setChannels(channels: number) {
+        this.state.update(s => ({ ...s, calling: { ...s.calling, channels } }))
     }
 
     toggleDevmode(state: boolean) {
