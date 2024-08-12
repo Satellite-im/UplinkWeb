@@ -236,7 +236,6 @@ export class VoiceRTC {
             }
         }
     }
-    
     async makeVideoCall(remotePeerId: string, chatID: string) {
         try {
             this.channel = chatID
