@@ -227,7 +227,6 @@ export class VoiceRTC {
                         this.remoteVideoElement.play()
                     }
                 })
-    
                 this._incomingCall.on("close", () => {})
                 this._incomingCall.on("error", err => {
                     console.error("Call error:", err)
