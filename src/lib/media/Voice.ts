@@ -209,7 +209,6 @@ export class VoiceRTC {
                         sampleSize: 16,
                     },
                 })
-    
                 this.localStream = stream
                 this._incomingCall.answer(this.localStream)
     
