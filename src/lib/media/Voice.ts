@@ -135,7 +135,6 @@ export class VoiceRTC {
             }
         }
     }
-    
     turnOnOffMicrophone() {
         this.callOptions.audio = !this.callOptions.audio
         this.localStream?.getAudioTracks().forEach(track => {
