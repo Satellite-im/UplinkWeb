@@ -323,42 +323,44 @@
                         {/if}
                     </div>
                 {/if}
-                <div class="section column">
-                    {#each Object.keys(groupUsersAlphabetically($friends)).sort() as letter}
-                        {#if groupUsersAlphabetically($friends)[letter].length > 0}
-                            <Label hook="label-friend-list-{letter}" text={letter} />
-                            {#each groupUsersAlphabetically($friends)[letter] as friend}
-                                <Friend friend={friend}>
-                                    <svelte:fragment slot="controls">
-                                        <Button
-                                            hook="button-friend-chat"
-                                            text={$_("chat.chat")}
-                                            on:click={async _ => {
-                                                let chat = Store.getChatForUser(friend.key)
-                                                if (chat) {
-                                                    Store.setActiveChat(chat)
-                                                    goto(Route.Chat)
-                                                } else {
-                                                    let conversation = await RaygunStoreInstance.createConversation(friend)
-                                                    conversation.onSuccess(chat => {
+                <div class="test">
+                    <div class="friends-section section column">
+                        {#each Object.keys(groupUsersAlphabetically($friends)).sort() as letter}
+                            {#if groupUsersAlphabetically($friends)[letter].length > 0}
+                                <Label hook="label-friend-list-{letter}" text={letter} />
+                                {#each groupUsersAlphabetically($friends)[letter] as friend}
+                                    <Friend friend={friend}>
+                                        <svelte:fragment slot="controls">
+                                            <Button
+                                                hook="button-friend-chat"
+                                                text={$_("chat.chat")}
+                                                on:click={async _ => {
+                                                    let chat = Store.getChatForUser(friend.key)
+                                                    if (chat) {
                                                         Store.setActiveChat(chat)
                                                         goto(Route.Chat)
-                                                    })
-                                                }
-                                            }}>
-                                            <Icon icon={Shape.ChatBubble} />
-                                        </Button>
-                                        <Button hook="button-friend-remove" icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => removeFriend(friend.key)}>
-                                            <Icon icon={Shape.UserMinus} />
-                                        </Button>
-                                        <Button hook="button-friend-block" icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => blockUser(friend.key)}>
-                                            <Icon icon={Shape.NoSymbol} />
-                                        </Button>
-                                    </svelte:fragment>
-                                </Friend>
-                            {/each}
-                        {/if}
-                    {/each}
+                                                    } else {
+                                                        let conversation = await RaygunStoreInstance.createConversation(friend)
+                                                        conversation.onSuccess(chat => {
+                                                            Store.setActiveChat(chat)
+                                                            goto(Route.Chat)
+                                                        })
+                                                    }
+                                                }}>
+                                                <Icon icon={Shape.ChatBubble} />
+                                            </Button>
+                                            <Button hook="button-friend-remove" icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => removeFriend(friend.key)}>
+                                                <Icon icon={Shape.UserMinus} />
+                                            </Button>
+                                            <Button hook="button-friend-block" icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => blockUser(friend.key)}>
+                                                <Icon icon={Shape.NoSymbol} />
+                                            </Button>
+                                        </svelte:fragment>
+                                    </Friend>
+                                {/each}
+                            {/if}
+                        {/each}
+                    </div>
                 </div>
             {:else if tab === "active"}
                 <div class="section column" data-cy="friends-section-requests">
@@ -427,7 +429,6 @@
             justify-content: space-between;
             align-items: flex-end;
         }
-
         .content {
             display: flex;
             min-height: 0;
@@ -442,12 +443,36 @@
                 flex-direction: column;
                 padding: var(--padding);
                 gap: var(--gap-less);
+                height: 100%;
 
                 .search-results {
                     border: var(--border-width) solid var(--border-color);
                     padding: var(--padding);
                     border-radius: var(--border-radius);
                 }
+
+                .test {
+                    min-height: 0;
+                    width: 100%;
+                    height: 35px;
+                    display: flex;
+                    flex-direction: column;
+                    padding-right: var(--gap);
+                    flex-grow: 1;
+                    overflow: hidden;
+                }
+
+                .friends-section {
+                    padding-top: 15px;
+                    min-height: 0;
+                    width: 100%;
+                    overflow-y: scroll;
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                    padding-right: var(--gap);
+                }
+
                 .section {
                     display: inline-flex;
                     gap: var(--gap);
@@ -455,9 +480,7 @@
 
                     &.column {
                         flex-direction: column;
-                        min-height: var(--min-scroll-height);
-                        overflow-y: scroll;
-                        overflow-x: hidden;
+                        min-height: var(--min-scroll-height) + var(--gap);
                         padding-right: var(--padding);
                     }
                 }
