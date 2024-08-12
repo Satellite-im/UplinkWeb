@@ -54,6 +54,7 @@
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
     import { MessageEvent } from "warp-wasm"
     import { debounce } from "$lib/utils/Functions"
+    import Controls from "$lib/layouts/Controls.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -423,18 +424,6 @@
                     {/if}
                 </div>
                 <svelte:fragment slot="controls">
-                    <CoinBalance balance={0.0} />
-                    <Button
-                        hook="button-chat-transact"
-                        icon
-                        appearance={transact ? Appearance.Primary : Appearance.Alt}
-                        disabled={$activeChat.users.length === 0}
-                        loading={loading}
-                        on:click={_ => {
-                            transact = true
-                        }}>
-                        <Icon icon={Shape.SendCoin} />
-                    </Button>
                     <Button hook="button-chat-call" loading={loading} icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
@@ -686,6 +675,21 @@
                         </Button>
                     </ContextMenu>
                 </svelte:fragment>
+
+                <Controls>
+                    <Button
+                        hook="button-chat-transact"
+                        icon
+                        outline
+                        appearance={transact ? Appearance.Primary : Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        loading={loading}
+                        on:click={_ => {
+                            transact = true
+                        }}>
+                        <Icon icon={Shape.SendCoin} />
+                    </Button>
+                </Controls>
             </Chatbar>
         {/if}
     </div>

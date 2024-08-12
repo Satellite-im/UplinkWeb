@@ -1,13 +1,9 @@
 import type { User } from "."
-
-export enum PermissionState {
-    Allowed = "allowed",
-    Denied = "denied",
-    Unset = "unset",
-}
+import { PermissionCategory, PermissionState } from "$lib/enums/community"
 
 export type Permission = {
     id: string
+    category: PermissionCategory
     description: string
     state: PermissionState
 }
