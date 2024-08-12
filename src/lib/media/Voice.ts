@@ -120,12 +120,25 @@ export class VoiceRTC {
     
 
     turnOnOffCamera() {
-        this.callOptions.video.enabled = !this.callOptions.video.enabled
-        this.localStream?.getVideoTracks().forEach(track => {
-            track.enabled = !track.enabled
-        })
+        if (this.localStream) {
+            // Toggle the video tracks
+            this.callOptions.video.enabled = !this.callOptions.video.enabled
+            this.localStream.getVideoTracks().forEach(track => {
+                track.enabled = this.callOptions.video.enabled
+            })
+    
+            // Update the local video element
+            if (this.localVideoCurrentSrc) {
+                if (this.callOptions.video.enabled) {
+                    this.localVideoCurrentSrc.srcObject = this.localStream
+                    this.localVideoCurrentSrc.play()
+                } else {
+                    this.localVideoCurrentSrc.srcObject = null // Stop playing the video
+                }
+            }
+        }
     }
-
+    
     turnOnOffMicrophone() {
         this.callOptions.audio = !this.callOptions.audio
         this.localStream?.getAudioTracks().forEach(track => {
@@ -146,6 +159,40 @@ export class VoiceRTC {
         this.acceptedIncomingCall = true
     }
 
+    public async enableVideo() {
+        if (this.localStream && !this.callOptions.video.enabled) {
+            try {
+                const videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        aspectRatio: 16 / 9,
+                        facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                        frameRate: 30,
+                        height: { ideal: 1080 },
+                        width: { ideal: 1920 },
+                    },
+                })
+    
+                // Replace the current stream's video track with the new one
+                const videoTrack = videoStream.getVideoTracks()[0]
+                const sender = this.localPeer!.getSenders().find(s => s.track?.kind === 'video')
+                if (sender) {
+                    sender.replaceTrack(videoTrack)
+                } else {
+                    this.localStream.addTrack(videoTrack)
+                }
+    
+                this.callOptions.video.enabled = true
+    
+                if (this.localVideoCurrentSrc) {
+                    this.localVideoCurrentSrc.srcObject = this.localStream
+                    this.localVideoCurrentSrc.play()
+                }
+            } catch (error) {
+                console.error("Error enabling video:", error)
+            }
+        }
+    }
+
     public async acceptCall() {
         if (this._incomingCall) {
             try {
@@ -156,7 +203,7 @@ export class VoiceRTC {
                         frameRate: 30,
                         height: { ideal: 1080 },
                         width: { ideal: 1920 },
-                    } : false, // Disable video if not enabled
+                    } : false, // Initially disable video if not enabled
                     audio: {
                         autoGainControl: false,
                         channelCount: 2,
@@ -171,14 +218,17 @@ export class VoiceRTC {
     
                 this._incomingCall.answer(this.localStream)
     
-                if (this.callOptions.video.enabled && this.localVideoCurrentSrc) {
+                // Setup video elements if they exist, but do not auto-play unless video is enabled
+                if (this.localVideoCurrentSrc) {
                     this.localVideoCurrentSrc.srcObject = this.localStream
-                    this.localVideoCurrentSrc.play()
+                    if (this.callOptions.video.enabled) {
+                        this.localVideoCurrentSrc.play()
+                    }
                 }
     
                 this._incomingCall.on("stream", remoteStream => {
-                    if (this.callOptions.video.enabled && this.remoteVideoElement) {
-                        this.remoteVideoElement.srcObject = remoteStream
+                    this.remoteVideoElement.srcObject = remoteStream
+                    if (this.callOptions.video.enabled) {
                         this.remoteVideoElement.play()
                     }
                 })
@@ -195,7 +245,7 @@ export class VoiceRTC {
         }
     }
     
-
+    
     async makeVideoCall(remotePeerId: string, chatID: string) {
         try {
             this.channel = chatID
