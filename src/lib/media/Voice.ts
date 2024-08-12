@@ -231,7 +231,6 @@ export class VoiceRTC {
                 this._incomingCall.on("error", err => {
                     console.error("Call error:", err)
                 })
-    
                 this._incomingCall = null
             } catch (error) {
                 console.error("Error accepting call:", error)
