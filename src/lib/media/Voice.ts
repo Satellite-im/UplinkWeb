@@ -21,6 +21,7 @@ export enum VoiceRTCMessageType {
 
 type VoiceRTCOptions = {
     audio: boolean
+    audioTrack: MediaStreamTrack | null
     video: {
         enabled: boolean
         selfie: boolean
@@ -181,14 +182,34 @@ export class VoiceRTC {
 
     turnOnOffMicrophone() {
         this.callOptions.audio = !this.callOptions.audio
+        // if (this.callOptions.audio) {
+        //     // Se a track já foi removida ou parada, crie uma nova track de áudio
+        //     if (!this.callOptions.audioTrack || this.callOptions.audioTrack.readyState === "ended") {
+        //         const audioContext = new AudioContext()
+        //         const newTrack = audioContext.createMediaStreamSource(this.localStream!).mediaStream.getAudioTracks()[0]
+
+        //         this.callOptions.audioTrack = newTrack // Atualize a referência da track
+        //     }
+        //     this.localStream?.addTrack(this.callOptions.audioTrack!)
+        // } else {
+        //     // Remover a track de áudio do stream
+        //     this.localStream?.removeTrack(this.callOptions.audioTrack!)
+        // }
+        if (this.callOptions.audio) {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: this.callOptions.video.enabled }).then(stream => {
+                const audioTrack = stream.getAudioTracks()[0]
+                this.localStream?.addTrack(audioTrack)
+                this.callOptions.audioTrack = audioTrack
+            })
+        } else {
+            this.localStream?.getAudioTracks().forEach(track => track.stop())
+            this.localStream?.removeTrack(this.callOptions.audioTrack!)
+        }
+
         this.localStream?.getAudioTracks().forEach(track => {
-            if (this.callOptions.audio) {
-                track.enabled = true
-            } else {
-                track.enabled = false
-            }
-            console.log("Track enabled: ", track.enabled)
+            console.log("Track enabled: ", track)
         })
+
         this.dataConnection?.send({
             type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
             channel: this.channel,
@@ -380,7 +401,8 @@ export class VoiceRTC {
                       }
                     : false,
             })
-        } catch (_) {
+        } catch (error) {
+            log.error("Error getting user media: ${error}")
             this.localStream = await navigator.mediaDevices.getUserMedia({
                 video: true,
                 audio: true,
@@ -403,6 +425,8 @@ export class VoiceRTC {
         }
 
         await this.improveAudioQuality()
+        this.callOptions.audioTrack = this.localStream.getAudioTracks()[0]
+        this.localStream.removeTrack(this.localStream.getAudioTracks()[0])
     }
 
     endCall() {
@@ -469,6 +493,7 @@ export class VoiceRTC {
 
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: true,
+    audioTrack: null,
     video: {
         enabled: true,
         selfie: true,
