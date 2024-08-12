@@ -115,7 +115,6 @@ export class VoiceRTC {
             console.error("Call error:", err)
         })
     }
-    
 
     turnOnOffCamera() {
         if (this.localStream) {
