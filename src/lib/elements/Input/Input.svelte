@@ -7,6 +7,7 @@
     import { EditorView } from "@codemirror/view"
     import { writable } from "svelte/store"
     import Text from "../Text.svelte"
+    import { debounce } from "$lib/utils/Functions"
 
     export let placeholder: string = ""
     export let hook: string = ""
@@ -45,19 +46,11 @@
         return true
     }
 
-    function debounce(func, wait) {
-        let timeout
-        return function(...args) {
-            clearTimeout(timeout)
-            timeout = setTimeout(() => func.apply(this, args), wait)
-        }
-    }
-
     const debouncedOnInput = debounce(() => {
         let isValid = isValidInput()
         dispatch("isValid", isValid)
         dispatch("input", value)
-    }, 300);
+    }, 300)
 
     if (copyOnInteract) {
         tooltip = "Copy"
