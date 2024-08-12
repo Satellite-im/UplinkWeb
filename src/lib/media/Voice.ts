@@ -182,32 +182,8 @@ export class VoiceRTC {
 
     turnOnOffMicrophone() {
         this.callOptions.audio = !this.callOptions.audio
-        // if (this.callOptions.audio) {
-        //     // Se a track já foi removida ou parada, crie uma nova track de áudio
-        //     if (!this.callOptions.audioTrack || this.callOptions.audioTrack.readyState === "ended") {
-        //         const audioContext = new AudioContext()
-        //         const newTrack = audioContext.createMediaStreamSource(this.localStream!).mediaStream.getAudioTracks()[0]
-
-        //         this.callOptions.audioTrack = newTrack // Atualize a referência da track
-        //     }
-        //     this.localStream?.addTrack(this.callOptions.audioTrack!)
-        // } else {
-        //     // Remover a track de áudio do stream
-        //     this.localStream?.removeTrack(this.callOptions.audioTrack!)
-        // }
-        if (this.callOptions.audio) {
-            navigator.mediaDevices.getUserMedia({ audio: true, video: this.callOptions.video.enabled }).then(stream => {
-                const audioTrack = stream.getAudioTracks()[0]
-                this.localStream?.addTrack(audioTrack)
-                this.callOptions.audioTrack = audioTrack
-            })
-        } else {
-            this.localStream?.getAudioTracks().forEach(track => track.stop())
-            this.localStream?.removeTrack(this.callOptions.audioTrack!)
-        }
-
         this.localStream?.getAudioTracks().forEach(track => {
-            console.log("Track enabled: ", track)
+            track.enabled = !track.enabled
         })
 
         this.dataConnection?.send({
@@ -316,7 +292,7 @@ export class VoiceRTC {
                 },
             })
 
-            console.log("Data connection established: ", this.dataConnection)
+            log.debug("Data connection established: ${this.dataConnection}")
 
             this.dataConnection.send({
                 type: VoiceRTCMessageType.Calling,
@@ -358,14 +334,11 @@ export class VoiceRTC {
             })
             Store.setActiveCall(Store.getCallingChat(this.channel)!)
         } catch (error) {
-            console.error("Error making call: ", error)
+            log.error(`Error making call: ${error}`)
         }
     }
 
     async startToMakeACall(remotePeerId: string, chatID: string) {
-        this.callOptions.audio = false
-        Store.updateMuted(true)
-
         this.channel = chatID
         const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
         this.remotePeerId = remotePeerIdEdited
@@ -389,7 +362,7 @@ export class VoiceRTC {
                           deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
                       }
                     : false,
-                audio: this.callOptions.video.enabled
+                audio: this.callOptions.audio
                     ? {
                           echoCancellation: settingsStore.calling.echoCancellation ?? true,
                           noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
@@ -402,10 +375,10 @@ export class VoiceRTC {
                     : false,
             })
         } catch (error) {
-            log.error("Error getting user media: ${error}")
+            log.error(`Error getting user media: ${error}`)
             this.localStream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
+                video: this.callOptions.video.enabled,
+                audio: this.callOptions.audio,
             })
         }
 
@@ -423,10 +396,8 @@ export class VoiceRTC {
             this.localVideoCurrentSrc.srcObject = this.localStream
             await this.localVideoCurrentSrc.play()
         }
-
-        await this.improveAudioQuality()
-        this.callOptions.audioTrack = this.localStream.getAudioTracks()[0]
-        this.localStream.removeTrack(this.localStream.getAudioTracks()[0])
+        /// Let it commented for now.
+        // await this.improveAudioQuality()
     }
 
     endCall() {
