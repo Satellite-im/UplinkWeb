@@ -211,7 +211,6 @@ export class VoiceRTC {
                 })
     
                 this.localStream = stream
-    
                 this._incomingCall.answer(this.localStream)
     
                 // Setup video elements if they exist, but do not auto-play unless video is enabled
