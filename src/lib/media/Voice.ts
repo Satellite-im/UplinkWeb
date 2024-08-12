@@ -361,7 +361,6 @@ export class VoiceRTC {
         }
     }
     
-    
     endCall() {
         this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
         if (this.localStream) {
