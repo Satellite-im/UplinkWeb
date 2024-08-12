@@ -202,6 +202,20 @@ export class VoiceRTC {
         Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
+    turnOnOffDeafened() {
+        let isDeafened = false
+
+        this.remoteStream?.getAudioTracks().forEach(track => {
+            track.enabled = !track.enabled
+            if (!track.enabled) {
+                isDeafened = true
+            } else {
+                isDeafened = false
+            }
+        })
+        Store.updateDeafened(isDeafened)
+    }
+
     async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
         this.remoteVideoElement = remoteVideoElement
         this.localVideoCurrentSrc = localVideoCurrentSrc
