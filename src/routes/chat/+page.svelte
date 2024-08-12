@@ -222,9 +222,9 @@
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
 
-    async function typing() {
+    let typing = debounce(async () => {
         await RaygunStoreInstance.sendEvent($activeChat.id, MessageEvent.Typing)
-    }
+    }, 50)
 
     let receivingCall: boolean = false
     $: activeCallInProgress = false
@@ -657,7 +657,7 @@
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
-                    debounce(() => typing(), 500)
+                    typing()
                 }}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
