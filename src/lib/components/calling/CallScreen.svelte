@@ -26,7 +26,7 @@
     let showVolumeMixer = false
     let showCallSettings = false
 
-    let muted: boolean = get(Store.state.devices.muted)
+    let muted: boolean = VoiceRTCInstance.callOptions.audio
     let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
 
     export let deafened: boolean = get(Store.state.devices.deafened)
@@ -58,7 +58,6 @@
     })
 
     function updateMuted() {
-        Store.updateMuted(!muted)
         VoiceRTCInstance.turnOnOffMicrophone()
     }
 
@@ -129,7 +128,7 @@
                 await VoiceRTCInstance.acceptCall()
             }
         }
-        Store.updateMuted(VoiceRTCInstance.callOptions.audio)
+        Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
         Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
         if (VoiceRTCInstance.remoteVideoElement) {
             remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
@@ -138,6 +137,8 @@
         if (VoiceRTCInstance.localVideoCurrentSrc) {
             await VoiceRTCInstance.updateLocalStream()
         }
+        console.log("Audio Enabled: ", VoiceRTCInstance.callOptions.audio)
+        // Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
     })
 
     onDestroy(() => {

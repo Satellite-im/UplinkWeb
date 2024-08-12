@@ -182,7 +182,12 @@ export class VoiceRTC {
     turnOnOffMicrophone() {
         this.callOptions.audio = !this.callOptions.audio
         this.localStream?.getAudioTracks().forEach(track => {
-            track.enabled = !track.enabled
+            if (this.callOptions.audio) {
+                track.enabled = true
+            } else {
+                track.enabled = false
+            }
+            console.log("Track enabled: ", track.enabled)
         })
         this.dataConnection?.send({
             type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
@@ -193,6 +198,8 @@ export class VoiceRTC {
                 audioEnabled: this.callOptions.audio,
             },
         })
+        Store.updateMuted(!this.callOptions.audio)
+        Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
     async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
@@ -202,6 +209,8 @@ export class VoiceRTC {
     }
 
     public async acceptIncomingCall() {
+        this.callOptions.audio = false
+        Store.updateMuted(true)
         this.acceptedIncomingCall = true
     }
 
@@ -319,6 +328,9 @@ export class VoiceRTC {
     }
 
     async startToMakeACall(remotePeerId: string, chatID: string) {
+        this.callOptions.audio = false
+        Store.updateMuted(true)
+
         this.channel = chatID
         const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
         this.remotePeerId = remotePeerIdEdited
@@ -332,23 +344,27 @@ export class VoiceRTC {
             let settingsStore = get(SettingsStore.state)
 
             this.localStream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    aspectRatio: 16 / 9,
-                    facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                    frameRate: 30,
-                    height: { ideal: 1080 },
-                    width: { ideal: 1920 },
-                    deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
-                },
-                audio: {
-                    echoCancellation: settingsStore.calling.echoCancellation ?? true,
-                    noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
-                    autoGainControl: settingsStore.calling.automaticGainControl ?? true,
-                    sampleRate: settingsStore.calling.bitrate ?? 48000,
-                    sampleSize: settingsStore.calling.sampleSize ?? 16,
-                    channelCount: settingsStore.calling.channels ?? 2,
-                    deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
-                },
+                video: this.callOptions.video.enabled
+                    ? {
+                          aspectRatio: 16 / 9,
+                          facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                          frameRate: 30,
+                          height: { ideal: 1080 },
+                          width: { ideal: 1920 },
+                          deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
+                      }
+                    : false,
+                audio: this.callOptions.video.enabled
+                    ? {
+                          echoCancellation: settingsStore.calling.echoCancellation ?? true,
+                          noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
+                          autoGainControl: settingsStore.calling.automaticGainControl ?? true,
+                          sampleRate: settingsStore.calling.bitrate ?? 48000,
+                          sampleSize: settingsStore.calling.sampleSize ?? 16,
+                          channelCount: settingsStore.calling.channels ?? 2,
+                          deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
+                      }
+                    : false,
             })
         } catch (_) {
             this.localStream = await navigator.mediaDevices.getUserMedia({
@@ -356,9 +372,6 @@ export class VoiceRTC {
                 audio: true,
             })
         }
-
-        this.callOptions.video.enabled = true
-        this.callOptions.audio = true
 
         this.dataConnection?.send({
             type: VoiceRTCMessageType.Calling,
