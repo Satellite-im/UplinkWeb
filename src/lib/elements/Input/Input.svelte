@@ -7,6 +7,7 @@
     import { EditorView } from "@codemirror/view"
     import { writable } from "svelte/store"
     import Text from "../Text.svelte"
+    import { debounce } from "$lib/utils/Functions"
 
     export let placeholder: string = ""
     export let hook: string = ""
@@ -45,6 +46,12 @@
         return true
     }
 
+    const debouncedOnInput = debounce(() => {
+        let isValid = isValidInput()
+        dispatch("isValid", isValid)
+        dispatch("input", value)
+    }, 300)
+
     if (copyOnInteract) {
         tooltip = "Copy"
         disabled = true
@@ -79,7 +86,7 @@
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
                 writableValue.set(val)
-                onInput()
+                debouncedOnInput()
             })
             onsend.push(() => {
                 editor.value("")
@@ -99,9 +106,7 @@
     }
 
     function onInput() {
-        let isValid = isValidInput()
-        dispatch("isValid", isValid)
-        dispatch("input", value)
+        debouncedOnInput()
     }
 
     function onBlur() {
