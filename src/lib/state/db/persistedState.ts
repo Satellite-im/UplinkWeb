@@ -1,11 +1,17 @@
 import { writable } from "svelte/store"
 import { getStateFromDB, setStateToDB } from "./dbOperations"
 
-export function createPersistentState<T>(key: string, defaultState: T) {
+export type DeSerializer<T> = {
+    deserializer?: (t: any) => T
+    serializer?: (t: T) => any
+}
+
+export function createPersistentState<T>(key: string, defaultState: T, deserializer?: DeSerializer<T>) {
     const state = writable<T>(defaultState)
-    getStateFromDB<T>(key, defaultState).then(loadedState => {
+    getStateFromDB<any>(key, defaultState).then(loadedState => {
+        if (deserializer && deserializer.deserializer) loadedState = deserializer.deserializer(loadedState)
         state.set(loadedState)
-        state.subscribe(value => setStateToDB<T>(key, value))
+        state.subscribe(value => setStateToDB<any>(key, deserializer?.serializer ? deserializer.serializer(value) : value))
     })
     return state
 }

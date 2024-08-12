@@ -537,10 +537,9 @@ class RaygunStore {
                     case "event_received": {
                         let conversation_id: string = event.values["conversation_id"]
                         let did_key = event.values["did_key"]
-                        let msg_event = parseJSValue(event.values["event"])
-                        if (msg_event.type === "typing") {
+                        if (event.values["event"] === "typing") {
                             UIStore.mutateChat(conversation_id, c => {
-                                c.typing_indicator[did_key] = new Date()
+                                c.typing_indicator.add(did_key)
                             })
                         }
                         break
