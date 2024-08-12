@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Text, Icon, Button } from "$lib/elements"
+    import Loader from "$lib/elements/Loader.svelte"
     import { Appearance, InventoryKind, Shape } from "$lib/enums"
     import { createEventDispatcher } from "svelte"
     import { _ } from "svelte-i18n"
@@ -14,13 +15,21 @@
     export let hook: string = ""
 
     const dispatch = createEventDispatcher()
+    let loaded = false
+
+    function handleImageLoad() {
+        loaded = true
+    }
 </script>
 
 <div data-cy={hook} class="inventory-item {equipped ? 'equipped' : ''}">
     {#if empty}
         <img src="/assets/frames/empty.png" alt="" class="preview" />
     {:else}
-        <img src={preview} alt="" class="preview" />
+        {#if !loaded}
+            <Loader />
+        {/if}
+        <img src={preview} alt="" class="preview" on:load={handleImageLoad} style:display={loaded ? "block" : "none"} />
     {/if}
     <Text hook="inventory-item-name">{name}</Text>
     <Text hook="inventory-item-type" muted>{kind}</Text>
@@ -69,6 +78,16 @@
 
         .preview {
             max-width: 180px;
+        }
+
+        .loading-indicator {
+            width: 180px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--loading-background-color);
+            color: var(--loading-text-color);
         }
     }
 </style>

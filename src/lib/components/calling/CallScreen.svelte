@@ -111,7 +111,6 @@
     let localVideoCurrentSrc: HTMLVideoElement
 
     onMount(async () => {
-        console.log("CallScreen mounted")
         await checkPermissions()
         await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 

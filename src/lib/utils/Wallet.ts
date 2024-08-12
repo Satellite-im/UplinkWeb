@@ -56,9 +56,7 @@ class Btc {
                     },
                 ],
             })
-            console.log(response)
             if (response.status === "success") {
-                console.log("success")
                 // handle success
             } else {
                 console.error(response.error.message)

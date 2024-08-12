@@ -31,6 +31,18 @@
         if (loading) setTimeout(() => (loading = false), 200)
     }
 
+    function handleCopyClick() {
+        const seedPhrase = samplePhrase.join(' ')
+        copyToClipboard(seedPhrase)
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            log.info('Text copied to clipboard')
+        }).catch(err => {
+            log.info('Failed to copy text: ', err)
+        })
+    }
     async function logOut() {
         AuthStore.setStayLogged(false)
         AuthStore.logIn(false)
@@ -416,11 +428,14 @@
                                         }
                                     }} />
                             {/if}
-                            {#if selectedKind === Integrations.Generic}
-                                <Input hook="input-account-integrations-new-generic" alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
-                            {/if}
                         </div>
                         <img class="integration-logo" data-cy="logo-account-integrations-new" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
+                        {#if selectedKind === Integrations.Generic}
+                            <div class="label">
+                                <Label hook="label-account-integration-new-address" text={$_("generic.label")} />
+                                <Input hook="input-account-integrations-new-generic" alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
+                            </div>
+                        {/if}
                         <div class="right">
                             <Label hook="label-account-integration-new-address" text={$_("generic.address")} />
                             <Input hook="input-account-integrations-new-address" alt bind:value={selectedKeyEditValue} />
@@ -468,8 +483,7 @@
                         <OrderedPhrase number={i + 1} word={word} loading={loading} />
                     {/each}
                     <div class="full-width flex-end">
-                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")}>
-                            <Icon icon={Shape.Clipboard} />
+                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")} on:click={handleCopyClick}>                            <Icon icon={Shape.Clipboard} />
                         </Button>
                     </div>
                 {/if}

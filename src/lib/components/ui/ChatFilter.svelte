@@ -44,7 +44,7 @@
 
     function is_friend_typing(friend: User) {
         let dm = $chats.find(c => c.kind === ChatType.DirectMessage && c.users[0] === friend.key)
-        return dm && dm.activity
+        return dm && dm.typing_indicator.has(friend.key)
     }
 
     function get_chat_name(chat: Chat): string {
@@ -111,7 +111,7 @@
                         <div class="profile-picture-wrap">
                             {#if chat.users.length === 2}
                                 <ProfilePicture
-                                    typing={chat.activity}
+                                    typing={chat.typing_indicator.size > 0}
                                     image={$userCache[chat.users[0]].profile.photo.image}
                                     status={$userCache[chat.users[0]].profile.status}
                                     size={Size.Medium}

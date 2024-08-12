@@ -75,7 +75,8 @@
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
-                value = val
+                writableValue.set(val)
+                onInput()
             })
             onsend.push(() => {
                 editor.value("")
