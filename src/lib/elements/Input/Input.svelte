@@ -23,7 +23,6 @@
     export let rules: InputRules = new InputRules()
 
     let errorMessage: string = ""
-    let needsUpdate = writable(true)
 
     function isValidInput(): boolean {
         if (rules.required && !value) {
@@ -54,6 +53,10 @@
     let clazz = ""
     let input: HTMLElement
     const dispatch = createEventDispatcher()
+    const writableValue = writable(value)
+
+    $: writableValue.set(value)
+    $: value = $writableValue
 
     let onsend: any[] = []
     let editor: MarkdownEditor
@@ -84,10 +87,8 @@
         })
     }
 
-    $: {
-        if (editor) {
-            editor.value(value)
-        }
+    $: if (rich && editor) {
+        editor.value($writableValue)
     }
 
     export { clazz as class }
@@ -146,7 +147,7 @@
             disabled={disabled}
             bind:this={input}
             on:focus={handleFocus}
-            bind:value={value}
+            bind:value={$writableValue}
             placeholder={placeholder}
             on:keydown={onKeyDown}
             on:input={onInput}
