@@ -25,7 +25,6 @@
                 level: battery.level,
             })
 
-
             // Event listeners to update the battery status
             updateStatus = () => {
                 batteryStatus.set({
