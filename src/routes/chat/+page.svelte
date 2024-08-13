@@ -222,10 +222,12 @@
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
     let activeCallInProgress = false
+    let activeCallDid = ""
 
     Store.state.activeCall.subscribe(call => {
         if (call) {
             activeCallInProgress = true
+            activeCallDid = call.chat.id
         } else {
             activeCallInProgress = false
         }
@@ -239,6 +241,7 @@
         setInterval(() => {
             if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
+                activeCallDid = VoiceRTCInstance.channel
             } else {
                 activeCallInProgress = false
             }
@@ -505,7 +508,7 @@
                 </svelte:fragment>
             </Topbar>
         {/if}
-        {#if activeCallInProgress}
+        {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
 
