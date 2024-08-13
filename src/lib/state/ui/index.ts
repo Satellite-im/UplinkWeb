@@ -138,6 +138,10 @@ class Store {
         if (update) {
             this.state.chats.update(c => c)
         }
+        MainStore.state.activeChat.update(c => {
+            c.typing_indicator.update()
+            return c
+        })
     }
 }
 
