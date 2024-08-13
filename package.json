@@ -47,7 +47,7 @@
         "markdown-editor": "github:Flemmli97/markdown-editor#5d17bfc53bca8958aa5599ddcbb991312c90a156",
         "peerjs": "^1.5.4",
         "pretty-bytes": "^6.1.1",
-        "sats-connect": "2.5.x",
+        "sats-connect": "2.6.0",
         "svelte-awesome-color-picker": "^3.0.6",
         "svelte-dnd-action": "^0.9.42",
         "svelte-highlight": "^7.6.1",
