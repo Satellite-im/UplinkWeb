@@ -37,6 +37,7 @@
     async function answerCall() {
         goto(Route.Chat)
         await VoiceRTCInstance.acceptIncomingCall()
+        Store.setActiveChat(Store.getCallingChat(VoiceRTCInstance.channel)!)
         pending = false
         VoiceRTCInstance.isReceivingCall = false
         callSound?.stop()
