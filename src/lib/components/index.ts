@@ -39,3 +39,6 @@ export { default as AAR } from "$lib/components/ui/AAR.svelte"
 export { default as IntegrationDisplay } from "$lib/components/ui/IntegrationDisplay.svelte"
 export { default as KeyboardListener } from "$lib/components/ui/KeyboardListener.svelte"
 export { default as MouseListener } from "$lib/components/ui/MouseListener.svelte"
+
+export { default as CommunitySettings } from "$lib/components/community/settings/CommunitySettings.svelte"
+export { default as PermissionsSettings } from "$lib/components/community/settings/permissions/PermissionsSettings.svelte"
