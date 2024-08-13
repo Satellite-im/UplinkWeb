@@ -17,7 +17,6 @@
     let interval: NodeJS.Timeout
 
     Store.state.pendingCall.subscribe(async _ => {
-        console.log("Arriving here on IncomingCall - PendingCall")
         if (VoiceRTCInstance.isReceivingCall) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)

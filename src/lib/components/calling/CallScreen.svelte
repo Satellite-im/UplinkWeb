@@ -14,7 +14,7 @@
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -49,15 +49,16 @@
 
     let subscribeThree = Store.state.devices.deafened.subscribe(state => {
         deafened = state
+        console.log("Deafened value: ", deafened)
     })
 
     let subscribeFour = Store.state.activeCall.subscribe(state => {
-        log.debug(`Active call state changed: ${state}`)
         otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
     function updateMuted() {
+        Store.updateMuted(!muted)
         VoiceRTCInstance.turnOnOffMicrophone()
     }
 
@@ -93,7 +94,7 @@
                 }
             }
         } catch (err) {
-            console.error("Error checking permissions: ", err)
+            log.error(`Error checking permissions: ${err}`)
         }
     }
 
@@ -102,7 +103,7 @@
             await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             permissionsGranted = true
         } catch (err) {
-            console.error("Error requesting permissions: ", err)
+            log.error(`Error requesting permissions: ${err}`)
             permissionsGranted = false
         }
     }
@@ -125,6 +126,7 @@
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 await VoiceRTCInstance.acceptCall()
+                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
             }
         }
         Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
@@ -136,8 +138,6 @@
         if (VoiceRTCInstance.localVideoCurrentSrc) {
             await VoiceRTCInstance.updateLocalStream()
         }
-        console.log("Audio Enabled: ", VoiceRTCInstance.callOptions.audio)
-        // Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
     })
 
     onDestroy(() => {
@@ -236,6 +236,7 @@
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
                 tooltip={$_("call.deafen")}
                 on:click={_ => {
+                    Store.updateDeafened(!deafened)
                     VoiceRTCInstance.turnOnOffDeafened()
                 }}>
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
