@@ -448,6 +448,7 @@ class RaygunStore {
                     case "message_received": {
                         let conversation_id: string = event.values["conversation_id"]
                         let message_id: string = event.values["message_id"]
+                        let incomingConvo: Chat
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
                         if (message) {
                             let ping = mentions_user(message, get(Store.state.user).key)
@@ -455,10 +456,19 @@ class RaygunStore {
                             let settings = get(SettingsStore.state)
                             let sender = get(Store.getUser(message.details.origin))
                             let activeChat = get(Store.state.activeChat)
+                            let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
+                            let messageToSend: string = ""
+                            if (chat) {
+                                if (!chat.unread) {
+                                    messageToSend = `${sender.name} sent you a message`
+                                } else if (chat.unread > 1) {
+                                    messageToSend = `${sender.name} sent you ${chat.unread} messages`
+                                }
+                            }
                             let notify = (settings.notifications.messages && get(page).route.id !== Route.Chat) || (settings.notifications.messages && get(page).route.id === Route.Chat && activeChat.id !== conversation_id)
                             if (ping || notify) {
                                 Store.addToastNotification(
-                                    new ToastMessage("New Message", `${sender.name} sent you a message`, 2, undefined, undefined, () => {
+                                    new ToastMessage("New Message", messageToSend, 2, undefined, undefined, () => {
                                         let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
                                         if (chat) {
                                             Store.setActiveChat(chat)
