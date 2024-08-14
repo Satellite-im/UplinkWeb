@@ -282,7 +282,9 @@
                                             hook="button-search-friend-chat"
                                             text={$_("chat.chat")}
                                             on:click={async _ => {
+                                                console.log("Result: ", result.item)
                                                 let chat = Store.getChatForUser(result.item.key)
+                                                console.log("Chat: ", chat)
                                                 if (chat) {
                                                     Store.setActiveChat(chat)
                                                 } else {
@@ -335,7 +337,9 @@
                                                 hook="button-friend-chat"
                                                 text={$_("chat.chat")}
                                                 on:click={async _ => {
+                                                    console.log("Friend: ", friend)
                                                     let chat = Store.getChatForUser(friend.key)
+                                                    console.log("Chat: ", chat)
                                                     if (chat) {
                                                         Store.setActiveChat(chat)
                                                         goto(Route.Chat)
