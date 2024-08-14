@@ -297,6 +297,7 @@ export type FileInfo = {
     remotePath: string
     source: string
     isRenaming: OperationState
+    imageThumbnail?: string
     extension?: string
     items?: FileInfo[]
     parentId?: string

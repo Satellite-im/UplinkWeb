@@ -16,6 +16,8 @@
     let hasFocus = false
     let oldName = name
 
+    console.log("itemId Image: ", info.imageThumbnail)
+
     $: if (isRenaming !== OperationState.Loading) {
         hasFocus = false
     }
@@ -112,7 +114,11 @@
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div data-cy={hook} class="filesitem" on:contextmenu>
-        <Icon icon={getIcon()} />
+        {#if kind === FilesItemKind.Image && info?.imageThumbnail}
+            <img src={info.imageThumbnail} alt={name} />
+        {:else}
+            <Icon icon={getIcon()} />
+        {/if}
         <Spacer less />
         {#if isRenaming === OperationState.Loading}
             <input data-cy="input-file-folder-name" id="input-{itemId}" type="text" bind:value={name} on:input={updateName} on:blur={onBlur} on:keydown={onKeydown} bind:this={inputRef} />
@@ -140,6 +146,14 @@
 
         &:hover {
             background: var(--background-alt);
+        }
+
+        img {
+            max-width: 100px;
+            max-height: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border-radius: 4px;
         }
 
         input {
