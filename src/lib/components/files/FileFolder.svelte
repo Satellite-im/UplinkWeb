@@ -6,6 +6,7 @@
     import { OperationState } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
+    import Modal from "../ui/Modal.svelte"
 
     export let itemId: string
     export let kind: FilesItemKind = FilesItemKind.File
@@ -16,7 +17,7 @@
     let hasFocus = false
     let oldName = name
 
-    console.log("itemId Image: ", info.imageThumbnail)
+    let openImageModal = false
 
     $: if (isRenaming !== OperationState.Loading) {
         hasFocus = false
@@ -109,13 +110,18 @@
         }
         isEnterOrEscapeKeyPressed = false
     }
+
+    function onCloseModal() {
+        openImageModal = false
+    }
 </script>
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div data-cy={hook} class="filesitem" on:contextmenu>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div data-cy={hook} class="filesitem" on:contextmenu on:click={_ => (openImageModal = true)}>
         {#if kind === FilesItemKind.Image && info?.imageThumbnail}
-            <img src={info.imageThumbnail} alt={name} />
+            <img class="img-preview-on-storage" src={info.imageThumbnail} alt={name} />
         {:else}
             <Icon icon={getIcon()} />
         {/if}
@@ -131,7 +137,18 @@
     </div>
 </section>
 
+{#if openImageModal}
+    <Modal on:close={onCloseModal}>
+        <img class="img-preview-on-storage-on-modal" src={info.imageThumbnail} alt={name} />
+    </Modal>
+{/if}
+
 <style lang="scss">
+    .img-preview-on-storage-on-modal {
+        width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
     .filesitem {
         height: var(--file-folder-size);
         width: var(--file-folder-size);
@@ -143,12 +160,12 @@
         align-items: center;
         transition: background-color var(--animation-speed);
         padding: var(--padding-less);
+        background-color: transparent;
 
         &:hover {
             background: var(--background-alt);
         }
-
-        img {
+        .img-preview-on-storage {
             max-width: 100px;
             max-height: 50%;
             object-fit: cover;
