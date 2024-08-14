@@ -119,7 +119,15 @@
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div data-cy={hook} class="filesitem" on:contextmenu on:click={_ => (openImageModal = true)}>
+    <div
+        data-cy={hook}
+        class="filesitem"
+        on:contextmenu
+        on:click={_ => {
+            if (kind === FilesItemKind.Image && info?.imageThumbnail) {
+                openImageModal = true
+            }
+        }}>
         {#if kind === FilesItemKind.Image && info?.imageThumbnail}
             <img class="img-preview-on-storage" src={info.imageThumbnail} alt={name} />
         {:else}

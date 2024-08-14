@@ -323,7 +323,7 @@
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
                 remotePath: item!.path(),
-                imageThumbnail: item.is_file() ? to_base64(item.thumbnail()) : undefined,
+                imageThumbnail: item.is_file() && item.thumbnail().length > 0 ? to_base64(item.thumbnail()) : undefined,
                 isRenaming: OperationState.Initial,
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
                 source: "",
