@@ -448,7 +448,6 @@ class RaygunStore {
                     case "message_received": {
                         let conversation_id: string = event.values["conversation_id"]
                         let message_id: string = event.values["message_id"]
-                        let incomingConvo: Chat
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
                         if (message) {
                             let ping = mentions_user(message, get(Store.state.user).key)
