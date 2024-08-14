@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Button, Icon } from "$lib/elements"
     import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
@@ -19,10 +20,12 @@
     import { goto } from "$app/navigation"
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
-    import type { Item } from "warp-wasm"
+    import { WarpInstance, type Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
+    import { initWarp } from "$lib/wasm/IWarp"
+    import { WarpStore } from "$lib/wasm/WarpStore"
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -357,6 +360,11 @@
     $: freeSpace = ConstellationStoreInstance.freeStorageSpace
 
     onMount(async () => {
+        console.log("Files page mounted")
+
+        /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
+        await new Promise(resolve => setTimeout(resolve, 300))
+
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
         getCurrentDirectoryFiles()
 
