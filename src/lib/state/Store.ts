@@ -121,7 +121,19 @@ class GlobalStore {
 
     getChatForUser(userID: string) {
         const chats = get(UIStore.state.chats)
-        return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+        let chat = chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+        if (chat) {
+            return chat
+        } else {
+            let hiddenChats = get(UIStore.state.hiddenChats)
+            let hiddenChat = hiddenChats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+            if (hiddenChat) {
+                UIStore.addSidebarChat(hiddenChat)
+                UIStore.state.hiddenChats.set(hiddenChats.filter(c => c.id !== hiddenChat.id))
+                return hiddenChat
+            }
+            return undefined
+        }
     }
 
     getCallingChat(chatID: string) {

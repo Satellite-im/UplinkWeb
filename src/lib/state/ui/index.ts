@@ -13,6 +13,7 @@ export interface IUIState {
     emojiFont: Writable<EmojiFont>
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
+    hiddenChats: Writable<Chat[]>
 }
 
 class Store {
@@ -35,6 +36,7 @@ class Store {
                     return c
                 },
             }),
+            hiddenChats: createPersistentState("uplink.ui.hiddenChats", []),
         }
     }
 
@@ -84,6 +86,13 @@ class Store {
 
     removeSidebarChat(chat: Chat | string) {
         let id = typeof chat === "string" ? chat : chat.id
+        this.state.hiddenChats.update(hiddenChats => {
+            let chat = get(this.state.chats).find(c => c.id === id)
+            if (chat) {
+                hiddenChats.push(chat)
+            }
+            return hiddenChats
+        })
         this.state.chats.set(get(this.state.chats).filter(c => c.id !== id))
     }
 
