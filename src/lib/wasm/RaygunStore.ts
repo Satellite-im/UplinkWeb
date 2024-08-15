@@ -461,7 +461,7 @@ class RaygunStore {
                                 if (!chat.unread) {
                                     messageToSend = `${sender.name} sent you a message`
                                 } else if (chat.unread > 1) {
-                                    messageToSend = `${sender.name} sent you ${chat.unread} messages`
+                                    messageToSend = `${sender.name} sent you ${chat.unread} new messages`
                                 }
                             }
                             let notify = (settings.notifications.messages && get(page).route.id !== Route.Chat) || (settings.notifications.messages && get(page).route.id === Route.Chat && activeChat.id !== conversation_id)
