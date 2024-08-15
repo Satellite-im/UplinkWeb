@@ -5,13 +5,16 @@
     import Chatbar from "$lib/layouts/Chatbar.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
     import { _ } from "svelte-i18n"
+    import Modal from "$lib/components/ui/Modal.svelte"
 
     let showSettings: boolean = false
 </script>
 
 <div id="community">
     {#if showSettings}
-        <CommunitySettings />
+        <Modal on:close={() => (showSettings = false)}>
+            <CommunitySettings />
+        </Modal>
     {/if}
 
     <Topbar>

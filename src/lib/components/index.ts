@@ -42,3 +42,8 @@ export { default as MouseListener } from "$lib/components/ui/MouseListener.svelt
 
 export { default as CommunitySettings } from "$lib/components/community/settings/CommunitySettings.svelte"
 export { default as PermissionsSettings } from "$lib/components/community/settings/permissions/PermissionsSettings.svelte"
+export { default as CommunityDetails } from "$lib/components/community/settings/details/CommunityDetails.svelte"
+export { default as ModerationSettings } from "$lib/components/community/settings/moderation/ModerationSettings.svelte"
+export { default as CreateRole } from "$lib/components/community/settings/roles/CreateRole.svelte"
+export { default as Role } from "$lib/components/community/settings/roles/Role.svelte"
+export { default as RoleSelector } from "$lib/components/community/settings/roles/RoleSelector.svelte"
