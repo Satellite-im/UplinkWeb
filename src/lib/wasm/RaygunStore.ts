@@ -623,66 +623,70 @@ class RaygunStore {
             },
         }
         let cancelled = false
-        for await (const value of listener) {
-            let event = parseJSValue(value)
-            log.info(`Handling file progress event: ${JSON.stringify(event)}`)
-            switch (event.type) {
-                case "AttachedProgress": {
-                    let locationKind = parseJSValue(event.values[0])
-                    // Only streams need progress update
-                    if (locationKind.type === "Stream") {
-                        let progress = parseJSValue(event.values[1])
-                        let file = progress.values["name"]
-                        ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
-                            if (current) {
-                                let copy = { ...current }
-                                switch (progress.type) {
-                                    case "CurrentProgress": {
-                                        copy.size = progress.values["current"]
-                                        copy.total = progress.values["total"]
-                                        break
+        try {
+            for await (const value of listener) {
+                let event = parseJSValue(value)
+                log.info(`Handling file progress event: ${JSON.stringify(event)}`)
+                switch (event.type) {
+                    case "AttachedProgress": {
+                        let locationKind = parseJSValue(event.values[0])
+                        // Only streams need progress update
+                        if (locationKind.type === "Stream") {
+                            let progress = parseJSValue(event.values[1])
+                            let file = progress.values["name"]
+                            ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
+                                if (current) {
+                                    let copy = { ...current }
+                                    switch (progress.type) {
+                                        case "CurrentProgress": {
+                                            copy.size = progress.values["current"]
+                                            copy.total = progress.values["total"]
+                                            break
+                                        }
+                                        case "ProgressComplete": {
+                                            copy.size = progress.values["total"]
+                                            copy.total = progress.values["total"]
+                                            copy.done = true
+                                            break
+                                        }
+                                        case "ProgressFailed": {
+                                            copy.size = progress.values["last_size"]
+                                            copy.error = `Error: ${progress.values["error"]}`
+                                            break
+                                        }
                                     }
-                                    case "ProgressComplete": {
-                                        copy.size = progress.values["total"]
-                                        copy.total = progress.values["total"]
-                                        copy.done = true
-                                        break
-                                    }
-                                    case "ProgressFailed": {
-                                        copy.size = progress.values["last_size"]
-                                        copy.error = `Error: ${progress.values["error"]}`
-                                        break
-                                    }
-                                }
-                                return copy
-                            } else if (progress.type === "CurrentProgress") {
-                                return {
-                                    name: file,
-                                    size: progress.values["current"],
-                                    total: progress.values["total"],
-                                    cancellation: {
-                                        cancel: () => {
-                                            cancelled = true
+                                    return copy
+                                } else if (progress.type === "CurrentProgress") {
+                                    return {
+                                        name: file,
+                                        size: progress.values["current"],
+                                        total: progress.values["total"],
+                                        cancellation: {
+                                            cancel: () => {
+                                                cancelled = true
+                                            },
                                         },
-                                    },
+                                    }
                                 }
-                            }
-                            return undefined
-                        })
-                    }
-                    break
-                }
-                case "Pending": {
-                    if (Object.keys(event.values).length > 0) {
-                        let res = parseJSValue(event.values)
-                        if (res.type === "Err") {
-                            log.error(`Error uploading file ${res.values}`)
+                                return undefined
+                            })
                         }
+                        break
                     }
-                    break
+                    case "Pending": {
+                        if (Object.keys(event.values).length > 0) {
+                            let res = parseJSValue(event.values)
+                            if (res.type === "Err") {
+                                log.error(`Error uploading file ${res.values}`)
+                            }
+                        }
+                        break
+                    }
                 }
+                if (cancelled) break
             }
-            if (cancelled) break
+        } catch (e) {
+            if (!`${e}`.includes(`Error: returned None`)) throw e
         }
     }
 
