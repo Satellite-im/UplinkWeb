@@ -360,8 +360,6 @@
     $: freeSpace = ConstellationStoreInstance.freeStorageSpace
 
     onMount(async () => {
-        console.log("Files page mounted")
-
         /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
         await new Promise(resolve => setTimeout(resolve, 300))
 
