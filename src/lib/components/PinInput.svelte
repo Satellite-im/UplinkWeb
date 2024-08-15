@@ -70,14 +70,14 @@
         // Check if the key is a digit
         if (!isNaN(Number(key)) && key !== " ") {
             updatePinValue(key)
-        } else if (key === 'Enter') {
+        } else if (key === "Enter") {
             event.preventDefault()
-        // Check if the pin value meets the minimum length requirement
-        if (pinValue.length >= min) {
-            submitPinValue()
+            // Check if the pin value meets the minimum length requirement
+            if (pinValue.length >= min) {
+                submitPinValue()
+            }
         }
     }
-}
 
     onMount(() => {
         window.addEventListener("keydown", handleKeyDown)

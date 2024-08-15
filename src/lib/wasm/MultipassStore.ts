@@ -201,15 +201,33 @@ class MultipassStore {
 
     /**
      * Sends a friend request.
-     * @param did - The DID of the user to send a friend request to.
+     * @param friend - The DID or Username#short of the user to send a friend request to.
      * @returns A Result containing either success or failure with a WarpError.
      */
-    async sendFriendRequest(did: string): Promise<Result<WarpError, void>> {
+    async sendFriendRequest(friend: string): Promise<Result<WarpError, void>> {
         const multipass = get(this.multipassWritable)
 
         if (multipass) {
             try {
-                log.debug("Sending friend request to: " + did)
+                let did = friend
+                if (!friend.startsWith("did:key") && friend.includes("#")) {
+                    let split_data = friend.split("#")
+                    if (
+                        split_data.length != 2 ||
+                        split_data[0].length < 4 || // Username constraints
+                        split_data[0].length > 32 ||
+                        split_data[1].length != 8
+                    ) {
+                        return failure(handleErrors("Invalid identity"))
+                    }
+                    let identity: any[] = await multipass.get_identity(wasm.Identifier.Username, friend)
+                    console.log("fetch res ", identity) // This is empty if it was never resolved
+                    // It should only find 1 matching identity
+                    if (identity.length != 1) {
+                        return failure(handleErrors("Invalid identity"))
+                    }
+                    did = identity[0].did_key
+                }
                 return success(await multipass.send_request(did))
             } catch (error) {
                 return failure(handleErrors(error))

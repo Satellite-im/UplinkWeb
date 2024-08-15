@@ -21,6 +21,7 @@ export enum VoiceRTCMessageType {
 
 type VoiceRTCOptions = {
     audio: boolean
+    audioTrack: MediaStreamTrack | null
     video: {
         enabled: boolean
         selfie: boolean
@@ -91,6 +92,7 @@ export class VoiceRTC {
 
         this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
 
+        this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
         this.localPeer!.on("call", async call => {
             this.activeCall = call
             this.channel = call.metadata.channel
@@ -122,6 +124,12 @@ export class VoiceRTC {
 
         conn.on("data", data => {
             let dataReceived = data as VoiceMessage
+            this.handleWithDataReceived(dataReceived)
+        })
+
+        conn.on("data", data => {
+            let dataReceived = data as VoiceMessage
+            log.debug(`Data received from user that received a call: ${dataReceived}`)
             this.handleWithDataReceived(dataReceived)
         })
     }
@@ -260,6 +268,23 @@ export class VoiceRTC {
         } catch (error) {
             log.error(`Error making call: ${error}`)
         }
+
+        this.dataConnection?.send({
+            type: VoiceRTCMessageType.Calling,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = this.localStream
+            await this.localVideoCurrentSrc.play()
+        }
+        /// Let it commented for now.
+        // await this.improveAudioQuality()
     }
 
     async updateLocalStream() {
@@ -434,6 +459,7 @@ export class VoiceRTC {
 
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: true,
+    audioTrack: null,
     video: {
         enabled: true,
         selfie: true,
