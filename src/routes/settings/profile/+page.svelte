@@ -20,6 +20,7 @@
     import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
+    import { log } from "$lib/utils/Logger"
 
     let loading = true
     let showSeed = false
@@ -32,16 +33,19 @@
     }
 
     function handleCopyClick() {
-        const seedPhrase = samplePhrase.join(' ')
+        const seedPhrase = samplePhrase.join(" ")
         copyToClipboard(seedPhrase)
     }
 
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            log.info('Text copied to clipboard')
-        }).catch(err => {
-            log.info('Failed to copy text: ', err)
-        })
+    function copyToClipboard(text: string) {
+        navigator.clipboard
+            .writeText(text)
+            .then(() => {
+                log.info("Text copied to clipboard")
+            })
+            .catch(err => {
+                log.info(`Failed to copy text: ${err}`)
+            })
     }
     async function logOut() {
         AuthStore.setStayLogged(false)
@@ -483,7 +487,8 @@
                         <OrderedPhrase number={i + 1} word={word} loading={loading} />
                     {/each}
                     <div class="full-width flex-end">
-                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")} on:click={handleCopyClick}>                            <Icon icon={Shape.Clipboard} />
+                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")} on:click={handleCopyClick}>
+                            <Icon icon={Shape.Clipboard} />
                         </Button>
                     </div>
                 {/if}
