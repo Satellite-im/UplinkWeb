@@ -129,7 +129,7 @@
             }
         }}>
         {#if kind === FilesItemKind.Image && info?.imageThumbnail}
-            <img class="img-preview-on-storage" src={info.imageThumbnail} alt={name} />
+            <img data-cy="file-preview-image" class="img-preview-on-storage" src={info.imageThumbnail} alt={name} />
         {:else}
             <Icon icon={getIcon()} />
         {/if}
