@@ -39,6 +39,7 @@ export interface ISettingsState {
     accessibility: {
         openDyslexic: boolean
     }
+    showSeedPhrase: boolean
     notifications: {
         enabled: boolean
         friends: boolean
@@ -90,6 +91,10 @@ class Store {
 
     toggleDevmode(state: boolean) {
         this.state.set({ ...get(this.state), devmode: state })
+    }
+
+    toggleSeedPhrase(showSeed: boolean) {
+        this.state.set({ ...get(this.state), showSeedPhrase: !showSeed })
     }
 }
 

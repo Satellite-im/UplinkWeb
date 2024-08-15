@@ -21,20 +21,54 @@
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
     import { log } from "$lib/utils/Logger"
+    import { SettingsStore, type ISettingsState } from "$lib/state"
 
     let loading = true
-    let showSeed = false
     let isValidUsernameToUpdate = false
     let isValidStatusMessageToUpdate = true
 
+    let showSeed = get(SettingsStore.state).showSeedPhrase
+    let samplePhrase = get(AuthStore.state).seedPhrase || []
+
+    AuthStore.state.subscribe(a => {
+        if (a.seedPhrase) {
+            samplePhrase = a.seedPhrase
+        }
+    })
     function toggleSeedPhrase() {
-        showSeed = !showSeed
-        if (loading) setTimeout(() => (loading = false), 200)
+        SettingsStore.toggleSeedPhrase(showSeed)
+        loading = !loading
+        if (showSeed) {
+            samplePhrase = get(AuthStore.state).seedPhrase || []
+        }
+    }
+    SettingsStore.state.subscribe((s: ISettingsState) => {
+        showSeed = s.showSeedPhrase
+    })
+
+    $: {
+        if (!samplePhrase) {
+            loading = true
+        } else {
+            loading = false
+            samplePhrase = get(AuthStore.state).seedPhrase || []
+        }
     }
 
+    const unsubscribeAuth = AuthStore.state.subscribe(a => {
+        if (a.seedPhrase) {
+            samplePhrase = a.seedPhrase
+        }
+    })
+
+    const unsubscribeSettings = SettingsStore.state.subscribe(s => {
+        showSeed = s.showSeedPhrase
+    })
     function handleCopyClick() {
-        const seedPhrase = samplePhrase.join(" ")
-        copyToClipboard(seedPhrase)
+        if (samplePhrase) {
+            const seedPhrase = samplePhrase.join(" ")
+            copyToClipboard(seedPhrase)
+        }
     }
 
     function copyToClipboard(text: string) {
@@ -92,19 +126,13 @@
         isValidUsernameToUpdate = false
     }
 
-    let samplePhrase = get(AuthStore.state).seedPhrase!
-
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
 
     onMount(() => {
         userReference = { ...get(Store.state.user) }
         statusMessage = { ...get(Store.state.user) }.profile.status_message
-    })
-
-    onDestroy(() => {
-        Store.setUsername(userReference.name)
-        Store.setStatusMessage(userReference.profile.status_message)
+        samplePhrase = get(AuthStore.state).seedPhrase || []
     })
 
     $: user = Store.state.user
@@ -121,6 +149,8 @@
     onDestroy(() => {
         Store.setUsername(userReference.name)
         Store.setStatusMessage(userReference.profile.status_message)
+        unsubscribeAuth()
+        unsubscribeSettings()
         userSub()
     })
 

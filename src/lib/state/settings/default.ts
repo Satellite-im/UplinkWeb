@@ -106,6 +106,7 @@ export let defaultSettings = {
     accessibility: {
         openDyslexic: true,
     },
+    showSeedPhrase: false,
     notifications: {
         enabled: true,
         friends: true,
