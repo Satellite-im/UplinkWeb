@@ -774,7 +774,7 @@ class RaygunStore {
             kind: direct ? ChatType.DirectMessage : ChatType.Group,
             settings: {
                 displayOwnerBadge: true,
-                readReciepts: true,
+                readReceipts: true,
                 permissions: {
                     allowAnyoneToAddUsers: !direct && (setting.values["members_can_add_participants"] as boolean),
                     allowAnyoneToModifyPhoto: false,
