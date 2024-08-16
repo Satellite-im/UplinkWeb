@@ -283,12 +283,15 @@ class GlobalStore {
     cancelRequest(user: string) {
         this.denyRequest(user)
     }
-
     removeFriend(user: string) {
         let friendsList = get(this.state.friends)
         this.state.friends.set(friendsList.filter(f => f !== user))
-    }
 
+        UIStore.state.chats.update(chats => {
+            return chats.filter(c => !c.users.includes(user))
+        })
+        this.state.activeChat.set(defaultChat)
+    }
     blockUser(user: string) {
         this.removeFriend(user)
         this.state.blocked.set([...get(this.state.blocked), user])

@@ -28,7 +28,7 @@
     import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { OperationState, type Chat, type User } from "$lib/types"
+    import { defaultChat, OperationState, type Chat, type User } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -236,6 +236,7 @@
     }, 50)
 
     onMount(() => {
+        console.log("ActiveChat: ", $activeChat)
         setInterval(() => {
             if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
@@ -510,7 +511,7 @@
         {/if}
 
         <Conversation loading={loading}>
-            {#if $activeChat.users.length > 0}
+            {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
                     {#each $conversation.messages as group}
