@@ -301,7 +301,12 @@
             "setNote": "Set a note . . .",
             "deleteBanner": "Delete Banner Picture",
             "deleteProfile": "Delete Profile Picture",
-            "address": "Address"
+            "address": "Address",
+            "seed": {
+                "remove": "Your recovery phrase will not be stored anymore and will be removed. Make sure to save the phrase! This change is irreversible!",
+                "remove.yes": "I understand",
+                "remove.no": "Cancel"
+            }
         },
         "calling": {
             "minimalCallingAlerts": "Minimal Calling Alerts",

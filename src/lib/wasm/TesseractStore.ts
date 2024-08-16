@@ -73,6 +73,7 @@ class TesseractStore {
 
     removeSeed() {
         const tesseract = get(this.tesseractWritable)
+        if (!tesseract?.exist("mnemonic")) return
         tesseract?._delete("mnemonic")
     }
 

@@ -21,6 +21,7 @@
     import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
     import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
     import { log } from "$lib/utils/Logger"
+    import Modal from "$lib/components/ui/Modal.svelte"
 
     enum SeedState {
         Hidden,
@@ -105,6 +106,7 @@
 
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
+    let seedWarning = false
 
     onMount(() => {
         userReference = { ...get(Store.state.user) }
@@ -203,12 +205,50 @@
         selectedKeyEditValue = ""
     }
 
-    async function toggleSeedPhraseSave(val: boolean) {
-        AuthStore.setSaveSeedPhrase(val)
+    function toggleSeedPhraseSave(val: boolean) {
+        if (!val && !seedWarning) {
+            seedWarning = true
+            return false
+        } else {
+            seedWarning = false
+            saveSeedPhrase = val
+            AuthStore.setSaveSeedPhrase(val)
+            seedPhrase = TesseractStoreInstance.fetchSeed()?.split(" ")
+            return true
+        }
     }
 </script>
 
 <div id="page">
+    {#if seedWarning}
+        <Modal on:close={() => (seedWarning = false)}>
+            <div class="seed-phrase-modal">
+                <Text hook="text-create-description">
+                    {$_("settings.profile.seed.remove")}
+                </Text>
+                <Controls>
+                    <Button
+                        text={$_("settings.profile.seed.remove.yes")}
+                        hook="button-seed-remove-confirm"
+                        on:click={_ => {
+                            toggleSeedPhraseSave(false)
+                        }}
+                        appearance={Appearance.Error}>
+                        <Icon icon={Shape.CheckMark} />
+                    </Button>
+                    <Button
+                        text={$_("settings.profile.seed.remove.no")}
+                        hook="button-seed-remove-cancel"
+                        on:click={_ => {
+                            seedWarning = false
+                        }}
+                        appearance={Appearance.Alt}>
+                        <Icon icon={Shape.XMark} />
+                    </Button>
+                </Controls>
+            </div>
+        </Modal>
+    {/if}
     {#if unsavedChanges}
         <div class="save-controls" data-cy="save-controls">
             <Controls>
@@ -509,7 +549,7 @@
             </div>
 
             <div class="section" data-cy="section-store-recovery-seed">
-                <Checkbox hook="checkbox-store-recovery-seed" checked={saveSeedPhrase} on:toggle={e => toggleSeedPhraseSave(e.detail)}>
+                <Checkbox hook="checkbox-store-recovery-seed" checked={saveSeedPhrase} disabled={seedPhrase === undefined} onToggle={e => toggleSeedPhraseSave(e)}>
                     <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
                 </Checkbox>
             </div>
@@ -687,6 +727,15 @@
                     }
                 }
             }
+        }
+        .seed-phrase-modal {
+            display: flex;
+            flex-direction: column;
+            width: var(--max-component-width);
+            overflow: hidden;
+            align-items: center;
+            gap: var(--gap);
+            padding: var(--padding);
         }
     }
 </style>
