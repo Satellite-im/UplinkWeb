@@ -1,9 +1,19 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte"
+
     export let checked: boolean = false
     export let hook: string = ""
+    const dispatch = createEventDispatcher()
 </script>
 
-<input data-cy={hook} type="checkbox" checked={checked} />
+<input
+    data-cy={hook}
+    type="checkbox"
+    checked={checked}
+    on:click={_ => {
+        checked = !checked
+        dispatch("toggle", checked)
+    }} />
 <slot></slot>
 
 <style lang="scss">

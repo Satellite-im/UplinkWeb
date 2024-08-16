@@ -281,7 +281,8 @@
                 "label": "Reveal recovery phrase",
                 "description": "Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.",
                 "show": "Reveal Phrase",
-                "hide": "Hide Phrase"
+                "hide": "Hide Phrase",
+                "missing": "Phrase not saved"
             },
             "should_store": "Store recovery seed on account (disable for increased security, irreversible)",
             "update": "Profile Updated!",

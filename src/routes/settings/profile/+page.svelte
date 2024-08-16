@@ -22,19 +22,26 @@
     import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
     import { log } from "$lib/utils/Logger"
 
+    enum SeedState {
+        Hidden,
+        Shown,
+        Missing,
+    }
+
     let loading = true
-    let showSeed = false
     let isValidUsernameToUpdate = false
     let isValidStatusMessageToUpdate = true
+    let seedPhrase = TesseractStoreInstance.fetchSeed()?.split(" ")
 
     function toggleSeedPhrase() {
-        showSeed = !showSeed
+        if (showSeed === SeedState.Missing) return
+        showSeed = showSeed === SeedState.Hidden ? SeedState.Shown : SeedState.Hidden
         if (loading) setTimeout(() => (loading = false), 200)
     }
 
     function handleCopyClick() {
-        const seedPhrase = samplePhrase.join(" ")
-        copyToClipboard(seedPhrase)
+        if (!seedPhrase) return
+        copyToClipboard(seedPhrase.join(" "))
     }
 
     function copyToClipboard(text: string) {
@@ -92,7 +99,9 @@
         isValidUsernameToUpdate = false
     }
 
-    let samplePhrase = get(AuthStore.state).seedPhrase!
+    $: auth = AuthStore.state
+    $: saveSeedPhrase = $auth.saveSeedPhrase
+    $: showSeed = seedPhrase ? SeedState.Hidden : SeedState.Missing
 
     let userReference: User = { ...get(Store.state.user) }
     let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
@@ -192,6 +201,10 @@
         showEditIntegrations.set(false)
         selectedKey = ""
         selectedKeyEditValue = ""
+    }
+
+    async function toggleSeedPhraseSave(val: boolean) {
+        AuthStore.setSaveSeedPhrase(val)
     }
 </script>
 
@@ -473,17 +486,18 @@
             <div class="section">
                 <SettingSection hook="section-reveal-phrase" name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
                     <Button
-                        hook={!showSeed ? "button-reveal-phrase" : "button-hide-phrase"}
-                        appearance={!showSeed ? Appearance.Error : Appearance.Alt}
-                        text={!showSeed ? $_("settings.profile.reveal_phrase.show") : $_("settings.profile.reveal_phrase.hide")}
+                        hook={showSeed === SeedState.Hidden ? "button-reveal-phrase" : showSeed === SeedState.Shown ? "button-hide-phrase" : "button-missing-phrase"}
+                        appearance={showSeed === SeedState.Hidden || showSeed === SeedState.Missing ? Appearance.Error : Appearance.Alt}
+                        text={showSeed === SeedState.Hidden ? $_("settings.profile.reveal_phrase.show") : showSeed === SeedState.Shown ? $_("settings.profile.reveal_phrase.hide") : $_("settings.profile.reveal_phrase.missing")}
+                        disabled={showSeed === SeedState.Missing}
                         on:click={_ => {
                             toggleSeedPhrase()
                         }}>
                         <Icon icon={showSeed ? Shape.EyeSlash : Shape.Eye} />
                     </Button>
                 </SettingSection>
-                {#if showSeed}
-                    {#each samplePhrase as word, i}
+                {#if showSeed === SeedState.Shown && seedPhrase}
+                    {#each seedPhrase as word, i}
                         <OrderedPhrase number={i + 1} word={word} loading={loading} />
                     {/each}
                     <div class="full-width flex-end">
@@ -495,7 +509,7 @@
             </div>
 
             <div class="section" data-cy="section-store-recovery-seed">
-                <Checkbox hook="checkbox-store-recovery-seed" checked>
+                <Checkbox hook="checkbox-store-recovery-seed" checked={saveSeedPhrase} on:toggle={e => toggleSeedPhraseSave(e.detail)}>
                     <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
                 </Checkbox>
             </div>
