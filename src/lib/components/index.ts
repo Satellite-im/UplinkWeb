@@ -41,6 +41,9 @@ export { default as KeyboardListener } from "$lib/components/ui/KeyboardListener
 export { default as MouseListener } from "$lib/components/ui/MouseListener.svelte"
 
 export { default as CommunitySettings } from "$lib/components/community/settings/CommunitySettings.svelte"
+export { default as CommunityTags } from "$lib/components/community/settings/tags/CommunityTags.svelte"
+export { default as CommunityTag } from "$lib/components/community/settings/tags/CommunityTag.svelte"
+export { default as SecuritySettings } from "$lib/components/community/settings/security/SecuritySettings.svelte"
 export { default as PermissionsSettings } from "$lib/components/community/settings/permissions/PermissionsSettings.svelte"
 export { default as CommunityDetails } from "$lib/components/community/settings/details/CommunityDetails.svelte"
 export { default as ModerationSettings } from "$lib/components/community/settings/moderation/ModerationSettings.svelte"

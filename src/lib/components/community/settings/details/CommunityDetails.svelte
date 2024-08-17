@@ -19,6 +19,10 @@
         <Input placeholder="Message of the Day"></Input>
     </div>
     <div class="section">
+        <Label text="Community ID"></Label>
+        <Input value="did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK" copyOnInteract></Input>
+    </div>
+    <div class="section">
         <Label text="Delete Community"></Label>
         <Button appearance={Appearance.Error} text="Delete"></Button>
     </div>
@@ -30,7 +34,8 @@
         flex-direction: column;
         gap: var(--gap);
         flex: 1;
-        min-width: var(--max-component-width);
+        min-width: 500px;
+        width: 100%;
         height: fit-content;
 
         .header {

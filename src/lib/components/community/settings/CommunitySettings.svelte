@@ -6,7 +6,7 @@
     import Navigation from "$lib/layouts/Navigation.svelte"
     import CreateRole from "./roles/CreateRole.svelte"
     import CommunityDetails from "./details/CommunityDetails.svelte"
-    import { ModerationSettings } from "$lib/components"
+    import { CommunityTags, ModerationSettings, SecuritySettings } from "$lib/components"
 
     let routes: NavRoute[] = [
         {
@@ -68,11 +68,16 @@
         {#if activeRoute === CommunitySettingsRoute.Roles}
             <!-- Todo: current Roles -->
             <CreateRole />
+            Select Role
             <PermissionsSettings />
         {:else if activeRoute === CommunitySettingsRoute.Details}
             <CommunityDetails />
         {:else if activeRoute === CommunitySettingsRoute.Moderation}
             <ModerationSettings />
+        {:else if activeRoute === CommunitySettingsRoute.Security}
+            <SecuritySettings />
+        {:else if activeRoute === CommunitySettingsRoute.Tags}
+            <CommunityTags />
         {/if}
     </div>
 </div>
@@ -83,21 +88,31 @@
         flex-direction: row;
         gap: var(--gap);
         flex: 1;
-        max-width: 90vw;
-        min-width: var(--max-component-width);
-        max-height: 80vh;
+        width: 960px;
+        min-width: var(--min-component-width);
+        height: 80vh;
+        max-height: 1200px;
         padding: var(--padding-less);
 
         .content {
             display: inline-flex;
             padding: var(--padding-less);
-
             flex-direction: column;
             gap: var(--gap);
-            flex: 1;
-            min-width: var(--max-component-width);
             overflow-y: scroll;
-            width: 800px;
+            flex: 1;
+        }
+    }
+
+    @media (max-width: 960px) {
+        #community-settings {
+            max-width: 100%;
+            padding: var(--padding-less);
+        }
+
+        .content {
+            padding: var(--padding-less);
+            max-width: 100%;
         }
     }
 </style>

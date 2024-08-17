@@ -26,7 +26,7 @@
         </div>
         <div class="form-control">
             <Label text="Color"></Label>
-            <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")}>
+            <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")} color={$hex}>
                 <ColorPicker textInputModes={["hex"]} isDialog={false} isAlpha={false} bind:hex={$hex} />
                 <div slot="icon" class="control">
                     <Icon icon={Shape.Eyedropper} />
@@ -44,7 +44,6 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        padding: var(--padding);
         padding-top: 0;
 
         .form {
@@ -60,8 +59,13 @@
                 display: none;
             }
 
-            :global(.input-container) {
-                height: var(--input-height);
+            :global(.wrapper) {
+                padding: 0;
+                margin: 0;
+            }
+
+            :global(.modal .body) {
+                min-width: unset;
             }
 
             :global(input) {

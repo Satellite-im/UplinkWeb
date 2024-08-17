@@ -20,6 +20,7 @@
 <style lang="scss">
     .sidebar-layout {
         width: fit-content;
+        min-width: var(--sidebar-width);
         display: inline-flex;
         flex-direction: row;
         border-right: var(--border-width) solid var(--border-color);

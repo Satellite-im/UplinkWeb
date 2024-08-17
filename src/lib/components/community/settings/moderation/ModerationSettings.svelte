@@ -7,8 +7,10 @@
     <SettingSection name="Spam Prevention" description="Limit repeated messages and rapid message generation to prevent spam.">
         <Switch on />
     </SettingSection>
-
-    <SettingSection name="Human Verification" description={`Require new users to complete a "are you human?" verification test before they can interact with the community.`}>
+    <SettingSection name="Profanity Filter" description={`Block messages from being sent if they contain certain words.`}>
+        <Switch on />
+    </SettingSection>
+    <SettingSection name="Age Verification" description={`Requires users to enter their birthdate to verify their age.`}>
         <Switch on />
     </SettingSection>
 </div>

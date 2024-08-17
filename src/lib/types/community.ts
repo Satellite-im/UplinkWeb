@@ -29,3 +29,8 @@ export type Community = {
     roles: Role[]
     permissions: Permissions[]
 }
+
+export type Tag = {
+    name: string
+    color: string
+}

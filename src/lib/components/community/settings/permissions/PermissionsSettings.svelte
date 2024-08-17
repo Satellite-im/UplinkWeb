@@ -23,8 +23,6 @@
         flex-direction: column;
         gap: var(--gap);
         flex: 1;
-        min-width: var(--max-component-width);
         height: fit-content;
-        padding: var(--padding);
     }
 </style>
