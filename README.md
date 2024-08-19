@@ -50,7 +50,7 @@ npm run dev
 
 ## Create Bitcoin payment request
 
-1 - On another user in UplinkWeb, open up the conversation and click the 'Create Payment Request' button on the top bar (coin exchange icon, next to the call button) They will also need Unisat installed.
+1 - On another user in UplinkWeb, open up the conversation and click the 'Create Payment Request' button on the top bar (coin exchange icon, next to the call button). They will also need Unisat installed.
 
 2 - Enter an amount and click the `Request` button. A clickable message will appear in the chat.
 
