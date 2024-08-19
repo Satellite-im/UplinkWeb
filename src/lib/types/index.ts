@@ -120,7 +120,7 @@ export let defaultUser: User = {
 
 export type ChatSettings = {
     displayOwnerBadge: boolean
-    readReciepts: boolean
+    readReceipts: boolean
     permissions: {
         allowAnyoneToAddUsers: boolean
         allowAnyoneToModifyPhoto: boolean
@@ -297,6 +297,7 @@ export type FileInfo = {
     remotePath: string
     source: string
     isRenaming: OperationState
+    imageThumbnail?: string
     extension?: string
     items?: FileInfo[]
     parentId?: string
