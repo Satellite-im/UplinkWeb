@@ -18,6 +18,7 @@
     let identiconStyle: Identicon = get(SettingsStore.state).messaging.identiconStyle
 
     let cssOverride = get(UIStore.state.cssOverride)
+    let wtf = 0
 
     let fontSize = get(UIStore.state.fontSize)
 
