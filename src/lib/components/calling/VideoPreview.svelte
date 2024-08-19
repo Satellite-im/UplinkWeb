@@ -5,6 +5,8 @@
     import { page } from "$app/stores"
     import { Route } from "$lib/enums"
     import { get } from "svelte/store"
+    import Participant from "./Participant.svelte"
+    import { UIStore } from "$lib/state/ui"
 
     export let show: boolean = false
     let previewVideo: HTMLDivElement
@@ -26,6 +28,8 @@
         }
     })
 
+    $: chat = get(Store.state.activeCall)?.chat
+
     Store.state.activeCall.subscribe(async activeCall => {
         if ($page.route.id !== Route.Chat && get(Store.state.activeCall) && !VoiceRTCInstance.isReceivingCall) {
             show = true
@@ -40,7 +44,14 @@
             remoteVideoElement.pause()
             remoteVideoElement.srcObject = null
         }
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        chat = activeCall?.chat
     })
+
+    $: otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+    $: ownUser = get(Store.state.user)
+    $: chats = UIStore.state.chats
+    $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
 
     onMount(() => {
         const video = previewVideo
@@ -102,9 +113,21 @@
 
 <div id="video-preview" class={show ? "video-preview" : "hidden"}>
     <div id="preview-video" bind:this={previewVideo}>
-        <video id="remote-user-float-video" bind:this={remoteVideoElement} width={400} height={400} autoplay>
+        <video id="remote-user-float-video" bind:this={remoteVideoElement} width={otherUserSettingsInCall?.videoEnabled ? 400 : 0} height={otherUserSettingsInCall?.videoEnabled ? 400 : 0} autoplay>
             <track kind="captions" src="" />
         </video>
+        {#if !otherUserSettingsInCall?.videoEnabled && chat !== undefined}
+            {#each chat.users as user}
+                {#if user !== ownUser.key}
+                    <Participant
+                        participant={$userCache[user]}
+                        hasVideo={$userCache[user].media.is_streaming_video}
+                        isMuted={$userCache[user].media.is_muted}
+                        isDeafened={$userCache[user].media.is_deafened}
+                        isTalking={$userCache[user].media.is_playing_audio} />
+                {/if}
+            {/each}
+        {/if}
     </div>
 </div>
 
