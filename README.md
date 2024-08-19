@@ -34,23 +34,23 @@ npm run dev
 
 ---
 
-## Get testnet bitcoin
+## Get Testnet Bitcoin
 
-1 - Install Unisat chrome extension
+1 - Install Unisat Chrome extension
 
 2 - Go to Settings -> Network and select 'Bitcoin Testnet'
 
-3 - Get some free testnet btc from a faucet. For example: https://bitcoinfaucet.uo1.net/send.php
+3 - Get some free Testnet BTC from a faucet. For example: https://bitcoinfaucet.uo1.net/send.php
 
-## Send to profile's bitcoin address
+## Send to profile's Bitcoin address
 
-1 - On another user in uplinkweb, update their profile to include a bitcoin address. For example: `tb1pa94qy59l3cxuau4m2vxzlc4flj0yma2pkwz4kd5u6y2ygpdzrlwqescp06` They can find their testnet address in their Unisat. (or use the same unisat, but create a 2nd account)
+1 - On another user in uplinkweb, update their profile to include a Bitcoin address. For example: `tb1pa94qy59l3cxuau4m2vxzlc4flj0yma2pkwz4kd5u6y2ygpdzrlwqescp06` They can find their testnet address in their Unisat. (or use the same Unisat, but create a 2nd account)
 
 2 - Now in a conversation with them, when you open up their profile popup, if it detects an address in their profile, it will show a button to send sats. Click it and the request will be forwarded to Unisat for you to approve the transaction.
 
-## Create bitcoin payment request
+## Create Bitcoin payment request
 
-1 - On another user in uplinkweb, open up the conversation and click the 'Create Payment Request' button on the top bar (coin exchange icon, next to the call button) They will also need Unisat installed.
+1 - On another user in UplinkWeb, open up the conversation and click the 'Create Payment Request' button on the top bar (coin exchange icon, next to the call button). They will also need Unisat installed.
 
 2 - Enter an amount and click the `Request` button. A clickable message will appear in the chat.
 
