@@ -20,12 +20,6 @@
                 remoteVideoElement.play()
             }
         }
-
-        if (activeChat.id === VoiceRTCInstance.channel) {
-            show = false
-            remoteVideoElement.pause()
-            remoteVideoElement.srcObject = null
-        }
     })
 
     $: chat = get(Store.state.activeCall)?.chat
