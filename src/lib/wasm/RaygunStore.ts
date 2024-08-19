@@ -99,7 +99,6 @@ class RaygunStore {
         this.raygunWritable = raygun
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(async r => {
-            await new Promise(f => setTimeout(f, 100))
             if (r) {
                 let listeners = get(this.messageListeners)
                 if (Object.keys(listeners).length > 0) {
@@ -108,7 +107,7 @@ class RaygunStore {
                         handler.cancel()
                     }
                 }
-                this.initConversationHandlers(r)
+                await this.initConversationHandlers(r)
                 // handleRaygunEvent must be called after initConversationHandlers
                 // this is because if 'raygun.raygun_subscribe' is called before 'raygun.list_conversations', it causes 'raygun.list_conversations' to hang. (reason currently unknown)
                 this.handleRaygunEvent(r)
@@ -361,10 +360,16 @@ class RaygunStore {
     }
 
     private async handleRaygunEvent(raygun: wasm.RayGunBox) {
-        let events
+        let events: wasm.AsyncIterator | undefined
         while (!events) {
             // Have a buffer that aborts and retries in case #raygun_subscribe hangs
-            events = await Promise.race([raygun.raygun_subscribe(), new Promise(f => setTimeout(f, 100))])
+            events = await Promise.race([
+                raygun.raygun_subscribe(),
+                new Promise<undefined>(f => {
+                    setTimeout(f, 100)
+                    return undefined
+                }),
+            ])
         }
         let listener = {
             [Symbol.asyncIterator]() {
@@ -411,7 +416,21 @@ class RaygunStore {
     }
 
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
-        let conversations = await raygun.list_conversations()
+        let conversations: wasm.ConversationList | undefined
+        while (!conversations) {
+            try {
+                conversations = await Promise.race([
+                    raygun.list_conversations(),
+                    new Promise<undefined>(f => {
+                        setTimeout(f, 100)
+                        return undefined
+                    }),
+                ])
+            } catch (e) {
+                log.error(`Listing conversations failed: ${e}`)
+                await new Promise(f => setTimeout(f, 100))
+            }
+        }
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations.convs()) {
             let handler = await this.createConversationEventHandler(raygun, conversation.id())
@@ -485,6 +504,7 @@ class RaygunStore {
                     case "message_edited": {
                         let conversation_id: string = event.values["conversation_id"]
                         let message_id: string = event.values["message_id"]
+                        await new Promise(f => setTimeout(f, 10))
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
                         if (message) {
                             ConversationStore.editMessage(conversation_id, message_id, message.text.join("\n"))
