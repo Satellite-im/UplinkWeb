@@ -22,7 +22,6 @@
         expanded = !expanded
     }
 
-    let showSettings = false
     let showVolumeMixer = false
     let showCallSettings = false
 
