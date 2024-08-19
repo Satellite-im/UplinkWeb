@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="docs/images/logo.png" width=200 height=200/><br>
+  <img src="static/logo.png" width=200 height=200/><br>
   Uplink Web
 </h1>
 
