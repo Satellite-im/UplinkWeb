@@ -62,6 +62,7 @@ class Store {
             config = wasm.Config.minimal_basic()
         }
         config.set_save_phrase(get(AuthStore.state).saveSeedPhrase)
+        config.set_thumbnail_size(500, 500)
         // HACK: Replace 'your-relay-address-here' with your relay address
         // This is a temporary solution
         // Run this command on Warp repo to start a relay server:
