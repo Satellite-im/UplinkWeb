@@ -19,6 +19,7 @@
 
     let cssOverride = get(UIStore.state.cssOverride)
     let fontSize = get(UIStore.state.fontSize)
+    let emojiUpload: HTMLInputElement
 
     UIStore.state.color.subscribe(c => {
         hex = c
@@ -89,6 +90,11 @@
     $: if (hex !== undefined) {
         UIStore.setThemeColor(hex)
     }
+
+    const onFileSelected = async (e: Event) => {
+        const target = e.target as HTMLInputElement
+        console.log("TASRGKER", target)
+    }
 </script>
 
 <div id="page">
@@ -118,9 +124,18 @@
             on:change={v => {
                 UIStore.setEmojiFont(v.detail)
             }} />
-        <Button hook="button-emoji-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+        <Button
+            hook="button-emoji-font-open-folder"
+            on:click={async event => {
+                // let emojiUpload = event.dataTransfer?.files
+                emojiUpload?.click()
+            }}
+            icon
+            appearance={Appearance.Alt}
+            tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={emojiUpload} />
     </SettingSection>
     <SettingSection hook="section-identicon" name={$_("settings.preferences.identiconStyle")} description={$_("settings.preferences.identiconStyleDescription")}>
         <ProfilePicture hook="identicon-profile-picture" id={"0x0000000000000000000000000000000000000000"} />
