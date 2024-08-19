@@ -453,11 +453,21 @@ class RaygunStore {
                             let ping = mentions_user(message, get(Store.state.user).key)
                             ConversationStore.addMessage(conversation_id, message)
                             let settings = get(SettingsStore.state)
-                            let notify = settings.notifications.messages && get(page).route.id !== Route.Chat
+                            let sender = get(Store.getUser(message.details.origin))
+                            let activeChat = get(Store.state.activeChat)
+                            let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
+                            let messageToSend: string = ""
+                            if (chat) {
+                                if (!chat.unread) {
+                                    messageToSend = `${sender.name} sent you a message`
+                                } else if (chat.unread > 1) {
+                                    messageToSend = `${sender.name} sent you ${chat.unread} new messages`
+                                }
+                            }
+                            let notify = (settings.notifications.messages && get(page).route.id !== Route.Chat) || (settings.notifications.messages && get(page).route.id === Route.Chat && activeChat.id !== conversation_id)
                             if (ping || notify) {
-                                let user = get(Store.getUser(message.details.origin))
                                 Store.addToastNotification(
-                                    new ToastMessage("New Message", `${user.name} sent you a message`, 2, undefined, undefined, () => {
+                                    new ToastMessage("New Message", messageToSend, 2, undefined, undefined, () => {
                                         let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
                                         if (chat) {
                                             Store.setActiveChat(chat)
@@ -764,7 +774,7 @@ class RaygunStore {
             kind: direct ? ChatType.DirectMessage : ChatType.Group,
             settings: {
                 displayOwnerBadge: true,
-                readReciepts: true,
+                readReceipts: true,
                 permissions: {
                     allowAnyoneToAddUsers: !direct && (setting.values["members_can_add_participants"] as boolean),
                     allowAnyoneToModifyPhoto: false,

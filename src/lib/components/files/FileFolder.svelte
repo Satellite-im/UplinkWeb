@@ -6,6 +6,7 @@
     import { OperationState } from "$lib/types"
     import prettyBytes from "pretty-bytes"
     import { createEventDispatcher, onMount } from "svelte"
+    import Modal from "../ui/Modal.svelte"
 
     export let itemId: string
     export let kind: FilesItemKind = FilesItemKind.File
@@ -15,6 +16,8 @@
     export let hook: string = ""
     let hasFocus = false
     let oldName = name
+
+    let openImageModal = false
 
     $: if (isRenaming !== OperationState.Loading) {
         hasFocus = false
@@ -107,12 +110,29 @@
         }
         isEnterOrEscapeKeyPressed = false
     }
+
+    function onCloseModal() {
+        openImageModal = false
+    }
 </script>
 
 <section>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div data-cy={hook} class="filesitem" on:contextmenu>
-        <Icon icon={getIcon()} />
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div
+        data-cy={hook}
+        class="filesitem"
+        on:contextmenu
+        on:click={_ => {
+            if (kind === FilesItemKind.Image && info?.imageThumbnail) {
+                openImageModal = true
+            }
+        }}>
+        {#if kind === FilesItemKind.Image && info?.imageThumbnail}
+            <img data-cy="file-preview-image" class="img-preview-on-storage" src={info.imageThumbnail} alt={name} />
+        {:else}
+            <Icon icon={getIcon()} />
+        {/if}
         <Spacer less />
         {#if isRenaming === OperationState.Loading}
             <input data-cy="input-file-folder-name" id="input-{itemId}" type="text" bind:value={name} on:input={updateName} on:blur={onBlur} on:keydown={onKeydown} bind:this={inputRef} />
@@ -125,7 +145,18 @@
     </div>
 </section>
 
+{#if openImageModal}
+    <Modal on:close={onCloseModal}>
+        <img class="img-preview-on-storage-on-modal" src={info.imageThumbnail} alt={name} />
+    </Modal>
+{/if}
+
 <style lang="scss">
+    .img-preview-on-storage-on-modal {
+        width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
     .filesitem {
         height: var(--file-folder-size);
         width: var(--file-folder-size);
@@ -137,9 +168,17 @@
         align-items: center;
         transition: background-color var(--animation-speed);
         padding: var(--padding-less);
+        background-color: transparent;
 
         &:hover {
             background: var(--background-alt);
+        }
+        .img-preview-on-storage {
+            max-width: 100px;
+            max-height: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border-radius: 4px;
         }
 
         input {

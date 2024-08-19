@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Button, Icon } from "$lib/elements"
     import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
@@ -17,12 +18,14 @@
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
     import { goto } from "$app/navigation"
-    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
+    import { ConstellationStoreInstance, imageFromData } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
-    import type { Item } from "warp-wasm"
+    import { WarpInstance, type Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
+    import { initWarp } from "$lib/wasm/IWarp"
+    import { WarpStore } from "$lib/wasm/WarpStore"
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -312,6 +315,10 @@
     function itemsToFileInfo(items: Item[]): FileInfo[] {
         let filesInfo: FileInfo[] = []
         items.forEach(item => {
+            const imageThumb = to_base64(item.thumbnail())
+            // console.log("imageThumb: ", imageThumb)
+            console.log("isFile: ", item.is_file())
+
             let newItem: FileInfo = {
                 id: item!.id(),
                 type: item.is_file() ? "file" : "folder",
@@ -319,6 +326,7 @@
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
                 remotePath: item!.path(),
+                imageThumbnail: item.is_file() && item.thumbnail().length > 0 ? to_base64(item.thumbnail()) : undefined,
                 isRenaming: OperationState.Initial,
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
                 source: "",
@@ -357,6 +365,9 @@
     $: freeSpace = ConstellationStoreInstance.freeStorageSpace
 
     onMount(async () => {
+        /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
+        await new Promise(resolve => setTimeout(resolve, 300))
+
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
         getCurrentDirectoryFiles()
 
@@ -590,6 +601,15 @@
     UIStore.state.chats.subscribe((sc: Chat[]) => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
     Store.state.activeChat.subscribe((c: Chat) => (activeChat = c))
+
+    function to_base64(data: Uint8Array): string | undefined {
+        const binaryString = Array.from(data)
+            .map(byte => String.fromCharCode(byte))
+            .join("")
+        const base64String = btoa(binaryString)
+        const cleanedBase64String = base64String.replace("dataimage/jpegbase64", "")
+        return `data:image/jpeg;base64,${cleanedBase64String}`
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -801,7 +821,7 @@
                                     renameItem(`${item.name}`, `${e.detail}`, `${item.extension}`)
                                 }}
                                 isRenaming={item.isRenaming}
-                                kind={FilesItemKind.File}
+                                kind={item.imageThumbnail ? FilesItemKind.Image : FilesItemKind.File}
                                 info={item} />
                         </ContextMenu>
                     {:else if item.type === "folder"}
