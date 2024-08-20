@@ -10,19 +10,9 @@
     import CommunityTag from "./CommunityTag.svelte"
     import { writable } from "svelte/store"
     import { _ } from "svelte-i18n"
+    import { mockTags } from "$lib/mock/community"
 
-    let tags: Tag[] = [
-        { name: "Programming", color: "#706fd3" },
-        { name: "Design", color: "#b33939" },
-        { name: "Music", color: "#cd6133" },
-        { name: "Art", color: "#01a3a4" },
-        { name: "Photography", color: "#c44569" },
-        { name: "Writing", color: "#3ae374" },
-        { name: "Gaming", color: "#ff6b6b" },
-        { name: "Movies", color: "#EAB543" },
-        { name: "Books", color: "#6F1E51" },
-        { name: "Sports", color: "#10ac84" },
-    ]
+    let tags: Tag[] = mockTags
 
     let tagName = ""
     let hex = writable("#30ae03")
@@ -41,14 +31,6 @@
 </script>
 
 <div class="community-tags">
-    <div class="available-tags">
-        <Label text="Available Tags" />
-        <div class="tags">
-            {#each tags as tag, index}
-                <CommunityTag tag={tag} on:remove={() => removeTag(index)} editable />
-            {/each}
-        </div>
-    </div>
     <div class="add-tag">
         <Label text="Add Tag" />
         <div class="section">
@@ -71,6 +53,14 @@
                     <Icon icon={Shape.Plus} />
                 </Button>
             </div>
+        </div>
+    </div>
+    <div class="available-tags">
+        <Label text="Available Tags" />
+        <div class="tags">
+            {#each tags as tag, index}
+                <CommunityTag tag={tag} on:remove={() => removeTag(index)} editable />
+            {/each}
         </div>
     </div>
 </div>

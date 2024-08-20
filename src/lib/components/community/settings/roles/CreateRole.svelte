@@ -16,7 +16,7 @@
 <div class="create-role">
     <Label text="Create a new role"></Label>
     <div class="form">
-        <div class="form-control">
+        <div class="form-control name">
             <Label text="Name"></Label>
             <Input placeholder="Role name" />
         </div>
@@ -33,10 +33,13 @@
                 </div>
             </PopupButton>
         </div>
+        <div class="form-control">
+            <Label text="Create"></Label>
+            <Button text="Add" appearance={Appearance.Primary} disabled>
+                <Icon icon={Shape.Plus} />
+            </Button>
+        </div>
     </div>
-    <Button text="Create Role" appearance={Appearance.Primary} disabled>
-        <Icon icon={Shape.Plus} />
-    </Button>
 </div>
 
 <style lang="scss">
@@ -51,8 +54,8 @@
             flex-direction: row;
             gap: var(--gap);
 
-            .form-control {
-                flex: 1;
+            .name {
+                flex: 100%;
             }
 
             :global(.button-like) {

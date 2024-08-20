@@ -10,8 +10,10 @@ export type Permission = {
 
 export type Role = {
     id: string
+    name: string
     level: number
     description: string
+    color: string
     permissions: Permission[]
 }
 
