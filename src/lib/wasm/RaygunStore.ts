@@ -453,11 +453,21 @@ class RaygunStore {
                             let ping = mentions_user(message, get(Store.state.user).key)
                             ConversationStore.addMessage(conversation_id, message)
                             let settings = get(SettingsStore.state)
-                            let notify = settings.notifications.messages && get(page).route.id !== Route.Chat
+                            let sender = get(Store.getUser(message.details.origin))
+                            let activeChat = get(Store.state.activeChat)
+                            let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
+                            let messageToSend: string = ""
+                            if (chat) {
+                                if (!chat.unread) {
+                                    messageToSend = `${sender.name} sent you a message`
+                                } else if (chat.unread > 1) {
+                                    messageToSend = `${sender.name} sent you ${chat.unread} new messages`
+                                }
+                            }
+                            let notify = (settings.notifications.messages && get(page).route.id !== Route.Chat) || (settings.notifications.messages && get(page).route.id === Route.Chat && activeChat.id !== conversation_id)
                             if (ping || notify) {
-                                let user = get(Store.getUser(message.details.origin))
                                 Store.addToastNotification(
-                                    new ToastMessage("New Message", `${user.name} sent you a message`, 2, undefined, undefined, () => {
+                                    new ToastMessage("New Message", messageToSend, 2, undefined, undefined, () => {
                                         let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
                                         if (chat) {
                                             Store.setActiveChat(chat)
@@ -613,66 +623,70 @@ class RaygunStore {
             },
         }
         let cancelled = false
-        for await (const value of listener) {
-            let event = parseJSValue(value)
-            log.info(`Handling file progress event: ${JSON.stringify(event)}`)
-            switch (event.type) {
-                case "AttachedProgress": {
-                    let locationKind = parseJSValue(event.values[0])
-                    // Only streams need progress update
-                    if (locationKind.type === "Stream") {
-                        let progress = parseJSValue(event.values[1])
-                        let file = progress.values["name"]
-                        ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
-                            if (current) {
-                                let copy = { ...current }
-                                switch (progress.type) {
-                                    case "CurrentProgress": {
-                                        copy.size = progress.values["current"]
-                                        copy.total = progress.values["total"]
-                                        break
+        try {
+            for await (const value of listener) {
+                let event = parseJSValue(value)
+                log.info(`Handling file progress event: ${JSON.stringify(event)}`)
+                switch (event.type) {
+                    case "AttachedProgress": {
+                        let locationKind = parseJSValue(event.values[0])
+                        // Only streams need progress update
+                        if (locationKind.type === "Stream") {
+                            let progress = parseJSValue(event.values[1])
+                            let file = progress.values["name"]
+                            ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
+                                if (current) {
+                                    let copy = { ...current }
+                                    switch (progress.type) {
+                                        case "CurrentProgress": {
+                                            copy.size = progress.values["current"]
+                                            copy.total = progress.values["total"]
+                                            break
+                                        }
+                                        case "ProgressComplete": {
+                                            copy.size = progress.values["total"]
+                                            copy.total = progress.values["total"]
+                                            copy.done = true
+                                            break
+                                        }
+                                        case "ProgressFailed": {
+                                            copy.size = progress.values["last_size"]
+                                            copy.error = `Error: ${progress.values["error"]}`
+                                            break
+                                        }
                                     }
-                                    case "ProgressComplete": {
-                                        copy.size = progress.values["total"]
-                                        copy.total = progress.values["total"]
-                                        copy.done = true
-                                        break
-                                    }
-                                    case "ProgressFailed": {
-                                        copy.size = progress.values["last_size"]
-                                        copy.error = `Error: ${progress.values["error"]}`
-                                        break
-                                    }
-                                }
-                                return copy
-                            } else if (progress.type === "CurrentProgress") {
-                                return {
-                                    name: file,
-                                    size: progress.values["current"],
-                                    total: progress.values["total"],
-                                    cancellation: {
-                                        cancel: () => {
-                                            cancelled = true
+                                    return copy
+                                } else if (progress.type === "CurrentProgress") {
+                                    return {
+                                        name: file,
+                                        size: progress.values["current"],
+                                        total: progress.values["total"],
+                                        cancellation: {
+                                            cancel: () => {
+                                                cancelled = true
+                                            },
                                         },
-                                    },
+                                    }
                                 }
-                            }
-                            return undefined
-                        })
-                    }
-                    break
-                }
-                case "Pending": {
-                    if (Object.keys(event.values).length > 0) {
-                        let res = parseJSValue(event.values)
-                        if (res.type === "Err") {
-                            log.error(`Error uploading file ${res.values}`)
+                                return undefined
+                            })
                         }
+                        break
                     }
-                    break
+                    case "Pending": {
+                        if (Object.keys(event.values).length > 0) {
+                            let res = parseJSValue(event.values)
+                            if (res.type === "Err") {
+                                log.error(`Error uploading file ${res.values}`)
+                            }
+                        }
+                        break
+                    }
                 }
+                if (cancelled) break
             }
-            if (cancelled) break
+        } catch (e) {
+            if (!`${e}`.includes(`Error: returned None`)) throw e
         }
     }
 
@@ -760,7 +774,7 @@ class RaygunStore {
             kind: direct ? ChatType.DirectMessage : ChatType.Group,
             settings: {
                 displayOwnerBadge: true,
-                readReciepts: true,
+                readReceipts: true,
                 permissions: {
                     allowAnyoneToAddUsers: !direct && (setting.values["members_can_add_participants"] as boolean),
                     allowAnyoneToModifyPhoto: false,

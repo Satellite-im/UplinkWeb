@@ -1,51 +1,74 @@
+import { CallDirection } from "$lib/enums"
+import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
+import { c } from "svelte-highlight/languages"
+import { t } from "svelte-i18n"
 import { get } from "svelte/store"
 
 export enum VoiceRTCMessageType {
     Calling = "CALLING_USER",
     EndingCall = "ENDING_CALL",
     IncomingCall = "INCOMING_CALL",
+    AcceptedCall = "ACCEPTED_CALL",
+    EnabledVideo = "ENABLED_VIDEO",
+    DisabledVideo = "DISABLED_VIDEO",
+    EnabledAudio = "ENABLED_AUDIO",
+    DisabledAudio = "DISABLED_AUDIO",
     None = "NONE",
 }
 
 type VoiceRTCOptions = {
     audio: boolean
+    audioTrack: MediaStreamTrack | null
     video: {
         enabled: boolean
         selfie: boolean
     }
 }
 
+type VoiceRTCUser = {
+    did: string
+    videoEnabled: boolean
+    audioEnabled: boolean
+}
+
+type VoiceMessage = {
+    type: VoiceRTCMessageType
+    channel: string
+    userInfo: VoiceRTCUser
+}
+
 export class VoiceRTC {
     channel: string
     localPeer: Peer | null = null
-    remotePeer: Peer | null = null
     localStream: MediaStream | null = null
-    remoteVideoElement: any
-    localVideoCurrentSrc: any
-    callOptions: VoiceRTCOptions
-    isReceivingCall: boolean = false
-    acceptedIncomingCall: boolean = false
-    dataConnection: DataConnection | null = null
-    private _incomingCall: MediaConnection | null = null
-
-    setChannel(channel: string) {
-        this.channel = channel
+    remoteStream: MediaStream | null = null
+    remoteVideoElement: HTMLVideoElement | null = null
+    localVideoCurrentSrc: HTMLVideoElement | null = null
+    remotePeerId: string | null = null
+    remoteVoiceUser: VoiceRTCUser = {
+        did: "",
+        videoEnabled: false,
+        audioEnabled: false,
     }
+    activeCall: MediaConnection | null = null
+    callOptions: VoiceRTCOptions
+    isReceivingCall = false
+    makingCall = false
+    acceptedIncomingCall = false
+    dataConnection: DataConnection | null = null
 
     constructor(channel: string, options: VoiceRTCOptions) {
         log.info("Initializing VoiceRTC")
-        this.callOptions = {
-            audio: options.audio,
-            video: {
-                enabled: options.video.enabled,
-                selfie: options.video.selfie,
-            },
-        }
         this.channel = channel
+        this.callOptions = { ...options }
         this.setupPeerEvents()
+    }
+
+    setChannel(channel: string) {
+        this.channel = channel
     }
 
     private async setupPeerEvents() {
@@ -54,68 +77,90 @@ export class VoiceRTC {
             userId = get(Store.state.user).key
             await new Promise(resolve => setTimeout(resolve, 500))
         }
-
         const peerId = userId.replace("did:key:", "")
-        if (this.localPeer) {
-            log.debug("Destroying existing peer")
-            this.localPeer.destroy()
-        }
 
-        try {
-            this.localPeer = new Peer(peerId)
-        } catch (error) {
-            log.error(`Error creating Peer: ${error}`)
-            this.localPeer?.destroy()
+        if (this.localPeer === null) {
             this.localPeer = new Peer(peerId)
         }
 
         this.localPeer!.on("open", id => {
-            log.debug("My peer ID is: " + id)
+            log.debug(`My peer ID is: ${id}`)
         })
 
-        this.localPeer!.on("connection", conn => {
-            conn.on("open", () => {})
-
-            conn.on("data", data => {
-                this.dataConnection = conn
-                if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
-                    this.isReceivingCall = false
-                    this.endCall()
-                } else if (data === VoiceRTCMessageType.Calling) {
-                    // this.dataConnection.on("data", data => {
-                    //     if (data === VoiceRTCMessageType.IncomingCall) {
-                    //         this.isReceivingCall = true
-                    //     }
-                    // })
-                } else {
-                    this.channel = data as string
-                }
-            })
-        })
-
+        this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
         this.localPeer!.on("call", async call => {
-            log.info(`Incoming call from: ${call.peer}`)
-            this.isReceivingCall = true
-            this._incomingCall = call
-            this.handleIncomingCall(call)
+            this.activeCall = call
+            this.channel = call.metadata.channel
+            if (!this.makingCall) {
+                this.isReceivingCall = true
+                Store.setPendingCall(Store.getCallingChat(this.channel)!, CallDirection.Inbound)
+            }
+            log.debug(`Incoming call: ${this.isReceivingCall}`)
         })
-
-        this.localPeer!.on("error", this.error)
+        this.localPeer!.on("error", this.handleError.bind(this))
     }
 
-    private handleIncomingCall(call: MediaConnection) {
-        call.on("stream", remoteStream => {
-            if (this.remoteVideoElement) {
-                this.remoteVideoElement.srcObject = remoteStream
-                this.remoteVideoElement.play()
-            }
+    private handlePeerConnection(conn: DataConnection) {
+        this.remoteVoiceUser = {
+            did: conn.metadata.did,
+            videoEnabled: conn.metadata.videoEnabled,
+            audioEnabled: conn.metadata.audioEnabled,
+        }
+
+        this.dataConnection = conn
+
+        conn.on("open", () => {
+            log.debug("Connection between peers established")
         })
 
-        call.on("close", () => {})
-
-        call.on("error", err => {
-            console.error("Call error:", err)
+        this.dataConnection?.send({
+            type: VoiceRTCMessageType.IncomingCall,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
         })
+
+        conn.on("data", data => {
+            let dataReceived = data as VoiceMessage
+            log.debug(`Data received from user that received a call: ${dataReceived}`)
+            this.handleWithDataReceived(dataReceived)
+        })
+    }
+
+    handleWithDataReceived(dataReceived: VoiceMessage) {
+        switch (dataReceived.type) {
+            case VoiceRTCMessageType.EndingCall:
+                this.endCall()
+                break
+            case VoiceRTCMessageType.Calling:
+                if (!this.makingCall) {
+                    this.isReceivingCall = true
+                }
+                this.remoteVoiceUser = dataReceived.userInfo
+                this.channel = dataReceived.channel
+                break
+            case VoiceRTCMessageType.AcceptedCall:
+            case VoiceRTCMessageType.IncomingCall:
+            case VoiceRTCMessageType.EnabledVideo:
+            case VoiceRTCMessageType.DisabledVideo:
+            case VoiceRTCMessageType.EnabledAudio:
+            case VoiceRTCMessageType.DisabledAudio:
+                this.updateRemoteUserInfo(dataReceived)
+                break
+            case VoiceRTCMessageType.None:
+                break
+            default:
+                log.debug(`Unknown message type: ${dataReceived.type}`)
+        }
+    }
+
+    updateRemoteUserInfo(dataReceived: VoiceMessage) {
+        this.channel = dataReceived.channel
+        this.remoteVoiceUser = dataReceived.userInfo
+        Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
     turnOnOffCamera() {
@@ -123,6 +168,16 @@ export class VoiceRTC {
         this.localStream?.getVideoTracks().forEach(track => {
             track.enabled = !track.enabled
         })
+        this.dataConnection?.send({
+            type: this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+        Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
     turnOnOffMicrophone() {
@@ -130,174 +185,286 @@ export class VoiceRTC {
         this.localStream?.getAudioTracks().forEach(track => {
             track.enabled = !track.enabled
         })
+
+        this.dataConnection?.send({
+            type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+        Store.updateMuted(!this.callOptions.audio)
+        Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
-    setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
+    turnOnOffDeafened() {
+        let isDeafened = false
+
+        this.remoteStream?.getAudioTracks().forEach(track => {
+            track.enabled = !track.enabled
+            if (!track.enabled) {
+                isDeafened = true
+            } else {
+                isDeafened = false
+            }
+        })
+        Store.updateDeafened(isDeafened)
+    }
+
+    async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
         this.remoteVideoElement = remoteVideoElement
         this.localVideoCurrentSrc = localVideoCurrentSrc
-        if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = this.localStream
-            this.localVideoCurrentSrc.play()
-        }
+        new Promise(resolve => setTimeout(resolve, 500))
     }
 
     public async acceptIncomingCall() {
+        this.callOptions.audio = false
+        Store.updateMuted(true)
         this.acceptedIncomingCall = true
     }
 
+    private async improveAudioQuality() {
+        const audioContext = new window.AudioContext()
+        const source = audioContext.createMediaStreamSource(this.localStream!)
+        const destination = audioContext.createMediaStreamDestination()
+
+        const gainNode = audioContext.createGain()
+        const echoCancellation = audioContext.createBiquadFilter()
+        const noiseSuppression = audioContext.createBiquadFilter()
+
+        echoCancellation.type = "lowshelf"
+        echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
+        echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
+
+        noiseSuppression.type = "highpass"
+        noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
+        noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
+
+        source.connect(echoCancellation)
+        echoCancellation.connect(noiseSuppression)
+        noiseSuppression.connect(gainNode)
+        gainNode.connect(destination)
+
+        const processedStream = new MediaStream()
+        processedStream.addTrack(destination.stream.getAudioTracks()[0])
+        processedStream.addTrack(this.localStream!.getVideoTracks()[0])
+        this.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
+    }
+
     public async acceptCall() {
-        if (this._incomingCall) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        aspectRatio: 16 / 9,
-                        facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                        frameRate: 30,
-                        height: { ideal: 1080 },
-                        width: { ideal: 1920 },
-                    },
-                    audio: {
-                        autoGainControl: false,
-                        channelCount: 2,
-                        echoCancellation: false,
-                        noiseSuppression: false,
-                        sampleRate: 48000,
-                        sampleSize: 16,
-                    },
-                })
+        await this.updateLocalStream()
 
-                this.localStream = stream
+        this.dataConnection?.send({
+            type: VoiceRTCMessageType.AcceptedCall,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
 
-                this._incomingCall.answer(this.localStream)
+        this.activeCall!.answer(this.localStream!)
 
-                this.localStream?.getAudioTracks().forEach(track => {
-                    track.enabled = false
-                })
-
-                this._incomingCall.on("stream", remoteStream => {
-                    if (this.remoteVideoElement) {
-                        this.remoteVideoElement.srcObject = remoteStream
-                        this.remoteVideoElement.play()
-                    }
-
-                    if (this.localVideoCurrentSrc) {
-                        this.localVideoCurrentSrc.srcObject = this.localStream
-                        this.localVideoCurrentSrc.play()
-                    }
-                })
-
-                this._incomingCall.on("close", () => {})
-                this._incomingCall.on("error", err => {
-                    console.error("Call error:", err)
-                })
-
-                this._incomingCall = null
-            } catch (error) {
-                console.error("Error accepting call:", error)
+        this.activeCall!.on("stream", async remoteStream => {
+            if (this.remoteVideoElement) {
+                this.remoteVideoElement.srcObject = remoteStream
+                this.remoteStream = remoteStream
+                if (this.remoteVideoElement.readyState >= 2) {
+                    await this.remoteVideoElement.play()
+                }
             }
+        })
+    }
+
+    public async makeVideoCall() {
+        try {
+            await this.setupPeerEvents()
+
+            this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
+                reliable: true,
+                metadata: {
+                    did: this.localPeer!.id,
+                    videoEnabled: this.callOptions.video.enabled,
+                    audioEnabled: this.callOptions.audio,
+                },
+            })
+
+            log.debug("Data connection established: ${this.dataConnection}")
+
+            this.dataConnection.send({
+                type: VoiceRTCMessageType.Calling,
+                channel: this.channel,
+                userInfo: {
+                    did: this.localPeer!.id,
+                    videoEnabled: this.callOptions.video.enabled,
+                    audioEnabled: this.callOptions.audio,
+                },
+            })
+
+            this.dataConnection.on("data", data => {
+                let dataReceived = data as VoiceMessage
+                log.debug(`Data received from user that made call: ${dataReceived}`)
+                this.handleWithDataReceived(dataReceived)
+            })
+
+            await this.updateLocalStream()
+
+            const call = this.localPeer!.call(this.remotePeerId!, this.localStream!, {
+                metadata: {
+                    channel: this.channel,
+                    userInfo: {
+                        did: this.localPeer!.id,
+                        videoEnabled: this.callOptions.video.enabled,
+                        audioEnabled: this.callOptions.audio,
+                    },
+                },
+            })
+
+            call.on("stream", async remoteStream => {
+                if (this.remoteVideoElement) {
+                    this.remoteVideoElement.srcObject = remoteStream
+                    this.remoteStream = remoteStream
+                    if (this.remoteVideoElement.readyState >= 2) {
+                        await this.remoteVideoElement.play()
+                    }
+                }
+            })
+            Store.setActiveCall(Store.getCallingChat(this.channel)!)
+        } catch (error) {
+            log.error(`Error making call: ${error}`)
         }
     }
 
-    async makeVideoCall(remotePeerId: string, chatID: string) {
+    async startToMakeACall(remotePeerId: string, chatID: string) {
+        this.channel = chatID
+        const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
+        this.remotePeerId = remotePeerIdEdited
+        this.makingCall = true
+    }
+
+    async updateLocalStream() {
         try {
-            this.channel = chatID
-            this.dataConnection?.send(VoiceRTCMessageType.Calling)
-            this.dataConnection?.send(chatID)
+            let videoInputDevice = get(Store.state.devices.video)
+            let audioInputDevice = get(Store.state.devices.input)
+            let settingsStore = get(SettingsStore.state)
 
-            const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
-
-            this.dataConnection = this.localPeer!.connect(remotePeerIdEdited)
-
-            this.dataConnection.on("data", data => {
-                if (data === VoiceRTCMessageType.EndingCall && this.localStream !== null) {
-                    this.endCall()
-                }
-            })
-
-            this.dataConnection.on("open", () => {
-                this.dataConnection?.send(chatID)
-            })
-
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    aspectRatio: 16 / 9,
-                    facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                    frameRate: 30,
-                    height: { ideal: 1080 },
-                    width: { ideal: 1920 },
-                },
-                audio: {
-                    autoGainControl: false,
-                    channelCount: 2,
-                    echoCancellation: false,
-                    noiseSuppression: false,
-                    sampleRate: 48000,
-                    sampleSize: 16,
-                },
-            })
-
-            const call = this.localPeer!.call(remotePeerIdEdited, stream)
-
-            this.localStream = stream
-
-            this.localStream?.getAudioTracks().forEach(track => {
-                track.enabled = false
-            })
-
-            call.on("stream", remoteStream => {
-                if (this.remoteVideoElement) {
-                    this.remoteVideoElement.srcObject = remoteStream
-                    this.remoteVideoElement.play()
-                }
-
-                if (this.localVideoCurrentSrc) {
-                    this.localVideoCurrentSrc.srcObject = this.localStream
-                    this.localVideoCurrentSrc.play()
-                }
-            })
-
-            call.on("close", () => {})
-            call.on("error", err => {
-                console.error("Call error:", err)
+            this.localStream = await navigator.mediaDevices.getUserMedia({
+                video: this.callOptions.video.enabled
+                    ? {
+                          aspectRatio: 16 / 9,
+                          facingMode: this.callOptions.video.selfie ? "user" : "environment",
+                          frameRate: 30,
+                          height: { ideal: 1080 },
+                          width: { ideal: 1920 },
+                          deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
+                      }
+                    : false,
+                audio: this.callOptions.audio
+                    ? {
+                          echoCancellation: settingsStore.calling.echoCancellation ?? true,
+                          noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
+                          autoGainControl: settingsStore.calling.automaticGainControl ?? true,
+                          sampleRate: settingsStore.calling.bitrate ?? 48000,
+                          sampleSize: settingsStore.calling.sampleSize ?? 16,
+                          channelCount: settingsStore.calling.channels ?? 2,
+                          deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
+                      }
+                    : false,
             })
         } catch (error) {
-            console.error("Error accessing media devices:", error)
+            log.error(`Error getting user media: ${error}`)
+            this.localStream = await navigator.mediaDevices.getUserMedia({
+                video: this.callOptions.video.enabled,
+                audio: this.callOptions.audio,
+            })
         }
+
+        this.dataConnection?.send({
+            type: VoiceRTCMessageType.Calling,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = this.localStream
+            await this.localVideoCurrentSrc.play()
+        }
+        /// Let it commented for now.
+        // await this.improveAudioQuality()
     }
 
     endCall() {
-        this.dataConnection?.send(VoiceRTCMessageType.EndingCall)
-        if (this.localStream) {
-            this.localStream.getTracks().forEach(track => {
-                track.stop()
-            })
-            this.localStream = null
+        this.dataConnection?.send({
+            type: VoiceRTCMessageType.EndingCall,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+
+        this.channel = ""
+        this.localStream?.getTracks().forEach(track => track.stop())
+        this.localStream = null
+        this.makingCall = false
+        this.acceptedIncomingCall = false
+        this.isReceivingCall = false
+
+        this.remoteStream?.getTracks().forEach(track => track.stop())
+        this.remoteStream = null
+
+        if (this.activeCall) {
+            this.activeCall.close()
+            this.activeCall = null
         }
 
-        if (this._incomingCall) {
-            this._incomingCall.close()
-            this._incomingCall = null
+        if (this.dataConnection) {
+            this.dataConnection.close()
+            this.dataConnection = null
+        }
+
+        this.remoteVoiceUser = {
+            did: "",
+            videoEnabled: false,
+            audioEnabled: false,
         }
 
         if (this.remoteVideoElement) {
+            this.remoteVideoElement.pause()
             this.remoteVideoElement.srcObject = null
+            this.remoteVideoElement = null
         }
         if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.pause()
             this.localVideoCurrentSrc.srcObject = null
+            this.localVideoCurrentSrc = null
         }
+
+        if (get(Store.state.activeCall)) {
+            Store.endCall()
+            Store.denyCall()
+        }
+
         log.info("Call ended and resources cleaned up.")
-        this.dataConnection?.send(VoiceRTCMessageType.None)
-        Store.endCall()
         this.setupPeerEvents()
     }
 
-    error(error: Error) {
-        console.error("Error:", error)
+    handleError(error: Error) {
+        log.error(`Error: ${error}`)
     }
 }
 
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: true,
+    audioTrack: null,
     video: {
         enabled: true,
         selfie: true,

@@ -76,6 +76,12 @@ export let defaultSettings = {
     },
     calling: {
         minimalCallingAlerts: false,
+        echoCancellation: true,
+        noiseSuppression: true,
+        automaticGainControl: true,
+        bitrate: 96000,
+        sampleSize: 16,
+        channels: 2,
     },
     messaging: {
         convertEmoji: true,

@@ -66,7 +66,7 @@
     $: users = Store.getUsersLookup($activeChat.users)
     $: loading = get(UIStore.state.chats).length > 0 && $users[$activeChat.users[1]]?.name === undefined
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
     const timeAgo = new TimeAgo("en-US")
@@ -222,33 +222,29 @@
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
+    let activeCallInProgress = false
 
-    async function typing() {
+    Store.state.activeCall.subscribe(call => {
+        if (call) {
+            activeCallInProgress = true
+        } else {
+            activeCallInProgress = false
+        }
+    })
+
+    let typing = debounce(async () => {
         await RaygunStoreInstance.sendEvent($activeChat.id, MessageEvent.Typing)
-    }
-
-    let receivingCall: boolean = false
-    $: activeCallInProgress = false
+    }, 50)
 
     onMount(() => {
         setInterval(() => {
-            if (receivingCall === false && VoiceRTCInstance.isReceivingCall === true) {
-                receivingCall = VoiceRTCInstance.isReceivingCall
-                VoiceRTCInstance.isReceivingCall = false
-            }
-            if (get(Store.state.activeCall)) {
+            if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
             } else {
                 activeCallInProgress = false
             }
-        }, 1000)
+        }, 500)
     })
-
-    async function end_call() {
-        activeCallInProgress = false
-        receivingCall = false
-        Store.endCall()
-    }
 
     function getPinned(conversation: ConversationMessages | undefined): MessageType[] {
         if (!conversation) return []
@@ -435,7 +431,7 @@
                         loading={loading}
                         on:click={async _ => {
                             Store.setActiveCall($activeChat)
-                            await VoiceRTCInstance.makeVideoCall($activeChat.users[1], $activeChat.id)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
                             activeCallInProgress = true
                         }}>
                         <Icon icon={Shape.VideoCamera} />
@@ -499,11 +495,7 @@
             </Topbar>
         {/if}
         {#if activeCallInProgress}
-            <CallScreen
-                chat={$activeChat}
-                on:onendcall={() => {
-                    end_call()
-                }} />
+            <CallScreen chat={$activeChat} />
         {/if}
 
         <Conversation loading={loading}>
@@ -646,7 +638,7 @@
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
-                    debounce(() => typing(), 500)
+                    typing()
                 }}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />

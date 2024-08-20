@@ -113,39 +113,13 @@
     }
 
     @media (max-width: 800px) {
-        .sidebar-layout.open {
+        .sidebar-layout {
             min-width: 100%;
-        }
-        .sidebar {
-            max-width: 90%;
         }
         .sidebar-layout.closed {
             min-width: 0;
             :global(.slimbar) {
                 display: none;
-            }
-        }
-    }
-
-    @media (max-width: 450px) {
-        .sidebar {
-            max-width: 80%;
-        }
-        .sidebar-content {
-            max-width: 100%;
-            :global(.chat-preview) {
-                min-width: none;
-            }
-        }
-    }
-    @media (max-width: 400px) {
-        .sidebar {
-            max-width: 75%;
-        }
-        .sidebar-content {
-            max-width: 100%;
-            :global(.chat-preview) {
-                min-width: none;
             }
         }
     }

@@ -31,6 +31,7 @@ class GlobalStore {
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
                 video: createPersistentState("uplink.devices.videoInput", "default"),
+                cameraEnabled: createPersistentState("uplink.devices.cameraEnabled", false),
                 output: createPersistentState("uplink.devices.output", "default"),
                 muted: createPersistentState("uplink.devices.muted", false),
                 deafened: createPersistentState("uplink.devices.deafened", false),
@@ -120,7 +121,19 @@ class GlobalStore {
 
     getChatForUser(userID: string) {
         const chats = get(UIStore.state.chats)
-        return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+        let chat = chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+        if (chat) {
+            return chat
+        } else {
+            let hiddenChats = get(UIStore.state.hiddenChats)
+            let hiddenChat = hiddenChats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+            if (hiddenChat) {
+                UIStore.addSidebarChat(hiddenChat)
+                UIStore.state.hiddenChats.set(hiddenChats.filter(c => c.id !== hiddenChat.id))
+                return hiddenChat
+            }
+            return undefined
+        }
     }
 
     getCallingChat(chatID: string) {
@@ -167,6 +180,11 @@ class GlobalStore {
 
     setOutputDevice(device: string) {
         this.state.devices.output.set(device)
+    }
+
+    updateCameraEnabled(enabled: boolean) {
+        this.state.devices.cameraEnabled.set(enabled)
+        if (get(SettingsStore.state).audio.controlSounds) playSound(enabled ? Sounds.Off : Sounds.On)
     }
 
     updateMuted(muted: boolean) {
