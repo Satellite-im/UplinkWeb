@@ -139,15 +139,6 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Add label if any of build jobs failed
-              if: failure()
-              uses: buildsville/add-remove-label@v2.0.1
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  labels: |
-                      Failed Automated Test
-                  type: add
-
     remove-label:
         needs: [playwright-run, generate-report]
         runs-on: ubuntu-latest
