@@ -34,7 +34,8 @@
         let screenHeight = evt.view!.innerHeight
         let overFlowY = screenHeight < height + offsetY
         let overFlowX = screenWidth < width + offsetX
-        let topX = overFlowX ? screenWidth - width - 5 : Math.max(5, offsetX)
+
+        let topX = overFlowX ? Math.max(5, screenWidth - width - 5) : Math.max(5, offsetX)
         let topY = Math.max(5, overFlowY ? offsetY - height : offsetY)
 
         return [topX, topY]
