@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { Store } from "../state/Store"
@@ -20,9 +20,9 @@ import { SettingsStore } from "$lib/state"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { page } from "$app/stores"
 import { goto } from "$app/navigation"
+import { createLock } from "./AsyncLock"
 
 const MAX_PINNED_MESSAGES = 100
-// Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
           type: "MostRecent"
@@ -96,7 +96,11 @@ class RaygunStore {
     private messageListeners: Writable<{ [key: string]: Cancellable }>
 
     constructor(raygun: Writable<wasm.RayGunBox | null>) {
-        this.raygunWritable = raygun
+        this.raygunWritable = {
+            ...derived(raygun, r => (r ? createLock(r) : null)),
+            set: raygun.set,
+            update: raygun.update,
+        }
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(async r => {
             if (r) {
@@ -504,7 +508,6 @@ class RaygunStore {
                     case "message_edited": {
                         let conversation_id: string = event.values["conversation_id"]
                         let message_id: string = event.values["message_id"]
-                        await new Promise(f => setTimeout(f, 10))
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
                         if (message) {
                             ConversationStore.editMessage(conversation_id, message_id, message.text.join("\n"))

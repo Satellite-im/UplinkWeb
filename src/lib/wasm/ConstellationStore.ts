@@ -1,12 +1,12 @@
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
-import { func } from "three/examples/jsm/nodes/Nodes.js"
 import prettyBytes from "pretty-bytes"
+import { createLock } from "./AsyncLock"
 
 /**
  * A class that provides various methods to interact with a ConstellationBox.
@@ -22,7 +22,11 @@ class ConstellationStore {
      * @param constellation - A writable store containing a ConstellationBox or null.
      */
     constructor(constellation: Writable<wasm.ConstellationBox | null>) {
-        this.constellationWritable = constellation
+        this.constellationWritable = {
+            ...derived(constellation, c => (c ? createLock(c) : null)),
+            set: constellation.set,
+            update: constellation.update,
+        }
     }
 
     /**
