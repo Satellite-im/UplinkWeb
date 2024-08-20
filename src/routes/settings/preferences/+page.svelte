@@ -20,6 +20,9 @@
     let cssOverride = get(UIStore.state.cssOverride)
     let fontSize = get(UIStore.state.fontSize)
     let emojiUpload: HTMLInputElement
+    let themeUpload: HTMLInputElement
+    let fontUpload: HTMLInputElement
+    let pfpUpload: HTMLInputElement
 
     UIStore.state.color.subscribe(c => {
         hex = c
@@ -93,7 +96,7 @@
 
     const onFileSelected = async (e: Event) => {
         const target = e.target as HTMLInputElement
-        console.log("TASRGKER", target)
+        console.log(target.files)
     }
 </script>
 
@@ -110,9 +113,18 @@
             on:change={v => {
                 UIStore.setFont(v.detail)
             }} />
-        <Button hook="button-font-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+        <Button
+            hook="button-font-open-folder"
+            on:click={async event => {
+                // let emojiUpload = event.dataTransfer?.files
+                fontUpload?.click()
+            }}
+            icon
+            appearance={Appearance.Alt}
+            tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={fontUpload} />
     </SettingSection>
     <SettingSection hook="section-emoji-font" name={$_("settings.preferences.emojiFont")} description={$_("settings.preferences.emojiFontDescription")}>
         <span data-cy="emoji-font-random-emoji" class="emoji">{randomEmoji}</span>
@@ -128,6 +140,7 @@
             hook="button-emoji-font-open-folder"
             on:click={async event => {
                 // let emojiUpload = event.dataTransfer?.files
+                console.log(event, emojiUpload)
                 emojiUpload?.click()
             }}
             icon
@@ -147,9 +160,17 @@
             on:change={v => {
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, identiconStyle: v.detail } })
             }} />
-        <Button hook="button-identicon-open-folder" icon appearance={Appearance.Alt} tooltip={$_("generic.openFolder")}>
+        <Button
+            hook="button-identicon-open-folder"
+            on:click={async event => {
+                pfpUpload?.click()
+            }}
+            icon
+            appearance={Appearance.Alt}
+            tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={pfpUpload} />
     </SettingSection>
     <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
         <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
@@ -167,9 +188,16 @@
             <Icon icon={Shape.Moon} />
         </Button>
         <Select hook="selector-theme" alt options={[{ text: "Default", value: "default" }]} />
-        <Button hook="button-theme-open-folder" icon appearance={Appearance.Alt}>
+        <Button
+            hook="button-theme-open-folder"
+            icon
+            appearance={Appearance.Alt}
+            on:click={async event => {
+                pfpUpload?.click()
+            }}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={themeUpload} />
     </SettingSection>
     <SettingSection hook="section-primary-color" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")} wrapContent>
         <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")}>
