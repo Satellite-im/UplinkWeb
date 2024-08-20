@@ -422,6 +422,7 @@ class RaygunStore {
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
         let conversations: wasm.ConversationList | undefined
         while (!conversations) {
+            // It seems it takes a while for raygun to be ready so we retry till this succeeds
             try {
                 conversations = await Promise.race([
                     raygun.list_conversations(),
@@ -431,7 +432,7 @@ class RaygunStore {
                     }),
                 ])
             } catch (e) {
-                log.error(`Listing conversations failed: ${e}`)
+                if (!`${e}`.includes("RayGun extension is unavailable")) throw e
                 await new Promise(f => setTimeout(f, 100))
             }
         }
