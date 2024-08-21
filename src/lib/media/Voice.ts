@@ -20,7 +20,9 @@ export enum VoiceRTCMessageType {
 }
 
 type VoiceRTCOptions = {
-    audio: boolean
+    audio: {
+        enabled: boolean
+    }
     audioTrack: MediaStreamTrack | null
     video: {
         enabled: boolean
@@ -152,16 +154,16 @@ export class VoiceRTC {
     }
 
     turnOnOffMicrophone() {
-        this.callOptions.audio = !this.callOptions.audio
+        this.callOptions.audio.enabled = !this.callOptions.audio.enabled
 
         if (this.localStream) {
             this.localStream?.getAudioTracks().forEach(track => {
-                track.enabled = this.callOptions.audio
+                track.enabled = this.callOptions.audio.enabled
             })
 
             this.localStream.getTracks().forEach(track => {
                 if (track.kind === "audio") {
-                    track.enabled = this.callOptions.audio
+                    track.enabled = this.callOptions.audio.enabled
                 }
             })
 
@@ -187,7 +189,7 @@ export class VoiceRTC {
     }
 
     public async acceptIncomingCall() {
-        this.callOptions.audio = false
+        this.callOptions.audio.enabled = false
         Store.updateMuted(true)
         this.acceptedIncomingCall = true
     }
@@ -458,7 +460,9 @@ export class VoiceRTC {
 }
 
 export const VoiceRTCInstance = new VoiceRTC("default", {
-    audio: true,
+    audio: {
+        enabled: true,
+    },
     audioTrack: null,
     video: {
         enabled: true,
