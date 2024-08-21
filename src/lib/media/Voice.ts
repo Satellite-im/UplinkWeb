@@ -98,7 +98,6 @@ export class VoiceRTC {
     }
 
     toggleMute(state: boolean) {
-        console.log("toggle mute", state)
         this.callOptions.audio.enabled = state
 
         if (state) {
