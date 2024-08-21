@@ -25,7 +25,7 @@
     let showVolumeMixer = false
     let showCallSettings = false
 
-    let muted: boolean = VoiceRTCInstance.callOptions.audio
+    let muted: boolean = VoiceRTCInstance.callOptions.audio.enabled
     let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
 
     export let deafened: boolean = get(Store.state.devices.deafened)

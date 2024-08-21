@@ -3,8 +3,6 @@ import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
-import { c } from "svelte-highlight/languages"
-import { t } from "svelte-i18n"
 import { get } from "svelte/store"
 
 export enum VoiceRTCMessageType {
@@ -94,7 +92,6 @@ export class VoiceRTC {
 
         this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
 
-        this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
         this.localPeer!.on("call", async call => {
             this.activeCall = call
             this.channel = call.metadata.channel
@@ -128,12 +125,6 @@ export class VoiceRTC {
             let dataReceived = data as VoiceMessage
             this.handleWithDataReceived(dataReceived)
         })
-
-        conn.on("data", data => {
-            let dataReceived = data as VoiceMessage
-            log.debug(`Data received from user that received a call: ${dataReceived}`)
-            this.handleWithDataReceived(dataReceived)
-        })
     }
 
     updateRemoteUserInfo(dataReceived: VoiceMessage) {
@@ -155,22 +146,11 @@ export class VoiceRTC {
 
     turnOnOffMicrophone() {
         this.callOptions.audio.enabled = !this.callOptions.audio.enabled
-
-        if (this.localStream) {
-            this.localStream?.getAudioTracks().forEach(track => {
-                track.enabled = this.callOptions.audio.enabled
-            })
-
-            this.localStream.getTracks().forEach(track => {
-                if (track.kind === "audio") {
-                    track.enabled = this.callOptions.audio.enabled
-                }
-            })
-
-            this.sendData(this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio)
-
-            Store.setActiveCall(Store.getCallingChat(this.channel)!)
-        }
+        this.activeCall?.localStream.getAudioTracks().forEach(track => {
+            track.enabled = this.callOptions.audio.enabled
+        })
+        this.sendData(this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio)
+        Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
     turnOnOffDeafened() {
@@ -189,7 +169,7 @@ export class VoiceRTC {
     }
 
     public async acceptIncomingCall() {
-        this.callOptions.audio.enabled = false
+        this.callOptions.audio.enabled = true
         Store.updateMuted(true)
         this.acceptedIncomingCall = true
     }
@@ -230,7 +210,7 @@ export class VoiceRTC {
                     did: this.localPeer!.id,
                     username: get(Store.state.user).name,
                     videoEnabled: this.callOptions.video.enabled,
-                    audioEnabled: this.callOptions.audio,
+                    audioEnabled: this.callOptions.audio.enabled,
                     channel: this.channel,
                 },
             })
@@ -251,11 +231,11 @@ export class VoiceRTC {
                         did: this.localPeer!.id,
                         username: get(Store.state.user).name,
                         videoEnabled: this.callOptions.video.enabled,
-                        audioEnabled: this.callOptions.audio,
+                        audioEnabled: this.callOptions.audio.enabled,
                     },
                 },
             })
-
+            this.activeCall = call
             call.on("stream", async remoteStream => {
                 /// Here will receive data from user that accepted the call
                 if (this.remoteVideoElement) {
@@ -277,7 +257,7 @@ export class VoiceRTC {
             userInfo: {
                 did: this.localPeer!.id,
                 videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
+                audioEnabled: this.callOptions.audio.enabled,
             },
         })
 
@@ -306,7 +286,7 @@ export class VoiceRTC {
                           deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
                       }
                     : false,
-                audio: this.callOptions.audio
+                audio: this.callOptions.audio.enabled
                     ? {
                           echoCancellation: settingsStore.calling.echoCancellation ?? true,
                           noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
@@ -399,7 +379,7 @@ export class VoiceRTC {
                 did: this.localPeer!.id,
                 username: get(Store.state.user).name,
                 videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
+                audioEnabled: this.callOptions.audio.enabled,
             },
         })
     }
