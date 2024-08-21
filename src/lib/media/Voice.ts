@@ -388,6 +388,8 @@ export class VoiceRTC {
                       }
                     : false,
             })
+
+            console.log("got local stream", this.localStream)
         } catch (error) {
             log.error(`Error getting user media: ${error}`)
             this.localStream = await navigator.mediaDevices.getUserMedia({

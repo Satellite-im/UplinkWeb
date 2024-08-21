@@ -193,6 +193,7 @@ class GlobalStore {
 
     updateDeafened(deafened: boolean) {
         this.state.devices.deafened.set(deafened)
+        this.state.devices.muted.set(deafened)
         if (get(SettingsStore.state).audio.controlSounds) playSound(deafened ? Sounds.Off : Sounds.On)
     }
 
