@@ -1,12 +1,12 @@
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
-import { func } from "three/examples/jsm/nodes/Nodes.js"
 import prettyBytes from "pretty-bytes"
+import { createLock } from "./AsyncLock"
 
 /**
  * A class that provides various methods to interact with a ConstellationBox.
@@ -45,13 +45,13 @@ class ConstellationStore {
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 
-    getStorageFreeSpaceSize(): Result<WarpError, number> {
+    async getStorageFreeSpaceSize(): Promise<Result<WarpError, number>> {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let maxSize = constellation.max_size()
+                let maxSize = await constellation.max_size()
                 this.MAX_STORAGE_SIZE = maxSize
-                let currentSize = constellation.current_size()
+                let currentSize = await constellation.current_size()
                 let freeSize = maxSize - currentSize
                 this.freeStorageSpace.set(prettyBytes(freeSize))
                 return success(freeSize)
@@ -88,7 +88,7 @@ class ConstellationStore {
                         break
                     }
                 }
-                this.getStorageFreeSpaceSize()
+                await this.getStorageFreeSpaceSize()
                 return success(undefined)
             } catch (error) {
                 log.error("Error uploading files from stream: " + error)
@@ -101,11 +101,11 @@ class ConstellationStore {
     /**
      * moves item/s from constellation.
      */
-    dropIntoFolder(fileName: string, toFolderName: string) {
+    async dropIntoFolder(fileName: string, toFolderName: string) {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let currentDir = constellation!.current_directory()
+                let currentDir = await constellation.current_directory()
                 currentDir.move_item_to(fileName, toFolderName)
                 return success(undefined)
             } catch (error) {
@@ -124,7 +124,7 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let files = constellation.current_directory().get_items()
+                let files = (await constellation.current_directory()).get_items()
                 return success(files)
             } catch (error) {
                 log.error("Error getting current directory files: " + error)
@@ -144,7 +144,7 @@ class ConstellationStore {
         if (constellation) {
             try {
                 await constellation.remove(file_name, true)
-                this.getStorageFreeSpaceSize()
+                await this.getStorageFreeSpaceSize()
                 return success(undefined)
             } catch (error) {
                 return failure(handleErrors(error))
@@ -204,7 +204,7 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let currentPath = constellation.current_directory().path()
+                let currentPath = (await constellation.current_directory()).path()
                 await constellation.set_path(`${currentPath}/${directory_name}`)
                 return success(undefined)
             } catch (error) {
@@ -222,7 +222,7 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let currentPath = constellation.current_directory().path()
+                let currentPath = (await constellation.current_directory()).path()
                 if (this.isValidFormat(currentPath)) {
                     await constellation.set_path("")
                 } else {

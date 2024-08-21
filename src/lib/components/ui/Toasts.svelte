@@ -8,6 +8,3 @@
 {#each Object.entries($toasts) as [id, [toast, _]]}
     <Toast toast={toast} on:mouseenter={_ => Store.pauseToastTimeout(id)} on:mouseleave={_ => Store.resumeToastTimeout(id)} remove={() => Store.removeToast(id)} />
 {/each}
-
-<style lang="scss">
-</style>
