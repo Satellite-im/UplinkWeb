@@ -21,7 +21,6 @@ type VoiceRTCOptions = {
     audio: {
         enabled: boolean
     }
-    audioTrack: MediaStreamTrack | null
     video: {
         enabled: boolean
         selfie: boolean
@@ -66,6 +65,78 @@ export class VoiceRTC {
         this.channel = channel
         this.callOptions = { ...options }
         this.setupPeerEvents()
+
+        this.subscribe()
+    }
+
+    subscribe() {
+        Store.state.devices.muted.subscribe(async value => this.toggleMute(value))
+        Store.state.devices.cameraEnabled.subscribe(async value => this.toggleVideo(value))
+        Store.state.devices.deafened.subscribe(async value => this.toggleDeafen(value))
+    }
+
+    toggleVideo(state: boolean) {
+        this.callOptions.video.enabled = state
+
+        if (state) {
+            this.localStream?.getVideoTracks().forEach(track => (track.enabled = true))
+        } else {
+            this.localStream?.getVideoTracks().forEach(track => (track.enabled = false))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+    }
+
+    toggleMute(state: boolean) {
+        this.callOptions.audio.enabled = state
+        console.log("toggling mute", this.localStream)
+
+        if (state) {
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = false))
+        } else {
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = true))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+    }
+
+    toggleDeafen(state: boolean) {
+        // TODO: This isn't perfect because if you mute yourself, and then deafen yourself, un-deafaning will also unmute you which could be unexpected
+        this.callOptions.audio.enabled = state
+
+        if (state) {
+            this.remoteStream?.getAudioTracks().forEach(track => (track.enabled = false))
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = false))
+        } else {
+            this.remoteStream?.getAudioTracks().forEach(track => (track.enabled = true))
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = true))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
     }
 
     async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
@@ -91,7 +162,6 @@ export class VoiceRTC {
         })
 
         this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
-
         this.localPeer!.on("call", async call => {
             this.activeCall = call
             this.channel = call.metadata.channel
@@ -293,6 +363,8 @@ export class VoiceRTC {
                       }
                     : false,
             })
+
+            console.log("got local stream", this.localStream)
         } catch (error) {
             log.error(`Error getting user media: ${error}`)
             this.localStream = await navigator.mediaDevices.getUserMedia({
@@ -436,11 +508,10 @@ export class VoiceRTC {
 
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: {
-        enabled: true,
+        enabled: get(Store.state.devices.muted),
     },
-    audioTrack: null,
     video: {
-        enabled: true,
+        enabled: get(Store.state.devices.cameraEnabled),
         selfie: true,
     },
 })
