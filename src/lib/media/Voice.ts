@@ -135,7 +135,7 @@ export class VoiceRTC {
 
     turnOnOffCamera() {
         this.callOptions.video.enabled = !this.callOptions.video.enabled
-        this.localStream?.getVideoTracks().forEach(track => {
+        this.activeCall?.localStream?.getVideoTracks().forEach(track => {
             track.enabled = !track.enabled
         })
 
