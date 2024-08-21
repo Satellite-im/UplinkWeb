@@ -18,10 +18,10 @@
 
     $: users = Store.getUsers(chat.users)
 
-    $: chatName = $users.length > 2 ? chat.name : ($users[1]?.name ?? $users[0].name)
+    $: chatName = $users.length > 2 ? chat.name : $users[1]?.name ?? $users[0].name
     $: loading = chatName === "Unknown User"
-    $: chatPhoto = $users.length > 2 ? "todo" : ($users[1]?.profile.photo.image ?? $users[0].profile.photo.image)
-    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
+    $: chatPhoto = $users.length > 2 ? "todo" : $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
+    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
 
     const dispatch = createEventDispatcher()
 
@@ -41,7 +41,7 @@
         goto(Route.Chat)
     }}>
     {#if chat.users.length === 2}
-        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.activity} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
+        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.typing_indicator.size > 0} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={$users} />
     {/if}

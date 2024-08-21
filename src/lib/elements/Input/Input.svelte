@@ -7,6 +7,7 @@
     import { EditorView } from "@codemirror/view"
     import { writable } from "svelte/store"
     import Text from "../Text.svelte"
+    import { debounce } from "$lib/utils/Functions"
 
     export let placeholder: string = ""
     export let hook: string = ""
@@ -23,7 +24,6 @@
     export let rules: InputRules = new InputRules()
 
     let errorMessage: string = ""
-    let needsUpdate = writable(true)
 
     function isValidInput(): boolean {
         if (rules.required && !value) {
@@ -46,6 +46,12 @@
         return true
     }
 
+    const debouncedOnInput = debounce(() => {
+        let isValid = isValidInput()
+        dispatch("isValid", isValid)
+        dispatch("input", value)
+    }, 300)
+
     if (copyOnInteract) {
         tooltip = "Copy"
         disabled = true
@@ -54,6 +60,10 @@
     let clazz = ""
     let input: HTMLElement
     const dispatch = createEventDispatcher()
+    const writableValue = writable(value)
+
+    $: writableValue.set(value)
+    $: value = $writableValue
 
     let onsend: any[] = []
     let editor: MarkdownEditor
@@ -75,7 +85,8 @@
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
-                value = val
+                writableValue.set(val)
+                debouncedOnInput()
             })
             onsend.push(() => {
                 editor.value("")
@@ -83,10 +94,8 @@
         })
     }
 
-    $: {
-        if (editor) {
-            editor.value(value)
-        }
+    $: if (rich && editor) {
+        editor.value($writableValue)
     }
 
     export { clazz as class }
@@ -97,9 +106,7 @@
     }
 
     function onInput() {
-        let isValid = isValidInput()
-        dispatch("isValid", isValid)
-        dispatch("input", value)
+        debouncedOnInput()
     }
 
     function onBlur() {
@@ -145,7 +152,7 @@
             disabled={disabled}
             bind:this={input}
             on:focus={handleFocus}
-            bind:value={value}
+            bind:value={$writableValue}
             placeholder={placeholder}
             on:keydown={onKeyDown}
             on:input={onInput}

@@ -1,7 +1,7 @@
 import { CallDirection, ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame, type Integration } from "$lib/types"
+import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame, type Integration, TypingIndicator } from "$lib/types"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
@@ -22,7 +22,12 @@ class GlobalStore {
             activeCall: writable(null),
             pendingCall: writable(null),
             user: createPersistentState("uplink.user", defaultUser),
-            activeChat: createPersistentState("uplink.activeChat", defaultChat),
+            activeChat: createPersistentState("uplink.activeChat", defaultChat, {
+                deserializer: (chat: Chat) => {
+                    chat.typing_indicator = new TypingIndicator()
+                    return chat
+                },
+            }),
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
                 video: createPersistentState("uplink.devices.videoInput", "default"),
@@ -115,7 +120,19 @@ class GlobalStore {
 
     getChatForUser(userID: string) {
         const chats = get(UIStore.state.chats)
-        return chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+        let chat = chats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+        if (chat) {
+            return chat
+        } else {
+            let hiddenChats = get(UIStore.state.hiddenChats)
+            let hiddenChat = hiddenChats.find(c => c.kind == ChatType.DirectMessage && c.users.find(u => u === userID))
+            if (hiddenChat) {
+                UIStore.addSidebarChat(hiddenChat)
+                UIStore.state.hiddenChats.set(hiddenChats.filter(c => c.id !== hiddenChat.id))
+                return hiddenChat
+            }
+            return undefined
+        }
     }
 
     getCallingChat(chatID: string) {

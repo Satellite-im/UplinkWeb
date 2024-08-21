@@ -14,7 +14,7 @@
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -22,7 +22,6 @@
         expanded = !expanded
     }
 
-    let showSettings = false
     let showVolumeMixer = false
     let showCallSettings = false
 
@@ -32,7 +31,27 @@
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
 
+    function toggleFullscreen() {
+        const elem = document.getElementById("call-screen")
+
+        if (!document.fullscreenElement) {
+            if (elem?.requestFullscreen) {
+                elem.requestFullscreen()
+                isFullScreen = true
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen()
+                isFullScreen = false
+            }
+        }
+        otherUserSettingsInCall.videoEnabled = otherUserSettingsInCall.videoEnabled
+        otherUserSettingsInCall = otherUserSettingsInCall
+        userCallOptions = userCallOptions
+    }
+
     let permissionsGranted = false
+    let isFullScreen = false
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
@@ -49,10 +68,10 @@
 
     let subscribeThree = Store.state.devices.deafened.subscribe(state => {
         deafened = state
+        console.log("Deafened value: ", deafened)
     })
 
     let subscribeFour = Store.state.activeCall.subscribe(state => {
-        log.debug(`Active call state changed: ${state}`)
         otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
@@ -94,7 +113,7 @@
                 }
             }
         } catch (err) {
-            console.error("Error checking permissions: ", err)
+            log.error(`Error checking permissions: ${err}`)
         }
     }
 
@@ -103,7 +122,7 @@
             await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             permissionsGranted = true
         } catch (err) {
-            console.error("Error requesting permissions: ", err)
+            log.error(`Error requesting permissions: ${err}`)
             permissionsGranted = false
         }
     }
@@ -112,7 +131,6 @@
     let localVideoCurrentSrc: HTMLVideoElement
 
     onMount(async () => {
-        console.log("CallScreen mounted")
         await checkPermissions()
         await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
@@ -127,6 +145,7 @@
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 await VoiceRTCInstance.acceptCall()
+                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
             }
         }
         // Store.updateMuted(VoiceRTCInstance.callOptions.audio)
@@ -158,11 +177,22 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video id="remote-user-video" bind:this={remoteVideoElement} width={otherUserSettingsInCall?.videoEnabled ? 400 : 0} height={otherUserSettingsInCall?.videoEnabled ? 400 : 0} autoplay>
+            <video
+                id="remote-user-video"
+                bind:this={remoteVideoElement}
+                width={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                height={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                autoplay>
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video id="local-user-video" bind:this={localVideoCurrentSrc} width={userCallOptions.video.enabled ? 400 : 0} height={userCallOptions.video.enabled ? 400 : 0} muted autoplay>
+            <video
+                id="local-user-video"
+                bind:this={localVideoCurrentSrc}
+                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 400) : 0}
+                muted
+                autoplay>
                 <track kind="captions" src="" />
             </video>
             {#each chat.users as user}
@@ -237,6 +267,7 @@
                 tooltip={$_("call.deafen")}
                 on:click={_ => {
                     Store.updateDeafened(!deafened)
+                    // VoiceRTCInstance.turnOnOffDeafened()
                 }}>
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
@@ -271,7 +302,7 @@
                     <Icon icon={Shape.ChevronsDown} />
                 {/if}
             </Button>
-            <Button appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")}>
+            <Button appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")} on:click={toggleFullscreen}>
                 <Icon icon={Shape.ArrowsOut} />
             </Button>
         </Controls>
@@ -314,6 +345,12 @@
             padding: var(--padding);
             align-items: center;
             justify-content: center;
+        }
+
+        video {
+            object-fit: contain;
+            border-radius: 12px;
+            background-color: var(--black);
         }
     }
 </style>

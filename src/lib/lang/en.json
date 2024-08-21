@@ -32,7 +32,8 @@
         "faves": "Faves",
         "initializing": "Initializing...",
         "platform": "Platform",
-        "address": "Address"
+        "address": "Address",
+        "label": "Label"
     },
     "market": {
         "market": "Marketplace",
@@ -76,7 +77,7 @@
         "chat_plural": "Chats",
         "create": "Create Chat",
         "add_attachment": "Add attachment",
-        "emoji": "Emoji",
+        "emoji": "Emojis",
         "emojiPicker": "Emoji Picker",
         "gifSearch": "GIF Search",
         "send": "Send",
@@ -88,6 +89,9 @@
         "markRead": "Mark Read",
         "getStarted": "Let's get something started!",
         "noChat": "You don't have any active chats yet, click the button below to head to the friends page to start one.",
+        "multiple-typing": "Multiple users are typing",
+        "user-typing": "{user} is typing",
+        "users-typing": "{users} are typing",
         "group": {
             "name": "Group name:",
             "members": "Group members:",

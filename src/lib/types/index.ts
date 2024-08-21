@@ -1,6 +1,25 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations, CallDirection } from "$lib/enums"
+import {
+    Status,
+    type Appearance,
+    type Route,
+    type SettingsRoute,
+    type Shape,
+    MessageAttachmentKind,
+    KeybindAction,
+    MessageDirection,
+    ChatType,
+    CommunityChannelKind,
+    KeybindState,
+    Integrations,
+    CallDirection,
+    CommunitySettingsRoute,
+} from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
 import type { Writable } from "svelte/store"
+
+export interface Serialize {
+    serialize(): any
+}
 
 export enum OperationState {
     Initial = "Initial",
@@ -116,7 +135,7 @@ export let defaultUser: User = {
 
 export type ChatSettings = {
     displayOwnerBadge: boolean
-    readReciepts: boolean
+    readReceipts: boolean
     permissions: {
         allowAnyoneToAddUsers: boolean
         allowAnyoneToModifyPhoto: boolean
@@ -127,7 +146,7 @@ export type ChatSettings = {
 export type NavRoute = {
     name: string
     icon: Shape
-    to: Route | SettingsRoute
+    to: Route | SettingsRoute | CommunitySettingsRoute
 }
 
 export type Chat = {
@@ -139,11 +158,79 @@ export type Chat = {
     settings: ChatSettings
     creator?: string
     notifications: number
-    activity: boolean
     users: string[]
-    typing_indicator: { [key: string]: Date }
+    typing_indicator: TypingIndicator
     last_message_at: Date
     last_message_preview: string
+}
+
+const typingDuration = 5
+
+/**
+ * Helper class for typing indicator. So the size is known all the time
+ */
+export class TypingIndicator {
+    private typingIndicator: { [key: string]: Date }
+    private _size = 0
+
+    constructor() {
+        this.typingIndicator = {}
+    }
+
+    /**
+     * Add a user indicating the user is typing
+     */
+    add(user: string) {
+        this.typingIndicator[user] = new Date()
+        this._size = Object.keys(this.typingIndicator).length
+    }
+
+    /**
+     * Add a user indicating the user stopped typing (e.g. cause they sent a message)
+     * @returns If the user was typing
+     */
+    remove(user: string): boolean {
+        let has: boolean = user in this.typingIndicator
+        delete this.typingIndicator[user]
+        this._size = Object.keys(this.typingIndicator).length
+        return has
+    }
+
+    /**
+     * Add a user indicating the user is typing
+     */
+    has(user: string): boolean {
+        return user in this.typingIndicator
+    }
+
+    /**
+     * @returns The typing user ids
+     */
+    users(): string[] {
+        return Object.keys(this.typingIndicator)
+    }
+
+    /**
+     * Update the typing indicator by removing all users that have not typed in the last 5 seconds
+     * @returns True if something changed
+     */
+    update(): boolean {
+        let time = new Date()
+        time.setSeconds(time.getSeconds() - 5)
+        let it = Object.entries(this.typingIndicator)
+        let old_len = it.length
+        let updated = it.filter(([_, d]) => d <= time)
+        this.typingIndicator = updated.reduce<{ [key: string]: Date }>((obj, [id, date]) => {
+            obj[id] = date
+            return obj
+        }, {})
+        this._size = updated.length
+        return old_len != this._size
+    }
+
+    get size(): number {
+        return this._size
+    }
 }
 
 export type CommunityChannel = {
@@ -194,9 +281,8 @@ export let defaultChat: Chat = {
             allowAnyoneToModifyName: false,
         },
     },
-    activity: false,
     users: [],
-    typing_indicator: {},
+    typing_indicator: new TypingIndicator(),
     last_message_at: new Date(),
     last_message_preview: "",
 }
@@ -226,6 +312,7 @@ export type FileInfo = {
     remotePath: string
     source: string
     isRenaming: OperationState
+    imageThumbnail?: string
     extension?: string
     items?: FileInfo[]
     parentId?: string
@@ -342,3 +429,5 @@ export type Integration = {
     location: string
     meta: any
 }
+
+export * from "./community"

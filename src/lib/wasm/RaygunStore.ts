@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { Store } from "../state/Store"
@@ -20,9 +20,9 @@ import { SettingsStore } from "$lib/state"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { page } from "$app/stores"
 import { goto } from "$app/navigation"
+import { createLock } from "./AsyncLock"
 
 const MAX_PINNED_MESSAGES = 100
-// Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
           type: "MostRecent"
@@ -99,7 +99,6 @@ class RaygunStore {
         this.raygunWritable = raygun
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(async r => {
-            await new Promise(f => setTimeout(f, 100))
             if (r) {
                 let listeners = get(this.messageListeners)
                 if (Object.keys(listeners).length > 0) {
@@ -108,7 +107,7 @@ class RaygunStore {
                         handler.cancel()
                     }
                 }
-                this.initConversationHandlers(r)
+                await this.initConversationHandlers(r)
                 // handleRaygunEvent must be called after initConversationHandlers
                 // this is because if 'raygun.raygun_subscribe' is called before 'raygun.list_conversations', it causes 'raygun.list_conversations' to hang. (reason currently unknown)
                 this.handleRaygunEvent(r)
@@ -361,10 +360,16 @@ class RaygunStore {
     }
 
     private async handleRaygunEvent(raygun: wasm.RayGunBox) {
-        let events
+        let events: wasm.AsyncIterator | undefined
         while (!events) {
             // Have a buffer that aborts and retries in case #raygun_subscribe hangs
-            events = await Promise.race([raygun.raygun_subscribe(), new Promise(f => setTimeout(f, 100))])
+            events = await Promise.race([
+                raygun.raygun_subscribe(),
+                new Promise<undefined>(f => {
+                    setTimeout(f, 100)
+                    return undefined
+                }),
+            ])
         }
         let listener = {
             [Symbol.asyncIterator]() {
@@ -411,7 +416,22 @@ class RaygunStore {
     }
 
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
-        let conversations = await raygun.list_conversations()
+        let conversations: wasm.ConversationList | undefined
+        while (!conversations) {
+            // It seems it takes a while for raygun to be ready so we retry till this succeeds
+            try {
+                conversations = await Promise.race([
+                    raygun.list_conversations(),
+                    new Promise<undefined>(f => {
+                        setTimeout(f, 100)
+                        return undefined
+                    }),
+                ])
+            } catch (e) {
+                if (!`${e}`.includes("RayGun extension is unavailable")) throw e
+                await new Promise(f => setTimeout(f, 100))
+            }
+        }
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations.convs()) {
             let handler = await this.createConversationEventHandler(raygun, conversation.id())
@@ -453,11 +473,21 @@ class RaygunStore {
                             let ping = mentions_user(message, get(Store.state.user).key)
                             ConversationStore.addMessage(conversation_id, message)
                             let settings = get(SettingsStore.state)
-                            let notify = settings.notifications.messages && get(page).route.id !== Route.Chat
+                            let sender = get(Store.getUser(message.details.origin))
+                            let activeChat = get(Store.state.activeChat)
+                            let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
+                            let messageToSend: string = ""
+                            if (chat) {
+                                if (!chat.unread) {
+                                    messageToSend = `${sender.name} sent you a message`
+                                } else if (chat.unread > 1) {
+                                    messageToSend = `${sender.name} sent you ${chat.unread} new messages`
+                                }
+                            }
+                            let notify = (settings.notifications.messages && get(page).route.id !== Route.Chat) || (settings.notifications.messages && get(page).route.id === Route.Chat && activeChat.id !== conversation_id)
                             if (ping || notify) {
-                                let user = get(Store.getUser(message.details.origin))
                                 Store.addToastNotification(
-                                    new ToastMessage("New Message", `${user.name} sent you a message`, 2, undefined, undefined, () => {
+                                    new ToastMessage("New Message", messageToSend, 2, undefined, undefined, () => {
                                         let chat = get(UIStore.state.chats).find(c => c.id === conversation_id)
                                         if (chat) {
                                             Store.setActiveChat(chat)
@@ -537,10 +567,9 @@ class RaygunStore {
                     case "event_received": {
                         let conversation_id: string = event.values["conversation_id"]
                         let did_key = event.values["did_key"]
-                        let msg_event = parseJSValue(event.values["event"])
-                        if (msg_event.type === "typing") {
+                        if (event.values["event"] === "typing") {
                             UIStore.mutateChat(conversation_id, c => {
-                                c.typing_indicator[did_key] = new Date()
+                                c.typing_indicator.add(did_key)
                             })
                         }
                         break
@@ -614,66 +643,70 @@ class RaygunStore {
             },
         }
         let cancelled = false
-        for await (const value of listener) {
-            let event = parseJSValue(value)
-            log.info(`Handling file progress event: ${JSON.stringify(event)}`)
-            switch (event.type) {
-                case "AttachedProgress": {
-                    let locationKind = parseJSValue(event.values[0])
-                    // Only streams need progress update
-                    if (locationKind.type === "Stream") {
-                        let progress = parseJSValue(event.values[1])
-                        let file = progress.values["name"]
-                        ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
-                            if (current) {
-                                let copy = { ...current }
-                                switch (progress.type) {
-                                    case "CurrentProgress": {
-                                        copy.size = progress.values["current"]
-                                        copy.total = progress.values["total"]
-                                        break
+        try {
+            for await (const value of listener) {
+                let event = parseJSValue(value)
+                log.info(`Handling file progress event: ${JSON.stringify(event)}`)
+                switch (event.type) {
+                    case "AttachedProgress": {
+                        let locationKind = parseJSValue(event.values[0])
+                        // Only streams need progress update
+                        if (locationKind.type === "Stream") {
+                            let progress = parseJSValue(event.values[1])
+                            let file = progress.values["name"]
+                            ConversationStore.updatePendingMessages(conversationId, upload.get_message_id(), file, current => {
+                                if (current) {
+                                    let copy = { ...current }
+                                    switch (progress.type) {
+                                        case "CurrentProgress": {
+                                            copy.size = progress.values["current"]
+                                            copy.total = progress.values["total"]
+                                            break
+                                        }
+                                        case "ProgressComplete": {
+                                            copy.size = progress.values["total"]
+                                            copy.total = progress.values["total"]
+                                            copy.done = true
+                                            break
+                                        }
+                                        case "ProgressFailed": {
+                                            copy.size = progress.values["last_size"]
+                                            copy.error = `Error: ${progress.values["error"]}`
+                                            break
+                                        }
                                     }
-                                    case "ProgressComplete": {
-                                        copy.size = progress.values["total"]
-                                        copy.total = progress.values["total"]
-                                        copy.done = true
-                                        break
-                                    }
-                                    case "ProgressFailed": {
-                                        copy.size = progress.values["last_size"]
-                                        copy.error = `Error: ${progress.values["error"]}`
-                                        break
-                                    }
-                                }
-                                return copy
-                            } else if (progress.type === "CurrentProgress") {
-                                return {
-                                    name: file,
-                                    size: progress.values["current"],
-                                    total: progress.values["total"],
-                                    cancellation: {
-                                        cancel: () => {
-                                            cancelled = true
+                                    return copy
+                                } else if (progress.type === "CurrentProgress") {
+                                    return {
+                                        name: file,
+                                        size: progress.values["current"],
+                                        total: progress.values["total"],
+                                        cancellation: {
+                                            cancel: () => {
+                                                cancelled = true
+                                            },
                                         },
-                                    },
+                                    }
                                 }
-                            }
-                            return undefined
-                        })
-                    }
-                    break
-                }
-                case "Pending": {
-                    if (Object.keys(event.values).length > 0) {
-                        let res = parseJSValue(event.values)
-                        if (res.type === "Err") {
-                            log.error(`Error uploading file ${res.values}`)
+                                return undefined
+                            })
                         }
+                        break
                     }
-                    break
+                    case "Pending": {
+                        if (Object.keys(event.values).length > 0) {
+                            let res = parseJSValue(event.values)
+                            if (res.type === "Err") {
+                                log.error(`Error uploading file ${res.values}`)
+                            }
+                        }
+                        break
+                    }
                 }
+                if (cancelled) break
             }
-            if (cancelled) break
+        } catch (e) {
+            if (!`${e}`.includes(`Error: returned None`)) throw e
         }
     }
 
@@ -761,7 +794,7 @@ class RaygunStore {
             kind: direct ? ChatType.DirectMessage : ChatType.Group,
             settings: {
                 displayOwnerBadge: true,
-                readReciepts: true,
+                readReceipts: true,
                 permissions: {
                     allowAnyoneToAddUsers: !direct && (setting.values["members_can_add_participants"] as boolean),
                     allowAnyoneToModifyPhoto: false,

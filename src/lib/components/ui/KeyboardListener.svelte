@@ -1,7 +1,7 @@
 <script lang="ts">
     import { KeybindState } from "$lib/enums"
     import type { Keybind } from "$lib/types"
-    import { onMount, onDestroy } from "svelte"
+    import { onMount } from "svelte"
     import { createEventDispatcher } from "svelte"
 
     export let keybinds: Keybind[] = []
@@ -66,9 +66,11 @@
 
     onMount(() => {
         window.addEventListener("keydown", handleKeyDown)
-    })
+        window.addEventListener("keyup", handleKeyUp)
 
-    onDestroy(() => {
-        window.removeEventListener("keydown", handleKeyDown)
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown)
+            window.removeEventListener("keyup", handleKeyUp)
+        }
     })
 </script>

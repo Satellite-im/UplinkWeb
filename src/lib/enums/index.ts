@@ -84,6 +84,17 @@ export const enum SettingsRoute {
     Gamepad = "/settings/gamepad",
 }
 
+export const enum CommunitySettingsRoute {
+    Roles = "roles",
+    Tags = "tags",
+    Users = "Users",
+    Details = "Details",
+    Extensions = "Extensions",
+    Moderation = "Moderation",
+    Security = "Security",
+    Bots = "Bots",
+}
+
 export const enum Appearance {
     Default = "",
     Alt = "alt",
@@ -151,6 +162,14 @@ export const enum KeybindAction {
 export const enum KeybindState {
     Pressed,
     Released,
+}
+
+export enum MouseButtons {
+    LeftClick = 0,
+    MiddleClick = 1,
+    RightClick = 2,
+    BackButton = 3,
+    ForwardButton = 4,
 }
 
 export enum MessageDirection {
