@@ -1,4 +1,4 @@
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
@@ -14,6 +14,7 @@ import { SettingsStore } from "$lib/state"
 import { Sounds } from "$lib/components/utils/SoundHandler"
 import { MAX_RETRY_COUNT, RETRY_DELAY } from "$lib/config"
 import { goto } from "$app/navigation"
+import { createLock } from "./AsyncLock"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -46,6 +47,7 @@ class MultipassStore {
 
     private async handleMultipassEvents(multipass: wasm.MultiPassBox) {
         try {
+            console.log(multipass.multipass_subscribe())
             let events = await multipass.multipass_subscribe()
             let listener = {
                 [Symbol.asyncIterator]() {
@@ -596,7 +598,7 @@ class MultipassStore {
                             overlay: "",
                         },
                         status: status,
-                        status_message: identity === undefined ? "" : identity.status_message ?? "",
+                        status_message: identity === undefined ? "" : (identity.status_message ?? ""),
                     },
                     integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
                     media: {
