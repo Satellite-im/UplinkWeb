@@ -96,11 +96,7 @@ class RaygunStore {
     private messageListeners: Writable<{ [key: string]: Cancellable }>
 
     constructor(raygun: Writable<wasm.RayGunBox | null>) {
-        this.raygunWritable = {
-            ...derived(raygun, r => (r ? createLock(r) : null)),
-            set: raygun.set,
-            update: raygun.update,
-        }
+        this.raygunWritable = raygun
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(async r => {
             if (r) {

@@ -6,11 +6,27 @@ class AsyncLock<T extends object> {
 
     private locked = false
     private queue: ((v: void) => void)[] = []
-    private onlyAsync: boolean
 
-    constructor(v: T, onlyAsync?: boolean) {
+    constructor(v: T) {
         this.val = v
-        this.onlyAsync = onlyAsync ? onlyAsync : false
+        return new Proxy<AsyncLock<T>>(this, {
+            get: (target, prop) => {
+                if (prop in target) {
+                    return target[prop as keyof typeof target]
+                }
+                if (prop in target.val) {
+                    let f = (target.val as any)[prop]
+                    // If its a field we return it directly without locks
+                    if (typeof f !== "function") return f
+                    return (...args: any[]) => {
+                        return target.apply(v => {
+                            return (v as any)[prop].apply(v, args)
+                        })
+                    }
+                }
+                return undefined
+            },
+        })
     }
 
     private async lock() {
@@ -30,7 +46,7 @@ class AsyncLock<T extends object> {
         }
     }
 
-    async apply<V>(f: (t: T) => V): Promise<V> {
+    private async apply<V>(f: (t: T) => V): Promise<V> {
         await this.lock()
         try {
             return await f(this.val)
@@ -39,28 +55,14 @@ class AsyncLock<T extends object> {
         }
     }
 
-    asProxy() {
-        return new Proxy<AsyncLock<T>>(this, {
-            get: (target, prop) => {
-                if (prop in target) {
-                    return target[prop as keyof typeof target]
-                }
-                if (prop in target.val) {
-                    let f = (target.val as any)[prop]
-                    // If its a field we return it directly without locks
-                    if (typeof f !== "function") return f
-                    return (...args: any[]) => {
-                        // If not async and we only target async return the function result directly
-                        // Otherwise the non async function will be behind a lock and also be turned into a Promise
-                        if (f.constructor.name !== "AsyncFunction" && target.onlyAsync) return f(args)
-                        return target.apply(v => {
-                            return (v as any)[prop].apply(v, args)
-                        })
-                    }
-                }
-                return undefined
-            },
-        })
+    /**
+     * Create a child lock that requires its parents lock to execute its things
+     */
+    subLock<V extends object>(f: (t: T) => V): AsyncLock<V> & V {
+        let subLock = new AsyncLock<V>(f(this.val))
+        subLock.lock = this.lock
+        subLock.unlock = this.unlock
+        return subLock as AsyncLock<V> & V
     }
 }
 
@@ -68,10 +70,8 @@ class AsyncLock<T extends object> {
  * Create a new Lock for the given value
  * All access to the underlying value will be delegated behind a lock
  * Field access are returned without a lock
- * @param onlyAsync If true only async function will be behind a lock.
- *                  Otherwise all functions are locked.
- *                  Note that non async function will then return a Promise
+ * Note that all functions (non async too) will return a Promise!
  */
-export function createLock<T extends object>(v: T, onlyAsync?: boolean) {
-    return new AsyncLock(v, onlyAsync).asProxy() as T
+export function createLock<T extends object>(v: T) {
+    return new AsyncLock(v) as AsyncLock<T> & T
 }

@@ -28,11 +28,7 @@ class MultipassStore {
      * @param multipass - A writable store containing a MultiPassBox or null.
      */
     constructor(multipass: Writable<wasm.MultiPassBox | null>) {
-        this.multipassWritable = {
-            ...derived(multipass, m => (m ? createLock(m) : null)),
-            set: multipass.set,
-            update: multipass.update,
-        }
+        this.multipassWritable = multipass
     }
 
     initMultipassListener() {
@@ -51,6 +47,7 @@ class MultipassStore {
 
     private async handleMultipassEvents(multipass: wasm.MultiPassBox) {
         try {
+            console.log(multipass.multipass_subscribe())
             let events = await multipass.multipass_subscribe()
             let listener = {
                 [Symbol.asyncIterator]() {
