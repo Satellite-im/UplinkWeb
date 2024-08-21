@@ -155,12 +155,7 @@ export class VoiceRTC {
 
     turnOnOffDeafened() {
         try {
-            if (!this.remoteStream) {
-                log.error("Remote stream is not available")
-                return
-            }
-
-            this.remoteStream.getAudioTracks().forEach(track => {
+            this.activeCall?.remoteStream.getAudioTracks().forEach(track => {
                 track.enabled = !track.enabled
             })
         } catch (error) {
