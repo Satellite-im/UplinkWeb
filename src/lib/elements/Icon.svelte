@@ -11,9 +11,16 @@
 
     let clazz = ""
     export { clazz as class }
+
+    export let style = ""
 </script>
 
-<svg class="svg-icon {muted ? 'muted' : ''} {spin ? 'spin' : ''} {alt ? 'alt' : ''} {filled ? 'filled' : ''} {size} {highlight !== null ? `highlight-${highlight}` : ''} {clazz || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+<svg
+    style={style}
+    class="svg-icon {muted ? 'muted' : ''} {spin ? 'spin' : ''} {alt ? 'alt' : ''} {filled ? 'filled' : ''} {size} {highlight !== null ? `highlight-${highlight}` : ''} {clazz || ''}"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor">
     {@html icon}
 </svg>
 
