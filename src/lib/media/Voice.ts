@@ -516,10 +516,10 @@ export class VoiceRTC {
 
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: {
-        enabled: true,
+        enabled: get(Store.state.devices.muted),
     },
     video: {
-        enabled: true,
+        enabled: get(Store.state.devices.cameraEnabled),
         selfie: true,
     },
 })
