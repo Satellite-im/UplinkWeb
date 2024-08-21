@@ -20,7 +20,9 @@ export enum VoiceRTCMessageType {
 }
 
 type VoiceRTCOptions = {
-    audio: boolean
+    audio: {
+        enabled: boolean
+    }
     video: {
         enabled: boolean
         selfie: boolean
@@ -64,6 +66,78 @@ export class VoiceRTC {
         this.channel = channel
         this.callOptions = { ...options }
         this.setupPeerEvents()
+
+        this.subscribe()
+    }
+
+    subscribe() {
+        Store.state.devices.muted.subscribe(async value => this.toggleMute(value))
+        Store.state.devices.cameraEnabled.subscribe(async value => this.toggleVideo(value))
+        Store.state.devices.deafened.subscribe(async value => this.toggleDeafen(value))
+    }
+
+    toggleVideo(state: boolean) {
+        this.callOptions.video.enabled = state
+
+        if (state) {
+            this.localStream?.getVideoTracks().forEach(track => (track.enabled = true))
+        } else {
+            this.localStream?.getVideoTracks().forEach(track => (track.enabled = false))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+    }
+
+    toggleMute(state: boolean) {
+        console.log("toggle mute", state)
+        this.callOptions.audio.enabled = state
+
+        if (state) {
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = false))
+        } else {
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = true))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
+    }
+
+    toggleDeafen(state: boolean) {
+        // TODO: This isn't perfect because if you mute yourself, and then deafen yourself, un-deafaning will also unmute you which could be unexpected
+        this.callOptions.audio.enabled = state
+
+        if (state) {
+            this.remoteStream?.getAudioTracks().forEach(track => (track.enabled = false))
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = false))
+        } else {
+            this.remoteStream?.getAudioTracks().forEach(track => (track.enabled = true))
+            this.localStream?.getAudioTracks().forEach(track => (track.enabled = true))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
     }
 
     setChannel(channel: string) {
@@ -162,38 +236,38 @@ export class VoiceRTC {
         Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
-    turnOnOffCamera() {
-        this.callOptions.video.enabled = !this.callOptions.video.enabled
-        this.localStream?.getVideoTracks().forEach(track => {
-            track.enabled = !track.enabled
-        })
-        this.dataConnection?.send({
-            type: this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
-            },
-        })
-        Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
+    // turnOnOffCamera() {
+    //     this.callOptions.video.enabled = !this.callOptions.video.enabled
+    //     this.localStream?.getVideoTracks().forEach(track => {
+    //         track.enabled = !track.enabled
+    //     })
+    //     this.dataConnection?.send({
+    //         type: this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
+    //         channel: this.channel,
+    //         userInfo: {
+    //             did: this.localPeer!.id,
+    //             videoEnabled: this.callOptions.video.enabled,
+    //             audioEnabled: this.callOptions.audio,
+    //         },
+    //     })
+    //     Store.setActiveCall(Store.getCallingChat(this.channel)!)
+    // }
 
-    turnOnOffMicrophone() {
-        this.callOptions.audio = !this.callOptions.audio
-        this.localStream?.getAudioTracks().forEach(track => {
-            track.enabled = !track.enabled
-        })
-        this.dataConnection?.send({
-            type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
-            },
-        })
-    }
+    // turnOnOffMicrophone() {
+    //     this.callOptions.audio = !this.callOptions.audio
+    //     this.localStream?.getAudioTracks().forEach(track => {
+    //         track.enabled = !track.enabled
+    //     })
+    //     this.dataConnection?.send({
+    //         type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+    //         channel: this.channel,
+    //         userInfo: {
+    //             did: this.localPeer!.id,
+    //             videoEnabled: this.callOptions.video.enabled,
+    //             audioEnabled: this.callOptions.audio,
+    //         },
+    //     })
+    // }
 
     async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
         this.remoteVideoElement = remoteVideoElement
@@ -358,7 +432,7 @@ export class VoiceRTC {
         }
 
         this.callOptions.video.enabled = true
-        this.callOptions.audio = true
+        this.callOptions.audio.enabled = true
 
         this.dataConnection?.send({
             type: VoiceRTCMessageType.Calling,
@@ -441,7 +515,9 @@ export class VoiceRTC {
 }
 
 export const VoiceRTCInstance = new VoiceRTC("default", {
-    audio: true,
+    audio: {
+        enabled: true,
+    },
     video: {
         enabled: true,
         selfie: true,

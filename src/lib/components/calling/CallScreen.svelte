@@ -57,15 +57,15 @@
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
-    function updateMuted() {
-        Store.updateMuted(!muted)
-        VoiceRTCInstance.turnOnOffMicrophone()
-    }
+    // function updateMuted() {
+    //     Store.updateMuted(!muted)
+    //     // VoiceRTCInstance.turnOnOffMicrophone()
+    // }
 
-    function updateCameraEnabled() {
-        Store.updateCameraEnabled(!cameraEnabled)
-        VoiceRTCInstance.turnOnOffCamera()
-    }
+    // function updateCameraEnabled() {
+    //     Store.updateCameraEnabled(!cameraEnabled)
+    //     // VoiceRTCInstance.turnOnOffCamera()
+    // }
 
     const checkPermissions = async () => {
         try {
@@ -129,8 +129,8 @@
                 await VoiceRTCInstance.acceptCall()
             }
         }
-        Store.updateMuted(VoiceRTCInstance.callOptions.audio)
-        Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
+        // Store.updateMuted(VoiceRTCInstance.callOptions.audio)
+        // Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
         if (VoiceRTCInstance.remoteVideoElement) {
             remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
             remoteVideoElement.play()
@@ -227,7 +227,7 @@
                 appearance={muted ? Appearance.Error : Appearance.Alt}
                 tooltip={muted ? $_("call.unmute") : $_("call.mute")}
                 on:click={_ => {
-                    updateMuted()
+                    Store.updateMuted(!muted)
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -248,7 +248,7 @@
                 icon
                 tooltip={cameraEnabled ? $_("call.disable_video") : $_("call.enable_video")}
                 on:click={_ => {
-                    updateCameraEnabled()
+                    Store.updateCameraEnabled(!cameraEnabled)
                 }}>
                 <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.VideoCameraSlash} />
             </Button>
