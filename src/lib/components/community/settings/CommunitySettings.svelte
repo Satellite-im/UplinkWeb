@@ -7,6 +7,8 @@
     import CreateRole from "./roles/CreateRole.svelte"
     import CommunityDetails from "./details/CommunityDetails.svelte"
     import { CommunityTags, ModerationSettings, SecuritySettings } from "$lib/components"
+    import RoleSelector from "./roles/RoleSelector.svelte"
+    import ManageMembers from "./members/ManageMembers.svelte"
 
     let routes: NavRoute[] = [
         {
@@ -68,8 +70,10 @@
         {#if activeRoute === CommunitySettingsRoute.Roles}
             <!-- Todo: current Roles -->
             <CreateRole />
-            Select Role
+            <RoleSelector />
             <PermissionsSettings />
+        {:else if activeRoute === CommunitySettingsRoute.Users}
+            <ManageMembers />
         {:else if activeRoute === CommunitySettingsRoute.Details}
             <CommunityDetails />
         {:else if activeRoute === CommunitySettingsRoute.Moderation}
@@ -88,9 +92,11 @@
         flex-direction: row;
         gap: var(--gap);
         flex: 1;
-        width: 960px;
+        min-width: 900px;
+        max-width: 1200px;
         min-width: var(--min-component-width);
         height: 80vh;
+        width: 80vw;
         max-height: 1200px;
         padding: var(--padding-less);
 

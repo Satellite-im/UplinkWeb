@@ -21,6 +21,10 @@ export type Member = {
     user: User
     roles: Role[]
     permissions: Permission[]
+    tags: Tag[]
+    meta: {
+        join: Date
+    }
 }
 
 export type Community = {

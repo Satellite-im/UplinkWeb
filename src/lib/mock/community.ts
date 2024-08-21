@@ -1,7 +1,8 @@
 import { corePermissions } from "$lib/defaults/community/Permissions"
 import { CommunityChannelKind, Shape } from "$lib/enums"
 import { PermissionCategory, PermissionState } from "$lib/enums/community"
-import type { CommunityChannelGroup, Role } from "$lib/types"
+import type { CommunityChannelGroup, Member, Role } from "$lib/types"
+import { mock_users } from "./users"
 
 export let communityChannelGroups: CommunityChannelGroup[] = [
     {
@@ -132,5 +133,26 @@ export const mockRoles: Role[] = [
                 state: PermissionState.Allowed,
             },
         ],
+    },
+]
+
+export const mockCommunityMembers: Member[] = [
+    {
+        user: mock_users[0],
+        roles: [mockRoles[0]],
+        permissions: [],
+        tags: [mockTags[0], mockTags[1]],
+        meta: {
+            join: new Date(),
+        },
+    },
+    {
+        user: mock_users[1],
+        roles: [mockRoles[1]],
+        permissions: [],
+        tags: [mockTags[2], mockTags[3], mockTags[4], mockTags[5]],
+        meta: {
+            join: new Date(),
+        },
     },
 ]
