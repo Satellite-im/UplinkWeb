@@ -108,7 +108,7 @@ export class VoiceRTC {
         }
 
         this.dataConnection?.send({
-            type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
             channel: this.channel,
             userInfo: {
                 did: this.localPeer!.id,
