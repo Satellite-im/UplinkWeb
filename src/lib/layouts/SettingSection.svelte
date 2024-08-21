@@ -44,11 +44,9 @@
 
             .content {
                 width: fit-content;
-                min-width: 50%;
                 justify-content: flex-end;
                 display: inline-flex;
                 flex-direction: row;
-                min-width: var(--min-component-width);
                 gap: var(--gap);
                 align-items: center;
 

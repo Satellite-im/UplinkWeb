@@ -31,7 +31,27 @@
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
 
+    function toggleFullscreen() {
+        const elem = document.getElementById("call-screen")
+
+        if (!document.fullscreenElement) {
+            if (elem?.requestFullscreen) {
+                elem.requestFullscreen()
+                isFullScreen = true
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen()
+                isFullScreen = false
+            }
+        }
+        otherUserSettingsInCall.videoEnabled = otherUserSettingsInCall.videoEnabled
+        otherUserSettingsInCall = otherUserSettingsInCall
+        userCallOptions = userCallOptions
+    }
+
     let permissionsGranted = false
+    let isFullScreen = false
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
@@ -157,11 +177,22 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video id="remote-user-video" bind:this={remoteVideoElement} width={otherUserSettingsInCall?.videoEnabled ? 400 : 0} height={otherUserSettingsInCall?.videoEnabled ? 400 : 0} autoplay>
+            <video
+                id="remote-user-video"
+                bind:this={remoteVideoElement}
+                width={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                height={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                autoplay>
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video id="local-user-video" bind:this={localVideoCurrentSrc} width={userCallOptions.video.enabled ? 400 : 0} height={userCallOptions.video.enabled ? 400 : 0} muted autoplay>
+            <video
+                id="local-user-video"
+                bind:this={localVideoCurrentSrc}
+                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 400) : 0}
+                muted
+                autoplay>
                 <track kind="captions" src="" />
             </video>
             {#each chat.users as user}
@@ -271,7 +302,7 @@
                     <Icon icon={Shape.ChevronsDown} />
                 {/if}
             </Button>
-            <Button appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")}>
+            <Button appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")} on:click={toggleFullscreen}>
                 <Icon icon={Shape.ArrowsOut} />
             </Button>
         </Controls>
@@ -314,6 +345,12 @@
             padding: var(--padding);
             align-items: center;
             justify-content: center;
+        }
+
+        video {
+            object-fit: contain;
+            border-radius: 12px;
+            background-color: var(--black);
         }
     }
 </style>

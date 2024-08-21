@@ -32,16 +32,20 @@
         let offsetY = evt.pageY
         let screenWidth = evt.view!.innerWidth
         let screenHeight = evt.view!.innerHeight
-        let overFlowY = screenHeight < height + offsetY
         let overFlowX = screenWidth < width + offsetX
-        let topY = Math.max(5, overFlowY ? offsetY - height : offsetY)
-        let minX = 5
-        let topX = Math.max(minX, overFlowX ? offsetX - width : offsetX)
-        return [topX, topY]
+        let overFlowY = screenHeight < height + offsetY
+        let topX = overFlowX ? Math.max(5, screenWidth - width - 5) : Math.max(5, offsetX)
+        if (screenHeight - offsetY < height + 30) {
+            let adjustedY = offsetY - height
+            let topY = Math.max(5, adjustedY)
+            return [topX, topY]
+        } else {
+            let topY = Math.max(5, overFlowY ? offsetY - height : offsetY)
+            return [topX, topY]
+        }
     }
 
     async function openContext(evt: MouseEvent) {
-        // Close the previous context if present
         if (close_context !== undefined) {
             close_context()
         }
@@ -54,7 +58,7 @@
     }
 
     function handleItemClick(e: MouseEvent, item: ContextItem) {
-        e.stopPropagation() // Prevent clickoutside from closing the menu
+        e.stopPropagation()
         log.info(`Clicked ${item.text}`)
         item.onClick()
         const customEvent = new CustomEvent("customMouseEvent", {
@@ -64,10 +68,8 @@
     }
 </script>
 
-<!-- Slot containing the actual elements. Assign the open props to the context event -->
 <slot name="content" open={openContext} />
 {#if visible}
-    <!-- Slot containing the actual elements -->
     <div id="context-menu" data-cy={hook} bind:this={context} use:clickoutside on:clickoutside={onClose} style={`left: ${coords[0]}px; top: ${coords[1]}px;`}>
         <slot name="items" close={onClose}></slot>
         {#each items as item}
