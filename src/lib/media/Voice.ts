@@ -97,12 +97,11 @@ export class VoiceRTC {
 
     toggleMute(state: boolean) {
         this.callOptions.audio.enabled = state
-        console.log("toggling mute", this.localStream)
 
         if (state) {
-            this.localStream?.getAudioTracks().forEach(track => (track.enabled = false))
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
         } else {
-            this.localStream?.getAudioTracks().forEach(track => (track.enabled = true))
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
         }
 
         this.dataConnection?.send({
@@ -121,11 +120,11 @@ export class VoiceRTC {
         this.callOptions.audio.enabled = state
 
         if (state) {
-            this.remoteStream?.getAudioTracks().forEach(track => (track.enabled = false))
-            this.localStream?.getAudioTracks().forEach(track => (track.enabled = false))
+            this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = false))
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
         } else {
-            this.remoteStream?.getAudioTracks().forEach(track => (track.enabled = true))
-            this.localStream?.getAudioTracks().forEach(track => (track.enabled = true))
+            this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = true))
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
         }
 
         this.dataConnection?.send({
@@ -201,36 +200,6 @@ export class VoiceRTC {
         this.channel = dataReceived.channel
         this.remoteVoiceUser = dataReceived.userInfo
         Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
-
-    turnOnOffCamera() {
-        this.callOptions.video.enabled = !this.callOptions.video.enabled
-        this.localStream?.getVideoTracks().forEach(track => {
-            track.enabled = !track.enabled
-        })
-
-        this.sendData(this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo)
-
-        Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
-
-    turnOnOffMicrophone() {
-        this.callOptions.audio.enabled = !this.callOptions.audio.enabled
-        this.activeCall?.localStream.getAudioTracks().forEach(track => {
-            track.enabled = this.callOptions.audio.enabled
-        })
-        this.sendData(this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio)
-        Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
-
-    turnOnOffDeafened() {
-        try {
-            this.activeCall?.remoteStream.getAudioTracks().forEach(track => {
-                track.enabled = !track.enabled
-            })
-        } catch (error) {
-            log.error(`Error turning on/off deafened: ${error}`)
-        }
     }
 
     public async acceptIncomingCall() {
