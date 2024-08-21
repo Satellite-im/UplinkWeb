@@ -13,7 +13,7 @@
 </script>
 
 <Button outline appearance={Appearance.Alt}>
-    <Icon icon={Shape.Starlight} size={Size.Large} highlight={Appearance.Warning} />
+    <Icon icon={Shape.Starlight} size={Size.Medium} highlight={Appearance.Warning} />
     <!-- svelte-ignore a11y-label-has-associated-control -->
     <Text size={Size.Small} secondaryFont>
         {NumberFormatter(balance, 2)}

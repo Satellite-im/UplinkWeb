@@ -14,8 +14,9 @@
         payment_request.destination = accounts[0].address
     })
 
-    function handleInput(e) {
-        payment_request.amount = e.target.value
+    function handleInput(e: Event) {
+        const target = e.target as HTMLSelectElement
+        payment_request.amount = parseInt(target.value)
     }
     async function sendMessage(text: string) {
         let chat = get(Store.state.activeChat)

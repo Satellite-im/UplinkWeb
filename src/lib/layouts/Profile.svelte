@@ -119,6 +119,7 @@
             min-height: 256px;
             background-color: var(--background-alt);
             background-size: cover;
+            background-position: center;
             padding: var(--padding-less);
             width: 100%;
             border-radius: var(--border-radius);
@@ -140,14 +141,6 @@
             :global(.profile-picture) {
                 margin-bottom: -5rem;
             }
-        }
-
-        .content {
-            border-top: var(--border-width) solid var(--border-color);
-            padding-top: var(--gap);
-            display: inline-flex;
-            flex-direction: column;
-            gap: var(--gap);
         }
 
         .content {

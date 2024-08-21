@@ -55,6 +55,7 @@
 
     function handleEmojiClick(emoji: string) {
         emojiSelectorOpen.set(false)
+        message.set($message + emoji)
     }
 
     function handleGif(gif: GiphyGif) {
@@ -128,8 +129,6 @@
                 bottom: var(--input-height);
                 top: var(--padding-less);
                 width: 100%;
-                align-self: center;
-                justify-self: center;
             }
         }
     }

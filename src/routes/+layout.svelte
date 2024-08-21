@@ -23,6 +23,7 @@
     import { _, locale } from "svelte-i18n"
     import { initializeLocale } from "$lib/lang/index"
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
+    import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
 
     TimeAgo.addDefaultLocale(en)
@@ -143,6 +144,8 @@
     Store.state.devices.muted.subscribe(state => (muted = state))
     Store.state.devices.deafened.subscribe(state => (deafened = state))
 
+    console.log("Arriving here on +layout")
+
     onMount(async () => {
         await checkIfUserIsLogged($page.route.id)
         await initializeLocale()
@@ -164,6 +167,7 @@
         <MouseListener on:clicked={() => {}} />
         <Toasts />
         <IncomingCall />
+        <VideoPreview />
         <GamepadListener />
         <slot></slot>
     </div>

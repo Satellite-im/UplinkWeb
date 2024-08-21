@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
     import { Appearance, CommunitySettingsRoute, Route, SettingsRoute } from "$lib/enums"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
@@ -66,6 +67,12 @@
 
     // Clean up subscriptions when component is destroyed
     onDestroy(() => {
+        setTimeout(() => {
+            if (get(Store.state.activeCall)) {
+                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
+            }
+        }, 100)
+
         unsubscribeStore()
         unsubscribeUIStore()
     })

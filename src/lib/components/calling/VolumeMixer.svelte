@@ -41,7 +41,8 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        background-color: var(--background-alt);
+        background-color: var(--opaque-color);
+        backdrop-filter: blur(var(--blur-radius));
         padding: var(--padding);
         border-radius: var(--border-radius);
         position: absolute;

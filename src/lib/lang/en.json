@@ -61,9 +61,11 @@
     "call": {
         "end": "End",
         "mute": "Mute",
+        "unmute": "Unmute",
         "deafen": "Deafen",
         "stream": "Stream",
-        "video": "Enable Video",
+        "enable_video": "Enable Video",
+        "disable_video": "Disable Video",
         "in_call": "In Call",
         "settings": "Call Settings",
         "collapse": "Less Space",
