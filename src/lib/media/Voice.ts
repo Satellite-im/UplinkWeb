@@ -376,7 +376,7 @@ export class VoiceRTC {
                           deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
                       }
                     : false,
-                audio: this.callOptions.audio
+                audio: this.callOptions.audio.enabled
                     ? {
                           echoCancellation: settingsStore.calling.echoCancellation ?? true,
                           noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
