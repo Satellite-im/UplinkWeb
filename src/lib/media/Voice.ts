@@ -99,6 +99,7 @@ export class VoiceRTC {
 
     toggleMute(state: boolean) {
         this.callOptions.audio.enabled = state
+        console.log("toggling mute", this.localStream)
 
         if (state) {
             this.localStream?.getAudioTracks().forEach(track => (track.enabled = false))
@@ -130,7 +131,7 @@ export class VoiceRTC {
         }
 
         this.dataConnection?.send({
-            type: this.callOptions.audio ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
             channel: this.channel,
             userInfo: {
                 did: this.localPeer!.id,
@@ -161,8 +162,6 @@ export class VoiceRTC {
         this.localPeer!.on("open", id => {
             log.debug(`My peer ID is: ${id}`)
         })
-
-        this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
 
         this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
         this.localPeer!.on("call", async call => {
@@ -196,12 +195,6 @@ export class VoiceRTC {
 
         conn.on("data", data => {
             let dataReceived = data as VoiceMessage
-            this.handleWithDataReceived(dataReceived)
-        })
-
-        conn.on("data", data => {
-            let dataReceived = data as VoiceMessage
-            log.debug(`Data received from user that received a call: ${dataReceived}`)
             this.handleWithDataReceived(dataReceived)
         })
     }
