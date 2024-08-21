@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
-    import { Appearance, Route, SettingsRoute } from "$lib/enums"
+    import { Appearance, CommunitySettingsRoute, Route, SettingsRoute } from "$lib/enums"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import { Store } from "$lib/state/Store"
@@ -11,7 +11,7 @@
     import { get } from "svelte/store"
 
     export let routes: NavRoute[] = []
-    export let activeRoute: Route | SettingsRoute = Route.Home
+    export let activeRoute: Route | SettingsRoute | CommunitySettingsRoute = Route.Home
     export let icons: boolean = false
     export let vertical: boolean = false
 
