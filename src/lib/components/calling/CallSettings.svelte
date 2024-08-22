@@ -46,11 +46,6 @@
             alt
             on:change={v => {
                 Store.setVideoInputDevice(v.detail)
-                // const videoTrack = VoiceRTCInstance.activeCall?.localStream.getVideoTracks()[0]
-                // const sender = VoiceRTCInstance.activeCall?.peerConnection.getSenders().find(s => s.track!.kind === "video")
-                // if (sender) {
-                //     await sender.replaceTrack(videoTrack)
-                // }
                 onChange()
             }} />
     </SettingSection>

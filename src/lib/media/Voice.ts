@@ -20,6 +20,7 @@ export enum VoiceRTCMessageType {
 type VoiceRTCOptions = {
     audio: {
         enabled: boolean
+        deafened: boolean
     }
     audioTrack: MediaStreamTrack | null
     video: {
@@ -33,6 +34,7 @@ type VoiceRTCUser = {
     username: string
     videoEnabled: boolean
     audioEnabled: boolean
+    isDeafened: boolean
 }
 
 type VoiceMessage = {
@@ -52,6 +54,7 @@ export class VoiceRTC {
         username: "unknown",
         videoEnabled: false,
         audioEnabled: false,
+        isDeafened: false,
     }
     activeCall: MediaConnection | null = null
     callOptions: VoiceRTCOptions
@@ -103,6 +106,7 @@ export class VoiceRTC {
             username: conn.metadata.username,
             videoEnabled: conn.metadata.videoEnabled,
             audioEnabled: conn.metadata.audioEnabled,
+            isDeafened: conn.metadata.isDeafened,
         }
 
         this.channel = conn.metadata.channel
@@ -153,6 +157,8 @@ export class VoiceRTC {
 
     turnOnOffDeafened() {
         try {
+            this.callOptions.audio.deafened = !this.callOptions.audio.deafened
+
             this.activeCall?.remoteStream.getAudioTracks().forEach(track => {
                 track.enabled = !track.enabled
             })
@@ -203,6 +209,7 @@ export class VoiceRTC {
                     username: get(Store.state.user).name,
                     videoEnabled: this.callOptions.video.enabled,
                     audioEnabled: this.callOptions.audio.enabled,
+                    isDeafened: this.callOptions.audio.deafened,
                     channel: this.channel,
                 },
             })
@@ -249,6 +256,7 @@ export class VoiceRTC {
                 did: this.localPeer!.id,
                 videoEnabled: this.callOptions.video.enabled,
                 audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
             },
         })
 
@@ -385,6 +393,7 @@ export class VoiceRTC {
                 username: get(Store.state.user).name,
                 videoEnabled: this.callOptions.video.enabled,
                 audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
             },
         })
     }
@@ -415,6 +424,7 @@ export class VoiceRTC {
             username: "unknown",
             videoEnabled: false,
             audioEnabled: false,
+            isDeafened: false,
         }
 
         if (this.remoteVideoElement) {
@@ -445,6 +455,7 @@ export class VoiceRTC {
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: {
         enabled: true,
+        deafened: false,
     },
     audioTrack: null,
     video: {
