@@ -287,6 +287,10 @@ class GlobalStore {
         let friendsList = get(this.state.friends)
         this.state.friends.set(friendsList.filter(f => f !== user))
 
+        this.state.favorites.update(favoriteChats => {
+            return favoriteChats.filter(c => !c.users.includes(user))
+        })
+
         UIStore.state.chats.update(chats => {
             return chats.filter(c => !c.users.includes(user))
         })
