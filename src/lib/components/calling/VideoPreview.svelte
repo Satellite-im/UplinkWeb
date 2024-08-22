@@ -16,7 +16,7 @@
         if (activeChat.id !== VoiceRTCInstance.channel && get(Store.state.activeCall)) {
             show = true
             if (VoiceRTCInstance.remoteVideoElement) {
-                remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+                remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
                 remoteVideoElement.play()
             }
         }
@@ -27,7 +27,7 @@
     Store.state.activeCall.subscribe(async activeCall => {
         if ($page.route.id !== Route.Chat && get(Store.state.activeCall) && !VoiceRTCInstance.isReceivingCall) {
             show = true
-            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
             remoteVideoElement.play()
         } else if (!activeCall && remoteVideoElement) {
             show = false

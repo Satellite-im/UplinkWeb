@@ -151,7 +151,7 @@
         Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
         Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
         if (VoiceRTCInstance.remoteVideoElement) {
-            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
             remoteVideoElement.play()
         }
         if (VoiceRTCInstance.localVideoCurrentSrc) {
