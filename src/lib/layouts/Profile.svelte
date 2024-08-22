@@ -1,14 +1,14 @@
 <script lang="ts">
     import { ProfilePicture } from "$lib/components"
     import { Button, Icon, Input, Label, Text } from "$lib/elements"
-    import { Appearance, Integrations, Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
     import { wallet } from "$lib/utils/Wallet"
     import { _ } from "svelte-i18n"
-    import { getIntegrationColor, identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
+    import { getIntegrationColor, identityColor } from "$lib/utils/ProfileUtils"
 
     export let user: User | null = null
 
@@ -49,16 +49,11 @@
             <div class="section">
                 <Label text={$_("settings.profile.integration.title")} />
                 <div class="integrations">
-                    {#each user.integrations as [key, value]}
-                        <div class="integration" style={`border-color: ${getIntegrationColor(key)};`}>
-                            <img class="integration-logo" src={toIntegrationIconSrc(key)} alt="Platform Logo" />
-                            {#if toIntegrationKind(key) === Integrations.Generic}
-                                <Text singleLine>{`${key} :`}</Text>
-                                <Text singleLine>{value}</Text>
-                            {:else}
-                                <Text singleLine>{value}</Text>
-                            {/if}
-                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(key)}>
+                    {#each user.integrations as integration}
+                        <div class="integration" style={`border-color: ${getIntegrationColor(integration)};`}>
+                            <img class="integration-logo" src="/assets/brand/{integration.kind}.png" alt="Platform Logo" />
+                            <Text singleLine>{integration.location}</Text>
+                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration)}>
                                 <Icon icon={Shape.Popout} />
                             </Button>
                         </div>

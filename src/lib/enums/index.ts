@@ -84,6 +84,17 @@ export const enum SettingsRoute {
     Gamepad = "/settings/gamepad",
 }
 
+export const enum CommunitySettingsRoute {
+    Roles = "roles",
+    Tags = "tags",
+    Users = "Users",
+    Details = "Details",
+    Extensions = "Extensions",
+    Moderation = "Moderation",
+    Security = "Security",
+    Bots = "Bots",
+}
+
 export const enum Appearance {
     Default = "",
     Alt = "alt",

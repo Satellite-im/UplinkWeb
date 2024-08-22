@@ -7,6 +7,7 @@
     import { get } from "svelte/store"
     import Participant from "./Participant.svelte"
     import { UIStore } from "$lib/state/ui"
+    import { log } from "$lib/utils/Logger"
 
     export let show: boolean = false
     let previewVideo: HTMLDivElement
@@ -16,7 +17,7 @@
         if (activeChat.id !== VoiceRTCInstance.channel && get(Store.state.activeCall)) {
             show = true
             if (VoiceRTCInstance.remoteVideoElement) {
-                remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+                remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
                 remoteVideoElement.play()
             }
         }
@@ -25,9 +26,10 @@
     $: chat = get(Store.state.activeCall)?.chat
 
     Store.state.activeCall.subscribe(async activeCall => {
-        if ($page.route.id !== Route.Chat && get(Store.state.activeCall) && !VoiceRTCInstance.isReceivingCall) {
+        log.debug(`VideoPreview: Page: ${$page.route.id}. activeCall: ${activeCall}`)
+        if ($page.route.id !== Route.Chat && activeCall != null) {
             show = true
-            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
             remoteVideoElement.play()
         } else if (!activeCall && remoteVideoElement) {
             show = false

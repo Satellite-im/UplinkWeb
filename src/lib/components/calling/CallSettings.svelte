@@ -2,6 +2,7 @@
     import Select from "$lib/elements/Select.svelte"
     import Switch from "$lib/elements/Switch.svelte"
     import { SettingSection } from "$lib/layouts"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { Store } from "$lib/state/Store"
     import { createEventDispatcher, onMount } from "svelte"

@@ -19,6 +19,7 @@
     export let noWrap: boolean = false
     export let hook: string = ""
     export let centered: boolean = false
+    export let color: string = ""
 
     let clazz = ""
     export { clazz as class }
@@ -26,7 +27,7 @@
 
 <p
     data-cy={hook}
-    style={textWidth === 0 ? "" : `width: ${textWidth}px`}
+    style={`${textWidth === 0 ? "" : `width: ${textWidth}px`} ${color === "" ? "" : `color: ${color}`}`}
     class="text
         {withShadow ? 'shadow' : ''}
         {noWrap ? 'no-wrap' : ''}
