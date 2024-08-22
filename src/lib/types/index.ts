@@ -111,6 +111,7 @@ export type MediaMeta = {
 
 export type User = {
     id: Id
+    loading?: boolean
     key: string
     name: string
     profile: ProfileData

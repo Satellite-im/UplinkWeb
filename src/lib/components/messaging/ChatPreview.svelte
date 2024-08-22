@@ -18,10 +18,10 @@
 
     $: users = Store.getUsers(chat.users)
 
-    $: chatName = $users.length > 2 ? chat.name : $users[1]?.name ?? $users[0].name
-    $: loading = chatName === "Unknown User"
-    $: chatPhoto = $users.length > 2 ? "todo" : $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
-    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
+    $: chatName = $users.length > 2 ? chat.name : ($users[1]?.name ?? $users[0].name)
+    $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
+    $: chatPhoto = $users.length > 2 ? "todo" : ($users[1]?.profile.photo.image ?? $users[0].profile.photo.image)
+    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
 
     const dispatch = createEventDispatcher()
 
