@@ -75,16 +75,6 @@
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
-    // function updateMuted() {
-    //     Store.updateMuted(!muted)
-    //     // VoiceRTCInstance.turnOnOffMicrophone()
-    // }
-
-    // function updateCameraEnabled() {
-    //     Store.updateCameraEnabled(!cameraEnabled)
-    //     // VoiceRTCInstance.turnOnOffCamera()
-    // }
-
     const checkPermissions = async () => {
         try {
             const cameraPermission = await navigator.permissions.query({ name: "camera" as PermissionName })
