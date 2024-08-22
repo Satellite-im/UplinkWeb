@@ -20,6 +20,7 @@ export enum VoiceRTCMessageType {
 type VoiceRTCOptions = {
     audio: {
         enabled: boolean
+        deafened: boolean
     }
     video: {
         enabled: boolean
@@ -32,6 +33,7 @@ type VoiceRTCUser = {
     username: string
     videoEnabled: boolean
     audioEnabled: boolean
+    isDeafened: boolean
 }
 
 type VoiceMessage = {
@@ -43,8 +45,6 @@ type VoiceMessage = {
 export class VoiceRTC {
     channel: string
     localPeer: Peer | null = null
-    localStream: MediaStream | null = null
-    remoteStream: MediaStream | null = null
     remoteVideoElement: HTMLVideoElement | null = null
     localVideoCurrentSrc: HTMLVideoElement | null = null
     remotePeerId: string | null = null
@@ -53,6 +53,7 @@ export class VoiceRTC {
         username: "unknown",
         videoEnabled: false,
         audioEnabled: false,
+        isDeafened: false,
     }
     activeCall: MediaConnection | null = null
     callOptions: VoiceRTCOptions
@@ -79,9 +80,9 @@ export class VoiceRTC {
         this.callOptions.video.enabled = state
 
         if (state) {
-            this.localStream?.getVideoTracks().forEach(track => (track.enabled = true))
+            this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = true))
         } else {
-            this.localStream?.getVideoTracks().forEach(track => (track.enabled = false))
+            this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = false))
         }
 
         this.dataConnection?.send({
@@ -110,7 +111,8 @@ export class VoiceRTC {
             userInfo: {
                 did: this.localPeer!.id,
                 videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
+                audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
             },
         })
     }
@@ -133,7 +135,8 @@ export class VoiceRTC {
             userInfo: {
                 did: this.localPeer!.id,
                 videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
+                audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
             },
         })
     }
@@ -174,6 +177,7 @@ export class VoiceRTC {
             username: conn.metadata.username,
             videoEnabled: conn.metadata.videoEnabled,
             audioEnabled: conn.metadata.audioEnabled,
+            isDeafened: conn.metadata.isDeafened,
         }
 
         this.channel = conn.metadata.channel
@@ -202,24 +206,55 @@ export class VoiceRTC {
         Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
+    turnOnOffCamera() {
+        this.callOptions.video.enabled = !this.callOptions.video.enabled
+        this.activeCall?.localStream?.getVideoTracks().forEach(track => {
+            track.enabled = !track.enabled
+        })
+
+        this.sendData(this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo)
+
+        Store.setActiveCall(Store.getCallingChat(this.channel)!)
+    }
+
+    turnOnOffMicrophone() {
+        this.callOptions.audio.enabled = !this.callOptions.audio.enabled
+        this.activeCall?.localStream.getAudioTracks().forEach(track => {
+            track.enabled = this.callOptions.audio.enabled
+        })
+        this.sendData(this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio)
+        Store.setActiveCall(Store.getCallingChat(this.channel)!)
+    }
+
+    turnOnOffDeafened() {
+        try {
+            this.callOptions.audio.deafened = !this.callOptions.audio.deafened
+
+            this.activeCall?.remoteStream.getAudioTracks().forEach(track => {
+                track.enabled = !track.enabled
+            })
+        } catch (error) {
+            log.error(`Error turning on/off deafened: ${error}`)
+        }
+    }
+
     public async acceptIncomingCall() {
         this.callOptions.audio.enabled = true
-        Store.updateMuted(true)
+        Store.updateMuted(false)
         this.acceptedIncomingCall = true
     }
 
     public async acceptCall() {
-        await this.updateLocalStream()
+        let localStream = await this.updateLocalStream()
 
         await this.sendData(VoiceRTCMessageType.AcceptedCall)
 
-        this.activeCall!.answer(this.localStream!)
+        this.activeCall!.answer(localStream!)
 
         this.activeCall!.on("stream", async remoteStream => {
             /// Here will receive data from user that made the call
             if (this.remoteVideoElement) {
                 this.remoteVideoElement.srcObject = remoteStream
-                this.remoteStream = remoteStream
                 if (this.remoteVideoElement.readyState >= 2) {
                     await this.remoteVideoElement.play()
                 }
@@ -245,6 +280,7 @@ export class VoiceRTC {
                     username: get(Store.state.user).name,
                     videoEnabled: this.callOptions.video.enabled,
                     audioEnabled: this.callOptions.audio.enabled,
+                    isDeafened: this.callOptions.audio.deafened,
                     channel: this.channel,
                 },
             })
@@ -256,9 +292,9 @@ export class VoiceRTC {
                 this.handleWithDataReceived(dataReceived)
             })
 
-            await this.updateLocalStream()
+            let localStream = await this.updateLocalStream()
 
-            const call = this.localPeer!.call(this.remotePeerId!, this.localStream!, {
+            this.activeCall = this.localPeer!.call(this.remotePeerId!, localStream!, {
                 metadata: {
                     channel: this.channel,
                     userInfo: {
@@ -269,12 +305,11 @@ export class VoiceRTC {
                     },
                 },
             })
-            this.activeCall = call
-            call.on("stream", async remoteStream => {
+
+            this.activeCall!.on("stream", async remoteStream => {
                 /// Here will receive data from user that accepted the call
                 if (this.remoteVideoElement) {
                     this.remoteVideoElement.srcObject = remoteStream
-                    this.remoteStream = remoteStream
                     if (this.remoteVideoElement.readyState >= 2) {
                         await this.remoteVideoElement.play()
                     }
@@ -292,24 +327,26 @@ export class VoiceRTC {
                 did: this.localPeer!.id,
                 videoEnabled: this.callOptions.video.enabled,
                 audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
             },
         })
 
         if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = this.localStream
+            this.localVideoCurrentSrc.srcObject = this.activeCall?.localStream!
             await this.localVideoCurrentSrc.play()
         }
         /// Let it commented for now.
         // await this.improveAudioQuality()
     }
 
-    async updateLocalStream() {
+    async updateLocalStream(updatingCallSetting = false) {
+        let localStream
         try {
             let videoInputDevice = get(Store.state.devices.video)
             let audioInputDevice = get(Store.state.devices.input)
             let settingsStore = get(SettingsStore.state)
 
-            this.localStream = await navigator.mediaDevices.getUserMedia({
+            localStream = await navigator.mediaDevices.getUserMedia({
                 video: this.callOptions.video.enabled
                     ? {
                           aspectRatio: 16 / 9,
@@ -332,11 +369,9 @@ export class VoiceRTC {
                       }
                     : false,
             })
-
-            console.log("got local stream", this.localStream)
         } catch (error) {
             log.error(`Error getting user media: ${error}`)
-            this.localStream = await navigator.mediaDevices.getUserMedia({
+            localStream = await navigator.mediaDevices.getUserMedia({
                 video: true,
                 audio: true,
             })
@@ -344,16 +379,29 @@ export class VoiceRTC {
         await this.sendData(VoiceRTCMessageType.Calling)
 
         if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = this.localStream
+            this.localVideoCurrentSrc.srcObject = localStream!
             await this.localVideoCurrentSrc.play()
         }
+
+        if (this.activeCall !== null && updatingCallSetting) {
+            console.log("Entering here")
+            this.activeCall?.peerConnection.getSenders().forEach(sender => {
+                if (sender.track?.kind === "video") {
+                    sender.replaceTrack(localStream.getVideoTracks()[0])
+                } else if (sender.track?.kind === "audio") {
+                    sender.replaceTrack(localStream.getAudioTracks()[0])
+                }
+            })
+        }
+
+        return localStream
         /// Let it commented for now.
         // await this.improveAudioQuality()
     }
 
     private async improveAudioQuality() {
         const audioContext = new window.AudioContext()
-        const source = audioContext.createMediaStreamSource(this.localStream!)
+        const source = audioContext.createMediaStreamSource(this.activeCall?.localStream!)
         const destination = audioContext.createMediaStreamDestination()
 
         const gainNode = audioContext.createGain()
@@ -375,8 +423,8 @@ export class VoiceRTC {
 
         const processedStream = new MediaStream()
         processedStream.addTrack(destination.stream.getAudioTracks()[0])
-        processedStream.addTrack(this.localStream!.getVideoTracks()[0])
-        this.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
+        processedStream.addTrack(this.activeCall?.localStream!.getVideoTracks()[0]!)
+        this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
     }
 
     handleWithDataReceived(dataReceived: VoiceMessage) {
@@ -416,6 +464,7 @@ export class VoiceRTC {
                 username: get(Store.state.user).name,
                 videoEnabled: this.callOptions.video.enabled,
                 audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
             },
         })
     }
@@ -424,14 +473,12 @@ export class VoiceRTC {
         await this.sendData(VoiceRTCMessageType.EndingCall)
 
         this.channel = ""
-        this.localStream?.getTracks().forEach(track => track.stop())
-        this.localStream = null
+        this.activeCall?.localStream?.getTracks().forEach(track => track.stop())
         this.makingCall = false
         this.acceptedIncomingCall = false
         this.isReceivingCall = false
 
-        this.remoteStream?.getTracks().forEach(track => track.stop())
-        this.remoteStream = null
+        this.activeCall?.remoteStream?.getTracks().forEach(track => track.stop())
 
         if (this.activeCall) {
             this.activeCall.close()
@@ -448,6 +495,7 @@ export class VoiceRTC {
             username: "unknown",
             videoEnabled: false,
             audioEnabled: false,
+            isDeafened: false,
         }
 
         if (this.remoteVideoElement) {
@@ -478,6 +526,7 @@ export class VoiceRTC {
 export const VoiceRTCInstance = new VoiceRTC("default", {
     audio: {
         enabled: get(Store.state.devices.muted),
+        deafened: false,
     },
     video: {
         enabled: get(Store.state.devices.cameraEnabled),

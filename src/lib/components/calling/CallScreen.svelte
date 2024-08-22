@@ -68,7 +68,6 @@
 
     let subscribeThree = Store.state.devices.deafened.subscribe(state => {
         deafened = state
-        console.log("Deafened value: ", deafened)
     })
 
     let subscribeFour = Store.state.activeCall.subscribe(state => {
@@ -148,10 +147,9 @@
                 Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
             }
         }
-        // Store.updateMuted(VoiceRTCInstance.callOptions.audio)
-        // Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
+
         if (VoiceRTCInstance.remoteVideoElement) {
-            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
             remoteVideoElement.play()
         }
         if (VoiceRTCInstance.localVideoCurrentSrc) {
@@ -189,27 +187,23 @@
             <video
                 id="local-user-video"
                 bind:this={localVideoCurrentSrc}
-                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 400) : 0}
+                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
+                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
                 muted
                 autoplay>
                 <track kind="captions" src="" />
             </video>
+
             {#each chat.users as user}
                 {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
-                    <Participant
-                        participant={$userCache[user]}
-                        hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={$userCache[user].media.is_muted}
-                        isDeafened={$userCache[user].media.is_deafened}
-                        isTalking={$userCache[user].media.is_playing_audio} />
+                    <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
                 {#if $userCache[user].key !== get(Store.state.user).key && !otherUserSettingsInCall?.videoEnabled}
                     <Participant
                         participant={$userCache[user]}
                         hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={$userCache[user].media.is_muted}
-                        isDeafened={$userCache[user].media.is_deafened}
+                        isMuted={!otherUserSettingsInCall.audioEnabled}
+                        isDeafened={otherUserSettingsInCall.isDeafened}
                         isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
             {/each}
@@ -220,8 +214,8 @@
             <div class="relative">
                 {#if showCallSettings}
                     <CallSettings
-                        on:change={e => {
-                            VoiceRTCInstance.updateLocalStream()
+                        on:change={_ => {
+                            VoiceRTCInstance.updateLocalStream(true)
                         }} />
                 {/if}
                 <Button
