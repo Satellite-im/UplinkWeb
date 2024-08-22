@@ -2,6 +2,7 @@
     import Select from "$lib/elements/Select.svelte"
     import Switch from "$lib/elements/Switch.svelte"
     import { SettingSection } from "$lib/layouts"
+    import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { Store } from "$lib/state/Store"
     import { createEventDispatcher, onMount } from "svelte"
@@ -45,6 +46,11 @@
             alt
             on:change={v => {
                 Store.setVideoInputDevice(v.detail)
+                // const videoTrack = VoiceRTCInstance.activeCall?.localStream.getVideoTracks()[0]
+                // const sender = VoiceRTCInstance.activeCall?.peerConnection.getSenders().find(s => s.track!.kind === "video")
+                // if (sender) {
+                //     await sender.replaceTrack(videoTrack)
+                // }
                 onChange()
             }} />
     </SettingSection>

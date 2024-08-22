@@ -163,7 +163,7 @@ export class VoiceRTC {
 
     public async acceptIncomingCall() {
         this.callOptions.audio.enabled = true
-        Store.updateMuted(true)
+        Store.updateMuted(false)
         this.acceptedIncomingCall = true
     }
 
@@ -260,7 +260,7 @@ export class VoiceRTC {
         // await this.improveAudioQuality()
     }
 
-    async updateLocalStream() {
+    async updateLocalStream(updatingCallSetting = false) {
         let localStream
         try {
             let videoInputDevice = get(Store.state.devices.video)
@@ -302,6 +302,17 @@ export class VoiceRTC {
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.srcObject = localStream!
             await this.localVideoCurrentSrc.play()
+        }
+
+        if (this.activeCall !== null && updatingCallSetting) {
+            console.log("Entering here")
+            this.activeCall?.peerConnection.getSenders().forEach(sender => {
+                if (sender.track?.kind === "video") {
+                    sender.replaceTrack(localStream.getVideoTracks()[0])
+                } else if (sender.track?.kind === "audio") {
+                    sender.replaceTrack(localStream.getAudioTracks()[0])
+                }
+            })
         }
 
         return localStream

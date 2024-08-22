@@ -148,7 +148,7 @@
                 Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
             }
         }
-        Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
+        Store.updateMuted(!VoiceRTCInstance.callOptions.audio.enabled)
         Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
         if (VoiceRTCInstance.remoteVideoElement) {
             remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
@@ -220,8 +220,8 @@
             <div class="relative">
                 {#if showCallSettings}
                     <CallSettings
-                        on:change={e => {
-                            VoiceRTCInstance.updateLocalStream()
+                        on:change={_ => {
+                            VoiceRTCInstance.updateLocalStream(true)
                         }} />
                 {/if}
                 <Button
