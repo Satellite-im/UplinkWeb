@@ -290,6 +290,15 @@
                                                     conversation.onSuccess(chat => {
                                                         Store.setActiveChat(chat)
                                                     })
+                                                    conversation.onFailure(async e => {
+                                                        let conversations = await RaygunStoreInstance.listConversations()
+                                                        conversations.onSuccess(conversations => {
+                                                            let chat = conversations.find(c => c.users.includes(result.item.key))
+                                                            if (chat) {
+                                                                Store.setActiveChat(chat)
+                                                            }
+                                                        })
+                                                    })
                                                 }
                                                 goto(Route.Chat)
                                             }}>
@@ -344,6 +353,16 @@
                                                         conversation.onSuccess(chat => {
                                                             Store.setActiveChat(chat)
                                                             goto(Route.Chat)
+                                                        })
+                                                        conversation.onFailure(async e => {
+                                                            let conversations = await RaygunStoreInstance.listConversations()
+                                                            conversations.onSuccess(conversations => {
+                                                                let chat = conversations.find(c => c.users.includes(friend.key))
+                                                                if (chat) {
+                                                                    Store.setActiveChat(chat)
+                                                                    goto(Route.Chat)
+                                                                }
+                                                            })
                                                         })
                                                     }
                                                 }}>
