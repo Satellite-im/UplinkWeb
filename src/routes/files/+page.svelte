@@ -26,6 +26,7 @@
     import { Store } from "$lib/state/Store"
     import { initWarp } from "$lib/wasm/IWarp"
     import { WarpStore } from "$lib/wasm/WarpStore"
+    import FileInput from "$lib/elements/Input/FileInput.svelte"
 
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -539,10 +540,15 @@
         )
     }
 
-    async function renameItem(oldName: string, newName: string, fileExtension: string = "") {
+    async function renameItem(item: FileInfo, newName: string, fileExtension: string = "") {
+        let oldName = item.name
+        if (item.type === "folder" && oldName === "" && newName === "") {
+            removeFolderFromStak(item)
+            return false
+        }
         if (newName === "") {
             Store.addToastNotification(new ToastMessage("", "Empty name provided", 2))
-            return
+            return false
         }
         let result = await ConstellationStoreInstance.renameItem(fileExtension === "" ? `${oldName}` : `${oldName}.${fileExtension}`, fileExtension === "" ? `${newName}` : `${newName}.${fileExtension}`)
         result.fold(
@@ -575,6 +581,7 @@
                 })
             }
         )
+        return true
     }
 
     async function downloadFile(fileName: string) {
@@ -817,8 +824,8 @@
                                     isContextMenuOpen = true
                                     open(e)
                                 }}
-                                on:rename={async e => {
-                                    renameItem(`${item.name}`, `${e.detail}`, `${item.extension}`)
+                                onRename={async name => {
+                                    return renameItem(item, `${name}`, `${item.extension}`)
                                 }}
                                 isRenaming={item.isRenaming}
                                 kind={item.imageThumbnail ? FilesItemKind.Image : FilesItemKind.File}
@@ -869,14 +876,15 @@
                                 }}
                                 kind={FilesItemKind.Folder}
                                 info={item}
-                                on:rename={async e => {
-                                    if (item.name === "" && e.detail !== "") {
-                                        const newName = `${e.detail}`
+                                onRename={async name => {
+                                    if (item.name === "" && name !== "") {
+                                        const newName = `${name}`
                                         item.name = newName
                                         await createNewDirectory(item)
                                         item.isRenaming = OperationState.Success
-                                    } else if (e.detail !== "") {
-                                        renameItem(`${item.name}`, `${e.detail}`)
+                                        return true
+                                    } else {
+                                        return renameItem(item, `${name}`)
                                     }
                                 }}
                                 isRenaming={item.isRenaming} />
