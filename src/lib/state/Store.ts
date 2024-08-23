@@ -13,6 +13,7 @@ import { Logger } from "$lib/utils/Logger"
 import { ConversationStore } from "./conversation"
 import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
 import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
 class GlobalStore {
     state: IState
@@ -283,12 +284,24 @@ class GlobalStore {
     cancelRequest(user: string) {
         this.denyRequest(user)
     }
-
     removeFriend(user: string) {
         let friendsList = get(this.state.friends)
+        let chatToRemove: Chat | undefined
         this.state.friends.set(friendsList.filter(f => f !== user))
-    }
 
+        this.state.favorites.update(favoriteChats => {
+            return favoriteChats.filter(c => !c.users.includes(user))
+        })
+
+        UIStore.state.chats.update(chats => {
+            chatToRemove = chats.find(c => c.users.includes(user) && c.kind === ChatType.DirectMessage)
+            return chats.filter(c => !c.users.includes(user))
+        })
+        this.state.activeChat.set(defaultChat)
+        if (chatToRemove) {
+            RaygunStoreInstance.delete(chatToRemove.id)
+        }
+    }
     blockUser(user: string) {
         this.removeFriend(user)
         this.state.blocked.set([...get(this.state.blocked), user])
