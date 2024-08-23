@@ -235,6 +235,7 @@ export class VoiceRTC {
     }
 
     async startToMakeACall(remotePeerId: string, chatID: string) {
+        this.channel = chatID
         this.makingCall = true
         const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
         this.remotePeerId = remotePeerIdEdited
