@@ -642,7 +642,6 @@
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
-                    console.log("inp")
                     typing()
                 }}>
                 <svelte:fragment slot="pre-controls">
