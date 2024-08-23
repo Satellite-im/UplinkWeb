@@ -405,6 +405,9 @@ class RaygunStore {
 
                     // Update stores
                     UIStore.removeSidebarChat(conversationId)
+                    Store.state.favorites.update(favoriteChats => {
+                        return favoriteChats.filter(c => !c.id.includes(conversationId))
+                    })
                     ConversationStore.removeConversation(conversationId)
                     if (get(Store.state.activeChat).id === conversationId) {
                         Store.clearActiveChat()
@@ -451,6 +454,7 @@ class RaygunStore {
             for await (const value of listener) {
                 let event = parseJSValue(value)
                 log.info(`Handling message event: ${JSON.stringify(event)}`)
+
                 switch (event.type) {
                     case "message_sent": {
                         let conversation_id: string = event.values["conversation_id"]
