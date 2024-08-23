@@ -67,7 +67,7 @@
                 onChange()
             }} />
     </SettingSection>
-    <SettingSection hook="section-noise-supression" name="Noise Suppression" description="Automatically try to remove background noise.">
+    <SettingSection hook="section-noise-suppression" name="Noise Suppression" description="Automatically try to remove background noise.">
         <Switch
             hook="switch-noise-suppression"
             on={noiseSuppression}
