@@ -2,6 +2,7 @@ import { CallDirection } from "$lib/enums"
 import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
+import { on } from "events"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
 import { get } from "svelte/store"
 
@@ -25,6 +26,9 @@ type VoiceRTCOptions = {
     video: {
         enabled: boolean
         selfie: boolean
+    }
+    call: {
+        onlyAudioCall: boolean
     }
 }
 
@@ -180,6 +184,9 @@ export class VoiceRTC {
             isDeafened: conn.metadata.isDeafened,
         }
 
+        this.callOptions.call.onlyAudioCall = conn.metadata.onlyAudioCall
+        this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && conn.metadata.videoEnabled
+
         this.channel = conn.metadata.channel
         this.dataConnection = conn
 
@@ -262,14 +269,18 @@ export class VoiceRTC {
         })
     }
 
-    async startToMakeACall(remotePeerId: string, chatID: string) {
+    async startToMakeACall(remotePeerId: string, chatID: string, onlyAudioCall: boolean = false) {
+        this.callOptions.video.enabled = !onlyAudioCall
+        this.callOptions.call.onlyAudioCall = onlyAudioCall
+        this.callOptions.audio.enabled = true
+
         this.channel = chatID
         const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
         this.remotePeerId = remotePeerIdEdited
         this.makingCall = true
     }
 
-    public async makeVideoCall() {
+    public async makeCall() {
         try {
             await this.setupPeerEvents()
 
@@ -281,6 +292,7 @@ export class VoiceRTC {
                     videoEnabled: this.callOptions.video.enabled,
                     audioEnabled: this.callOptions.audio.enabled,
                     isDeafened: this.callOptions.audio.deafened,
+                    onlyAudioCall: this.callOptions.call.onlyAudioCall,
                     channel: this.channel,
                 },
             })
@@ -531,5 +543,8 @@ export const VoiceRTCInstance = new VoiceRTC("default", {
     video: {
         enabled: get(Store.state.devices.cameraEnabled),
         selfie: true,
+    },
+    call: {
+        onlyAudioCall: false,
     },
 })

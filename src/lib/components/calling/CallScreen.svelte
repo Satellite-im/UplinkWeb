@@ -130,7 +130,7 @@
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
             if (VoiceRTCInstance.makingCall && VoiceRTCInstance.remoteVoiceUser.did === "") {
-                await VoiceRTCInstance.makeVideoCall()
+                await VoiceRTCInstance.makeCall()
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 await VoiceRTCInstance.acceptCall()
