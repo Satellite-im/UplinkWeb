@@ -14,7 +14,7 @@
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -22,11 +22,10 @@
         expanded = !expanded
     }
 
-    let showSettings = false
     let showVolumeMixer = false
     let showCallSettings = false
 
-    let muted: boolean = VoiceRTCInstance.callOptions.audio
+    let muted: boolean = VoiceRTCInstance.callOptions.audio.enabled
     let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
 
     export let deafened: boolean = get(Store.state.devices.deafened)
@@ -72,19 +71,9 @@
     })
 
     let subscribeFour = Store.state.activeCall.subscribe(state => {
-        log.debug(`Active call state changed: ${state}`)
         otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
-
-    function updateMuted() {
-        VoiceRTCInstance.turnOnOffMicrophone()
-    }
-
-    function updateCameraEnabled() {
-        Store.updateCameraEnabled(!cameraEnabled)
-        VoiceRTCInstance.turnOnOffCamera()
-    }
 
     const checkPermissions = async () => {
         try {
@@ -113,7 +102,7 @@
                 }
             }
         } catch (err) {
-            console.error("Error checking permissions: ", err)
+            log.error(`Error checking permissions: ${err}`)
         }
     }
 
@@ -122,7 +111,7 @@
             await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             permissionsGranted = true
         } catch (err) {
-            console.error("Error requesting permissions: ", err)
+            log.error(`Error requesting permissions: ${err}`)
             permissionsGranted = false
         }
     }
@@ -145,19 +134,17 @@
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 await VoiceRTCInstance.acceptCall()
+                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
             }
         }
-        Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
-        Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
+
         if (VoiceRTCInstance.remoteVideoElement) {
-            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
             remoteVideoElement.play()
         }
         if (VoiceRTCInstance.localVideoCurrentSrc) {
             await VoiceRTCInstance.updateLocalStream()
         }
-        console.log("Audio Enabled: ", VoiceRTCInstance.callOptions.audio)
-        // Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
     })
 
     onDestroy(() => {
@@ -190,27 +177,23 @@
             <video
                 id="local-user-video"
                 bind:this={localVideoCurrentSrc}
-                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 400) : 0}
+                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
+                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
                 muted
                 autoplay>
                 <track kind="captions" src="" />
             </video>
+
             {#each chat.users as user}
                 {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
-                    <Participant
-                        participant={$userCache[user]}
-                        hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={$userCache[user].media.is_muted}
-                        isDeafened={$userCache[user].media.is_deafened}
-                        isTalking={$userCache[user].media.is_playing_audio} />
+                    <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
                 {#if $userCache[user].key !== get(Store.state.user).key && !otherUserSettingsInCall?.videoEnabled}
                     <Participant
                         participant={$userCache[user]}
                         hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={$userCache[user].media.is_muted}
-                        isDeafened={$userCache[user].media.is_deafened}
+                        isMuted={!otherUserSettingsInCall.audioEnabled}
+                        isDeafened={otherUserSettingsInCall.isDeafened}
                         isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
             {/each}
@@ -221,8 +204,8 @@
             <div class="relative">
                 {#if showCallSettings}
                     <CallSettings
-                        on:change={e => {
-                            VoiceRTCInstance.updateLocalStream()
+                        on:change={_ => {
+                            VoiceRTCInstance.updateLocalStream(true)
                         }} />
                 {/if}
                 <Button
@@ -258,7 +241,7 @@
                 appearance={muted ? Appearance.Error : Appearance.Alt}
                 tooltip={muted ? $_("call.unmute") : $_("call.mute")}
                 on:click={_ => {
-                    updateMuted()
+                    Store.updateMuted(!muted)
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
@@ -267,7 +250,8 @@
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
                 tooltip={$_("call.deafen")}
                 on:click={_ => {
-                    VoiceRTCInstance.turnOnOffDeafened()
+                    Store.updateDeafened(!deafened)
+                    // VoiceRTCInstance.turnOnOffDeafened()
                 }}>
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
@@ -279,7 +263,7 @@
                 icon
                 tooltip={cameraEnabled ? $_("call.disable_video") : $_("call.enable_video")}
                 on:click={_ => {
-                    updateCameraEnabled()
+                    Store.updateCameraEnabled(!cameraEnabled)
                 }}>
                 <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.VideoCameraSlash} />
             </Button>

@@ -4,7 +4,7 @@
     import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
     import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
@@ -23,12 +23,19 @@
     $: chatPhoto = $users.length > 2 ? "todo" : ($users[1]?.profile.photo.image ?? $users[0].profile.photo.image)
     $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
 
+    let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
 
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
+
+    onMount(() => {
+        setInterval(() => {
+            timeago = getTimeAgo(chat.last_message_at)
+        }, 500)
+    })
 </script>
 
 <button
@@ -52,7 +59,7 @@
             </Text>
             <div class="right">
                 <Text hook="chat-preview-timestamp" class="timestamp min-text" loading={loading} size={Size.Smallest} muted>
-                    {getTimeAgo(chat.last_message_at)}
+                    {timeago}
                 </Text>
                 {#if !loading}
                     {#if chat.notifications > 0 && !simpleUnreads}
