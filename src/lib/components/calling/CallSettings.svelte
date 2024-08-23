@@ -49,32 +49,36 @@
                 onChange()
             }} />
     </SettingSection>
-    <SettingSection name="Echo Cancellation" description="Cancel out feedback from your microphone.">
+    <SettingSection hook="section-echo-cancellation" name="Echo Cancellation" description="Cancel out feedback from your microphone.">
         <Switch
+            hook="swtich-echo-cancellation"
             on={echoCancellation}
             on:toggle={e => {
                 SettingsStore.setEchoCancellation(e.detail)
                 onChange()
             }} />
     </SettingSection>
-    <SettingSection name="Auto Gain Control" description="Automatically adjust microphone gain.">
+    <SettingSection hook="section-auto-gain-control" name="Auto Gain Control" description="Automatically adjust microphone gain.">
         <Switch
+            hook="switch-auto-gain-control"
             on={automaticGainControl}
             on:toggle={e => {
                 SettingsStore.setAutomaticGainControl(e.detail)
                 onChange()
             }} />
     </SettingSection>
-    <SettingSection name="Noise Suppression" description="Automatically try to remove background noise.">
+    <SettingSection hook="section-noise-supression" name="Noise Suppression" description="Automatically try to remove background noise.">
         <Switch
+            hook="switch-noise-suppression"
             on={noiseSuppression}
             on:toggle={e => {
                 SettingsStore.setNoiseSuppression(e.detail)
                 onChange()
             }} />
     </SettingSection>
-    <SettingSection name="Channels" description="Sets the number of audio channels to be used.">
+    <SettingSection hook="section-audio-channels" name="Channels" description="Sets the number of audio channels to be used.">
         <Select
+            hook="selector-audio-channels"
             options={[
                 { text: "Mono", value: "1" },
                 { text: "Stereo", value: "2" },
@@ -88,8 +92,9 @@
             }}
             alt />
     </SettingSection>
-    <SettingSection name="Bitrate" description="Bitrate at which your stream is broadcast.">
+    <SettingSection hook="section-audio-bitrate" name="Bitrate" description="Bitrate at which your stream is broadcast.">
         <Select
+            hook="selector-audio-bitrate"
             options={[
                 { text: "8 Kbps", value: "8000" },
                 { text: "16 Kbps", value: "16000" },
@@ -108,8 +113,9 @@
             }}
             alt />
     </SettingSection>
-    <SettingSection name="Sample Size" description="Bitrate at which your stream is broadcast.">
+    <SettingSection hook="section-sample-size" name="Sample Size" description="Bitrate at which your stream is broadcast.">
         <Select
+            hook="selector-sample-size"
             options={[
                 { text: "16", value: "16" },
                 { text: "32", value: "32" },

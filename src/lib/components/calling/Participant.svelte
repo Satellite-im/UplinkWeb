@@ -20,7 +20,7 @@
     }
 </script>
 
-<div class="participant" data-cy="participant">
+<div class="participant" data-cy="call-participant">
     {#if hasVideo}
         <!-- svelte-ignore a11y-media-has-caption -->
         <video data-cy="participant-video" class="{isMuted ? 'muted' : ''} {isDeafened ? 'deafened' : ''}" autoplay muted on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}> </video>
