@@ -5,7 +5,7 @@ import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
 import { get } from "svelte/store"
-import { send } from "vite"
+import { _ } from "svelte-i18n"
 
 export enum VoiceRTCMessageType {
     Calling = "CALLING_USER",
@@ -245,7 +245,7 @@ export class VoiceRTC {
         const now = new Date()
         this.callStartTime = now
         const formattedTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
-        const text = `📞 A call started at ${formattedTime}.`
+        const text = get(_)("settings.calling.startCallMessage", { values: { value: formattedTime } })
         this.channel = chatID
         await RaygunStoreInstance.send(chatID, text.split("\n"), [])
     }
@@ -512,7 +512,7 @@ export class VoiceRTC {
             const now = new Date()
             const duration = this.getDuration(now)
             const formattedEndTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
-            const endText = `📴 The call ended at ${formattedEndTime}. Duration: ${duration}.`
+            const endText = get(_)("settings.calling.endCallMessage", { values: { formattedEndTime: formattedEndTime, duration: duration } })
             await RaygunStoreInstance.send(this.channel, endText.split("\n"), [])
         }
 
