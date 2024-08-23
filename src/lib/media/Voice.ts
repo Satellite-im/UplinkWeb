@@ -184,7 +184,7 @@ export class VoiceRTC {
         }
 
         this.channel = conn.metadata.channel
-        this.callStartTime = new Date(conn.metadata.callStartTime)
+        this.callStartTime = conn.metadata.callStartTime ? new Date(conn.metadata.callStartTime) : null
         this.dataConnection = conn
 
         conn.on("open", () => {
@@ -255,6 +255,12 @@ export class VoiceRTC {
             await this.setupPeerEvents()
 
             await this.connectWithRetry()
+
+            setTimeout(() => {
+                if (this.callStartTime === null) {
+                    this.endCall(true)
+                }
+            }, 10000)
 
             await this.sendData(VoiceRTCMessageType.Calling)
 
@@ -508,18 +514,24 @@ export class VoiceRTC {
     async endCall(sendEndCallMessage = true) {
         await this.sendData(VoiceRTCMessageType.EndingCall)
 
-        if (sendEndCallMessage) {
+        if (sendEndCallMessage && this.callStartTime) {
             const now = new Date()
             const duration = this.getDuration(now)
             const formattedEndTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
             const endText = get(_)("settings.calling.endCallMessage", { values: { formattedEndTime: formattedEndTime, duration: duration } })
             await RaygunStoreInstance.send(this.channel, endText.split("\n"), [])
+        } else if (sendEndCallMessage && this.callStartTime === null) {
+            const text = get(_)("settings.calling.callMissed")
+            await RaygunStoreInstance.send(this.channel, text.split("\n"), [])
         }
 
         this.clearResources()
 
         if (get(Store.state.activeCall)) {
             Store.endCall()
+        }
+
+        if (get(Store.state.pendingCall)) {
             Store.denyCall()
         }
 
@@ -528,12 +540,12 @@ export class VoiceRTC {
     }
 
     private clearResources() {
-        this.callStartTime = null
         this.channel = ""
         this.activeCall?.localStream?.getTracks().forEach(track => track.stop())
         this.makingCall = false
         this.acceptedIncomingCall = false
         this.isReceivingCall = false
+        this.callStartTime = null
 
         this.activeCall?.remoteStream?.getTracks().forEach(track => track.stop())
 
