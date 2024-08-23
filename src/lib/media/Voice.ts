@@ -246,7 +246,6 @@ export class VoiceRTC {
         this.callStartTime = now
         const formattedTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
         const text = `📞 A call started at ${formattedTime}.`
-
         this.channel = chatID
         await RaygunStoreInstance.send(chatID, text.split("\n"), [])
     }
@@ -339,8 +338,9 @@ export class VoiceRTC {
                 })
 
                 await new Promise(resolve => setTimeout(resolve, 2000))
+                log.debug("Not possible to connect, trying again.")
 
-                if (!connected) {
+                if (!connected && attempts === maxRetries) {
                     log.error("Connection attempt failed. Ending call.")
                     this.endCall(false)
                 }
@@ -492,10 +492,17 @@ export class VoiceRTC {
         if (!this.callStartTime) return "0:00"
 
         const durationMs = endTime.getTime() - this.callStartTime.getTime()
-        const minutes = Math.floor(durationMs / 6000)
-        const seconds = Math.floor((durationMs % 60000) / 1000)
+        const totalSeconds = Math.floor(durationMs / 1000)
+        const minutes = Math.floor(totalSeconds / 60)
+        const seconds = totalSeconds % 60
 
-        return `${minutes}:${seconds.toString().padStart(2, "0")}`
+        if (minutes === 0) {
+            const fractionalSeconds = (durationMs / 1000).toFixed(2)
+            return `${fractionalSeconds} seconds`
+        } else {
+            const minutesFormatted = minutes.toString().padStart(2, "0")
+            return `${minutesFormatted}min`
+        }
     }
 
     async endCall(sendEndCallMessage = true) {
