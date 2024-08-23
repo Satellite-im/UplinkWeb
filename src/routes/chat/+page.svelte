@@ -66,7 +66,7 @@
     $: users = Store.getUsersLookup($activeChat.users)
     $: loading = get(UIStore.state.chats).length > 0 && $users[$activeChat.users[1]]?.name === undefined
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
     const timeAgo = new TimeAgo("en-US")
@@ -642,6 +642,7 @@
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
+                    console.log("inp")
                     typing()
                 }}>
                 <svelte:fragment slot="pre-controls">
