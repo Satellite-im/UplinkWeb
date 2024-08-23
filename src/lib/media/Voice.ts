@@ -185,7 +185,7 @@ export class VoiceRTC {
         }
 
         this.callOptions.call.onlyAudioCall = conn.metadata.onlyAudioCall
-        this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && conn.metadata.videoEnabled
+        this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && this.callOptions.video.enabled
 
         this.channel = conn.metadata.channel
         this.dataConnection = conn
