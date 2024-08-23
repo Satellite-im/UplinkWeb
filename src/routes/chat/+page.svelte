@@ -433,9 +433,9 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            Store.setActiveCall($activeChat)
                             await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
                             activeCallInProgress = true
+                            Store.setActiveCall($activeChat)
                         }}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>
