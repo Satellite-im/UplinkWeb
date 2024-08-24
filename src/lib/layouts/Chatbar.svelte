@@ -72,7 +72,7 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:enter={_ => sendMessage($message)} />
+    <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:input on:enter={_ => sendMessage($message)} />
 
     <slot></slot>
 
