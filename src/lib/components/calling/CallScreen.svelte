@@ -119,7 +119,23 @@
     let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
 
+    function handleClickOutside(event: MouseEvent) {
+        const callSettingsElement = document.getElementById("call-settings")
+        const showVolumeElement = document.getElementById("volume-mixer")
+
+        if (callSettingsElement && !callSettingsElement.contains(event.target as Node)) {
+            showCallSettings = false
+            event.stopPropagation()
+        }
+
+        if (showVolumeElement && !showVolumeElement.contains(event.target as Node)) {
+            showVolumeMixer = false
+            event.stopPropagation()
+        }
+    }
+
     onMount(async () => {
+        document.addEventListener("mousedown", handleClickOutside)
         await checkPermissions()
         await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
@@ -148,6 +164,7 @@
     })
 
     onDestroy(() => {
+        document.removeEventListener("mousedown", handleClickOutside)
         subscribeOne()
         subscribeTwo()
         subscribeThree()
@@ -205,10 +222,12 @@
         <Controls>
             <div class="relative">
                 {#if showCallSettings}
-                    <CallSettings
-                        on:change={_ => {
-                            VoiceRTCInstance.updateLocalStream(true)
-                        }} />
+                    <div id="call-settings">
+                        <CallSettings
+                            on:change={_ => {
+                                VoiceRTCInstance.updateLocalStream(true)
+                            }} />
+                    </div>
                 {/if}
                 <Button
                     hook="button-call-settings"
@@ -224,7 +243,9 @@
             </div>
             <div class="relative">
                 {#if showVolumeMixer}
-                    <VolumeMixer participants={chat.users} />
+                    <div id="volume-mixer">
+                        <VolumeMixer participants={chat.users} />
+                    </div>
                 {/if}
                 <Button
                     hook="button-call-volume-mixer"

@@ -304,7 +304,10 @@
         },
         "calling": {
             "minimalCallingAlerts": "Minimal Calling Alerts",
-            "minimalCallingAlertsDescription": "Instead of displaying a full screen alert when a call is incoming, with this mode enabled the call dialog will show within the sidebar."
+            "minimalCallingAlertsDescription": "Instead of displaying a full screen alert when a call is incoming, with this mode enabled the call dialog will show within the sidebar.",
+            "startCallMessage": "📞 A call started at {value}.",
+            "endCallMessage": "📴 The call ended at {formattedEndTime}. Duration: {duration}.",
+            "callMissed": "📞 Missed call"
         },
         "notifications": {
             "name": "Notifications",
