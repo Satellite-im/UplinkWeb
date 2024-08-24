@@ -22,8 +22,6 @@
 </script>
 
 <div id="page">
-    <CallEvents event={CallEvent.Started} eventTime={new Date()} />
-
     <WidgetBar />
     <SettingSection hook="section-devmode" name={$_("settings.about.devMode")} description={$_("settings.developer.disable")}>
         <Button
