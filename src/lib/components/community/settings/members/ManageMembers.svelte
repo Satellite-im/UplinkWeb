@@ -1,5 +1,4 @@
 <script lang="ts">
-    import TimeAgo from "javascript-time-ago"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
     import { Label, Text, Icon, Button } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
@@ -7,15 +6,9 @@
     import { mockCommunityMembers } from "$lib/mock/community"
     import { CommunityTag } from "$lib/components"
     import type { Member } from "$lib/types"
+    import { getTimeAgo } from "$lib/utils/Functions"
 
     let members: Member[] = mockCommunityMembers
-
-    const timeAgo = new TimeAgo("en-US")
-
-    function getTimeAgo(dateInput: string | Date) {
-        const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
-        return timeAgo.format(date)
-    }
 </script>
 
 <div class="manage-members">

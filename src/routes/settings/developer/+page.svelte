@@ -1,7 +1,7 @@
 <script lang="ts">
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
-    import { Appearance, Route } from "$lib/enums"
+    import { Appearance, CallEvent, Route } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import Button from "$lib/elements/Button.svelte"
     import { SettingsStore, clearState } from "$lib/state"
@@ -13,6 +13,7 @@
     import { get } from "svelte/store"
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     import AAR from "$lib/components/ui/AAR.svelte"
+    import CallEvents from "$lib/components/calling/CallEvents.svelte"
 
     let settings = get(log.settings)
     log.settings.subscribe(s => {
@@ -21,6 +22,8 @@
 </script>
 
 <div id="page">
+    <CallEvents event={CallEvent.Started} eventTime={new Date()} />
+
     <WidgetBar />
     <SettingSection hook="section-devmode" name={$_("settings.about.devMode")} description={$_("settings.developer.disable")}>
         <Button
