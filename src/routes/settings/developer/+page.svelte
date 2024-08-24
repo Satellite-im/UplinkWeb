@@ -12,8 +12,6 @@
     import { Select } from "$lib/elements"
     import { get } from "svelte/store"
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
-    import AAR from "$lib/components/ui/AAR.svelte"
-    import CallEvents from "$lib/components/calling/CallEvents.svelte"
 
     let settings = get(log.settings)
     log.settings.subscribe(s => {
