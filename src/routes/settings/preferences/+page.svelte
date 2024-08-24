@@ -195,6 +195,7 @@
         <textarea
             data-cy="text-area-custom-css"
             bind:value={cssOverride}
+            placeholder={`body { background-color: #000; }`}
             on:change={_ => {
                 UIStore.setCssOverride(cssOverride)
             }}></textarea>
@@ -227,10 +228,18 @@
             min-width: unset;
         }
 
-        :global(input) {
+        :global(input),
+        textarea {
             border-radius: var(--border-radius-minimal);
             background-color: var(--alt-color) !important;
             color: var(--color);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            border: var(--border-width) solid var(--border-color);
+            padding: var(--padding-minimal);
         }
     }
 </style>

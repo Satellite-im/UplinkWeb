@@ -13,13 +13,9 @@
 <div class="friend" data-cy="friend-{friend.name}">
     <ProfilePicture id={friend.key} hook="friend-profile-picture" size={Size.Small} loading={friend.loading} image={friend.profile.photo.image} status={friend.profile.status} />
     <div class="friend-name-container">
-        {#if friend.loading}
-            <Loader text />
-        {:else}
-            <Text hook="friend-name" class="username" singleLine>
-                {friend.name}
-            </Text>
-        {/if}
+        <Text hook="friend-name" class="username" singleLine loading={friend.loading}>
+            {friend.name}
+        </Text>
     </div>
     <Controls>
         <slot name="controls"></slot>
@@ -37,7 +33,7 @@
             flex: 100%;
             display: inline-flex;
             width: 100%;
-            min-width: fit-content;
+            min-width: 100px;
             max-width: 100%;
         }
         .friend-name-container {
