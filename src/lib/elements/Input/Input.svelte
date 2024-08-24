@@ -50,7 +50,7 @@
         let isValid = isValidInput()
         dispatch("isValid", isValid)
         dispatch("input", value)
-    }, 300)
+    }, 5)
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -86,7 +86,7 @@
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
                 writableValue.set(val)
-                debouncedOnInput()
+                onInput()
             })
             onsend.push(() => {
                 editor.value("")
