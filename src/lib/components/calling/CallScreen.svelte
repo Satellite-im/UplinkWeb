@@ -119,7 +119,23 @@
     let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
 
+    function handleClickOutside(event: MouseEvent) {
+        const callSettingsElement = document.getElementById("call-settings")
+        const showVolumeElement = document.getElementById("volume-mixer")
+
+        if (callSettingsElement && !callSettingsElement.contains(event.target as Node)) {
+            showCallSettings = false
+            event.stopPropagation()
+        }
+
+        if (showVolumeElement && !showVolumeElement.contains(event.target as Node)) {
+            showVolumeMixer = false
+            event.stopPropagation()
+        }
+    }
+
     onMount(async () => {
+        document.addEventListener("mousedown", handleClickOutside)
         await checkPermissions()
         await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
@@ -148,6 +164,7 @@
     })
 
     onDestroy(() => {
+        document.removeEventListener("mousedown", handleClickOutside)
         subscribeOne()
         subscribeTwo()
         subscribeThree()
@@ -155,17 +172,18 @@
     })
 </script>
 
-<div id="call-screen" class={expanded ? "expanded" : ""}>
+<div id="call-screen" data-cy="call-screen" class={expanded ? "expanded" : ""}>
     {#if chat}
         <Topbar simple>
             <svelte:fragment slot="content">
-                <Text muted size={Size.Smaller}>
+                <Text hook="text-users-in-call" muted size={Size.Smaller}>
                     ({chat.users.length}) users in the call
                 </Text>
             </svelte:fragment>
         </Topbar>
         <div id="participants">
             <video
+                data-cy="remote-user-video"
                 id="remote-user-video"
                 bind:this={remoteVideoElement}
                 width={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
@@ -175,6 +193,7 @@
             </video>
             <br />
             <video
+                data-cy="local-user-video"
                 id="local-user-video"
                 bind:this={localVideoCurrentSrc}
                 width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
@@ -203,12 +222,15 @@
         <Controls>
             <div class="relative">
                 {#if showCallSettings}
-                    <CallSettings
-                        on:change={_ => {
-                            VoiceRTCInstance.updateLocalStream(true)
-                        }} />
+                    <div id="call-settings">
+                        <CallSettings
+                            on:change={_ => {
+                                VoiceRTCInstance.updateLocalStream(true)
+                            }} />
+                    </div>
                 {/if}
                 <Button
+                    hook="button-call-settings"
                     tooltip="Settings"
                     icon
                     appearance={showCallSettings ? Appearance.Primary : Appearance.Alt}
@@ -221,9 +243,12 @@
             </div>
             <div class="relative">
                 {#if showVolumeMixer}
-                    <VolumeMixer participants={chat.users} />
+                    <div id="volume-mixer">
+                        <VolumeMixer participants={chat.users} />
+                    </div>
                 {/if}
                 <Button
+                    hook="button-call-volume-mixer"
                     tooltip="Volume Mixer"
                     icon
                     appearance={showVolumeMixer ? Appearance.Primary : Appearance.Alt}
@@ -237,6 +262,7 @@
         </Controls>
         <Controls>
             <Button
+                hook="button-call-mute"
                 icon
                 appearance={muted ? Appearance.Error : Appearance.Alt}
                 tooltip={muted ? $_("call.unmute") : $_("call.mute")}
@@ -246,6 +272,7 @@
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
             <Button
+                hook="button-call-deafen"
                 icon
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
                 tooltip={$_("call.deafen")}
@@ -255,10 +282,11 @@
                 }}>
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
-            <Button appearance={Appearance.Alt} icon tooltip={$_("call.stream")}>
+            <Button hook="button-call-stream" appearance={Appearance.Alt} icon tooltip={$_("call.stream")}>
                 <Icon icon={Shape.Stream} />
             </Button>
             <Button
+                hook="button-call-video"
                 appearance={cameraEnabled ? Appearance.Alt : Appearance.Error}
                 icon
                 tooltip={cameraEnabled ? $_("call.disable_video") : $_("call.enable_video")}
@@ -268,6 +296,7 @@
                 <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.VideoCameraSlash} />
             </Button>
             <Button
+                hook="button-call-end"
                 appearance={Appearance.Error}
                 icon
                 tooltip={$_("call.end")}
@@ -279,14 +308,14 @@
             </Button>
         </Controls>
         <Controls>
-            <Button appearance={Appearance.Alt} icon outline tooltip={expanded ? $_("call.collapse") : $_("call.expand")} on:click={toggleExanded}>
+            <Button hook="button-call-collapse-expand" appearance={Appearance.Alt} icon outline tooltip={expanded ? $_("call.collapse") : $_("call.expand")} on:click={toggleExanded}>
                 {#if expanded}
                     <Icon icon={Shape.ChevronsUp} />
                 {:else}
                     <Icon icon={Shape.ChevronsDown} />
                 {/if}
             </Button>
-            <Button appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")} on:click={toggleFullscreen}>
+            <Button hook="button-call-fullscreen" appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")} on:click={toggleFullscreen}>
                 <Icon icon={Shape.ArrowsOut} />
             </Button>
         </Controls>

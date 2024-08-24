@@ -22,18 +22,18 @@
     let note: string = user ? new Notes().get(user?.name) : ""
 </script>
 
-<div class="profile">
-    <div class="profile-header" style={`background-image: url(${user?.profile.banner.image}); background-color: ${identityColor(user?.key || "")};`}>
-        <ProfilePicture id={user?.key} image={user?.profile.photo.image} size={Size.Larger} noIndicator status={user?.profile.status} frame={user?.profile.photo.frame} />
+<div class="profile" data-cy="quick-profile">
+    <div class="profile-header" data-cy="quick-profile-banner" style={`background-image: url(${user?.profile.banner.image}); background-color: ${identityColor(user?.key || "")};`}>
+        <ProfilePicture hook="quick-profile-picture" id={user?.key} image={user?.profile.photo.image} size={Size.Larger} noIndicator status={user?.profile.status} frame={user?.profile.photo.frame} />
 
         <div class="details">
             <div class="left">
-                <Label text={$_("generic.username")} />
-                <Text size={Size.Large}>{user?.name}</Text>
+                <Label hook="label-quick-profile-username" text={$_("generic.username")} />
+                <Text hook="text-quick-profile-username" size={Size.Large}>{user?.name}</Text>
             </div>
             <div class="right">
                 {#if user && user.id.short !== currentUserShortId}
-                    <Button outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? $_("settings.profile.friended") : $_("settings.profile.addFriend")}>
+                    <Button hook="button-quick-profile-user" outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? $_("settings.profile.friended") : $_("settings.profile.addFriend")}>
                         <Icon icon={isFriended(user) ? Shape.CheckMark : Shape.Plus} />
                     </Button>
                 {/if}
@@ -43,8 +43,8 @@
     {#if user}
         <div class="content">
             <div class="section">
-                <Label text={$_("generic.status_message")} />
-                <Text>{user.profile.status_message}</Text>
+                <Label hook="label-quick-profile-status" text={$_("generic.status_message")} />
+                <Text hook="text-quick-profile-status">{user.profile.status_message}</Text>
             </div>
             <div class="section">
                 <Label text={$_("settings.profile.integration.title")} />
@@ -61,8 +61,9 @@
                 </div>
             </div>
             <div class="section">
-                <Label text={$_("settings.profile.note")} />
+                <Label hook="label-quick-profile-note" text={$_("settings.profile.note")} />
                 <Input
+                    hook="input-quick-profile-note"
                     alt
                     placeholder={$_("settings.profile.setNote")}
                     value={note}

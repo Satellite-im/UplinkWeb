@@ -66,7 +66,7 @@
     $: users = Store.getUsersLookup($activeChat.users)
     $: loading = get(UIStore.state.chats).length > 0 && $users[$activeChat.users[1]]?.name === undefined
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
     const timeAgo = new TimeAgo("en-US")
@@ -434,9 +434,9 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            Store.setActiveCall($activeChat)
                             await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
                             activeCallInProgress = true
+                            Store.setActiveCall($activeChat)
                         }}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>

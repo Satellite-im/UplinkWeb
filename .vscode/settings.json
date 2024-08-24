@@ -1,9 +1,7 @@
 {
-    "rust-analyzer.linkedProjects": [
-        "./yew/Cargo.toml",
-        "./yew/Cargo.toml"
-    ],
+    "rust-analyzer.linkedProjects": ["./yew/Cargo.toml", "./yew/Cargo.toml"],
     "html.format.indentInnerHtml": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "scm.showHistoryGraph": false
 }
