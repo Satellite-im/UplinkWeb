@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Text } from "$lib/elements"
+    import { Loader, Text } from "$lib/elements"
     import { defaultUser, type User } from "$lib/types"
     import { ProfilePicture } from ".."
     import Controls from "$lib/layouts/Controls.svelte"
@@ -11,10 +11,12 @@
 </script>
 
 <div class="friend" data-cy="friend-{friend.name}">
-    <ProfilePicture id={friend.key} hook="friend-profile-picture" size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
-    <Text hook="friend-name" class="username" singleLine>
-        {friend.name}
-    </Text>
+    <ProfilePicture id={friend.key} hook="friend-profile-picture" size={Size.Small} loading={friend.loading} image={friend.profile.photo.image} status={friend.profile.status} />
+    <div class="friend-name-container">
+        <Text hook="friend-name" class="username" singleLine loading={friend.loading}>
+            {friend.name}
+        </Text>
+    </div>
     <Controls>
         <slot name="controls"></slot>
     </Controls>
@@ -31,8 +33,11 @@
             flex: 100%;
             display: inline-flex;
             width: 100%;
-            min-width: fit-content;
+            min-width: 100px;
             max-width: 100%;
+        }
+        .friend-name-container {
+            width: 100%;
         }
     }
 </style>

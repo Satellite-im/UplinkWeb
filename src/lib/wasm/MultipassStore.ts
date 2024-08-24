@@ -81,6 +81,7 @@ class MultipassStore {
                                     }),
                                     Sounds.Notification
                                 )
+                                Store.updateUser(incoming)
                             } else {
                                 Store.addToastNotification(
                                     new ToastMessage("New friend request.", `You received a new friend request.`, 2, undefined, undefined, () => {
