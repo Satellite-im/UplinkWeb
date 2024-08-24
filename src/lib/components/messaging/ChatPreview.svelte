@@ -1,4 +1,5 @@
 <script lang="ts">
+    import TimeAgo from "javascript-time-ago"
     import { Route, Size, Status } from "$lib/enums"
     import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
@@ -7,12 +8,13 @@
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
     import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
-    import { getTimeAgo } from "$lib/utils/Functions"
 
     export let chat: Chat
     export let cta: boolean = false
     export let simpleUnreads: boolean = false
     export let loading: boolean
+
+    const timeAgo = new TimeAgo("en-US")
 
     $: users = Store.getUsers(chat.users)
 
@@ -23,6 +25,11 @@
 
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
+
+    function getTimeAgo(dateInput: string | Date) {
+        const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
+        return timeAgo.format(date)
+    }
 
     onMount(() => {
         setInterval(() => {
