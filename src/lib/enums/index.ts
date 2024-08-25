@@ -10,6 +10,13 @@ export const enum CallDirection {
     Outbound,
 }
 
+export const enum CallEvent {
+    Started,
+    Ended,
+    Missed,
+    Declined,
+}
+
 export const enum Locale {
     EN_US = "English (US)",
     ES_MX = "Español (México)",
