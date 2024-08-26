@@ -2,9 +2,10 @@ import { CallDirection } from "$lib/enums"
 import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { log } from "$lib/utils/Logger"
-import { on } from "events"
+import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
 import { get } from "svelte/store"
+import { _ } from "svelte-i18n"
 
 export enum VoiceRTCMessageType {
     Calling = "CALLING_USER",
@@ -61,6 +62,7 @@ export class VoiceRTC {
     }
     activeCall: MediaConnection | null = null
     callOptions: VoiceRTCOptions
+    private callStartTime: Date | null = null
     isReceivingCall = false
     makingCall = false
     acceptedIncomingCall = false
@@ -188,6 +190,7 @@ export class VoiceRTC {
         this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && this.callOptions.video.enabled
 
         this.channel = conn.metadata.channel
+        this.callStartTime = conn.metadata.callStartTime ? new Date(conn.metadata.callStartTime) : null
         this.dataConnection = conn
 
         conn.on("open", () => {
@@ -211,38 +214,6 @@ export class VoiceRTC {
         this.channel = dataReceived.channel
         this.remoteVoiceUser = dataReceived.userInfo
         Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
-
-    turnOnOffCamera() {
-        this.callOptions.video.enabled = !this.callOptions.video.enabled
-        this.activeCall?.localStream?.getVideoTracks().forEach(track => {
-            track.enabled = !track.enabled
-        })
-
-        this.sendData(this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo)
-
-        Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
-
-    turnOnOffMicrophone() {
-        this.callOptions.audio.enabled = !this.callOptions.audio.enabled
-        this.activeCall?.localStream.getAudioTracks().forEach(track => {
-            track.enabled = this.callOptions.audio.enabled
-        })
-        this.sendData(this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio)
-        Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
-
-    turnOnOffDeafened() {
-        try {
-            this.callOptions.audio.deafened = !this.callOptions.audio.deafened
-
-            this.activeCall?.remoteStream.getAudioTracks().forEach(track => {
-                track.enabled = !track.enabled
-            })
-        } catch (error) {
-            log.error(`Error turning on/off deafened: ${error}`)
-        }
     }
 
     public async acceptIncomingCall() {
@@ -275,9 +246,18 @@ export class VoiceRTC {
         this.callOptions.audio.enabled = true
 
         this.channel = chatID
+        this.makingCall = true
         const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
         this.remotePeerId = remotePeerIdEdited
-        this.makingCall = true
+    }
+
+    private async sendMessageCallStarted(chatID: string) {
+        const now = new Date()
+        this.callStartTime = now
+        const formattedTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+        const text = get(_)("settings.calling.startCallMessage", { values: { value: formattedTime } })
+        this.channel = chatID
+        await RaygunStoreInstance.send(chatID, text.split("\n"), [])
     }
 
     public async makeCall() {
@@ -296,13 +276,22 @@ export class VoiceRTC {
                     channel: this.channel,
                 },
             })
+            await this.connectWithRetry()
+
+            setTimeout(() => {
+                if (this.callStartTime === null) {
+                    this.endCall(true)
+                }
+            }, 10000)
 
             await this.sendData(VoiceRTCMessageType.Calling)
 
-            this.dataConnection.on("data", data => {
-                let dataReceived = data as VoiceMessage
-                this.handleWithDataReceived(dataReceived)
-            })
+            if (this.dataConnection) {
+                this.dataConnection.on("data", data => {
+                    let dataReceived = data as VoiceMessage
+                    this.handleWithDataReceived(dataReceived)
+                })
+            }
 
             let localStream = await this.updateLocalStream()
 
@@ -351,6 +340,50 @@ export class VoiceRTC {
         // await this.improveAudioQuality()
     }
 
+    async connectWithRetry() {
+        const maxRetries = 5
+        let attempts = 0
+        let connected = false
+
+        while (!connected && attempts < maxRetries) {
+            try {
+                this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
+                    reliable: true,
+                    metadata: {
+                        did: this.localPeer!.id,
+                        username: get(Store.state.user).name,
+                        videoEnabled: this.callOptions.video.enabled,
+                        audioEnabled: this.callOptions.audio.enabled,
+                        isDeafened: this.callOptions.audio.deafened,
+                        channel: this.channel,
+                        callStartTime: this.callStartTime,
+                    },
+                })
+
+                this.dataConnection.on("open", () => {
+                    connected = true
+                    log.debug("Connection established successfully.")
+                })
+
+                await new Promise(resolve => setTimeout(resolve, 2000))
+                log.debug("Not possible to connect, trying again.")
+
+                if (!connected && attempts === maxRetries) {
+                    log.error("Connection attempt failed. Ending call.")
+                    this.endCall(false)
+                }
+            } catch (error) {
+                attempts += 1
+                log.debug(`Attempt ${attempts} failed. Retrying...`)
+
+                if (attempts >= maxRetries) {
+                    log.error("Max retries reached. Connection failed.")
+                    break
+                }
+            }
+        }
+    }
+
     async updateLocalStream(updatingCallSetting = false) {
         let localStream
         try {
@@ -396,7 +429,6 @@ export class VoiceRTC {
         }
 
         if (this.activeCall !== null && updatingCallSetting) {
-            console.log("Entering here")
             this.activeCall?.peerConnection.getSenders().forEach(sender => {
                 if (sender.track?.kind === "video") {
                     sender.replaceTrack(localStream.getVideoTracks()[0])
@@ -443,7 +475,7 @@ export class VoiceRTC {
         log.debug(`Data received: ${dataReceived.type}`)
         switch (dataReceived.type) {
             case VoiceRTCMessageType.EndingCall:
-                this.endCall()
+                this.endCall(false)
                 break
             case VoiceRTCMessageType.Calling:
                 if (!this.makingCall) {
@@ -451,6 +483,9 @@ export class VoiceRTC {
                 }
                 this.remoteVoiceUser = dataReceived.userInfo
                 this.channel = dataReceived.channel
+                break
+            case VoiceRTCMessageType.AcceptedCall:
+                this.sendMessageCallStarted(this.channel)
                 break
             case VoiceRTCMessageType.AcceptedCall:
             case VoiceRTCMessageType.IncomingCall:
@@ -481,14 +516,58 @@ export class VoiceRTC {
         })
     }
 
-    async endCall() {
+    private getDuration(endTime: Date): string {
+        if (!this.callStartTime) return "0:00"
+
+        const durationMs = endTime.getTime() - this.callStartTime.getTime()
+        const totalSeconds = Math.floor(durationMs / 1000)
+        const minutes = Math.floor(totalSeconds / 60)
+        const seconds = totalSeconds % 60
+
+        if (minutes === 0) {
+            const fractionalSeconds = (durationMs / 1000).toFixed(2)
+            return `${fractionalSeconds} seconds`
+        } else {
+            const minutesFormatted = minutes.toString().padStart(2, "0")
+            return `${minutesFormatted}min`
+        }
+    }
+
+    async endCall(sendEndCallMessage = true) {
         await this.sendData(VoiceRTCMessageType.EndingCall)
 
+        if (sendEndCallMessage && this.callStartTime) {
+            const now = new Date()
+            const duration = this.getDuration(now)
+            const formattedEndTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+            const endText = get(_)("settings.calling.endCallMessage", { values: { formattedEndTime: formattedEndTime, duration: duration } })
+            await RaygunStoreInstance.send(this.channel, endText.split("\n"), [])
+        } else if (sendEndCallMessage && this.callStartTime === null) {
+            const text = get(_)("settings.calling.callMissed")
+            await RaygunStoreInstance.send(this.channel, text.split("\n"), [])
+        }
+
+        this.clearResources()
+
+        if (get(Store.state.activeCall)) {
+            Store.endCall()
+        }
+
+        if (get(Store.state.pendingCall)) {
+            Store.denyCall()
+        }
+
+        log.info("Call ended and resources cleaned up.")
+        this.setupPeerEvents()
+    }
+
+    private clearResources() {
         this.channel = ""
         this.activeCall?.localStream?.getTracks().forEach(track => track.stop())
         this.makingCall = false
         this.acceptedIncomingCall = false
         this.isReceivingCall = false
+        this.callStartTime = null
 
         this.activeCall?.remoteStream?.getTracks().forEach(track => track.stop())
 
@@ -520,14 +599,6 @@ export class VoiceRTC {
             this.localVideoCurrentSrc.srcObject = null
             this.localVideoCurrentSrc = null
         }
-
-        if (get(Store.state.activeCall)) {
-            Store.endCall()
-            Store.denyCall()
-        }
-
-        log.info("Call ended and resources cleaned up.")
-        this.setupPeerEvents()
     }
 
     handleError(error: Error) {
