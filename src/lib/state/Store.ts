@@ -333,10 +333,17 @@ class GlobalStore {
         if (!cached) {
             // The user is not in the cache so we fetch it from Multipass
             // For that we return the default user that then gets updated with the result from Multipass
-            let create = writable(defaultUser)
-            MultipassStoreInstance.identity_from_did(did).then(fetched => {
-                if (fetched) create.set(fetched)
+            let create: Writable<User> = writable({
+                ...defaultUser,
+                loading: true,
             })
+            MultipassStoreInstance.identity_from_did(did)
+                .then(fetched => {
+                    if (fetched) {
+                        create.set(fetched)
+                    } else create.set({ ...get(create), loading: false })
+                })
+                .catch(_ => create.set({ ...get(create), loading: false }))
             cache[did] = create
             this.state.userCache.set(cache)
             return create

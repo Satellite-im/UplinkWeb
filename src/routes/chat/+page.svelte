@@ -1,8 +1,6 @@
 <script lang="ts">
     import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
-    import TimeAgo from "javascript-time-ago"
-
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
@@ -28,7 +26,7 @@
     import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { defaultChat, OperationState, type Chat, type User } from "$lib/types"
+    import { OperationState } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -42,7 +40,7 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import type { Attachment, Message as MessageType } from "$lib/types"
+    import type { Attachment, Message as MessageType, User } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
     import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
@@ -53,7 +51,7 @@
     import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
     import { MessageEvent } from "warp-wasm"
-    import { debounce } from "$lib/utils/Functions"
+    import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
 
     let loading = false
@@ -69,15 +67,9 @@
     $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
-    const timeAgo = new TimeAgo("en-US")
 
     function toggleSidebar() {
         UIStore.toggleSidebar()
-    }
-
-    function getTimeAgo(dateInput: string | Date) {
-        const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
-        return timeAgo.format(date)
     }
 
     let transact: boolean = false
@@ -434,9 +426,9 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            Store.setActiveCall($activeChat)
                             await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
                             activeCallInProgress = true
+                            Store.setActiveCall($activeChat)
                         }}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>
