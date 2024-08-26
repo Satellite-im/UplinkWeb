@@ -542,11 +542,12 @@
 
     async function renameItem(item: FileInfo, newName: string, fileExtension: string = "") {
         let oldName = item.name
-        if (item.type === "folder" && oldName === "" && newName === "") {
+        console.log("old: ", oldName.trim(), "; new: ", newName.trim(), "°")
+        if (item.type === "folder" && oldName.trim() === "" && newName.trim() === "") {
             removeFolderFromStak(item)
             return false
         }
-        if (newName === "") {
+        if (newName.trim() === "") {
             Store.addToastNotification(new ToastMessage("", "Empty name provided", 2))
             return false
         }
@@ -877,7 +878,7 @@
                                 kind={FilesItemKind.Folder}
                                 info={item}
                                 onRename={async name => {
-                                    if (item.name === "" && name !== "") {
+                                    if (item.name.trim() === "" && name.trim() !== "") {
                                         const newName = `${name}`
                                         item.name = newName
                                         await createNewDirectory(item)
