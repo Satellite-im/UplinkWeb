@@ -392,7 +392,7 @@
             <Topbar>
                 <div slot="before">
                     {#if $activeChat.users.length > 0}
-                        {#if $activeChat.users.length === 2}
+                        {#if $activeChat.kind === ChatType.DirectMessage}
                             <ProfilePicture
                                 hook="chat-topbar-profile-picture"
                                 typing={$activeChat.typing_indicator.size > 0}
