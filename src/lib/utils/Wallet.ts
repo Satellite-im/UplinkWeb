@@ -10,6 +10,7 @@ export type Account = {
 }
 
 export enum AssetType {
+    None = "Select an asset",
     Bitcoin = "BTC",
     BitcoinRunes = "BTC.Runes(wip)",
 
@@ -29,6 +30,7 @@ type EthWallet = {
     provider: ethers.BrowserProvider
     signer: ethers.JsonRpcSigner
 }
+
 async function getEthWallet(ethWallet: EthWallet | undefined): Promise<EthWallet> {
     if (ethWallet === undefined) {
         // Connect to the MetaMask EIP-1193 object from the browser extension (read-only)
@@ -59,6 +61,10 @@ class ExternalWallets {
     ethWallet: EthWallet | undefined
 
     async myAddress(asset: Asset): Promise<string> {
+        if (asset.kind === AssetType.None) {
+            throw new Error("Please select an asset before retrieving the address")
+        }
+
         switch (asset.kind) {
             case AssetType.Bitcoin:
                 return await btcMyAddress()
@@ -80,7 +86,12 @@ class ExternalWallets {
                 return await solSplMyAddress()
         }
     }
+
     async myBalance(asset: Asset): Promise<bigint> {
+        if (asset.kind === AssetType.None) {
+            throw new Error("Please select an asset before checking the balance")
+        }
+
         switch (asset.kind) {
             case AssetType.Bitcoin:
                 return await btcMyBalance()
@@ -102,7 +113,12 @@ class ExternalWallets {
                 return await solSplMyBalance(asset)
         }
     }
+
     async getAmountDisplay(asset: Asset, amount: bigint): Promise<string> {
+        if (asset.kind === AssetType.None) {
+            throw new Error("Please select an asset before formatting the amount")
+        }
+
         switch (asset.kind) {
             case AssetType.Bitcoin:
                 return await btcGetAmountDisplay(amount)
@@ -121,11 +137,15 @@ class ExternalWallets {
                 return await solSplGetAmountDisplay(asset, amount)
         }
     }
+
     async transfer(asset: Asset, amount: bigint, toAddress: string) {
+        if (asset.kind === AssetType.None) {
+            throw new Error("Please select an asset before performing a transfer")
+        }
+
         switch (asset.kind) {
-            case AssetType.Bitcoin: {
+            case AssetType.Bitcoin:
                 return await btcTransfer(amount, toAddress)
-            }
             case AssetType.BitcoinRunes:
                 return await btcRunesTransfer(asset, amount, toAddress)
             case AssetType.Ethereum: {
@@ -356,12 +376,13 @@ export class Transfer {
     toAddress: string
 
     constructor() {
-        this.asset = { kind: AssetType.Bitcoin, id: "" }
+        this.asset = { kind: AssetType.None, id: "" }
         this.amount = BigInt(0)
         this.toAddress = ""
     }
+
     isValid(): boolean {
-        if (this.asset.kind !== undefined && this.toAddress !== "" && this.amount > 0) {
+        if (this.asset.kind !== AssetType.None && this.toAddress !== "" && this.amount > 0) {
             if (this.asset.kind === AssetType.BitcoinRunes && this.asset.id === "") {
                 return false
             }
@@ -375,14 +396,17 @@ export class Transfer {
         }
         return false
     }
+
     toCmdString(): string {
         let id = this.asset.id === "" ? "n/a" : this.asset.id
         return `/request ${this.asset.kind} ${id} ${this.amount} ${this.toAddress}`
     }
+
     toDisplayString(): string {
         let id = this.asset.id === "n/a" ? "" : this.asset.id
         return `Send ${this.amount} ${this.asset.kind}: ${id} to ${shortenAddr(this.toAddress, 6)}`
     }
+
     async execute() {
         if (this.isValid()) {
             await wallet.transfer(this.asset, this.amount, this.toAddress)
