@@ -2,7 +2,7 @@
     import Button from "$lib/elements/Button.svelte"
     import { ConversationStore } from "$lib/state/conversation"
     import { Store } from "$lib/state/Store"
-    import { AssetType, shorten_addr, Transfer, wallet, type Asset } from "$lib/utils/Wallet"
+    import { AssetType, shortenAddr, Transfer, wallet, type Asset } from "$lib/utils/Wallet"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { get } from "svelte/store"
     import { _ } from "svelte-i18n"
@@ -21,10 +21,10 @@
         })
     }
 
-    let display_amount = ""
+    let displayAmount = ""
     function onChangeAmount() {
-        wallet.get_amount_display(transfer.asset, transfer.amount).then(display => {
-            display_amount = display
+        wallet.getAmountDisplay(transfer.asset, transfer.amount).then(display => {
+            displayAmount = display
         })
     }
     onChangeAmount()
@@ -32,8 +32,8 @@
         transfer.asset.id = ""
         transfer.amount = BigInt(0)
         onChangeAmount()
-        wallet.my_address(transfer.asset).then(address => {
-            transfer.to_address = address
+        wallet.myAddress(transfer.asset).then(address => {
+            transfer.toAddress = address
         })
     }
     onChangeAssetKind()
@@ -41,19 +41,19 @@
 
 <div>
     <div>{$_("payments.assetType") + ":"}<Select bind:selected={transfer.asset.kind} options={Object.values(AssetType).map(value => ({ value: value, text: value }))} on:change={onChangeAssetKind} /></div>
-    {#if transfer.asset.kind === AssetType.Bitcoin_Runes || transfer.asset.kind === AssetType.Ethereum_ERC20 || transfer.asset.kind === AssetType.Solana_SPL}
+    {#if transfer.asset.kind === AssetType.BitcoinRunes || transfer.asset.kind === AssetType.EthereumERC20 || transfer.asset.kind === AssetType.SolanaSPL}
         <div>{$_("payments.assetId") + ":"}<input bind:value={transfer.asset.id} on:change={onChangeAmount} /></div>
     {/if}
-    <div>{display_amount}</div>
+    <div>{displayAmount}</div>
     <div>{$_("payments.amount") + ":"} <input bind:value={transfer.amount} type="number" pattern="[0-9]" on:change={onChangeAmount} /></div>
-    {#if transfer.to_address !== ""}
-        <div>{$_("payments.receiving_to")}: {shorten_addr(transfer.to_address, 6)}</div>
+    {#if transfer.toAddress !== ""}
+        <div>{$_("payments.receiving_to")}: {shortenAddr(transfer.toAddress, 6)}</div>
     {/if}
 
     <Button
-        disabled={!transfer.is_valid()}
+        disabled={!transfer.isValid()}
         on:click={async () => {
-            await sendMessage(transfer.to_cmd_string())
+            await sendMessage(transfer.toCmdString())
             onClose()
         }}>{$_("payments.request")}</Button>
 </div>
