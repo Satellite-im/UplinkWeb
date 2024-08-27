@@ -486,8 +486,8 @@ export class VoiceRTC {
                 break
             case VoiceRTCMessageType.AcceptedCall:
                 this.sendMessageCallStarted(this.channel)
+                this.updateRemoteUserInfo(dataReceived)
                 break
-            case VoiceRTCMessageType.AcceptedCall:
             case VoiceRTCMessageType.IncomingCall:
             case VoiceRTCMessageType.EnabledVideo:
             case VoiceRTCMessageType.DisabledVideo:
