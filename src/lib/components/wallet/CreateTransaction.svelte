@@ -37,11 +37,15 @@
         })
     }
     onChangeAssetKind()
+
+    function needsAssetId(): boolean {
+        return transfer.asset.kind === AssetType.BitcoinRunes || transfer.asset.kind === AssetType.EthereumERC20 || transfer.asset.kind === AssetType.SolanaSPL
+    }
 </script>
 
 <div>
     <div>{$_("payments.assetType") + ":"}<Select bind:selected={transfer.asset.kind} options={Object.values(AssetType).map(value => ({ value: value, text: value }))} on:change={onChangeAssetKind} /></div>
-    {#if transfer.asset.kind === AssetType.BitcoinRunes || transfer.asset.kind === AssetType.EthereumERC20 || transfer.asset.kind === AssetType.SolanaSPL}
+    {#if needsAssetId()}
         <div>{$_("payments.assetId") + ":"}<input bind:value={transfer.asset.id} on:change={onChangeAmount} /></div>
     {/if}
     <div>{displayAmount}</div>
