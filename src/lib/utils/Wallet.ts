@@ -151,11 +151,11 @@ async function btcMyAddress(): Promise<string> {
         purposes: [AddressPurpose.Payment],
     })
     if (response.status !== "success") {
-        console.error("failed to get accounts")
+        log.error("failed to get accounts")
         return ""
     }
     if (response.result.length < 1) {
-        console.error("no account exists")
+        log.error("no account exists")
         return ""
     }
     return response.result[0].address
@@ -187,13 +187,12 @@ async function btcTransfer(amount: bigint, toAddress: string) {
             ],
         })
         if (response.status === "success") {
-            // handle success
+            log.info("btc transfer successful")
         } else {
-            console.error(response.error.message)
             if (response.error.code === RpcErrorCode.USER_REJECTION) {
-                // handle user cancellation error
+                log.warn(response.error.message)
             } else {
-                // handle error
+                log.error(response.error.message)
             }
         }
     } catch (err) {
@@ -206,11 +205,11 @@ async function btcRunesMyAddress(): Promise<string> {
         purposes: [AddressPurpose.Ordinals],
     })
     if (response.status !== "success") {
-        console.error("failed to get accounts")
+        log.error("failed to get accounts")
         return ""
     }
     if (response.result.length < 1) {
-        console.error("no account exists")
+        log.error("no account exists")
         return ""
     }
     return response.result[0].address
@@ -250,13 +249,12 @@ async function btcRunesTransfer(asset: Asset, amount: bigint, toAddress: string)
         })
 
         if (response.status === "success") {
-            // handle success
+            log.info("btc runes transfer successful")
         } else {
-            console.error(response.error.message)
             if (response.error.code === RpcErrorCode.USER_REJECTION) {
-                // handle user cancellation error
+                log.warn(response.error.message)
             } else {
-                // handle error
+                log.error(response.error.message)
             }
         }
     } catch (err) {
@@ -315,41 +313,41 @@ async function ethErc20Transfer(ethWallet: EthWallet, asset: Asset, amount: bigi
 }
 
 async function solMyAddress(): Promise<string> {
-    console.error("solMyAddress:", "SOL not yet supported")
+    log.error("solMyAddress: SOL not yet supported")
     return ""
 }
 
 async function solMyBalance(): Promise<bigint> {
-    console.error("solMyBalance:", "SOL not yet supported")
+    log.error("solMyBalance: SOL not yet supported")
     return BigInt(0)
 }
 
 async function solGetAmountDisplay(amount: bigint): Promise<string> {
-    console.error("solGetAmountDisplay:", "SOL not yet supported")
+    log.error("solGetAmountDisplay: SOL not yet supported")
     return ""
 }
 
 async function solTransfer(amount: bigint, toAddress: string) {
-    console.error("solTransfer:", "SOL not yet supported")
+    log.error("solTransfer: SOL not yet supported")
 }
 
 async function solSplMyAddress(): Promise<string> {
-    console.error("solSplMyAddress:", "SOL not yet supported")
+    log.error("solSplMyAddress: SOL not yet supported")
     return ""
 }
 
 async function solSplMyBalance(asset: Asset): Promise<bigint> {
-    console.error("solSplMyBalance:", "SOL not yet supported")
+    log.error("solSplMyBalance: SOL not yet supported")
     return BigInt(0)
 }
 
 async function solSplGetAmountDisplay(asset: Asset, amount: bigint): Promise<string> {
-    console.error("solSplGetAmountDisplay:", "SOL not yet supported")
+    log.error("solSplGetAmountDisplay: SOL not yet supported")
     return ""
 }
 
 async function solSplTransfer(asset: Asset, amount: bigint, toAddress: string) {
-    console.error("solSplTransfer:", "SOL not yet supported")
+    log.error("solSplTransfer: SOL not yet supported")
 }
 
 export class Transfer {
