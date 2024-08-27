@@ -60,14 +60,20 @@
 
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
     })
 
     let subscribeTwo = Store.state.devices.cameraEnabled.subscribe(state => {
         cameraEnabled = state
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
     })
 
     let subscribeThree = Store.state.devices.deafened.subscribe(state => {
         deafened = state
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
     })
 
     let subscribeFour = Store.state.activeCall.subscribe(state => {
@@ -146,7 +152,7 @@
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
             if (VoiceRTCInstance.makingCall && VoiceRTCInstance.remoteVoiceUser.did === "") {
-                await VoiceRTCInstance.makeVideoCall()
+                await VoiceRTCInstance.makeCall()
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 await VoiceRTCInstance.acceptCall()
