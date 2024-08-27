@@ -36,7 +36,7 @@ npm run dev
 
 ## Get Testnet Bitcoin
 
-1 - Install Xverse Chrome extension
+1 - Install Xverse Chrome extension (or Unisat)
 
 2 - In Xverse, go to Settings -> General -> Network and select 'Testnet'
 
