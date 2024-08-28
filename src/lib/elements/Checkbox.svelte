@@ -1,21 +1,9 @@
 <script lang="ts">
     export let checked: boolean = false
     export let hook: string = ""
-    export let onToggle: (current: boolean) => boolean = _ => true
-    export let disabled = false
 </script>
 
-<input
-    data-cy={hook}
-    type="checkbox"
-    checked={checked}
-    class="{checked ? 'checked' : ''} {disabled ? 'disabled' : ''}"
-    disabled={disabled}
-    on:click={_ => {
-        if (onToggle(!checked)) {
-            checked = !checked
-        }
-    }} />
+<input data-cy={hook} type="checkbox" checked={checked} />
 <slot></slot>
 
 <style lang="scss">
@@ -52,12 +40,7 @@
             clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
         }
 
-        &.disabled {
-            border-color: var(--color-muted);
-            cursor: auto;
-        }
-
-        &.checked {
+        &:checked {
             border-color: var(--color);
 
             &::before {
