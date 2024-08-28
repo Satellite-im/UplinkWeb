@@ -50,9 +50,7 @@
                     (e: WarpError) => {
                         log.error("Error creating identity: " + e)
                     },
-                    pass => {
-                        phrase = pass.split(" ")
-                        AuthStore.setSeedPhrase(phrase)
+                    _ => {
                         currentPage = LoginPage.RecoveryCopy
                     }
                 )
