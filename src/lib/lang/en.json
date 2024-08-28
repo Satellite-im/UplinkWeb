@@ -168,6 +168,9 @@
         "totalSpace": "Total Space"
     },
     "payments": {
+        "send": "Send",
+        "receive": "Receive",
+        "receiving_to": "Receiving to",
         "send_coin": "Send Coin",
         "amount": "Amount",
         "from": "From",
@@ -175,12 +178,14 @@
         "note": "Note",
         "date": "Date",
         "create": "Create Payment Request",
-        "network": "Network: {network}",
-        "assetType": "Asset type: {type}",
-        "assetName": "Asset name: {name}",
+        "network": "Network",
+        "assetType": "Asset type",
+        "assetName": "Asset name",
+        "assetId": "Asset Id",
         "request": "Request",
         "notePlaceholder": "Add a note...",
-        "recipients": "Recipients:",
+        "recipient": "Recipient",
+        "recipients": "Recipients",
         "selectRecipients": "Select recipient(s)",
         "newPayment": "New Payment",
         "paymentID": "Payment ID",
@@ -281,7 +286,8 @@
                 "label": "Reveal recovery phrase",
                 "description": "Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.",
                 "show": "Reveal Phrase",
-                "hide": "Hide Phrase"
+                "hide": "Hide Phrase",
+                "missing": "Phrase not saved"
             },
             "should_store": "Store recovery seed on account (disable for increased security, irreversible)",
             "update": "Profile Updated!",
@@ -300,7 +306,12 @@
             "setNote": "Set a note . . .",
             "deleteBanner": "Delete Banner Picture",
             "deleteProfile": "Delete Profile Picture",
-            "address": "Address"
+            "address": "Address",
+            "seed": {
+                "remove": "Your recovery phrase will not be stored anymore and will be removed. Make sure to save the phrase! This change is irreversible!",
+                "remove.yes": "I understand",
+                "remove.no": "Cancel"
+            }
         },
         "calling": {
             "minimalCallingAlerts": "Minimal Calling Alerts",

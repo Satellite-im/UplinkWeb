@@ -2,22 +2,16 @@
     import Button from "$lib/elements/Button.svelte"
     import { ConversationStore } from "$lib/state/conversation"
     import { Store } from "$lib/state/Store"
-    import { PayRequest, wallet } from "$lib/utils/Wallet"
+    import { AssetType, shortenAddr, Transfer, wallet, type Asset } from "$lib/utils/Wallet"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { get } from "svelte/store"
     import { _ } from "svelte-i18n"
+    import { Select } from "$lib/elements"
 
     export let onClose
 
-    let payment_request = new PayRequest(0, "sat", "")
-    wallet.btc.get_accounts().then(accounts => {
-        payment_request.destination = accounts[0].address
-    })
+    let transfer = new Transfer()
 
-    function handleInput(e: Event) {
-        const target = e.target as HTMLSelectElement
-        payment_request.amount = parseInt(target.value)
-    }
     async function sendMessage(text: string) {
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
@@ -26,19 +20,44 @@
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
     }
+
+    let displayAmount = ""
+    function onChangeAmount() {
+        wallet.getAmountDisplay(transfer.asset, transfer.amount).then(display => {
+            displayAmount = display
+        })
+    }
+    onChangeAmount()
+    function onChangeAssetKind() {
+        transfer.asset.id = ""
+        transfer.amount = BigInt(0)
+        onChangeAmount()
+        wallet.myAddress(transfer.asset).then(address => {
+            transfer.toAddress = address
+        })
+    }
+    onChangeAssetKind()
+
+    function needsAssetId(): boolean {
+        return transfer.asset.kind === AssetType.BitcoinRunes || transfer.asset.kind === AssetType.EthereumERC20 || transfer.asset.kind === AssetType.SolanaSPL
+    }
 </script>
 
 <div>
-    <h1>{$_("payments.create") + ":"}</h1>
-    <div>{$_("payments.amount") + ":"} <input type="number" on:input={handleInput} pattern="[0-9]" /></div>
+    <div>{$_("payments.assetType") + ":"}<Select bind:selected={transfer.asset.kind} options={Object.values(AssetType).map(value => ({ value: value, text: value }))} on:change={onChangeAssetKind} /></div>
+    {#if needsAssetId()}
+        <div>{$_("payments.assetId") + ":"}<input bind:value={transfer.asset.id} on:change={onChangeAmount} /></div>
+    {/if}
+    <div>{displayAmount}</div>
+    <div>{$_("payments.amount") + ":"} <input bind:value={transfer.amount} type="number" pattern="[0-9]" on:change={onChangeAmount} /></div>
+    {#if transfer.toAddress !== ""}
+        <div>{$_("payments.receiving_to")}: {shortenAddr(transfer.toAddress, 6)}</div>
+    {/if}
 
-    <div>{$_("payments.network", { values: { network: "btc" } })}</div>
-    <div>{$_("payments.assetType", { values: { type: "native" } })}</div>
-    <div>{$_("payments.assetName", { values: { name: "sat" } })}</div>
     <Button
-        disabled={!payment_request.is_valid()}
+        disabled={!transfer.isValid()}
         on:click={async () => {
-            await sendMessage(payment_request.to_cmd_string())
+            await sendMessage(transfer.toCmdString())
             onClose()
         }}>{$_("payments.request")}</Button>
 </div>

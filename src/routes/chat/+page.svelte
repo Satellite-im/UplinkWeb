@@ -47,7 +47,7 @@
     import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
-    import { get_valid_payment_request } from "$lib/utils/Wallet"
+    import { getValidPaymentRequest } from "$lib/utils/Wallet"
     import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
     import { MessageEvent } from "warp-wasm"
@@ -418,7 +418,17 @@
                     {/if}
                 </div>
                 <svelte:fragment slot="controls">
-                    <Button hook="button-chat-call" loading={loading} icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
+                    <Button
+                        hook="button-chat-call"
+                        loading={loading}
+                        icon
+                        appearance={Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        on:click={async _ => {
+                            Store.setActiveCall($activeChat)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id, true)
+                            activeCallInProgress = true
+                        }}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
                     <Button
@@ -544,8 +554,8 @@
                                                     <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
-                                                        {#if get_valid_payment_request(line) != undefined}
-                                                            <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
+                                                        {#if getValidPaymentRequest(line) != undefined}
+                                                            <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
                                                         {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
                                                             <Text markdown={line} />
                                                         {/if}
