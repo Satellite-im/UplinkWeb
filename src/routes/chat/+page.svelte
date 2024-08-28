@@ -233,7 +233,6 @@
     }, 50)
 
     onMount(() => {
-        console.log("ActiveChat: ", $activeChat)
         setInterval(() => {
             if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
