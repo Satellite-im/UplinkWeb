@@ -65,18 +65,6 @@ class TesseractStore {
         return tesseract?.exist("keypair")
     }
 
-    fetchSeed() {
-        const tesseract = get(this.tesseractWritable)
-        if (!tesseract?.exist("mnemonic")) return undefined
-        return tesseract?.retrieve("mnemonic")
-    }
-
-    removeSeed() {
-        const tesseract = get(this.tesseractWritable)
-        if (!tesseract?.exist("mnemonic")) return
-        tesseract?._delete("mnemonic")
-    }
-
     async initTesseract(from?: wasm.Tesseract) {
         if (from) {
             this.tesseractWritable.set(from)
