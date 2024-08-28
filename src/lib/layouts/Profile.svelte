@@ -1,14 +1,14 @@
 <script lang="ts">
     import { ProfilePicture } from "$lib/components"
     import { Button, Icon, Input, Label, Text } from "$lib/elements"
-    import { Appearance, Integrations, Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
     import { wallet } from "$lib/utils/Wallet"
     import { _ } from "svelte-i18n"
-    import { getIntegrationColor, identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
+    import { getIntegrationColor, identityColor } from "$lib/utils/ProfileUtils"
 
     export let user: User | null = null
 
@@ -22,18 +22,18 @@
     let note: string = user ? new Notes().get(user?.name) : ""
 </script>
 
-<div class="profile">
-    <div class="profile-header" style={`background-image: url(${user?.profile.banner.image}); background-color: ${identityColor(user?.key || "")};`}>
-        <ProfilePicture id={user?.key} image={user?.profile.photo.image} size={Size.Larger} noIndicator status={user?.profile.status} frame={user?.profile.photo.frame} />
+<div class="profile" data-cy="quick-profile">
+    <div class="profile-header" data-cy="quick-profile-banner" style={`background-image: url(${user?.profile.banner.image}); background-color: ${identityColor(user?.key || "")};`}>
+        <ProfilePicture hook="quick-profile-picture" id={user?.key} image={user?.profile.photo.image} size={Size.Larger} noIndicator status={user?.profile.status} frame={user?.profile.photo.frame} />
 
         <div class="details">
             <div class="left">
-                <Label text={$_("generic.username")} />
-                <Text size={Size.Large}>{user?.name}</Text>
+                <Label hook="label-quick-profile-username" text={$_("generic.username")} />
+                <Text hook="text-quick-profile-username" size={Size.Large}>{user?.name}</Text>
             </div>
             <div class="right">
                 {#if user && user.id.short !== currentUserShortId}
-                    <Button outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? $_("settings.profile.friended") : $_("settings.profile.addFriend")}>
+                    <Button hook="button-quick-profile-user" outline appearance={isFriended(user) ? Appearance.Alt : Appearance.Primary} text={isFriended(user) ? $_("settings.profile.friended") : $_("settings.profile.addFriend")}>
                         <Icon icon={isFriended(user) ? Shape.CheckMark : Shape.Plus} />
                     </Button>
                 {/if}
@@ -43,22 +43,17 @@
     {#if user}
         <div class="content">
             <div class="section">
-                <Label text={$_("generic.status_message")} />
-                <Text>{user.profile.status_message}</Text>
+                <Label hook="label-quick-profile-status" text={$_("generic.status_message")} />
+                <Text hook="text-quick-profile-status">{user.profile.status_message}</Text>
             </div>
             <div class="section">
                 <Label text={$_("settings.profile.integration.title")} />
                 <div class="integrations">
-                    {#each user.integrations as [key, value]}
-                        <div class="integration" style={`border-color: ${getIntegrationColor(key)};`}>
-                            <img class="integration-logo" src={toIntegrationIconSrc(key)} alt="Platform Logo" />
-                            {#if toIntegrationKind(key) === Integrations.Generic}
-                                <Text singleLine>{`${key} :`}</Text>
-                                <Text singleLine>{value}</Text>
-                            {:else}
-                                <Text singleLine>{value}</Text>
-                            {/if}
-                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(key)}>
+                    {#each user.integrations as integration}
+                        <div class="integration" style={`border-color: ${getIntegrationColor(integration)};`}>
+                            <img class="integration-logo" src="/assets/brand/{integration.kind}.png" alt="Platform Logo" />
+                            <Text singleLine>{integration.location}</Text>
+                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration)}>
                                 <Icon icon={Shape.Popout} />
                             </Button>
                         </div>
@@ -66,8 +61,9 @@
                 </div>
             </div>
             <div class="section">
-                <Label text={$_("settings.profile.note")} />
+                <Label hook="label-quick-profile-note" text={$_("settings.profile.note")} />
                 <Input
+                    hook="input-quick-profile-note"
                     alt
                     placeholder={$_("settings.profile.setNote")}
                     value={note}

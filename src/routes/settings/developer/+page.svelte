@@ -1,7 +1,7 @@
 <script lang="ts">
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
-    import { Appearance, Route } from "$lib/enums"
+    import { Appearance, CallEvent, Route } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import Button from "$lib/elements/Button.svelte"
     import { SettingsStore, clearState } from "$lib/state"
@@ -12,7 +12,6 @@
     import { Select } from "$lib/elements"
     import { get } from "svelte/store"
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
-    import AAR from "$lib/components/ui/AAR.svelte"
 
     let settings = get(log.settings)
     log.settings.subscribe(s => {

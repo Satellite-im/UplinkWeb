@@ -10,6 +10,13 @@ export const enum CallDirection {
     Outbound,
 }
 
+export const enum CallEvent {
+    Started,
+    Ended,
+    Missed,
+    Declined,
+}
+
 export const enum Locale {
     EN_US = "English (US)",
     ES_MX = "Español (México)",
@@ -82,6 +89,17 @@ export const enum SettingsRoute {
     Network = "/settings/network",
     Realms = "/settings/realms",
     Gamepad = "/settings/gamepad",
+}
+
+export const enum CommunitySettingsRoute {
+    Roles = "roles",
+    Tags = "tags",
+    Users = "Users",
+    Details = "Details",
+    Extensions = "Extensions",
+    Moderation = "Moderation",
+    Security = "Security",
+    Bots = "Bots",
 }
 
 export const enum Appearance {

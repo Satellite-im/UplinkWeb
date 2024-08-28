@@ -1,13 +1,22 @@
 <script lang="ts">
-    import { Button, Icon, Text } from "$lib/elements"
-    import Label from "$lib/elements/Label.svelte"
+    import { Button, Icon, Text, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
+    import { CommunitySettings } from "$lib/components"
     import Chatbar from "$lib/layouts/Chatbar.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
     import { _ } from "svelte-i18n"
+    import Modal from "$lib/components/ui/Modal.svelte"
+
+    let showSettings: boolean = false
 </script>
 
 <div id="community">
+    {#if showSettings}
+        <Modal on:close={() => (showSettings = false)}>
+            <CommunitySettings />
+        </Modal>
+    {/if}
+
     <Topbar>
         <div slot="before">
             <div class="topbar-details">
@@ -22,7 +31,12 @@
             <Button appearance={Appearance.Alt} icon>
                 <Icon icon={Shape.Users} />
             </Button>
-            <Button appearance={Appearance.Alt} icon>
+            <Button
+                appearance={Appearance.Alt}
+                icon
+                on:click={() => {
+                    showSettings = !showSettings
+                }}>
                 <Icon icon={Shape.Cog} />
             </Button>
         </svelte:fragment>

@@ -136,7 +136,10 @@ class Conversations {
             this.conversations.set(conversations)
         }
         UIStore.mutateChat(chatId, c => {
-            c.last_message_preview = message.text.join("\n")
+            if (message.details.at > c.last_message_at) {
+                c.last_message_preview = message.text.join("\n")
+                c.last_message_at = message.details.at
+            }
         })
     }
 

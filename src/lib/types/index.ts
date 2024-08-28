@@ -1,4 +1,19 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations, CallDirection } from "$lib/enums"
+import {
+    Status,
+    type Appearance,
+    type Route,
+    type SettingsRoute,
+    type Shape,
+    MessageAttachmentKind,
+    KeybindAction,
+    MessageDirection,
+    ChatType,
+    CommunityChannelKind,
+    KeybindState,
+    Integrations,
+    CallDirection,
+    CommunitySettingsRoute,
+} from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
 import type { Writable } from "svelte/store"
 
@@ -96,6 +111,7 @@ export type MediaMeta = {
 
 export type User = {
     id: Id
+    loading?: boolean
     key: string
     name: string
     profile: ProfileData
@@ -131,7 +147,7 @@ export type ChatSettings = {
 export type NavRoute = {
     name: string
     icon: Shape
-    to: Route | SettingsRoute
+    to: Route | SettingsRoute | CommunitySettingsRoute
 }
 
 export type Chat = {
@@ -414,3 +430,5 @@ export type Integration = {
     location: string
     meta: any
 }
+
+export * from "./community"

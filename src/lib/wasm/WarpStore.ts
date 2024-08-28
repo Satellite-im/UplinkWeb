@@ -3,6 +3,7 @@ import { initWarp, type IWarp } from "./IWarp"
 import { get, writable } from "svelte/store"
 import { log } from "$lib/utils/Logger"
 import { TesseractStoreInstance } from "./TesseractStore"
+import { createLock } from "./AsyncLock"
 import { AuthStore } from "$lib/state/auth"
 
 /**
@@ -38,12 +39,13 @@ class Store {
         await initWarp()
         let warp_instance = await this.createIpfs(addresses)
         let tesseract = warp_instance.multipass.tesseract()
+        let locked = createLock(warp_instance)
         // After passing tesseract to Ipfs the current ref is consumed so we fetch it from Ipfs again
         TesseractStoreInstance.initTesseract(tesseract)
         this.warp.tesseract.set(tesseract)
-        this.warp.multipass.set(warp_instance.multipass)
-        this.warp.raygun.set(warp_instance.raygun)
-        this.warp.constellation.set(warp_instance.constellation)
+        this.warp.multipass.set(locked.subLock(w => w.multipass))
+        this.warp.raygun.set(locked.subLock(w => w.raygun))
+        this.warp.constellation.set(locked.subLock(w => w.constellation))
     }
 
     /**

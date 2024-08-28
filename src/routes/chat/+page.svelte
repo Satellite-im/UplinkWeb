@@ -1,8 +1,6 @@
 <script lang="ts">
     import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
-    import TimeAgo from "javascript-time-ago"
-
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
@@ -28,7 +26,7 @@
     import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { OperationState, type Chat, type User } from "$lib/types"
+    import { OperationState } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -42,18 +40,19 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import type { Attachment, Message as MessageType } from "$lib/types"
+    import type { Attachment, Message as MessageType, User } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
     import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
     import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
-    import { get_valid_payment_request } from "$lib/utils/Wallet"
+    import { getValidPaymentRequest } from "$lib/utils/Wallet"
     import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
     import { MessageEvent } from "warp-wasm"
-    import { debounce } from "$lib/utils/Functions"
+    import { debounce, getTimeAgo } from "$lib/utils/Functions"
+    import Controls from "$lib/layouts/Controls.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -68,15 +67,9 @@
     $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
-    const timeAgo = new TimeAgo("en-US")
 
     function toggleSidebar() {
         UIStore.toggleSidebar()
-    }
-
-    function getTimeAgo(dateInput: string | Date) {
-        const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
-        return timeAgo.format(date)
     }
 
     let transact: boolean = false
@@ -222,10 +215,12 @@
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
     let activeCallInProgress = false
+    let activeCallDid = ""
 
     Store.state.activeCall.subscribe(call => {
         if (call) {
             activeCallInProgress = true
+            activeCallDid = call.chat.id
         } else {
             activeCallInProgress = false
         }
@@ -236,9 +231,11 @@
     }, 50)
 
     onMount(() => {
+        console.log("ActiveChat: ", $activeChat)
         setInterval(() => {
             if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
+                activeCallDid = VoiceRTCInstance.channel
             } else {
                 activeCallInProgress = false
             }
@@ -419,19 +416,17 @@
                     {/if}
                 </div>
                 <svelte:fragment slot="controls">
-                    <CoinBalance balance={0.0} />
                     <Button
-                        hook="button-chat-transact"
-                        icon
-                        appearance={transact ? Appearance.Primary : Appearance.Alt}
-                        disabled={$activeChat.users.length === 0}
+                        hook="button-chat-call"
                         loading={loading}
-                        on:click={_ => {
-                            transact = true
+                        icon
+                        appearance={Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        on:click={async _ => {
+                            Store.setActiveCall($activeChat)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id, true)
+                            activeCallInProgress = true
                         }}>
-                        <Icon icon={Shape.SendCoin} />
-                    </Button>
-                    <Button hook="button-chat-call" loading={loading} icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
                     <Button
@@ -441,9 +436,9 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            Store.setActiveCall($activeChat)
                             await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
                             activeCallInProgress = true
+                            Store.setActiveCall($activeChat)
                         }}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>
@@ -505,12 +500,12 @@
                 </svelte:fragment>
             </Topbar>
         {/if}
-        {#if activeCallInProgress}
+        {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
 
         <Conversation loading={loading}>
-            {#if $activeChat.users.length > 0}
+            {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
                     {#each $conversation.messages as group}
@@ -557,8 +552,8 @@
                                                     <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
-                                                        {#if get_valid_payment_request(line) != undefined}
-                                                            <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
+                                                        {#if getValidPaymentRequest(line) != undefined}
+                                                            <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
                                                         {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
                                                             <Text markdown={line} />
                                                         {/if}
@@ -678,6 +673,21 @@
                         </Button>
                     </ContextMenu>
                 </svelte:fragment>
+
+                <Controls>
+                    <Button
+                        hook="button-chat-transact"
+                        icon
+                        outline
+                        appearance={transact ? Appearance.Primary : Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        loading={loading}
+                        on:click={_ => {
+                            transact = true
+                        }}>
+                        <Icon icon={Shape.SendCoin} />
+                    </Button>
+                </Controls>
             </Chatbar>
         {/if}
     </div>
