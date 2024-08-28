@@ -51,7 +51,7 @@
     </SettingSection>
     <SettingSection hook="section-echo-cancellation" name="Echo Cancellation" description="Cancel out feedback from your microphone.">
         <Switch
-            hook="swtich-echo-cancellation"
+            hook="switch-echo-cancellation"
             on={echoCancellation}
             on:toggle={e => {
                 SettingsStore.setEchoCancellation(e.detail)
