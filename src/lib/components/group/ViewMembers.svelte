@@ -51,7 +51,6 @@
             friends = [] // Default to empty array if an error occurs
         }
 
-        // Debug: Ensure friends is an array
         if (!Array.isArray(friends)) {
             friends = []
         }
