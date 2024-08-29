@@ -14,6 +14,7 @@
 
     let name = ""
     let recipients: User[] = []
+    let error = "" // Step 1: Add an error state
 
     function update_recipients(recipient: User) {
         let new_recipient_list = recipients
@@ -25,6 +26,7 @@
         }
 
         recipients = new_recipient_list
+        error = "" // Clear error when recipients change
     }
 
     function contains_recipient(list: User[], recipient: User): boolean {
@@ -33,7 +35,17 @@
 
     $: friends = Store.getUsers(Store.state.friends)
     const dispatch = createEventDispatcher()
-    function onCreate() {
+
+    async function onCreate() {
+        if (recipients.length === 0) { // Step 2: Validate before creating group chat
+            error = $_("chat.group.noMembers") || "Please select at least one member."
+            return
+        }
+
+        let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
+        conversation.onSuccess(chat => {
+            Store.setActiveChat(chat)
+        })
         name = ""
         recipients = []
         dispatch("create")
@@ -81,18 +93,19 @@
                 </button>
             {/each}
         </div>
+
+        {#if error} <!-- Step 3: Display error message -->
+            <Text appearance={Appearance.Error} size={Size.Small}>
+                {error}
+            </Text>
+        {/if}
+
         <Controls>
             <Button
                 hook="button-create-group"
                 text={$_("chat.group.create")}
                 fill
-                on:click={async _ => {
-                    let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
-                    conversation.onSuccess(chat => {
-                        Store.setActiveChat(chat)
-                    })
-                    onCreate()
-                }}>
+                on:click={onCreate}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </Controls>
