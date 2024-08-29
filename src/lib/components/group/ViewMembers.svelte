@@ -10,26 +10,25 @@
     import { _ } from "svelte-i18n"
     import { Store } from "$lib/state/Store"
 
-    let selected_users: Array<User> = []
     export let members: User[] = []
     export let adminControls: boolean = false
 
     function update_members(user: User) {
-        let group_members = selected_users
+        let group_members = [...members]
 
-        if (members.includes(user)) {
+        if (group_members.includes(user)) {
             group_members.splice(group_members.indexOf(user), 1)
         } else {
             group_members.push(user)
         }
 
-        selected_users = group_members
+        members = group_members
     }
 
     function remove_member(user: User) {
-        let group_members = members
+        let group_members = [...members]
 
-        if (members.includes(user)) {
+        if (group_members.includes(user)) {
             group_members.splice(group_members.indexOf(user), 1)
         }
 
@@ -41,61 +40,55 @@
     }
 
     $: friends = Store.getUsers(Store.state.friends)
+
+    // Combine members and friends without duplicates
+    $: allRecipients = Array.from(new Set([...members, ...$friends]))
 </script>
 
 <div class="members">
     {#if adminControls}
-        <Label hook="label-create-group-add-members" text={$_("chat.group.settings.add")} />
+        <Label hook="label-create-group-add-members" text={$_("chat.group.members")} />
         <div class="recipient-list">
-            {#each selected_users as recipient}
+            {#each members as recipient}
                 <div class="mini-recipient">
-                    <ProfilePicture size={Size.Smallest} image={recipient.profile.photo.image} />
+                    <ProfilePicture size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Button small outline icon on:click={() => remove_member(recipient)}>
+                    <Button small icon on:click={() => remove_member(recipient)} appearance={Appearance.Alt}>
                         <Icon icon={Shape.XMark} alt class="control" />
                     </Button>
                 </div>
             {/each}
         </div>
-        <Label text={$_("payments.selectRecipients")} />
+        <Label text={$_("chat.group.settings.edit")} />
         <div class="recipient-selection-list">
-            {#each $friends.filter(friend => !members.some(member => member.key === friend.key)) as friend}
-                <button class="recipient" on:click={() => update_members(friend)}>
-                    <ProfilePicture size={Size.Small} image={friend.profile.photo.image} status={friend.profile.status} />
+            {#each allRecipients as recipient (recipient.key)}
+                <button class="recipient" on:click={() => update_members(recipient)}>
+                    <ProfilePicture size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
                     <div class="info">
                         <Text singleLine size={Size.Medium}>
-                            {friend.name}
+                            {recipient.name}
                         </Text>
                         <Text singleLine muted>
-                            {friend.key}
+                            {recipient.key}
                         </Text>
                     </div>
-                    <Checkbox checked={contains_user(selected_users, friend)} />
+                    <Checkbox checked={contains_user(members, recipient)} />
                 </button>
             {/each}
         </div>
-        <Button appearance={Appearance.Primary} text={$_("chat.group.settings.add")}>
-            <Icon icon={Shape.Plus} />
-        </Button>
-    {/if}
-    <Label text={$_("chat.group.amount", { values: { amount: members.length } })} />
-    {#each members as member}
-        <div class="user">
-            <ProfilePicture id={member.key} image={member.profile.photo.image} noIndicator size={Size.Small} />
-            <div class="username">
-                <Text singleLine class="username">{member.name}</Text>
+    {:else}
+        <Label text={$_("chat.group.amount", { values: { amount: members.length } })} />
+        {#each members as member}
+            <div class="user">
+                <ProfilePicture id={member.key} image={member.profile.photo.image} noIndicator size={Size.Small} />
+                <div class="username">
+                    <Text singleLine class="username">{member.name}</Text>
+                </div>
             </div>
-            {#if adminControls}
-                <Controls>
-                    <Button small icon appearance={Appearance.Alt} tooltip={$_("generic.remove")}>
-                        <Icon icon={Shape.XMark} />
-                    </Button>
-                </Controls>
-            {/if}
-        </div>
-    {/each}
+        {/each}
+    {/if}
 </div>
 
 <style lang="scss">
@@ -135,7 +128,7 @@
                 align-items: center;
                 background-color: var(--info-color);
                 color: var(--color-alt);
-                padding-right: var(--padding-less);
+                padding-right: 0;
                 border-radius: var(--border-radius-more);
                 max-width: 150px;
                 font-size: var(--font-size-smaller);
