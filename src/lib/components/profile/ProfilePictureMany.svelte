@@ -57,6 +57,7 @@
             align-items: center;
             gap: var(--gap-less);
             z-index: 2;
+            cursor: pointer;
         }
 
         :global(.profile-picture) {

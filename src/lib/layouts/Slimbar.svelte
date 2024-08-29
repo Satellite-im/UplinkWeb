@@ -2,7 +2,7 @@
     import { routes } from "$lib/mock/routes"
     import Navigation from "./Navigation.svelte"
     import Icon from "$lib/elements/Icon.svelte"
-    import { Appearance, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, ChatType, Route, Shape, Size } from "$lib/enums"
     import Button from "$lib/elements/Button.svelte"
     import { createEventDispatcher } from "svelte"
     import { slide } from "svelte/transition"
@@ -53,7 +53,7 @@
                             Store.setActiveChat(favorite)
                             goto(Route.Chat)
                         }}>
-                        {#if favorite.users.length === 2}
+                        {#if favorite.kind === ChatType.DirectMessage}
                             <ProfilePicture hook="favorite-profile-picture" id={resolved[1]?.key} typing={favorite.typing_indicator.size > 0} image={resolved[1]?.profile.photo.image} status={resolved[1].profile.status} size={Size.Medium} />
                         {:else}
                             <ProfilePictureMany users={resolved} />
