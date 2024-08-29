@@ -44,15 +44,14 @@
         <Label hook="label-create-group-name" text={$_("chat.group.name")} />
         <Input hook="input-create-group-name" alt bind:value={name} />
         <Label hook="label-create-group-members" text={$_("chat.group.members")} />
-        <div class="user-list" data-cy="create-group-user-list">
+        <div class="user-list">
             {#each recipients as recipient}
-                <div class="mini-user" data-cy="group-member">
-                    <ProfilePicture hook="group-member-profile-picture" id={recipient.key} size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
-                    <Text hook="group-member-username" singleLine size={Size.Small} appearance={Appearance.Alt}>
+                <div class="mini-user">
+                    <ProfilePicture id={recipient.key} size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
+                    <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
                     <Button
-                        hook="button-group-member-remove"
                         small
                         outline
                         icon
@@ -65,19 +64,19 @@
             {/each}
         </div>
         <Label hook="label-create-group-select-members" text={$_("chat.group.select")} />
-        <div data-cy="create-group-user-selection-list" class="user-selection-list {embedded ? 'embedded' : ''}">
+        <div class="user-selection-list {embedded ? 'embedded' : ''}">
             {#each $friends as recipient}
-                <button data-cy="button-profile-select-user" class="user" on:click={() => update_recipients(recipient)}>
-                    <ProfilePicture hook="user-to-select-profile-picture" id={recipient.key} size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
+                <button class="user" on:click={() => update_recipients(recipient)}>
+                    <ProfilePicture id={recipient.key} size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
                     <div class="info">
-                        <Text hook="user-to-select-name" singleLine size={Size.Medium}>
+                        <Text singleLine size={Size.Medium}>
                             {recipient.name}
                         </Text>
-                        <Text hook="user-to-select-key" singleLine muted>
+                        <Text singleLine muted>
                             {recipient.key}
                         </Text>
                     </div>
-                    <Checkbox hook="checkbox-select-user" checked={contains_recipient(recipients, recipient)} />
+                    <Checkbox checked={contains_recipient(recipients, recipient)} />
                 </button>
             {/each}
         </div>
