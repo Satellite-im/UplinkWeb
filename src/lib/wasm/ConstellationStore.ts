@@ -17,12 +17,37 @@ class ConstellationStore {
     public MAX_FILE_SIZE = 104857600
     public MAX_STORAGE_SIZE = 2 * 1024 * 1024 * 1024
 
+    private loaded = false
+
     /**
      * Creates an instance of ConstellationStore.
      * @param constellation - A writable store containing a ConstellationBox or null.
      */
     constructor(constellation: Writable<wasm.ConstellationBox | null>) {
         this.constellationWritable = constellation
+    }
+
+    /**
+     * Check if ConstellationStore is ready to be used
+     * When its not ready the root directory is using a default value instead of "root"
+     */
+    async checkLoaded() {
+        while (!this.loaded) {
+            const constellation = get(this.constellationWritable)
+            if (constellation) {
+                try {
+                    let dir = await constellation.root_directory()
+                    this.loaded = dir ? dir.name() !== "un-named directory" : false
+                    if (this.loaded) {
+                        break;
+                    }
+                    await new Promise(f => setTimeout(f, 100))
+                } catch (e) {
+                    if (!`${e}`.includes("Constellation extension is unavailable")) throw e
+                    await new Promise(f => setTimeout(f, 100))
+                }
+            }
+        }
     }
 
     /**
