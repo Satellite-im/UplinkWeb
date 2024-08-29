@@ -94,7 +94,7 @@
             {/each}
         </div>
 
-        {#if error} <!-- Step 3: Display error message -->
+        {#if error} <!-- Display error message -->
             <Text appearance={Appearance.Error} size={Size.Small}>
                 {error}
             </Text>
