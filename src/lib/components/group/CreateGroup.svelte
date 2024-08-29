@@ -37,7 +37,7 @@
     const dispatch = createEventDispatcher()
 
     async function onCreate() {
-        if (recipients.length === 0) { // Step 2: Validate before creating group chat
+        if (recipients.length === 0) { // Validate before creating group chat
             error = $_("chat.group.noMembers") || "Please select at least one member."
             return
         }
