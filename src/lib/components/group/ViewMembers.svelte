@@ -73,9 +73,6 @@
             console.error("Error combining members and friends:", error)
             allRecipients = [] // Default to empty array if an error occurs
         }
-
-        // Debug: Monitor combined recipients
-        console.log("All recipients:", allRecipients)
     }
 </script>
 
