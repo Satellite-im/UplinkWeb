@@ -75,7 +75,7 @@
     "chat": {
         "chat": "Chat",
         "chat_plural": "Chats",
-        "create": "Create Chat",
+        "create": "Create Group Chat",
         "add_attachment": "Add attachment",
         "emoji": "Emojis",
         "emojiPicker": "Emoji Picker",
@@ -105,6 +105,7 @@
                 "description.placeholder": "Group description goes here",
                 "add": "Add Members",
                 "add.description": "Allow anyone to add members to the group",
+                "edit": "Edit Members",
                 "details": "Change Details",
                 "details.description": "Allow anyone to change the name and motd of the group",
                 "photo": "Change Photo",

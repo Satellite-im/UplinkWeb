@@ -11,6 +11,7 @@
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     export let embedded: boolean = false
+
     let name = ""
     let recipients: User[] = []
 
