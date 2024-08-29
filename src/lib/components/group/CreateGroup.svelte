@@ -14,7 +14,7 @@
 
     let name = ""
     let recipients: User[] = []
-    let error = "" // Step 1: Add an error state
+    let error = ""
 
     function update_recipients(recipient: User) {
         let new_recipient_list = recipients
