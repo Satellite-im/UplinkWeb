@@ -62,7 +62,9 @@
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
-    $: loading = get(UIStore.state.chats).length > 0 && $users[$activeChat.users[1]]?.name === undefined
+
+    // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
+    $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
     $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
@@ -231,7 +233,6 @@
     }, 50)
 
     onMount(() => {
-        console.log("ActiveChat: ", $activeChat)
         setInterval(() => {
             if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
@@ -392,7 +393,7 @@
             <Topbar>
                 <div slot="before">
                     {#if $activeChat.users.length > 0}
-                        {#if $activeChat.users.length === 2}
+                        {#if $activeChat.kind === ChatType.DirectMessage}
                             <ProfilePicture
                                 hook="chat-topbar-profile-picture"
                                 typing={$activeChat.typing_indicator.size > 0}
