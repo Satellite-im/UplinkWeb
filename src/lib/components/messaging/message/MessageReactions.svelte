@@ -8,14 +8,14 @@
     $: own = Store.state.user
 </script>
 
-<div class="message-reactions {remote ? 'remote' : 'local'}">
+<div data-cy="message-reactions-{remote ? 'remote' : 'local'}" class="message-reactions {remote ? 'remote' : 'local'}">
     {#each reactions as reaction}
-        <div role="none" class="reaction highlight-{reaction.highlight.toLowerCase()} {reaction.reactors.has($own.key) ? 'reacted' : ''}" on:click={_ => onClick(reaction.emoji)}>
+        <div data-cy="emoji-reaction-{reaction.emoji}" role="none" class="reaction highlight-{reaction.highlight.toLowerCase()} {reaction.reactors.has($own.key) ? 'reacted' : ''}" on:click={_ => onClick(reaction.emoji)}>
             <div class="reaction-hover">
                 <span class="emoji">{reaction.emoji}</span> <span class="description">{reaction.description}</span>
             </div>
-            <span class="reaction-emoji">{reaction.emoji}</span>
-            <span class="count">{reaction.reactors.size}</span>
+            <span data-cy="emoji-reaction" class="reaction-emoji">{reaction.emoji}</span>
+            <span data-cy="emoji-count" class="count">{reaction.reactors.size}</span>
         </div>
     {/each}
 </div>
