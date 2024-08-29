@@ -105,6 +105,7 @@
                 "description.placeholder": "Group description goes here",
                 "add": "Add Members",
                 "add.description": "Allow anyone to add members to the group",
+                "edit": "Edit Members",
                 "details": "Change Details",
                 "details.description": "Allow anyone to change the name and motd of the group",
                 "photo": "Change Photo",
