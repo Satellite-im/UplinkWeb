@@ -75,7 +75,7 @@
     "chat": {
         "chat": "Chat",
         "chat_plural": "Chats",
-        "create": "Create Chat",
+        "create": "Create Group Chat",
         "add_attachment": "Add attachment",
         "emoji": "Emojis",
         "emojiPicker": "Emoji Picker",
