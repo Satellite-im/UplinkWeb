@@ -19,9 +19,9 @@ jobs:
       - name: Install dependencies (dev branch)
         run: npm install
 
-      - name: Build project (dev branch)
+      - name: Build project (dev branch) and save log
         run: |
-          npm run build 2>&1 | tee dev-build-log.txt
+          npm run build > dev-build-log.txt 2>&1
 
       - name: Save dev build log as artifact
         uses: actions/upload-artifact@v4
@@ -35,9 +35,9 @@ jobs:
       - name: Install dependencies (PR branch)
         run: npm install
 
-      - name: Build project (PR branch)
+      - name: Build project (PR branch) and save log
         run: |
-          npm run build 2>&1 | tee pr-build-log.txt
+          npm run build > pr-build-log.txt 2>&1
 
       - name: Save PR build log as artifact
         uses: actions/upload-artifact@v4
@@ -47,15 +47,18 @@ jobs:
 
       - name: Compare build logs
         run: |
-          echo "Differences between dev and PR build logs:"
-          diff -u dev-build-log.txt pr-build-log.txt || true
+          echo "Comparing build logs..."
+          diff dev-build-log.txt pr-build-log.txt > log-diff.txt || true
+          cat log-diff.txt
 
-      - name: Annotate warnings
-        if: success()
+      - name: Annotate new warnings
         run: |
-          WARNINGS=$(diff -u dev-build-log.txt pr-build-log.txt | grep '^+' | grep -i 'warning' || true)
-          if [ -n "$WARNINGS" ]; then
-            echo "::warning title=Build Warnings::${WARNINGS}"
+          echo "Checking for new warnings..."
+          NEW_WARNINGS=$(grep '^+.*warning' log-diff.txt || true)
+          if [ -n "$NEW_WARNINGS" ]; then
+            echo "$NEW_WARNINGS" | while IFS= read -r line; do
+              echo "::warning title=New Warning::${line#++}"
+            done
           else
             echo "No additional warnings found."
           fi
