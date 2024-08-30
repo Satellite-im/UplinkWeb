@@ -121,40 +121,17 @@ jobs:
           allure_history: allure-history
           keep_reports: 100
 
-      - name: Deploy report to Github Pages with retry
-        if: always()
-        run: |
-          #!/bin/bash
-          set -e
-
-          MAX_RETRIES=3
-          RETRY_DELAY=30
-          COUNT=0
-
-          while [ $COUNT -lt $MAX_RETRIES ]; do
-            echo "Attempt $((COUNT + 1)) of $MAX_RETRIES..."
-            
-            # Run the deployment
-            peaceiris-actions-gh-pages \
-              --deploy_key "${{ secrets.ACTIONS_DEPLOY_KEY }}" \
-              --external_repository "Satellite-im/test-reports" \
-              --publish_branch "gh-pages" \
-              --publish_dir "allure-history"
-
-            if [ $? -eq 0 ]; then
-              echo "Deployment succeeded!"
-              exit 0
-            else
-              echo "Deployment failed. Retrying in $RETRY_DELAY seconds..."
-              sleep $RETRY_DELAY
-              COUNT=$((COUNT + 1))
-            fi
-          done
-
-          echo "Deployment failed after $MAX_RETRIES attempts."
-          exit 1
-        env:
-          ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      - name: Deploy report to Github Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: Satellite-im/test-reports
+          publish_branch: gh-pages
+          publish_dir: allure-history
+        retry:
+          max-attempts: 3
+          delay-seconds: 30
 
       - name: Comment PR with Allure test results
         if: always() && github.event_name == 'pull_request'
