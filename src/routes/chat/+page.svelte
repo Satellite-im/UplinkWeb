@@ -15,7 +15,6 @@
         MessageReactions,
         MessageReplyContainer,
         ProfilePicture,
-        CoinBalance,
         Modal,
         ProfilePictureMany,
         STLViewer,
