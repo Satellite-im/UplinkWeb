@@ -29,6 +29,8 @@
                 return "tooltip-left"
             case TooltipPosition.RIGHT:
                 return "tooltip-right"
+            case TooltipPosition.BOTTOM:
+                return "tooltip-bottom"
             default:
                 return ""
         }
