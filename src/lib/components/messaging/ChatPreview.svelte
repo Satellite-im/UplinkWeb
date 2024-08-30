@@ -1,6 +1,6 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
-    import { Route, Size, Status } from "$lib/enums"
+    import { ChatType, Route, Size, Status } from "$lib/enums"
     import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
@@ -18,10 +18,10 @@
 
     $: users = Store.getUsers(chat.users)
 
-    $: chatName = $users.length > 2 ? chat.name : ($users[1]?.name ?? $users[0].name)
+    $: chatName = chat.kind === ChatType.Group ? chat.name : $users[1]?.name ?? $users[0].name
     $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
-    $: chatPhoto = $users.length > 2 ? "todo" : ($users[1]?.profile.photo.image ?? $users[0].profile.photo.image)
-    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
+    $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
+    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
 
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
@@ -47,8 +47,8 @@
         Store.setActiveChat(chat)
         goto(Route.Chat)
     }}>
-    {#if chat.users.length === 2}
-        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.typing_indicator.size > 0} image={chatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
+    {#if chat.kind === ChatType.DirectMessage}
+        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.typing_indicator.size > 0} image={directChatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={$users} />
     {/if}

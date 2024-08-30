@@ -1,5 +1,4 @@
 :root {
-
     --primary-font: "Poppins";
 
     --black: #000;
@@ -38,10 +37,10 @@
     --info-color: #0771fa;
     --info-color-alt: color-mix(in srgb, var(--info-color) 90%, white);
 
-    --error-color: #F93854;
+    --error-color: #f93854;
     --error-color-alt: color-mix(in srgb, var(--error-color) 90%, white);
 
-    --warning-color: #FECA57;
+    --warning-color: #feca57;
     --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%, white);
 
     --border-color: #1c1d2b;
