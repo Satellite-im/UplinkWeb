@@ -154,31 +154,32 @@
 
 <style lang="scss">
     .settings-wrapper {
-        display: flex
-        justify-content: center
-        align-items: center
-        height: 100vh
-        width: 100vw
-        position: fixed
-        top: 0
-        left: 0
-        z-index: 3
-        background-color: rgba(0, 0, 0, 0.5) /* Optional: Adds a backdrop */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 3;
+        background-color: rgba(0, 0, 0, 0.5);
     }
 
     .call-settings {
-        min-width: 400px
-        width: 750px
-        max-height: 400px
-        min-height: var(--min-component-width)
-        display: flex
-        flex-direction: column
-        gap: var(--gap-less)
-        background-color: var(--opaque-color)
-        backdrop-filter: blur(var(--blur-radius))
-        padding: var(--padding)
-        border-radius: var(--border-radius)
-        overflow-y: auto
-        border: var(--border-width) solid var(--border-color)
+        min-width: 400px;
+        width: 750px;
+        max-height: 400px;
+        min-height: var(--min-component-width);
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-less);
+        background-color: var(--opaque-color);
+        backdrop-filter: blur(var(--blur-radius));
+        padding: var(--padding);
+        border-radius: var(--border-radius);
+        overflow-y: auto;
+        border: var(--border-width) solid var(--border-color);
     }
 </style>
+
