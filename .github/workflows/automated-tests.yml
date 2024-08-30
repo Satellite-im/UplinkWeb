@@ -129,9 +129,13 @@ jobs:
           external_repository: Satellite-im/test-reports
           publish_branch: gh-pages
           publish_dir: allure-history
-        retry:
-          max-attempts: 3
-          delay-seconds: 30
+
+      - name: Retry Deployment if it fails
+        run: |
+          for i in {1..3}; do
+            gh-pages -d allure-history && break || sleep 30;
+          done
+        shell: bash
 
       - name: Comment PR with Allure test results
         if: always() && github.event_name == 'pull_request'
