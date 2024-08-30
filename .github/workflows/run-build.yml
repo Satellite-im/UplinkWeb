@@ -1,0 +1,61 @@
+name: Compare Build Logs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  compare-build-logs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for accurate comparisons
+
+      - name: Checkout dev branch
+        run: git checkout dev
+
+      - name: Install dependencies (dev branch)
+        run: npm install
+
+      - name: Build project (dev branch)
+        run: |
+          npm run build 2>&1 | tee dev-build-log.txt
+
+      - name: Save dev build log as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-build-log
+          path: dev-build-log.txt
+
+      - name: Checkout PR branch
+        run: git checkout ${{ github.head_ref }}
+
+      - name: Install dependencies (PR branch)
+        run: npm install
+
+      - name: Build project (PR branch)
+        run: |
+          npm run build 2>&1 | tee pr-build-log.txt
+
+      - name: Save PR build log as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-build-log
+          path: pr-build-log.txt
+
+      - name: Compare build logs
+        run: |
+          echo "Differences between dev and PR build logs:"
+          diff -u dev-build-log.txt pr-build-log.txt || true
+
+      - name: Annotate warnings
+        if: success()
+        run: |
+          WARNINGS=$(diff -u dev-build-log.txt pr-build-log.txt | grep '^+' | grep -i 'warning' || true)
+          if [ -n "$WARNINGS" ]; then
+            echo "::warning title=Build Warnings::${WARNINGS}"
+          else
+            echo "No additional warnings found."
+          fi
