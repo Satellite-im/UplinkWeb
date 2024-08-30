@@ -27,7 +27,7 @@
     $: if (isRenaming === OperationState.Success) {
         hasFocus = false
         oldName = name
-        storeFiles.update(items => {
+        Store.state.files.update(items => {
             const updatedItems = items.map(item => {
                 if (item.id === info.id) {
                     return { ...item, name: name }
@@ -63,7 +63,6 @@
                 return Shape.Beaker
         }
     }
-    let storeFiles = Store.state.files
     function updateName(
         event: Event & {
             currentTarget: EventTarget & HTMLInputElement

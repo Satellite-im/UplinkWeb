@@ -29,7 +29,7 @@
     import FileInput from "$lib/elements/Input/FileInput.svelte"
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
+    $: sidebarOpen = UIStore.state.sidebarOpen
     let isContextMenuOpen: boolean = false
     let isDraggingFromLocal = false
     let filesCount = 0
@@ -41,29 +41,26 @@
 
     let tabRoutes: string[] = ["chats", "files"]
     let activeTabRoute: string = tabRoutes[1]
-    $: openFolders = get(Store.state.openFolders)
-
+    $: openFolders = Store.state.openFolders
     function toggleFolder(folderId: string | number) {
-        const currentOpenFolders = openFolders
+        const currentOpenFolders = $openFolders
         const updatedOpenFolders = {
             ...currentOpenFolders,
             [folderId]: !currentOpenFolders[folderId],
         }
         Store.updateFolderTree(updatedOpenFolders)
     }
-    const unsubscribeopenFolders = Store.state.openFolders.subscribe((f: any) => {
-        openFolders = f
-    })
+
     let dragging_files = 0
     let previewImage: string | null
     let search_filter: string
     let search_component: ChatFilter
     let filesToUpload: HTMLInputElement
-    let allFiles: FileInfo[] = get(Store.state.files)
+    $: allFiles = Store.state.files
     let currentFolderIdStore = writable<string>("")
-    $: currentFiles = allFiles
+    $: currentFiles = $allFiles
 
-    const folderStackStore = writable<FileInfo[][]>([allFiles])
+    const folderStackStore = writable<FileInfo[][]>([$allFiles])
     folderStackStore.subscribe((folderStack: string | any[]) => {
         currentFiles = folderStack[folderStack.length - 1]
     })
@@ -208,12 +205,7 @@
                     newFolders[i] = [...parentItem.items]
                 }
 
-                const currentOpenFolders = openFolders
-                const updatedOpenFolders = {
-                    ...currentOpenFolders,
-                    [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
-                }
-                Store.updateFolderTree(updatedOpenFolders)
+                toggleFolder(parentItem?.id!)
             }
             return newFolders
         })
@@ -289,12 +281,7 @@
                     newFolders[i] = [...parentItem.items]
                 }
 
-                const currentOpenFolders = openFolders
-                const updatedOpenFolders = {
-                    ...currentOpenFolders,
-                    [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
-                }
-                Store.updateFolderTree(updatedOpenFolders)
+                toggleFolder(parentItem?.id!)
             }
             Store.updateFileOrder(currentFiles)
             return newFolders
@@ -353,7 +340,7 @@
         files.onSuccess(items => {
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
-            Store.state.files.set(Array.from(filesSet))
+            Store.updateFileOrder(Array.from(filesSet))
             currentFiles = Array.from(filesSet)
         })
     }
@@ -429,10 +416,6 @@
             lastClickTarget = target
             lastClickTime = currentTime
         })
-    })
-
-    onDestroy(() => {
-        unsubscribeopenFolders()
     })
 
     function dragEnter(event: DragEvent) {
@@ -604,7 +587,6 @@
         )
     }
 
-    UIStore.state.sidebarOpen.subscribe((s: boolean) => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe((sc: Chat[]) => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
@@ -661,7 +643,7 @@
         </Modal>
     {/if}
 
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={$sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>
             <Button
@@ -710,7 +692,7 @@
         {#if activeTabRoute === "files"}
             <ul class="folderList" data-cy="folder-list">
                 {#each currentFiles as file}
-                    <FolderItem file={file} openFolders={openFolders} toggleFolder={toggleFolder} />
+                    <FolderItem file={file} openFolders={$openFolders} toggleFolder={toggleFolder} />
                 {/each}
             </ul>
         {/if}
