@@ -459,11 +459,13 @@ export class Transfer {
     asset: Asset
     amount: bigint
     toAddress: string
+    amountPreview: string
 
     constructor() {
         this.asset = { kind: AssetType.None, id: "" }
         this.amount = BigInt(0)
         this.toAddress = ""
+        this.amountPreview = ""
     }
 
     isValid(): boolean {
@@ -483,13 +485,13 @@ export class Transfer {
     }
 
     toCmdString(): string {
-        let id = this.asset.id === "" ? "n/a" : this.asset.id
-        return `/request ${this.asset.kind} ${id} ${this.amount} ${this.toAddress}`
+        let transfer = JSON.stringify(this, (k, v) => (k === "amount" && typeof v === "bigint" ? v.toString() : v))
+        return `/request ${transfer}`
     }
 
     toDisplayString(): string {
         let id = this.asset.id === "n/a" ? "" : this.asset.id
-        return `Send ${this.amount} ${this.asset.kind}: ${id} to ${shortenAddr(this.toAddress, 6)}`
+        return `Send ${this.amountPreview} to ${shortenAddr(this.toAddress, 6)}`
     }
 
     async execute() {
@@ -500,14 +502,21 @@ export class Transfer {
 }
 
 export function getValidPaymentRequest(msg: string): Transfer | undefined {
-    let parts = msg.split(" ")
-    if (parts.length === 5 && parts[0] === "/request") {
-        let request = new Transfer()
-        request.asset = { kind: parts[1] as AssetType, id: parts[2] }
-        request.amount = BigInt(parts[3])
-        request.toAddress = parts[4]
-        if (request.isValid()) {
-            return request
+    let cmd = "/request "
+    if (msg.startsWith(cmd)) {
+        let json = msg.substring(cmd.length, msg.length)
+        let transfer = new Transfer()
+        try {
+            let parsed = JSON.parse(json, (k, v) => (k === "amount" && typeof v === "string" ? BigInt(v) : v))
+            transfer.asset = parsed.asset
+            transfer.amount = parsed.amount
+            transfer.toAddress = parsed.toAddress
+            transfer.amountPreview = parsed.amountPreview
+        } catch {
+            // if it wasn't valid json, do nothing.
+        }
+        if (transfer.asset.kind !== AssetType.None && transfer.isValid()) {
+            return transfer
         }
     }
 }

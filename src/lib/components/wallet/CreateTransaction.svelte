@@ -22,7 +22,6 @@
     }
 
     let inputAmount = ""
-    let amountPreviewString = ""
 
     function onInputAmount() {
         //remove any input that is not a number or a dot
@@ -36,8 +35,8 @@
         //convert string amount to bigint
         wallet.toBigIntAmount(transfer.asset, inputAmount).then(amount => {
             transfer.amount = amount
-            wallet.toAmountPreviewString(transfer.asset, transfer.amount).then(display => {
-                amountPreviewString = display
+            wallet.toAmountPreviewString(transfer.asset, transfer.amount).then(amountPreview => {
+                transfer.amountPreview = amountPreview
             })
         })
     }
@@ -62,7 +61,7 @@
     {#if needsAssetId()}
         <div>{$_("payments.assetId") + ":"}<input bind:value={transfer.asset.id} on:change={onInputAmount} /></div>
     {/if}
-    <div>{amountPreviewString}</div>
+    <div>{transfer.amountPreview}</div>
     <div>{$_("payments.amount") + ":"} <input bind:value={inputAmount} type="text" on:input={onInputAmount} /></div>
     {#if transfer.toAddress !== ""}
         <div>{$_("payments.receiving_to")}: {shortenAddr(transfer.toAddress, 6)}</div>
