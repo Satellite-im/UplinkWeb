@@ -24,7 +24,7 @@ jobs:
 
       - name: Extract relevant section from dev log
         run: |
-          sed -n '/building for production.../,/modules transformed./p' dev-build-log.txt > relevant-dev-log.txt
+          sed -n '/building for production.../,/modules transformed./p' dev-build-log.txt | grep -v "modules transformed." > relevant-dev-log.txt
 
       - name: Save extracted dev log as artifact
         uses: actions/upload-artifact@v4
@@ -43,7 +43,7 @@ jobs:
 
       - name: Extract relevant section from PR log
         run: |
-          sed -n '/building for production.../,/modules transformed./p' pr-build-log.txt > relevant-pr-log.txt
+          sed -n '/building for production.../,/modules transformed./p' pr-build-log.txt | grep -v "modules transformed." > relevant-pr-log.txt
 
       - name: Save extracted PR log as artifact
         uses: actions/upload-artifact@v4
