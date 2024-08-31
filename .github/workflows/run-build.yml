@@ -22,11 +22,15 @@ jobs:
       - name: Build project (dev branch) and save log
         run: npm run build > dev-build-log.txt 2>&1
 
-      - name: Save dev build log as artifact
+      - name: Extract relevant section from dev log
+        run: |
+          sed -n '/building for production.../,/modules transformed./p' dev-build-log.txt > relevant-dev-log.txt
+
+      - name: Save extracted dev log as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dev-build-log
-          path: dev-build-log.txt
+          name: relevant-dev-log
+          path: relevant-dev-log.txt
 
       - name: Checkout PR branch
         run: git checkout ${{ github.head_ref }}
@@ -37,17 +41,20 @@ jobs:
       - name: Build project (PR branch) and save log
         run: npm run build > pr-build-log.txt 2>&1
 
-      - name: Save PR build log as artifact
+      - name: Extract relevant section from PR log
+        run: |
+          sed -n '/building for production.../,/modules transformed./p' pr-build-log.txt > relevant-pr-log.txt
+
+      - name: Save extracted PR log as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pr-build-log
-          path: pr-build-log.txt
+          name: relevant-pr-log
+          path: relevant-pr-log.txt
 
-      - name: Compare build logs for any differences
+      - name: Compare extracted sections for differences
         run: |
-          echo "Comparing logs for differences..."
-          # Compare the logs and highlight the differences
-          diff dev-build-log.txt pr-build-log.txt > log-diff.txt || true
+          echo "Comparing relevant sections for differences..."
+          diff relevant-dev-log.txt relevant-pr-log.txt > log-diff.txt || true
 
           if [ -s log-diff.txt ]; then
             echo "::warning title=Differences Found::$(cat log-diff.txt | tr '\n' ' ')"
