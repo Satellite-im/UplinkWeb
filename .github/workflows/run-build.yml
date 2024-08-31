@@ -60,7 +60,7 @@ jobs:
         id: diff_check
         run: |
           echo "Comparing relevant sections for differences..."
-          diff -u relevant-dev-log.txt relevant-pr-log.txt > log-diff.txt || true
+          diff relevant-dev-log.txt relevant-pr-log.txt > log-diff.txt || true
 
           if [ -s log-diff.txt ]; then
             echo "Differences detected."
@@ -76,14 +76,25 @@ jobs:
           name: build-log-diff
           path: log-diff.txt
 
+      - name: Read log-diff.txt content
+        id: read_diff
+        run: |
+          if [ -f log-diff.txt ]; then
+            echo "DIFF_CONTENT<<EOF" >> $GITHUB_ENV
+            cat log-diff.txt >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "No diff file found." >> $GITHUB_ENV
+          fi
+
       - name: Comment PR with build log differences
         if: env.diff_found == 'true'
         uses: actions-ecosystem/action-create-comment@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            :warning: **Build Log Differences Found**:
+            **Build Log Differences Found**:
 
             ```diff
-            $(cat log-diff.txt)
+            ${{ env.DIFF_CONTENT }}
             ```
