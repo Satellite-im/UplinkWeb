@@ -64,10 +64,13 @@ jobs:
 
           if [ -s log-diff.txt ]; then
             echo "Differences detected."
-            echo "::set-output name=diff_found::true"
+            echo "diff_found=true" >> $GITHUB_ENV
+            # Extract the new warnings from the PR log
+            grep -Ff relevant-dev-log.txt relevant-pr-log.txt > new-warnings.txt || true
+            cat new-warnings.txt
           else
             echo "No differences found." > log-diff.txt
-            echo "::set-output name=diff_found::false"
+            echo "diff_found=false" >> $GITHUB_ENV
           fi
 
       - name: Upload diff as artifact for review
@@ -76,15 +79,17 @@ jobs:
           name: build-log-diff
           path: log-diff.txt
 
-      - name: Comment PR with diff results
-        if: steps.diff_check.outputs.diff_found == 'true'
-        uses: mshick/add-pr-comment@v2
+      - name: Comment PR with warning results
+        if: env.diff_found == 'true'
+        run: |
+          NEW_WARNINGS=$(cat new-warnings.txt)
+          COMMENT_BODY="**Build Log Differences Found**:\n\n${NEW_WARNINGS}"
+          PR_COMMENT_ID=$(gh pr view ${{ github.event.pull_request.number }} --json comments -q '.comments[] | select(.body | contains("Build Log Differences Found")) | .id')
+          
+          if [ -z "$PR_COMMENT_ID" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+          else
+            gh api --method PATCH /repos/${{ github.repository }}/issues/comments/$PR_COMMENT_ID --field body="$COMMENT_BODY"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          message: |
-            **Build Log Differences Found**:
-
-            ```diff
-            $(cat log-diff.txt)
-            ```
