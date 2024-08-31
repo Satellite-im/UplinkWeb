@@ -7,6 +7,11 @@ on:
 jobs:
   compare-build-logs:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+      issues: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
