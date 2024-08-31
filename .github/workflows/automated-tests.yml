@@ -49,6 +49,7 @@ jobs:
 
       - name: Run server for Uplink Web
         run: npm run dev &
+        continue-on-error: true # Ensure this step does not cause failure
 
       - name: Run Playwright tests
         working-directory: automated-tests
@@ -57,7 +58,7 @@ jobs:
       - uses: daun/playwright-report-summary@v3
         if: always()
         with:
-          github-token: ${{ secrets.github_token }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           report-file: ./automated-tests/playwright-report/report.json
           job-summary: false
           comment-title: "Automated Test Results"
@@ -111,15 +112,36 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      - name: Generate Allure Report
-        if: always()
-        uses: simple-elf/allure-report-action@master
-        with:
-          gh_pages: gh-pages
-          allure_results: automated-tests/allure
-          allure_report: allure-report
-          allure_history: allure-history
-          keep_reports: 100
+      - name: Retry Generate Allure Report
+        id: generate-report
+        run: |
+          #!/bin/bash
+          set -e
+
+          max_attempts=3
+          attempt=1
+
+          while [[ $attempt -le $max_attempts ]]; do
+            echo "Attempt $attempt to generate Allure report..."
+            if npx simple-elf/allure-report-action@master \
+              --gh_pages=gh-pages \
+              --allure_results=automated-tests/allure \
+              --allure_report=allure-report \
+              --allure_history=allure-history \
+              --keep_reports=100; then
+              echo "Report generation successful on attempt $attempt."
+              exit 0
+            else
+              echo "Report generation failed on attempt $attempt. Retrying in 30 seconds..."
+              ((attempt++))
+              sleep 30
+            fi
+          done
+
+          echo "All attempts to generate the report have failed."
+          exit 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy report to Github Pages with retry
         run: |
