@@ -52,15 +52,17 @@ jobs:
           path: relevant-pr-log.txt
 
       - name: Compare extracted sections for differences
+        id: diff_check
         run: |
           echo "Comparing relevant sections for differences..."
           diff relevant-dev-log.txt relevant-pr-log.txt > log-diff.txt || true
 
           if [ -s log-diff.txt ]; then
-            echo "::warning title=Differences Found::$(cat log-diff.txt | tr '\n' ' ')"
             echo "Differences detected."
+            echo "::set-output name=diff_found::true"
           else
-            echo "No differences found."
+            echo "No differences found." > log-diff.txt
+            echo "::set-output name=diff_found::false"
           fi
 
       - name: Upload diff as artifact for review
@@ -68,3 +70,16 @@ jobs:
         with:
           name: build-log-diff
           path: log-diff.txt
+
+      - name: Comment PR with diff results
+        if: steps.diff_check.outputs.diff_found == 'true'
+        uses: mshick/add-pr-comment@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          message: |
+            **Build Log Differences Found**:
+
+            ```diff
+            $(cat log-diff.txt)
+            ```
