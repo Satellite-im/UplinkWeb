@@ -43,25 +43,21 @@ jobs:
           name: pr-build-log
           path: pr-build-log.txt
 
-      - name: Find differences in warnings
+      - name: Compare build logs for any differences
         run: |
-          echo "Extracting warnings from logs..."
-          grep -i "warning" dev-build-log.txt > dev-warnings.txt || true
-          grep -i "warning" pr-build-log.txt > pr-warnings.txt || true
+          echo "Comparing logs for differences..."
+          # Compare the logs and highlight the differences
+          diff dev-build-log.txt pr-build-log.txt > log-diff.txt || true
 
-          echo "Checking for new warnings in PR..."
-          comm -13 dev-warnings.txt pr-warnings.txt > new-warnings.txt || true
-
-          if [ -s new-warnings.txt ]; then
-            echo "New warnings found:"
-            cat new-warnings.txt
-            echo "::warning title=New Warnings Found::$(cat new-warnings.txt | tr '\n' ' ')"
+          if [ -s log-diff.txt ]; then
+            echo "::warning title=Differences Found::$(cat log-diff.txt | tr '\n' ' ')"
+            echo "Differences detected."
           else
-            echo "No new warnings found."
+            echo "No differences found."
           fi
 
       - name: Upload diff as artifact for review
         uses: actions/upload-artifact@v4
         with:
-          name: new-warnings
-          path: new-warnings.txt
+          name: build-log-diff
+          path: log-diff.txt
