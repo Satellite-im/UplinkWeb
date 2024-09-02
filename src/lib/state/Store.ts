@@ -199,7 +199,7 @@ class GlobalStore {
     }
 
     updateFileOrder(newOrder: FileInfo[]) {
-        this.state.files.set(newOrder)
+        this.state.files.update(_ => newOrder)
     }
     updateFolderTree(newFolderTree: Record<string, boolean>) {
         this.state.openFolders.set(newFolderTree)

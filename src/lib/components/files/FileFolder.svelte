@@ -27,15 +27,6 @@
     $: if (isRenaming === OperationState.Success) {
         hasFocus = false
         oldName = name
-        Store.state.files.update(items => {
-            const updatedItems = items.map(item => {
-                if (item.id === info.id) {
-                    return { ...item, name: name }
-                }
-                return item
-            })
-            return updatedItems
-        })
         isRenaming = OperationState.Initial
     } else if (isRenaming === OperationState.Error) {
         hasFocus = false

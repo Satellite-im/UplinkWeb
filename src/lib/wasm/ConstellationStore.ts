@@ -109,7 +109,7 @@ class ConstellationStore {
                 currentDir.move_item_to(fileName, toFolderName)
                 return success(undefined)
             } catch (error) {
-                log.error("Error moving item to directory: " + error)
+                log.error(`Error moving item ${fileName} to directory ${toFolderName}: ` + error)
                 return failure(handleErrors(error))
             }
         }
@@ -218,7 +218,7 @@ class ConstellationStore {
      * Goes back to the previous directory in the constellation.
      * @returns A Result containing either success or failure with a WarpError.
      */
-    async goBack(): Promise<Result<WarpError, void>> {
+    async goBack(): Promise<Result<WarpError, string>> {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
@@ -228,7 +228,7 @@ class ConstellationStore {
                 } else {
                     await constellation.go_back()
                 }
-                return success(undefined)
+                return success((await constellation.current_directory()).id())
             } catch (error) {
                 return failure(handleErrors(error))
             }
