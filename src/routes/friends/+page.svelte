@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
-    import { ChatPreview, ContextMenu } from "$lib/components"
+    import { ChatPreview, ContextMenu, Modal } from "$lib/components"
     import { Sidebar, Topbar } from "$lib/layouts"
     import { Appearance, Route, Shape, TooltipPosition } from "$lib/enums"
 
@@ -19,6 +19,7 @@
     import { ToastMessage } from "$lib/state/ui/toast"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
     import { page } from "$app/stores"
+    import CreateGroup from "$lib/components/group/CreateGroup.svelte"
 
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
@@ -28,6 +29,7 @@
     $: incomingRequests = Store.inboundRequests($activeRequests)
     $: outgoingRequests = Store.outboundRequests($activeRequests)
     let isValidFriendDid: boolean = false
+    let newGroup: boolean = false
 
     let tab: "all" | "active" | "blocked" = "all"
 
@@ -160,7 +162,7 @@
         -->
         <div class="content-header">
             <Label hook="label-chats" text={$_("chat.chat_plural")} />
-            <Button hook="button-create-group-chat" icon small tooltip={$_("chat.create")} tooltipPosition={TooltipPosition.LEFT}>
+            <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </div>
@@ -432,6 +434,11 @@
             {/if}
         </div>
     </div>
+    {#if newGroup}
+    <Modal on:close={() => (newGroup = false)}>
+        <CreateGroup on:create={() => (newGroup = false)} />
+    </Modal>
+{/if}
 </div>
 
 <style lang="scss">
