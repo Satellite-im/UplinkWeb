@@ -53,48 +53,16 @@ export const mock_users: Array<User> = [
             is_muted: true,
             is_deafened: true,
         },
-        integrations: [
-            {
-                kind: Integrations.Twitch,
-                location: "https://twitch.tv/SpaceKev",
-                meta: null,
-            },
-            {
-                kind: Integrations.Steam,
-                location: "https://steamcommunity.com/id/SpaceKev/",
-                meta: null,
-            },
-            {
-                kind: Integrations.YouTube,
-                location: "https://youtube.com/c/SpaceKev/",
-                meta: null,
-            },
-            {
-                kind: Integrations.Spotify,
-                location: "@SpaceKev",
-                meta: null,
-            },
-            {
-                kind: Integrations.Generic,
-                location: "https://satellite.im",
-                meta: null,
-            },
-            {
-                kind: Integrations.BTC,
-                location: "1cwI2h8ETSROxAihiRDB5QqfDc3EDxWsf0",
-                meta: null,
-            },
-            {
-                kind: Integrations.ETH,
-                location: "0x0000000000000000000000000000000000000000",
-                meta: null,
-            },
-            {
-                kind: Integrations.SOL,
-                location: "26AKqj1Au1jGrHFm7RXVJJeu7nsbqqin5Ff3vjPxM4QK",
-                meta: null,
-            },
-        ],
+        integrations: new Map<string, string>([
+            [Integrations.Twitch, "https://twitch.tv/SpaceKev"],
+            [Integrations.Steam, "https://steamcommunity.com/id/SpaceKev/"],
+            [Integrations.YouTube, "https://youtube.com/c/SpaceKev/"],
+            [Integrations.Spotify, "@SpaceKev"],
+            [Integrations.Generic, "https://satellite.im"],
+            [Integrations.BTC, "1cwI2h8ETSROxAihiRDB5QqfDc3EDxWsf0"],
+            [Integrations.ETH, "0x0000000000000000000000000000000000000000"],
+            [Integrations.SOL, "26AKqj1Au1jGrHFm7RXVJJeu7nsbqqin5Ff3vjPxM4QK"],
+        ]),
     },
     {
         ...defaultUser,
