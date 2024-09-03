@@ -50,10 +50,16 @@
                 UIStore.decreaseFontSize()
                 break
             case KeybindAction.ToggleMute:
-                Store.updateMuted(!muted)
+                if (VoiceRTCInstance.isInCall) {
+                    Store.updateMuted(!muted)
+                    VoiceRTCInstance.toggleMute(!muted)
+                }
                 break
             case KeybindAction.ToggleDeafen:
-                Store.updateDeafened(!deafened)
+                if (VoiceRTCInstance.isInCall) {
+                    Store.updateDeafened(!deafened)
+                    VoiceRTCInstance.toggleDeafen(!deafened)
+                }
                 break
             case KeybindAction.OpenInspector:
                 log.info("todo")
@@ -65,16 +71,25 @@
                 log.info("todo")
                 break
             case KeybindAction.PushToTalk:
-                playSound(Sounds.Press)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Press)
+                    VoiceRTCInstance.toggleMute(false)
+                }
                 break
             case KeybindAction.PushToMute:
-                playSound(Sounds.Press)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Press)
+                    VoiceRTCInstance.toggleMute(true)
+                }
                 break
             case KeybindAction.PushToDeafen:
-                playSound(Sounds.Press)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Press)
+                    VoiceRTCInstance.toggleDeafen(true)
+                }
                 break
             default:
-                console.warn("unhandled keybind", keybind)
+                log.info("unhandled keybind " + keybind.action)
         }
     }
 
@@ -84,16 +99,25 @@
 
         switch (keybind.action) {
             case KeybindAction.PushToTalk:
-                playSound(Sounds.Release)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Release)
+                    VoiceRTCInstance.toggleMute(true)
+                }
                 break
             case KeybindAction.PushToMute:
-                playSound(Sounds.Release)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Release)
+                    VoiceRTCInstance.toggleMute(false)
+                }
                 break
             case KeybindAction.PushToDeafen:
-                playSound(Sounds.Release)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Release)
+                    VoiceRTCInstance.toggleDeafen(false)
+                }
                 break
             default:
-                log.warn(`unhandled keybind ${keybind}`)
+                log.info("unhandled keybind " + keybind.action)
         }
     }
 
