@@ -363,8 +363,7 @@
 
     onMount(async () => {
         /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
-        await new Promise(resolve => setTimeout(resolve, 300))
-
+        await ConstellationStoreInstance.checkLoaded()
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
         getCurrentDirectoryFiles()
 
