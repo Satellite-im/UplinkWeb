@@ -94,6 +94,7 @@
         "users-typing": "{users} are typing",
         "group": {
             "name": "Group name:",
+            "error": "Please insert group name",
             "members": "Group members:",
             "amount": "{amount} member(s)",
             "select": "Select member(s)",
