@@ -89,6 +89,12 @@
         let newDirCreated = await ConstellationStoreInstance.createDirectory(folder.name)
         newDirCreated.fold(
             err => {
+                if (err === WarpError.DIRECTORY_ALREADY_EXIST) {
+                    updateCurrentDirectory()
+                    Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
+                    return
+                }
+                updateCurrentDirectory()
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             async _ => {
