@@ -275,7 +275,7 @@ export let defaultChat: Chat = {
     creator: undefined,
     settings: {
         displayOwnerBadge: true,
-        readReciepts: true,
+        readReceipts: true,
         permissions: {
             allowAnyoneToAddUsers: false,
             allowAnyoneToModifyPhoto: false,
