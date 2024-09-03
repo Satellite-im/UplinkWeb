@@ -15,6 +15,7 @@
     let name = ""
     let recipients: User[] = []
     let nameError = false
+    let error: string | null = null
 
     function update_recipients(recipient: User) {
         let new_recipient_list = [...recipients]
@@ -26,6 +27,11 @@
         }
 
         recipients = new_recipient_list
+
+        // Clear error when the user updates the recipient list
+        if (recipients.length > 0) {
+            error = null
+        }
     }
 
     function contains_recipient(list: User[], recipient: User): boolean {
@@ -45,9 +51,25 @@
     $: friends = Store.getUsers(Store.state.friends)
     const dispatch = createEventDispatcher()
 
-    function onCreate() {
+    async function onCreate() {
+        if (recipients.length === 0) { // Validate before creating group chat
+            error = $_("chat.group.noMembers") || "Please select at least one member."
+            return
+        }
+
+        if (validateGroupName(name)) {
+            let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
+            conversation.onSuccess(chat => {
+                Store.setActiveChat(chat)
+            })
+            onCreateComplete()
+        }
+    }
+
+    function onCreateComplete() {
         name = ""
         recipients = []
+        error = null
         dispatch("create")
     }
 </script>
@@ -109,21 +131,20 @@
             {/each}
         </div>
 
+        <!-- Display error message if no recipients are selected -->
+        {#if error}
+            <Text appearance={Appearance.Error} size={Size.Small}>
+                {error}
+            </Text>
+        {/if}
+
         <Controls>
             <Button
                 hook="button-create-group"
                 text={$_("chat.group.create")}
                 fill
                 disabled={nameError}
-                on:click={async () => {
-                    if (validateGroupName(name)) {
-                        let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
-                        conversation.onSuccess(chat => {
-                            Store.setActiveChat(chat)
-                        })
-                        onCreate()
-                    }
-                }}
+                on:click={onCreate}
             >
                 <Icon icon={Shape.ChatPlus} />
             </Button>
