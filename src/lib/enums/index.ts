@@ -156,6 +156,7 @@ export const enum TooltipPosition {
     LEFT,
     MIDDLE,
     RIGHT,
+    BOTTOM,
 }
 
 export const enum MessagePosition {

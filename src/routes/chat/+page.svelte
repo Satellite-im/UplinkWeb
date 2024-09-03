@@ -15,7 +15,6 @@
         MessageReactions,
         MessageReplyContainer,
         ProfilePicture,
-        CoinBalance,
         Modal,
         ProfilePictureMany,
         STLViewer,
@@ -66,7 +65,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -419,6 +418,8 @@
                 <svelte:fragment slot="controls">
                     <Button
                         hook="button-chat-call"
+                        tooltip={$_("chat.call")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         loading={loading}
                         icon
                         appearance={Appearance.Alt}
@@ -433,6 +434,8 @@
                     <Button
                         icon
                         hook="button-chat-video"
+                        tooltip={$_("chat.videocall")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         appearance={Appearance.Alt}
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
@@ -446,6 +449,8 @@
                     <Button
                         icon
                         hook="button-chat-favorite"
+                        tooltip={$_("chat.favorite")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
@@ -456,6 +461,8 @@
                     </Button>
                     <Button
                         hook="button-chat-pin"
+                        tooltip={$_("chat.pinned-messages")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         icon
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
@@ -469,6 +476,9 @@
                     </Button>
                     {#if $activeChat.kind === ChatType.Group}
                         <Button
+                            hook="button-chat-group-participants"
+                            tooltip={$_("chat.show-participants")}
+                            tooltipPosition={TooltipPosition.BOTTOM}
                             icon
                             appearance={showUsers ? Appearance.Primary : Appearance.Alt}
                             loading={loading}
@@ -478,6 +488,9 @@
                             <Icon icon={Shape.Users} />
                         </Button>
                         <Button
+                            hook="button-chat-group-settings"
+                            tooltip={$_("chat.group-settings")}
+                            tooltipPosition={TooltipPosition.BOTTOM}
                             icon
                             appearance={groupSettings ? Appearance.Primary : Appearance.Alt}
                             loading={loading}
@@ -678,6 +691,7 @@
                 <Controls>
                     <Button
                         hook="button-chat-transact"
+                        tooltip={$_("chat.send-coin")}
                         icon
                         outline
                         appearance={transact ? Appearance.Primary : Appearance.Alt}

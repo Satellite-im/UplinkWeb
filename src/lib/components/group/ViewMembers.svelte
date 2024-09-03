@@ -13,6 +13,9 @@
     export let members: User[] = []
     export let adminControls: boolean = false
 
+    let allRecipients: User[] = []
+    let friends: User[] = [] // Initialize friends as an empty array
+
     function update_members(user: User) {
         let group_members = [...members]
 
@@ -39,10 +42,41 @@
         return list.includes(user)
     }
 
-    $: friends = Store.getUsers(Store.state.friends)
+    // Ensure friends is always an array and handle potential errors
+    $: {
+        try {
+            friends = Store.getUsers(Store.state.friends) || [] // Default to empty array if undefined
+        } catch (error) {
+            console.error("Error fetching friends from store:", error)
+            friends = [] // Default to empty array if an error occurs
+        }
+
+        if (!Array.isArray(friends)) {
+            friends = []
+        }
+    }
 
     // Combine members and friends without duplicates
-    $: allRecipients = Array.from(new Set([...members, ...$friends]))
+    $: {
+        try {
+            const uniqueKeys = new Set()
+            allRecipients = Array.from(
+                new Set(
+                    [...members, ...friends].filter(user => {
+                        if (uniqueKeys.has(user.key)) {
+                            return false
+                        } else {
+                            uniqueKeys.add(user.key)
+                            return true
+                        }
+                    })
+                )
+            )
+        } catch (error) {
+            console.error("Error combining members and friends:", error)
+            allRecipients = [] // Default to empty array if an error occurs
+        }
+    }
 </script>
 
 <div class="members">
