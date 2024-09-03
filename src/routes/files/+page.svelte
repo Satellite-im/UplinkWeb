@@ -841,7 +841,6 @@
                                     text: $_("generic.delete"),
                                     appearance: Appearance.Default,
                                     onClick: () => {
-                                        // TODO(Lucas): Delete item not working for folders yet
                                         deleteItem(`/${item.name}/`)
                                     },
                                 },
