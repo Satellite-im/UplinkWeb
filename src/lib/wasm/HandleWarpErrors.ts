@@ -14,6 +14,7 @@ export enum WarpError {
     MULTIPASS_NOT_FOUND = "Multipass instance not found",
     CONSTELLATION_NOT_FOUND = "Constellation instance not found",
     RAYGUN_NOT_FOUND = "Raygun instance not found",
+    FILE_SIZE_EXCEEDED = "File size exceeded",
 }
 
 export function handleErrors(error: any): WarpError {

@@ -76,7 +76,7 @@
         "chat": "Chat",
         "chat_plural": "Chats",
         "create": "Create Group Chat",
-        "add_attachment": "Add attachment",
+        "add_attachment": "Add Attachment",
         "emoji": "Emojis",
         "emojiPicker": "Emoji Picker",
         "gifSearch": "GIF Search",
@@ -94,6 +94,7 @@
         "users-typing": "{users} are typing",
         "group": {
             "name": "Group name:",
+            "error": "Please insert group name",
             "members": "Group members:",
             "amount": "{amount} member(s)",
             "select": "Select member(s)",
@@ -111,7 +112,13 @@
                 "photo": "Change Photo",
                 "photo.description": "Allow anyone to change the group photo"
             }
-        }
+        },
+        "call": "Audio Call",
+        "videocall": "Video Call",
+        "pinned-messages": "Pinned",
+        "send-coin": "Send Coin",
+        "show-participants": "Participants",
+        "group-settings": "Settings"
     },
     "community": {
         "title": "Satellite Community - General",

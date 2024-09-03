@@ -471,6 +471,10 @@ export class VoiceRTC {
         this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
     }
 
+    get isInCall(): boolean {
+        return this.activeCall !== null
+    }    
+
     handleWithDataReceived(dataReceived: VoiceMessage) {
         log.debug(`Data received: ${dataReceived.type}`)
         switch (dataReceived.type) {
