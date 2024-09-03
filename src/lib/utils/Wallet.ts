@@ -46,7 +46,7 @@ async function getEthWallet(ethWallet: EthWallet | undefined): Promise<EthWallet
     return ethWallet
 }
 
-function getDisplayAmount(amount: bigint, decimals: number): string {
+function toAmountPreviewString(amount: bigint, decimals: number): string {
     if (decimals > 0) {
         let num = amount.toString().padStart(decimals + 1, "0")
         let integer = num.substring(0, num.length - decimals)
@@ -55,6 +55,34 @@ function getDisplayAmount(amount: bigint, decimals: number): string {
     } else {
         return amount.toString()
     }
+}
+
+function toBigIntAmount(amount: string, decimals: number): bigint {
+    //check if the amount string is valid. it should only contain numbers and at most one dot.
+    if (amount.match(/[^0-9.]/g) || amount.split(".").length > 2) {
+        return BigInt(0)
+    }
+
+    //get the position of the decimal and split amount into fraction and integer
+    let integer = ""
+    let fraction = ""
+    let i = amount.indexOf(".")
+    if (i === -1) {
+        integer = amount
+    } else {
+        integer = amount.substring(0, i)
+        fraction = amount.substring(i + 1, amount.length)
+    }
+
+    //make fraction the appropriate length according to number of decimals
+    if (fraction.length > decimals) {
+        fraction = fraction.substring(0, decimals)
+    } else {
+        fraction = fraction.padEnd(decimals, "0")
+    }
+
+    //concat integer and fraction and convert to bigint
+    return BigInt(integer + fraction)
 }
 
 class ExternalWallets {
@@ -114,27 +142,51 @@ class ExternalWallets {
         }
     }
 
-    async getAmountDisplay(asset: Asset, amount: bigint): Promise<string> {
+    async toAmountPreviewString(asset: Asset, amount: bigint): Promise<string> {
         if (asset.kind === AssetType.None) {
             throw new Error("Please select an asset before formatting the amount")
         }
 
         switch (asset.kind) {
             case AssetType.Bitcoin:
-                return await btcGetAmountDisplay(amount)
+                return await btcToAmountPreviewString(amount)
             case AssetType.BitcoinRunes:
-                return await btcRunesGetAmountDisplay(asset, amount)
+                return await btcRunesToAmountPreviewString(asset, amount)
             case AssetType.Ethereum:
-                return await ethGetAmountDisplay(amount)
+                return await ethToAmountPreviewString(amount)
             case AssetType.EthereumERC20: {
                 let ethWallet = await getEthWallet(this.ethWallet)
                 this.ethWallet = ethWallet
-                return await ethErc20GetAmountDisplay(ethWallet, asset, amount)
+                return await ethErc20ToAmountPreviewString(ethWallet, asset, amount)
             }
             case AssetType.Solana:
-                return await solGetAmountDisplay(amount)
+                return await solToAmountPreviewString(amount)
             case AssetType.SolanaSPL:
-                return await solSplGetAmountDisplay(asset, amount)
+                return await solSplToAmountPreviewString(asset, amount)
+        }
+    }
+
+    async toBigIntAmount(asset: Asset, amount: string): Promise<bigint> {
+        if (asset.kind === AssetType.None) {
+            throw new Error("Please select an asset before formatting the amount")
+        }
+
+        switch (asset.kind) {
+            case AssetType.Bitcoin:
+                return await btcToBigIntAmount(amount)
+            case AssetType.BitcoinRunes:
+                return await btcRunesToBigIntAmount(asset, amount)
+            case AssetType.Ethereum:
+                return await ethToBigIntAmount(amount)
+            case AssetType.EthereumERC20: {
+                let ethWallet = await getEthWallet(this.ethWallet)
+                this.ethWallet = ethWallet
+                return await ethErc20ToBigIntAmount(ethWallet, asset, amount)
+            }
+            case AssetType.Solana:
+                return await solToBigIntAmount(amount)
+            case AssetType.SolanaSPL:
+                return await solSplToBigIntAmount(asset, amount)
         }
     }
 
@@ -192,8 +244,12 @@ async function btcMyBalance(): Promise<bigint> {
     }
 }
 
-async function btcGetAmountDisplay(amount: bigint): Promise<string> {
-    return getDisplayAmount(amount, 8) + " BTC"
+async function btcToAmountPreviewString(amount: bigint): Promise<string> {
+    return toAmountPreviewString(amount, 8) + " BTC"
+}
+
+async function btcToBigIntAmount(amount: string): Promise<bigint> {
+    return toBigIntAmount(amount, 8)
 }
 
 async function btcTransfer(amount: bigint, toAddress: string) {
@@ -252,8 +308,12 @@ async function btcRunesMyBalance(asset: Asset): Promise<bigint> {
     }
 }
 
-async function btcRunesGetAmountDisplay(asset: Asset, amount: bigint): Promise<string> {
-    return getDisplayAmount(amount, 0) + " " + asset.id
+async function btcRunesToAmountPreviewString(asset: Asset, amount: bigint): Promise<string> {
+    return toAmountPreviewString(amount, 0) + " " + asset.id
+}
+
+async function btcRunesToBigIntAmount(asset: Asset, amount: string): Promise<bigint> {
+    return toBigIntAmount(amount, 0)
 }
 
 async function btcRunesTransfer(asset: Asset, amount: bigint, toAddress: string) {
@@ -292,8 +352,12 @@ async function ethMyBalance(ethWallet: EthWallet, myAddress: string): Promise<bi
     return await ethWallet.provider.getBalance(myAddress)
 }
 
-async function ethGetAmountDisplay(amount: bigint): Promise<string> {
-    return getDisplayAmount(amount, 18) + " ETH"
+async function ethToAmountPreviewString(amount: bigint): Promise<string> {
+    return toAmountPreviewString(amount, 18) + " ETH"
+}
+
+async function ethToBigIntAmount(amount: string): Promise<bigint> {
+    return toBigIntAmount(amount, 18)
 }
 
 async function ethTransfer(ethWallet: EthWallet, amount: bigint, toAddress: string) {
@@ -314,7 +378,7 @@ async function ethErc20MyBalance(ethWallet: EthWallet, asset: Asset): Promise<bi
     return BigInt(balance)
 }
 
-async function ethErc20GetAmountDisplay(ethWallet: EthWallet, asset: Asset, amount: bigint): Promise<string> {
+async function ethErc20ToAmountPreviewString(ethWallet: EthWallet, asset: Asset, amount: bigint): Promise<string> {
     if (asset.id === "") {
         return amount.toString()
     }
@@ -322,7 +386,18 @@ async function ethErc20GetAmountDisplay(ethWallet: EthWallet, asset: Asset, amou
     let contract = new ethers.Contract(asset.id, abi, ethWallet.provider)
     let decimals: number = Number(await contract.decimals())
     let symbol: string = await contract.symbol()
-    return getDisplayAmount(amount, decimals) + " " + symbol
+    return toAmountPreviewString(amount, decimals) + " " + symbol
+}
+
+async function ethErc20ToBigIntAmount(ethWallet: EthWallet, asset: Asset, amount: string): Promise<bigint> {
+    if (asset.id === "") {
+        return BigInt(0)
+    }
+    let abi = ["function decimals() view returns (uint8)", "function symbol() view returns (string)"]
+    let contract = new ethers.Contract(asset.id, abi, ethWallet.provider)
+    let decimals: number = Number(await contract.decimals())
+    let symbol: string = await contract.symbol()
+    return toBigIntAmount(amount, decimals)
 }
 
 async function ethErc20Transfer(ethWallet: EthWallet, asset: Asset, amount: bigint, toAddress: string) {
@@ -342,9 +417,14 @@ async function solMyBalance(): Promise<bigint> {
     return BigInt(0)
 }
 
-async function solGetAmountDisplay(amount: bigint): Promise<string> {
+async function solToAmountPreviewString(amount: bigint): Promise<string> {
     log.error("solGetAmountDisplay: SOL not yet supported")
     return ""
+}
+
+async function solToBigIntAmount(amount: string): Promise<bigint> {
+    log.error("solToBigIntAmount: SOL not yet supported")
+    return BigInt(0)
 }
 
 async function solTransfer(amount: bigint, toAddress: string) {
@@ -361,9 +441,14 @@ async function solSplMyBalance(asset: Asset): Promise<bigint> {
     return BigInt(0)
 }
 
-async function solSplGetAmountDisplay(asset: Asset, amount: bigint): Promise<string> {
+async function solSplToAmountPreviewString(asset: Asset, amount: bigint): Promise<string> {
     log.error("solSplGetAmountDisplay: SOL not yet supported")
     return ""
+}
+
+async function solSplToBigIntAmount(asset: Asset, amount: string): Promise<bigint> {
+    log.error("solSplToBigIntAmount: SOL not yet supported")
+    return BigInt(0)
 }
 
 async function solSplTransfer(asset: Asset, amount: bigint, toAddress: string) {
@@ -374,11 +459,13 @@ export class Transfer {
     asset: Asset
     amount: bigint
     toAddress: string
+    amountPreview: string
 
     constructor() {
         this.asset = { kind: AssetType.None, id: "" }
         this.amount = BigInt(0)
         this.toAddress = ""
+        this.amountPreview = ""
     }
 
     isValid(): boolean {
@@ -398,13 +485,13 @@ export class Transfer {
     }
 
     toCmdString(): string {
-        let id = this.asset.id === "" ? "n/a" : this.asset.id
-        return `/request ${this.asset.kind} ${id} ${this.amount} ${this.toAddress}`
+        let transfer = JSON.stringify(this, (k, v) => (k === "amount" && typeof v === "bigint" ? v.toString() : v))
+        return `/request ${transfer}`
     }
 
     toDisplayString(): string {
         let id = this.asset.id === "n/a" ? "" : this.asset.id
-        return `Send ${this.amount} ${this.asset.kind}: ${id} to ${shortenAddr(this.toAddress, 6)}`
+        return `Send ${this.amountPreview} to ${shortenAddr(this.toAddress, 6)}`
     }
 
     async execute() {
@@ -415,14 +502,21 @@ export class Transfer {
 }
 
 export function getValidPaymentRequest(msg: string): Transfer | undefined {
-    let parts = msg.split(" ")
-    if (parts.length === 5 && parts[0] === "/request") {
-        let request = new Transfer()
-        request.asset = { kind: parts[1] as AssetType, id: parts[2] }
-        request.amount = BigInt(parts[3])
-        request.toAddress = parts[4]
-        if (request.isValid()) {
-            return request
+    let cmd = "/request "
+    if (msg.startsWith(cmd)) {
+        let json = msg.substring(cmd.length, msg.length)
+        let transfer = new Transfer()
+        try {
+            let parsed = JSON.parse(json, (k, v) => (k === "amount" && typeof v === "string" ? BigInt(v) : v))
+            transfer.asset = parsed.asset
+            transfer.amount = parsed.amount
+            transfer.toAddress = parsed.toAddress
+            transfer.amountPreview = parsed.amountPreview
+        } catch {
+            // if it wasn't valid json, do nothing.
+        }
+        if (transfer.asset.kind !== AssetType.None && transfer.isValid()) {
+            return transfer
         }
     }
 }
