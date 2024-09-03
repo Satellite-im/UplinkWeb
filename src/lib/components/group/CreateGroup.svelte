@@ -27,6 +27,11 @@
         }
 
         recipients = new_recipient_list
+
+        // Clear error when the user updates the recipient list
+        if (recipients.length > 0) {
+            error = null
+        }
     }
 
     function contains_recipient(list: User[], recipient: User): boolean {
