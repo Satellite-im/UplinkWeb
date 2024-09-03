@@ -1,20 +1,18 @@
-import { derived, get, writable, type Writable } from "svelte/store"
+import { get, writable, Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
-import { failure, success, type Result } from "$lib/utils/Result"
+import { failure, success, Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
-import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
+import { defaultProfileData, defaultUser, FriendRequest, User } from "$lib/types"
 import { Store } from "$lib/state/Store"
 import { MessageDirection, Route, Status } from "$lib/enums"
-import { parseJSValue } from "./EnumParser"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { SettingsStore } from "$lib/state"
 import { Sounds } from "$lib/components/utils/SoundHandler"
 import { MAX_RETRY_COUNT, RETRY_DELAY } from "$lib/config"
 import { goto } from "$app/navigation"
-import { createLock } from "./AsyncLock"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.

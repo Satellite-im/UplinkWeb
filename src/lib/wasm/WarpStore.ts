@@ -1,5 +1,5 @@
 import * as wasm from "warp-wasm"
-import { initWarp, type IWarp } from "./IWarp"
+import { initWarp, IWarp } from "./IWarp"
 import { get, writable } from "svelte/store"
 import { log } from "$lib/utils/Logger"
 import { TesseractStoreInstance } from "./TesseractStore"
