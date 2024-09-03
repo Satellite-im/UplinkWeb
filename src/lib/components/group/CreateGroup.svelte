@@ -1,4 +1,15 @@
 <script lang="ts">
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import { type User } from "$lib/types"
+    import { ProfilePicture } from "$lib/components"
+    import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
+    import Text from "$lib/elements/Text.svelte"
+    import { _ } from "svelte-i18n"
+    import { Store } from "$lib/state/Store"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { createEventDispatcher } from "svelte"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+
     export let embedded: boolean = false
 
     let name = ""
