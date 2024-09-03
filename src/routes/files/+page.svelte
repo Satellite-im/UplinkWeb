@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Button, Icon } from "$lib/elements"
     import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
@@ -18,16 +17,13 @@
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
     import { goto } from "$app/navigation"
-    import { ConstellationStoreInstance, imageFromData } from "$lib/wasm/ConstellationStore"
+    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
-    import { WarpInstance, type Item } from "warp-wasm"
+    import { type Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
-    import { initWarp } from "$lib/wasm/IWarp"
-    import { WarpStore } from "$lib/wasm/WarpStore"
-    import FileInput from "$lib/elements/Input/FileInput.svelte"
-
+    
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
     let isContextMenuOpen: boolean = false

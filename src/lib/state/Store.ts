@@ -61,6 +61,7 @@ class GlobalStore {
                 status: Status.Online,
                 status_message: identity.status_message() || "",
             },
+            integrations: identity.metadata(),
         }
         this.state.user.update(u => (u = userFromIdentity))
     }
