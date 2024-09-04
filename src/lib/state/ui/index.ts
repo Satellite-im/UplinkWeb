@@ -1,7 +1,7 @@
 import { TypingIndicator, type Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
-import { EmojiFont, Font } from "$lib/enums"
+import { EmojiFont, Font, Identicon } from "$lib/enums"
 import { Store as MainStore } from "../Store"
 import { mchats } from "$lib/mock/users"
 
@@ -10,7 +10,9 @@ export interface IUIState {
     fontSize: Writable<number>
     cssOverride: Writable<string>
     font: Writable<Font>
+    theme: Writable<string>
     emojiFont: Writable<EmojiFont>
+    identicon: Writable<Identicon>
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
     hiddenChats: Writable<Chat[]>
@@ -24,6 +26,8 @@ class Store {
             color: createPersistentState("uplink.color", "#4d4dff"),
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
             font: createPersistentState("uplink.ui.font", Font.Poppins),
+            theme: createPersistentState("uplink.ui.font", "default"),
+            identicon: createPersistentState("uplink.ui.identicon", Identicon.PixelArtNeutral),
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
             sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),

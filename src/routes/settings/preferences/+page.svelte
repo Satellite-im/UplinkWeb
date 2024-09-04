@@ -20,34 +20,6 @@
     import type { Item } from "warp-wasm"
     import { ToastMessage } from "$lib/state/ui/toast"
 
-    let hex = get(UIStore.state.color)
-    let font: Font = get(UIStore.state.font)
-    let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
-    let identiconStyle: Identicon = get(SettingsStore.state).messaging.identiconStyle
-
-    let cssOverride = get(UIStore.state.cssOverride)
-    let fontSize = get(UIStore.state.fontSize)
-    let emojiUpload: HTMLInputElement
-    let themeUpload: HTMLInputElement
-    let fontUpload: HTMLInputElement
-    let pfpUpload: HTMLInputElement
-
-    UIStore.state.color.subscribe(c => {
-        hex = c
-    })
-    UIStore.state.font.subscribe(f => {
-        font = f
-    })
-    UIStore.state.fontSize.subscribe(s => {
-        fontSize = s
-    })
-    UIStore.state.cssOverride.subscribe(css => {
-        cssOverride = css
-    })
-    SettingsStore.state.subscribe(settings => {
-        identiconStyle = settings.messaging.identiconStyle
-    })
-
     const availableFonts = [
         { text: Font.Poppins, value: Font.Poppins },
         { text: Font.SpaceMono, value: Font.SpaceMono },
@@ -82,17 +54,60 @@
         { text: Identicon.Shapes, value: Identicon.Shapes },
     ]
 
-    const availableEmojiFonts = [
+    const availableEmoji = [
         { text: EmojiFont.NotoEmoji.split(".")[0], value: EmojiFont.NotoEmoji },
         { text: EmojiFont.OpenMoji.split(".")[0], value: EmojiFont.OpenMoji },
         { text: EmojiFont.Blobmoji.split(".")[0], value: EmojiFont.Blobmoji },
         { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
         { text: EmojiFont.Fluent.split(".")[0], value: EmojiFont.Fluent },
     ]
-    let allFiles: FileInfo[] = get(Store.state.files)
 
+    const availableThemes = [{ text: "Default", value: "Default" }]
+
+    let hex = get(UIStore.state.color)
+    $: font = get(UIStore.state.font)
+    $: emojiFont = get(UIStore.state.emojiFont)
+    $: theme = get(UIStore.state.theme)
+    $: identiconStyle = get(SettingsStore.state).messaging.identiconStyle
+
+    let cssOverride = get(UIStore.state.cssOverride)
+    let fontSize = get(UIStore.state.fontSize)
+    let emojiUpload: HTMLInputElement
+    let themeUpload: HTMLInputElement
+    let fontUpload: HTMLInputElement
+    let pfpUpload: HTMLInputElement
+
+    UIStore.state.color.subscribe(c => {
+        hex = c
+    })
+    UIStore.state.font.subscribe(f => {
+        font = f
+    })
+    UIStore.state.theme.subscribe(f => {
+        theme = f
+    })
+    UIStore.state.emojiFont.subscribe(f => {
+        emojiFont = f
+    })
+    UIStore.state.fontSize.subscribe(s => {
+        fontSize = s
+    })
+    UIStore.state.cssOverride.subscribe(css => {
+        cssOverride = css
+    })
+
+    SettingsStore.state.subscribe(settings => {
+        identiconStyle = settings.messaging.identiconStyle
+    })
+
+    // let allFiles: FileInfo[] = get(Store.state.files)
+    // $: CustomFolderFiles = allFiles.map(e => {
+    //     console.log(e)
+    //     if (e.name === "customization") {
+    //         return e
+    //     }
+    // })
     let newDirCreated
-    let customStylesFolder
     let possibleEmojis: string[] = ["🛰️", "🪐", "🤣", "😀", "🖖"]
     let randomEmoji: string = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)]
 
@@ -100,32 +115,18 @@
     SettingsStore.state.subscribe((s: ISettingsState) => {
         settings = s
     })
+    let allFiles: FileInfo[] = get(Store.state.files)
     const folderStackStore = writable<FileInfo[][]>([allFiles])
     folderStackStore.subscribe((folderStack: string | any[]) => {
-        allFiles = folderStack[folderStack.length - 1]
+        currentFiles = folderStack[folderStack.length - 1]
         console.log(allFiles)
     })
+    $: currentFiles = allFiles
 
-    let availableEmoji: { text: string; value: EmojiFont }[] = []
-
-    // Subscribe to changes and persist to localStorage
-    // filePathStore.subscribe(value => {
-    //     if (value !== null) {
-    //         localStorage.setItem("filePath", value)
-    //     } else {
-    //         localStorage.removeItem("filePath")
-    //     }
-    // })
-    // rootPathStore.subscribe(value => {
-    //     // console.log(value.kind)
-    //     if (value) {
-    //         console.log(value.kind, value.name)
-    //         localStorage.setItem(value.kind, value.name)
-    //     } else {
-    //         localStorage.removeItem("")
-    //     }
-    // })
-    let allAvailableFonts: { text: string; value: Font }[] = []
+    let allAvailableEmoji: { text: string; value: string }[] = []
+    let allAvailableFonts: { text: string; value: string }[] = []
+    let allAvailableIdenticons: { text: string; value: string }[] = []
+    let allAvailableThemes: { text: string; value: string }[] = []
 
     $: if (hex !== undefined) {
         UIStore.setThemeColor(hex)
@@ -135,8 +136,10 @@
         files.onSuccess(items => {
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
+            console.log("SUCESSD", filesSet)
             Store.state.files.set(Array.from(filesSet))
-            // currentFiles = Array.from(filesSet)
+            currentFiles = Array.from(filesSet)
+            loadAllFonts()
         })
     }
 
@@ -152,30 +155,23 @@
 
     async function saveFile(e: Event, folderHandle: string) {
         const target = e.target as HTMLInputElement
-
-        // let currentdir = await ConstellationStoreInstance.getCurrentDirectoryFiles
         if (target && target.files) {
             for (let i = 0; i < target.files.length; i++) {
                 const file = target.files[i]
                 const stream = file.stream()
                 const fileNameParts = file.name.split(".")
+                const baseName = fileNameParts.slice(0, -1).join(".")
+                const fileExtension = fileNameParts.slice(-1)[0]
                 let newFileName = file.name
+                let fileIndex = 1
+                newFileName = `${baseName} (${fileIndex}).${fileExtension}`
                 let topDIr = await ConstellationStoreInstance.openDirectory("customization")
-                let localDIr = await ConstellationStoreInstance.openDirectory(folderHandle)
+                let folderDIr = await ConstellationStoreInstance.openDirectory(folderHandle)
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
-                console.log(result)
                 result.onSuccess(result => {
-                    // ConstellationStoreInstance.goBack()
                     ConstellationStoreInstance.dropIntoFolder(newFileName, folderHandle)
-
-                    // ConstellationStoreInstance.openDirectory("customization")
-                    // ConstellationStoreInstance.getCurrentDirectoryFiles()
-                    // if (ConstellationStoreInstance.getCurrentDirectoryFiles)
-                    // console.log(currentdir)
-                    // ConstellationStoreInstance.openDirectory("/")
                     ConstellationStoreInstance.goBack()
                     ConstellationStoreInstance.goBack()
-                    // ConstellationStoreInstance.openDirectory("customization")
                 })
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
@@ -188,7 +184,6 @@
     function itemsToFileInfo(items: Item[]): FileInfo[] {
         let filesInfo: FileInfo[] = []
         items.forEach(item => {
-            // const imageThumb = to_base64(item.thumbnail())
             console.log("isFile: ", item.is_file())
 
             let newItem: FileInfo = {
@@ -214,27 +209,67 @@
         return /emoji|Emoji|moji|Moji/i.test(value)
     }
 
-    // async function loadAllFonts() {
-    //     const userFonts = await loadUserFonts("font")
-    //     allAvailableFonts = [...availableFonts, ...userFonts]
-    //     return [...availableFonts, ...userFonts]
-    // }
-
-    // async function loadAllIdenticons() {
-    //     const userIdenticons = await loadUserFonts("pfp")
-
-    //     return [...availableIdenticons, ...userIdenticons]
-    // }
+    async function loadAllFonts() {
+        const userUploads: { text: string; value: string }[] = []
+        // Traverse the custom folder structure to extract user-uploaded fonts
+        if (!currentFiles.length) {
+            // loadOrCreateFolders()
+            console.log("allfiles no lenth")
+        }
+        currentFiles.forEach(e => {
+            if (e.name === "customization") {
+                e.items?.forEach(a => {
+                    if (a.name === "fonts") {
+                        a.items?.forEach(fontFile => {
+                            userUploads.push({
+                                text: fontFile.name.split(".")[0],
+                                value: fontFile.name,
+                            })
+                        })
+                        allAvailableFonts = [...availableFonts, ...userUploads]
+                    }
+                    if (a.name === "emoji") {
+                        a.items?.forEach(fontFile => {
+                            userUploads.push({
+                                text: fontFile.name.split(".")[0],
+                                value: fontFile.name,
+                            })
+                        })
+                        allAvailableEmoji = [...availableEmoji, ...userUploads]
+                    }
+                    if (a.name === "pfp") {
+                        a.items?.forEach(fontFile => {
+                            userUploads.push({
+                                text: fontFile.name.split(".")[0],
+                                value: fontFile.name,
+                            })
+                        })
+                        allAvailableIdenticons = [...availableIdenticons, ...userUploads]
+                    }
+                    if (a.name === "theme") {
+                        a.items?.forEach(fontFile => {
+                            userUploads.push({
+                                text: fontFile.name.split(".")[0],
+                                value: fontFile.name,
+                            })
+                        })
+                        allAvailableThemes = [...availableThemes, ...userUploads]
+                    }
+                })
+            }
+        })
+        return
+    }
 
     async function loadOrCreateFolders() {
+        await ConstellationStoreInstance.goToRootPath()
         newDirCreated = await ConstellationStoreInstance.createDirectory("customization")
-        // console.log(newDirCreated, currentDir, "custom")
+
         let checkForCustomFolder: boolean = false
         newDirCreated.onSuccess(items => {
             checkForCustomFolder = true
-            console.log(items)
         })
-        newDirCreated.onFailure(item => console.log(item))
+        newDirCreated.onFailure(item => getCurrentDirectoryFiles())
         if (checkForCustomFolder) {
             await ConstellationStoreInstance.createDirectory("emoji")
             await ConstellationStoreInstance.createDirectory("fonts")
@@ -245,15 +280,15 @@
             await ConstellationStoreInstance.dropIntoFolder("theme", "customization")
             await ConstellationStoreInstance.dropIntoFolder("pfp", "customization")
         }
+        getCurrentDirectoryFiles()
     }
-    onMount(async () => {
-        await ConstellationStoreInstance.getStorageFreeSpaceSize()
-        loadOrCreateFolders()
-    })
 
-    // function to_base64(arg0: Uint8Array) {
-    //     throw new Error("Function not implemented.")
+    // $: {
+    //     loadOrCreateFolders()
     // }
+    onMount(async () => {
+        await loadOrCreateFolders()
+    })
 </script>
 
 <div id="page">
@@ -264,7 +299,7 @@
         <Select
             hook="selector-current-font-{font.toLowerCase()}"
             selected={font}
-            options={availableFonts}
+            options={allAvailableFonts}
             alt
             on:change={v => {
                 UIStore.setFont(v.detail)
@@ -287,7 +322,7 @@
         <Select
             hook="selector-current-emoji-font-{emojiFont.toLowerCase()}"
             selected={emojiFont}
-            options={availableEmoji}
+            options={allAvailableEmoji}
             alt
             on:change={v => {
                 UIStore.setEmojiFont(v.detail)
@@ -310,7 +345,7 @@
         <Select
             hook="selector-current-identicon-{identiconStyle.toLowerCase()}"
             selected={identiconStyle}
-            options={availableIdenticons}
+            options={allAvailableIdenticons}
             alt
             on:change={v => {
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, identiconStyle: v.detail } })
@@ -342,7 +377,7 @@
         <Button hook="button-theme-moon" icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Moon} />
         </Button>
-        <Select hook="selector-theme" alt options={[{ text: "Default", value: "default" }]} />
+        <Select hook="selector-theme" alt selected={theme} options={allAvailableThemes} />
         <Button
             hook="button-theme-open-folder"
             icon
