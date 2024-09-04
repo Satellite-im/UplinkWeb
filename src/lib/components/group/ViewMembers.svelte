@@ -60,14 +60,18 @@
     $: {
         try {
             const uniqueKeys = new Set()
-            allRecipients = Array.from(new Set([...members, ...friends].filter(user => {
-                if (uniqueKeys.has(user.key)) {
-                    return false
-                } else {
-                    uniqueKeys.add(user.key)
-                    return true
-                }
-            })))
+            allRecipients = Array.from(
+                new Set(
+                    [...members, ...friends].filter(user => {
+                        if (uniqueKeys.has(user.key)) {
+                            return false
+                        } else {
+                            uniqueKeys.add(user.key)
+                            return true
+                        }
+                    })
+                )
+            )
         } catch (error) {
             console.error("Error combining members and friends:", error)
             allRecipients = [] // Default to empty array if an error occurs
