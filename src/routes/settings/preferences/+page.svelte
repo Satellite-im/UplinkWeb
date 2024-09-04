@@ -11,6 +11,14 @@
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
+    import { onDestroy, onMount } from "svelte"
+    import { writable } from "svelte/store"
+    import { OperationState, type FileInfo } from "$lib/types"
+    import { Store } from "$lib/state/Store"
+    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
+    import { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import type { Item } from "warp-wasm"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     let hex = get(UIStore.state.color)
     let font: Font = get(UIStore.state.font)
@@ -81,7 +89,10 @@
         { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
         { text: EmojiFont.Fluent.split(".")[0], value: EmojiFont.Fluent },
     ]
+    let allFiles: FileInfo[] = get(Store.state.files)
 
+    let newDirCreated
+    let customStylesFolder
     let possibleEmojis: string[] = ["🛰️", "🪐", "🤣", "😀", "🖖"]
     let randomEmoji: string = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)]
 
@@ -89,15 +100,160 @@
     SettingsStore.state.subscribe((s: ISettingsState) => {
         settings = s
     })
+    const folderStackStore = writable<FileInfo[][]>([allFiles])
+    folderStackStore.subscribe((folderStack: string | any[]) => {
+        allFiles = folderStack[folderStack.length - 1]
+        console.log(allFiles)
+    })
+
+    let availableEmoji: { text: string; value: EmojiFont }[] = []
+
+    // Subscribe to changes and persist to localStorage
+    // filePathStore.subscribe(value => {
+    //     if (value !== null) {
+    //         localStorage.setItem("filePath", value)
+    //     } else {
+    //         localStorage.removeItem("filePath")
+    //     }
+    // })
+    // rootPathStore.subscribe(value => {
+    //     // console.log(value.kind)
+    //     if (value) {
+    //         console.log(value.kind, value.name)
+    //         localStorage.setItem(value.kind, value.name)
+    //     } else {
+    //         localStorage.removeItem("")
+    //     }
+    // })
+    let allAvailableFonts: { text: string; value: Font }[] = []
 
     $: if (hex !== undefined) {
         UIStore.setThemeColor(hex)
     }
-
-    const onFileSelected = async (e: Event) => {
-        const target = e.target as HTMLInputElement
-        console.log(target.files)
+    async function getCurrentDirectoryFiles() {
+        let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
+        files.onSuccess(items => {
+            let newFilesInfo = itemsToFileInfo(items)
+            let filesSet = new Set(newFilesInfo)
+            Store.state.files.set(Array.from(filesSet))
+            // currentFiles = Array.from(filesSet)
+        })
     }
+
+    function splitFileName(fileName: string): { name: string; extension: string } {
+        const lastDotIndex = fileName.lastIndexOf(".")
+        if (lastDotIndex === -1) {
+            return { name: fileName, extension: "" }
+        }
+        const name = fileName.substring(0, lastDotIndex)
+        const extension = fileName.substring(lastDotIndex + 1)
+        return { name, extension }
+    }
+
+    async function saveFile(e: Event, folderHandle: string) {
+        const target = e.target as HTMLInputElement
+
+        // let currentdir = await ConstellationStoreInstance.getCurrentDirectoryFiles
+        if (target && target.files) {
+            for (let i = 0; i < target.files.length; i++) {
+                const file = target.files[i]
+                const stream = file.stream()
+                const fileNameParts = file.name.split(".")
+                let newFileName = file.name
+                let topDIr = await ConstellationStoreInstance.openDirectory("customization")
+                let localDIr = await ConstellationStoreInstance.openDirectory(folderHandle)
+                let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
+                console.log(result)
+                result.onSuccess(result => {
+                    // ConstellationStoreInstance.goBack()
+                    ConstellationStoreInstance.dropIntoFolder(newFileName, folderHandle)
+
+                    // ConstellationStoreInstance.openDirectory("customization")
+                    // ConstellationStoreInstance.getCurrentDirectoryFiles()
+                    // if (ConstellationStoreInstance.getCurrentDirectoryFiles)
+                    // console.log(currentdir)
+                    // ConstellationStoreInstance.openDirectory("/")
+                    ConstellationStoreInstance.goBack()
+                    ConstellationStoreInstance.goBack()
+                    // ConstellationStoreInstance.openDirectory("customization")
+                })
+                result.onFailure(err => {
+                    Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
+                })
+            }
+        }
+        target.value = ""
+        getCurrentDirectoryFiles()
+    }
+    function itemsToFileInfo(items: Item[]): FileInfo[] {
+        let filesInfo: FileInfo[] = []
+        items.forEach(item => {
+            // const imageThumb = to_base64(item.thumbnail())
+            console.log("isFile: ", item.is_file())
+
+            let newItem: FileInfo = {
+                id: item!.id(),
+                type: item.is_file() ? "file" : "folder",
+                icon: item.is_file() ? Shape.Document : Shape.Folder,
+                name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
+                size: item!.size(),
+                remotePath: item!.path(),
+                imageThumbnail: "",
+                isRenaming: OperationState.Initial,
+                extension: item.is_file() ? splitFileName(item.name()).extension : "",
+                source: "",
+                items: item.is_file() ? undefined : itemsToFileInfo(item.directory()!.get_items()),
+            }
+            filesInfo = [...filesInfo, newItem]
+        })
+        return filesInfo
+    }
+
+    // Type guard to validate if a string is a valid EmojiFont
+    function isEmojiFont(value: string): boolean {
+        return /emoji|Emoji|moji|Moji/i.test(value)
+    }
+
+    // async function loadAllFonts() {
+    //     const userFonts = await loadUserFonts("font")
+    //     allAvailableFonts = [...availableFonts, ...userFonts]
+    //     return [...availableFonts, ...userFonts]
+    // }
+
+    // async function loadAllIdenticons() {
+    //     const userIdenticons = await loadUserFonts("pfp")
+
+    //     return [...availableIdenticons, ...userIdenticons]
+    // }
+
+    async function loadOrCreateFolders() {
+        newDirCreated = await ConstellationStoreInstance.createDirectory("customization")
+        // console.log(newDirCreated, currentDir, "custom")
+        let checkForCustomFolder: boolean = false
+        newDirCreated.onSuccess(items => {
+            checkForCustomFolder = true
+            console.log(items)
+        })
+        newDirCreated.onFailure(item => console.log(item))
+        if (checkForCustomFolder) {
+            await ConstellationStoreInstance.createDirectory("emoji")
+            await ConstellationStoreInstance.createDirectory("fonts")
+            await ConstellationStoreInstance.createDirectory("theme")
+            await ConstellationStoreInstance.createDirectory("pfp")
+            await ConstellationStoreInstance.dropIntoFolder("emoji", "customization")
+            await ConstellationStoreInstance.dropIntoFolder("fonts", "customization")
+            await ConstellationStoreInstance.dropIntoFolder("theme", "customization")
+            await ConstellationStoreInstance.dropIntoFolder("pfp", "customization")
+        }
+    }
+    onMount(async () => {
+        await ConstellationStoreInstance.getStorageFreeSpaceSize()
+        loadOrCreateFolders()
+    })
+
+    // function to_base64(arg0: Uint8Array) {
+    //     throw new Error("Function not implemented.")
+    // }
 </script>
 
 <div id="page">
@@ -124,14 +280,14 @@
             tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
-        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={fontUpload} />
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e, "fonts")} bind:this={fontUpload} />
     </SettingSection>
     <SettingSection hook="section-emoji-font" name={$_("settings.preferences.emojiFont")} description={$_("settings.preferences.emojiFontDescription")}>
         <span data-cy="emoji-font-random-emoji" class="emoji">{randomEmoji}</span>
         <Select
             hook="selector-current-emoji-font-{emojiFont.toLowerCase()}"
             selected={emojiFont}
-            options={availableEmojiFonts}
+            options={availableEmoji}
             alt
             on:change={v => {
                 UIStore.setEmojiFont(v.detail)
@@ -140,7 +296,6 @@
             hook="button-emoji-font-open-folder"
             on:click={async event => {
                 // let emojiUpload = event.dataTransfer?.files
-                console.log(event, emojiUpload)
                 emojiUpload?.click()
             }}
             icon
@@ -148,7 +303,7 @@
             tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
-        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={emojiUpload} />
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e, "emoji")} bind:this={emojiUpload} />
     </SettingSection>
     <SettingSection hook="section-identicon" name={$_("settings.preferences.identiconStyle")} description={$_("settings.preferences.identiconStyleDescription")}>
         <ProfilePicture hook="identicon-profile-picture" id={"0x0000000000000000000000000000000000000000"} />
@@ -170,7 +325,7 @@
             tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
-        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={pfpUpload} />
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e, "pfp")} bind:this={pfpUpload} />
     </SettingSection>
     <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
         <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
@@ -193,11 +348,11 @@
             icon
             appearance={Appearance.Alt}
             on:click={async event => {
-                pfpUpload?.click()
+                themeUpload?.click()
             }}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
-        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={themeUpload} />
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e, "theme")} bind:this={themeUpload} />
     </SettingSection>
     <SettingSection hook="section-primary-color" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")} wrapContent>
         <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")}>
