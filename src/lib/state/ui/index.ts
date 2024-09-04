@@ -1,5 +1,5 @@
 import { TypingIndicator, type Chat } from "$lib/types"
-import { get, type Writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { EmojiFont, Font } from "$lib/enums"
 import { Store as MainStore } from "../Store"
@@ -14,6 +14,7 @@ export interface IUIState {
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
     hiddenChats: Writable<Chat[]>
+    emojiSelector: Writable<boolean>
 }
 
 class Store {
@@ -37,6 +38,7 @@ class Store {
                 },
             }),
             hiddenChats: createPersistentState("uplink.ui.hiddenChats", []),
+            emojiSelector: writable(false),
         }
     }
 

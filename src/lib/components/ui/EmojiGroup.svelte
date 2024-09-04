@@ -2,6 +2,7 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import { Appearance, Shape } from "$lib/enums"
+    import { UIStore } from "$lib/state/ui"
 
     export let emojis: string[]
     export let close: (event: MouseEvent) => void
@@ -25,8 +26,8 @@
         class="emoji-picker"
         appearance={Appearance.Alt}
         on:click={e => {
-            // Open emoji picker
             close(e)
+            UIStore.state.emojiSelector.set(true)
         }}><Icon icon={Shape.Plus} /></Button>
 </div>
 
