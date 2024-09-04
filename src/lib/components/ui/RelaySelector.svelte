@@ -3,19 +3,24 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import { RelayStore, type RelayState } from "$lib/state/wasm/relays"
     import Modal from "$lib/components/ui/Modal.svelte"
-    import { WarpStore } from "$lib/wasm/WarpStore"
     import { get } from "svelte/store"
     import { _ } from "svelte-i18n"
     import Controls from "$lib/layouts/Controls.svelte"
 
     type onClose = () => {}
     export let close: onClose | undefined = undefined
-    let tesseract = get(WarpStore.warp.tesseract)
     let changed = false
     let adding: boolean = false
     let editing: string | undefined = undefined
     let relaysBack: { [key: string]: RelayState } = get(RelayStore.state)
     let relays = { ...relaysBack }
+    // There seems to be some import problems when refreshing and having the relay component on the page
+    // We fetch it lazily here instead
+    let warp: typeof import("$lib/wasm/WarpStore")
+    let warpImport = async () => {
+        if (!warp) warp = await import("$lib/wasm/WarpStore")
+        return warp
+    }
     RelayStore.state.subscribe(s => {
         relaysBack = s
         relays = { ...s }
@@ -24,8 +29,10 @@
     let nameToAdd: string = ""
     let relayToAdd: string = ""
 
-    function saveAndUpdate() {
+    async function saveAndUpdate() {
+        const WarpStore = (await warpImport()).WarpStore
         RelayStore.update(relays)
+        let tesseract = get(WarpStore.warp.tesseract)
         if (tesseract && tesseract !== null) {
             WarpStore.initWarpInstances(
                 Object.values(relays)

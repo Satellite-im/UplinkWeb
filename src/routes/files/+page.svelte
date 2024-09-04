@@ -23,7 +23,7 @@
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
-    
+
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
     let isContextMenuOpen: boolean = false
@@ -201,8 +201,7 @@
 
     onMount(async () => {
         /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
-        await new Promise(resolve => setTimeout(resolve, 300))
-
+        await ConstellationStoreInstance.checkLoaded()
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
         updateCurrentDirectory()
 
@@ -667,8 +666,7 @@
                                         text: $_("generic.delete"),
                                         appearance: Appearance.Default,
                                         onClick: () => {
-                                            // TODO(Lucas): Delete item not working for folders yet
-                                            // deleteItem(item.name)
+                                            deleteItem(`/${item.name}/`)
                                         },
                                     },
                                     {
