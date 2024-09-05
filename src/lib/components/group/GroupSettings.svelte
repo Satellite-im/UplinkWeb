@@ -7,7 +7,50 @@
     import { _ } from "svelte-i18n"
     import { ProfilePicture } from ".."
     import FileUploadButton from "../ui/FileUploadButton.svelte"
-    import { Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import type { Chat } from "$lib/types"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import Button from "$lib/elements/Button.svelte"
+    import { Icon } from "$lib/elements"
+    import { createEventDispatcher, onMount } from "svelte"
+
+    export let activeChat: Chat
+    let groupChatOriginal = structuredClone(activeChat)
+    let groupChatToBeChanged = structuredClone(activeChat)
+
+    let unsavedChanges = false
+    let shakeSaveControls = false
+
+    $: {
+        unsavedChanges = Object.values(propertiesChangedList).some(value => value)
+        shakeSaveControls = unsavedChanges
+        onUnasavedChanges(unsavedChanges)
+    }
+
+    let propertiesChangedList = {
+        groupName: false,
+        addMembersSwitch: false,
+        changeDetailsSwitch: false,
+        allowOtherToChangePictureSwitch: false,
+    }
+
+    const dispatch = createEventDispatcher()
+    function onUnasavedChanges(value: boolean) {
+        dispatch("unasavedChanges", value)
+    }
+
+    function handleClickOutside() {
+        if (unsavedChanges) {
+            shakeSaveControls = false
+            setTimeout(() => {
+                shakeSaveControls = true
+            }, 50)
+        }
+    }
+
+    onMount(() => {
+        window.addEventListener("click", handleClickOutside)
+    })
 </script>
 
 <div class="settings">
@@ -17,23 +60,108 @@
         <FileUploadButton icon tooltip={$_("chat.group.settings.photo")} on:upload={async picture => {}} />
     </div>
     <Label text={$_("chat.group.settings.name")} />
-    <Input value={$_("chat.group.settings.name.placeholder")} />
+    <Input
+        bind:value={groupChatToBeChanged.name}
+        on:input={_ => {
+            propertiesChangedList.groupName = groupChatToBeChanged.name !== groupChatOriginal.name
+        }} />
     <Label text={$_("chat.group.settings.description")} />
     <Input value={$_("chat.group.settings.description.placeholder")} />
     <Spacer />
     <Label text={$_("generic.settings")} />
     <SettingSection name={$_("chat.group.settings.add")} description={$_("chat.group.settings.add.description")}>
-        <Switch on />
+        <Switch
+            on={groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers}
+            on:toggle={_ => {
+                groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers = !groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers
+                propertiesChangedList.addMembersSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers !== groupChatOriginal.settings.permissions.allowAnyoneToAddUsers
+            }} />
     </SettingSection>
     <SettingSection name={$_("chat.group.settings.details")} description={$_("chat.group.settings.details.description")}>
-        <Switch />
+        <Switch
+            on={groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName}
+            on:toggle={_ => {
+                groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName = !groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName
+                propertiesChangedList.changeDetailsSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName !== groupChatOriginal.settings.permissions.allowAnyoneToModifyName
+            }} />
     </SettingSection>
     <SettingSection name={$_("chat.group.settings.photo")} description={$_("chat.group.settings.photo.description")}>
-        <Switch />
+        <Switch
+            on={groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto}
+            on:toggle={_ => {
+                groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto = !groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto
+                propertiesChangedList.changeDetailsSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName !== groupChatOriginal.settings.permissions.allowAnyoneToModifyName
+            }} />
     </SettingSection>
+    {#if unsavedChanges}
+        <div class={`save-controls ${shakeSaveControls ? "shake" : ""}`} data-cy="save-controls">
+            <Controls>
+                <Button
+                    hook="button-cancel"
+                    text={$_("generic.cancel")}
+                    appearance={Appearance.Alt}
+                    on:click={_ => {
+                        // statusMessage = userReference.profile.status_message
+                        // Store.setUsername(userReference.name)
+                        // Store.setStatusMessage(userReference.profile.status_message)
+                        // updatePendentItemsToSave()
+                    }}>
+                    <Icon icon={Shape.XMark} />
+                </Button>
+                <Button
+                    hook="button-save"
+                    text={$_("generic.save")}
+                    appearance={Appearance.Primary}
+                    on:click={async _ => {
+                        // if (changeList.statusMessage) {
+                        //     await updateStatusMessage(statusMessage)
+                        // }
+                        // if (changeList.username) {
+                        //     await updateUsername($user.name)
+                        // }
+                        // updatePendentItemsToSave()
+                    }}>
+                    <Icon icon={Shape.CheckMark} />
+                </Button>
+            </Controls>
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">
+    .save-controls {
+        z-index: 2;
+        position: absolute;
+        bottom: var(--padding);
+        right: calc(var(--padding) * 2);
+        padding: var(--padding);
+        background-color: var(--background-alt);
+        border-radius: var(--border-radius);
+        border: var(--border-width) solid var(--border-color);
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+        25% {
+            transform: translateX(-10px);
+        }
+        50% {
+            transform: translateX(10px);
+        }
+        75% {
+            transform: translateX(-10px);
+        }
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    .shake {
+        animation: shake 0.5s ease;
+    }
+
     .settings {
         display: inline-flex;
         flex-direction: column;
