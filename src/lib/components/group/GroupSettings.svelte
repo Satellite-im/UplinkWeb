@@ -13,6 +13,7 @@
     import Button from "$lib/elements/Button.svelte"
     import { Icon } from "$lib/elements"
     import { createEventDispatcher, onMount } from "svelte"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     export let activeChat: Chat
     let groupChatOriginal = structuredClone(activeChat)
@@ -37,6 +38,41 @@
     const dispatch = createEventDispatcher()
     function onUnasavedChanges(value: boolean) {
         dispatch("unasavedChanges", value)
+    }
+
+    function onCancelChanges() {
+        groupChatToBeChanged = structuredClone(groupChatOriginal)
+        propertiesChangedList = {
+            groupName: false,
+            addMembersSwitch: false,
+            changeDetailsSwitch: false,
+            allowOtherToChangePictureSwitch: false,
+        }
+        dispatch("close", _)
+    }
+
+    function onSaveChanges() {
+        groupChatOriginal = structuredClone(groupChatToBeChanged)
+        if (propertiesChangedList.groupName) {
+            RaygunStoreInstance.updateConversationName(groupChatToBeChanged.id, groupChatToBeChanged.name)
+        }
+        if (propertiesChangedList.addMembersSwitch || propertiesChangedList.changeDetailsSwitch || propertiesChangedList.allowOtherToChangePictureSwitch) {
+            RaygunStoreInstance.updateConversationSettings(groupChatToBeChanged.id, {
+                group: {
+                    members_can_add_participants: groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers,
+                    members_can_change_photo: groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto,
+                    members_can_change_name: groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName,
+                },
+            })
+        }
+        propertiesChangedList = {
+            groupName: false,
+            addMembersSwitch: false,
+            changeDetailsSwitch: false,
+            allowOtherToChangePictureSwitch: false,
+        }
+        unsavedChanges = false
+        dispatch("close", _)
     }
 
     function handleClickOutside() {
@@ -101,10 +137,7 @@
                     text={$_("generic.cancel")}
                     appearance={Appearance.Alt}
                     on:click={_ => {
-                        // statusMessage = userReference.profile.status_message
-                        // Store.setUsername(userReference.name)
-                        // Store.setStatusMessage(userReference.profile.status_message)
-                        // updatePendentItemsToSave()
+                        onCancelChanges()
                     }}>
                     <Icon icon={Shape.XMark} />
                 </Button>
@@ -113,13 +146,7 @@
                     text={$_("generic.save")}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        // if (changeList.statusMessage) {
-                        //     await updateStatusMessage(statusMessage)
-                        // }
-                        // if (changeList.username) {
-                        //     await updateUsername($user.name)
-                        // }
-                        // updatePendentItemsToSave()
+                        onSaveChanges()
                     }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>

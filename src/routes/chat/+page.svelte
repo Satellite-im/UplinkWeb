@@ -304,7 +304,11 @@
                     groupSettings = false
                 }
             }}>
-            <GroupSettings activeChat={$activeChat} on:create={_ => (groupSettings = false)} on:unasavedChanges={value => (unasavedChangesOnGroupSettings = value.detail)} />
+            <GroupSettings
+                activeChat={$activeChat}
+                on:create={_ => (groupSettings = false)}
+                on:unasavedChanges={value => (unasavedChangesOnGroupSettings = value.detail)}
+                on:close={_ => ((groupSettings = false), (unasavedChangesOnGroupSettings = false))} />
         </Modal>
     {/if}
 

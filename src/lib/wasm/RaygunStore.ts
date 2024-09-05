@@ -75,6 +75,7 @@ export type ConversationSettings =
           group: {
               members_can_add_participants: boolean
               members_can_change_name: boolean
+              members_can_change_photo: boolean
           }
       }
 
@@ -158,7 +159,7 @@ class RaygunStore {
     }
 
     async updateConversationSettings(conversation_id: string, settings: ConversationSettings) {
-        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error deleting message")
+        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error updating conversation settings")
     }
 
     /**
