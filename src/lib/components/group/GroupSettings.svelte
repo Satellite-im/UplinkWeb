@@ -14,6 +14,8 @@
     import { Icon } from "$lib/elements"
     import { createEventDispatcher, onMount } from "svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { get } from "svelte/store"
+    import { Store } from "$lib/state/Store"
 
     export let activeChat: Chat
     let groupChatOriginal = structuredClone(activeChat)
@@ -21,6 +23,9 @@
 
     let unsavedChanges = false
     let shakeSaveControls = false
+    let groupPicture = ""
+    let user = get(Store.state.user)
+    let isAdmin = groupChatToBeChanged.creator !== undefined ? groupChatToBeChanged.creator === user.key : false
 
     $: {
         unsavedChanges = Object.values(propertiesChangedList).some(value => value)
@@ -30,6 +35,7 @@
 
     let propertiesChangedList = {
         groupName: false,
+        pictureChanged: false,
         addMembersSwitch: false,
         changeDetailsSwitch: false,
         allowOtherToChangePictureSwitch: false,
@@ -44,6 +50,7 @@
         groupChatToBeChanged = structuredClone(groupChatOriginal)
         propertiesChangedList = {
             groupName: false,
+            pictureChanged: false,
             addMembersSwitch: false,
             changeDetailsSwitch: false,
             allowOtherToChangePictureSwitch: false,
@@ -67,6 +74,7 @@
         }
         propertiesChangedList = {
             groupName: false,
+            pictureChanged: false,
             addMembersSwitch: false,
             changeDetailsSwitch: false,
             allowOtherToChangePictureSwitch: false,
@@ -92,22 +100,31 @@
 <div class="settings">
     <Label text={$_("chat.group.settings.photo")} />
     <div class="profile-picture-container">
-        <ProfilePicture noIndicator size={Size.Large} />
-        <FileUploadButton icon tooltip={$_("chat.group.settings.photo")} on:upload={async picture => {}} />
+        <ProfilePicture noIndicator image={groupPicture} size={Size.Large} />
+        <FileUploadButton
+            icon
+            tooltip={$_("chat.group.settings.photo")}
+            on:upload={async picture => {
+                /// TODO(Lucas): It is not implemented in warp yet
+                groupPicture = picture.detail
+                propertiesChangedList.pictureChanged = true
+            }} />
     </div>
     <Label text={$_("chat.group.settings.name")} />
     <Input
         bind:value={groupChatToBeChanged.name}
+        disabled={!isAdmin}
         on:input={_ => {
             propertiesChangedList.groupName = groupChatToBeChanged.name !== groupChatOriginal.name
         }} />
     <Label text={$_("chat.group.settings.description")} />
-    <Input value={$_("chat.group.settings.description.placeholder")} />
+    <Input disabled={!isAdmin} value={$_("chat.group.settings.description.placeholder")} />
     <Spacer />
     <Label text={$_("generic.settings")} />
     <SettingSection name={$_("chat.group.settings.add")} description={$_("chat.group.settings.add.description")}>
         <Switch
             on={groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers}
+            disabled={!isAdmin}
             on:toggle={_ => {
                 groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers = !groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers
                 propertiesChangedList.addMembersSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers !== groupChatOriginal.settings.permissions.allowAnyoneToAddUsers
@@ -116,6 +133,7 @@
     <SettingSection name={$_("chat.group.settings.details")} description={$_("chat.group.settings.details.description")}>
         <Switch
             on={groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName}
+            disabled={!isAdmin}
             on:toggle={_ => {
                 groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName = !groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName
                 propertiesChangedList.changeDetailsSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName !== groupChatOriginal.settings.permissions.allowAnyoneToModifyName
@@ -124,6 +142,7 @@
     <SettingSection name={$_("chat.group.settings.photo")} description={$_("chat.group.settings.photo.description")}>
         <Switch
             on={groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto}
+            disabled={!isAdmin}
             on:toggle={_ => {
                 groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto = !groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto
                 propertiesChangedList.changeDetailsSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName !== groupChatOriginal.settings.permissions.allowAnyoneToModifyName
