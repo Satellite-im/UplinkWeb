@@ -1,20 +1,18 @@
-import { derived, get, writable, type Writable } from "svelte/store"
+import { get, writable, Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
-import { failure, success, type Result } from "$lib/utils/Result"
+import { failure, success, Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
-import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
+import { defaultProfileData, defaultUser, FriendRequest, User } from "$lib/types"
 import { Store } from "$lib/state/Store"
 import { MessageDirection, Route, Status } from "$lib/enums"
-import { parseJSValue } from "./EnumParser"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { SettingsStore } from "$lib/state"
 import { Sounds } from "$lib/components/utils/SoundHandler"
 import { MAX_RETRY_COUNT, RETRY_DELAY } from "$lib/config"
 import { goto } from "$app/navigation"
-import { createLock } from "./AsyncLock"
 
 /**
  * A class that provides various methods to interact with a MultiPassBox.
@@ -47,7 +45,6 @@ class MultipassStore {
 
     private async handleMultipassEvents(multipass: wasm.MultiPassBox) {
         try {
-            console.log(multipass.multipass_subscribe())
             let events = await multipass.multipass_subscribe()
             let listener = {
                 [Symbol.asyncIterator]() {
@@ -180,7 +177,7 @@ class MultipassStore {
                 let outgoingFriendRequests: Array<any> = await multipass.list_outgoing_request()
                 let outgoingFriendRequestsUsers: Array<FriendRequest> = []
                 for (let i = 0; i < outgoingFriendRequests.length; i++) {
-                    let friendUser = await this.identity_from_did(outgoingFriendRequests[i])
+                    let friendUser = await this.identity_from_did(outgoingFriendRequests[i].identity)
                     if (friendUser) {
                         let friendRequest: FriendRequest = {
                             direction: MessageDirection.Outbound,
@@ -223,8 +220,7 @@ class MultipassStore {
                     ) {
                         return failure(handleErrors("Invalid identity"))
                     }
-                    let identity: any[] = await multipass.get_identity(wasm.Identifier.Username, friend)
-                    console.log("fetch res ", identity) // This is empty if it was never resolved
+                    let identity: any[] = await multipass.get_identity(wasm.Identifier.Username, friend) // This is empty if it was never resolved
                     // It should only find 1 matching identity
                     if (identity.length != 1) {
                         return failure(handleErrors("Invalid identity"))
@@ -309,7 +305,7 @@ class MultipassStore {
                 let incomingFriendRequests: Array<any> = await multipass.list_incoming_request()
                 let incomingFriendRequestsUsers: Array<FriendRequest> = []
                 for (let i = 0; i < incomingFriendRequests.length; i++) {
-                    let friendUser = await this.identity_from_did(incomingFriendRequests[i])
+                    let friendUser = await this.identity_from_did(incomingFriendRequests[i].identity)
                     if (friendUser) {
                         let friendRequest: FriendRequest = {
                             direction: MessageDirection.Inbound,

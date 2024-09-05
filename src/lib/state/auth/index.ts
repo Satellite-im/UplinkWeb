@@ -13,7 +13,7 @@ export type Authentication = {
     pin: string
     scramblePin: boolean
     stayLoggedIn: boolean
-    seedPhrase?: string[]
+    saveSeedPhrase: boolean
 }
 
 class Auth {
@@ -26,6 +26,7 @@ class Auth {
         this.state = createPersistentState<Authentication>("uplink.auth", {
             pin: "",
             scramblePin: false,
+            saveSeedPhrase: true,
             stayLoggedIn: true,
         })
         this.loggedIn = createSessionState(
@@ -57,11 +58,19 @@ class Auth {
         })
     }
 
-    setSeedPhrase(seedPhrase: string[]) {
-        this.state.update(auth => {
-            auth.seedPhrase = seedPhrase
-            return auth
-        })
+    setSaveSeedPhrase(save: boolean) {
+        if (save) {
+            this.state.update(auth => {
+                auth.saveSeedPhrase = true
+                return auth
+            })
+        } else {
+            this.state.update(auth => {
+                auth.saveSeedPhrase = false
+                TesseractStoreInstance.removeSeed()
+                return auth
+            })
+        }
     }
 
     logIn(flag: boolean) {
@@ -72,6 +81,7 @@ class Auth {
         let state = await getStateFromDB<Authentication>("uplink.auth", {
             pin: "",
             scramblePin: false,
+            saveSeedPhrase: false,
             stayLoggedIn: false,
         })
         return state

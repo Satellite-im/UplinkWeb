@@ -28,6 +28,9 @@ type VoiceRTCOptions = {
         enabled: boolean
         selfie: boolean
     }
+    call: {
+        onlyAudioCall: boolean
+    }
 }
 
 type VoiceRTCUser = {
@@ -183,6 +186,9 @@ export class VoiceRTC {
             isDeafened: conn.metadata.isDeafened,
         }
 
+        this.callOptions.call.onlyAudioCall = conn.metadata.onlyAudioCall
+        this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && this.callOptions.video.enabled
+
         this.channel = conn.metadata.channel
         this.callStartTime = conn.metadata.callStartTime ? new Date(conn.metadata.callStartTime) : null
         this.dataConnection = conn
@@ -234,7 +240,11 @@ export class VoiceRTC {
         })
     }
 
-    async startToMakeACall(remotePeerId: string, chatID: string) {
+    async startToMakeACall(remotePeerId: string, chatID: string, onlyAudioCall: boolean = false) {
+        this.callOptions.video.enabled = !onlyAudioCall
+        this.callOptions.call.onlyAudioCall = onlyAudioCall
+        this.callOptions.audio.enabled = true
+
         this.channel = chatID
         this.makingCall = true
         const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
@@ -250,10 +260,22 @@ export class VoiceRTC {
         await RaygunStoreInstance.send(chatID, text.split("\n"), [])
     }
 
-    public async makeVideoCall() {
+    public async makeCall() {
         try {
             await this.setupPeerEvents()
 
+            this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
+                reliable: true,
+                metadata: {
+                    did: this.localPeer!.id,
+                    username: get(Store.state.user).name,
+                    videoEnabled: this.callOptions.video.enabled,
+                    audioEnabled: this.callOptions.audio.enabled,
+                    isDeafened: this.callOptions.audio.deafened,
+                    onlyAudioCall: this.callOptions.call.onlyAudioCall,
+                    channel: this.channel,
+                },
+            })
             await this.connectWithRetry()
 
             setTimeout(() => {
@@ -449,6 +471,10 @@ export class VoiceRTC {
         this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
     }
 
+    get isInCall(): boolean {
+        return this.activeCall !== null
+    }    
+
     handleWithDataReceived(dataReceived: VoiceMessage) {
         log.debug(`Data received: ${dataReceived.type}`)
         switch (dataReceived.type) {
@@ -464,8 +490,8 @@ export class VoiceRTC {
                 break
             case VoiceRTCMessageType.AcceptedCall:
                 this.sendMessageCallStarted(this.channel)
+                this.updateRemoteUserInfo(dataReceived)
                 break
-            case VoiceRTCMessageType.AcceptedCall:
             case VoiceRTCMessageType.IncomingCall:
             case VoiceRTCMessageType.EnabledVideo:
             case VoiceRTCMessageType.DisabledVideo:
@@ -592,5 +618,8 @@ export const VoiceRTCInstance = new VoiceRTC("default", {
     video: {
         enabled: get(Store.state.devices.cameraEnabled),
         selfie: true,
+    },
+    call: {
+        onlyAudioCall: false,
     },
 })

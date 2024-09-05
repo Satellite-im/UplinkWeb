@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { Button, Icon } from "$lib/elements"
     import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
@@ -18,15 +17,13 @@
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
     import { goto } from "$app/navigation"
-    import { ConstellationStoreInstance, imageFromData } from "$lib/wasm/ConstellationStore"
+    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { ToastMessage } from "$lib/state/ui/toast"
-    import { WarpInstance, type Item } from "warp-wasm"
+    import { type Item } from "warp-wasm"
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
-    import { initWarp } from "$lib/wasm/IWarp"
-    import { WarpStore } from "$lib/wasm/WarpStore"
-
+    
     let loading: boolean = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
     let isContextMenuOpen: boolean = false
@@ -366,8 +363,7 @@
 
     onMount(async () => {
         /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
-        await new Promise(resolve => setTimeout(resolve, 300))
-
+        await ConstellationStoreInstance.checkLoaded()
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
         getCurrentDirectoryFiles()
 
@@ -539,10 +535,16 @@
         )
     }
 
-    async function renameItem(oldName: string, newName: string, fileExtension: string = "") {
-        if (newName === "") {
+    async function renameItem(item: FileInfo, newName: string, fileExtension: string = "") {
+        let oldName = item.name
+        console.log("old: ", oldName.trim(), "; new: ", newName.trim(), "°")
+        if (item.type === "folder" && oldName.trim() === "" && newName.trim() === "") {
+            removeFolderFromStak(item)
+            return false
+        }
+        if (newName.trim() === "") {
             Store.addToastNotification(new ToastMessage("", "Empty name provided", 2))
-            return
+            return false
         }
         let result = await ConstellationStoreInstance.renameItem(fileExtension === "" ? `${oldName}` : `${oldName}.${fileExtension}`, fileExtension === "" ? `${newName}` : `${newName}.${fileExtension}`)
         result.fold(
@@ -575,6 +577,7 @@
                 })
             }
         )
+        return true
     }
 
     async function downloadFile(fileName: string) {
@@ -817,8 +820,8 @@
                                     isContextMenuOpen = true
                                     open(e)
                                 }}
-                                on:rename={async e => {
-                                    renameItem(`${item.name}`, `${e.detail}`, `${item.extension}`)
+                                onRename={async name => {
+                                    return renameItem(item, `${name}`, `${item.extension}`)
                                 }}
                                 isRenaming={item.isRenaming}
                                 kind={item.imageThumbnail ? FilesItemKind.Image : FilesItemKind.File}
@@ -837,8 +840,7 @@
                                     text: $_("generic.delete"),
                                     appearance: Appearance.Default,
                                     onClick: () => {
-                                        // TODO(Lucas): Delete item not working for folders yet
-                                        // deleteItem(item.name)
+                                        deleteItem(`/${item.name}/`)
                                     },
                                 },
                                 {
@@ -869,14 +871,15 @@
                                 }}
                                 kind={FilesItemKind.Folder}
                                 info={item}
-                                on:rename={async e => {
-                                    if (item.name === "" && e.detail !== "") {
-                                        const newName = `${e.detail}`
+                                onRename={async name => {
+                                    if (item.name.trim() === "" && name.trim() !== "") {
+                                        const newName = `${name}`
                                         item.name = newName
                                         await createNewDirectory(item)
                                         item.isRenaming = OperationState.Success
-                                    } else if (e.detail !== "") {
-                                        renameItem(`${item.name}`, `${e.detail}`)
+                                        return true
+                                    } else {
+                                        return renameItem(item, `${name}`)
                                     }
                                 }}
                                 isRenaming={item.isRenaming} />
