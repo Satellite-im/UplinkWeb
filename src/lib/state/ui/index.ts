@@ -26,7 +26,7 @@ class Store {
             color: createPersistentState("uplink.color", "#4d4dff"),
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
             font: createPersistentState("uplink.ui.font", Font.Poppins),
-            theme: createPersistentState("uplink.ui.font", "default"),
+            theme: createPersistentState("uplink.ui.font", `{text: "default", value: "default"}`),
             identicon: createPersistentState("uplink.ui.identicon", Identicon.PixelArtNeutral),
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
