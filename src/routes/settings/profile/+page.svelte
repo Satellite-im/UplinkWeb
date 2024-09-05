@@ -523,31 +523,34 @@
                 {/if}
             </div>
 
-            {#if showSeed !== SeedState.Missing}
-                <div class="section">
-                    <SettingSection hook="section-reveal-phrase" name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
-                        <Button
-                            hook={showSeed === SeedState.Hidden ? "button-reveal-phrase" : showSeed === SeedState.Shown ? "button-hide-phrase" : "button-missing-phrase"}
-                            appearance={showSeed === SeedState.Hidden ? Appearance.Error : Appearance.Alt}
-                            text={showSeed === SeedState.Hidden ? $_("settings.profile.reveal_phrase.show") : showSeed === SeedState.Shown ? $_("settings.profile.reveal_phrase.hide") : $_("settings.profile.reveal_phrase.missing")}
-                            on:click={_ => {
-                                toggleSeedPhrase()
-                            }}>
-                            <Icon icon={showSeed ? Shape.EyeSlash : Shape.Eye} />
+            <div class="section">
+                <SettingSection
+                    hook="section-reveal-phrase"
+                    name={$_("settings.profile.reveal_phrase.label")}
+                    description={showSeed !== SeedState.Missing ? $_("settings.profile.reveal_phrase.description") : $_("settings.profile.reveal_phrase.description.missing")}>
+                    <Button
+                        hook={showSeed === SeedState.Hidden ? "button-reveal-phrase" : showSeed === SeedState.Shown ? "button-hide-phrase" : "button-missing-phrase"}
+                        appearance={showSeed === SeedState.Hidden || showSeed === SeedState.Missing ? Appearance.Error : Appearance.Alt}
+                        text={showSeed === SeedState.Hidden ? $_("settings.profile.reveal_phrase.show") : showSeed === SeedState.Shown ? $_("settings.profile.reveal_phrase.hide") : $_("settings.profile.reveal_phrase.missing")}
+                        disabled={showSeed === SeedState.Missing}
+                        on:click={_ => {
+                            toggleSeedPhrase()
+                        }}>
+                        <Icon icon={showSeed ? Shape.EyeSlash : Shape.Eye} />
+                    </Button>
+                </SettingSection>
+                {#if showSeed === SeedState.Shown && seedPhrase}
+                    {#each seedPhrase as word, i}
+                        <OrderedPhrase number={i + 1} word={word} loading={loading} />
+                    {/each}
+                    <div class="full-width flex-end">
+                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")} on:click={handleCopyClick}>
+                            <Icon icon={Shape.Clipboard} />
                         </Button>
-                    </SettingSection>
-                    {#if showSeed === SeedState.Shown && seedPhrase}
-                        {#each seedPhrase as word, i}
-                            <OrderedPhrase number={i + 1} word={word} loading={loading} />
-                        {/each}
-                        <div class="full-width flex-end">
-                            <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")} on:click={handleCopyClick}>
-                                <Icon icon={Shape.Clipboard} />
-                            </Button>
-                        </div>
-                    {/if}
-                </div>
-
+                    </div>
+                {/if}
+            </div>
+            {#if showSeed !== SeedState.Missing}
                 <div class="section" data-cy="section-store-recovery-seed">
                     <Checkbox hook="checkbox-store-recovery-seed" checked={saveSeedPhrase} disabled={seedPhrase === undefined} onToggle={e => toggleSeedPhraseSave(e)}>
                         <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
