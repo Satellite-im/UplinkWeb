@@ -16,53 +16,14 @@
     import { OperationState, type FileInfo } from "$lib/types"
     import { Store } from "$lib/state/Store"
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
-    import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import type { Item } from "warp-wasm"
     import { ToastMessage } from "$lib/state/ui/toast"
+    import { availableEmoji, availableFonts, availableIdenticons, availableThemes } from "$lib/state/settings/default"
 
-    const availableFonts = [
-        { text: Font.Poppins, value: Font.Poppins },
-        { text: Font.SpaceMono, value: Font.SpaceMono },
-        { text: Font.ChakraPetch, value: Font.ChakraPetch },
-        { text: Font.Comfortaa, value: Font.Comfortaa },
-        { text: Font.Dosis, value: Font.Dosis },
-        { text: Font.IBMPlexMono, value: Font.IBMPlexMono },
-        { text: Font.PixelifySans, value: Font.PixelifySans },
-        { text: Font.IndieFlower, value: Font.IndieFlower },
-        { text: Font.JosefinSans, value: Font.JosefinSans },
-        { text: Font.Noto, value: Font.Noto },
-        { text: Font.SourceCodePro, value: Font.SourceCodePro },
-        { text: Font.SpaceGrotesk, value: Font.SpaceGrotesk },
-        { text: Font.MajorMono, value: Font.MajorMono },
-        { text: Font.Merriweather, value: Font.Merriweather },
-        { text: Font.PoiretOne, value: Font.PoiretOne },
-        { text: Font.OpenDyslexic, value: Font.OpenDyslexic },
-    ]
-
-    const availableIdenticons = [
-        { text: Identicon.Avataaars, value: Identicon.Avataaars },
-        { text: Identicon.AvataaarsNeutral, value: Identicon.AvataaarsNeutral },
-        { text: Identicon.Bots, value: Identicon.Bots },
-        { text: Identicon.BotsNeutral, value: Identicon.BotsNeutral },
-        { text: Identicon.Icons, value: Identicon.Icons },
-        { text: Identicon.Identicon, value: Identicon.Identicon },
-        { text: Identicon.Lorelei, value: Identicon.Lorelei },
-        { text: Identicon.Notionists, value: Identicon.Notionists },
-        { text: Identicon.OpenPeeps, value: Identicon.OpenPeeps },
-        { text: Identicon.PixelArt, value: Identicon.PixelArt },
-        { text: Identicon.PixelArtNeutral, value: Identicon.PixelArtNeutral },
-        { text: Identicon.Shapes, value: Identicon.Shapes },
-    ]
-
-    const availableEmoji = [
-        { text: EmojiFont.NotoEmoji.split(".")[0], value: EmojiFont.NotoEmoji },
-        { text: EmojiFont.OpenMoji.split(".")[0], value: EmojiFont.OpenMoji },
-        { text: EmojiFont.Blobmoji.split(".")[0], value: EmojiFont.Blobmoji },
-        { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
-        { text: EmojiFont.Fluent.split(".")[0], value: EmojiFont.Fluent },
-    ]
-
-    const availableThemes = [{ text: "Default", value: "Default" }]
+    interface FontOption {
+        text: string
+        value: string
+    }
 
     let hex = get(UIStore.state.color)
     $: font = get(UIStore.state.font)
@@ -75,7 +36,7 @@
     let emojiUpload: HTMLInputElement
     let themeUpload: HTMLInputElement
     let fontUpload: HTMLInputElement
-    let pfpUpload: HTMLInputElement
+    let identiconUpload: HTMLInputElement
 
     UIStore.state.color.subscribe(c => {
         hex = c
@@ -108,18 +69,7 @@
     SettingsStore.state.subscribe((s: ISettingsState) => {
         settings = s
     })
-    let allFiles: FileInfo[] = get(Store.state.files)
-    // const folderStackStore = writable<FileInfo[][]>([allFiles])
 
-    // folderStackStore.subscribe((folderStack: FileInfo[][]) => {
-    //     currentFiles = folderStack[folderStack.length - 1]
-    //     console.log("Current files: ", currentFiles)
-    // })
-
-    interface FontOption {
-        text: string
-        value: string
-    }
     $: currentFiles = get(Store.state.files)
     Store.state.files.subscribe(files => {
         currentFiles = files
@@ -139,12 +89,11 @@
             Store.state.files.set(Array.from(filesSet))
             currentFiles = Array.from(filesSet)
         })
-        console.log(currentFiles)
     }
     async function updateAvailableItems() {
         const fonts = getUserUploadedItems("fonts")
         const emoji = getUserUploadedItems("emoji")
-        const identicons = getUserUploadedItems("pfp")
+        const identicons = getUserUploadedItems("identicon")
         const themes = getUserUploadedItems("theme")
 
         availableFontsStore.set([...availableFonts, ...fonts])
@@ -174,8 +123,8 @@
                 let newFileName = file.name
                 let fileIndex = 1
                 newFileName = `${baseName} (${fileIndex}).${fileExtension}`
-                let topDIr = await ConstellationStoreInstance.openDirectory("customization")
-                let folderDIr = await ConstellationStoreInstance.openDirectory(folderHandle)
+                await ConstellationStoreInstance.openDirectory("customization")
+                await ConstellationStoreInstance.openDirectory(folderHandle)
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
                 result.onSuccess(r => {
                     ConstellationStoreInstance.dropIntoFolder(newFileName, folderHandle)
@@ -190,6 +139,7 @@
         }
         target.value = ""
     }
+
     function itemsToFileInfo(items: Item[]): FileInfo[] {
         let filesInfo: FileInfo[] = []
         items.forEach(item => {
@@ -215,7 +165,7 @@
     function isEmojiFont(value: string): boolean {
         return /emoji|Emoji|moji|Moji/i.test(value)
     }
-    // In `getUserUploadedItems`, avoid redundant calls to `getCurrentDirectoryFiles`:
+
     function getUserUploadedItems(type: string): { text: string; value: string }[] {
         const userUploaded: { text: string; value: string }[] = []
 
@@ -251,11 +201,11 @@
             await ConstellationStoreInstance.createDirectory("emoji")
             await ConstellationStoreInstance.createDirectory("fonts")
             await ConstellationStoreInstance.createDirectory("theme")
-            await ConstellationStoreInstance.createDirectory("pfp")
+            await ConstellationStoreInstance.createDirectory("identicon")
             await ConstellationStoreInstance.dropIntoFolder("emoji", "customization")
             await ConstellationStoreInstance.dropIntoFolder("fonts", "customization")
             await ConstellationStoreInstance.dropIntoFolder("theme", "customization")
-            await ConstellationStoreInstance.dropIntoFolder("pfp", "customization")
+            await ConstellationStoreInstance.dropIntoFolder("identicon", "customization")
         }
         getCurrentDirectoryFiles()
     }
@@ -331,14 +281,14 @@
         <Button
             hook="button-identicon-open-folder"
             on:click={async event => {
-                pfpUpload?.click()
+                identiconUpload?.click()
             }}
             icon
             appearance={Appearance.Alt}
             tooltip={$_("generic.openFolder")}>
             <Icon icon={Shape.FolderOpen} />
         </Button>
-        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e, "pfp")} bind:this={pfpUpload} />
+        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e, "identicon")} bind:this={identiconUpload} />
     </SettingSection>
     <SettingSection hook="section-font-scaling" name={$_("settings.preferences.fontScaling")} description={$_("settings.preferences.fontScalingDescription")}>
         <Button hook="button-font-scaling-decrease" icon appearance={Appearance.Alt} on:click={_ => UIStore.decreaseFontSize()}>
