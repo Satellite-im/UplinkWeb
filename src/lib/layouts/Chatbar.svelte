@@ -19,6 +19,7 @@
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
+    export let emojiClickHook: (emoji: string) => boolean
 
     const dispatch = createEventDispatcher()
 
@@ -56,6 +57,7 @@
 
     function handleEmojiClick(emoji: string) {
         emojiSelectorOpen.set(false)
+        if (emojiClickHook(emoji)) return
         message.set($message + emoji)
     }
 

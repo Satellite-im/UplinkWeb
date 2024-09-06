@@ -3,10 +3,12 @@
     import Icon from "$lib/elements/Icon.svelte"
     import { Appearance, Shape } from "$lib/enums"
     import { UIStore } from "$lib/state/ui"
+    import { createEventDispatcher } from "svelte"
 
     export let emojis: string[]
     export let close: (event: MouseEvent) => void
     export let emojiPick: (emoji: string) => void
+    const dispatcher = createEventDispatcher()
 </script>
 
 <div class="emoji-group" data-cy="emoji-group">
@@ -27,6 +29,7 @@
         appearance={Appearance.Alt}
         on:click={e => {
             close(e)
+            dispatcher("openPicker")
             UIStore.state.emojiSelector.set(true)
         }}><Icon icon={Shape.Plus} /></Button>
 </div>
