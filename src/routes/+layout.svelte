@@ -6,7 +6,7 @@
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
-    import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
+    import { EmojiFont, Font, KeybindAction, KeybindState, Route, Theme } from "$lib/enums"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
@@ -34,6 +34,7 @@
     let fontSize: number = get(UIStore.state.fontSize)
     let font: Font = get(UIStore.state.font)
     let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
+    let theme: Theme = get(UIStore.state.theme)
     let cssOverride: string = get(UIStore.state.cssOverride)
     let muted: boolean = get(Store.state.devices.muted)
     let deafened: boolean = get(Store.state.devices.deafened)
@@ -107,6 +108,9 @@
             }
             .emoji {
                 font-family: ${emojiFont};
+            }
+            .theme {
+                font-family: ${theme};
             }`
         )
     }
@@ -134,6 +138,11 @@
 
     UIStore.state.emojiFont.subscribe(f => {
         emojiFont = f
+        style = buildStyle()
+    })
+
+    UIStore.state.theme.subscribe(f => {
+        theme = f
         style = buildStyle()
     })
 

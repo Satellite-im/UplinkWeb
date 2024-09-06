@@ -49,6 +49,10 @@ export const enum EmojiFont {
     Fluent = "Fluent",
 }
 
+export const enum Theme {
+    Default = "Default",
+}
+
 export const enum Route {
     Home = "/",
     Chat = "/chat",

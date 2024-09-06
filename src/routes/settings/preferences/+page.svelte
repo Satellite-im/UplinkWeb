@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Appearance, EmojiFont, Font, Identicon, Shape } from "$lib/enums"
-
+    import { Appearance, EmojiFont, Font, Identicon, Shape, Theme } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import { ColorSwatch } from "$lib/components"
     import { SettingSection } from "$lib/layouts"
@@ -45,9 +44,15 @@
         font = f
     })
     UIStore.state.theme.subscribe(f => {
-        theme = f
+        console.log(f)
+        if (f == "Default") {
+            theme = Theme.Default
+        } else {
+            theme = f
+        }
     })
     UIStore.state.emojiFont.subscribe(f => {
+        console.log(f)
         emojiFont = f
     })
     UIStore.state.fontSize.subscribe(s => {
@@ -235,7 +240,6 @@
         <Button
             hook="button-font-open-folder"
             on:click={async event => {
-                // let emojiUpload = event.dataTransfer?.files
                 fontUpload?.click()
             }}
             icon
@@ -305,7 +309,15 @@
         <Button hook="button-theme-moon" icon appearance={Appearance.Alt}>
             <Icon icon={Shape.Moon} />
         </Button>
-        <Select hook="selector-theme" alt selected={theme} options={$availableThemesStore} />
+        <Select
+            hook="selector-theme"
+            alt
+            selected={theme}
+            options={$availableThemesStore}
+            on:change={v => {
+                console.log(v)
+                UIStore.setTheme(v.detail)
+            }} />
         <Button
             hook="button-theme-open-folder"
             icon

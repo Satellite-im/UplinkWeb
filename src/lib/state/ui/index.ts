@@ -1,7 +1,7 @@
 import { TypingIndicator, type Chat } from "$lib/types"
 import { get, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
-import { EmojiFont, Font, Identicon } from "$lib/enums"
+import { EmojiFont, Font, Identicon, Theme } from "$lib/enums"
 import { Store as MainStore } from "../Store"
 import { mchats } from "$lib/mock/users"
 
@@ -10,7 +10,7 @@ export interface IUIState {
     fontSize: Writable<number>
     cssOverride: Writable<string>
     font: Writable<Font>
-    theme: Writable<string>
+    theme: Writable<Theme>
     emojiFont: Writable<EmojiFont>
     identicon: Writable<Identicon>
     sidebarOpen: Writable<boolean>
@@ -26,7 +26,7 @@ class Store {
             color: createPersistentState("uplink.color", "#4d4dff"),
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
             font: createPersistentState("uplink.ui.font", Font.Poppins),
-            theme: createPersistentState("uplink.ui.font", `{text: "default", value: "default"}`),
+            theme: createPersistentState("uplink.ui.theme", Theme.Default),
             identicon: createPersistentState("uplink.ui.identicon", Identicon.PixelArtNeutral),
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
@@ -59,7 +59,10 @@ class Store {
     setEmojiFont(font: EmojiFont) {
         this.state.emojiFont.set(font)
     }
-
+    setTheme(theme: Theme) {
+        console.log(this.state.theme)
+        this.state.theme.set(theme)
+    }
     increaseFontSize(amount: number = 0.025) {
         this.state.fontSize.update(s => (s + amount <= 1.5 ? (s += amount) : s))
     }
