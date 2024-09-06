@@ -44,15 +44,9 @@
         font = f
     })
     UIStore.state.theme.subscribe(f => {
-        console.log(f)
-        if (f == "Default") {
-            theme = Theme.Default
-        } else {
-            theme = f
-        }
+        theme = f
     })
     UIStore.state.emojiFont.subscribe(f => {
-        console.log(f)
         emojiFont = f
     })
     UIStore.state.fontSize.subscribe(s => {
@@ -135,7 +129,6 @@
                     ConstellationStoreInstance.dropIntoFolder(newFileName, folderHandle)
                     ConstellationStoreInstance.goToRootPath()
                     getCurrentDirectoryFiles().then(updateAvailableItems)
-                    console.log(updateAvailableItems) // Update after getting files
                 })
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
@@ -164,11 +157,6 @@
             filesInfo = [...filesInfo, newItem]
         })
         return filesInfo
-    }
-
-    // Type guard to validate if a string is a valid EmojiFont
-    function isEmojiFont(value: string): boolean {
-        return /emoji|Emoji|moji|Moji/i.test(value)
     }
 
     function getUserUploadedItems(type: string): { text: string; value: string }[] {
