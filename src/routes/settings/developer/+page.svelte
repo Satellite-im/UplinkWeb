@@ -17,6 +17,10 @@
     log.settings.subscribe(s => {
         settings = s
     })
+    let mockButtonText = get(Store.state.isUsingMockData) ? $_("settings.developer.clearMockDataButton") : $_("settings.developer.loadMockButton")
+    Store.state.isUsingMockData.subscribe(v => {
+        mockButtonText = v ? $_("settings.developer.clearMockDataButton") : $_("settings.developer.loadMockButton")
+    })
 </script>
 
 <div id="page">
@@ -36,11 +40,15 @@
             hook="button-load-mock"
             appearance={Appearance.Alt}
             on:click={_ => {
-                Store.loadMockData()
-                ConversationStore.loadMockData()
-                InventoryStore.loadMockData()
+                if (get(Store.state.isUsingMockData)) {
+                    Store.unloadMockData()
+                } else {
+                    Store.loadMockData()
+                    ConversationStore.loadMockData()
+                    InventoryStore.loadMockData()
+                }
             }}>
-            {$_("settings.developer.loadMockButton")}
+            {mockButtonText}
         </Button>
     </SettingSection>
 

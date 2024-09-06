@@ -389,6 +389,7 @@
             "loadMock": "Load Mock",
             "loadMockDescription": "Loads mock data into state.",
             "loadMockButton": "Load Mock Data",
+            "clearMockDataButton": "Clear Mock Data",
             "clearState": "Clear State",
             "clearStateDescription": "Reset the application state.",
             "clearStateButton": "Clear State",

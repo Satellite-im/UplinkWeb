@@ -45,6 +45,7 @@ class GlobalStore {
             openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
             toasts: writable({}),
             userCache: writable({}),
+            isUsingMockData: createPersistentState("uplink.isUsingMockData", false),
         }
     }
 
@@ -482,18 +483,70 @@ class GlobalStore {
     }
 
     loadMockData() {
+        this.state.isUsingMockData.set(true)
         let mchatsMod = mchats
         let activeChat = mchatsMod[0]
 
         mchatsMod[0] = activeChat
 
+        let originalChats = get(UIStore.state.chats)
+        let combinedChats = [...originalChats, ...mchatsMod.filter(mockChat => !originalChats.some(origChat => origChat.id === mockChat.id))]
+
+        UIStore.state.chats.set(combinedChats)
+
         this.state.activeChat.set(mchatsMod[0])
-        UIStore.state.chats.set(mchatsMod)
-        this.state.files.set(mock_files)
-        this.state.friends.set(mock_users.map(u => u.key))
-        this.state.blocked.set(blocked_users.map(u => u.key))
-        this.state.favorites.set([activeChat])
+        const updatedFiles = new Set([...get(this.state.files), ...mock_files])
+        this.state.files.set(Array.from(updatedFiles))
+        const updatedFriends = new Set([...get(this.state.friends), ...mock_users.map(u => u.key)])
+        this.state.friends.set(Array.from(updatedFriends))
+        const updatedBlocked = new Set([...get(this.state.blocked), ...blocked_users.map(u => u.key)])
+        this.state.blocked.set(Array.from(updatedBlocked))
+
+        let currentFavorites = get(this.state.favorites)
+
+        let updatedFavorites = [...currentFavorites, activeChat].filter((fav, index, self) => index === self.findIndex(f => f.id === fav.id))
+        this.state.favorites.set(updatedFavorites)
+
         ConversationStore.addConversations(mchatsMod.map(c => c.id))
+    }
+
+    unloadMockData() {
+        this.state.isUsingMockData.set(false)
+        let allChats = get(UIStore.state.chats)
+
+        let originalChats = allChats.filter(c => !mchats.some(mockChat => mockChat.id === c.id))
+
+        UIStore.state.chats.set(originalChats)
+
+        if (originalChats.length > 0) {
+            this.state.activeChat.set(originalChats[0])
+        } else {
+            this.state.activeChat.set(defaultChat)
+        }
+
+        const updatedFiles = new Set([...get(this.state.files)].filter(file => !mock_files.includes(file)))
+        this.state.files.set(Array.from(updatedFiles))
+
+        const updatedFriends = new Set([...get(this.state.friends)].filter(friend => !mock_users.map(u => u.key).includes(friend)))
+        this.state.friends.set(Array.from(updatedFriends))
+
+        const updatedBlocked = new Set([...get(this.state.blocked)].filter(blocked => !blocked_users.map(u => u.key).includes(blocked)))
+        this.state.blocked.set(Array.from(updatedBlocked))
+
+        let chatToRemove = mchats[0]
+        this.removeFavorite(chatToRemove)
+        mchats.map(c => {
+            ConversationStore.removeConversation(c.id)
+        })
+    }
+
+    loadMockFriends() {
+        const updatedFiles = new Set([...get(this.state.files), ...mock_files])
+        this.state.files.set(Array.from(updatedFiles))
+        const updatedFriends = new Set([...get(this.state.friends), ...mock_users.map(u => u.key)])
+        this.state.friends.set(Array.from(updatedFriends))
+        const updatedBlocked = new Set([...get(this.state.blocked), ...blocked_users.map(u => u.key)])
+        this.state.blocked.set(Array.from(updatedBlocked))
     }
 }
 

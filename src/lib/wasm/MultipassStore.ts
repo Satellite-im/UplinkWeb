@@ -595,7 +595,7 @@ class MultipassStore {
                             overlay: "",
                         },
                         status: status,
-                        status_message: identity === undefined ? "" : (identity.status_message ?? ""),
+                        status_message: identity === undefined ? "" : identity.status_message ?? "",
                     },
                     integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
                     media: {

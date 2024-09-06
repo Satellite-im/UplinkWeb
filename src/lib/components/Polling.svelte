@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onMount } from "svelte"
+    import { get } from "svelte/store"
 
     export let rate: number = 5000
 
@@ -11,6 +13,10 @@
         // add processes here.
         updateTypingIndicators()
         await MultipassStoreInstance.fetchAllFriendsAndRequests()
+
+        if (get(Store.state.isUsingMockData)) {
+            Store.loadMockFriends()
+        }
 
         // Increase the interval exponentially until it reaches the provided rate
         if (currentInterval < rate) {
