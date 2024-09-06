@@ -2,7 +2,7 @@ import type { MessageGroup, Chat, Message, PendingMessage, FileProgress } from "
 import { derived, get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
-import { mock_messages } from "$lib/mock/messages"
+import { mock_group, mock_dm1 } from "$lib/mock/messages"
 import { Appearance } from "$lib/enums"
 import { Store } from "../Store"
 import { UIStore } from "../ui"
@@ -350,10 +350,19 @@ class Conversations {
         const firstChatId = mchats[0].id
         const initialData: Writable<ConversationMessages> = this.createConversation({
             id: firstChatId,
-            messages: mock_messages,
+            messages: mock_group,
         })
         this.conversations.update(currentConversations => {
             currentConversations[firstChatId] = initialData
+            return currentConversations
+        })
+        const secondChatId = mchats[1].id
+        const initialData2: Writable<ConversationMessages> = this.createConversation({
+            id: secondChatId,
+            messages: mock_dm1,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[secondChatId] = initialData2
             return currentConversations
         })
         // this.pendingMsgConversations.set({

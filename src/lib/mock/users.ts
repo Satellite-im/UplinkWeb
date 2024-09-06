@@ -192,7 +192,7 @@ let mock_chats: Chat[] = [
         notifications: 4,
         users: [defaultUser.key, mock_users[0].key],
         last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        last_message_preview: "doot doot doot",
     },
     {
         ...defaultChat,
