@@ -80,11 +80,14 @@
 
     async function createNewDirectory(folder: FileInfo) {
         if (folder.name === "") {
+            updateCurrentDirectory()
+            folder.isRenaming = OperationState.Error
             return
         }
         let newDirCreated = await ConstellationStoreInstance.createDirectory(folder.name)
         newDirCreated.fold(
             err => {
+                folder.isRenaming = OperationState.Error
                 if (err === WarpError.DIRECTORY_ALREADY_EXIST) {
                     updateCurrentDirectory()
                     Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
@@ -94,6 +97,7 @@
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             async _ => {
+                folder.isRenaming = OperationState.Success
                 updateCurrentDirectory()
             }
         )
@@ -645,8 +649,9 @@
                                         isContextMenuOpen = true
                                         open(e)
                                     }}
-                                    onRename={async name => {
+                                    onRename={async (name, cancel) => {
                                         rename = undefined
+                                        if (cancel) return false
                                         return renameItem(item, `${name}`, `${item.extension}`)
                                     }}
                                     isRenaming={item.isRenaming}
@@ -697,13 +702,16 @@
                                     }}
                                     kind={FilesItemKind.Folder}
                                     info={item}
-                                    onRename={async name => {
+                                    onRename={async (name, cancel) => {
+                                        if (cancel) {
+                                            updateCurrentDirectory()
+                                            return false
+                                        }
                                         rename = undefined
-                                        if (item.name.trim() === "" && name.trim() !== "") {
+                                        if (item.name.trim() === "") {
                                             const newName = `${name}`
                                             item.name = newName
                                             await createNewDirectory(item)
-                                            item.isRenaming = OperationState.Success
                                             return true
                                         } else {
                                             return renameItem(item, `${name}`)

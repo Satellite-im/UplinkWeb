@@ -14,7 +14,7 @@
     export let name = info.name
     export let isRenaming: OperationState = OperationState.Initial
     export let hook: string = ""
-    export let onRename: (name: string) => Promise<boolean> = _ => Promise.resolve(true)
+    export let onRename: (name: string, cancel: boolean) => Promise<boolean> = _ => Promise.resolve(true)
     let hasFocus = false
     let oldName = name
 
@@ -72,13 +72,13 @@
     async function onKeydown(event: KeyboardEvent) {
         if (event.key === "Escape") {
             isEnterOrEscapeKeyPressed = true
+            await onRename(name, true)
             isRenaming = OperationState.Initial
-            name = oldName
             return
         }
         if (event.key === "Enter") {
             isEnterOrEscapeKeyPressed = true
-            let rename = await onRename(name)
+            let rename = await onRename(name, false)
             if (!rename) {
                 name = oldName
                 isRenaming = OperationState.Initial
@@ -90,7 +90,7 @@
 
     async function onBlur() {
         if (!isEnterOrEscapeKeyPressed) {
-            let rename = await onRename(name)
+            let rename = await onRename(name, isEnterOrEscapeKeyPressed)
             if (!rename) {
                 name = oldName
             }
