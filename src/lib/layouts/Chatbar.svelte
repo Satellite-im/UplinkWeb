@@ -15,15 +15,17 @@
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
     import { VoiceRTCMessageType } from "$lib/media/Voice"
+    import { UIStore } from "$lib/state/ui"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
+    export let emojiClickHook: (emoji: string) => boolean
 
     const dispatch = createEventDispatcher()
 
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message = writable("")
-    let emojiSelectorOpen = writable(false)
+    $: emojiSelectorOpen = UIStore.state.emojiSelector
     let gifSelectorOpen = writable(false)
     let stickerSelectorOpen = writable(false)
 
@@ -55,6 +57,7 @@
 
     function handleEmojiClick(emoji: string) {
         emojiSelectorOpen.set(false)
+        if (emojiClickHook(emoji)) return
         message.set($message + emoji)
     }
 

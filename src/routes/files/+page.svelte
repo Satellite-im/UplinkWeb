@@ -23,9 +23,9 @@
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
-    
+
     let loading: boolean = false
-    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
+    $: sidebarOpen = UIStore.state.sidebarOpen
     let isContextMenuOpen: boolean = false
     let isDraggingFromLocal = false
     let filesCount = 0
@@ -37,110 +37,70 @@
 
     let tabRoutes: string[] = ["chats", "files"]
     let activeTabRoute: string = tabRoutes[1]
-    $: openFolders = get(Store.state.openFolders)
-
+    $: openFolders = Store.state.openFolders
     function toggleFolder(folderId: string | number) {
-        const currentOpenFolders = openFolders
+        const currentOpenFolders = $openFolders
         const updatedOpenFolders = {
             ...currentOpenFolders,
             [folderId]: !currentOpenFolders[folderId],
         }
         Store.updateFolderTree(updatedOpenFolders)
     }
-    const unsubscribeopenFolders = Store.state.openFolders.subscribe((f: any) => {
-        openFolders = f
-    })
+
     let dragging_files = 0
     let previewImage: string | null
     let search_filter: string
     let search_component: ChatFilter
     let filesToUpload: HTMLInputElement
-    let allFiles: FileInfo[] = get(Store.state.files)
+    $: files = Store.state.files
     let currentFolderIdStore = writable<string>("")
-    $: currentFiles = allFiles
-
-    const folderStackStore = writable<FileInfo[][]>([allFiles])
-    folderStackStore.subscribe((folderStack: string | any[]) => {
-        currentFiles = folderStack[folderStack.length - 1]
-    })
+    let rename: string | undefined
 
     async function openFolder(folder: FileInfo) {
-        await ConstellationStoreInstance.openDirectory(folder.name)
-        currentFolderIdStore.set(folder.id)
-        folderStackStore.update((stack: any) => {
-            const newStack = [...stack, folder.items!]
-            return newStack
-        })
+        let res = await ConstellationStoreInstance.openDirectory(folder.name)
+        res.fold(
+            _ => {},
+            _ => {
+                currentFolderIdStore.set(folder.id)
+                updateCurrentDirectory()
+            }
+        )
     }
 
     async function goBack() {
-        await ConstellationStoreInstance.goBack()
-        folderStackStore.update((stack: any[]) => {
-            if (stack.length > 1) {
-                stack.pop()
+        let res = await ConstellationStoreInstance.goBack()
+        res.fold(
+            _ => {},
+            id => {
+                currentFolderIdStore.set(id)
+                updateCurrentDirectory()
             }
-            stack.forEach((sta: any[]) => {
-                sta.forEach((files: { parentId: string }) => {
-                    if (files.parentId === "") {
-                        currentFolderIdStore.set("")
-                    }
-                })
-            })
-            return stack
-        })
-        getCurrentDirectoryFiles()
+        )
     }
 
     async function createNewDirectory(folder: FileInfo) {
         if (folder.name === "") {
-            removeFolderFromStak(folder)
+            updateCurrentDirectory()
+            folder.isRenaming = OperationState.Error
             return
         }
         let newDirCreated = await ConstellationStoreInstance.createDirectory(folder.name)
-
         newDirCreated.fold(
             err => {
-                removeFolderFromStak(folder)
+                folder.isRenaming = OperationState.Error
+                if (err === WarpError.DIRECTORY_ALREADY_EXIST) {
+                    updateCurrentDirectory()
+                    Store.addToastNotification(new ToastMessage("", `Other item already exists with this name`, 2))
+                    return
+                }
+                updateCurrentDirectory()
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
-            _ => {
-                folderStackStore.update((folders: any[]) => {
-                    const newFolders = folders.map((folderStack: any[]) => {
-                        if (Array.isArray(folderStack)) {
-                            return folderStack.map(file => {
-                                if (file.id === folder.id) {
-                                    toggleFolder(folder.id)
-                                    Store.state.files.update((files: any[]) => {
-                                        const exists = files.some((file: { id: string }) => file.id === folder.id)
-                                        if (!exists) {
-                                            return [...files, folder]
-                                        }
-                                        return files
-                                    })
-                                    return folder
-                                }
-                                return file
-                            })
-                        }
-                        return folderStack
-                    })
-                    return newFolders
-                })
+            async _ => {
+                folder.isRenaming = OperationState.Success
+                updateCurrentDirectory()
             }
         )
-        getCurrentDirectoryFiles()
-    }
-
-    function removeFolderFromStak(folder: FileInfo) {
-        folderStackStore.update((folders: any[]) => {
-            const newFolders = folders.map((folderStack: any[]) => {
-                if (Array.isArray(folderStack)) {
-                    return folderStack.filter(file => file.id !== folder.id)
-                }
-                return folderStack
-            })
-            return newFolders
-        })
     }
 
     function newFolder() {
@@ -157,144 +117,24 @@
             items: [],
             parentId: $currentFolderIdStore,
         }
-
-        function insertIntoFolder(folders: FileInfo[], parentId: string): FileInfo[] {
-            if (parentId === "") {
-                return [...folders, createNewFolder]
-            }
-            return folders.map(folder => {
-                if (folder.id === parentId && folder.type === "folder" && folder.items) {
-                    toggleFolder(createNewFolder.id)
-                    return {
-                        ...folder,
-                        items: [...folder.items, createNewFolder],
-                    }
-                }
-                if (folder.items && folder.items.length > 0) {
-                    return {
-                        ...folder,
-                        items: insertIntoFolder(folder.items, parentId),
-                    }
-                }
-                return folder
-            })
-        }
-        folderStackStore.update((folders: any[]) => {
-            let newFolders = folders.map((folderStack: FileInfo[]) => {
-                if (Array.isArray(folderStack)) {
-                    return insertIntoFolder(folderStack, $currentFolderIdStore)
-                }
-                return folderStack
-            })
-            for (let i = 1; i < newFolders.length; i++) {
-                let prevArray = newFolders[i - 1]
-                let currArray = newFolders[i]
-                const parentItem = prevArray.find((item: { id: any }) => {
-                    if (currArray.length === 0) {
-                        newFolders[i].push(createNewFolder)
-                    }
-                    return item.id === currArray[0].parentId
-                })
-                if (newFolders[i].length === 0) {
-                    if (parentItem && parentItem.items) {
-                        currArray = [...parentItem.items]
-                    }
-                }
-                if (parentItem && parentItem.items) {
-                    newFolders[i] = [...parentItem.items]
-                }
-
-                const currentOpenFolders = openFolders
-                const updatedOpenFolders = {
-                    ...currentOpenFolders,
-                    [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
-                }
-                Store.updateFolderTree(updatedOpenFolders)
-            }
-            return newFolders
-        })
+        $files = [...$files, createNewFolder]
+        rename = createNewFolder.id
     }
 
-    function dropItemIntoFolder(droppingItem: FileInfo, parentId: string) {
-        function insertIntoFolder(folderId: string, item: FileInfo, folders: FileInfo[]): FileInfo[] {
-            function removeFromFolder(itemId: string, folders: FileInfo[]): FileInfo[] {
-                return folders
-                    .map(folder => {
-                        if (folder.type === "folder") {
-                            folder.items = folder.items!.filter(i => i.id !== itemId)
-                            folder.items = removeFromFolder(itemId, folder.items)
-                        }
-                        return folder
-                    })
-                    .filter(folder => folder.id !== itemId)
+    function dropItemIntoFolder(droppingItem: FileInfo, target: string) {
+        function findFolderAndInsert(targetId: string, item: FileInfo, folders: FileInfo[]) {
+            let target = folders.find(target => target.id === targetId && target.type === "folder")
+            if (target) {
+                if (item.type === "folder") {
+                    ConstellationStoreInstance.dropIntoFolder(item.name, target.name)
+                } else {
+                    ConstellationStoreInstance.dropIntoFolder(`${item.name}.${item.extension}`, target.name)
+                }
             }
-
-            function findFolderAndInsert(folderId: string, item: FileInfo, folders: FileInfo[]): FileInfo[] {
-                return folders.map(folder => {
-                    if (folder.id === folderId && folder.type === "folder") {
-                        updateFilesFromFolder(folder)
-                        folder.items!.push(item)
-                        if (item.type === "folder" && folder.type === "folder") {
-                            ConstellationStoreInstance.dropIntoFolder(item.name, folder.name)
-                        } else {
-                            ConstellationStoreInstance.dropIntoFolder(`${item.name}.${item.extension}`, folder.name)
-                        }
-                    } else if (folder.type === "folder") {
-                        folder.items = findFolderAndInsert(folderId, item, folder.items!)
-                    }
-                    return folder
-                })
-            }
-            const updatedFolders = removeFromFolder(item.id, folders)
-            return findFolderAndInsert(folderId, item, updatedFolders)
         }
-
-        folderStackStore.update((folders: any[]) => {
-            let newFolders = folders.map(folderStack => {
-                const updatedFolderStack = insertIntoFolder(droppingItem.parentId!, droppingItem, currentFiles)
-                return updatedFolderStack
-            })
-
-            let newCurrentFiles: FileInfo[] = newFolders
-                .flatMap(folderStack =>
-                    folderStack.flatMap(item => {
-                        const file = item.items?.find(file => file.id === droppingItem.parentId)
-                        return file ? [file] : [item]
-                    })
-                )
-                .filter(file => file !== null) as FileInfo[]
-
-            currentFiles = newCurrentFiles
-
-            for (let i = 1; i < newFolders.length; i++) {
-                let prevArray = newFolders[i - 1]
-                let currArray = newFolders[i]
-                const parentItem = prevArray.find(item => {
-                    if (currArray.length === 0) {
-                        newFolders[i].push(droppingItem)
-                    }
-                    return item.id === currArray[0].parentId
-                })
-
-                if (newFolders[i].length === 0) {
-                    if (parentItem && parentItem.items) {
-                        currArray = [...parentItem.items]
-                    }
-                }
-                if (parentItem && parentItem.items) {
-                    newFolders[i] = [...parentItem.items]
-                }
-
-                const currentOpenFolders = openFolders
-                const updatedOpenFolders = {
-                    ...currentOpenFolders,
-                    [parentItem?.id!]: !currentOpenFolders[parentItem?.id!],
-                }
-                Store.updateFolderTree(updatedOpenFolders)
-            }
-            Store.updateFileOrder(currentFiles)
-            return newFolders
-        })
+        ;("")
+        findFolderAndInsert(target, droppingItem, $files)
+        updateCurrentDirectory()
     }
 
     let folderClicked: FileInfo = {
@@ -312,10 +152,6 @@
     function itemsToFileInfo(items: Item[]): FileInfo[] {
         let filesInfo: FileInfo[] = []
         items.forEach(item => {
-            const imageThumb = to_base64(item.thumbnail())
-            // console.log("imageThumb: ", imageThumb)
-            console.log("isFile: ", item.is_file())
-
             let newItem: FileInfo = {
                 id: item!.id(),
                 type: item.is_file() ? "file" : "folder",
@@ -331,6 +167,12 @@
             }
             filesInfo = [...filesInfo, newItem]
         })
+        filesInfo.sort((f1, f2) => {
+            if (f1.type === f2.type) {
+                return f1.name.localeCompare(f2.name)
+            }
+            return f2.type.localeCompare(f1.type)
+        })
         return filesInfo
     }
 
@@ -344,13 +186,13 @@
         return { name, extension }
     }
 
-    async function getCurrentDirectoryFiles() {
+    async function updateCurrentDirectory() {
         let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
         files.onSuccess(items => {
             let newFilesInfo = itemsToFileInfo(items)
             let filesSet = new Set(newFilesInfo)
-            Store.state.files.set(Array.from(filesSet))
-            currentFiles = Array.from(filesSet)
+            Store.updateFileOrder(Array.from(filesSet))
+            $files = Array.from(filesSet)
         })
     }
     function updateFilesFromFolder(folder: FileInfo): void {
@@ -365,7 +207,7 @@
         /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
         await ConstellationStoreInstance.checkLoaded()
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
-        getCurrentDirectoryFiles()
+        updateCurrentDirectory()
 
         let lastClickTime = 0
         let lastClickTarget: HTMLElement | null = null
@@ -380,13 +222,13 @@
             if (lastClickTarget === target && currentTime - lastClickTime < 200) {
                 if (lastClickTarget.classList.contains("folder-draggable")) {
                     const targetId = target.dataset.id
-                    const targetFolder = currentFiles.find(item => item.id === targetId)
+                    const targetFolder = $files.find(item => item.id === targetId)
                     if (targetFolder) {
                         folderClicked = targetFolder
                     }
                     if (target) {
                         const targetId = target.dataset.id
-                        const targetFolder = currentFiles.find(item => item.id === targetId)
+                        const targetFolder = $files.find(item => item.id === targetId)
                         if (targetFolder) {
                             updateFilesFromFolder(targetFolder)
                             openFolder(targetFolder)
@@ -394,40 +236,37 @@
                     }
                 }
             }
-            let draggedItemId: string | null = ""
-            let draggedElement: HTMLElement | null = null
-            let targetFolderId: string | null = null
-            document.addEventListener("dragstart", (event: DragEvent) => {
-                draggedElement = (event.target as HTMLElement).closest(".draggable-item")
-            })
-            document.addEventListener("dragover", (event: DragEvent) => {
-                event.preventDefault()
-            })
-            document.addEventListener("drop", (event: DragEvent) => {
-                const dropTargetElement = (event.target as HTMLElement).closest(".draggable-item")
-                if (dropTargetElement && draggedElement) {
-                    targetFolderId = dropTargetElement.getAttribute("data-id")
-                    const dragId = draggedElement.getAttribute("data-id")
-                    const draggedItem = currentFiles.find(item => item.id === dragId)
-                    if (draggedElement) {
-                        draggedItemId = draggedElement.getAttribute("data-id")
-                        if (targetFolderId && draggedItem) {
-                            if (targetFolderId !== draggedItem.id) {
-                                draggedItem.parentId = targetFolderId
-                                dropItemIntoFolder(draggedItem, targetFolderId)
-                            }
-                        }
-                    }
-                    draggedElement = null
-                }
-            })
             lastClickTarget = target
             lastClickTime = currentTime
         })
-    })
-
-    onDestroy(() => {
-        unsubscribeopenFolders()
+        let draggedItemId: string | null = ""
+        let draggedElement: HTMLElement | null = null
+        let targetFolderId: string | null = null
+        document.addEventListener("dragstart", (event: DragEvent) => {
+            draggedElement = (event.target as HTMLElement).closest(".draggable-item")
+        })
+        document.addEventListener("dragover", (event: DragEvent) => {
+            event.preventDefault()
+        })
+        document.addEventListener("drop", (event: DragEvent) => {
+            event.preventDefault()
+            const dropTargetElement = (event.target as HTMLElement).closest(".draggable-item")
+            if (dropTargetElement && draggedElement) {
+                targetFolderId = dropTargetElement.getAttribute("data-id")
+                const dragId = draggedElement.getAttribute("data-id")
+                const draggedItem = $files.find(item => item.id === dragId)
+                if (draggedElement) {
+                    draggedItemId = draggedElement.getAttribute("data-id")
+                    if (targetFolderId && draggedItem) {
+                        if (targetFolderId !== draggedItem.id) {
+                            draggedItem.parentId = targetFolderId
+                            dropItemIntoFolder(draggedItem, targetFolderId)
+                        }
+                    }
+                }
+                draggedElement = null
+            }
+        })
     })
 
     function dragEnter(event: DragEvent) {
@@ -452,6 +291,8 @@
 
     async function dragDrop(event: DragEvent) {
         event.preventDefault()
+        const dropTargetElement = (event.target as HTMLElement).closest(".draggable-item")
+        if (dropTargetElement) return
         dragging_files = 0
         isFadingOutDragDropOverlay = true
         let filesToUpload = event.dataTransfer?.files
@@ -468,7 +309,7 @@
                 let newFileName = file.name
                 let fileIndex = 1
 
-                currentFiles.forEach(fileUploaded => {
+                $files.forEach(fileUploaded => {
                     if (`${fileUploaded.name}.${fileUploaded.extension}` === newFileName) {
                         newFileName = `${baseName} (${fileIndex}).${fileExtension}`
                         fileIndex++
@@ -477,7 +318,7 @@
                 await uploadFilesFromDrop(newFileName, stream, file.size)
             }
         }
-        getCurrentDirectoryFiles()
+        updateCurrentDirectory()
         setTimeout(() => {
             isFadingOutDragDropOverlay = false
         }, 300)
@@ -506,7 +347,7 @@
                 const extension = fileNameParts.slice(-1)[0]
                 let newFileName = file.name
                 let fileIndex = 1
-                currentFiles.forEach(fileUploaded => {
+                $files.forEach(fileUploaded => {
                     if (`${fileUploaded.name}.${fileUploaded.extension}` === newFileName) {
                         newFileName = `${baseName} (${fileIndex}).${extension}`
                         fileIndex++
@@ -519,7 +360,7 @@
             }
         }
         target.value = ""
-        getCurrentDirectoryFiles()
+        updateCurrentDirectory()
     }
 
     async function deleteItem(file_name: string) {
@@ -530,51 +371,41 @@
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
-                getCurrentDirectoryFiles()
+                updateCurrentDirectory()
+                Store.addToastNotification(new ToastMessage("", `Successfully deleted item "${file_name}"`, 2))
             }
         )
     }
 
     async function renameItem(item: FileInfo, newName: string, fileExtension: string = "") {
+        newName = newName.trim()
         let oldName = item.name
-        console.log("old: ", oldName.trim(), "; new: ", newName.trim(), "°")
-        if (item.type === "folder" && oldName.trim() === "" && newName.trim() === "") {
-            removeFolderFromStak(item)
+        if (item.type === "folder" && oldName.trim() === "" && newName === "") {
             return false
         }
-        if (newName.trim() === "") {
+        if (oldName.trim() === newName) {
+            return false
+        }
+        if (newName === "") {
             Store.addToastNotification(new ToastMessage("", "Empty name provided", 2))
             return false
         }
         let result = await ConstellationStoreInstance.renameItem(fileExtension === "" ? `${oldName}` : `${oldName}.${fileExtension}`, fileExtension === "" ? `${newName}` : `${newName}.${fileExtension}`)
         result.fold(
             err => {
-                currentFiles = currentFiles.map(file => {
-                    if (file.name === oldName) {
-                        file.isRenaming = OperationState.Error
-                        Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
-                        return file
-                    }
-                    return file
-                })
+                item.isRenaming = OperationState.Error
                 if (err === WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME) {
-                    getCurrentDirectoryFiles()
-                    Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
+                    updateCurrentDirectory()
+                    Store.addToastNotification(new ToastMessage("", `Other item already exists with this name`, 2))
                     return
                 }
-                getCurrentDirectoryFiles()
+                updateCurrentDirectory()
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             _ => {
-                currentFiles = currentFiles.map(file => {
-                    if (file.name === oldName) {
-                        file.name = newName
-                        file.isRenaming = OperationState.Success
-                    }
-                    getCurrentDirectoryFiles()
-                    Store.addToastNotification(new ToastMessage("", `Successfully renamed "${oldName}" to "${newName}"`, 2))
-                    return file
-                })
+                item.isRenaming = OperationState.Success
+                Store.addToastNotification(new ToastMessage("", `Successfully renamed "${oldName}" to "${newName}"`, 2))
+                updateCurrentDirectory()
             }
         )
         return true
@@ -599,11 +430,8 @@
         )
     }
 
-    UIStore.state.sidebarOpen.subscribe((s: boolean) => (sidebarOpen = s))
-    let chats: Chat[] = get(UIStore.state.chats)
-    UIStore.state.chats.subscribe((sc: Chat[]) => (chats = sc))
-    let activeChat: Chat = get(Store.state.activeChat)
-    Store.state.activeChat.subscribe((c: Chat) => (activeChat = c))
+    $: chats = UIStore.state.chats
+    $: activeChat = Store.state.activeChat
 
     function to_base64(data: Uint8Array): string | undefined {
         const binaryString = Array.from(data)
@@ -656,7 +484,7 @@
         </Modal>
     {/if}
 
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={$sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
         <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
         <Controls>
             <Button
@@ -679,7 +507,7 @@
             </Button>
         </Controls>
         {#if activeTabRoute === "chats"}
-            {#each chats as chat}
+            {#each $chats as chat}
                 <ContextMenu
                     hook="context-menu-sidebar-chat"
                     items={[
@@ -698,14 +526,14 @@
                             onClick: () => {},
                         },
                     ]}>
-                    <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={activeChat === chat} />
+                    <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
                 </ContextMenu>
             {/each}
         {/if}
         {#if activeTabRoute === "files"}
             <ul class="folderList" data-cy="folder-list">
-                {#each currentFiles as file}
-                    <FolderItem file={file} openFolders={openFolders} toggleFolder={toggleFolder} />
+                {#each $files as file}
+                    <FolderItem file={file} openFolders={$openFolders} toggleFolder={toggleFolder} />
                 {/each}
             </ul>
         {/if}
@@ -766,134 +594,142 @@
         </div>
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
-            {#each currentFiles as item, index (item.id)}
+            {#each $files as item}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
-                    {#if item.type === "file"}
-                        <ContextMenu
-                            hook="context-menu-file"
-                            on:close={_ => {
-                                isContextMenuOpen = false
-                            }}
-                            items={[
-                                {
-                                    id: `rename-${item.id}`,
-                                    icon: Shape.Pencil,
-                                    text: $_("files.rename"),
-                                    appearance: Appearance.Default,
-                                    onClick: async () => {
-                                        currentFiles = currentFiles.map(file => {
-                                            if (file.id === item.id) {
-                                                file.isRenaming = OperationState.Loading
-                                            } else {
-                                                file.isRenaming = OperationState.Initial
-                                            }
-                                            return file
-                                        })
-                                    },
-                                },
-                                {
-                                    id: "download-" + item.id,
-                                    icon: Shape.ArrowDown,
-                                    text: $_("files.download"),
-                                    appearance: Appearance.Default,
-                                    onClick: async () => {
-                                        downloadFile(`/${item.name}.${item.extension}`)
-                                    },
-                                },
-                                {
-                                    id: "delete-" + item.id,
-                                    icon: Shape.Trash,
-                                    text: $_("generic.delete"),
-                                    appearance: Appearance.Error,
-                                    onClick: () => {
-                                        deleteItem(`/${item.name}.${item.extension}`)
-                                    },
-                                },
-                            ]}>
-                            <FileFolder
-                                itemId={item.id}
-                                hook="file-{item.name}"
-                                slot="content"
-                                let:open
-                                on:contextmenu={e => {
-                                    isContextMenuOpen = true
-                                    open(e)
+                {#key item}
+                    <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
+                        {#if item.type === "file"}
+                            <ContextMenu
+                                hook="context-menu-file"
+                                on:close={_ => {
+                                    isContextMenuOpen = false
                                 }}
-                                onRename={async name => {
-                                    return renameItem(item, `${name}`, `${item.extension}`)
-                                }}
-                                isRenaming={item.isRenaming}
-                                kind={item.imageThumbnail ? FilesItemKind.Image : FilesItemKind.File}
-                                info={item} />
-                        </ContextMenu>
-                    {:else if item.type === "folder"}
-                        <ContextMenu
-                            hook="context-menu-folder"
-                            on:close={_ => {
-                                isContextMenuOpen = false
-                            }}
-                            items={[
-                                {
-                                    id: "delete-" + item.id,
-                                    icon: Shape.XMark,
-                                    text: $_("generic.delete"),
-                                    appearance: Appearance.Default,
-                                    onClick: () => {
-                                        deleteItem(`/${item.name}/`)
+                                items={[
+                                    {
+                                        id: `rename-${item.id}`,
+                                        icon: Shape.Pencil,
+                                        text: $_("files.rename"),
+                                        appearance: Appearance.Default,
+                                        onClick: async () => {
+                                            $files = $files.map(file => {
+                                                if (file.id === item.id) {
+                                                    file.isRenaming = OperationState.Loading
+                                                } else {
+                                                    file.isRenaming = OperationState.Initial
+                                                }
+                                                return file
+                                            })
+                                        },
                                     },
-                                },
-                                {
-                                    id: "rename-" + item.id,
-                                    icon: Shape.Pencil,
-                                    text: $_("files.rename"),
-                                    appearance: Appearance.Default,
-                                    onClick: async () => {
-                                        currentFiles = currentFiles.map(file => {
-                                            if (file.id === item.id) {
-                                                file.isRenaming = OperationState.Loading
-                                            } else {
-                                                file.isRenaming = OperationState.Initial
-                                            }
-                                            return file
-                                        })
+                                    {
+                                        id: "download-" + item.id,
+                                        icon: Shape.ArrowDown,
+                                        text: $_("files.download"),
+                                        appearance: Appearance.Default,
+                                        onClick: async () => {
+                                            downloadFile(`/${item.name}.${item.extension}`)
+                                        },
                                     },
-                                },
-                            ]}>
-                            <FileFolder
-                                itemId={item.id}
-                                hook="folder-{item.name}"
-                                slot="content"
-                                let:open
-                                on:contextmenu={e => {
-                                    isContextMenuOpen = true
-                                    open(e)
+                                    {
+                                        id: "delete-" + item.id,
+                                        icon: Shape.Trash,
+                                        text: $_("generic.delete"),
+                                        appearance: Appearance.Error,
+                                        onClick: () => {
+                                            deleteItem(`/${item.name}.${item.extension}`)
+                                        },
+                                    },
+                                ]}>
+                                <FileFolder
+                                    itemId={item.id}
+                                    hook="file-{item.name}"
+                                    slot="content"
+                                    let:open
+                                    on:contextmenu={e => {
+                                        isContextMenuOpen = true
+                                        open(e)
+                                    }}
+                                    onRename={async (name, cancel) => {
+                                        rename = undefined
+                                        if (cancel) return false
+                                        return renameItem(item, `${name}`, `${item.extension}`)
+                                    }}
+                                    isRenaming={item.isRenaming}
+                                    kind={item.imageThumbnail ? FilesItemKind.Image : FilesItemKind.File}
+                                    info={item} />
+                            </ContextMenu>
+                        {:else if item.type === "folder"}
+                            <ContextMenu
+                                hook="context-menu-folder"
+                                on:close={_ => {
+                                    isContextMenuOpen = false
                                 }}
-                                kind={FilesItemKind.Folder}
-                                info={item}
-                                onRename={async name => {
-                                    if (item.name.trim() === "" && name.trim() !== "") {
-                                        const newName = `${name}`
-                                        item.name = newName
-                                        await createNewDirectory(item)
-                                        item.isRenaming = OperationState.Success
-                                        return true
-                                    } else {
-                                        return renameItem(item, `${name}`)
-                                    }
-                                }}
-                                isRenaming={item.isRenaming} />
-                        </ContextMenu>
-                    {:else if item.type === "image"}
-                        <ImageFile
-                            filesize={item.size}
-                            name={item.name}
-                            ImgSource={item.source}
-                            on:click={_ => {
-                                previewImage = item.source
-                            }} />
-                    {/if}
-                </div>
+                                items={[
+                                    {
+                                        id: "delete-" + item.id,
+                                        icon: Shape.XMark,
+                                        text: $_("generic.delete"),
+                                        appearance: Appearance.Default,
+                                        onClick: () => {
+                                            deleteItem(`/${item.name}/`)
+                                        },
+                                    },
+                                    {
+                                        id: "rename-" + item.id,
+                                        icon: Shape.Pencil,
+                                        text: $_("files.rename"),
+                                        appearance: Appearance.Default,
+                                        onClick: async () => {
+                                            $files = $files.map(file => {
+                                                if (file.id === item.id) {
+                                                    file.isRenaming = OperationState.Loading
+                                                } else {
+                                                    file.isRenaming = OperationState.Initial
+                                                }
+                                                return file
+                                            })
+                                        },
+                                    },
+                                ]}>
+                                <FileFolder
+                                    itemId={item.id}
+                                    hook="folder-{item.name}"
+                                    slot="content"
+                                    let:open
+                                    on:contextmenu={e => {
+                                        isContextMenuOpen = true
+                                        open(e)
+                                    }}
+                                    kind={FilesItemKind.Folder}
+                                    info={item}
+                                    onRename={async (name, cancel) => {
+                                        if (cancel) {
+                                            updateCurrentDirectory()
+                                            return false
+                                        }
+                                        rename = undefined
+                                        if (item.name.trim() === "") {
+                                            const newName = `${name}`
+                                            item.name = newName
+                                            await createNewDirectory(item)
+                                            return true
+                                        } else {
+                                            return renameItem(item, `${name}`)
+                                        }
+                                    }}
+                                    isRenaming={item.isRenaming} />
+                            </ContextMenu>
+                        {:else if item.type === "image"}
+                            <ImageFile
+                                filesize={item.size}
+                                name={item.name}
+                                ImgSource={item.source}
+                                on:click={_ => {
+                                    previewImage = item.source
+                                }} />
+                        {/if}
+                    </div>
+                {/key}
             {/each}
         </div>
     </div>

@@ -86,9 +86,10 @@
     let dragging_files = 0
     let editing_message: string | undefined = undefined
     let editing_text: string | undefined = undefined
-    let emojis: string[] = ["👍", "👎", "❤️", "🖖", "😂"]
+    $: emojis = UIStore.getMostUsed()
     $: own_user = Store.state.user
     let replyTo: MessageType | undefined = undefined
+    let reactingTo: string | undefined
     let fileUpload: FileInput
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
@@ -201,6 +202,7 @@
 
     async function reactTo(message: string, emoji: string, toggle: boolean) {
         let add = toggle ? !ConversationStore.hasReaction($activeChat, message, emoji) : true
+        if (add) UIStore.useEmoji(emoji)
         await RaygunStoreInstance.react($conversation!.id, message, add ? 0 : 1, emoji)
     }
 
@@ -563,13 +565,13 @@
                                                 position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                                 morePadding={message.text.length > 1 || message.attachments.length > 0}>
                                                 {#if editing_message === message.id}
-                                                    <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
+                                                    <Input hook="chat-message-edit-input" alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
                                                         {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
-                                                            <Text markdown={line} />
+                                                            <Text hook="text-chat-message" markdown={line} />
                                                         {/if}
                                                     {/each}
 
@@ -611,7 +613,7 @@
                                                 {/if}
                                             </Message>
                                             <svelte:fragment slot="items" let:close>
-                                                <EmojiGroup emojis={emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close}></EmojiGroup>
+                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
                                             </svelte:fragment>
                                         </ContextMenu>
                                     {/if}
@@ -656,6 +658,14 @@
                 filesSelected={files}
                 replyTo={replyTo}
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
+                emojiClickHook={emoji => {
+                    if (reactingTo) {
+                        reactTo(reactingTo, emoji, false)
+                        reactingTo = undefined
+                        return true
+                    }
+                    return false
+                }}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
                     typing()
