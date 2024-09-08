@@ -90,7 +90,7 @@
                 folder.isRenaming = OperationState.Error
                 if (err === WarpError.DIRECTORY_ALREADY_EXIST) {
                     updateCurrentDirectory()
-                    Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
+                    Store.addToastNotification(new ToastMessage("", `Other item already exists with this name`, 2))
                     return
                 }
                 updateCurrentDirectory()
@@ -396,7 +396,7 @@
                 item.isRenaming = OperationState.Error
                 if (err === WarpError.ITEM_ALREADY_EXIST_WITH_SAME_NAME) {
                     updateCurrentDirectory()
-                    Store.addToastNotification(new ToastMessage("", `Other item already exist with this name`, 2))
+                    Store.addToastNotification(new ToastMessage("", `Other item already exists with this name`, 2))
                     return
                 }
                 updateCurrentDirectory()
