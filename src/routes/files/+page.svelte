@@ -807,7 +807,7 @@
             margin: 10px;
         }
         .folderList {
-            margin-left: -40px;
+            margin-left: -20px;
         }
 
         .content {
