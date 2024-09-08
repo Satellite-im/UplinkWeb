@@ -565,13 +565,13 @@
                                                 position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                                 morePadding={message.text.length > 1 || message.attachments.length > 0}>
                                                 {#if editing_message === message.id}
-                                                    <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
+                                                    <Input hook="chat-message-edit-input" alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
                                                         {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
-                                                            <Text markdown={line} />
+                                                            <Text hook="text-chat-message" markdown={line} />
                                                         {/if}
                                                     {/each}
 

@@ -23,21 +23,21 @@
     }
 </script>
 
-<div class="container">
+<div class="container" data-cy="image-embed-container">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-    <img class={big ? "image-big" : "image"} src={source} alt={alt} on:click={onClick} />
+    <img data-cy="image-embed-file" class={big ? "image-big" : "image"} src={source} alt={alt} on:click={onClick} />
 
     {#if name}
         <div class="details">
-            <Text size={Size.Smaller}>{name}</Text>
+            <Text hook="image-embed-file-name" size={Size.Smaller}>{name}</Text>
             {#if filesize}
-                <Text size={Size.Smaller}>{prettyBytes(filesize)}</Text>
+                <Text hook="image-embed-file-size" size={Size.Smaller}>{prettyBytes(filesize)}</Text>
             {/if}
         </div>
     {/if}
     <Controls>
-        <Button icon small tooltip={$_("files.download")} on:click={download} appearance={Appearance.Transparent}>
+        <Button hook="image-embed-download-button" icon small tooltip={$_("files.download")} on:click={download} appearance={Appearance.Transparent}>
             <Icon icon={Shape.Download} />
         </Button>
     </Controls>
