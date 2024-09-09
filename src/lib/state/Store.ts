@@ -484,7 +484,6 @@ class GlobalStore {
 
     loadMockData() {
         this.state.isUsingMockData.set(true)
-
         mock_users[0].name = get(this.state.user).name
         mock_users[0].profile.photo.image = get(this.state.user).profile.photo.image
         mock_users[0].profile.banner.image = get(this.state.user).profile.banner.image
@@ -504,7 +503,7 @@ class GlobalStore {
         this.state.activeChat.set(mchatsMod[0])
         const updatedFiles = new Set([...get(this.state.files), ...mock_files])
         this.state.files.set(Array.from(updatedFiles))
-        const updatedFriends = new Set([...get(this.state.friends), ...mock_users.map(u => u.key)])
+        const updatedFriends = new Set([...get(this.state.friends), ...mock_users.map(u => u.key).filter((_, index) => index !== 0)])
         this.state.friends.set(Array.from(updatedFriends))
         const updatedBlocked = new Set([...get(this.state.blocked), ...blocked_users.map(u => u.key)])
         this.state.blocked.set(Array.from(updatedBlocked))
@@ -550,7 +549,7 @@ class GlobalStore {
     loadMockFriends() {
         const updatedFiles = new Set([...get(this.state.files), ...mock_files])
         this.state.files.set(Array.from(updatedFiles))
-        const updatedFriends = new Set([...get(this.state.friends), ...mock_users.map(u => u.key)])
+        const updatedFriends = new Set([...get(this.state.friends), ...mock_users.map(u => u.key).filter((_, index) => index !== 0)])
         this.state.friends.set(Array.from(updatedFriends))
         const updatedBlocked = new Set([...get(this.state.blocked), ...blocked_users.map(u => u.key)])
         this.state.blocked.set(Array.from(updatedBlocked))
