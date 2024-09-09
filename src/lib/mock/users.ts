@@ -184,7 +184,6 @@ let mock_chats: Chat[] = [
         last_message_at: new Date(),
         last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
     },
-
     {
         ...defaultChat,
         id: "a45",
@@ -238,6 +237,14 @@ let mock_chats: Chat[] = [
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
 ]
+
+export function patchOwnDIDKey(newKey: string): void {
+    mock_users[0].key = newKey
+
+    mock_chats.forEach(chat => {
+        chat.users = chat.users.map(userKey => (userKey === mock_users[0].key ? newKey : userKey))
+    })
+}
 
 function mockIndicator(user: string): TypingIndicator {
     let indicator = new TypingIndicator()

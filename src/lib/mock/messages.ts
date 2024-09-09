@@ -88,12 +88,11 @@ export let mock_group: MessageGroup[] = [
     // Individual messages added at the end (not part of MessageGroup)
 ]
 
-export let mock_dm1: Message[] = [
-    // Individual message from mock_users[2]
+export let mock_dm1: MessageGroup[] = [
     {
         details: {
             at: new Date(),
-            origin: mock_users[0].key,
+            origin: "did:key:z6MkueJ5Waq9qDgPig27fBbagCCbUYxqcwharjzrMakGCV74",
             remote: false,
         },
         messages: [
@@ -182,7 +181,40 @@ export let mock_dm1: Message[] = [
                 ],
                 pinned: true,
             },
-            // Other grouped messages...
         ],
     },
 ]
+
+export function patchOwnDIDInMessages(newKey: string): void {
+    // Helper function to update keys within the details and messages
+    function updateKeyInGroup(group: MessageGroup[]): void {
+        group.forEach(messageGroup => {
+            // Update the key in the group details
+            if (messageGroup.details.origin === mock_users[0].key) {
+                messageGroup.details.origin = newKey
+            }
+
+            // Update the key in each message within the group
+            messageGroup.messages.forEach(message => {
+                if (message.details.origin === mock_users[0].key) {
+                    message.details.origin = newKey
+                }
+
+                // Update reactors in message reactions
+                Object.keys(message.reactions).forEach(reactionKey => {
+                    const reaction = message.reactions[reactionKey]
+                    if (reaction.reactors.has(mock_users[0].key)) {
+                        reaction.reactors.delete(mock_users[0].key)
+                        reaction.reactors.add(newKey)
+                    }
+                })
+            })
+        })
+    }
+
+    // Update mock_group
+    updateKeyInGroup(mock_group)
+
+    // Update mock_dm1
+    updateKeyInGroup(mock_dm1)
+}
