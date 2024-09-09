@@ -14,11 +14,13 @@
     import { Slimbar } from "."
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { UIStore } from "$lib/state/ui"
 
     export let activeRoute: Route = Route.Chat
     export let open: boolean = true
     export let loading: boolean = true
     export let activeCall: Call | null = get(Store.state.activeCall)
+    export let simple: boolean = false
 
     export let search: string = ""
     let settings: ISettingsState = get(SettingsStore.state)
@@ -60,6 +62,16 @@
             </div>
 
             <div class="sidebar-content">
+                <Button
+                    appearance={Appearance.Alt}
+                    on:click={() => {
+                        UIStore.toggleMarket()
+                    }}
+                    text="Marketplace"
+                    outline>
+                    <Icon icon={Shape.Shop} />
+                </Button>
+
                 {#if settings && settings.widgets && settings.widgets.show}
                     <WidgetBar />
                 {/if}
