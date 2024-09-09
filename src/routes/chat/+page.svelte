@@ -319,7 +319,7 @@
             on:close={_ => {
                 showUsers = false
             }}>
-            <ViewMembers adminControls members={Object.values($users)} on:create={_ => (showUsers = false)} />
+            <ViewMembers adminControls activeChat={$activeChat} members={Object.values($users)} on:create={_ => (showUsers = false)} />
         </Modal>
     {/if}
 
@@ -664,7 +664,6 @@
             <Chatbar
                 filesSelected={files}
                 replyTo={replyTo}
-                typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 emojiClickHook={emoji => {
                     if (reactingTo) {
                         reactTo(reactingTo, emoji, false)

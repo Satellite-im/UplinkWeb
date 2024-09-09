@@ -6,7 +6,6 @@ import { failure, success, type Result } from "$lib/utils/Result"
 import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
 import prettyBytes from "pretty-bytes"
-import { createLock } from "./AsyncLock"
 
 /**
  * A class that provides various methods to interact with a ConstellationBox.
@@ -39,7 +38,7 @@ class ConstellationStore {
                     let dir = await constellation.root_directory()
                     this.loaded = dir ? dir.name() !== "un-named directory" : false
                     if (this.loaded) {
-                        break;
+                        break
                     }
                     await new Promise(f => setTimeout(f, 100))
                 } catch (e) {
