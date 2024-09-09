@@ -103,6 +103,7 @@
         <ProfilePicture noIndicator image={groupPicture} size={Size.Large} />
         <FileUploadButton
             icon
+            disabled={!isAdmin}
             tooltip={$_("chat.group.settings.photo")}
             on:upload={async picture => {
                 /// TODO(Lucas): It is not implemented in warp yet
