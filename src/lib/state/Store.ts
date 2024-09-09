@@ -484,6 +484,13 @@ class GlobalStore {
 
     loadMockData() {
         this.state.isUsingMockData.set(true)
+
+        mock_users[0].name = get(this.state.user).name
+        mock_users[0].profile.photo.image = get(this.state.user).profile.photo.image
+        mock_users[0].profile.banner.image = get(this.state.user).profile.banner.image
+        mock_users[0].profile.status = get(this.state.user).profile.status
+        mock_users[0].profile.status_message = get(this.state.user).profile.status_message
+
         let mchatsMod = mchats
         let activeChat = mchatsMod[0]
 
