@@ -16,6 +16,7 @@
     import { checkMobile } from "$lib/utils/Mobile"
     import { VoiceRTCMessageType } from "$lib/media/Voice"
     import { UIStore } from "$lib/state/ui"
+    import { emojiList } from "$lib/components/messaging/emoji/EmojiList"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
@@ -68,6 +69,29 @@
     function handleSticker(gif: GiphyGif) {
         stickerSelectorOpen.set(false)
     }
+
+    function replaceEmojis(inputText: string) {
+        let result = inputText
+
+        let isThereEmoji = false
+
+        emojiList.smileys_and_emotion.forEach(emoji => {
+            if (emoji.text && result.includes(emoji.text)) {
+                result = result.replaceAll(emoji.text, emoji.glyph)
+                isThereEmoji = true
+            }
+            if (emoji.shortname && result.includes(emoji.shortname)) {
+                result = result.replaceAll(emoji.shortname, emoji.glyph)
+                isThereEmoji = true
+            }
+        })
+
+        if (isThereEmoji) {
+            message.set(result)
+        }
+
+        return result
+    }
 </script>
 
 <div class="chatbar" data-cy="chatbar">
@@ -75,7 +99,7 @@
         <slot name="pre-controls"></slot>
     </Controls>
 
-    <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:input on:enter={_ => sendMessage($message)} />
+    <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:input={_ => replaceEmojis($message)} on:enter={_ => sendMessage($message)} />
 
     <slot></slot>
 
