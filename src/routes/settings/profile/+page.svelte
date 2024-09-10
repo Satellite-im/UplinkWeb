@@ -524,7 +524,10 @@
             </div>
 
             <div class="section">
-                <SettingSection hook="section-reveal-phrase" name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
+                <SettingSection
+                    hook="section-reveal-phrase"
+                    name={$_("settings.profile.reveal_phrase.label")}
+                    description={showSeed !== SeedState.Missing ? $_("settings.profile.reveal_phrase.description") : $_("settings.profile.reveal_phrase.description.missing")}>
                     <Button
                         hook={showSeed === SeedState.Hidden ? "button-reveal-phrase" : showSeed === SeedState.Shown ? "button-hide-phrase" : "button-missing-phrase"}
                         appearance={showSeed === SeedState.Hidden || showSeed === SeedState.Missing ? Appearance.Error : Appearance.Alt}
@@ -547,13 +550,13 @@
                     </div>
                 {/if}
             </div>
-
-            <div class="section" data-cy="section-store-recovery-seed">
-                <Checkbox hook="checkbox-store-recovery-seed" checked={saveSeedPhrase} disabled={seedPhrase === undefined} onToggle={e => toggleSeedPhraseSave(e)}>
-                    <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
-                </Checkbox>
-            </div>
-
+            {#if showSeed !== SeedState.Missing}
+                <div class="section" data-cy="section-store-recovery-seed">
+                    <Checkbox hook="checkbox-store-recovery-seed" checked={saveSeedPhrase} disabled={seedPhrase === undefined} onToggle={e => toggleSeedPhraseSave(e)}>
+                        <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
+                    </Checkbox>
+                </div>
+            {/if}
             <div class="section">
                 <SettingSection hook="section-log-out" name={$_("settings.profile.log_out.label")} description={$_("settings.profile.log_out.description")}>
                     <Button
