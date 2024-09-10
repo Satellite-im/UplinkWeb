@@ -16,6 +16,7 @@
     import { checkMobile } from "$lib/utils/Mobile"
     import { VoiceRTCMessageType } from "$lib/media/Voice"
     import { UIStore } from "$lib/state/ui"
+    import { tempCDN } from "$lib/utils/CommonVariables"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
@@ -65,8 +66,11 @@
         gifSelectorOpen.set(false)
     }
 
-    function handleSticker(gif: GiphyGif) {
+    async function handleSticker(sticker: any) {
         stickerSelectorOpen.set(false)
+        let stickerUrl = `${tempCDN}${sticker.sticker.path}`
+
+        sendMessage(`![${sticker.sticker.name}](${stickerUrl})`)
     }
 </script>
 
@@ -95,7 +99,11 @@
         </PopupButton>
 
         <PopupButton hook="button-chatbar-sticker-picker" name={$_("chat.stickers")} class="emoji-popup" bind:open={$stickerSelectorOpen}>
-            <CombinedSelector active={{ name: $_("chat.stickers"), icon: Shape.Sticker }} on:sticker={e => handleSticker(e.detail)} />
+            <CombinedSelector
+                active={{ name: $_("chat.stickers"), icon: Shape.Sticker }}
+                on:sticker={e => {
+                    handleSticker(e.detail)
+                }} />
             <div slot="icon" class="control">
                 <Icon icon={Shape.Sticker} />
             </div>
