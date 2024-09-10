@@ -77,7 +77,7 @@
             {#if loading}
                 <Loader text small />
                 <Loader text small />
-            {:else if chat.last_message_preview.includes(tempCDN)}
+            {:else if chat.last_message_preview.includes(tempCDN) || chat.last_message_preview.includes("giphy.com")}
                 <div class="sticker">
                     <Text hook="chat-preview-last-message" size={Size.Small} loading={loading} markdown={chat.last_message_preview}></Text>
                 </div>

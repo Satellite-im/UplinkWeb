@@ -64,6 +64,7 @@
 
     function handleGif(gif: GiphyGif) {
         gifSelectorOpen.set(false)
+        sendMessage(`![${gif.title}](${gif.images.fixed_height_small.url})`)
     }
 
     async function handleSticker(sticker: any) {
