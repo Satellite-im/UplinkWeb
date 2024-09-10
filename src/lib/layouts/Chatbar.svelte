@@ -73,6 +73,10 @@
     function replaceEmojis(inputText: string) {
         let result = inputText
 
+        if (!get(SettingsStore.state).messaging.convertEmoji) {
+            return result
+        }
+
         let isThereEmoji = false
 
         emojiList.smileys_and_emotion.forEach(emoji => {
@@ -89,7 +93,6 @@
         if (isThereEmoji) {
             message.set(result)
         }
-
         return result
     }
 </script>
