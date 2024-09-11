@@ -8,6 +8,7 @@
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
     import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
+    import { get } from "svelte/store"
     import { tempCDN } from "$lib/utils/CommonVariables"
 
     export let chat: Chat
@@ -41,7 +42,7 @@
 
 <button
     data-cy="chat-preview"
-    class="chat-preview {cta ? 'cta' : ''}"
+    class="chat-preview {cta ? 'cta' : ''} {get(Store.state.activeChat)?.id === chat.id ? 'active-chat' : ''}"
     on:contextmenu
     on:click={_ => {
         dispatch("click")
@@ -106,6 +107,10 @@
         user-select: none;
         transition: all var(--animation-speed);
         min-width: var(--min-component-width);
+
+        &.active-chat {
+            background-color: var(--primary-color-alt);
+        }
 
         &.cta {
             background-color: var(--alt-color);

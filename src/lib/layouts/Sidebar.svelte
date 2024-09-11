@@ -51,7 +51,7 @@
     {#if open}
         <div class="sidebar">
             <div class="sidebar-pre">
-                <Input hook="input-sidebar-search" alt placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
+                <Input hook="input-sidebar-search" alt autoFocus={false} placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
                     <Icon icon={Shape.Search} />
                 </Input>
 
