@@ -20,7 +20,6 @@
     export let open: boolean = true
     export let loading: boolean = true
     export let activeCall: Call | null = get(Store.state.activeCall)
-    export let simple: boolean = false
 
     export let search: string = ""
     let settings: ISettingsState = get(SettingsStore.state)
