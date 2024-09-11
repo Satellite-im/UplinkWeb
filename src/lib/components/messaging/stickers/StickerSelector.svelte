@@ -7,15 +7,14 @@
     import { _ } from "svelte-i18n"
     import { writable } from "svelte/store"
     import Spacer from "$lib/elements/Spacer.svelte"
+    import { tempCDN } from "$lib/utils/CommonVariables"
 
     const stickers = defaultManifest.stickers
     const dispatch = createEventDispatcher()
     const searchQuery = writable("")
 
-    let tempCDN: string = "https://cdn.deepspaceshipping.co"
-
     function handleStickerClick(sticker: any) {
-        dispatch("select", { sticker })
+        dispatch("sticker", { sticker })
     }
 
     function handleKeyDown(event: KeyboardEvent, sticker: any) {

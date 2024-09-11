@@ -52,6 +52,7 @@
     import { MessageEvent } from "warp-wasm"
     import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
+    import { tempCDN } from "$lib/utils/CommonVariables"
 
     let loading = false
     let contentAsideOpen = false
@@ -65,7 +66,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -570,8 +571,12 @@
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
+                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
                                                             <Text hook="text-chat-message" markdown={line} />
+                                                        {:else if line.includes(tempCDN)}
+                                                            <div class="sticker">
+                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                                            </div>
                                                         {/if}
                                                     {/each}
 
@@ -657,7 +662,6 @@
             <Chatbar
                 filesSelected={files}
                 replyTo={replyTo}
-                typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 emojiClickHook={emoji => {
                     if (reactingTo) {
                         reactTo(reactingTo, emoji, false)
@@ -857,5 +861,9 @@
                 max-width: 100%;
             }
         }
+    }
+
+    .sticker {
+        width: 150px;
     }
 </style>
