@@ -25,6 +25,7 @@
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
+    import Market from "$lib/components/market/Market.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -193,6 +194,7 @@
         <IncomingCall />
         <VideoPreview />
         <GamepadListener />
+        <Market on:close={() => UIStore.toggleMarket()} />
         <slot></slot>
     </div>
 {:else}
