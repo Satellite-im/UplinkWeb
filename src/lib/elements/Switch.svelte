@@ -4,6 +4,7 @@
     export let on: boolean = false
     export let small: boolean = false
     export let hook: string = ""
+    export let disabled: boolean = false
 
     // Create an event dispatcher
     const dispatch = createEventDispatcher()
@@ -15,7 +16,7 @@
 </script>
 
 <label class="switch {small ? 'small' : ''}">
-    <input data-cy={hook} type="checkbox" bind:checked={on} on:change={onToggle} />
+    <input data-cy={hook} disabled={disabled} type="checkbox" bind:checked={on} on:change={onToggle} />
     <span class="slider"></span>
 </label>
 
