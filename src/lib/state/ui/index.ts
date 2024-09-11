@@ -16,6 +16,7 @@ export interface IUIState {
     hiddenChats: Writable<Chat[]>
     emojiSelector: Writable<boolean>
     emojiCounter: Writable<{ [emoji: string]: number }>
+    marketOpen: Writable<boolean>
 }
 
 class Store {
@@ -41,6 +42,7 @@ class Store {
             hiddenChats: createPersistentState("uplink.ui.hiddenChats", []),
             emojiSelector: writable(false),
             emojiCounter: createPersistentState("uplink.ui.emojiCounter", { "👍": 0, "👎": 0, "❤️": 0, "🖖": 0, "😂": 0 }),
+            marketOpen: writable(false),
         }
     }
 
@@ -79,6 +81,11 @@ class Store {
     toggleSidebar() {
         const current = get(this.state.sidebarOpen)
         this.state.sidebarOpen.set(!current)
+    }
+
+    toggleMarket() {
+        const current = get(this.state.marketOpen)
+        this.state.marketOpen.set(!current)
     }
 
     addSidebarChat(chat: Chat) {

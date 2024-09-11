@@ -52,6 +52,7 @@
     import { MessageEvent } from "warp-wasm"
     import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
+    import { tempCDN } from "$lib/utils/CommonVariables"
 
     let loading = false
     let contentAsideOpen = false
@@ -577,8 +578,12 @@
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
+                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
                                                             <Text hook="text-chat-message" markdown={line} />
+                                                        {:else if line.includes(tempCDN)}
+                                                            <div class="sticker">
+                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                                            </div>
                                                         {/if}
                                                     {/each}
 
@@ -863,5 +868,9 @@
                 max-width: 100%;
             }
         }
+    }
+
+    .sticker {
+        width: 150px;
     }
 </style>

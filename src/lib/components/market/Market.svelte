@@ -6,30 +6,35 @@
     import Sidebar from "$lib/layouts/market/Sidebar.svelte"
     import MarketNav from "./MarketNav.svelte"
     import { _ } from "svelte-i18n"
+    import { UIStore } from "$lib/state/ui"
 
     const dispatch = createEventDispatcher()
     function onClose() {
         dispatch("close")
     }
+
+    $: open = UIStore.state.marketOpen
 </script>
 
-<Modal on:close={onClose}>
-    <div id="market">
-        <Topbar>
-            <svelte:fragment slot="content">
-                <Text class="title" noWrap>{$_("market.label")}</Text>
-            </svelte:fragment>
-        </Topbar>
-        <div class="content">
-            <div class="aside">
-                <Sidebar>
-                    <MarketNav />
-                </Sidebar>
+{#if $open}
+    <Modal on:close={onClose}>
+        <div id="market">
+            <Topbar>
+                <svelte:fragment slot="content">
+                    <Text class="title" noWrap>{$_("market.label")}</Text>
+                </svelte:fragment>
+            </Topbar>
+            <div class="content">
+                <div class="aside">
+                    <Sidebar>
+                        <MarketNav />
+                    </Sidebar>
+                </div>
+                <div class="body">{$open}</div>
             </div>
-            <div class="body">body</div>
         </div>
-    </div>
-</Modal>
+    </Modal>
+{/if}
 
 <style lang="scss">
     #market {
