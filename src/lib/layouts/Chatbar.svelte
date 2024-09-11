@@ -10,16 +10,16 @@
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { GiphyGif, Message } from "$lib/types"
+    import type { Chat, GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
-    import { VoiceRTCMessageType } from "$lib/media/Voice"
     import { UIStore } from "$lib/state/ui"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
     export let emojiClickHook: (emoji: string) => boolean
+    export let activeChat: Chat
 
     const dispatch = createEventDispatcher()
 
@@ -28,6 +28,21 @@
     $: emojiSelectorOpen = UIStore.state.emojiSelector
     let gifSelectorOpen = writable(false)
     let stickerSelectorOpen = writable(false)
+    let focus = writable(true)
+
+    let chatMessages = writable<{ [key: string]: string }>({})
+
+    $: if (activeChat) {
+        message.set(get(chatMessages)[activeChat.id] || "")
+    }
+
+    $: if (message) {
+        focus.set(true)
+        chatMessages.update(messages => {
+            messages[activeChat.id] = $message
+            return messages
+        })
+    }
 
     async function sendMessage(text: string) {
         let attachments: FileAttachment[] = []
@@ -51,14 +66,20 @@
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         message.set("")
+        chatMessages.update(messages => {
+            messages[activeChat.id] = ""
+            return messages
+        })
         replyTo = undefined
         dispatch("onsend")
     }
 
     function handleEmojiClick(emoji: string) {
+        focus.set(false)
         emojiSelectorOpen.set(false)
+        focus.set(true)
         if (emojiClickHook(emoji)) return
-        message.set($message + emoji)
+        message.update(m => m + emoji)
     }
 
     function handleGif(gif: GiphyGif) {
@@ -70,12 +91,11 @@
     }
 </script>
 
-<div class="chatbar" data-cy="chatbar">
+<div class="chatbar" data-cy="chatbar" id={activeChat.id}>
     <Controls>
         <slot name="pre-controls"></slot>
     </Controls>
-
-    <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:input on:enter={_ => sendMessage($message)} />
+    <Input hook={activeChat.id} alt placeholder={$_("generic.placeholder")} autoFocus={$focus} bind:value={$message} rounded rich={markdown} on:input on:enter={_ => sendMessage($message)} />
 
     <slot></slot>
 
