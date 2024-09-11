@@ -252,7 +252,7 @@ export const activities = [
         glyph: "🕹",
     },
     {
-        name: "game die",
+        name: "game dice",
         glyph: "🎲",
     },
     {
