@@ -28,7 +28,7 @@
     $: emojiSelectorOpen = UIStore.state.emojiSelector
     let gifSelectorOpen = writable(false)
     let stickerSelectorOpen = writable(false)
-    let focus = writable(true)
+    let hackVariableToRefocusChatBar = writable("")
 
     let chatMessages = writable<{ [key: string]: string }>({})
 
@@ -37,7 +37,6 @@
     }
 
     $: if (message) {
-        focus.set(true)
         chatMessages.update(messages => {
             messages[activeChat.id] = $message
             return messages
@@ -75,19 +74,20 @@
     }
 
     function handleEmojiClick(emoji: string) {
-        focus.set(false)
         emojiSelectorOpen.set(false)
-        focus.set(true)
         if (emojiClickHook(emoji)) return
         message.update(m => m + emoji)
+        hackVariableToRefocusChatBar.set(Math.random().toString())
     }
 
     function handleGif(gif: GiphyGif) {
         gifSelectorOpen.set(false)
+        hackVariableToRefocusChatBar.set(Math.random().toString())
     }
 
     function handleSticker(gif: GiphyGif) {
         stickerSelectorOpen.set(false)
+        hackVariableToRefocusChatBar.set(Math.random().toString())
     }
 </script>
 
@@ -95,7 +95,7 @@
     <Controls>
         <slot name="pre-controls"></slot>
     </Controls>
-    <Input hook={activeChat.id} alt placeholder={$_("generic.placeholder")} autoFocus={$focus} bind:value={$message} rounded rich={markdown} on:input on:enter={_ => sendMessage($message)} />
+    <Input hook={`${activeChat.id}-${$hackVariableToRefocusChatBar}`} alt placeholder={$_("generic.placeholder")} autoFocus={true} bind:value={$message} rounded rich={markdown} on:input on:enter={_ => sendMessage($message)} />
 
     <slot></slot>
 
