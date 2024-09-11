@@ -1,11 +1,11 @@
-import { get, writable, Writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
-import { failure, success, Result } from "$lib/utils/Result"
+import { failure, success, type Result } from "$lib/utils/Result"
 import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
-import { defaultProfileData, defaultUser, FriendRequest, User } from "$lib/types"
+import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
 import { Store } from "$lib/state/Store"
 import { MessageDirection, Route, Status } from "$lib/enums"
 import { ToastMessage } from "$lib/state/ui/toast"
@@ -595,7 +595,7 @@ class MultipassStore {
                             overlay: "",
                         },
                         status: status,
-                        status_message: identity === undefined ? "" : (identity.status_message ?? ""),
+                        status_message: identity === undefined ? "" : identity.status_message ?? "",
                     },
                     integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
                     media: {

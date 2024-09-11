@@ -1,4 +1,4 @@
-import { get, writable, Writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { Store } from "../state/Store"
@@ -6,10 +6,10 @@ import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
 import { ChatType, MessageAttachmentKind, Route } from "$lib/enums"
-import { User, Chat, defaultChat, Message, mentions_user, Attachment } from "$lib/types"
+import { type User, type Chat, defaultChat, type Message, mentions_user, type Attachment } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
-import { failure, success, Result } from "$lib/utils/Result"
-import { create_cancellable_handler, Cancellable } from "$lib/utils/CancellablePromise"
+import { failure, success, type Result } from "$lib/utils/Result"
+import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 import { parseJSValue } from "./EnumParser"
 import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
@@ -75,6 +75,7 @@ export type ConversationSettings =
           group: {
               members_can_add_participants: boolean
               members_can_change_name: boolean
+              members_can_change_photo: boolean
           }
       }
 
@@ -158,7 +159,7 @@ class RaygunStore {
     }
 
     async updateConversationSettings(conversation_id: string, settings: ConversationSettings) {
-        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error deleting message")
+        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error updating conversation settings")
     }
 
     /**
@@ -378,6 +379,7 @@ class RaygunStore {
         for await (const value of listener) {
             let event = parseJSValue(value)
             log.info(`Handling conversation event: ${JSON.stringify(event)}`)
+            log.info(`Event Type ${event.type}`)
             switch (event.type) {
                 case "conversation_created": {
                     let conversationId: string = event.values["conversation_id"]

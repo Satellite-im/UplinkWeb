@@ -82,6 +82,7 @@
     let showMarket: boolean = false
     let withPinned: string | undefined = undefined
     let groupSettings: boolean = false
+    let unasavedChangesOnGroupSettings: boolean = false
     let search_filter: string
     let search_component: ChatFilter
     let dragging_files = 0
@@ -302,9 +303,15 @@
     {#if groupSettings}
         <Modal
             on:close={_ => {
-                groupSettings = false
+                if (!unasavedChangesOnGroupSettings) {
+                    groupSettings = false
+                }
             }}>
-            <GroupSettings on:create={_ => (groupSettings = false)} />
+            <GroupSettings
+                activeChat={$activeChat}
+                on:create={_ => (groupSettings = false)}
+                on:unasavedChanges={value => (unasavedChangesOnGroupSettings = value.detail)}
+                on:close={_ => ((groupSettings = false), (unasavedChangesOnGroupSettings = false))} />
         </Modal>
     {/if}
 
@@ -313,7 +320,7 @@
             on:close={_ => {
                 showUsers = false
             }}>
-            <ViewMembers adminControls members={Object.values($users)} on:create={_ => (showUsers = false)} />
+            <ViewMembers adminControls activeChat={$activeChat} members={Object.values($users)} on:create={_ => (showUsers = false)} />
         </Modal>
     {/if}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Appearance, Shape, Size } from "$lib/enums"
-    import type { User } from "$lib/types"
+    import type { Chat, User } from "$lib/types"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { Checkbox, Input, Text } from "$lib/elements"
     import Controls from "$lib/layouts/Controls.svelte"
@@ -9,9 +9,13 @@
     import Label from "$lib/elements/Label.svelte"
     import { _ } from "svelte-i18n"
     import { Store } from "$lib/state/Store"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { get } from "svelte/store"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     export let members: User[] = []
     export let adminControls: boolean = false
+    export let activeChat: Chat
 
     let allRecipients: User[] = []
     let friends: User[] = [] // Initialize friends as an empty array
@@ -26,9 +30,19 @@
         }
 
         members = group_members
+        RaygunStoreInstance.addGroupParticipants(activeChat.id, [user.key])
     }
 
     function remove_member(user: User) {
+        if (members.length < 3) {
+            Store.addToastNotification(new ToastMessage("", `A group can not exist with one person`, 2))
+            return
+        }
+        if (user.key === activeChat.creator) {
+            Store.addToastNotification(new ToastMessage("", `You can not remove the group creator`, 2))
+            return
+        }
+
         let group_members = [...members]
 
         if (group_members.includes(user)) {
@@ -36,6 +50,7 @@
         }
 
         members = group_members
+        RaygunStoreInstance.removeGroupParticipants(activeChat.id, [user.key])
     }
 
     function contains_user(list: User[], user: User): boolean {
@@ -45,7 +60,7 @@
     // Ensure friends is always an array and handle potential errors
     $: {
         try {
-            friends = Store.getUsers(Store.state.friends) || [] // Default to empty array if undefined
+            friends = get(Store.getUsers(Store.state.friends)) || [] // Default to empty array if undefined
         } catch (error) {
             console.error("Error fetching friends from store:", error)
             friends = [] // Default to empty array if an error occurs

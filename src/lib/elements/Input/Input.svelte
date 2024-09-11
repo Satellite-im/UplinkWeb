@@ -235,6 +235,13 @@
             }
         }
 
+        .input.disabled {
+            cursor: not-allowed;
+            background-color: var(--disabled-color);
+            color: var(--disabled-color);
+            opacity: 0.6;
+        }
+
         &.alt {
             .input-container {
                 background-color: var(--alt-color);
