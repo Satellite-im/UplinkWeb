@@ -8,7 +8,7 @@
     import { get, writable } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
     import type { Chat, GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
@@ -17,6 +17,7 @@
     import { UIStore } from "$lib/state/ui"
     import { emojiList } from "$lib/components/messaging/emoji/EmojiList"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import { on } from "events"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
@@ -32,17 +33,19 @@
     let stickerSelectorOpen = writable(false)
     let hackVariableToRefocusChatBar = writable("")
 
-    let chatMessages = writable<{ [key: string]: string }>({})
+    let chatMessages = Store.state.chatMessagesToSend
 
     $: if (activeChat) {
         message.set(get(chatMessages)[activeChat.id] || "")
     }
 
     $: if (message) {
+        let messages = get(Store.state.chatMessagesToSend)
         chatMessages.update(messages => {
             messages[activeChat.id] = $message
             return messages
         })
+        Store.state.chatMessagesToSend = chatMessages
     }
 
     async function sendMessage(text: string, isStickerOrGif: boolean = false) {
@@ -129,6 +132,10 @@
         }
         return result
     }
+
+    onMount(() => {
+        hackVariableToRefocusChatBar.set(Math.random().toString())
+    })
 </script>
 
 <div class="chatbar" data-cy="chatbar" id={activeChat.id}>
