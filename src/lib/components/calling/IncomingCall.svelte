@@ -10,6 +10,7 @@
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { get } from "svelte/store"
 
     let callSound: SoundHandler | undefined = undefined
     let pending = false
@@ -23,7 +24,7 @@
                 callSound.play()
             }
             pending = true
-            const callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
+            const callingChat = Store.getCallingChat(VoiceRTCInstance.channel!)
             if (callingChat) {
                 user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
             }
@@ -36,8 +37,9 @@
 
     async function answerCall() {
         goto(Route.Chat)
-        await VoiceRTCInstance.acceptIncomingCall()
-        Store.setActiveChat(Store.getCallingChat(VoiceRTCInstance.channel)!)
+        let chat = get(Store.state.pendingCall)!.chat.id
+        await VoiceRTCInstance.acceptCall(chat)
+        Store.setActiveChat(Store.getCallingChat(chat)!)
         pending = false
         VoiceRTCInstance.isReceivingCall = false
         callSound?.stop()
@@ -48,7 +50,7 @@
         pending = false
         callSound?.stop()
         callSound = undefined
-        VoiceRTCInstance.endCall()
+        VoiceRTCInstance.leaveCall()
         VoiceRTCInstance.isReceivingCall = false
     }
 </script>

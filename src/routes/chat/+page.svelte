@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
@@ -426,7 +426,7 @@
                         disabled={$activeChat.users.length === 0}
                         on:click={async _ => {
                             Store.setActiveCall($activeChat)
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id, true)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id, true)
                             activeCallInProgress = true
                         }}>
                         <Icon icon={Shape.PhoneCall} />
@@ -440,7 +440,7 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id)
                             activeCallInProgress = true
                             Store.setActiveCall($activeChat)
                         }}>

@@ -121,7 +121,7 @@
                     loading={loading}
                     on:click={_ => {
                         Store.endCall()
-                        VoiceRTCInstance.endCall()
+                        VoiceRTCInstance.leaveCall()
                     }}>
                     <Icon icon={Shape.PhoneXMark} />
                 </Button>
