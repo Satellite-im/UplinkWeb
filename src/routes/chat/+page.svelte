@@ -366,7 +366,11 @@
             </Button>
         </div>
 
-        {#each $chats as chat}
+        {#each $chats.slice().sort((a, b) => {
+            const dateA = new Date(a.last_message_at || 0)
+            const dateB = new Date(b.last_message_at || 0)
+            return dateB.getTime() - dateA.getTime()
+        }) as chat}
             <ContextMenu
                 hook="context-menu-sidebar-chat"
                 items={[
