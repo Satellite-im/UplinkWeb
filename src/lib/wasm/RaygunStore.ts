@@ -511,7 +511,7 @@ class RaygunStore {
                         let message_id: string = event.values["message_id"]
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
                         if (message) {
-                            ConversationStore.editMessage(conversation_id, message_id, message.text.join("\n"))
+                            ConversationStore.editMessage(conversation_id, message_id, message.text.join("\n"), message)
                         }
                         break
                     }
