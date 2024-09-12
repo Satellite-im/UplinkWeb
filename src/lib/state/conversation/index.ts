@@ -143,7 +143,7 @@ class Conversations {
         })
     }
 
-    async editMessage(chat: Chat | string, messageId: string, editedContent: string) {
+    async editMessage(chat: Chat | string, messageId: string, editedContent: string, message: Message) {
         let chatId = typeof chat === "string" ? chat : chat.id
         const conversations = get(this.conversations)
         const conversation = conversations[chatId]
@@ -161,6 +161,12 @@ class Conversations {
                 return conv
             })
         }
+        UIStore.mutateChat(chatId, c => {
+            if (message.details.at >= c.last_message_at) {
+                c.last_message_preview = message.text.join("\n")
+                c.last_message_at = message.details.at
+            }
+        })
     }
 
     hasReaction(chat: Chat | string, messageId: string, emoji: string) {
@@ -234,7 +240,7 @@ class Conversations {
         }
     }
 
-    async removeMessage(chat: string, messageId: string) {
+    async removeMessage(chat: string, messageId: string, message: Message | null) {
         const conversations = get(this.conversations)
         const conversation = conversations[chat]
 
@@ -245,6 +251,12 @@ class Conversations {
                     if (index !== -1) {
                         group.messages.splice(index, 1)
                     }
+                    UIStore.mutateChat(chat, c => {
+                        if (message !== null && message.details.at === c.last_message_at) {
+                            c.last_message_preview = group.messages[group.messages.length - 1].text.join("\n")
+                            c.last_message_at = group.messages[group.messages.length - 1].details.at
+                        }
+                    })
                 })
                 conv.messages = conv.messages.filter(group => group.messages.length > 0)
                 return conv
