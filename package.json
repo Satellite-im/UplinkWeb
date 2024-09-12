@@ -33,6 +33,10 @@
     },
     "type": "module",
     "dependencies": {
+        "@capacitor/android": "^6.1.2",
+        "@capacitor/cli": "^6.1.2",
+        "@capacitor/core": "^6.1.2",
+        "@capacitor/ios": "^6.1.2",
         "@dicebear/collection": "^9.0.1",
         "@dicebear/core": "^9.0.1",
         "@dicebear/identicon": "^9.0.1",
