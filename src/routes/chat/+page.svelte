@@ -250,6 +250,14 @@
         if (!conversation) return []
         return conversation!.messages.flatMap(g => g.messages.filter(m => m.pinned))
     }
+
+    function handleClickOutsideEditInput(event: any) {
+        const myElement = document.getElementById(`chat-message-edit-input-${editing_message}`)
+        if (myElement && !myElement.contains(event.target)) {
+            editing_message = undefined
+        }
+    }
+    document.addEventListener("click", handleClickOutsideEditInput)
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -577,7 +585,7 @@
                                                 position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                                 morePadding={message.text.length > 1 || message.attachments.length > 0}>
                                                 {#if editing_message === message.id}
-                                                    <Input hook="chat-message-edit-input" alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
+                                                    <Input hook="chat-message-edit-input-{editing_message}" alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
@@ -629,12 +637,12 @@
                                                 {/if}
                                             </Message>
                                             <svelte:fragment slot="items" let:close>
-                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, true)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
+                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
                                             </svelte:fragment>
                                         </ContextMenu>
                                     {/if}
                                     {#if Object.keys(message.reactions).length > 0}
-                                        <MessageReactions remote={group.details.remote} reactions={Object.values(message.reactions)} onClick={emoji => reactTo(message.id, emoji, true)} />
+                                        <MessageReactions remote={group.details.remote} reactions={Object.values(message.reactions)} onClick={emoji => reactTo(message.id, emoji, false)} />
                                     {/if}
                                 {/each}
                             </MessageGroup>
