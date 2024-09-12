@@ -518,8 +518,7 @@ class RaygunStore {
                     case "message_deleted": {
                         let conversation_id: string = event.values["conversation_id"]
                         let message_id: string = event.values["message_id"]
-                        let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
-                        ConversationStore.removeMessage(conversation_id, message_id, message)
+                        ConversationStore.removeMessage(conversation_id, message_id)
                         break
                     }
                     case "message_pinned": {

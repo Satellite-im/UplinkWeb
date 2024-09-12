@@ -161,6 +161,7 @@ export type Chat = {
     notifications: number
     users: string[]
     typing_indicator: TypingIndicator
+    last_message_id: string
     last_message_at: Date
     last_message_preview: string
 }
@@ -284,6 +285,7 @@ export let defaultChat: Chat = {
     },
     users: [],
     typing_indicator: new TypingIndicator(),
+    last_message_id: "",
     last_message_at: new Date(),
     last_message_preview: "",
 }

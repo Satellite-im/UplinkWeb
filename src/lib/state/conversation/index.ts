@@ -137,6 +137,7 @@ class Conversations {
         }
         UIStore.mutateChat(chatId, c => {
             if (message.details.at > c.last_message_at) {
+                c.last_message_id = message.id
                 c.last_message_preview = message.text.join("\n")
                 c.last_message_at = message.details.at
             }
@@ -162,7 +163,8 @@ class Conversations {
             })
         }
         UIStore.mutateChat(chatId, c => {
-            if (message.details.at >= c.last_message_at) {
+            if (messageId === c.last_message_id) {
+                c.last_message_id = message.id
                 c.last_message_preview = message.text.join("\n")
                 c.last_message_at = message.details.at
             }
@@ -240,7 +242,7 @@ class Conversations {
         }
     }
 
-    async removeMessage(chat: string, messageId: string, message: Message | null) {
+    async removeMessage(chat: string, messageId: string) {
         const conversations = get(this.conversations)
         const conversation = conversations[chat]
 
@@ -250,13 +252,17 @@ class Conversations {
                     const index = group.messages.findIndex(m => m.id === messageId)
                     if (index !== -1) {
                         group.messages.splice(index, 1)
+                        UIStore.mutateChat(chat, c => {
+                            if (messageId === c.last_message_id) {
+                                const lastMessage = group.messages.reduce((latest, current) => {
+                                    return new Date(current.details.at) > new Date(latest.details.at) ? current : latest
+                                })
+                                c.last_message_id = lastMessage.id
+                                c.last_message_preview = lastMessage.text.join("\n")
+                                c.last_message_at = lastMessage.details.at
+                            }
+                        })
                     }
-                    UIStore.mutateChat(chat, c => {
-                        if (message !== null && message.details.at === c.last_message_at) {
-                            c.last_message_preview = group.messages[group.messages.length - 1].text.join("\n")
-                            c.last_message_at = group.messages[group.messages.length - 1].details.at
-                        }
-                    })
                 })
                 conv.messages = conv.messages.filter(group => group.messages.length > 0)
                 return conv
