@@ -625,7 +625,7 @@
                                                 {/if}
                                             </Message>
                                             <svelte:fragment slot="items" let:close>
-                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
+                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, true)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
                                             </svelte:fragment>
                                         </ContextMenu>
                                     {/if}
@@ -673,7 +673,7 @@
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
                 emojiClickHook={emoji => {
                     if (reactingTo) {
-                        reactTo(reactingTo, emoji, false)
+                        reactTo(reactingTo, emoji, true)
                         reactingTo = undefined
                         return true
                     }
