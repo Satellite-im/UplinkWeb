@@ -8,7 +8,7 @@
     import { get, writable } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
     import type { Chat, GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
@@ -17,6 +17,7 @@
     import { UIStore } from "$lib/state/ui"
     import { emojiList } from "$lib/components/messaging/emoji/EmojiList"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import { on } from "events"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
@@ -131,6 +132,10 @@
         }
         return result
     }
+
+    onMount(() => {
+        hackVariableToRefocusChatBar.set(Math.random().toString())
+    })
 </script>
 
 <div class="chatbar" data-cy="chatbar" id={activeChat.id}>
