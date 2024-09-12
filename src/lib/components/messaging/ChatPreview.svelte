@@ -109,7 +109,7 @@
         min-width: var(--min-component-width);
 
         &.active-chat {
-            background-color: var(--primary-color-alt);
+            border-color: var(--primary-color-alt);
         }
 
         &.cta {
