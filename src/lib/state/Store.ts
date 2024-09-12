@@ -1,7 +1,7 @@
 import { CallDirection, ChatType, MessageDirection, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
-import { blocked_users, mchats, mock_users, patchOwnDIDKey } from "$lib/mock/users"
-import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, type FileInfo, type Frame, TypingIndicator } from "$lib/types"
+import { blocked_users, mchats, mock_users } from "$lib/mock/users"
+import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame, type Integration, TypingIndicator } from "$lib/types"
 import { derived, get, writable, type Readable, type Writable } from "svelte/store"
 import { type IState } from "./initial"
 import { createPersistentState, SettingsStore } from "."
@@ -9,11 +9,11 @@ import { UIStore } from "./ui"
 import * as wasm from "warp-wasm"
 import { ToastMessage } from "./ui/toast"
 import { v4 as uuidv4 } from "uuid"
+import { Logger } from "$lib/utils/Logger"
 import { ConversationStore } from "./conversation"
 import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
 import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-import { patchOwnDIDInMessages } from "$lib/mock/messages"
 
 class GlobalStore {
     state: IState
@@ -489,11 +489,7 @@ class GlobalStore {
         mock_users[0].profile.banner.image = get(this.state.user).profile.banner.image
         mock_users[0].profile.status = get(this.state.user).profile.status
         mock_users[0].profile.status_message = get(this.state.user).profile.status_message
-        mock_users[0].key = get(this.state.user).key
-        mock_users[0].id.short = get(this.state.user).id.short
-
-        patchOwnDIDKey(get(this.state.user).key)
-        patchOwnDIDInMessages(get(this.state.user).key)
+        //mock_users[0].key = get(this.state.user).key
 
         let mchatsMod = mchats
         let activeChat = mchatsMod[0]

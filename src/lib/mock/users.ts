@@ -1,11 +1,13 @@
 import { ChatType, Integrations, Status } from "$lib/enums"
 import { defaultUser, type Chat, type User, hashChat, defaultChat, TypingIndicator } from "$lib/types"
+import { get } from "svelte/store"
+import { Store } from "$lib/state/Store"
 
 export const mock_users: Array<User> = [
     {
         ...defaultUser,
-        name: "Lunar Lucas",
-        key: "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        name: "CurrentUser",
+        key: "did:key:z6MkeWmuqj64znsaPPfqUJwuSSfMLupuDo7ygoqGefednD8t",
         id: {
             short: "xe89fsia",
         },
@@ -29,10 +31,10 @@ export const mock_users: Array<User> = [
     },
     {
         ...defaultUser,
-        name: "Space Kev",
+        name: "Kevin Keppler",
         key: "did:key:z4MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
         id: {
-            short: "uw7r8sa9",
+            short: "EGta2doK",
         },
         profile: {
             ...defaultUser.profile,
@@ -67,9 +69,9 @@ export const mock_users: Array<User> = [
     {
         ...defaultUser,
         name: "Sara Saturn",
-        key: "did:key:z8HkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        key: "did:key:teZ2GpumzDYTCiltzFrQ5hMjgASE0AHlifIp6KDLJoWtZpmv",
         id: {
-            short: "tu728sce",
+            short: "JoWtZpmv",
         },
         profile: {
             ...defaultUser.profile,
@@ -88,9 +90,9 @@ export const mock_users: Array<User> = [
     {
         ...defaultUser,
         name: "Pluto Phill",
-        key: "did:key:z9EkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        key: "did:key:UvDDl46rclywiu0iMxp9VqSKnkKnVplotuK68aWHjLkabmeH",
         id: {
-            short: "6efyaui8",
+            short: "jLkabmeH",
         },
         profile: {
             ...defaultUser.profile,
@@ -109,9 +111,30 @@ export const mock_users: Array<User> = [
     {
         ...defaultUser,
         name: "Daring DariusDariusDariusDariusDariusDariusDariusDarius",
-        key: "did:key:z7YkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+        key: "did:key:cQ5Y9rGs3lyrYELJBnbirUk9L6Ztn0Y0TH0kvjplABEOGZgS",
         id: {
-            short: "fya72e8z",
+            short: "ABEOGZgS",
+        },
+        profile: {
+            ...defaultUser.profile,
+            photo: {
+                image: "",
+                frame: { name: "", image: "" },
+            },
+            banner: {
+                image: "",
+                overlay: "",
+            },
+            status: Status.Offline,
+            status_message: "This is a status message that you are reading.",
+        },
+    },
+    {
+        ...defaultUser,
+        name: "HyperHugo",
+        key: "did:key:huMy9BBBBplCrAK5YmQo0biTsCyUgTSCMIii03MktwE217gD",
+        id: {
+            short: "twE217gD",
         },
         profile: {
             ...defaultUser.profile,
@@ -124,6 +147,111 @@ export const mock_users: Array<User> = [
                 overlay: "",
             },
             status: Status.DoNotDisturb,
+            status_message: "This is a status message that you are reading.",
+        },
+    },
+    {
+        ...defaultUser,
+        name: "Whirlwind Wendy",
+        key: "did:key:kFmZVe2AxJb2BjU07ZzOmxh6iAH3Fj1vKb5lkmnzeIHqdYcA",
+        id: {
+            short: "eIHqdYcA",
+        },
+        profile: {
+            ...defaultUser.profile,
+            photo: {
+                image: "",
+                frame: { name: "", image: "" },
+            },
+            banner: {
+                image: "",
+                overlay: "",
+            },
+            status: Status.Online,
+            status_message: "This is a status message that you are reading.",
+        },
+    },
+    {
+        ...defaultUser,
+        name: "Lunar Lucas",
+        key: "did:key:KrmKwDhUlm5FHEgvQuJvEyRjeaQATAXmkAh89Z8zBiRQ4qom",
+        id: {
+            short: "BiRQ4qom",
+        },
+        profile: {
+            ...defaultUser.profile,
+            photo: {
+                image: "",
+                frame: { name: "", image: "" },
+            },
+            banner: {
+                image: "",
+                overlay: "",
+            },
+            status: Status.Online,
+            status_message: "This is a status message that you are reading.",
+        },
+    },
+    {
+        ...defaultUser,
+        name: "Luis Laserbeam",
+        key: "did:key:XaaeMyj22XIHu8J8vl7AYgRpRzaCLQCAmVaFci5x3VThDAke",
+        id: {
+            short: "3VThDAke",
+        },
+        profile: {
+            ...defaultUser.profile,
+            photo: {
+                image: "",
+                frame: { name: "", image: "" },
+            },
+            banner: {
+                image: "",
+                overlay: "",
+            },
+            status: Status.DoNotDisturb,
+            status_message: "This is a status message that you are reading.",
+        },
+    },
+    {
+        ...defaultUser,
+        name: "Cosmic Shelly",
+        key: "did:key:wFyhpbbRod0LEmMyVe8LDLobf8lgYkUUHsoh8IRZ7sCpYuVl",
+        id: {
+            short: "7sCpYuVl",
+        },
+        profile: {
+            ...defaultUser.profile,
+            photo: {
+                image: "",
+                frame: { name: "", image: "" },
+            },
+            banner: {
+                image: "",
+                overlay: "",
+            },
+            status: Status.Online,
+            status_message: "This is a status message that you are reading.",
+        },
+    },
+    {
+        ...defaultUser,
+        name: "Astro Jeff",
+        key: "did:key:UA2cAdfrUCe4Diy9RgpXQj6q5a77MxPKUu9prqorMEGfkCrb",
+        id: {
+            short: "MEGfkCrb",
+        },
+        profile: {
+            ...defaultUser.profile,
+            photo: {
+                image: "",
+                frame: { name: "", image: "" },
+            },
+            banner: {
+                image: "",
+                overlay: "",
+            },
+            status: Status.Offline,
             status_message: "This is a status message that you are reading.",
         },
     },
@@ -181,8 +309,8 @@ let mock_chats: Chat[] = [
         kind: ChatType.Group,
         notifications: 0,
         users: [mock_users[0].key, mock_users[1].key, mock_users[3].key],
-        last_message_at: new Date(),
-        last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
+        last_message_at: "9/12/2024 10:30",
+        last_message_preview: "Hmm, okay!",
     },
     {
         ...defaultChat,
@@ -192,29 +320,19 @@ let mock_chats: Chat[] = [
         notifications: 2,
         typing_indicator: mockIndicator(mock_users[1].key),
         users: [mock_users[0].key, mock_users[1].key],
-        last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        last_message_at: "9/12/2024 10:00",
+        last_message_preview: "I'm in!",
     },
     {
         ...defaultChat,
-        id: "op23",
-        name: "D&G Friends",
-        motd: "",
-        kind: ChatType.Group,
-        notifications: 1,
-        users: [mock_users[0].key, mock_users[1].key, mock_users[2].key],
-        last_message_at: new Date(),
-        last_message_preview: "doot doot doot",
-    },
-    {
-        ...defaultChat,
+
         id: "s12",
         name: "",
         motd: "",
         notifications: 0,
         users: [mock_users[0].key, mock_users[2].key],
-        last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        last_message_at: "9/11/2024 22:00",
+        last_message_preview: "I'm in. Let's do it!",
     },
     {
         ...defaultChat,
@@ -223,8 +341,8 @@ let mock_chats: Chat[] = [
         motd: "",
         notifications: 13,
         users: [mock_users[0].key, mock_users[3].key],
-        last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        last_message_at: "9/11/2024 18:45",
+        last_message_preview: "Let me know when you do!",
     },
     {
         ...defaultChat,
@@ -233,18 +351,70 @@ let mock_chats: Chat[] = [
         motd: "",
         notifications: 0,
         users: [mock_users[0].key, mock_users[4].key],
-        last_message_at: new Date(),
-        last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        last_message_at: "9/11/2024 18:30",
+        last_message_preview: "Let me know. Should be a fun night.",
+    },
+    {
+        ...defaultChat,
+        id: "op23",
+        name: "",
+        motd: "",
+        notifications: 0,
+        users: [defaultUser.key, mock_users[5].key],
+        last_message_at: "9/11/2024 18:00",
+        last_message_preview: "Appreciate it.",
+    },
+    {
+        ...defaultChat,
+        id: "op24",
+        name: "",
+        motd: "",
+        notifications: 0,
+        users: [defaultUser.key, mock_users[6].key],
+        last_message_at: "9/10/2024 17:30",
+        last_message_preview: "I'm down to try it!",
+    },
+    {
+        ...defaultChat,
+        id: "op25",
+        name: "",
+        motd: "",
+        notifications: 0,
+        users: [defaultUser.key, mock_users[7].key],
+        last_message_at: "9/10/2024 17:00",
+        last_message_preview: "Really? Maybe I’ll hit him up for tips.",
+    },
+    {
+        ...defaultChat,
+        id: "op26",
+        name: "",
+        motd: "",
+        notifications: 0,
+        users: [defaultUser.key, mock_users[8].key],
+        last_message_at: "9/10/2024 16:00",
+        last_message_preview: "Haha, sounds like Phill.",
+    },
+    {
+        ...defaultChat,
+        id: "op27",
+        name: "",
+        motd: "",
+        notifications: 0,
+        users: [defaultUser.key, mock_users[9].key],
+        last_message_at: "9/10/2024 15:00",
+        last_message_preview: "Count me jealous.",
+    },
+    {
+        ...defaultChat,
+        id: "op28",
+        name: "",
+        motd: "",
+        notifications: 0,
+        users: [defaultUser.key, mock_users[10].key],
+        last_message_at: "9/10/2024 14:00",
+        last_message_preview: "Of course he is. I’ll watch it tonight.",
     },
 ]
-
-export function patchOwnDIDKey(newKey: string): void {
-    mock_users[0].key = newKey
-
-    mock_chats.forEach(chat => {
-        chat.users = chat.users.map(userKey => (userKey === mock_users[0].key ? newKey : userKey))
-    })
-}
 
 function mockIndicator(user: string): TypingIndicator {
     let indicator = new TypingIndicator()
@@ -258,5 +428,10 @@ mock_chats[2].id = hashChat(mock_chats[2])
 mock_chats[3].id = hashChat(mock_chats[3])
 mock_chats[4].id = hashChat(mock_chats[4])
 mock_chats[5].id = hashChat(mock_chats[5])
+mock_chats[6].id = hashChat(mock_chats[6])
+mock_chats[7].id = hashChat(mock_chats[7])
+mock_chats[8].id = hashChat(mock_chats[8])
+mock_chats[9].id = hashChat(mock_chats[9])
+mock_chats[10].id = hashChat(mock_chats[10])
 
 export let mchats = mock_chats

@@ -2,7 +2,7 @@ import type { MessageGroup, Chat, Message, PendingMessage, FileProgress } from "
 import { derived, get, writable, type Writable } from "svelte/store"
 import { v4 as uuidv4 } from "uuid"
 import { getStateFromDB, setStateToDB } from ".."
-import { mock_group, mock_dm1 } from "$lib/mock/messages"
+import { mock_group, mock_dm1, mock_dm2, mock_dm3, mock_dm4, mock_dm5, mock_dm6, mock_dm7, mock_dm8, mock_dm9, mock_dm10 } from "$lib/mock/messages"
 import { Appearance } from "$lib/enums"
 import { Store } from "../Store"
 import { UIStore } from "../ui"
@@ -347,22 +347,103 @@ class Conversations {
     }
 
     async loadMockData() {
-        const firstChatId = mchats[0].id
+        const initialChatId = mchats[0].id
         const initialData: Writable<ConversationMessages> = this.createConversation({
-            id: firstChatId,
+            id: initialChatId,
             messages: mock_group,
         })
         this.conversations.update(currentConversations => {
-            currentConversations[firstChatId] = initialData
+            currentConversations[initialChatId] = initialData
             return currentConversations
         })
-        const secondChatId = mchats[1].id
+        const firstChatId = mchats[1].id
         const initialData2: Writable<ConversationMessages> = this.createConversation({
-            id: secondChatId,
+            id: firstChatId,
             messages: mock_dm1,
         })
         this.conversations.update(currentConversations => {
-            currentConversations[secondChatId] = initialData2
+            currentConversations[firstChatId] = initialData2
+            return currentConversations
+        })
+        const secondChatId = mchats[2].id
+        const initialData3: Writable<ConversationMessages> = this.createConversation({
+            id: secondChatId,
+            messages: mock_dm2,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[secondChatId] = initialData3
+            return currentConversations
+        })
+        const thirdChatId = mchats[3].id
+        const initialData4: Writable<ConversationMessages> = this.createConversation({
+            id: thirdChatId,
+            messages: mock_dm3,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[thirdChatId] = initialData4
+            return currentConversations
+        })
+        const fourthChatId = mchats[4].id
+        const initialData5: Writable<ConversationMessages> = this.createConversation({
+            id: fourthChatId,
+            messages: mock_dm4,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[fourthChatId] = initialData5
+            return currentConversations
+        })
+        const fifthChatId = mchats[5].id
+        const initialData6: Writable<ConversationMessages> = this.createConversation({
+            id: fifthChatId,
+            messages: mock_dm5,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[fifthChatId] = initialData6
+            return currentConversations
+        })
+        const sixthChatId = mchats[6].id
+        const initialData7: Writable<ConversationMessages> = this.createConversation({
+            id: sixthChatId,
+            messages: mock_dm6,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[sixthChatId] = initialData7
+            return currentConversations
+        })
+        const seventhChatId = mchats[7].id
+        const initialData8: Writable<ConversationMessages> = this.createConversation({
+            id: seventhChatId,
+            messages: mock_dm7,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[seventhChatId] = initialData8
+            return currentConversations
+        })
+        const eighthChatId = mchats[8].id
+        const initialData9: Writable<ConversationMessages> = this.createConversation({
+            id: eighthChatId,
+            messages: mock_dm8,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[eighthChatId] = initialData9
+            return currentConversations
+        })
+        const ninthChatId = mchats[9].id
+        const initialData10: Writable<ConversationMessages> = this.createConversation({
+            id: ninthChatId,
+            messages: mock_dm9,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[ninthChatId] = initialData10
+            return currentConversations
+        })
+        const tenthChatId = mchats[10].id
+        const initialData11: Writable<ConversationMessages> = this.createConversation({
+            id: tenthChatId,
+            messages: mock_dm10,
+        })
+        this.conversations.update(currentConversations => {
+            currentConversations[tenthChatId] = initialData11
             return currentConversations
         })
         // this.pendingMsgConversations.set({
