@@ -33,17 +33,19 @@
     let stickerSelectorOpen = writable(false)
     let hackVariableToRefocusChatBar = writable("")
 
-    let chatMessages = writable<{ [key: string]: string }>({})
+    let chatMessages = Store.state.chatMessagesToSend
 
     $: if (activeChat) {
         message.set(get(chatMessages)[activeChat.id] || "")
     }
 
     $: if (message) {
+        let messages = get(Store.state.chatMessagesToSend)
         chatMessages.update(messages => {
             messages[activeChat.id] = $message
             return messages
         })
+        Store.state.chatMessagesToSend = chatMessages
     }
 
     async function sendMessage(text: string, isStickerOrGif: boolean = false) {

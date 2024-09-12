@@ -19,6 +19,7 @@ export interface IState {
         video: Writable<string>
     }
     activeChat: Writable<Chat>
+    chatMessagesToSend: Writable<{ [key: string]: string }>
     activeCall: Writable<Call | null>
     pendingCall: Writable<Call | null>
     toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
