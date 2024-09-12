@@ -254,12 +254,24 @@ class Conversations {
                         group.messages.splice(index, 1)
                         UIStore.mutateChat(chat, c => {
                             if (messageId === c.last_message_id) {
-                                const lastMessage = group.messages.reduce((latest, current) => {
-                                    return new Date(current.details.at) > new Date(latest.details.at) ? current : latest
-                                })
-                                c.last_message_id = lastMessage.id
-                                c.last_message_preview = lastMessage.text.join("\n")
-                                c.last_message_at = lastMessage.details.at
+                                if (group.messages.length > 0) {
+                                    const lastMessage = group.messages.reduce((latest, current) => {
+                                        return new Date(current.details.at) > new Date(latest.details.at) ? current : latest
+                                    })
+                                    if (lastMessage && messageId === c.last_message_id) {
+                                        c.last_message_id = lastMessage.id
+                                        c.last_message_preview = lastMessage.text.join("\n")
+                                        c.last_message_at = lastMessage.details.at
+                                    } else {
+                                        c.last_message_id = ""
+                                        c.last_message_preview = ""
+                                        c.last_message_at = new Date()
+                                    }
+                                } else {
+                                    c.last_message_id = ""
+                                    c.last_message_preview = ""
+                                    c.last_message_at = new Date()
+                                }
                             }
                         })
                     }
