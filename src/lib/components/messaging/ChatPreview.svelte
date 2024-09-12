@@ -8,6 +8,8 @@
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
     import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
+    import { get } from "svelte/store"
+    import { tempCDN } from "$lib/utils/CommonVariables"
 
     export let chat: Chat
     export let cta: boolean = false
@@ -40,7 +42,7 @@
 
 <button
     data-cy="chat-preview"
-    class="chat-preview {cta ? 'cta' : ''}"
+    class="chat-preview {cta ? 'cta' : ''} {get(Store.state.activeChat)?.id === chat.id ? 'active-chat' : ''}"
     on:contextmenu
     on:click={_ => {
         dispatch("click")
@@ -76,6 +78,10 @@
             {#if loading}
                 <Loader text small />
                 <Loader text small />
+            {:else if chat.last_message_preview.includes(tempCDN) || chat.last_message_preview.includes("giphy.com")}
+                <div class="sticker">
+                    <Text hook="chat-preview-last-message" size={Size.Small} loading={loading} markdown={chat.last_message_preview}></Text>
+                </div>
             {:else}
                 <Text hook="chat-preview-last-message" size={Size.Small} loading={loading}>
                     {chat.last_message_preview || "No messages sent yet."}
@@ -86,6 +92,10 @@
 </button>
 
 <style lang="scss">
+    .sticker {
+        width: 40px;
+    }
+
     .chat-preview {
         display: inline-flex;
         flex-direction: row;
@@ -97,6 +107,10 @@
         user-select: none;
         transition: all var(--animation-speed);
         min-width: var(--min-component-width);
+
+        &.active-chat {
+            background-color: var(--primary-color-alt);
+        }
 
         &.cta {
             background-color: var(--alt-color);

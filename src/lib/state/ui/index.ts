@@ -1,5 +1,5 @@
 import { TypingIndicator, type Chat } from "$lib/types"
-import { get, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { EmojiFont, Font } from "$lib/enums"
 import { Store as MainStore } from "../Store"
@@ -14,6 +14,9 @@ export interface IUIState {
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
     hiddenChats: Writable<Chat[]>
+    emojiSelector: Writable<boolean>
+    emojiCounter: Writable<{ [emoji: string]: number }>
+    marketOpen: Writable<boolean>
 }
 
 class Store {
@@ -37,6 +40,9 @@ class Store {
                 },
             }),
             hiddenChats: createPersistentState("uplink.ui.hiddenChats", []),
+            emojiSelector: writable(false),
+            emojiCounter: createPersistentState("uplink.ui.emojiCounter", { "👍": 0, "👎": 0, "❤️": 0, "🖖": 0, "😂": 0 }),
+            marketOpen: writable(false),
         }
     }
 
@@ -75,6 +81,11 @@ class Store {
     toggleSidebar() {
         const current = get(this.state.sidebarOpen)
         this.state.sidebarOpen.set(!current)
+    }
+
+    toggleMarket() {
+        const current = get(this.state.marketOpen)
+        this.state.marketOpen.set(!current)
     }
 
     addSidebarChat(chat: Chat) {
@@ -150,6 +161,26 @@ class Store {
         MainStore.state.activeChat.update(c => {
             c.typing_indicator.update()
             return c
+        })
+    }
+
+    useEmoji(emoji: string) {
+        this.state.emojiCounter.update(counter => {
+            if (emoji in counter) {
+                counter[emoji] += 1
+            } else {
+                counter[emoji] = 1
+            }
+            return counter
+        })
+    }
+
+    getMostUsed(top?: number) {
+        top = top ? top : 5
+        return derived(this.state.emojiCounter, counter => {
+            return Object.entries(counter)
+                .sort((f, s) => s[1] - f[1])
+                .map(v => v[0])
         })
     }
 }

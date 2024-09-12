@@ -46,7 +46,7 @@ npm run dev
 
 1. Install MetaMask Chrome extension
 
-2. In Metamask, Open the dropdown in the top left corner, and select Sepolia (This is the ethereum testnet currently)
+2. In Metamask, Open the dropdown in the top left corner, and select Sepolia (This is the Ethereum testnet currently)
 
 3. Go to https://faucets.chain.link and select Sepolia ETH and LINK. Press continue and paste your address.
 
@@ -57,7 +57,7 @@ npm run dev
 <img width="1034" alt="Captura de ecrã 2024-08-28, às 11 00 58" src="https://github.com/user-attachments/assets/5c18e3f6-80f5-4ee7-9194-13ae248dc52b">
 
 
-2. Select the asset type. If selecting ETH.ERC20, you will need to put in the asset ID as well. The asset id of LINK on Sepolia testnet is `0x779877A7B0D9E8603169DdbD7836e478b4624789` (You can see this ID in MetaMask if you own some LINK: click on it, then near the top click the '3 dots' icon, and select 'Token details'. The ID is listed under `Token contract address`).
+2. Select the asset type. If selecting ETH.ERC20, you will need to put in the asset ID as well. The asset ID of LINK on Sepolia testnet is `0x779877A7B0D9E8603169DdbD7836e478b4624789` (You can see this ID in MetaMask if you own some LINK: click on it, then near the top click the '3 dots' icon, and select 'Token details'. The ID is listed under `Token contract address`).
 
 3. In UplinkWeb, once you selected the asset (and ID if applicable), enter an amount. Then click the `Request` button. A clickable message will appear in the chat. Anyone clicking this message will get a prompt via the Chrome extension to make the transfer. (Expect at least 10 seconds for a transfer to go through on the Ethereum network).
 
