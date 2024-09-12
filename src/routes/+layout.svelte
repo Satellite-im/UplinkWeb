@@ -25,6 +25,7 @@
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
+    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -78,7 +79,12 @@
                 console.warn("unhandled keybind", keybind)
         }
     }
-
+    async function getFontFiles() {
+        let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
+        files.onSuccess(items => {
+            console.log(items)
+        })
+    }
     function handleKeybindMatchRelease(event: CustomEvent<any>) {
         let keybind: Keybind = event.detail
         let state: KeybindState = keybind.state
@@ -97,22 +103,67 @@
                 log.warn(`unhandled keybind ${keybind}`)
         }
     }
+    const userFontPath = "/customization" // Adjust dynamically
+    const isSystemFont = ["SpaceMono", "NotoEmoji"].includes(font) // Example check for system fonts
+
+    // const fontFaceRule = !isSystemFont
+    //     ? `@font-face {
+    //        font-family: '${font}';
+    //        src: url('${userFontPath}${font}.ttf');
+    //      }`
+    //     : ""
 
     function buildStyle() {
-        return (
-            cssOverride +
-            `:root {
+        // console.log(getFontFiles())
+        const isUserUploadedFont = font.includes("/")
+        const isUserUploadedEmojiFont = emojiFont.includes("/")
+        const isUserUploadedThemeFont = theme.includes("/")
+        console.log(isUserUploadedFont, font)
+        // @font-face rules
+        const fontFaceRule = isUserUploadedFont
+            ? `@font-face {
+                font-family: '${font.split("/").pop()}';
+                src: url('${font}');
+              }`
+            : ""
+        const fontTest = isUserUploadedFont
+            ? `@font-face {
+                font-family: 'NightmarePills-BV2w (1).ttf';
+                src: url('/4006cd70-eeef-4172-bb20-cf1a11100afa');
+              }`
+            : ""
+        const emojiFontFaceRule = isUserUploadedEmojiFont
+            ? `@font-face {
+                font-family: '${emojiFont.split("/").pop()}';
+                src: url('${emojiFont}');
+              }`
+            : ""
+
+        const themeFontFaceRule = isUserUploadedThemeFont
+            ? `@font-face {
+                font-family: '${theme.split("/").pop()}';
+                src: url('${theme}');
+              }`
+            : ""
+
+        return `
+            ${fontFaceRule}
+            ${fontTest}
+            ${emojiFontFaceRule}
+            ${themeFontFaceRule}
+            ${cssOverride}
+            :root {
                 --font-size: ${fontSize.toFixed(2)}rem;
                 --primary-color: ${color};
-                --primary-font: ${font};
+                --primary-font: ${isUserUploadedFont ? font.split("/").pop() : font};
             }
             .emoji {
-                font-family: ${emojiFont};
+                font-family: ${isUserUploadedEmojiFont ? emojiFont.split("/").pop() : emojiFont};
             }
             .theme {
-                font-family: ${theme};
-            }`
-        )
+                font-family: ${isUserUploadedThemeFont ? theme.split("/").pop() : theme};
+            }
+        `
     }
 
     let style: string = buildStyle()

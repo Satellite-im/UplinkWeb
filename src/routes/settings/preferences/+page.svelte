@@ -18,6 +18,8 @@
     import type { Item } from "warp-wasm"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { availableEmoji, availableFonts, availableIdenticons, availableThemes } from "$lib/state/settings/default"
+    import type { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import type { Result } from "$lib/utils/Result"
 
     interface FontOption {
         text: string
@@ -63,7 +65,7 @@
     let newDirCreated
     let possibleEmojis: string[] = ["🛰️", "🪐", "🤣", "😀", "🖖"]
     let randomEmoji: string = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)]
-
+    let currentBlobUrl: string = ""
     let settings: ISettingsState = get(SettingsStore.state)
     SettingsStore.state.subscribe((s: ISettingsState) => {
         settings = s
@@ -83,10 +85,12 @@
     async function getCurrentDirectoryFiles() {
         let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
         files.onSuccess(items => {
-            let newFilesInfo = itemsToFileInfo(items)
+            let newFilesInfo = itemsToFileInfo(items) // Use blob URL here
             let filesSet = new Set(newFilesInfo)
             Store.state.files.set(Array.from(filesSet))
             currentFiles = Array.from(filesSet)
+            updateAvailableItems()
+            // console.log($availableFontsStore)
         })
     }
     async function updateAvailableItems() {
@@ -95,11 +99,50 @@
         const identicons = getUserUploadedItems("identicon")
         const themes = getUserUploadedItems("theme")
 
-        availableFontsStore.set([...availableFonts, ...fonts])
+        console.log("User uploaded fonts:", fonts)
+
+        const updatedFonts = [...availableFonts, ...fonts]
+        console.log("Updated fonts:", updatedFonts)
+
+        availableFontsStore.set(updatedFonts)
+
+        if (fonts.length > 0) {
+            UIStore.state.font.set(fonts[0].text as Font)
+        }
+
         availableEmojiStore.set([...availableEmoji, ...emoji])
         availableIdenticonsStore.set([...availableIdenticons, ...identicons])
         availableThemesStore.set([...availableThemes, ...themes])
+
+        // getCurrentDirectoryFiles()
+        // console.log("Available fonts store:", $availableFontsStore)
     }
+
+    const blobUrlMap: Record<string, string> = {}
+
+    function updateBlobUrl(fileName: string, blobUrl: string) {
+        blobUrlMap[fileName] = blobUrl
+        console.log("Updated blob URL:", fileName, blobUrlMap)
+        fontsStore.set(blobUrl)
+        getCurrentDirectoryFiles()
+    }
+    async function saveBlob(fileName: string, folderName: string): Promise<Result<WarpError, string>> {
+        await ConstellationStoreInstance.goToRootPath()
+        await ConstellationStoreInstance.openDirectory("customization")
+        await ConstellationStoreInstance.openDirectory(folderName)
+
+        let result = await ConstellationStoreInstance.downloadFile(fileName)
+
+        return result.map(blob => {
+            const mimeType = fileName.endsWith(".ttf") ? "font/ttf" : "font/otf"
+            const url = URL.createObjectURL(new Blob([blob], { type: mimeType }))
+            console.log("Blob URL generated:", url)
+            return url
+        })
+    }
+    // availableFontsStore.subscribe(value => {
+    //     console.log("Available fonts store value:", value)
+    // })
     function splitFileName(fileName: string): { name: string; extension: string } {
         const lastDotIndex = fileName.lastIndexOf(".")
         if (lastDotIndex === -1) {
@@ -119,17 +162,27 @@
                 const fileNameParts = file.name.split(".")
                 const baseName = fileNameParts.slice(0, -1).join(".")
                 const fileExtension = fileNameParts.slice(-1)[0]
-                let newFileName = file.name
-                let fileIndex = 1
-                newFileName = `${baseName} (${fileIndex}).${fileExtension}`
+                let newFileName = `${baseName} (${i + 1}).${fileExtension}`
+
                 await ConstellationStoreInstance.openDirectory("customization")
                 await ConstellationStoreInstance.openDirectory(folderHandle)
                 let result = await ConstellationStoreInstance.uploadFilesFromStream(newFileName, stream, file.size)
-                result.onSuccess(r => {
-                    ConstellationStoreInstance.dropIntoFolder(newFileName, folderHandle)
-                    ConstellationStoreInstance.goToRootPath()
-                    getCurrentDirectoryFiles().then(updateAvailableItems)
+                result.onSuccess(async () => {
+                    let blobResult = await saveBlob(newFileName, folderHandle)
+
+                    blobResult.fold(
+                        err => {
+                            Store.addToastNotification(new ToastMessage("", err, 2))
+                        },
+                        blobUrl => {
+                            updateBlobUrl(newFileName, blobUrl)
+                            // getCurrentDirectoryFiles().then(updateAvailableItems) // Ensure this is awaited
+                        }
+                    )
+                    await ConstellationStoreInstance.dropIntoFolder(newFileName, folderHandle)
+                    await ConstellationStoreInstance.goToRootPath()
                 })
+
                 result.onFailure(err => {
                     Store.addToastNotification(new ToastMessage("", err, 3, Shape.XMark, Appearance.Error))
                 })
@@ -147,7 +200,7 @@
                 icon: item.is_file() ? Shape.Document : Shape.Folder,
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
-                remotePath: item!.path(),
+                remotePath: currentBlobUrl,
                 imageThumbnail: "",
                 isRenaming: OperationState.Initial,
                 extension: item.is_file() ? splitFileName(item.name()).extension : "",
@@ -167,16 +220,17 @@
                 e.items?.forEach(a => {
                     if (a.name === type) {
                         a.items?.forEach(item => {
+                            const blobUrl = blobUrlMap[item.name] || ""
+                            console.log(blobUrl)
                             userUploaded.push({
                                 text: item.name.split(".")[0],
-                                value: item.remotePath,
+                                value: blobUrl,
                             })
                         })
                     }
                 })
             }
         })
-        getCurrentDirectoryFiles()
 
         return userUploaded
     }
@@ -205,9 +259,14 @@
     const unsubscribeFromFiles = Store.state.files.subscribe((f: any) => {
         currentFiles = f
     })
+    // $: {
+    //     // Ensure that currentFiles is updated
+    //     console.log("Current files updated:", currentFiles)
+    //     getCurrentDirectoryFiles().then(updateAvailableItems)
+    // }
     onMount(async () => {
         await loadOrCreateFolders()
-        await getCurrentDirectoryFiles().then(updateAvailableItems)
+        await getCurrentDirectoryFiles()
     })
     onDestroy(async () => unsubscribeFromFiles())
 </script>

@@ -38,6 +38,8 @@ export const enum Font {
     MajorMono = "MajorMono",
     Merriweather = "Merriweather",
     PoiretOne = "PoiretOne",
+    NightmarePills = "NightmarePills",
+    MajorMonoDisplayRegular = "MajorMonoDisplayRegular",
     OpenDyslexic = "OpenDyslexic",
 }
 

@@ -80,6 +80,7 @@ export const availableFonts = [
     { text: Font.MajorMono, value: Font.MajorMono },
     { text: Font.Merriweather, value: Font.Merriweather },
     { text: Font.PoiretOne, value: Font.PoiretOne },
+    { text: Font.NightmarePills, value: Font.NightmarePills },
     { text: Font.OpenDyslexic, value: Font.OpenDyslexic },
 ]
 

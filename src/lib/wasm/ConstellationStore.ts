@@ -173,6 +173,25 @@ class ConstellationStore {
     }
 
     /**
+     * Set path of an item in the constellation.
+     * @param name - The current name of the item.
+     * @param new_url - The new url for the item.
+     * @returns A Result containing either success or failure with a WarpError.
+     */
+    async setItemUrl(name: string, new_url: string): Promise<Result<WarpError, void>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                await constellation.set_path(new_url)
+                return success(undefined)
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
+
+    /**
      * Sets the order of items in the current directory.
      * @param currentFiles - An array of FileInfo objects representing the new order of items.
      * @returns A Result containing either success or failure with a WarpError.
