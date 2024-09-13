@@ -152,8 +152,6 @@
         .select-user {
             min-height: fit-content;
             flex: 1;
-            border: var(--border-width) solid var(--border-color);
-            border-radius: var(--border-radius-less);
             padding: var(--gap);
             gap: var(--gap);
             display: inline-flex;
