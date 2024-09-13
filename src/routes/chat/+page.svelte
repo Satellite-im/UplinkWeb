@@ -637,12 +637,12 @@
                                                 {/if}
                                             </Message>
                                             <svelte:fragment slot="items" let:close>
-                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
+                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, true)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
                                             </svelte:fragment>
                                         </ContextMenu>
                                     {/if}
                                     {#if Object.keys(message.reactions).length > 0}
-                                        <MessageReactions remote={group.details.remote} reactions={Object.values(message.reactions)} onClick={emoji => reactTo(message.id, emoji, false)} />
+                                        <MessageReactions remote={group.details.remote} reactions={Object.values(message.reactions)} onClick={emoji => reactTo(message.id, emoji, true)} />
                                     {/if}
                                 {/each}
                             </MessageGroup>
