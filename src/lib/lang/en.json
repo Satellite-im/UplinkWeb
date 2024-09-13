@@ -292,6 +292,7 @@
             "reveal_phrase": {
                 "label": "Reveal recovery phrase",
                 "description": "Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.",
+                "description.missing": "You either didn't save your recovery seed or removed it!",
                 "show": "Reveal Phrase",
                 "hide": "Hide Phrase",
                 "missing": "Phrase not saved"

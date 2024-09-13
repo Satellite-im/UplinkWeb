@@ -137,13 +137,14 @@ class Conversations {
         }
         UIStore.mutateChat(chatId, c => {
             if (message.details.at > c.last_message_at) {
+                c.last_message_id = message.id
                 c.last_message_preview = message.text.join("\n")
                 c.last_message_at = message.details.at
             }
         })
     }
 
-    async editMessage(chat: Chat | string, messageId: string, editedContent: string) {
+    async editMessage(chat: Chat | string, messageId: string, editedContent: string, message: Message) {
         let chatId = typeof chat === "string" ? chat : chat.id
         const conversations = get(this.conversations)
         const conversation = conversations[chatId]
@@ -161,6 +162,13 @@ class Conversations {
                 return conv
             })
         }
+        UIStore.mutateChat(chatId, c => {
+            if (messageId === c.last_message_id) {
+                c.last_message_id = message.id
+                c.last_message_preview = message.text.join("\n")
+                c.last_message_at = message.details.at
+            }
+        })
     }
 
     hasReaction(chat: Chat | string, messageId: string, emoji: string) {
@@ -244,6 +252,28 @@ class Conversations {
                     const index = group.messages.findIndex(m => m.id === messageId)
                     if (index !== -1) {
                         group.messages.splice(index, 1)
+                        UIStore.mutateChat(chat, c => {
+                            if (messageId === c.last_message_id) {
+                                if (group.messages.length > 0) {
+                                    const lastMessage = group.messages.reduce((latest, current) => {
+                                        return new Date(current.details.at) > new Date(latest.details.at) ? current : latest
+                                    })
+                                    if (lastMessage && messageId === c.last_message_id) {
+                                        c.last_message_id = lastMessage.id
+                                        c.last_message_preview = lastMessage.text.join("\n")
+                                        c.last_message_at = lastMessage.details.at
+                                    } else {
+                                        c.last_message_id = ""
+                                        c.last_message_preview = ""
+                                        c.last_message_at = new Date()
+                                    }
+                                } else {
+                                    c.last_message_id = ""
+                                    c.last_message_preview = ""
+                                    c.last_message_at = new Date()
+                                }
+                            }
+                        })
                     }
                 })
                 conv.messages = conv.messages.filter(group => group.messages.length > 0)

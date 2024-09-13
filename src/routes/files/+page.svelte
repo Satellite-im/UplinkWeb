@@ -23,6 +23,7 @@
     import { WarpError } from "$lib/wasm/HandleWarpErrors"
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
+    import path from "path"
 
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
@@ -421,7 +422,7 @@
                 const url = URL.createObjectURL(blob)
                 const a = document.createElement("a")
                 a.href = url
-                a.download = fileName
+                a.download = path.basename(fileName)
                 document.body.appendChild(a)
                 a.click()
                 document.body.removeChild(a)
@@ -807,7 +808,7 @@
             margin: 10px;
         }
         .folderList {
-            margin-left: -40px;
+            margin-left: -20px;
         }
 
         .content {
