@@ -235,7 +235,7 @@
         setInterval(() => {
             if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
-                activeCallDid = VoiceRTCInstance.channel
+                activeCallDid = VoiceRTCInstance.channel!
             } else {
                 activeCallInProgress = false
             }
@@ -568,7 +568,7 @@
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
+                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.LeavingCall)}
                                                             <Text markdown={line} />
                                                         {/if}
                                                     {/each}

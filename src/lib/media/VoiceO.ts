@@ -6,7 +6,6 @@ import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection, MediaConnection } from "peerjs"
 import { get } from "svelte/store"
 import { _ } from "svelte-i18n"
-import { string } from "three/examples/jsm/nodes/Nodes.js"
 
 export enum VoiceRTCMessageType {
     Calling = "CALLING_USER",
@@ -17,7 +16,6 @@ export enum VoiceRTCMessageType {
     DisabledVideo = "DISABLED_VIDEO",
     EnabledAudio = "ENABLED_AUDIO",
     DisabledAudio = "DISABLED_AUDIO",
-    Connect = "CONNECT_WITH",
     None = "NONE",
 }
 
@@ -47,64 +45,13 @@ type VoiceMessage = {
     type: VoiceRTCMessageType
     channel: string
     userInfo: VoiceRTCUser
-    other?: any
 }
 
-enum ToggleType {
-    Video,
-    Mute,
-    Deafen,
-}
-
-const AUDIO_WINDOW_SIZE = 256
-const VOLUME_THRESHOLD = 10
-
-export class RemotePeers {
-    remotePeers: RemotePeer[] = []
-    connectedPeers: string[] = []
-    inCall: boolean = false
-
-    init(recipients: string[]) {
-        this.inCall = false
-        this.remotePeers = recipients.map(did => {
-            return new RemotePeer(did)
-        })
-    }
-
-    join(call: MediaConnection) {
-        call.on("stream", async stream => {})
-    }
-
-    leave() {}
-
-    clear() {
-        this.remotePeers.forEach(p => p.close())
-        this.remotePeers = []
-        this.inCall = false
-    }
-
-    getPeer(predicate: (p: RemotePeer) => boolean) {
-        return this.remotePeers.find(predicate)
-    }
-
-    mutatePeer(predicate: (p: RemotePeer) => boolean, action: (p: RemotePeer) => any) {
-        let peer = this.getPeer(predicate)
-        if (peer) action(peer)
-    }
-
-    get(): VoiceRTCUser {
-        return {
-            did: "",
-            username: "unknown",
-            videoEnabled: false,
-            audioEnabled: false,
-            isDeafened: false,
-        }
-    }
-}
-
-export class RemotePeer {
-    did: string
+export class VoiceRTC {
+    channel: string
+    localPeer: Peer | null = null
+    remoteVideoElement: HTMLVideoElement | null = null
+    localVideoCurrentSrc: HTMLVideoElement | null = null
     remotePeerId: string | null = null
     remoteVoiceUser: VoiceRTCUser = {
         did: "",
@@ -114,152 +61,17 @@ export class RemotePeer {
         isDeafened: false,
     }
     activeCall: MediaConnection | null = null
-    dataConnection: DataConnection | null = null
-
-    streamHandler?: [ReturnType<typeof setInterval>, AnalyserNode]
-
-    constructor(id: string) {
-        this.did = id
-        this.remotePeerId = id.replace("did:key:", "")
-    }
-
-    toggleStreams(state: boolean, did: string, options: VoiceRTCOptions, channel: string, type: ToggleType) {
-        switch (type) {
-            case ToggleType.Video: {
-                if (state) {
-                    this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = true))
-                } else {
-                    this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = false))
-                }
-                break
-            }
-            case ToggleType.Mute: {
-                if (state) {
-                    this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
-                } else {
-                    this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
-                }
-                break
-            }
-            case ToggleType.Deafen: {
-                if (state) {
-                    this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = false))
-                    this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
-                } else {
-                    this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = true))
-                    this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
-                }
-                break
-            }
-        }
-
-        this.dataConnection?.send({
-            type: options.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
-            channel: channel,
-            userInfo: {
-                did: did,
-                videoEnabled: options.video.enabled,
-                audioEnabled: options.audio,
-            },
-        })
-    }
-
-    private async handleStreamMeta(stream: MediaStream) {
-        if (this.streamHandler) {
-            this.streamHandler[1].disconnect()
-            clearInterval(this.streamHandler[0] as any) // IDE is complaining for some reason
-        }
-        const audioContext = new window.AudioContext()
-        const mediaStreamSource = audioContext.createMediaStreamSource(stream)
-        const analyser = audioContext.createAnalyser()
-        analyser.fftSize = AUDIO_WINDOW_SIZE
-        mediaStreamSource.connect(analyser)
-        const dataArray = new Uint8Array(analyser.frequencyBinCount)
-        function volume() {
-            analyser.getByteFrequencyData(dataArray)
-            return dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length
-        }
-
-        function updateMeta(did: string) {
-            let muted = stream.getTracks().find(track => !track.enabled || track.readyState === "ended") !== undefined
-            let speaking = false
-            let user = Store.getUser(did)
-            let current = get(user)
-            if (!muted && volume() < VOLUME_THRESHOLD) {
-                speaking = true
-            }
-            if (current.media.is_muted !== muted || current.media.is_playing_audio !== speaking) {
-                user.update(u => {
-                    return {
-                        ...u,
-                        media: {
-                            ...u.media,
-                            is_muted: muted,
-                            is_playing_audio: speaking,
-                        },
-                    }
-                })
-            }
-        }
-        const checker = setInterval(() => updateMeta(this.did), 3000)
-        this.streamHandler = [checker, analyser]
-    }
-
-    async handleRemoteStream(stream: MediaStream, remoteVideoElement: HTMLVideoElement | null) {
-        this.handleStreamMeta(stream)
-        /// Here will receive data from user that made the call
-        // TODO: decide which video to play?
-        if (remoteVideoElement) {
-            if (remoteVideoElement.srcObject) {
-                stream.getTracks().forEach(track => (remoteVideoElement.srcObject as MediaStream).addTrack(track))
-            } else {
-                const mergedStream = new MediaStream()
-                stream.getTracks().forEach(track => mergedStream.addTrack(track))
-                remoteVideoElement.srcObject = mergedStream
-                if (remoteVideoElement.readyState >= 2) {
-                    await remoteVideoElement.play()
-                }
-            }
-        }
-    }
-
-    close() {
-        this.activeCall?.localStream?.getTracks().forEach(track => track.stop())
-        this.activeCall?.remoteStream?.getTracks().forEach(track => track.stop())
-
-        if (this.streamHandler) {
-            this.streamHandler[1].disconnect()
-            clearInterval(this.streamHandler[0] as any) // IDE is complaining for some reason
-        }
-        if (this.activeCall) this.activeCall.close()
-        if (this.dataConnection) this.dataConnection.close()
-    }
-}
-
-// User call -> send call to all peers
-// Peer accept -> update on user
-// Peer accept -> fetch peers from other end -> join mesh -> get other peers and connect
-//
-
-export class VoiceRTC {
-    channel: string
-    localPeer: Peer | null = null
-    remoteVideoElement: HTMLVideoElement | null = null
-    localVideoCurrentSrc: HTMLVideoElement | null = null
-
-    // The other peers in the call
-    remotePeersHolder: RemotePeers = new RemotePeers()
-
     callOptions: VoiceRTCOptions
     private callStartTime: Date | null = null
     isReceivingCall = false
     makingCall = false
     acceptedIncomingCall = false
+    dataConnection: DataConnection | null = null
 
     constructor(channel: string, options: VoiceRTCOptions) {
         this.channel = channel
         this.callOptions = { ...options }
-        this.setupLocalPeer()
+        this.setupPeerEvents()
 
         this.subscribe()
     }
@@ -273,20 +85,66 @@ export class VoiceRTC {
     toggleVideo(state: boolean) {
         this.callOptions.video.enabled = state
 
-        this.remotePeersHolder.remotePeers.forEach(p => p.toggleStreams(state, this.localPeer!.id, this.callOptions, this.channel, ToggleType.Video))
+        if (state) {
+            this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = true))
+        } else {
+            this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = false))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio,
+            },
+        })
     }
 
     toggleMute(state: boolean) {
         this.callOptions.audio.enabled = state
 
-        this.remotePeersHolder.remotePeers.forEach(p => p.toggleStreams(state, this.localPeer!.id, this.callOptions, this.channel, ToggleType.Mute))
+        if (state) {
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
+        } else {
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
+            },
+        })
     }
 
     toggleDeafen(state: boolean) {
         // TODO: This isn't perfect because if you mute yourself, and then deafen yourself, un-deafaning will also unmute you which could be unexpected
         this.callOptions.audio.enabled = state
 
-        this.remotePeersHolder.remotePeers.forEach(p => p.toggleStreams(state, this.localPeer!.id, this.callOptions, this.channel, ToggleType.Deafen))
+        if (state) {
+            this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = false))
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
+        } else {
+            this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = true))
+            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
+        }
+
+        this.dataConnection?.send({
+            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
+            },
+        })
     }
 
     async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
@@ -295,61 +153,45 @@ export class VoiceRTC {
         new Promise(resolve => setTimeout(resolve, 500))
     }
 
-    private async setupLocalPeer(reset?: boolean) {
-        if (reset && this.localPeer) {
-            this.localPeer.destroy()
-            this.localPeer = null
+    private async setupPeerEvents() {
+        let userId = get(Store.state.user).key
+        while (userId === "0x0") {
+            userId = get(Store.state.user).key
+            await new Promise(resolve => setTimeout(resolve, 500))
         }
+        const peerId = userId.replace("did:key:", "")
+
         if (this.localPeer === null) {
-            let userId = get(Store.state.user).key
-            while (userId === "0x0") {
-                userId = get(Store.state.user).key
-                await new Promise(resolve => setTimeout(resolve, 500))
-            }
-            const peerId = userId.replace("did:key:", "")
             this.localPeer = new Peer(peerId)
-
-            this.localPeer!.on("open", id => {
-                log.debug(`My peer ID is: ${id}`)
-            })
-
-            this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
-            this.localPeer!.on("call", async call => {
-                if (!this.remotePeersHolder.inCall) {
-                    this.channel = call.metadata.channel
-                }
-                this.remotePeersHolder.mutatePeer(
-                    p => p.remotePeerId === call.peer,
-                    peer => (peer.activeCall = call)
-                )
-            })
-            this.localPeer!.on("error", this.handleError.bind(this))
         }
+
+        this.localPeer!.on("open", id => {
+            log.debug(`My peer ID is: ${id}`)
+        })
+
+        this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
+        this.localPeer!.on("call", async call => {
+            this.activeCall = call
+            this.channel = call.metadata.channel
+        })
+        this.localPeer!.on("error", this.handleError.bind(this))
     }
 
     private handlePeerConnection(conn: DataConnection) {
-        let inCall = this.remotePeersHolder.inCall
-        this.remotePeersHolder.mutatePeer(
-            p => p.remotePeerId === conn.peer,
-            peer => {
-                peer.remoteVoiceUser = {
-                    did: conn.metadata.did,
-                    username: conn.metadata.username,
-                    videoEnabled: conn.metadata.videoEnabled,
-                    audioEnabled: conn.metadata.audioEnabled,
-                    isDeafened: conn.metadata.isDeafened,
-                }
-                peer.dataConnection = conn
-            }
-        )
-
-        if (!inCall) {
-            this.callOptions.call.onlyAudioCall = conn.metadata.onlyAudioCall
-            this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && this.callOptions.video.enabled
-
-            this.channel = conn.metadata.channel
-            this.callStartTime = conn.metadata.callStartTim ? new Date(conn.metadata.callStartTime) : null
+        this.remoteVoiceUser = {
+            did: conn.metadata.did,
+            username: conn.metadata.username,
+            videoEnabled: conn.metadata.videoEnabled,
+            audioEnabled: conn.metadata.audioEnabled,
+            isDeafened: conn.metadata.isDeafened,
         }
+
+        this.callOptions.call.onlyAudioCall = conn.metadata.onlyAudioCall
+        this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && this.callOptions.video.enabled
+
+        this.channel = conn.metadata.channel
+        this.callStartTime = conn.metadata.callStartTime ? new Date(conn.metadata.callStartTime) : null
+        this.dataConnection = conn
 
         conn.on("open", () => {
             /// It will appear to user that is receiving the call
@@ -363,16 +205,14 @@ export class VoiceRTC {
         this.sendData(VoiceRTCMessageType.IncomingCall)
 
         conn.on("data", data => {
-            this.handleWithDataReceived(data as VoiceMessage)
+            let dataReceived = data as VoiceMessage
+            this.handleWithDataReceived(dataReceived)
         })
     }
 
     updateRemoteUserInfo(dataReceived: VoiceMessage) {
         this.channel = dataReceived.channel
-        this.remotePeersHolder.mutatePeer(
-            p => p.remotePeerId === dataReceived.userInfo.did,
-            peer => (peer.remoteVoiceUser = dataReceived.userInfo)
-        )
+        this.remoteVoiceUser = dataReceived.userInfo
         Store.setActiveCall(Store.getCallingChat(this.channel)!)
     }
 
@@ -387,23 +227,28 @@ export class VoiceRTC {
 
         await this.sendData(VoiceRTCMessageType.AcceptedCall)
 
-        this.remotePeersHolder.remotePeers.forEach(peer => {
-            peer.activeCall!.answer(localStream!)
+        this.activeCall!.answer(localStream!)
 
-            peer.activeCall!.on("stream", async remoteStream => {
-                await peer.handleRemoteStream(remoteStream, this.remoteVideoElement)
-            })
+        this.activeCall!.on("stream", async remoteStream => {
+            /// Here will receive data from user that made the call
+            if (this.remoteVideoElement) {
+                this.remoteVideoElement.srcObject = remoteStream
+                if (this.remoteVideoElement.readyState >= 2) {
+                    await this.remoteVideoElement.play()
+                }
+            }
         })
     }
 
-    async startToMakeACall(recipients: string[], chatID: string, onlyAudioCall: boolean = false) {
+    async startToMakeACall(remotePeerId: string, chatID: string, onlyAudioCall: boolean = false) {
         this.callOptions.video.enabled = !onlyAudioCall
         this.callOptions.call.onlyAudioCall = onlyAudioCall
         this.callOptions.audio.enabled = true
 
         this.channel = chatID
         this.makingCall = true
-        this.remotePeersHolder.init(recipients)
+        const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
+        this.remotePeerId = remotePeerIdEdited
     }
 
     private async sendMessageCallStarted(chatID: string) {
@@ -416,9 +261,21 @@ export class VoiceRTC {
     }
 
     public async makeCall() {
-        let localStream: MediaStream
         try {
-            await this.setupLocalPeer()
+            await this.setupPeerEvents()
+
+            this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
+                reliable: true,
+                metadata: {
+                    did: this.localPeer!.id,
+                    username: get(Store.state.user).name,
+                    videoEnabled: this.callOptions.video.enabled,
+                    audioEnabled: this.callOptions.audio.enabled,
+                    isDeafened: this.callOptions.audio.deafened,
+                    onlyAudioCall: this.callOptions.call.onlyAudioCall,
+                    channel: this.channel,
+                },
+            })
             await this.connectWithRetry()
 
             setTimeout(() => {
@@ -429,45 +286,54 @@ export class VoiceRTC {
 
             await this.sendData(VoiceRTCMessageType.Calling)
 
-            localStream = await this.updateLocalStream()
+            if (this.dataConnection) {
+                this.dataConnection.on("data", data => {
+                    let dataReceived = data as VoiceMessage
+                    this.handleWithDataReceived(dataReceived)
+                })
+            }
 
-            this.remotePeersHolder.remotePeers.forEach(peer => {
-                peer.activeCall = this.localPeer!.call(peer.remotePeerId!, localStream!, {
-                    metadata: {
-                        channel: this.channel,
-                        userInfo: {
-                            did: this.localPeer!.id,
-                            username: get(Store.state.user).name,
-                            videoEnabled: this.callOptions.video.enabled,
-                            audioEnabled: this.callOptions.audio.enabled,
-                        },
+            let localStream = await this.updateLocalStream()
+
+            this.activeCall = this.localPeer!.call(this.remotePeerId!, localStream!, {
+                metadata: {
+                    channel: this.channel,
+                    userInfo: {
+                        did: this.localPeer!.id,
+                        username: get(Store.state.user).name,
+                        videoEnabled: this.callOptions.video.enabled,
+                        audioEnabled: this.callOptions.audio.enabled,
                     },
-                })
+                },
+            })
 
-                peer.activeCall!.on("stream", async remoteStream => {
-                    await peer.handleRemoteStream(remoteStream, this.remoteVideoElement)
-                })
+            this.activeCall!.on("stream", async remoteStream => {
+                /// Here will receive data from user that accepted the call
+                if (this.remoteVideoElement) {
+                    this.remoteVideoElement.srcObject = remoteStream
+                    if (this.remoteVideoElement.readyState >= 2) {
+                        await this.remoteVideoElement.play()
+                    }
+                }
             })
             Store.setActiveCall(Store.getCallingChat(this.channel)!)
         } catch (error) {
             log.error(`Error making call: ${error}`)
         }
 
-        this.remotePeersHolder.remotePeers.forEach(peer => {
-            peer.dataConnection?.send({
-                type: VoiceRTCMessageType.Calling,
-                channel: this.channel,
-                userInfo: {
-                    did: this.localPeer!.id,
-                    videoEnabled: this.callOptions.video.enabled,
-                    audioEnabled: this.callOptions.audio.enabled,
-                    isDeafened: this.callOptions.audio.deafened,
-                },
-            })
+        this.dataConnection?.send({
+            type: VoiceRTCMessageType.Calling,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
+            },
         })
 
         if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = localStream!
+            this.localVideoCurrentSrc.srcObject = this.activeCall?.localStream!
             await this.localVideoCurrentSrc.play()
         }
         /// Let it commented for now.
@@ -477,35 +343,32 @@ export class VoiceRTC {
     async connectWithRetry() {
         const maxRetries = 5
         let attempts = 0
-        let connected: string[] = []
+        let connected = false
 
-        while (connected.length < this.remotePeersHolder.remotePeers.length && attempts < maxRetries) {
+        while (!connected && attempts < maxRetries) {
             try {
-                this.remotePeersHolder.remotePeers.forEach(peer => {
-                    if (!(peer.remotePeerId! in connected)) {
-                        peer.dataConnection = this.localPeer!.connect(peer.remotePeerId!, {
-                            reliable: true,
-                            metadata: {
-                                did: this.localPeer!.id,
-                                username: get(Store.state.user).name,
-                                videoEnabled: this.callOptions.video.enabled,
-                                audioEnabled: this.callOptions.audio.enabled,
-                                isDeafened: this.callOptions.audio.deafened,
-                                channel: this.channel,
-                                callStartTime: this.callStartTime,
-                            },
-                        })
-                        peer.dataConnection.on("open", () => {
-                            connected.push(peer.remotePeerId!)
-                            log.debug("Connection established successfully.")
-                        })
-                    }
+                this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
+                    reliable: true,
+                    metadata: {
+                        did: this.localPeer!.id,
+                        username: get(Store.state.user).name,
+                        videoEnabled: this.callOptions.video.enabled,
+                        audioEnabled: this.callOptions.audio.enabled,
+                        isDeafened: this.callOptions.audio.deafened,
+                        channel: this.channel,
+                        callStartTime: this.callStartTime,
+                    },
+                })
+
+                this.dataConnection.on("open", () => {
+                    connected = true
+                    log.debug("Connection established successfully.")
                 })
 
                 await new Promise(resolve => setTimeout(resolve, 2000))
                 log.debug("Not possible to connect, trying again.")
 
-                if (connected.length === 0 && attempts === maxRetries) {
+                if (!connected && attempts === maxRetries) {
                     log.error("Connection attempt failed. Ending call.")
                     this.endCall(false)
                 }
@@ -565,16 +428,12 @@ export class VoiceRTC {
             await this.localVideoCurrentSrc.play()
         }
 
-        if (updatingCallSetting) {
-            this.remotePeersHolder.remotePeers.forEach(peer => {
-                if (peer.activeCall !== null) {
-                    peer.activeCall?.peerConnection.getSenders().forEach(sender => {
-                        if (sender.track?.kind === "video") {
-                            sender.replaceTrack(localStream.getVideoTracks()[0])
-                        } else if (sender.track?.kind === "audio") {
-                            sender.replaceTrack(localStream.getAudioTracks()[0])
-                        }
-                    })
+        if (this.activeCall !== null && updatingCallSetting) {
+            this.activeCall?.peerConnection.getSenders().forEach(sender => {
+                if (sender.track?.kind === "video") {
+                    sender.replaceTrack(localStream.getVideoTracks()[0])
+                } else if (sender.track?.kind === "audio") {
+                    sender.replaceTrack(localStream.getAudioTracks()[0])
                 }
             })
         }
@@ -584,40 +443,40 @@ export class VoiceRTC {
         // await this.improveAudioQuality()
     }
 
-    // private async improveAudioQuality() {
-    //     const audioContext = new window.AudioContext()
-    //     const source = audioContext.createMediaStreamSource(this.activeCall?.localStream!)
-    //     const destination = audioContext.createMediaStreamDestination()
+    private async improveAudioQuality() {
+        const audioContext = new window.AudioContext()
+        const source = audioContext.createMediaStreamSource(this.activeCall?.localStream!)
+        const destination = audioContext.createMediaStreamDestination()
 
-    //     const gainNode = audioContext.createGain()
-    //     const echoCancellation = audioContext.createBiquadFilter()
-    //     const noiseSuppression = audioContext.createBiquadFilter()
+        const gainNode = audioContext.createGain()
+        const echoCancellation = audioContext.createBiquadFilter()
+        const noiseSuppression = audioContext.createBiquadFilter()
 
-    //     echoCancellation.type = "lowshelf"
-    //     echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
-    //     echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
+        echoCancellation.type = "lowshelf"
+        echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
+        echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
 
-    //     noiseSuppression.type = "highpass"
-    //     noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
-    //     noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
+        noiseSuppression.type = "highpass"
+        noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
+        noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
 
-    //     source.connect(echoCancellation)
-    //     echoCancellation.connect(noiseSuppression)
-    //     noiseSuppression.connect(gainNode)
-    //     gainNode.connect(destination)
+        source.connect(echoCancellation)
+        echoCancellation.connect(noiseSuppression)
+        noiseSuppression.connect(gainNode)
+        gainNode.connect(destination)
 
-    //     const processedStream = new MediaStream()
-    //     processedStream.addTrack(destination.stream.getAudioTracks()[0])
-    //     processedStream.addTrack(this.activeCall?.localStream!.getVideoTracks()[0]!)
-    //     this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
-    // }
+        const processedStream = new MediaStream()
+        processedStream.addTrack(destination.stream.getAudioTracks()[0])
+        processedStream.addTrack(this.activeCall?.localStream!.getVideoTracks()[0]!)
+        this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
+    }
 
     get isInCall(): boolean {
-        return this.remotePeersHolder.remotePeers.find(p => p.activeCall !== null) !== undefined
+        return this.activeCall !== null
     }
 
     handleWithDataReceived(dataReceived: VoiceMessage) {
-        log.debug(`Data received from ${dataReceived.userInfo.username}: ${dataReceived.type}`)
+        log.debug(`Data received: ${dataReceived.type}`)
         switch (dataReceived.type) {
             case VoiceRTCMessageType.EndingCall:
                 this.endCall(false)
@@ -626,19 +485,12 @@ export class VoiceRTC {
                 if (!this.makingCall) {
                     this.isReceivingCall = true
                 }
-                this.remotePeersHolder.mutatePeer(
-                    p => p.remoteVoiceUser.did === dataReceived.userInfo.did,
-                    peer => (peer.remoteVoiceUser = dataReceived.userInfo)
-                )
+                this.remoteVoiceUser = dataReceived.userInfo
                 this.channel = dataReceived.channel
                 break
             case VoiceRTCMessageType.AcceptedCall:
                 this.sendMessageCallStarted(this.channel)
                 this.updateRemoteUserInfo(dataReceived)
-                this.sendData(
-                    VoiceRTCMessageType.Connect,
-                    this.remotePeersHolder.remotePeers.map(p => p.remotePeerId)
-                )
                 break
             case VoiceRTCMessageType.IncomingCall:
             case VoiceRTCMessageType.EnabledVideo:
@@ -647,10 +499,6 @@ export class VoiceRTC {
             case VoiceRTCMessageType.DisabledAudio:
                 this.updateRemoteUserInfo(dataReceived)
                 break
-            case VoiceRTCMessageType.Connect:
-                let peers: string[] = dataReceived.other
-                peers.forEach(peer => this.localPeer?.call(peer, this.localVideoCurrentSrc!.srcObject as any))
-                break
             case VoiceRTCMessageType.None:
                 break
             default:
@@ -658,23 +506,18 @@ export class VoiceRTC {
         }
     }
 
-    async sendData(type: VoiceRTCMessageType, other?: any) {
-        await Promise.all(
-            this.remotePeersHolder.remotePeers.map(p =>
-                p.dataConnection?.send({
-                    type: type,
-                    channel: this.channel,
-                    userInfo: {
-                        did: this.localPeer!.id,
-                        username: get(Store.state.user).name,
-                        videoEnabled: this.callOptions.video.enabled,
-                        audioEnabled: this.callOptions.audio.enabled,
-                        isDeafened: this.callOptions.audio.deafened,
-                    },
-                    other,
-                })
-            )
-        )
+    async sendData(type: VoiceRTCMessageType) {
+        await this.dataConnection?.send({
+            type: type,
+            channel: this.channel,
+            userInfo: {
+                did: this.localPeer!.id,
+                username: get(Store.state.user).name,
+                videoEnabled: this.callOptions.video.enabled,
+                audioEnabled: this.callOptions.audio.enabled,
+                isDeafened: this.callOptions.audio.deafened,
+            },
+        })
     }
 
     private getDuration(endTime: Date): string {
@@ -719,16 +562,36 @@ export class VoiceRTC {
         }
 
         log.info("Call ended and resources cleaned up.")
-        this.setupLocalPeer()
+        this.setupPeerEvents()
     }
 
     private clearResources() {
         this.channel = ""
+        this.activeCall?.localStream?.getTracks().forEach(track => track.stop())
         this.makingCall = false
         this.acceptedIncomingCall = false
         this.isReceivingCall = false
         this.callStartTime = null
-        this.remotePeersHolder.clear()
+
+        this.activeCall?.remoteStream?.getTracks().forEach(track => track.stop())
+
+        if (this.activeCall) {
+            this.activeCall.close()
+            this.activeCall = null
+        }
+
+        if (this.dataConnection) {
+            this.dataConnection.close()
+            this.dataConnection = null
+        }
+
+        this.remoteVoiceUser = {
+            did: "",
+            username: "unknown",
+            videoEnabled: false,
+            audioEnabled: false,
+            isDeafened: false,
+        }
 
         if (this.remoteVideoElement) {
             this.remoteVideoElement.pause()

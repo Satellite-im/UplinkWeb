@@ -18,7 +18,7 @@
     let interval: NodeJS.Timeout
 
     Store.state.pendingCall.subscribe(async _ => {
-        if (VoiceRTCInstance.isReceivingCall) {
+        if (VoiceRTCInstance.incomingCall) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)
                 callSound.play()
@@ -28,7 +28,7 @@
             if (callingChat) {
                 user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
             }
-        } else if (!VoiceRTCInstance.isReceivingCall && !VoiceRTCInstance.makingCall) {
+        } else if (!VoiceRTCInstance.incomingCall && !VoiceRTCInstance.makingCall) {
             pending = false
             callSound?.stop()
             callSound = undefined
@@ -37,11 +37,10 @@
 
     async function answerCall() {
         goto(Route.Chat)
-        let chat = get(Store.state.pendingCall)!.chat.id
-        await VoiceRTCInstance.acceptCall(chat)
-        Store.setActiveChat(Store.getCallingChat(chat)!)
+        await VoiceRTCInstance.acceptCall(true)
+        Store.setActiveChat(Store.getCallingChat(VoiceRTCInstance.channel!)!)
         pending = false
-        VoiceRTCInstance.isReceivingCall = false
+        VoiceRTCInstance.incomingCall = null
         callSound?.stop()
         callSound = undefined
     }
@@ -51,7 +50,7 @@
         callSound?.stop()
         callSound = undefined
         VoiceRTCInstance.leaveCall()
-        VoiceRTCInstance.isReceivingCall = false
+        VoiceRTCInstance.incomingCall = null
     }
 </script>
 

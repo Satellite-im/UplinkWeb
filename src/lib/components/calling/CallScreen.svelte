@@ -7,14 +7,14 @@
     import Participant from "./Participant.svelte"
     import Text from "$lib/elements/Text.svelte"
     import CallSettings from "./CallSettings.svelte"
-    import { get } from "svelte/store"
+    import { get, writable, type Writable } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
     import type { Chat } from "$lib/types"
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance, type RemoteStream } from "$lib/media/Voice"
+    import { VoiceRTCInstance, type VoiceRTCUser } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -54,8 +54,7 @@
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
     $: userCallOptions = VoiceRTCInstance.callOptions
-
-    let remoteStreams: { [user: string]: RemoteStream } = {}
+    let remoteStreams: Writable<{ [key: string]: { user: VoiceRTCUser; stream: MediaStream | null } | undefined }> = writable({})
 
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
@@ -117,7 +116,6 @@
         }
     }
 
-    let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
 
     function handleClickOutside(event: MouseEvent) {
@@ -136,7 +134,8 @@
     }
 
     function attachStream(node: HTMLMediaElement, user: string) {
-        let stream = remoteStreams[user].stream
+        if (!$remoteStreams[user]) return
+        let stream = $remoteStreams[user].stream
         node.srcObject = stream
         node.play()
         return {
@@ -153,14 +152,16 @@
         await VoiceRTCInstance.setVideoElements(
             {
                 create: stream => {
-                    remoteStreams[stream.user.did] = stream
-                    remoteStreams = remoteStreams
-                    console.log(remoteStreams)
+                    remoteStreams.update(s => {
+                        s[stream.user.did] = stream
+                        return s
+                    })
                 },
                 delete: user => {
-                    remoteStreams[user].stream = null
-                    remoteStreams = remoteStreams
-                    console.log(remoteStreams)
+                    remoteStreams.update(s => {
+                        if (s[user]) s[user].stream = null
+                        return s
+                    })
                 },
             },
             localVideoCurrentSrc
@@ -172,11 +173,13 @@
 
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
-            if (VoiceRTCInstance.makingCall && VoiceRTCInstance.peerMesh.isCallReady()) {
-                await VoiceRTCInstance.makeCall()
+            if (VoiceRTCInstance.makingCall && VoiceRTCInstance.peerMesh.readyForCalling()) {
+                await VoiceRTCInstance.makeCall().catch(e => {
+                    console.log("call err ", e)
+                })
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
-                await VoiceRTCInstance.acceptCall(VoiceRTCInstance.channel!)
+                await VoiceRTCInstance.acceptCall(true)
                 Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel!)!)
             }
         }
@@ -197,6 +200,13 @@
         subscribeThree()
         subscribeFour()
     })
+
+    function checkUser(user: string) {
+        console.log("cache ", $userCache)
+        console.log("user ", user)
+        console.log("streams ", $remoteStreams)
+        return $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]
+    }
 </script>
 
 <div id="call-screen" data-cy="call-screen" class={expanded ? "expanded" : ""}>
@@ -224,20 +234,21 @@
                 {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
-                {#if $userCache[user].key !== get(Store.state.user).key && remoteStreams[user] && !remoteStreams[user].user.videoEnabled}
-                    <Participant
-                        participant={$userCache[user]}
-                        hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={!remoteStreams[user].user.audioEnabled}
-                        isDeafened={remoteStreams[user].user.isDeafened}
-                        isTalking={$userCache[user].media.is_playing_audio} />
-                    {#if remoteStreams[user].stream}
+                {#if $userCache[user].key !== get(Store.state.user).key}
+                    {#if !$remoteStreams[user] || !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
+                        <Participant
+                            participant={$userCache[user]}
+                            hasVideo={$userCache[user].media.is_streaming_video}
+                            isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
+                            isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
+                            isTalking={$userCache[user].media.is_playing_audio} />
+                    {/if}
+                    {#if $remoteStreams[user] && $remoteStreams[user].stream}
                         <video
                             data-cy="remote-user-video"
                             id="remote-user-video"
-                            bind:this={remoteVideoElement}
-                            width={remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                            height={remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                            width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                            height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
                             autoplay
                             use:attachStream={user}>
                             <track kind="captions" src="" />
