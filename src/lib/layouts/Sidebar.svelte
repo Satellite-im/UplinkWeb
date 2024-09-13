@@ -61,6 +61,8 @@
             </div>
 
             <div class="sidebar-content">
+                <!-- Commenting out the Marketplace button -->
+                <!--
                 <Button
                     appearance={Appearance.Alt}
                     on:click={() => {
@@ -70,6 +72,7 @@
                     outline>
                     <Icon icon={Shape.Shop} />
                 </Button>
+                -->
 
                 {#if settings && settings.widgets && settings.widgets.show}
                     <WidgetBar />
