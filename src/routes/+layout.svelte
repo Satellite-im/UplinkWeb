@@ -26,6 +26,7 @@
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
     import Market from "$lib/components/market/Market.svelte"
+    import InstallBanner from "$lib/components/ui/InstallBanner.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -195,6 +196,7 @@
         <VideoPreview />
         <GamepadListener />
         <Market on:close={() => UIStore.toggleMarket()} />
+        <InstallBanner />
         <slot></slot>
     </div>
 {:else}
