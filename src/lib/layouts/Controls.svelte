@@ -5,7 +5,7 @@
 
     let id = uuidv4()
     let dynamicStyle = `
-        .controlsWithBreakpoint_${id} {
+        .controls {
             display: inline-flex;
             min-width: fit-content;
             height: fit-content;
@@ -26,7 +26,7 @@
     }
 </script>
 
-<div id={id} class="controlsWithBreakpoint_{id}">
+<div id={id} class="controls controlsWithBreakpoint_{id}">
     <slot></slot>
 </div>
 
