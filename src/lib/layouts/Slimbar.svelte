@@ -16,6 +16,7 @@
     import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
     import { _ } from "svelte-i18n"
+    import { UIStore } from "$lib/state/ui"
 
     export let sidebarOpen: boolean = true
     export let activeRoute: Route = Route.Chat
@@ -37,8 +38,13 @@
     {/if}
 
     <div class="content">
-        <Button icon appearance={Appearance.Alt}>
-            <Icon icon={Shape.Beaker} />
+        <Button
+            appearance={Appearance.Alt}
+            on:click={() => {
+                UIStore.toggleMarket()
+            }}
+            icon>
+            <Icon icon={Shape.Shop} />
         </Button>
         {#if $favorites.length}
             <Label hook="label-favorites" text={$_("generic.faves")} />
