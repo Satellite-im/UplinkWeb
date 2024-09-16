@@ -110,16 +110,20 @@ class Conversations {
             conversation.update(conv => {
                 const lastGroup = conv.messages[conv.messages.length - 1]
                 const now = new Date()
+                const isMessageDuplicate = lastGroup?.messages.some(msg => msg.id === message.id)
 
-                if (lastGroup && lastGroup.details.origin === message.details.origin && now.getTime() - new Date(lastGroup.details.at).getTime() < 60000) {
-                    lastGroup.messages.push(message)
-                } else {
-                    const newMessageGroup: MessageGroup = {
-                        details: message.details,
-                        messages: [message],
+                if (!isMessageDuplicate) {
+                    if (lastGroup && lastGroup.details.origin === message.details.origin && now.getTime() - new Date(lastGroup.details.at).getTime() < 60000) {
+                        lastGroup.messages.push(message)
+                    } else {
+                        const newMessageGroup: MessageGroup = {
+                            details: message.details,
+                            messages: [message],
+                        }
+                        conv.messages.push(newMessageGroup)
                     }
-                    conv.messages.push(newMessageGroup)
                 }
+
                 return conv
             })
         } else {
