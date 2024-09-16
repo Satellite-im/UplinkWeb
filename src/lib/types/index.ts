@@ -409,6 +409,7 @@ export type GiphyGif = {
     uniqueKey: string
     images: {
         fixed_height_small: GiphyImage
+        original: GiphyImage
     }
     title: string
     loaded?: boolean

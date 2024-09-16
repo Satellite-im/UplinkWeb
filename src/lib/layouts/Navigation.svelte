@@ -15,11 +15,6 @@
     export let icons: boolean = false
     export let vertical: boolean = false
 
-    let settings: ISettingsState = get(SettingsStore.state)
-    SettingsStore.state.subscribe((s: ISettingsState) => {
-        settings = s
-    })
-
     let incomingRequests: FriendRequest[] = []
     let totalUnreads: number = 0
     let badgeCounts: Record<string, number> = {}
@@ -59,7 +54,7 @@
     }
 
     function overrides(route: NavRoute) {
-        if (route.to === Route.Chat && settings.messaging.quick) {
+        if (route.to === Route.Chat && $settings.messaging.quick) {
             return true
         }
         if (route.to === Route.Settings) return true
@@ -76,6 +71,8 @@
         unsubscribeStore()
         unsubscribeUIStore()
     })
+
+    $: settings = SettingsStore.state
 </script>
 
 <div class="navigation {vertical ? 'vertical' : 'horizontal'} {icons ? 'icons' : ''}">
