@@ -78,8 +78,9 @@
         &.highlight-success,
         &.highlight-info,
         &.highlight-error,
+        &.highlight-alt,
         &.highlight-warning {
-            @each $type in success, info, error, warning {
+            @each $type in alt, success, info, error, warning {
                 &.highlight-#{$type} {
                     color: var(--#{$type}-color);
 

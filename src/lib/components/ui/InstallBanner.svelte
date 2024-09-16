@@ -41,7 +41,7 @@
     }
 
     function isBannerClosed(): boolean {
-        return localStorage.getItem("bannerClosed") === "true"
+        return localStorage.getItem("install-banner-dismissed") === "true"
     }
 
     let showBanner: boolean = !(isElectron() || isTauri() || isBannerClosed())
@@ -50,12 +50,12 @@
 
     function closeBanner() {
         showBanner = false
-        localStorage.setItem("bannerClosed", "true")
+        localStorage.setItem("install-banner-dismissed", "true")
     }
 </script>
 
 {#if showBanner}
-    <div id="install-banner">
+    <div id="install-banner" class="pulse-success">
         <div class="pre">
             <Button appearance={Appearance.Alt} icon on:click={closeBanner}>
                 <Icon icon={Shape.XMark} />
@@ -67,27 +67,27 @@
         </div>
         <Controls>
             {#if platform === Platform.Windows}
-                <Button appearance={Appearance.Alt} text="Download for Windows">
+                <Button appearance={Appearance.Success} text="Download for Windows">
                     <Icon icon={Shape.MicrosoftWindows} />
                 </Button>
             {:else if platform === Platform.MacOS}
-                <Button appearance={Appearance.Alt} text="Download for MacOS">
+                <Button appearance={Appearance.Success} text="Download for MacOS">
                     <Icon icon={Shape.AppleAppStore} />
                 </Button>
             {:else if platform === Platform.Android}
-                <Button appearance={Appearance.Alt} text="Download for Android">
+                <Button appearance={Appearance.Success} text="Download for Android">
                     <Icon icon={Shape.Android} />
                 </Button>
             {:else if platform === Platform.iOS}
-                <Button appearance={Appearance.Alt} text="Download for iPhone">
+                <Button appearance={Appearance.Success} text="Download for iPhone">
                     <Icon icon={Shape.Apple} />
                 </Button>
             {:else if platform === Platform.Linux}
-                <Button appearance={Appearance.Alt} text="Download for Linux">
+                <Button appearance={Appearance.Success} text="Download for Linux">
                     <Icon icon={Shape.Code} />
                 </Button>
             {:else}
-                <Button appearance={Appearance.Alt} text="Download for Other">
+                <Button appearance={Appearance.Success} text="Download for Other">
                     <Icon icon={Shape.Download} />
                 </Button>
             {/if}
@@ -98,7 +98,7 @@
 <style lang="scss">
     #install-banner {
         width: 100%;
-        background: var(--primary-color);
+        background: var(--background-alt);
         height: fit-content;
         padding: var(--padding-less);
         display: inline-flex;
