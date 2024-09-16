@@ -29,6 +29,7 @@ class GlobalStore {
                     return chat
                 },
             }),
+            activeCallMeta: writable({}),
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
                 video: createPersistentState("uplink.devices.videoInput", "default"),

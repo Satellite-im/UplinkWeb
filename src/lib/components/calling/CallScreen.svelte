@@ -54,7 +54,7 @@
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
     $: userCallOptions = VoiceRTCInstance.callOptions
-    let remoteStreams: Writable<{ [key: string]: { user: VoiceRTCUser; stream: MediaStream | null } | undefined }> = writable({})
+    $: remoteStreams = Store.state.activeCallMeta
 
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
@@ -149,23 +149,7 @@
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
         await checkPermissions()
-        await VoiceRTCInstance.setVideoElements(
-            {
-                create: stream => {
-                    remoteStreams.update(s => {
-                        s[stream.user.did] = stream
-                        return s
-                    })
-                },
-                delete: user => {
-                    remoteStreams.update(s => {
-                        if (s[user]) s[user].stream = null
-                        return s
-                    })
-                },
-            },
-            localVideoCurrentSrc
-        )
+        await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
 
         if (!permissionsGranted) {
             requestPermissions()
@@ -200,13 +184,6 @@
         subscribeThree()
         subscribeFour()
     })
-
-    function checkUser(user: string) {
-        console.log("cache ", $userCache)
-        console.log("user ", user)
-        console.log("streams ", $remoteStreams)
-        return $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]
-    }
 </script>
 
 <div id="call-screen" data-cy="call-screen" class={expanded ? "expanded" : ""}>
