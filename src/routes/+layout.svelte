@@ -11,7 +11,7 @@
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
-    import { UIStore } from "$lib/state/ui"
+    import { UIStore, type FontOption } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -25,6 +25,7 @@
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
+    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -33,6 +34,7 @@
     let color: string = get(UIStore.state.color)
     let fontSize: number = get(UIStore.state.fontSize)
     let font: Font = get(UIStore.state.font)
+    let allFonts: FontOption[] = get(UIStore.state.allFonts)
     let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
     let theme: Theme = get(UIStore.state.theme)
     let cssOverride: string = get(UIStore.state.cssOverride)
@@ -78,7 +80,6 @@
                 console.warn("unhandled keybind", keybind)
         }
     }
-
     function handleKeybindMatchRelease(event: CustomEvent<any>) {
         let keybind: Keybind = event.detail
         let state: KeybindState = keybind.state
@@ -97,25 +98,88 @@
                 log.warn(`unhandled keybind ${keybind}`)
         }
     }
+    // const fontFaceRule = !isSystemFont
+    //     ? `@font-face {
+    //        font-family: '${font}';
+    //        src: url('${userFontPath}${font}.ttf');
+    //      }`
+    //     : ""
 
+    let calledBuilDelay = false
+    function callBuildStyleAfterDelay() {
+        if (!calledBuilDelay) {
+            setTimeout(() => {
+                const style = buildStyle()
+                injectStyle(style)
+                calledBuilDelay = true
+            }, 5000)
+        }
+    }
     function buildStyle() {
-        return (
-            cssOverride +
-            `:root {
+        console.log(allFonts)
+        let sortFontFamilyName: FontOption | undefined = allFonts.find(a => a.value === font)
+        const isUserUploadedFont = font.includes("/")
+        let fontFaceRule
+        if (sortFontFamilyName) {
+            fontFaceRule = isUserUploadedFont
+                ? `@font-face {
+                font-family: '${sortFontFamilyName.text}';
+                src: url('${sortFontFamilyName.value}');
+              }`
+                : ""
+        }
+        const isUserUploadedEmojiFont = emojiFont.includes("/")
+        const isUserUploadedThemeFont = theme.includes("/")
+        // @font-face rules
+        callBuildStyleAfterDelay()
+        // const fontTest = isUserUploadedFont
+        //     ? `@font-face {
+        //         font-family: 'NightmarePills-BV2w (1).ttf';
+        //         src: url('/4006cd70-eeef-4172-bb20-cf1a11100afa');
+        //       }`
+        //     : ""
+        const emojiFontFaceRule = isUserUploadedEmojiFont
+            ? `@font-face {
+                font-family: '${emojiFont.split("/").pop()}';
+                src: url('${emojiFont}');
+              }`
+            : ""
+
+        const themeFontFaceRule = isUserUploadedThemeFont
+            ? `@font-face {
+                font-family: '${theme.split("/").pop()}';
+                src: url('${theme}');
+              }`
+            : ""
+
+        return `
+            ${fontFaceRule}
+            ${emojiFontFaceRule}
+            ${themeFontFaceRule}
+            ${cssOverride}
+            :root {
                 --font-size: ${fontSize.toFixed(2)}rem;
                 --primary-color: ${color};
-                --primary-font: ${font};
+                --primary-font: ${isUserUploadedFont ? font.split("/").pop() : font};
             }
             .emoji {
-                font-family: ${emojiFont};
+                font-family: ${isUserUploadedEmojiFont ? emojiFont.split("/").pop() : emojiFont};
             }
             .theme {
-                font-family: ${theme};
-            }`
-        )
+                font-family: ${isUserUploadedThemeFont ? theme.split("/").pop() : theme};
+            }
+        `
+    }
+
+    function injectStyle(styleString: string) {
+        const style = document.createElement("style")
+        style.innerHTML = styleString
+        document.head.appendChild(style)
     }
 
     let style: string = buildStyle()
+    document.head.insertAdjacentHTML("beforeend", `<style>${style}</style>`)
+    injectStyle(buildStyle())
     UIStore.state.color.subscribe(v => {
         color = v
         style = buildStyle()
@@ -133,6 +197,11 @@
 
     UIStore.state.font.subscribe(f => {
         font = f
+        style = buildStyle()
+    })
+
+    UIStore.state.allFonts.subscribe(f => {
+        allFonts = f
         style = buildStyle()
     })
 
@@ -158,6 +227,7 @@
     onMount(async () => {
         await checkIfUserIsLogged($page.route.id)
         await initializeLocale()
+        buildStyle()
     })
 
     let isLocaleSet = false
