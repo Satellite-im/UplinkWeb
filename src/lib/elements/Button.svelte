@@ -230,7 +230,7 @@
                             color: var(--#{$type}-color);
 
                             &:hover {
-                                background-color: var(--color-alt);
+                                background-color: var(--alt-color);
                                 color: var(--color-alt);
                             }
                         }

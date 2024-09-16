@@ -15,42 +15,61 @@
     }
 
     function detectPlatform(): Platform {
-        const userAgent = window.navigator.userAgent.toLowerCase()
+        const userAgent = navigator.userAgent.toLowerCase()
 
-        if (userAgent.includes("windows")) {
-            return Platform.Windows
-        } else if (userAgent.includes("mac")) {
-            return Platform.MacOS
-        } else if (userAgent.includes("android")) {
-            return Platform.Android
-        } else if (/iphone|ipad|ipod/.test(userAgent)) {
-            return Platform.iOS
-        } else if (userAgent.includes("linux")) {
-            return Platform.Linux
-        } else {
-            return Platform.Other
-        }
+        if (userAgent.includes("windows")) return Platform.Windows
+        if (userAgent.includes("mac")) return Platform.MacOS
+        if (userAgent.includes("android")) return Platform.Android
+        if (/iphone|ipad|ipod/.test(userAgent)) return Platform.iOS
+        if (userAgent.includes("linux")) return Platform.Linux
+        return Platform.Other
     }
 
     function isElectron(): boolean {
-        return typeof window !== "undefined" && typeof window.process === "object" && window.process.versions?.electron !== undefined
+        return typeof window !== "undefined" && window.process?.versions?.electron !== undefined
     }
 
     function isTauri(): boolean {
-        return typeof window !== "undefined" && (window as any).__TAURI__ !== undefined
+        return typeof window !== "undefined" && "__TAURI__" in window
     }
 
     function isBannerClosed(): boolean {
         return localStorage.getItem("install-banner-dismissed") === "true"
     }
 
-    let showBanner: boolean = !(isElectron() || isTauri() || isBannerClosed())
-
-    let platform: Platform = detectPlatform()
+    let showBanner = !(isElectron() || isTauri() || isBannerClosed())
+    let platform = detectPlatform()
 
     function closeBanner() {
         showBanner = false
         localStorage.setItem("install-banner-dismissed", "true")
+    }
+
+    const platformButtonProps = {
+        [Platform.Windows]: {
+            text: "Download for Windows",
+            icon: Shape.MicrosoftWindows,
+        },
+        [Platform.MacOS]: {
+            text: "Download for MacOS",
+            icon: Shape.AppleAppStore,
+        },
+        [Platform.Android]: {
+            text: "Download for Android",
+            icon: Shape.Android,
+        },
+        [Platform.iOS]: {
+            text: "Download for iPhone",
+            icon: Shape.Apple,
+        },
+        [Platform.Linux]: {
+            text: "Download for Linux",
+            icon: Shape.Code,
+        },
+        [Platform.Other]: {
+            text: "Download for Other",
+            icon: Shape.Download,
+        },
     }
 </script>
 
@@ -66,31 +85,9 @@
             </div>
         </div>
         <Controls>
-            {#if platform === Platform.Windows}
-                <Button appearance={Appearance.Success} text="Download for Windows">
-                    <Icon icon={Shape.MicrosoftWindows} />
-                </Button>
-            {:else if platform === Platform.MacOS}
-                <Button appearance={Appearance.Success} text="Download for MacOS">
-                    <Icon icon={Shape.AppleAppStore} />
-                </Button>
-            {:else if platform === Platform.Android}
-                <Button appearance={Appearance.Success} text="Download for Android">
-                    <Icon icon={Shape.Android} />
-                </Button>
-            {:else if platform === Platform.iOS}
-                <Button appearance={Appearance.Success} text="Download for iPhone">
-                    <Icon icon={Shape.Apple} />
-                </Button>
-            {:else if platform === Platform.Linux}
-                <Button appearance={Appearance.Success} text="Download for Linux">
-                    <Icon icon={Shape.Code} />
-                </Button>
-            {:else}
-                <Button appearance={Appearance.Success} text="Download for Other">
-                    <Icon icon={Shape.Download} />
-                </Button>
-            {/if}
+            <Button appearance={Appearance.Success} outline text={platformButtonProps[platform].text}>
+                <Icon icon={platformButtonProps[platform].icon} highlight={Appearance.Success} />
+            </Button>
         </Controls>
     </div>
 {/if}
@@ -99,14 +96,14 @@
     #install-banner {
         width: 100%;
         background: var(--background-alt);
-        height: fit-content;
         padding: var(--padding-less);
-        display: inline-flex;
+        display: flex;
         gap: var(--gap);
         justify-content: space-between;
+        align-items: center;
 
         .pre {
-            display: inline-flex;
+            display: flex;
             gap: var(--gap);
             align-items: center;
         }
