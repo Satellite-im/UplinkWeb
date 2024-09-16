@@ -380,6 +380,7 @@ class RaygunStore {
             let event = parseJSValue(value)
             log.info(`Handling conversation event: ${JSON.stringify(event)}`)
             log.info(`Event Type ${event.type}`)
+
             switch (event.type) {
                 case "conversation_created": {
                     let conversationId: string = event.values["conversation_id"]
@@ -445,16 +446,19 @@ class RaygunStore {
 
     private async createConversationEventHandler(raygun: wasm.RayGunBox, conversation_id: string) {
         let stream = await raygun.get_conversation_stream(conversation_id)
-        return create_cancellable_handler(async () => {
+        return create_cancellable_handler(async isCancelled => {
             let listener = {
                 [Symbol.asyncIterator]() {
                     return stream
                 },
             }
-            for await (const value of listener) {
+            streamLoop: for await (const value of listener) {
                 let event = parseJSValue(value)
                 log.info(`Handling message event: ${JSON.stringify(event)}`)
-
+                if (isCancelled()) {
+                    log.debug(`Breaking stream loop not necessary anymore from: ${conversation_id}`)
+                    break streamLoop
+                }
                 switch (event.type) {
                     case "message_sent": {
                         let conversation_id: string = event.values["conversation_id"]

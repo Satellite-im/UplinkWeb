@@ -41,10 +41,15 @@ export type ProfileOverlay = {
 
 export type Bundle = {
     name: string
+    image: string
+    description: string
+    price: number
     frames: Frame[]
-    profileOverlays: ProfileOverlay[]
-    // themes: []
-    // fonts: []
+    overlays: ProfileOverlay[]
+    themes: []
+    fonts: []
+    titles: []
+    trinkets: []
 }
 
 export type SelectOption = {

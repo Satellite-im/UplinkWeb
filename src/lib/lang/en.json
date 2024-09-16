@@ -38,19 +38,17 @@
     "market": {
         "market": "Marketplace",
         "label": "Uplink Marketplace",
+        "bundle": "Bundle",
         "bundles": "Bundles & Packs",
-        "filter": "Filter",
-        "staff": "Staff & Picks",
-        "recentlyUpdated": "Recently Updated",
-        "mostDownloaded": "Most Downloaded",
-        "newlyAdded": "Newly Added",
+        "purchase_starlight": "Purchase Starlight",
         "categories": "Categories",
         "communityUpgrades": "Community Upgrades",
         "extensions": "Extensions",
         "themes": "Themes",
         "stickers": "Stickers & Emotes",
         "sound": "Sound & Fonts",
-        "bots": "Bots & Moderation"
+        "bots": "Bots & Moderation",
+        "home": "The Market"
     },
     "inventory": {
         "equip": "Equip",
