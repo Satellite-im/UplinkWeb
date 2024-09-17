@@ -540,7 +540,7 @@
         {/if}
     </Sidebar>
     <div class="content">
-        <Topbar>
+        <!-- <Topbar>
             <div slot="before" class="before flex-column">
                 <Label hook="label-quick-actions" text={$_("files.quickActions")} />
                 <div class="actions">
@@ -558,7 +558,7 @@
                     </Button>
                 </div>
             </div>
-        </Topbar>
+        </Topbar> -->
         <Topbar>
             <div slot="before" class="before">
                 <button class="stat">

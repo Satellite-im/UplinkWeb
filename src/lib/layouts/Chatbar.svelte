@@ -94,7 +94,7 @@
         emojiSelectorOpen.set(false)
         gifSelectorOpen.set(false)
         stickerSelectorOpen.set(false)
-        sendMessage(`![${gif.title}](${gif.images.fixed_height_small.url})`, true)
+        sendMessage(`![${gif.title}](${gif.images.original.url})`, true)
         hackVariableToRefocusChatBar.set(Math.random().toString())
     }
 

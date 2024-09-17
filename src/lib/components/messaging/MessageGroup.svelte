@@ -31,9 +31,6 @@
         </div>
     {/if}
     <div class="flex">
-        {#if username && username.length}
-            <Label hook="message-group-username" class="username-{remote ? 'remote' : 'local'}" text={username} />
-        {/if}
         <slot></slot>
     </div>
     {#if profilePictureRequirements && !remote}
@@ -52,7 +49,7 @@
     {/if}
 
     {#if subtext}
-        <span data-cy="message-group-timestamp" class="subtext {remote ? 'remote' : 'local'}">{subtext}</span>
+        <span data-cy="message-group-timestamp" class="subtext {remote ? 'remote' : 'local'}">{`${username} - ${subtext}`}</span>
     {/if}
 </div>
 
