@@ -415,29 +415,6 @@
 
         target.value = "" // Reset the input value
     }
-    // async function getFontFromDB(fileName: string): Promise<ArrayBuffer | null> {
-    //     const db = await openDatabase()
-
-    //     return new Promise((resolve, reject) => {
-    //         const transaction = db.transaction("fonts", "readonly")
-    //         const store = transaction.objectStore("fonts")
-
-    //         const request = store.get(fileName)
-
-    //         request.onsuccess = () => {
-    //             if (request.result) {
-    //                 resolve(request.result.fileData)
-    //             } else {
-    //                 resolve(null)
-    //             }
-    //         }
-
-    //         request.onerror = () => {
-    //             reject("Error retrieving font from IndexedDB")
-    //         }
-    //     })
-    // }
-
     function getUserUploadedItems(type: string): { text: string; value: string }[] {
         const userUploaded: { text: string; value: string }[] = []
         const availbleBlobUrls = blobUrlMap
@@ -487,6 +464,7 @@
         await updateFontBlobUrls()
         updateAvailableItems() // Ensure this updates availableFontsStore correctly
         syncFonts()
+        console.log(font)
         const fontNames = Object.keys(blobUrlMap) // Assuming blobUrlMap holds the font names
         for (const fontName of fontNames) {
             console.log(fontName, "ONMOUNT")

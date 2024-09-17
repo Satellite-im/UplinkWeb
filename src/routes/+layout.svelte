@@ -116,59 +116,54 @@
         }
     }
     function buildStyle() {
-        console.log(allFonts)
-        let sortFontFamilyName: FontOption | undefined = allFonts.find(a => a.value === font)
-        const isUserUploadedFont = font.includes("/")
-        let fontFaceRule
-        if (sortFontFamilyName) {
-            fontFaceRule = isUserUploadedFont
-                ? `@font-face {
-                font-family: '${sortFontFamilyName.text}';
-                src: url('${sortFontFamilyName.value}');
-              }`
-                : ""
-        }
-        const isUserUploadedEmojiFont = emojiFont.includes("/")
-        const isUserUploadedThemeFont = theme.includes("/")
-        // @font-face rules
-        callBuildStyleAfterDelay()
-        // const fontTest = isUserUploadedFont
-        //     ? `@font-face {
-        //         font-family: 'NightmarePills-BV2w (1).ttf';
-        //         src: url('/4006cd70-eeef-4172-bb20-cf1a11100afa');
-        //       }`
-        //     : ""
-        const emojiFontFaceRule = isUserUploadedEmojiFont
-            ? `@font-face {
-                font-family: '${emojiFont.split("/").pop()}';
-                src: url('${emojiFont}');
-              }`
-            : ""
+        console.log(font)
 
-        const themeFontFaceRule = isUserUploadedThemeFont
-            ? `@font-face {
-                font-family: '${theme.split("/").pop()}';
-                src: url('${theme}');
-              }`
-            : ""
+        let isUserFontFam
+        let fontFaceRules = get(UIStore.state.allFonts)
+            .map(({ text, value }) => {
+                const fontFamily = text.replace(/'/g, "\\'")
 
+                if (font === value) {
+                    if (value.startsWith("blob:")) {
+                        console.log(text, value, font)
+                        isUserFontFam = text
+                        return `
+                    @font-face {
+                        font-family: '${fontFamily}';
+                        src: url('${value}'); // Use the blob URL directly
+                        font-weight: normal;
+                        font-style: normal;
+                    }
+                    `
+                    }
+                } else {
+                    return `
+                @font-face {
+                    font-family: '${fontFamily}';
+                    src: url('/assets/font/${text}.woff2') format('woff2'), 
+                         url('/assets/font/${text}.woff') format('woff'); // Example static asset paths
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                `
+                }
+            })
+            .join("\n")
+        const primaryFont = isUserFontFam || font
         return `
-            ${fontFaceRule}
-            ${emojiFontFaceRule}
-            ${themeFontFaceRule}
-            ${cssOverride}
-            :root {
-                --font-size: ${fontSize.toFixed(2)}rem;
-                --primary-color: ${color};
-                --primary-font: ${isUserUploadedFont ? font.split("/").pop() : font};
-            }
-            .emoji {
-                font-family: ${isUserUploadedEmojiFont ? emojiFont.split("/").pop() : emojiFont};
-            }
-            .theme {
-                font-family: ${isUserUploadedThemeFont ? theme.split("/").pop() : theme};
-            }
-        `
+    ${fontFaceRules}
+    :root {
+        --font-size: ${fontSize.toFixed(2)}rem;
+        --primary-color: ${color};
+        --primary-font: '${primaryFont}'; // Ensure font is properly set
+    }
+    .emoji {
+        font-family: '${emojiFont}';
+    }
+    .theme {
+        font-family: '${theme}';
+    }
+    `
     }
 
     function injectStyle(styleString: string) {
@@ -178,7 +173,7 @@
     }
 
     let style: string = buildStyle()
-    document.head.insertAdjacentHTML("beforeend", `<style>${style}</style>`)
+    // document.head.insertAdjacentHTML("beforeend", `<style>${style}</style>`)
     injectStyle(buildStyle())
     UIStore.state.color.subscribe(v => {
         color = v
