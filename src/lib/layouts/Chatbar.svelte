@@ -10,19 +10,19 @@
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { Chat, GiphyGif, Message } from "$lib/types"
+    import type { Chat, GiphyGif, Message, User } from "$lib/types"
     import { PopupButton } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
     import { UIStore } from "$lib/state/ui"
     import { emojiList } from "$lib/components/messaging/emoji/EmojiList"
     import { tempCDN } from "$lib/utils/CommonVariables"
-    import { on } from "events"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
     export let emojiClickHook: (emoji: string) => boolean
     export let activeChat: Chat
+    export let typing: User[]
 
     const dispatch = createEventDispatcher()
 
