@@ -74,18 +74,18 @@
 </script>
 
 {#if showBanner}
-    <div id="install-banner" class="pulse-success">
+    <div id="install-banner" data-cy="install-banner" class="pulse-success">
         <div class="pre">
-            <Button appearance={Appearance.Alt} icon on:click={closeBanner}>
+            <Button hook="button-close-banner" appearance={Appearance.Alt} icon on:click={closeBanner}>
                 <Icon icon={Shape.XMark} />
             </Button>
             <div class="content">
-                <Label text="Install Uplink" />
-                <p>Install our app for a better experience</p>
+                <Label hook="label-install-banner" text="Install Uplink" />
+                <p data-cy="text-install-banner">Install our app for a better experience</p>
             </div>
         </div>
         <Controls>
-            <Button appearance={Appearance.Success} outline text={platformButtonProps[platform].text}>
+            <Button hook="button-install-banner" appearance={Appearance.Success} outline text={platformButtonProps[platform].text}>
                 <Icon icon={platformButtonProps[platform].icon} highlight={Appearance.Success} />
             </Button>
         </Controls>
