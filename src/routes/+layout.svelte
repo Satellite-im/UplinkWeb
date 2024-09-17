@@ -6,7 +6,7 @@
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
-    import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
+    import { EmojiFont, Font, KeybindAction, KeybindState } from "$lib/enums"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
@@ -14,7 +14,6 @@
     import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
@@ -26,6 +25,7 @@
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
     import Market from "$lib/components/market/Market.svelte"
+    import InstallBanner from "$lib/components/ui/InstallBanner.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -181,11 +181,14 @@
     $: if ($locale) {
         isLocaleSet = true
     }
+
+    $: theme = UIStore.state.theme
 </script>
 
 {#if isLocaleSet}
     <div id="app">
         {@html `<style>${style}</style>`}
+        <link rel="stylesheet" href={`/assets/themes/${$theme}.css`} />
         {@html `<style>${cssOverride}</style>`}
         <Polling rate={5000} />
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
@@ -195,6 +198,7 @@
         <VideoPreview />
         <GamepadListener />
         <Market on:close={() => UIStore.toggleMarket()} />
+        <InstallBanner />
         <slot></slot>
     </div>
 {:else}

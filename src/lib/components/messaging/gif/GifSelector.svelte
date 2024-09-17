@@ -39,6 +39,9 @@
                         fixed_height_small: {
                             url: gif.images.fixed_height_small.url,
                         },
+                        original: {
+                            url: gif.images.original.url,
+                        },
                     },
                     title: gif.title,
                 }))
@@ -58,6 +61,9 @@
                     images: {
                         fixed_height_small: {
                             url: gif.images.fixed_height_small.url,
+                        },
+                        original: {
+                            url: gif.images.original.url,
                         },
                     },
                     title: gif.title,

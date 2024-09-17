@@ -41,10 +41,15 @@ export type ProfileOverlay = {
 
 export type Bundle = {
     name: string
+    image: string
+    description: string
+    price: number
     frames: Frame[]
-    profileOverlays: ProfileOverlay[]
-    // themes: []
-    // fonts: []
+    overlays: ProfileOverlay[]
+    themes: []
+    fonts: []
+    titles: []
+    trinkets: []
 }
 
 export type SelectOption = {
@@ -409,6 +414,7 @@ export type GiphyGif = {
     uniqueKey: string
     images: {
         fixed_height_small: GiphyImage
+        original: GiphyImage
     }
     title: string
     loaded?: boolean
