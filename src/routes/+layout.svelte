@@ -6,7 +6,7 @@
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
-    import { EmojiFont, Font, KeybindAction, KeybindState, Route } from "$lib/enums"
+    import { EmojiFont, Font, KeybindAction, KeybindState } from "$lib/enums"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
@@ -14,7 +14,6 @@
     import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
@@ -25,6 +24,8 @@
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
+    import Market from "$lib/components/market/Market.svelte"
+    import InstallBanner from "$lib/components/ui/InstallBanner.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -193,6 +194,8 @@
         <IncomingCall />
         <VideoPreview />
         <GamepadListener />
+        <Market on:close={() => UIStore.toggleMarket()} />
+        <InstallBanner />
         <slot></slot>
     </div>
 {:else}

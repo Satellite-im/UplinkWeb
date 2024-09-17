@@ -52,6 +52,7 @@
     import { MessageEvent } from "warp-wasm"
     import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
+    import { tempCDN } from "$lib/utils/CommonVariables"
 
     let loading = false
     let contentAsideOpen = false
@@ -81,14 +82,16 @@
     let showMarket: boolean = false
     let withPinned: string | undefined = undefined
     let groupSettings: boolean = false
+    let unasavedChangesOnGroupSettings: boolean = false
     let search_filter: string
     let search_component: ChatFilter
     let dragging_files = 0
     let editing_message: string | undefined = undefined
     let editing_text: string | undefined = undefined
-    let emojis: string[] = ["👍", "👎", "❤️", "🖖", "😂"]
+    $: emojis = UIStore.getMostUsed()
     $: own_user = Store.state.user
     let replyTo: MessageType | undefined = undefined
+    let reactingTo: string | undefined
     let fileUpload: FileInput
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
@@ -201,6 +204,7 @@
 
     async function reactTo(message: string, emoji: string, toggle: boolean) {
         let add = toggle ? !ConversationStore.hasReaction($activeChat, message, emoji) : true
+        if (add) UIStore.useEmoji(emoji)
         await RaygunStoreInstance.react($conversation!.id, message, add ? 0 : 1, emoji)
     }
 
@@ -246,6 +250,14 @@
         if (!conversation) return []
         return conversation!.messages.flatMap(g => g.messages.filter(m => m.pinned))
     }
+
+    function handleClickOutsideEditInput(event: any) {
+        const myElement = document.getElementById(`chat-message-edit-input-${editing_message}`)
+        if (myElement && !myElement.contains(event.target)) {
+            editing_message = undefined
+        }
+    }
+    document.addEventListener("click", handleClickOutsideEditInput)
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -299,9 +311,15 @@
     {#if groupSettings}
         <Modal
             on:close={_ => {
-                groupSettings = false
+                if (!unasavedChangesOnGroupSettings) {
+                    groupSettings = false
+                }
             }}>
-            <GroupSettings on:create={_ => (groupSettings = false)} />
+            <GroupSettings
+                activeChat={$activeChat}
+                on:create={_ => (groupSettings = false)}
+                on:unasavedChanges={value => (unasavedChangesOnGroupSettings = value.detail)}
+                on:close={_ => ((groupSettings = false), (unasavedChangesOnGroupSettings = false))} />
         </Modal>
     {/if}
 
@@ -310,7 +328,7 @@
             on:close={_ => {
                 showUsers = false
             }}>
-            <ViewMembers adminControls members={Object.values($users)} on:create={_ => (showUsers = false)} />
+            <ViewMembers adminControls activeChat={$activeChat} members={Object.values($users)} on:create={_ => (showUsers = false)} />
         </Modal>
     {/if}
 
@@ -356,7 +374,11 @@
             </Button>
         </div>
 
-        {#each $chats as chat}
+        {#each $chats.slice().sort((a, b) => {
+            const dateA = new Date(a.last_message_at || 0)
+            const dateB = new Date(b.last_message_at || 0)
+            return dateB.getTime() - dateA.getTime()
+        }) as chat}
             <ContextMenu
                 hook="context-menu-sidebar-chat"
                 items={[
@@ -563,13 +585,17 @@
                                                 position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                                 morePadding={message.text.length > 1 || message.attachments.length > 0}>
                                                 {#if editing_message === message.id}
-                                                    <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
+                                                    <Input hook="chat-message-edit-input-{editing_message}" alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.LeavingCall)}
-                                                            <Text markdown={line} />
+                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.LeavingCall) && !line.includes(tempCDN)}
+                                                            <Text hook="text-chat-message" markdown={line} />
+                                                        {:else if line.includes(tempCDN)}
+                                                            <div class="sticker">
+                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                                            </div>
                                                         {/if}
                                                     {/each}
 
@@ -611,7 +637,7 @@
                                                 {/if}
                                             </Message>
                                             <svelte:fragment slot="items" let:close>
-                                                <EmojiGroup emojis={emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close}></EmojiGroup>
+                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, true)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
                                             </svelte:fragment>
                                         </ContextMenu>
                                     {/if}
@@ -655,7 +681,16 @@
             <Chatbar
                 filesSelected={files}
                 replyTo={replyTo}
+                activeChat={$activeChat}
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
+                emojiClickHook={emoji => {
+                    if (reactingTo) {
+                        reactTo(reactingTo, emoji, true)
+                        reactingTo = undefined
+                        return true
+                    }
+                    return false
+                }}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
                     typing()
@@ -847,5 +882,9 @@
                 max-width: 100%;
             }
         }
+    }
+
+    .sticker {
+        width: var(--sticker-width-rendered);
     }
 </style>

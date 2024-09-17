@@ -38,19 +38,17 @@
     "market": {
         "market": "Marketplace",
         "label": "Uplink Marketplace",
+        "bundle": "Bundle",
         "bundles": "Bundles & Packs",
-        "filter": "Filter",
-        "staff": "Staff & Picks",
-        "recentUpdated": "Recently Updated",
-        "mostDownloaded": "Most Downloaded",
-        "newlyAdded": "Newly Added",
+        "purchase_starlight": "Purchase Starlight",
         "categories": "Categories",
         "communityUpgrades": "Community Upgrades",
         "extensions": "Extensions",
         "themes": "Themes",
         "stickers": "Stickers & Emotes",
         "sound": "Sound & Fonts",
-        "bots": "Bots & Moderation"
+        "bots": "Bots & Moderation",
+        "home": "The Market"
     },
     "inventory": {
         "equip": "Equip",
@@ -294,6 +292,7 @@
             "reveal_phrase": {
                 "label": "Reveal recovery phrase",
                 "description": "Click the button to reveal your recovery seed, please do not share this with anybody, it is the master-key for your account.",
+                "description.missing": "You either didn't save your recovery seed or removed it!",
                 "show": "Reveal Phrase",
                 "hide": "Hide Phrase",
                 "missing": "Phrase not saved"

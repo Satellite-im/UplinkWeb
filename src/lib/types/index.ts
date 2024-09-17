@@ -41,10 +41,15 @@ export type ProfileOverlay = {
 
 export type Bundle = {
     name: string
+    image: string
+    description: string
+    price: number
     frames: Frame[]
-    profileOverlays: ProfileOverlay[]
-    // themes: []
-    // fonts: []
+    overlays: ProfileOverlay[]
+    themes: []
+    fonts: []
+    titles: []
+    trinkets: []
 }
 
 export type SelectOption = {
@@ -161,6 +166,7 @@ export type Chat = {
     notifications: number
     users: string[]
     typing_indicator: TypingIndicator
+    last_message_id: string
     last_message_at: Date
     last_message_preview: string
 }
@@ -284,6 +290,7 @@ export let defaultChat: Chat = {
     },
     users: [],
     typing_indicator: new TypingIndicator(),
+    last_message_id: "",
     last_message_at: new Date(),
     last_message_preview: "",
 }
@@ -407,6 +414,7 @@ export type GiphyGif = {
     uniqueKey: string
     images: {
         fixed_height_small: GiphyImage
+        original: GiphyImage
     }
     title: string
     loaded?: boolean

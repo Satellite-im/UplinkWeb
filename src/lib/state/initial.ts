@@ -20,6 +20,7 @@ export interface IState {
         video: Writable<string>
     }
     activeChat: Writable<Chat>
+    chatMessagesToSend: Writable<{ [key: string]: string }>
     activeCall: Writable<Call | null>
     activeCallMeta: Writable<{ [key: string]: { user: VoiceRTCUser; stream: MediaStream | null } | undefined }>
     pendingCall: Writable<Call | null>

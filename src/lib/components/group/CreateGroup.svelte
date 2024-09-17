@@ -20,7 +20,7 @@
     function update_recipients(recipient: User) {
         let new_recipient_list = [...recipients]
 
-        if (recipients.includes(recipient)) {
+        if (recipients.map(r => r.key).includes(recipient.key)) {
             new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1)
         } else {
             new_recipient_list.push(recipient)
@@ -35,7 +35,7 @@
     }
 
     function contains_recipient(list: User[], recipient: User): boolean {
-        return list.includes(recipient)
+        return list.map(r => r.key).includes(recipient.key)
     }
 
     function validateGroupName(name: string): boolean {
@@ -52,7 +52,8 @@
     const dispatch = createEventDispatcher()
 
     async function onCreate() {
-        if (recipients.length === 0) { // Validate before creating group chat
+        if (recipients.length === 0) {
+            // Validate before creating group chat
             error = $_("chat.group.noMembers") || "Please select at least one member."
             return
         }
@@ -77,12 +78,7 @@
 <div class="new-chat" data-cy="modal-create-group-chat">
     <div class="select-user">
         <Label hook="label-create-group-name" text={$_("chat.group.name")} />
-        <Input
-            hook="input-create-group-name"
-            alt
-            bind:value={name}
-            on:input={() => validateGroupName(name)}
-        />
+        <Input hook="input-create-group-name" alt bind:value={name} on:input={() => validateGroupName(name)} />
 
         <!-- Error message for invalid group name -->
         {#if nameError}
@@ -101,12 +97,7 @@
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Button
-                        small
-                        outline
-                        icon
-                        on:click={() => update_recipients(recipient)}
-                    >
+                    <Button small outline icon on:click={() => update_recipients(recipient)}>
                         <Icon icon={Shape.XMark} alt class="control" />
                     </Button>
                 </div>
@@ -139,13 +130,7 @@
         {/if}
 
         <Controls>
-            <Button
-                hook="button-create-group"
-                text={$_("chat.group.create")}
-                fill
-                disabled={nameError}
-                on:click={onCreate}
-            >
+            <Button hook="button-create-group" text={$_("chat.group.create")} fill disabled={nameError} on:click={onCreate}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </Controls>
@@ -167,8 +152,6 @@
         .select-user {
             min-height: fit-content;
             flex: 1;
-            border: var(--border-width) solid var(--border-color);
-            border-radius: var(--border-radius-less);
             padding: var(--gap);
             gap: var(--gap);
             display: inline-flex;

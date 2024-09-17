@@ -21,11 +21,6 @@
             name: $_("settings.profile.name"),
         },
         {
-            to: SettingsRoute.Inventory,
-            icon: Shape.Inventory,
-            name: $_("settings.inventory.name"),
-        },
-        {
             to: SettingsRoute.Preferences,
             icon: Shape.Brush,
             name: $_("settings.customization.name"),
@@ -146,6 +141,11 @@
         if (value.devmode) {
             if (!get(settingsRoutes).find(route => route.to === SettingsRoute.Developer)) {
                 settingsRoutes.update(routes => [
+                    {
+                        to: SettingsRoute.Inventory,
+                        icon: Shape.Inventory,
+                        name: $_("settings.inventory.name"),
+                    },
                     ...routes,
                     {
                         to: SettingsRoute.Developer,
