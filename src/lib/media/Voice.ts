@@ -105,11 +105,20 @@ export class PeerMesh {
     /**
      * Joins this mesh. Will connect and call all peers that are not connected still
      */
-    async join(user?: VoiceRTCUser) {
-        if (user && !this.remotePeers.find(p => p.did === user.did)) {
-            let peer = new RemotePeer(user.did)
-            peer.updateUserData(user)
-            this.remotePeers.push(peer)
+    async join(users?: string[] | VoiceRTCUser) {
+        if (users) {
+            if (Array.isArray(users)) {
+                users.forEach(did => {
+                    if (!this.remotePeers.find(p => p.did in users)) {
+                        let peer = new RemotePeer(did)
+                        this.remotePeers.push(peer)
+                    }
+                })
+            } else if (!this.remotePeers.find(p => p.did === users.did)) {
+                let peer = new RemotePeer(users.did)
+                peer.updateUserData(users)
+                this.remotePeers.push(peer)
+            }
         }
         await this.connectWithRetry(VoiceRTCInstance.localPeer!, VoiceRTCInstance.channel!, VoiceRTCInstance.callOptions)
     }
@@ -140,6 +149,7 @@ export class PeerMesh {
         this.remotePeers = []
         this.connectedPeers = new Set()
         this.callStartTime = null
+        this.inCall = false
     }
 
     private async connectWithRetry(localPeer: Peer, channel: string, callOptions: VoiceRTCOptions) {
@@ -187,6 +197,9 @@ export class PeerMesh {
                     connected = true
                     this.connectedPeers.add(peer.remotePeerId!)
                     log.debug(`Connection established successfully.`)
+                })
+                peer.dataConnection.on("data", data => {
+                    VoiceRTCInstance.handleWithDataReceived(data as VoiceMessage)
                 })
                 peer.dataConnection.on("close", () => {
                     this.connectedPeers.delete(peer.remotePeerId)
@@ -304,7 +317,7 @@ export class RemotePeer {
         }
     }
 
-    toggleStreams(state: boolean, did: string, options: VoiceRTCOptions, channel: string, type: ToggleType) {
+    toggleStreams(state: boolean, type: ToggleType) {
         switch (type) {
             case ToggleType.Video: {
                 if (state) {
@@ -333,16 +346,6 @@ export class RemotePeer {
                 break
             }
         }
-
-        this.dataConnection?.send({
-            type: options.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
-            channel: channel,
-            userInfo: {
-                did: did,
-                videoEnabled: options.video.enabled,
-                audioEnabled: options.audio,
-            },
-        })
     }
 
     updateUserData(userData: VoiceRTCUser) {
@@ -470,21 +473,24 @@ export class VoiceRTC {
         this.callOptions.video.enabled = state
         if (this.localStream) await this.getLocalStream(true)
 
-        this.peerMesh.remotePeers.forEach(p => p.toggleStreams(state, this.localPeer!.id, this.callOptions, this.channel!, ToggleType.Video))
+        this.peerMesh.remotePeers.forEach(p => p.toggleStreams(state, ToggleType.Video))
+        this.peerMesh.notify(this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo)
     }
 
     async toggleMute(state: boolean) {
         this.callOptions.audio.enabled = state
         if (this.localStream) await this.getLocalStream(true)
 
-        this.peerMesh.remotePeers.forEach(p => p.toggleStreams(state, this.localPeer!.id, this.callOptions, this.channel!, ToggleType.Mute))
+        this.peerMesh.remotePeers.forEach(p => p.toggleStreams(state, ToggleType.Mute))
+        this.peerMesh.notify(this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo)
     }
 
     async toggleDeafen(state: boolean) {
         // TODO: This isn't perfect because if you mute yourself, and then deafen yourself, un-deafaning will also unmute you which could be unexpected
         this.callOptions.audio.enabled = state
 
-        this.peerMesh.remotePeers.forEach(p => p.toggleStreams(state, this.localPeer!.id, this.callOptions, this.channel!, ToggleType.Deafen))
+        this.peerMesh.remotePeers.forEach(p => p.toggleStreams(state, ToggleType.Deafen))
+        this.peerMesh.notify(this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo)
     }
 
     async setVideoElements(localVideoCurrentSrc: HTMLVideoElement) {
@@ -564,6 +570,7 @@ export class VoiceRTC {
         let own = get(Store.state.user).key
         recipients = recipients.filter(r => r !== own)
         this.callOptions.video.enabled = !onlyAudioCall
+        Store.state.devices.cameraEnabled.set(!onlyAudioCall)
         this.callOptions.call.onlyAudioCall = onlyAudioCall
         this.callOptions.audio.enabled = true
 
@@ -580,7 +587,6 @@ export class VoiceRTC {
             log.error("Calling not setup")
             return
         }
-        let localStream: MediaStream
         try {
             await this.setupLocalPeer()
             // Joins and calls all peers. The mesh contains the to calling peers from #startToMakeACall
@@ -595,8 +601,27 @@ export class VoiceRTC {
             log.error(`Error making call: ${error}`)
         }
         if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = localStream!
+            this.localVideoCurrentSrc.srcObject = await this.getLocalStream()!
             await this.localVideoCurrentSrc.play()
+        }
+    }
+
+    async inviteToCall(dids: string[]) {
+        if (this.peerMesh.callStartTime == null) {
+            log.error("Not in a call")
+            return
+        }
+        try {
+            await this.setupLocalPeer()
+            // Joins and calls all peers. The mesh contains the to calling peers from #startToMakeACall
+            this.peerMesh.join(dids)
+            setTimeout(() => {
+                if (this.peerMesh.callStartTime === null) {
+                    this.leaveCall(true)
+                }
+            }, 100000)
+        } catch (error) {
+            log.error(`Error making call: ${error}`)
         }
     }
 
@@ -610,6 +635,7 @@ export class VoiceRTC {
         }
         this.callOptions.audio.enabled = audioOnly
         this.callOptions.video.enabled = !audioOnly
+        Store.state.devices.cameraEnabled.set(!audioOnly)
         this.callOptions.call.onlyAudioCall = audioOnly
         // If in a existing call leave it first
         this.peerMesh.leave()
@@ -622,6 +648,10 @@ export class VoiceRTC {
         })
         this.incomingConnections = []
         this.incomingCall = null
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = await this.getLocalStream()!
+            await this.localVideoCurrentSrc.play()
+        }
     }
 
     private async acceptCallInternal(call: MediaConnection) {
@@ -714,7 +744,7 @@ export class VoiceRTC {
         } catch (error) {
             log.error(`Error getting user media: ${error}`)
             localStream = await navigator.mediaDevices.getUserMedia({
-                video: false,
+                video: true,
                 audio: true,
             })
         }
@@ -828,13 +858,13 @@ export class VoiceRTC {
         this.makingCall = false
         this.acceptedIncomingCall = false
         this.incomingCall = null
-        if (this.localStream) this.localStream.getTracks().forEach(track => track.stop())
-        this.localStream = null
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.pause()
             this.localVideoCurrentSrc.srcObject = null
             this.localVideoCurrentSrc = null
         }
+        if (this.localStream) this.localStream.getTracks().forEach(track => track.stop())
+        this.localStream = null
         this.peerMesh.clear()
         Store.state.activeCallMeta.set({})
     }
