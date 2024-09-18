@@ -18,6 +18,7 @@
 <div class="pill-tabs">
     {#each tabs as tab, index}
         <Button
+            hook="button-{tab.name}"
             text={tab.name}
             small
             class={`pill ${index === 0 ? "tab-first" : index > 0 && index < tabs.length - 1 ? "tab-middle" : "tab-last"}`}

@@ -25,30 +25,30 @@
     }
 </script>
 
-<div class="sticker-selector">
-    <div class="sidebar">
-        <Label text="Packs" />
+<div class="sticker-selector" data-cy="sticker-selector">
+    <div class="sidebar" data-cy="sticker-selector-sidebar">
+        <Label hook="sticker-selector-sidebar-label" text="Packs" />
 
         {#each stickers as collection}
             <a href={`#${collection.name}`} class="collection-link" aria-label={`Jump to ${collection.name}`}>
-                <img src={`${tempCDN}${collection.assets[0].path}`} alt={collection.name} />
+                <img data-cy="sticker-sidebar-collection" src={`${tempCDN}${collection.assets[0].path}`} alt={collection.name} />
             </a>
         {/each}
     </div>
     <div class="content">
         <div class="header">
             <!-- svelte-ignore missing-declaration -->
-            <Input alt placeholder={$_("generic.search_placeholder")} bind:value={$searchQuery}>
+            <Input hook="sticker-search-input" alt placeholder={$_("generic.search_placeholder")} bind:value={$searchQuery}>
                 <Icon icon={Shape.Search} />
             </Input>
         </div>
         <div class="stickers">
             {#each stickers as collection}
                 <section id={collection.name}>
-                    <Label text={`${collection.name} (${collection.author})`} />
+                    <Label hook="sticker-selection-label" text={`${collection.name} (${collection.author})`} />
                     <div class="collection-items">
                         {#each collection.assets as sticker}
-                            <button class="sticker-item" on:click={() => handleStickerClick(sticker)} on:keydown={event => handleKeyDown(event, sticker)} tabindex="0" aria-label={`Select sticker ${sticker.name}`}>
+                            <button data-cy="sticker-item" class="sticker-item" on:click={() => handleStickerClick(sticker)} on:keydown={event => handleKeyDown(event, sticker)} tabindex="0" aria-label={`Select sticker ${sticker.name}`}>
                                 <img src={`${tempCDN}${sticker.path}`} alt={sticker.name} />
                                 <Label class="label" text={sticker.name} />
                             </button>

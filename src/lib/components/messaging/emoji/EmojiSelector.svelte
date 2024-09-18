@@ -108,12 +108,12 @@
     const emojiSize = createPersistentState("emoji.selectorsize", 44)
 </script>
 
-<div id="emoji-container">
+<div id="emoji-container" data-cy="emoji-container">
     <div class="input-group">
-        <Input alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
+        <Input hook="emoji-container-input-search" alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
             <Icon icon={Shape.Search} />
         </Input>
-        <button class="skin-tone-selector" on:click={toggleSkinTonePopup} aria-haspopup="true" aria-expanded={showSkinTonePopup}>
+        <button data-cy="emoji-container-skin-tone-selector" class="skin-tone-selector" on:click={toggleSkinTonePopup} aria-haspopup="true" aria-expanded={showSkinTonePopup}>
             <span class="emoji">{skinToneEmoji}</span>
         </button>
         {#if showSkinTonePopup}
