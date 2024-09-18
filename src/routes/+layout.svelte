@@ -124,8 +124,10 @@
                         return `
                     @font-face {
                         font-family: '${font.text}';
-                        src: url('/assets/font/${font.text}.woff2') format('woff2'), 
-                             url('/assets/font/${font.text}.woff') format('woff'); // Example static asset paths
+                        src: url('/assets/font/${font.text}.ttf') format('ttf'),
+                            url('/assets/font/${font.text}.otf') format('otf'), 
+                            url('/assets/font/${font.text}.woff2') format('woff2'), 
+                            url('/assets/font/${font.text}.woff') format('woff'); // Example static asset paths
                         font-weight: normal;
                         font-style: normal;
                     }

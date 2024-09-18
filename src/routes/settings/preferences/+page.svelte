@@ -249,7 +249,6 @@
                 const fileData = await blobToArrayBuffer(file)
 
                 const base64Url = generateBase64Url(fileData, "font/tts")
-                console.log(base64Url)
                 newFontUploadTitle = fontFam
                 availableFontsStore.update(availableFonts => [...availableFonts, { text: fontFam, value: base64Url }])
                 await updateFontBlobUrls()
