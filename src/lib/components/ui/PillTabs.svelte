@@ -23,7 +23,7 @@
             class={`pill ${index === 0 ? "tab-first" : index > 0 && index < tabs.length - 1 ? "tab-middle" : "tab-last"}`}
             appearance={active.name === tab.name ? Appearance.Primary : Appearance.Alt}
             on:click={() => handleTabClick(tab)}>
-            <Icon icon={tab.icon} />
+            <Icon icon={tab.icon} alt={active.name === tab.name} />
         </Button>
     {/each}
 </div>

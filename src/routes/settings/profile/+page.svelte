@@ -523,10 +523,11 @@
                     <Button
                         hook="button-integrations-add"
                         text={$_("generic.add")}
+                        appearance={Appearance.Primary}
                         on:click={_ => {
                             startEditingIntegration("", "")
                         }}>
-                        <Icon icon={Shape.Plus} />
+                        <Icon icon={Shape.Plus} alt />
                     </Button>
                 {/if}
             </div>
