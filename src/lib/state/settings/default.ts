@@ -64,11 +64,6 @@ export let defaultKeybinds = [
     },
 ]
 
-export interface FontOption {
-    text: string
-    value: string
-}
-
 export const availableFonts = [
     { text: Font.Poppins, value: Font.Poppins },
     { text: Font.SpaceMono, value: Font.SpaceMono },

@@ -1,10 +1,9 @@
-import { TypingIndicator, type Chat } from "$lib/types"
+import { TypingIndicator, type Chat, type FontOption } from "$lib/types"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
 import { EmojiFont, Font, Identicon, Theme } from "$lib/enums"
 import { Store as MainStore } from "../Store"
 import { mchats } from "$lib/mock/users"
-import type { FontOption } from "../settings/default"
 
 export interface IUIState {
     color: Writable<string>

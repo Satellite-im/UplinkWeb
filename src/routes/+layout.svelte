@@ -12,7 +12,7 @@
     import { checkIfUserIsLogged } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
-    import type { Keybind } from "$lib/types"
+    import type { FontOption, Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
@@ -24,12 +24,9 @@
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
-    import type { FontOption } from "$lib/state/settings/default"
     import InstallBanner from "$lib/components/ui/InstallBanner.svelte"
     import Market from "$lib/components/market/Market.svelte"
-
     TimeAgo.addDefaultLocale(en)
-
     let keybinds: Keybind[]
     let devmode: boolean = get(SettingsStore.state).devmode
     let color: string = get(UIStore.state.color)
