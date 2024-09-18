@@ -100,58 +100,61 @@
         }
     }
 
+    function getValidFontFormats(fontName: string): string {
+        const extensions = ["ttf", "otf", "woff2", "woff"]
+        return extensions.map(ext => `/assets/font/${fontName}.${ext} format('${ext}')`).join(", ")
+    }
+
     function buildStyle() {
         const activeFont = get(UIStore.state.font)
         const allFontsFromStore = get(UIStore.state.allFonts)
         let fontFaceRules = ""
+
         fontFaceRules = allFontsFromStore
             .map(({ text, value }) => {
                 const isActiveFont = activeFont && activeFont.value === value
 
-                if (text !== value) {
-                    if (value.startsWith("blob:") && isActiveFont) {
-                        return `
-                    @font-face {
-                        font-family: '${text}';
-                        src: url('${value}'); // Use the blob URL directly
-                        font-weight: normal;
-                        font-style: normal;
-                    }
-                    `
-                    }
-                } else {
-                    if (isActiveFont) {
-                        return `
-                    @font-face {
-                        font-family: '${font.text}';
-                        src: url('/assets/font/${font.text}.ttf') format('ttf'),
-                            url('/assets/font/${font.text}.otf') format('otf'), 
-                            url('/assets/font/${font.text}.woff2') format('woff2'), 
-                            url('/assets/font/${font.text}.woff') format('woff'); // Example static asset paths
-                        font-weight: normal;
-                        font-style: normal;
-                    }
-                    `
-                    }
+                // For user-uploaded fonts (blob URLs)
+                if (value.startsWith("blob:") && isActiveFont) {
+                    return `
+                @font-face {
+                    font-family: '${text}';
+                    src: url('${value}'); // Use the blob URL directly
+                    font-weight: normal;
+                    font-style: normal;
+                }`
+                }
+
+                // For default fonts, check extensions and build the URLs
+                if (!value.startsWith("blob:") && isActiveFont) {
+                    const validFontFormats = getValidFontFormats(text)
+                    return `
+                @font-face {
+                    font-family: '${text}';
+                    src: ${validFontFormats}; // Load only valid formats
+                    font-weight: normal;
+                    font-style: normal;
+                }`
                 }
             })
+            .filter(Boolean) // Remove any undefined/null values
             .join("\n")
 
         const primaryFont = activeFont.text || font.text
 
         return `
-    ${fontFaceRules}
-    :root {
-        --font-size: ${fontSize.toFixed(2)}rem;
-        --primary-color: ${color};
-        --primary-font: '${primaryFont}'; // Ensure primary font is set
-    }
-    .emoji {
-        font-family: '${emojiFont}';
-    }
-    .theme {
-        font-family: '${theme}';
-    }
+        ${fontFaceRules}
+        :root {
+            --font-size: ${fontSize.toFixed(2)}rem;
+            --primary-color: ${color};
+            --primary-font: '${primaryFont}'; // Ensure primary font is set
+        }
+        .emoji {
+            font-family: '${emojiFont}';
+        }
+        .theme {
+            font-family: '${theme}';
+        }
     `
     }
 
