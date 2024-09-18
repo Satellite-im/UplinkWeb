@@ -33,7 +33,7 @@
         {noWrap ? 'no-wrap' : ''}
         {muted ? 'muted' : ''}
         {centered ? 'centered' : ''}
-        {appearance}
+        {appearance === Appearance.Alt ? 'alt' : ''}
         {size}
         {singleLine ? 'single-line' : ''}
         {doubleLine ? 'double-line' : ''}
@@ -119,7 +119,7 @@
         }
 
         &.alt {
-            color: var(--color);
+            color: var(--color-alt) !important;
         }
 
         &.shadow {

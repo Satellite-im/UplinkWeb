@@ -11,6 +11,7 @@ export interface IUIState {
     cssOverride: Writable<string>
     font: Writable<Font>
     emojiFont: Writable<EmojiFont>
+    theme: Writable<string>
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
     hiddenChats: Writable<Chat[]>
@@ -28,6 +29,7 @@ class Store {
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
             font: createPersistentState("uplink.ui.font", Font.Poppins),
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
+            theme: createPersistentState("uplink.ui.theme", "default"),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
             sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),
             chats: createPersistentState("uplink.ui.chats", [], {
@@ -56,6 +58,14 @@ class Store {
 
     setFont(font: Font) {
         this.state.font.set(font)
+    }
+
+    setTheme(theme: string) {
+        this.state.theme.set(theme)
+    }
+
+    clearTheme() {
+        this.state.theme.set("default")
     }
 
     setEmojiFont(font: EmojiFont) {

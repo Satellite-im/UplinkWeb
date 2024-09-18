@@ -54,7 +54,7 @@
         {#if showScrollToBottom}
             <div class="scroll-to-bottom" transition:fade={{ duration: 300 }}>
                 <Button icon appearance={Appearance.Primary} on:click={() => scrollToBottom(scrollContainer)}>
-                    <Icon icon={Shape.ArrowDown} />
+                    <Icon icon={Shape.ArrowDown} alt />
                 </Button>
             </div>
         {/if}
