@@ -211,8 +211,8 @@
                 {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
-                {#if $userCache[user].key !== get(Store.state.user).key}
-                    {#if !$remoteStreams[user] || !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
+                {#if $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                    {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
                         <Participant
                             participant={$userCache[user]}
                             hasVideo={$userCache[user].media.is_streaming_video}
