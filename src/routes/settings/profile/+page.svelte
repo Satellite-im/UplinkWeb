@@ -217,6 +217,14 @@
             return true
         }
     }
+
+    log.debug(`DID KEY: ${userReference.key}`)
+    log.debug(`DID KEY: ${userReference.key}`)
+    log.debug(`DID KEY: ${userReference.key}`)
+    log.debug(`DID KEY: ${userReference.key}`)
+    log.debug(`DID KEY: ${userReference.key}`)
+    log.debug(`DID KEY: ${userReference.key}`)
+    log.debug(`DID KEY: ${userReference.key}`)
 </script>
 
 <div id="page">
