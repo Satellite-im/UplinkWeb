@@ -35,6 +35,7 @@
 <style lang="scss">
     .message-bubble {
         background-color: var(--primary-color);
+        color: var(--color-alt);
         padding: var(--padding-less) var(--padding);
         border-radius: var(--border-radius-more);
         border-bottom-right-radius: var(--border-radius-minimal);
@@ -44,7 +45,6 @@
         justify-content: center;
         display: inline-flex;
         gap: var(--gap);
-        color: var(--color);
         position: relative;
 
         :global(img) {
@@ -77,10 +77,10 @@
 
         &.remote {
             background-color: var(--alt-color);
+            color: var(--color);
             border-radius: var(--border-radius-more);
             border-bottom-left-radius: var(--border-radius-minimal);
             align-self: flex-start;
-            color: var(--color);
         }
 
         &.highlight-success {

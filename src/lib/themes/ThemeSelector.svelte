@@ -7,6 +7,7 @@
     let availableThemes = [
         { text: "Default", value: "default" },
         { text: "Dracula", value: "dracula" },
+        { text: "Olivia", value: "olivia" },
         { text: "Light", value: "light" },
     ]
 

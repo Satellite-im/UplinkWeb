@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Input } from "$lib/elements"
-    import { Shape } from "$lib/enums"
+    import { Appearance, Shape } from "$lib/enums"
 
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
@@ -178,8 +178,8 @@
         </PopupButton>
     {/if}
 
-    <Button hook="button-chatbar-send-message" icon tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
-        <Icon icon={Shape.ChevronRight} />
+    <Button hook="button-chatbar-send-message" icon appearance={Appearance.Primary} tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
+        <Icon icon={Shape.ChevronRight} alt />
     </Button>
 </div>
 
