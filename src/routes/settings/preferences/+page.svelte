@@ -73,6 +73,7 @@
         UIStore.setThemeColor(hex)
     }
     const blobUrlMap: Record<string, string> = {}
+
     function getFontFamilyName(fontFile: File): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader()
@@ -159,23 +160,39 @@
         })
     }
 
-    async function saveFontToDB(fileName: string, fileData: Blob): Promise<void> {
+    async function saveFontToDB(fileName: string, fileData: Blob): Promise<boolean> {
         const db = await openDatabase()
 
         return new Promise((resolve, reject) => {
             const transaction = db.transaction("fonts", "readwrite")
             const store = transaction.objectStore("fonts")
-            const request = store.put({ fileName, fileData })
 
-            request.onsuccess = () => {
-                console.log(`Font saved to DB: ${fileName}`)
+            const checkRequest = store.get(fileName)
 
-                resolve()
+            checkRequest.onsuccess = () => {
+                const existingFont = checkRequest.result
+
+                if (existingFont) {
+                    Store.addToastNotification(new ToastMessage("", `Font already exists in DB: ${fileName}`, 2))
+                    resolve(false)
+                } else {
+                    const saveRequest = store.put({ fileName, fileData })
+
+                    saveRequest.onsuccess = () => {
+                        Store.addToastNotification(new ToastMessage("", `Font saved to DB: ${fileName}`, 2))
+                        resolve(true)
+                    }
+
+                    saveRequest.onerror = () => {
+                        Store.addToastNotification(new ToastMessage("", `Error saving font to DB: ${fileName}`, 2))
+                        reject("Error saving font to IndexedDB")
+                    }
+                }
             }
 
-            request.onerror = () => {
-                console.error(`Error saving font to DB: ${fileName}`)
-                reject("Error saving font to IndexedDB")
+            checkRequest.onerror = () => {
+                Store.addToastNotification(new ToastMessage("", `Error checking font in DB: ${fileName}`, 2))
+                reject("Error checking font in IndexedDB")
             }
         })
     }
@@ -244,7 +261,9 @@
 
                 const fontFam = (await getFontFamilyName(file)).replace(/\s+/g, "")
 
-                await saveFontToDB(fontFam, file)
+                const isSaved = await saveFontToDB(fontFam, file)
+
+                if (!isSaved) continue
 
                 const fileData = await blobToArrayBuffer(file)
 
