@@ -135,7 +135,6 @@
             .map(({ text, value }) => {
                 const isActiveFont = activeFont && activeFont.value === value
 
-                // For user-uploaded fonts (blob URLs)
                 if (value.startsWith("blob:") && isActiveFont) {
                     return `
                 @font-face {
@@ -146,7 +145,6 @@
                 }`
                 }
 
-                // For default fonts, check extensions and build the URLs
                 if (!value.startsWith("blob:") && isActiveFont) {
                     const validFontFormats = getValidFontFormats(text)
                     return `
