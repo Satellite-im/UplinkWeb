@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { routes } from "$lib/mock/routes"
+    import { routes } from "$lib/defaults/routes"
     import Navigation from "./Navigation.svelte"
     import { Input, Icon, Button } from "$lib/elements"
     import { CallControls } from "$lib/components"

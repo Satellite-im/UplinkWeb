@@ -15,7 +15,7 @@ class Store {
         this.state = createPersistentState("uplink.wasm.relays", {
             // Default Relay addresses taken from warp RelayClient
             "Default US_NYC-1": {
-                address: "/ip4/167.71.93.202/tcp/4445/ws/p2p/12D3KooWSsn13GxHchpG6dtr7o6ARqSkcMtsBuojgL9XU9t1M1uE",
+                address: "/dns4/nyc-3-dev.relay.satellite.im/tcp/4410/wss/p2p/12D3KooWKmRupXFyBqJtm6FAySPe6Krmi6v5i6SsQ96NMZ9J4Nns",
                 active: true,
                 default: true,
             },

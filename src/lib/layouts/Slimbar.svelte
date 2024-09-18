@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { routes } from "$lib/mock/routes"
+    import { routes } from "$lib/defaults/routes"
     import Navigation from "./Navigation.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import { Appearance, ChatType, Route, Shape, Size } from "$lib/enums"
@@ -8,18 +8,19 @@
     import { slide } from "svelte/transition"
     import { animationDuration } from "$lib/globals/animations"
     import { Store } from "$lib/state/Store"
-    import type { Chat } from "$lib/types"
-    import { get } from "svelte/store"
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { Label } from "$lib/elements"
     import { goto } from "$app/navigation"
     import CommunityIcon from "$lib/components/community/icon/CommunityIcon.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
     import { _ } from "svelte-i18n"
+    import { SettingsStore } from "$lib/state"
     import { UIStore } from "$lib/state/ui"
 
     export let sidebarOpen: boolean = true
     export let activeRoute: Route = Route.Chat
+
+    $: settings = SettingsStore.state
     $: favorites = Store.state.favorites
 
     const dispatch = createEventDispatcher()
@@ -38,14 +39,16 @@
     {/if}
 
     <div class="content">
-        <Button
-            appearance={Appearance.Alt}
-            on:click={() => {
-                UIStore.toggleMarket()
-            }}
-            icon>
-            <Icon icon={Shape.Shop} />
-        </Button>
+        {#if $settings.devmode}
+          <Button
+              appearance={Appearance.Alt}
+              on:click={() => {
+                  UIStore.toggleMarket()
+              }}
+              icon>
+              <Icon icon={Shape.Shop} />
+          </Button>
+        {/if}
         {#if $favorites.length}
             <Label hook="label-favorites" text={$_("generic.faves")} />
             {#each $favorites as favorite}
@@ -70,7 +73,10 @@
         {/if}
 
         <slot></slot>
-        <CommunityIcon name="Satellite.im" image="/assets/logo/satellite.png" />
+
+        {#if $settings.devmode}
+            <CommunityIcon name="Satellite.im" image="/assets/logo/satellite.png" />
+        {/if}
     </div>
 
     {#if !sidebarOpen}
