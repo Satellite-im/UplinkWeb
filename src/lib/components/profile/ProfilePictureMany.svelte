@@ -33,7 +33,7 @@
     {/each}
     <div class="count">
         <Icon icon={Shape.Users} size={Size.Smaller} alt />
-        <Text size={Size.Smaller} appearance={Appearance.Alt}>
+        <Text hook="profile-picture-many-length" size={Size.Smaller} appearance={Appearance.Alt}>
             {users.length}
         </Text>
     </div>
