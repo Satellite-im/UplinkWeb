@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { Button, Icon, Input } from "$lib/elements"
+    import { Button, Icon, Input, Label } from "$lib/elements"
     import { Appearance, MessageAttachmentKind, MessagePosition, Shape, Size } from "$lib/enums"
-
-
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
     import { Store } from "$lib/state/Store"
@@ -11,10 +9,10 @@
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { Chat, GiphyGif, Message, User } from "$lib/types"
-    import { PopupButton } from "$lib/components"
-    import { OperationState, type Chat, type GiphyGif, type Message as MessageType } from "$lib/types"
-    import { FileEmbed, ImageEmbed, Message, PopupButton, ProfilePicture, STLViewer } from "$lib/components"
+    import type { Chat, GiphyGif, User } from "$lib/types"
+    import { Message, PopupButton } from "$lib/components"
+    import { OperationState, type Message as MessageType } from "$lib/types"
+    import { FileEmbed, ImageEmbed, ProfilePicture, STLViewer } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
     import { UIStore } from "$lib/state/ui"
