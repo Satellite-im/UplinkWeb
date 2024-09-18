@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from "$lib/elements/Icon.svelte"
     import Text from "$lib/elements/Text.svelte"
-    import { Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types"
     import { createEventDispatcher } from "svelte"
     import ProfilePicture from "./ProfilePicture.svelte"
@@ -31,9 +31,9 @@
             <ProfilePicture hook="profile-picture-many-single-pic" id={user.key} size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
         {/if}
     {/each}
-    <div class="count" data-cy="profile-picture-many-count">
-        <Icon icon={Shape.Users} size={Size.Smaller} />
-        <Text hook="profile-picture-many-length" size={Size.Smaller}>
+    <div class="count">
+        <Icon icon={Shape.Users} size={Size.Smaller} alt />
+        <Text size={Size.Smaller} appearance={Appearance.Alt}>
             {users.length}
         </Text>
     </div>

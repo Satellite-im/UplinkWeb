@@ -1,60 +1,58 @@
+/* theme: Light */
+
 :root {
     --primary-font: "Poppins";
 
     --black: #000;
-    --background: #0d0e16;
-    --background-alt: color-mix(in srgb, var(--background) 60%, #21263a);
+    --background: white;
+    --background-alt: color-mix(in srgb, var(--background) 50%, #bebebe);
+
+    --color: #000000;
+    --color-bright: #676767;
+    --color-muted: #333333;
+    --color-alt: #000;
+    --placeholder-color: var(--color-muted);
+    --link-color: #ff860d;
+
+    --focus-color: var(--primary-color);
+    --highlight-color: #d9d9d9;
+
+    --primary-color: #c0c6fc;
+    --primary-color-alt: color-mix(in srgb, var(--primary-color) 95%, black);
+
+    --alt-color: #e4edf6;
+    --alt-color-alt: color-mix(in srgb, var(--secondary) 90%, black);
+
+    --success-color: #17b7ba;
+    --success-color-alt: #079a7c;
+
+    --warning-color: #df9d10;
+    --warning-color-alt: #d67c22;
+
+    --error-color: #f93854;
+    --error-color-alt: #fa4662;
+
+    --border-color: #eee;
+    --border-color-alt: #dbdbdb;
+
+    --tooltip-color: #0f121b;
 
     --animation-speed: 0.2s;
     --animation-speed-mid: 1s;
     --animation-speed-slow: 2s;
     --animation-style: ease;
 
-    --color: #d7e2ff;
-    --color-bright: #fff;
-    --color-muted: #a2b2ee;
-    --color-alt: #d7e2ff;
-    --placeholder-color: #97a7e4;
-    --link-color: #8d8dfc;
-
-    --focus-color: var(--primary-color);
-    --highlight-color: #4d4dff;
-
-    --primary-color: #4d4dff;
-    --primary-color-alt: color-mix(in srgb, var(--primary-color) 90%, white);
-
-    --alt-color: #21263a;
-    --alt-color-alt: #23293e;
-
     --cp-bg-color: transparent;
     --input-size: var(--input-height);
     --cp-border-color: transparent;
     --cp-input-color: var(--color);
 
-    --success-color: #12c046;
-    --success-color-alt: color-mix(in srgb, var(--success-color) 90%, white);
-
-    --info-color: #0771fa;
+    --info-color: #0771fa; /* No equivalent in old CSS, keeping original */
     --info-color-alt: color-mix(in srgb, var(--info-color) 90%, white);
-
-    --error-color: #f93854;
-    --error-color-alt: color-mix(in srgb, var(--error-color) 90%, white);
-
-    --warning-color: #feca57;
-    --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%, white);
-
-    --border-color: #1c1d2b;
-    --border-color-alt: color-mix(in srgb, var(--border-color) 90%, white);
-
-    --tooltip-color: #0f121b;
-
-    --input-height: 2.75rem;
-    --spacer-size: 2rem;
-    --swatch-size: var(--input-height);
 
     --disabled-opacity: 0.75;
 
-    --opaque-color: rgba(18, 21, 33, 0.75);
+    --opaque-color: rgba(224, 224, 224, 0.9); /* From --background-modal in old CSS */
     --blur-radius: 4px;
 
     /* Border Radius / Corners */
@@ -113,5 +111,4 @@
     --min-call-screen-height: 15rem;
     --emoji-selector-height: 30rem;
     --sticker-width: 8.5rem;
-    --sticker-width-rendered: 18rem;
 }

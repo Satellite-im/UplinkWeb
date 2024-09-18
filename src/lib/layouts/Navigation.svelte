@@ -87,9 +87,9 @@
                 outline={activeRoute !== route.to && !icons}
                 appearance={activeRoute === route.to ? Appearance.Primary : Appearance.Alt}
                 on:click={() => handleNavigate(route)}>
-                <Icon icon={route.icon} />
+                <Icon alt={activeRoute === route.to} icon={route.icon} />
                 {#if !icons}
-                    <Text>{route.name}</Text>
+                    <Text appearance={activeRoute !== route.to ? Appearance.Default : Appearance.Alt}>{route.name}</Text>
                 {/if}
             </Button>
         </div>

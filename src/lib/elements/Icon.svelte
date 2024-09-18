@@ -33,7 +33,7 @@
         min-height: var(--icon-size);
 
         &.alt {
-            color: var(--color);
+            color: var(--color-alt);
         }
 
         &.muted {

@@ -117,7 +117,8 @@
         "pinned-messages": "Pinned",
         "send-coin": "Send Coin",
         "show-participants": "Participants",
-        "group-settings": "Settings"
+        "group-settings": "Settings",
+        "replyTo": "Replying to: {user}"
     },
     "community": {
         "title": "Satellite Community - General",
