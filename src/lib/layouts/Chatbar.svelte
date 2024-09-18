@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Button, Icon, Input } from "$lib/elements"
-    import { Shape } from "$lib/enums"
+    import { Button, Icon, Input, Label } from "$lib/elements"
+    import { Appearance, MessageAttachmentKind, MessagePosition, Shape, Size } from "$lib/enums"
 
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
@@ -10,16 +10,22 @@
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { Chat, GiphyGif, Message } from "$lib/types"
-    import { PopupButton } from "$lib/components"
+    import { OperationState, type Chat, type GiphyGif, type Message as MessageType } from "$lib/types"
+    import { FileEmbed, ImageEmbed, Message, PopupButton, ProfilePicture, STLViewer } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
     import { UIStore } from "$lib/state/ui"
     import { emojiList } from "$lib/components/messaging/emoji/EmojiList"
     import { tempCDN } from "$lib/utils/CommonVariables"
-    import { on } from "events"
+    import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
+    import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
+    import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
+    import { getValidPaymentRequest } from "$lib/utils/Wallet"
+    import { VoiceRTCMessageType } from "$lib/media/Voice"
+    import Text from "$lib/elements/Text.svelte"
+    import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
 
-    export let replyTo: Message | undefined = undefined
+    export let replyTo: MessageType | undefined = undefined
     export let filesSelected: [File?, string?][] = []
     export let emojiClickHook: (emoji: string) => boolean
     export let activeChat: Chat
@@ -154,7 +160,60 @@
         on:enter={_ => sendMessage($message)} />
 
     <slot></slot>
+    {#if replyTo}
+        <div class="chatbar-reply">
+            <StoreResolver value={replyTo.details.origin} resolver={v => Store.getUser(v)} let:resolved>
+                <Label text={$_("chat.replyTo", { values: { user: resolved.name } })} />
+                <div class="reply-message">
+                    <Message id={replyTo.id} remote={false} position={MessagePosition.First} morePadding={replyTo.text.length > 1 || replyTo.attachments.length > 0}>
+                        {#each replyTo.text as line}
+                            {#if getValidPaymentRequest(line) != undefined}
+                                <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
+                            {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
+                                <Text hook="text-chat-message" markdown={line} />
+                            {:else if line.includes(tempCDN)}
+                                <div class="sticker">
+                                    <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                </div>
+                            {/if}
+                        {/each}
 
+                        {#if replyTo.attachments.length > 0}
+                            {#each replyTo.attachments as attachment}
+                                {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
+                                    <FileEmbed
+                                        fileInfo={{
+                                            id: "1",
+                                            isRenaming: OperationState.Initial,
+                                            source: "unknown",
+                                            name: attachment.name,
+                                            size: attachment.size,
+                                            icon: Shape.Document,
+                                            type: "unknown/unknown",
+                                            remotePath: "",
+                                        }} />
+                                {:else if attachment.kind === MessageAttachmentKind.Image}
+                                    <ImageEmbed source={attachment.location} name={attachment.name} filesize={attachment.size} />
+                                {:else if attachment.kind === MessageAttachmentKind.Text}
+                                    <TextDocument />
+                                {:else if attachment.kind === MessageAttachmentKind.STL}
+                                    <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
+                                {:else if attachment.kind === MessageAttachmentKind.Audio}
+                                    <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                {:else if attachment.kind === MessageAttachmentKind.Video}
+                                    <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                {/if}
+                            {/each}
+                        {/if}
+                    </Message>
+                    <ProfilePicture id={resolved.key} hook="message-group-remote-profile-picture" size={Size.Small} image={resolved.profile.photo.image} status={resolved.profile.status} highlight={Appearance.Default} notifications={0} />
+                    <Button appearance={Appearance.Default} icon={true} small={true} on:click={_ => (replyTo = undefined)}>
+                        <Icon icon={Shape.XMark} />
+                    </Button>
+                </div>
+            </StoreResolver>
+        </div>
+    {/if}
     <PopupButton hook="button-chatbar-emoji-picker" name={$_("chat.emojiPicker")} class="emoji-popup" bind:open={$emojiSelectorOpen}>
         <CombinedSelector active={{ name: $_("chat.emoji"), icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
         <div slot="icon" class="control">
@@ -191,11 +250,49 @@
         gap: var(--gap);
         width: 100%;
         border-top: var(--border-width) solid var(--border-color);
+        position: relative;
 
         :global(.emoji-popup) {
             position: absolute;
             right: 1rem;
             bottom: var(--input-height);
+        }
+
+        .chatbar-reply {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            bottom: 100%;
+            left: var(--gap);
+            right: var(--gap);
+            padding: var(--padding-minimal);
+            padding-left: var(--padding);
+            padding-right: var(--padding);
+            background-color: var(--alt-color-alt);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            max-height: 160px;
+            .reply-message {
+                display: flex;
+                align-items: center;
+                gap: var(--gap);
+                margin-top: var(--padding-less);
+                margin-bottom: var(--padding-less);
+                :global(.text) {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    text-align: left;
+                }
+            }
+            :global(.button) {
+                position: absolute;
+                top: var(--padding-less);
+                right: var(--padding-less);
+                z-index: 1;
+            }
         }
     }
 
