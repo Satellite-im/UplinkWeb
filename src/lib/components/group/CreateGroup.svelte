@@ -11,30 +11,66 @@
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     export let embedded: boolean = false
+
     let name = ""
     let recipients: User[] = []
+    let nameError = false
+    let error: string | null = null
 
     function update_recipients(recipient: User) {
-        let new_recipient_list = recipients
+        let new_recipient_list = [...recipients]
 
-        if (recipients.includes(recipient)) {
+        if (recipients.map(r => r.key).includes(recipient.key)) {
             new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1)
         } else {
             new_recipient_list.push(recipient)
         }
 
         recipients = new_recipient_list
+
+        // Clear error when the user updates the recipient list
+        if (recipients.length > 0) {
+            error = null
+        }
     }
 
     function contains_recipient(list: User[], recipient: User): boolean {
-        return list.includes(recipient)
+        return list.map(r => r.key).includes(recipient.key)
+    }
+
+    function validateGroupName(name: string): boolean {
+        if (name.trim().length === 0) {
+            nameError = true
+            return false
+        } else {
+            nameError = false
+            return true
+        }
     }
 
     $: friends = Store.getUsers(Store.state.friends)
     const dispatch = createEventDispatcher()
-    function onCreate() {
+
+    async function onCreate() {
+        if (recipients.length === 0) {
+            // Validate before creating group chat
+            error = $_("chat.group.noMembers") || "Please select at least one member."
+            return
+        }
+
+        if (validateGroupName(name)) {
+            let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
+            conversation.onSuccess(chat => {
+                Store.setActiveChat(chat)
+            })
+            onCreateComplete()
+        }
+    }
+
+    function onCreateComplete() {
         name = ""
         recipients = []
+        error = null
         dispatch("create")
     }
 </script>
@@ -42,7 +78,17 @@
 <div class="new-chat" data-cy="modal-create-group-chat">
     <div class="select-user">
         <Label hook="label-create-group-name" text={$_("chat.group.name")} />
-        <Input hook="input-create-group-name" alt bind:value={name} />
+        <Input hook="input-create-group-name" alt bind:value={name} on:input={() => validateGroupName(name)} />
+
+        <!-- Error message for invalid group name -->
+        {#if nameError}
+            <div class="error-message">
+                <Text size={Size.Small} appearance={Appearance.Error}>
+                    {$_("chat.group.error")}
+                </Text>
+            </div>
+        {/if}
+
         <Label hook="label-create-group-members" text={$_("chat.group.members")} />
         <div class="user-list">
             {#each recipients as recipient}
@@ -51,18 +97,13 @@
                     <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Button
-                        small
-                        outline
-                        icon
-                        on:click={_ => {
-                            update_recipients(recipient)
-                        }}>
+                    <Button small outline icon on:click={() => update_recipients(recipient)}>
                         <Icon icon={Shape.XMark} alt class="control" />
                     </Button>
                 </div>
             {/each}
         </div>
+
         <Label hook="label-create-group-select-members" text={$_("chat.group.select")} />
         <div class="user-selection-list {embedded ? 'embedded' : ''}">
             {#each $friends as recipient}
@@ -80,18 +121,16 @@
                 </button>
             {/each}
         </div>
+
+        <!-- Display error message if no recipients are selected -->
+        {#if error}
+            <Text appearance={Appearance.Error} size={Size.Small}>
+                {error}
+            </Text>
+        {/if}
+
         <Controls>
-            <Button
-                hook="button-create-group"
-                text={$_("chat.group.create")}
-                fill
-                on:click={async _ => {
-                    let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
-                    conversation.onSuccess(chat => {
-                        Store.setActiveChat(chat)
-                    })
-                    onCreate()
-                }}>
+            <Button hook="button-create-group" text={$_("chat.group.create")} fill disabled={nameError} on:click={onCreate}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </Controls>
@@ -113,8 +152,6 @@
         .select-user {
             min-height: fit-content;
             flex: 1;
-            border: var(--border-width) solid var(--border-color);
-            border-radius: var(--border-radius-less);
             padding: var(--gap);
             gap: var(--gap);
             display: inline-flex;
@@ -206,5 +243,9 @@
                 }
             }
         }
+    }
+
+    .error-message {
+        margin-top: var(--gap-less);
     }
 </style>

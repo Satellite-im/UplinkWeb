@@ -54,7 +54,7 @@
 </script>
 
 {#if $activeCall || pending}
-    <div class={`call-controls ${pending ? "incoming" : ""}`}>
+    <div data-cy="call-controls" class={`call-controls ${pending ? "incoming" : ""}`}>
         {#if settings?.audio?.callTimer && $activeCall}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -64,20 +64,21 @@
                     Store.setActiveChat($activeCall.chat)
                     goto(Route.Chat)
                 }}>
-                <Label text={$_("call.in_call")} />
-                <Text appearance={Appearance.Success} loading={loading}>
+                <Label hook="label-in-call" text={$_("call.in_call")} />
+                <Text hook="text-elapsed-time-call" appearance={Appearance.Success} loading={loading}>
                     {elapsedTime}
                 </Text>
             </div>
         {/if}
 
         {#if pending}
-            <Label text="Incoming Call..." />
+            <Label hook="label-incoming-call" text="Incoming Call..." />
             <Controls>
-                <Button tooltip="Answer" text="Answer" appearance={Appearance.Success} loading={loading} on:click={_ => {}}>
+                <Button hook="button-call-answer" tooltip="Answer" text="Answer" appearance={Appearance.Success} loading={loading} on:click={_ => {}}>
                     <Icon icon={Shape.PhoneCall} />
                 </Button>
                 <Button
+                    hook="button-call-deny"
                     tooltip="End"
                     text="Deny"
                     appearance={Appearance.Error}
@@ -91,16 +92,18 @@
         {:else if $activeCall}
             <Controls>
                 <Button
+                    hook="button-call-mute"
                     icon
                     appearance={muted ? Appearance.Error : Appearance.Alt}
                     tooltip={$_("call.mute")}
                     loading={loading}
                     on:click={_ => {
-                        VoiceRTCInstance.turnOnOffMicrophone()
+                        Store.updateMuted(!muted)
                     }}>
                     <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
                 </Button>
                 <Button
+                    hook="button-call-deafen"
                     icon
                     appearance={deafened ? Appearance.Error : Appearance.Alt}
                     tooltip={$_("call.deafen")}
@@ -111,6 +114,7 @@
                     <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
                 </Button>
                 <Button
+                    hook="button-call-end"
                     tooltip="End"
                     icon
                     appearance={Appearance.Error}
@@ -123,6 +127,7 @@
                 </Button>
                 {#if $activeChat.id !== $activeCall.chat.id || activeRoute !== Route.Chat}
                     <Button
+                        hook="button-call-go"
                         tooltip="Go"
                         icon
                         appearance={Appearance.Success}

@@ -8,26 +8,47 @@
     import { get, writable } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { GiphyGif, Message, User } from "$lib/types"
+    import type { Chat, GiphyGif, Message } from "$lib/types"
     import { PopupButton } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
+    import { UIStore } from "$lib/state/ui"
+    import { emojiList } from "$lib/components/messaging/emoji/EmojiList"
+    import { tempCDN } from "$lib/utils/CommonVariables"
+    import { on } from "events"
 
     export let replyTo: Message | undefined = undefined
     export let filesSelected: [File?, string?][] = []
-    export let typing: User[] = []
+    export let emojiClickHook: (emoji: string) => boolean
+    export let activeChat: Chat
 
     const dispatch = createEventDispatcher()
 
     let markdown = get(SettingsStore.state).messaging.markdownSupport
     let message = writable("")
-    let emojiSelectorOpen = writable(false)
+    $: emojiSelectorOpen = UIStore.state.emojiSelector
     let gifSelectorOpen = writable(false)
     let stickerSelectorOpen = writable(false)
+    let hackVariableToRefocusChatBar = writable("")
 
-    async function sendMessage(text: string) {
+    let chatMessages = Store.state.chatMessagesToSend
+
+    $: if (activeChat) {
+        message.set(get(chatMessages)[activeChat.id] || "")
+    }
+
+    $: if (message) {
+        let messages = get(Store.state.chatMessagesToSend)
+        chatMessages.update(messages => {
+            messages[activeChat.id] = $message
+            return messages
+        })
+        Store.state.chatMessagesToSend = chatMessages
+    }
+
+    async function sendMessage(text: string, isStickerOrGif: boolean = false) {
         let attachments: FileAttachment[] = []
         filesSelected.forEach(([file, path]) => {
             if (file) {
@@ -48,57 +69,94 @@
         result.onSuccess(res => {
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
-        message.set("")
+        if (!isStickerOrGif) {
+            message.set("")
+            chatMessages.update(messages => {
+                messages[activeChat.id] = ""
+                return messages
+            })
+        }
+
         replyTo = undefined
         dispatch("onsend")
     }
 
     function handleEmojiClick(emoji: string) {
         emojiSelectorOpen.set(false)
-        message.set($message + emoji)
+        gifSelectorOpen.set(false)
+        stickerSelectorOpen.set(false)
+        if (emojiClickHook(emoji)) return
+        message.update(m => m + emoji)
+        hackVariableToRefocusChatBar.set(Math.random().toString())
     }
 
     function handleGif(gif: GiphyGif) {
+        emojiSelectorOpen.set(false)
         gifSelectorOpen.set(false)
-    }
-
-    function handleSticker(gif: GiphyGif) {
         stickerSelectorOpen.set(false)
+        sendMessage(`![${gif.title}](${gif.images.original.url})`, true)
+        hackVariableToRefocusChatBar.set(Math.random().toString())
     }
 
-    function formatTyping() {
-        if (typing && typing.length > 3) {
-            return $_("chat.users-multiple-typing")
-        } else if (typing && typing.length == 1) {
-            return $_("chat.user-typing", { values: { user: typing[0].name } })
-        }
-        let users = typing.map(u => u.name).join(", ")
-        return $_("chat.user-typing", { values: { users: users } })
+    async function handleSticker(sticker: any) {
+        emojiSelectorOpen.set(false)
+        gifSelectorOpen.set(false)
+        stickerSelectorOpen.set(false)
+        let stickerUrl = `${tempCDN}${sticker.sticker.path}`
+        sendMessage(`![${sticker.sticker.name}](${stickerUrl})`, true)
+        hackVariableToRefocusChatBar.set(Math.random().toString())
     }
+
+    function replaceEmojis(inputText: string) {
+        let result = inputText
+
+        if (!get(SettingsStore.state).messaging.convertEmoji) {
+            return result
+        }
+
+        let isThereEmoji = false
+
+        emojiList.smileys_and_emotion.forEach(emoji => {
+            if (emoji.text && result.includes(emoji.text)) {
+                result = result.replaceAll(emoji.text, emoji.glyph)
+                isThereEmoji = true
+            }
+            if (emoji.shortname && result.includes(emoji.shortname)) {
+                result = result.replaceAll(emoji.shortname, emoji.glyph)
+                isThereEmoji = true
+            }
+        })
+
+        if (isThereEmoji) {
+            message.set(result)
+        }
+        return result
+    }
+
+    onMount(() => {
+        hackVariableToRefocusChatBar.set(Math.random().toString())
+    })
 </script>
 
-<div class="chatbar" data-cy="chatbar">
+<div class="chatbar" data-cy="chatbar" id={activeChat.id}>
     <Controls>
         <slot name="pre-controls"></slot>
     </Controls>
+    <Input
+        hook={`${activeChat.id}-${$hackVariableToRefocusChatBar}`}
+        alt
+        placeholder={$_("generic.placeholder")}
+        autoFocus={true}
+        bind:value={$message}
+        rounded
+        rich={markdown}
+        on:input={_ => replaceEmojis($message)}
+        on:enter={_ => sendMessage($message)} />
 
-    <div class="input-component">
-        <Input hook="chatbar-input" alt placeholder={$_("generic.placeholder")} autoFocus bind:value={$message} rounded rich={markdown} on:enter={_ => sendMessage($message)} on:input />
-        {#if typing && typing.length > 0}
-            <div class="typing-indicator">
-                {formatTyping()}
-                <div class="dots">
-                    <div class="dot dot-1"></div>
-                    <div class="dot dot-2"></div>
-                    <div class="dot dot-3"></div>
-                </div>
-            </div>
-        {/if}
-    </div>
     <slot></slot>
 
     <PopupButton hook="button-chatbar-emoji-picker" name={$_("chat.emojiPicker")} class="emoji-popup" bind:open={$emojiSelectorOpen}>
-        <CombinedSelector active={{ name: $_("chat.emoji"), icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} />
+        <CombinedSelector active={{ name: $_("chat.emoji"), icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
         <div slot="icon" class="control">
             <Icon icon={Shape.Smile} />
         </div>
@@ -106,14 +164,14 @@
 
     {#if !checkMobile()}
         <PopupButton hook="button-chatbar-gif-picker" name={$_("chat.gifSearch")} class="emoji-popup" bind:open={$gifSelectorOpen}>
-            <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:gif={e => handleGif(e.detail)} />
+            <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
             <div slot="icon" class="control">
                 <Icon icon={Shape.Gif} />
             </div>
         </PopupButton>
 
         <PopupButton hook="button-chatbar-sticker-picker" name={$_("chat.stickers")} class="emoji-popup" bind:open={$stickerSelectorOpen}>
-            <CombinedSelector active={{ name: $_("chat.stickers"), icon: Shape.Sticker }} on:sticker={e => handleSticker(e.detail)} />
+            <CombinedSelector active={{ name: $_("chat.stickers"), icon: Shape.Sticker }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
             <div slot="icon" class="control">
                 <Icon icon={Shape.Sticker} />
             </div>
@@ -133,40 +191,6 @@
         gap: var(--gap);
         width: 100%;
         border-top: var(--border-width) solid var(--border-color);
-        margin-bottom: var(--padding);
-
-        .input-component {
-            position: relative;
-            width: 100%;
-            height: fit-content;
-            .typing-indicator {
-                font-size: smaller;
-                position: absolute;
-                display: flex;
-                gap: var(--gap-less);
-                padding-left: var(--padding);
-                .dots {
-                    display: flex;
-                    gap: var(--gap-less);
-                    align-items: center;
-                }
-                .dot {
-                    height: var(--font-size-smaller);
-                    width: var(--font-size-smaller);
-                    border-radius: 50%;
-                    background: var(--color);
-                }
-                .dot-1 {
-                    animation: 1s pulse 0s infinite;
-                }
-                .dot-2 {
-                    animation: 1s pulse 0.33s infinite;
-                }
-                .dot-3 {
-                    animation: 1s pulse 0.66s infinite;
-                }
-            }
-        }
 
         :global(.emoji-popup) {
             position: absolute;
@@ -185,21 +209,6 @@
                 top: var(--padding-less);
                 width: 100%;
             }
-        }
-    }
-
-    @keyframes pulse {
-        0% {
-            background: var(--color);
-        }
-        25% {
-            background: var(--color);
-        }
-        75% {
-            background: var(--alt-color);
-        }
-        100% {
-            background: var(--color);
         }
     }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { routes } from "$lib/mock/routes"
+    import { routes } from "$lib/defaults/routes"
     import Navigation from "./Navigation.svelte"
     import { Input, Icon, Button } from "$lib/elements"
     import { CallControls } from "$lib/components"
@@ -14,6 +14,7 @@
     import { Slimbar } from "."
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { UIStore } from "$lib/state/ui"
 
     export let activeRoute: Route = Route.Chat
     export let open: boolean = true
@@ -50,7 +51,7 @@
     {#if open}
         <div class="sidebar">
             <div class="sidebar-pre">
-                <Input hook="input-sidebar-search" alt placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
+                <Input hook="input-sidebar-search" alt autoFocus={false} placeholder={$_("generic.search_placeholder")} bind:value={search} on:enter={handleEnter} on:input={handleSearch}>
                     <Icon icon={Shape.Search} />
                 </Input>
 
@@ -60,6 +61,19 @@
             </div>
 
             <div class="sidebar-content">
+                <!-- Commenting out the Marketplace button -->
+                <!--
+                <Button
+                    appearance={Appearance.Alt}
+                    on:click={() => {
+                        UIStore.toggleMarket()
+                    }}
+                    text="Marketplace"
+                    outline>
+                    <Icon icon={Shape.Shop} />
+                </Button>
+                -->
+
                 {#if settings && settings.widgets && settings.widgets.show}
                     <WidgetBar />
                 {/if}

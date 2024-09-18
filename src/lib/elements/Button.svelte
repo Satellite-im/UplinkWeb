@@ -29,6 +29,8 @@
                 return "tooltip-left"
             case TooltipPosition.RIGHT:
                 return "tooltip-right"
+            case TooltipPosition.BOTTOM:
+                return "tooltip-bottom"
             default:
                 return ""
         }
@@ -217,11 +219,6 @@
                 border-color: var(--primary-color);
                 color: var(--primary-color);
 
-                &:hover {
-                    background-color: var(--primary-color-alt);
-                    color: var(--color-alt);
-                }
-
                 &.alt,
                 &.success,
                 &.info,
@@ -233,11 +230,16 @@
                             color: var(--#{$type}-color);
 
                             &:hover {
-                                background-color: var(--#{$type}-color-alt);
+                                background-color: var(--alt-color);
                                 color: var(--color-alt);
                             }
                         }
                     }
+                }
+
+                &:hover {
+                    background-color: var(--primary-color-alt);
+                    color: var(--color-alt);
                 }
 
                 &.alt {

@@ -11,24 +11,24 @@
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
 </script>
 
-<div class="volume-mixer">
+<div class="volume-mixer" data-cy="volume-mixer">
     <div class="global">
-        <Label text="Master Volume" />
+        <Label hook="label-master-volume" text="Master Volume" />
         <div class="control">
             <RangeSelector min={0} max={200} value={100} />
-            <Text>100</Text>
+            <Text hook="text-master-volume">100</Text>
         </div>
     </div>
 
     {#each participants as user}
-        <div class="user-volume">
-            <Label text={$userCache[user].name} />
+        <div class="user-volume" data-cy="{$userCache[user].name}-volume">
+            <Label hook="label-mixer-username" text={$userCache[user].name} />
             <div class="control">
-                <ProfilePicture id={$userCache[user].key} size={Size.Smallest} image={$userCache[user].profile.photo.image} status={$userCache[user].profile.status} />
+                <ProfilePicture hook="mixer-user-picture" id={$userCache[user].key} size={Size.Smallest} image={$userCache[user].profile.photo.image} status={$userCache[user].profile.status} />
                 <div class="range">
                     <RangeSelector min={0} max={200} value={100} />
                 </div>
-                <Text>100</Text>
+                <Text hook="text-user-volume">100</Text>
             </div>
         </div>
     {/each}

@@ -1,11 +1,10 @@
-import { get, writable, type Writable } from "svelte/store"
+import { derived, get, writable, type Writable } from "svelte/store"
 import * as wasm from "warp-wasm"
 import { WarpStore } from "./WarpStore"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import type { FileInfo } from "$lib/types"
 import { log } from "$lib/utils/Logger"
-import { func } from "three/examples/jsm/nodes/Nodes.js"
 import prettyBytes from "pretty-bytes"
 
 /**
@@ -17,12 +16,37 @@ class ConstellationStore {
     public MAX_FILE_SIZE = 104857600
     public MAX_STORAGE_SIZE = 2 * 1024 * 1024 * 1024
 
+    private loaded = false
+
     /**
      * Creates an instance of ConstellationStore.
      * @param constellation - A writable store containing a ConstellationBox or null.
      */
     constructor(constellation: Writable<wasm.ConstellationBox | null>) {
         this.constellationWritable = constellation
+    }
+
+    /**
+     * Check if ConstellationStore is ready to be used
+     * When its not ready the root directory is using a default value instead of "root"
+     */
+    async checkLoaded() {
+        while (!this.loaded) {
+            const constellation = get(this.constellationWritable)
+            if (constellation) {
+                try {
+                    let dir = await constellation.root_directory()
+                    this.loaded = dir ? dir.name() !== "un-named directory" : false
+                    if (this.loaded) {
+                        break
+                    }
+                    await new Promise(f => setTimeout(f, 100))
+                } catch (e) {
+                    if (!`${e}`.includes("Constellation extension is unavailable")) throw e
+                    await new Promise(f => setTimeout(f, 100))
+                }
+            }
+        }
     }
 
     /**
@@ -45,13 +69,13 @@ class ConstellationStore {
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 
-    getStorageFreeSpaceSize(): Result<WarpError, number> {
+    async getStorageFreeSpaceSize(): Promise<Result<WarpError, number>> {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let maxSize = constellation.max_size()
+                let maxSize = await constellation.max_size()
                 this.MAX_STORAGE_SIZE = maxSize
-                let currentSize = constellation.current_size()
+                let currentSize = await constellation.current_size()
                 let freeSize = maxSize - currentSize
                 this.freeStorageSpace.set(prettyBytes(freeSize))
                 return success(freeSize)
@@ -88,7 +112,7 @@ class ConstellationStore {
                         break
                     }
                 }
-                this.getStorageFreeSpaceSize()
+                await this.getStorageFreeSpaceSize()
                 return success(undefined)
             } catch (error) {
                 log.error("Error uploading files from stream: " + error)
@@ -101,15 +125,15 @@ class ConstellationStore {
     /**
      * moves item/s from constellation.
      */
-    dropIntoFolder(fileName: string, toFolderName: string) {
+    async dropIntoFolder(fileName: string, toFolderName: string) {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let currentDir = constellation!.current_directory()
+                let currentDir = await constellation.current_directory()
                 currentDir.move_item_to(fileName, toFolderName)
                 return success(undefined)
             } catch (error) {
-                log.error("Error moving item to directory: " + error)
+                log.error(`Error moving item ${fileName} to directory ${toFolderName}: ` + error)
                 return failure(handleErrors(error))
             }
         }
@@ -124,7 +148,7 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let files = constellation.current_directory().get_items()
+                let files = (await constellation.current_directory()).get_items()
                 return success(files)
             } catch (error) {
                 log.error("Error getting current directory files: " + error)
@@ -144,7 +168,7 @@ class ConstellationStore {
         if (constellation) {
             try {
                 await constellation.remove(file_name, true)
-                this.getStorageFreeSpaceSize()
+                await this.getStorageFreeSpaceSize()
                 return success(undefined)
             } catch (error) {
                 return failure(handleErrors(error))
@@ -204,7 +228,7 @@ class ConstellationStore {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let currentPath = constellation.current_directory().path()
+                let currentPath = (await constellation.current_directory()).path()
                 await constellation.set_path(`${currentPath}/${directory_name}`)
                 return success(undefined)
             } catch (error) {
@@ -218,17 +242,17 @@ class ConstellationStore {
      * Goes back to the previous directory in the constellation.
      * @returns A Result containing either success or failure with a WarpError.
      */
-    async goBack(): Promise<Result<WarpError, void>> {
+    async goBack(): Promise<Result<WarpError, string>> {
         const constellation = get(this.constellationWritable)
         if (constellation) {
             try {
-                let currentPath = constellation.current_directory().path()
+                let currentPath = (await constellation.current_directory()).path()
                 if (this.isValidFormat(currentPath)) {
                     await constellation.set_path("")
                 } else {
                     await constellation.go_back()
                 }
-                return success(undefined)
+                return success((await constellation.current_directory()).id())
             } catch (error) {
                 return failure(handleErrors(error))
             }

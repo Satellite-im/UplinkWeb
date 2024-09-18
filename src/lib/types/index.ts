@@ -1,4 +1,19 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType, CommunityChannelKind, KeybindState, Integrations, CallDirection } from "$lib/enums"
+import {
+    Status,
+    type Appearance,
+    type Route,
+    type SettingsRoute,
+    type Shape,
+    MessageAttachmentKind,
+    KeybindAction,
+    MessageDirection,
+    ChatType,
+    CommunityChannelKind,
+    KeybindState,
+    Integrations,
+    CallDirection,
+    CommunitySettingsRoute,
+} from "$lib/enums"
 import type { Cancellable } from "$lib/utils/CancellablePromise"
 import type { Writable } from "svelte/store"
 
@@ -26,10 +41,15 @@ export type ProfileOverlay = {
 
 export type Bundle = {
     name: string
+    image: string
+    description: string
+    price: number
     frames: Frame[]
-    profileOverlays: ProfileOverlay[]
-    // themes: []
-    // fonts: []
+    overlays: ProfileOverlay[]
+    themes: []
+    fonts: []
+    titles: []
+    trinkets: []
 }
 
 export type SelectOption = {
@@ -96,6 +116,7 @@ export type MediaMeta = {
 
 export type User = {
     id: Id
+    loading?: boolean
     key: string
     name: string
     profile: ProfileData
@@ -131,7 +152,7 @@ export type ChatSettings = {
 export type NavRoute = {
     name: string
     icon: Shape
-    to: Route | SettingsRoute
+    to: Route | SettingsRoute | CommunitySettingsRoute
 }
 
 export type Chat = {
@@ -145,6 +166,7 @@ export type Chat = {
     notifications: number
     users: string[]
     typing_indicator: TypingIndicator
+    last_message_id: string
     last_message_at: Date
     last_message_preview: string
 }
@@ -259,7 +281,7 @@ export let defaultChat: Chat = {
     creator: undefined,
     settings: {
         displayOwnerBadge: true,
-        readReciepts: true,
+        readReceipts: true,
         permissions: {
             allowAnyoneToAddUsers: false,
             allowAnyoneToModifyPhoto: false,
@@ -268,6 +290,7 @@ export let defaultChat: Chat = {
     },
     users: [],
     typing_indicator: new TypingIndicator(),
+    last_message_id: "",
     last_message_at: new Date(),
     last_message_preview: "",
 }
@@ -391,6 +414,7 @@ export type GiphyGif = {
     uniqueKey: string
     images: {
         fixed_height_small: GiphyImage
+        original: GiphyImage
     }
     title: string
     loaded?: boolean
@@ -414,3 +438,5 @@ export type Integration = {
     location: string
     meta: any
 }
+
+export * from "./community"

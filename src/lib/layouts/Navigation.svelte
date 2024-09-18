@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
-    import { Appearance, Route, SettingsRoute } from "$lib/enums"
+    import { Appearance, CommunitySettingsRoute, Route, SettingsRoute } from "$lib/enums"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import { Store } from "$lib/state/Store"
@@ -11,14 +11,9 @@
     import { get } from "svelte/store"
 
     export let routes: NavRoute[] = []
-    export let activeRoute: Route | SettingsRoute = Route.Home
+    export let activeRoute: Route | SettingsRoute | CommunitySettingsRoute = Route.Home
     export let icons: boolean = false
     export let vertical: boolean = false
-
-    let settings: ISettingsState = get(SettingsStore.state)
-    SettingsStore.state.subscribe((s: ISettingsState) => {
-        settings = s
-    })
 
     let incomingRequests: FriendRequest[] = []
     let totalUnreads: number = 0
@@ -59,7 +54,7 @@
     }
 
     function overrides(route: NavRoute) {
-        if (route.to === Route.Chat && settings.messaging.quick) {
+        if (route.to === Route.Chat && $settings.messaging.quick) {
             return true
         }
         if (route.to === Route.Settings) return true
@@ -76,6 +71,8 @@
         unsubscribeStore()
         unsubscribeUIStore()
     })
+
+    $: settings = SettingsStore.state
 </script>
 
 <div class="navigation {vertical ? 'vertical' : 'horizontal'} {icons ? 'icons' : ''}">

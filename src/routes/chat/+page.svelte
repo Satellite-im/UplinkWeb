@@ -1,8 +1,6 @@
 <script lang="ts">
     import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
-    import TimeAgo from "javascript-time-ago"
-
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
@@ -17,7 +15,6 @@
         MessageReactions,
         MessageReplyContainer,
         ProfilePicture,
-        CoinBalance,
         Modal,
         ProfilePictureMany,
         STLViewer,
@@ -28,7 +25,7 @@
     import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { OperationState, type Chat, type User } from "$lib/types"
+    import { OperationState } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -42,18 +39,20 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import type { Attachment, Message as MessageType } from "$lib/types"
+    import type { Attachment, Message as MessageType, User } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
     import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
     import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
     import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
-    import { get_valid_payment_request } from "$lib/utils/Wallet"
+    import { getValidPaymentRequest } from "$lib/utils/Wallet"
     import { onMount } from "svelte"
     import PinnedMessages from "$lib/components/messaging/PinnedMessages.svelte"
     import { MessageEvent } from "warp-wasm"
-    import { debounce } from "$lib/utils/Functions"
+    import { debounce, getTimeAgo } from "$lib/utils/Functions"
+    import Controls from "$lib/layouts/Controls.svelte"
+    import { tempCDN } from "$lib/utils/CommonVariables"
 
     let loading = false
     let contentAsideOpen = false
@@ -63,20 +62,16 @@
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
     $: users = Store.getUsersLookup($activeChat.users)
-    $: loading = get(UIStore.state.chats).length > 0 && $users[$activeChat.users[1]]?.name === undefined
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
+    $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
+
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
-    const timeAgo = new TimeAgo("en-US")
 
     function toggleSidebar() {
         UIStore.toggleSidebar()
-    }
-
-    function getTimeAgo(dateInput: string | Date) {
-        const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
-        return timeAgo.format(date)
     }
 
     let transact: boolean = false
@@ -87,14 +82,16 @@
     let showMarket: boolean = false
     let withPinned: string | undefined = undefined
     let groupSettings: boolean = false
+    let unasavedChangesOnGroupSettings: boolean = false
     let search_filter: string
     let search_component: ChatFilter
     let dragging_files = 0
     let editing_message: string | undefined = undefined
     let editing_text: string | undefined = undefined
-    let emojis: string[] = ["👍", "👎", "❤️", "🖖", "😂"]
+    $: emojis = UIStore.getMostUsed()
     $: own_user = Store.state.user
     let replyTo: MessageType | undefined = undefined
+    let reactingTo: string | undefined
     let fileUpload: FileInput
     let files: [File?, string?][] = []
     let browseFiles: boolean = false
@@ -207,6 +204,7 @@
 
     async function reactTo(message: string, emoji: string, toggle: boolean) {
         let add = toggle ? !ConversationStore.hasReaction($activeChat, message, emoji) : true
+        if (add) UIStore.useEmoji(emoji)
         await RaygunStoreInstance.react($conversation!.id, message, add ? 0 : 1, emoji)
     }
 
@@ -222,10 +220,12 @@
         await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
     }
     let activeCallInProgress = false
+    let activeCallDid = ""
 
     Store.state.activeCall.subscribe(call => {
         if (call) {
             activeCallInProgress = true
+            activeCallDid = call.chat.id
         } else {
             activeCallInProgress = false
         }
@@ -239,6 +239,7 @@
         setInterval(() => {
             if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
                 activeCallInProgress = true
+                activeCallDid = VoiceRTCInstance.channel
             } else {
                 activeCallInProgress = false
             }
@@ -249,6 +250,14 @@
         if (!conversation) return []
         return conversation!.messages.flatMap(g => g.messages.filter(m => m.pinned))
     }
+
+    function handleClickOutsideEditInput(event: any) {
+        const myElement = document.getElementById(`chat-message-edit-input-${editing_message}`)
+        if (myElement && !myElement.contains(event.target)) {
+            editing_message = undefined
+        }
+    }
+    document.addEventListener("click", handleClickOutsideEditInput)
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -302,9 +311,15 @@
     {#if groupSettings}
         <Modal
             on:close={_ => {
-                groupSettings = false
+                if (!unasavedChangesOnGroupSettings) {
+                    groupSettings = false
+                }
             }}>
-            <GroupSettings on:create={_ => (groupSettings = false)} />
+            <GroupSettings
+                activeChat={$activeChat}
+                on:create={_ => (groupSettings = false)}
+                on:unasavedChanges={value => (unasavedChangesOnGroupSettings = value.detail)}
+                on:close={_ => ((groupSettings = false), (unasavedChangesOnGroupSettings = false))} />
         </Modal>
     {/if}
 
@@ -313,7 +328,7 @@
             on:close={_ => {
                 showUsers = false
             }}>
-            <ViewMembers adminControls members={Object.values($users)} on:create={_ => (showUsers = false)} />
+            <ViewMembers adminControls activeChat={$activeChat} members={Object.values($users)} on:create={_ => (showUsers = false)} />
         </Modal>
     {/if}
 
@@ -359,7 +374,11 @@
             </Button>
         </div>
 
-        {#each $chats as chat}
+        {#each $chats.slice().sort((a, b) => {
+            const dateA = new Date(a.last_message_at || 0)
+            const dateB = new Date(b.last_message_at || 0)
+            return dateB.getTime() - dateA.getTime()
+        }) as chat}
             <ContextMenu
                 hook="context-menu-sidebar-chat"
                 items={[
@@ -395,7 +414,7 @@
             <Topbar>
                 <div slot="before">
                     {#if $activeChat.users.length > 0}
-                        {#if $activeChat.users.length === 2}
+                        {#if $activeChat.kind === ChatType.DirectMessage}
                             <ProfilePicture
                                 hook="chat-topbar-profile-picture"
                                 typing={$activeChat.typing_indicator.size > 0}
@@ -419,37 +438,41 @@
                     {/if}
                 </div>
                 <svelte:fragment slot="controls">
-                    <CoinBalance balance={0.0} />
                     <Button
-                        hook="button-chat-transact"
-                        icon
-                        appearance={transact ? Appearance.Primary : Appearance.Alt}
-                        disabled={$activeChat.users.length === 0}
+                        hook="button-chat-call"
+                        tooltip={$_("chat.call")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         loading={loading}
-                        on:click={_ => {
-                            transact = true
+                        icon
+                        appearance={Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        on:click={async _ => {
+                            Store.setActiveCall($activeChat)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id, true)
+                            activeCallInProgress = true
                         }}>
-                        <Icon icon={Shape.SendCoin} />
-                    </Button>
-                    <Button hook="button-chat-call" loading={loading} icon appearance={Appearance.Alt} disabled={$activeChat.users.length === 0}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
                     <Button
                         icon
                         hook="button-chat-video"
+                        tooltip={$_("chat.videocall")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         appearance={Appearance.Alt}
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            Store.setActiveCall($activeChat)
                             await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
                             activeCallInProgress = true
+                            Store.setActiveCall($activeChat)
                         }}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>
                     <Button
                         icon
                         hook="button-chat-favorite"
+                        tooltip={$_("chat.favorite")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         appearance={$isFavorite ? Appearance.Primary : Appearance.Alt}
@@ -460,6 +483,8 @@
                     </Button>
                     <Button
                         hook="button-chat-pin"
+                        tooltip={$_("chat.pinned-messages")}
+                        tooltipPosition={TooltipPosition.BOTTOM}
                         icon
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
@@ -473,6 +498,9 @@
                     </Button>
                     {#if $activeChat.kind === ChatType.Group}
                         <Button
+                            hook="button-chat-group-participants"
+                            tooltip={$_("chat.show-participants")}
+                            tooltipPosition={TooltipPosition.BOTTOM}
                             icon
                             appearance={showUsers ? Appearance.Primary : Appearance.Alt}
                             loading={loading}
@@ -482,6 +510,9 @@
                             <Icon icon={Shape.Users} />
                         </Button>
                         <Button
+                            hook="button-chat-group-settings"
+                            tooltip={$_("chat.group-settings")}
+                            tooltipPosition={TooltipPosition.BOTTOM}
                             icon
                             appearance={groupSettings ? Appearance.Primary : Appearance.Alt}
                             loading={loading}
@@ -505,12 +536,12 @@
                 </svelte:fragment>
             </Topbar>
         {/if}
-        {#if activeCallInProgress}
+        {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
 
         <Conversation loading={loading}>
-            {#if $activeChat.users.length > 0}
+            {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
                     {#each $conversation.messages as group}
@@ -554,13 +585,17 @@
                                                 position={idx === 0 ? MessagePosition.First : idx === group.messages.length - 1 ? MessagePosition.Last : MessagePosition.Middle}
                                                 morePadding={message.text.length > 1 || message.attachments.length > 0}>
                                                 {#if editing_message === message.id}
-                                                    <Input alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
+                                                    <Input hook="chat-message-edit-input-{editing_message}" alt bind:value={editing_text} autoFocus rich on:enter={_ => edit_message(message.id, editing_text ? editing_text : "")} />
                                                 {:else}
                                                     {#each message.text as line}
-                                                        {#if get_valid_payment_request(line) != undefined}
-                                                            <Button text={get_valid_payment_request(line)?.to_display_string()} on:click={async () => get_valid_payment_request(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) || !line.includes(VoiceRTCMessageType.EndingCall)}
-                                                            <Text markdown={line} />
+                                                        {#if getValidPaymentRequest(line) != undefined}
+                                                            <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
+                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
+                                                            <Text hook="text-chat-message" markdown={line} />
+                                                        {:else if line.includes(tempCDN)}
+                                                            <div class="sticker">
+                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                                            </div>
                                                         {/if}
                                                     {/each}
 
@@ -602,7 +637,7 @@
                                                 {/if}
                                             </Message>
                                             <svelte:fragment slot="items" let:close>
-                                                <EmojiGroup emojis={emojis} emojiPick={emoji => reactTo(message.id, emoji, false)} close={close}></EmojiGroup>
+                                                <EmojiGroup emojis={$emojis} emojiPick={emoji => reactTo(message.id, emoji, true)} close={close} on:openPicker={_ => (reactingTo = message.id)}></EmojiGroup>
                                             </svelte:fragment>
                                         </ContextMenu>
                                     {/if}
@@ -646,7 +681,16 @@
             <Chatbar
                 filesSelected={files}
                 replyTo={replyTo}
+                activeChat={$activeChat}
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
+                emojiClickHook={emoji => {
+                    if (reactingTo) {
+                        reactTo(reactingTo, emoji, true)
+                        reactingTo = undefined
+                        return true
+                    }
+                    return false
+                }}
                 on:onsend={_ => (files = [])}
                 on:input={_ => {
                     typing()
@@ -678,6 +722,22 @@
                         </Button>
                     </ContextMenu>
                 </svelte:fragment>
+
+                <Controls>
+                    <Button
+                        hook="button-chat-transact"
+                        tooltip={$_("chat.send-coin")}
+                        icon
+                        outline
+                        appearance={transact ? Appearance.Primary : Appearance.Alt}
+                        disabled={$activeChat.users.length === 0}
+                        loading={loading}
+                        on:click={_ => {
+                            transact = true
+                        }}>
+                        <Icon icon={Shape.SendCoin} />
+                    </Button>
+                </Controls>
             </Chatbar>
         {/if}
     </div>
@@ -822,5 +882,9 @@
                 max-width: 100%;
             }
         }
+    }
+
+    .sticker {
+        width: var(--sticker-width-rendered);
     }
 </style>

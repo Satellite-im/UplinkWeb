@@ -47,6 +47,11 @@
         color: var(--color);
         position: relative;
 
+        :global(img) {
+            margin: var(--padding-less) 0;
+            border-radius: var(--border-radius);
+        }
+
         .pin-indicator {
             position: absolute;
             right: -6px;
@@ -143,6 +148,11 @@
             &.reply {
                 padding: 0;
             }
+        }
+
+        &:has(.sticker) {
+            padding: 0;
+            background-color: transparent;
         }
     }
 </style>

@@ -1,9 +1,7 @@
-import { get, writable, type Writable } from "svelte/store"
-import init, * as wasm from "warp-wasm"
-import { WarpStore } from "./WarpStore"
+import { get, writable, Writable } from "svelte/store"
+import * as wasm from "warp-wasm"
 import { log } from "$lib/utils/Logger"
-import { MultipassStoreInstance } from "./MultipassStore"
-import { failure, success, type Result } from "$lib/utils/Result"
+import { failure, success, Result } from "$lib/utils/Result"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { initWarp } from "./IWarp"
 
@@ -63,6 +61,18 @@ class TesseractStore {
     exists() {
         const tesseract = get(this.tesseractWritable)
         return tesseract?.exist("keypair")
+    }
+
+    fetchSeed() {
+        const tesseract = get(this.tesseractWritable)
+        if (!tesseract?.exist("mnemonic")) return undefined
+        return tesseract?.retrieve("mnemonic")
+    }
+
+    removeSeed() {
+        const tesseract = get(this.tesseractWritable)
+        if (!tesseract?.exist("mnemonic")) return
+        tesseract?._delete("mnemonic")
     }
 
     async initTesseract(from?: wasm.Tesseract) {

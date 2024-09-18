@@ -6,7 +6,7 @@ import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
 import { ChatType, MessageAttachmentKind, Route } from "$lib/enums"
-import { type User, type Chat, defaultChat, type Message, defaultUser, mentions_user, type FileProgress, type Attachment } from "$lib/types"
+import { type User, type Chat, defaultChat, type Message, mentions_user, type Attachment } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
@@ -15,14 +15,12 @@ import { MultipassStoreInstance } from "./MultipassStore"
 import { log } from "$lib/utils/Logger"
 import { imageFromData } from "./ConstellationStore"
 import { Sounds } from "$lib/components/utils/SoundHandler"
-import { _ } from "svelte-i18n"
 import { SettingsStore } from "$lib/state"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { page } from "$app/stores"
 import { goto } from "$app/navigation"
 
 const MAX_PINNED_MESSAGES = 100
-// Ok("{\"AttachedProgress\":[{\"Constellation\":{\"path\":\"path\"}},{\"CurrentProgress\":{\"name\":\"name\",\"current\":5,\"total\":null}}]}")
 export type FetchMessagesConfig =
     | {
           type: "MostRecent"
@@ -77,6 +75,7 @@ export type ConversationSettings =
           group: {
               members_can_add_participants: boolean
               members_can_change_name: boolean
+              members_can_change_photo: boolean
           }
       }
 
@@ -99,7 +98,6 @@ class RaygunStore {
         this.raygunWritable = raygun
         this.messageListeners = writable({})
         this.raygunWritable.subscribe(async r => {
-            await new Promise(f => setTimeout(f, 100))
             if (r) {
                 let listeners = get(this.messageListeners)
                 if (Object.keys(listeners).length > 0) {
@@ -108,7 +106,7 @@ class RaygunStore {
                         handler.cancel()
                     }
                 }
-                this.initConversationHandlers(r)
+                await this.initConversationHandlers(r)
                 // handleRaygunEvent must be called after initConversationHandlers
                 // this is because if 'raygun.raygun_subscribe' is called before 'raygun.list_conversations', it causes 'raygun.list_conversations' to hang. (reason currently unknown)
                 this.handleRaygunEvent(r)
@@ -161,7 +159,7 @@ class RaygunStore {
     }
 
     async updateConversationSettings(conversation_id: string, settings: ConversationSettings) {
-        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error deleting message")
+        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error updating conversation settings")
     }
 
     /**
@@ -361,10 +359,16 @@ class RaygunStore {
     }
 
     private async handleRaygunEvent(raygun: wasm.RayGunBox) {
-        let events
+        let events: wasm.AsyncIterator | undefined
         while (!events) {
             // Have a buffer that aborts and retries in case #raygun_subscribe hangs
-            events = await Promise.race([raygun.raygun_subscribe(), new Promise(f => setTimeout(f, 100))])
+            events = await Promise.race([
+                raygun.raygun_subscribe(),
+                new Promise<undefined>(f => {
+                    setTimeout(f, 100)
+                    return undefined
+                }),
+            ])
         }
         let listener = {
             [Symbol.asyncIterator]() {
@@ -375,6 +379,8 @@ class RaygunStore {
         for await (const value of listener) {
             let event = parseJSValue(value)
             log.info(`Handling conversation event: ${JSON.stringify(event)}`)
+            log.info(`Event Type ${event.type}`)
+
             switch (event.type) {
                 case "conversation_created": {
                     let conversationId: string = event.values["conversation_id"]
@@ -400,6 +406,9 @@ class RaygunStore {
 
                     // Update stores
                     UIStore.removeSidebarChat(conversationId)
+                    Store.state.favorites.update(favoriteChats => {
+                        return favoriteChats.filter(c => !c.id.includes(conversationId))
+                    })
                     ConversationStore.removeConversation(conversationId)
                     if (get(Store.state.activeChat).id === conversationId) {
                         Store.clearActiveChat()
@@ -411,7 +420,22 @@ class RaygunStore {
     }
 
     private async initConversationHandlers(raygun: wasm.RayGunBox) {
-        let conversations = await raygun.list_conversations()
+        let conversations: wasm.ConversationList | undefined
+        while (!conversations) {
+            // It seems it takes a while for raygun to be ready so we retry till this succeeds
+            try {
+                conversations = await Promise.race([
+                    raygun.list_conversations(),
+                    new Promise<undefined>(f => {
+                        setTimeout(f, 100)
+                        return undefined
+                    }),
+                ])
+            } catch (e) {
+                if (!`${e}`.includes("RayGun extension is unavailable")) throw e
+                await new Promise(f => setTimeout(f, 100))
+            }
+        }
         let handlers: { [key: string]: Cancellable } = {}
         for (let conversation of conversations.convs()) {
             let handler = await this.createConversationEventHandler(raygun, conversation.id())
@@ -422,15 +446,19 @@ class RaygunStore {
 
     private async createConversationEventHandler(raygun: wasm.RayGunBox, conversation_id: string) {
         let stream = await raygun.get_conversation_stream(conversation_id)
-        return create_cancellable_handler(async () => {
+        return create_cancellable_handler(async isCancelled => {
             let listener = {
                 [Symbol.asyncIterator]() {
                     return stream
                 },
             }
-            for await (const value of listener) {
+            streamLoop: for await (const value of listener) {
                 let event = parseJSValue(value)
                 log.info(`Handling message event: ${JSON.stringify(event)}`)
+                if (isCancelled()) {
+                    log.debug(`Breaking stream loop not necessary anymore from: ${conversation_id}`)
+                    break streamLoop
+                }
                 switch (event.type) {
                     case "message_sent": {
                         let conversation_id: string = event.values["conversation_id"]
@@ -487,7 +515,7 @@ class RaygunStore {
                         let message_id: string = event.values["message_id"]
                         let message = await this.convertWarpMessage(conversation_id, await raygun.get_message(conversation_id, message_id))
                         if (message) {
-                            ConversationStore.editMessage(conversation_id, message_id, message.text.join("\n"))
+                            ConversationStore.editMessage(conversation_id, message_id, message.text.join("\n"), message)
                         }
                         break
                     }

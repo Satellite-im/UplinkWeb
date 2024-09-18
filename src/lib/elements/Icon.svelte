@@ -11,9 +11,16 @@
 
     let clazz = ""
     export { clazz as class }
+
+    export let style = ""
 </script>
 
-<svg class="svg-icon {muted ? 'muted' : ''} {spin ? 'spin' : ''} {alt ? 'alt' : ''} {filled ? 'filled' : ''} {size} {highlight !== null ? `highlight-${highlight}` : ''} {clazz || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+<svg
+    style={style}
+    class="svg-icon {muted ? 'muted' : ''} {spin ? 'spin' : ''} {alt ? 'alt' : ''} {filled ? 'filled' : ''} {size} {highlight !== null ? `highlight-${highlight}` : ''} {clazz || ''}"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor">
     {@html icon}
 </svg>
 
@@ -71,8 +78,9 @@
         &.highlight-success,
         &.highlight-info,
         &.highlight-error,
+        &.highlight-alt,
         &.highlight-warning {
-            @each $type in success, info, error, warning {
+            @each $type in alt, success, info, error, warning {
                 &.highlight-#{$type} {
                     color: var(--#{$type}-color);
 

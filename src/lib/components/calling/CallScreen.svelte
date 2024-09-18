@@ -14,7 +14,7 @@
     import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -22,17 +22,36 @@
         expanded = !expanded
     }
 
-    let showSettings = false
     let showVolumeMixer = false
     let showCallSettings = false
 
-    let muted: boolean = VoiceRTCInstance.callOptions.audio
+    let muted: boolean = VoiceRTCInstance.callOptions.audio.enabled
     let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
 
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
 
+    function toggleFullscreen() {
+        const elem = document.getElementById("call-screen")
+
+        if (!document.fullscreenElement) {
+            if (elem?.requestFullscreen) {
+                elem.requestFullscreen()
+                isFullScreen = true
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen()
+                isFullScreen = false
+            }
+        }
+        otherUserSettingsInCall.videoEnabled = otherUserSettingsInCall.videoEnabled
+        otherUserSettingsInCall = otherUserSettingsInCall
+        userCallOptions = userCallOptions
+    }
+
     let permissionsGranted = false
+    let isFullScreen = false
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
@@ -41,30 +60,26 @@
 
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
-    })
-
-    let subscribeTwo = Store.state.devices.cameraEnabled.subscribe(state => {
-        cameraEnabled = state
-    })
-
-    let subscribeThree = Store.state.devices.deafened.subscribe(state => {
-        deafened = state
-    })
-
-    let subscribeFour = Store.state.activeCall.subscribe(state => {
-        log.debug(`Active call state changed: ${state}`)
         otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
-    function updateMuted() {
-        VoiceRTCInstance.turnOnOffMicrophone()
-    }
+    let subscribeTwo = Store.state.devices.cameraEnabled.subscribe(state => {
+        cameraEnabled = state
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
+    })
 
-    function updateCameraEnabled() {
-        Store.updateCameraEnabled(!cameraEnabled)
-        VoiceRTCInstance.turnOnOffCamera()
-    }
+    let subscribeThree = Store.state.devices.deafened.subscribe(state => {
+        deafened = state
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
+    })
+
+    let subscribeFour = Store.state.activeCall.subscribe(state => {
+        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+        userCallOptions = VoiceRTCInstance.callOptions
+    })
 
     const checkPermissions = async () => {
         try {
@@ -93,7 +108,7 @@
                 }
             }
         } catch (err) {
-            console.error("Error checking permissions: ", err)
+            log.error(`Error checking permissions: ${err}`)
         }
     }
 
@@ -102,7 +117,7 @@
             await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             permissionsGranted = true
         } catch (err) {
-            console.error("Error requesting permissions: ", err)
+            log.error(`Error requesting permissions: ${err}`)
             permissionsGranted = false
         }
     }
@@ -110,7 +125,23 @@
     let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
 
+    function handleClickOutside(event: MouseEvent) {
+        const callSettingsElement = document.getElementById("call-settings")
+        const showVolumeElement = document.getElementById("volume-mixer")
+
+        if (callSettingsElement && !callSettingsElement.contains(event.target as Node)) {
+            showCallSettings = false
+            event.stopPropagation()
+        }
+
+        if (showVolumeElement && !showVolumeElement.contains(event.target as Node)) {
+            showVolumeMixer = false
+            event.stopPropagation()
+        }
+    }
+
     onMount(async () => {
+        document.addEventListener("mousedown", handleClickOutside)
         await checkPermissions()
         await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
 
@@ -121,26 +152,25 @@
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
             if (VoiceRTCInstance.makingCall && VoiceRTCInstance.remoteVoiceUser.did === "") {
-                await VoiceRTCInstance.makeVideoCall()
+                await VoiceRTCInstance.makeCall()
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 await VoiceRTCInstance.acceptCall()
+                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
             }
         }
-        Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
-        Store.updateCameraEnabled(VoiceRTCInstance.callOptions.video.enabled)
+
         if (VoiceRTCInstance.remoteVideoElement) {
-            remoteVideoElement.srcObject = VoiceRTCInstance.remoteStream!
+            remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
             remoteVideoElement.play()
         }
         if (VoiceRTCInstance.localVideoCurrentSrc) {
             await VoiceRTCInstance.updateLocalStream()
         }
-        console.log("Audio Enabled: ", VoiceRTCInstance.callOptions.audio)
-        // Store.updateMuted(!VoiceRTCInstance.callOptions.audio)
     })
 
     onDestroy(() => {
+        document.removeEventListener("mousedown", handleClickOutside)
         subscribeOne()
         subscribeTwo()
         subscribeThree()
@@ -148,38 +178,47 @@
     })
 </script>
 
-<div id="call-screen" class={expanded ? "expanded" : ""}>
+<div id="call-screen" data-cy="call-screen" class={expanded ? "expanded" : ""}>
     {#if chat}
         <Topbar simple>
             <svelte:fragment slot="content">
-                <Text muted size={Size.Smaller}>
+                <Text hook="text-users-in-call" muted size={Size.Smaller}>
                     ({chat.users.length}) users in the call
                 </Text>
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video id="remote-user-video" bind:this={remoteVideoElement} width={otherUserSettingsInCall?.videoEnabled ? 400 : 0} height={otherUserSettingsInCall?.videoEnabled ? 400 : 0} autoplay>
+            <video
+                data-cy="remote-user-video"
+                id="remote-user-video"
+                bind:this={remoteVideoElement}
+                width={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                height={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                autoplay>
                 <track kind="captions" src="" />
             </video>
             <br />
-            <video id="local-user-video" bind:this={localVideoCurrentSrc} width={userCallOptions.video.enabled ? 400 : 0} height={userCallOptions.video.enabled ? 400 : 0} muted autoplay>
+            <video
+                data-cy="local-user-video"
+                id="local-user-video"
+                bind:this={localVideoCurrentSrc}
+                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
+                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
+                muted
+                autoplay>
                 <track kind="captions" src="" />
             </video>
+
             {#each chat.users as user}
                 {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
-                    <Participant
-                        participant={$userCache[user]}
-                        hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={$userCache[user].media.is_muted}
-                        isDeafened={$userCache[user].media.is_deafened}
-                        isTalking={$userCache[user].media.is_playing_audio} />
+                    <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
                 {#if $userCache[user].key !== get(Store.state.user).key && !otherUserSettingsInCall?.videoEnabled}
                     <Participant
                         participant={$userCache[user]}
                         hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={$userCache[user].media.is_muted}
-                        isDeafened={$userCache[user].media.is_deafened}
+                        isMuted={!otherUserSettingsInCall.audioEnabled}
+                        isDeafened={otherUserSettingsInCall.isDeafened}
                         isTalking={$userCache[user].media.is_playing_audio} />
                 {/if}
             {/each}
@@ -189,12 +228,15 @@
         <Controls>
             <div class="relative">
                 {#if showCallSettings}
-                    <CallSettings
-                        on:change={e => {
-                            VoiceRTCInstance.updateLocalStream()
-                        }} />
+                    <div id="call-settings">
+                        <CallSettings
+                            on:change={_ => {
+                                VoiceRTCInstance.updateLocalStream(true)
+                            }} />
+                    </div>
                 {/if}
                 <Button
+                    hook="button-call-settings"
                     tooltip="Settings"
                     icon
                     appearance={showCallSettings ? Appearance.Primary : Appearance.Alt}
@@ -207,9 +249,12 @@
             </div>
             <div class="relative">
                 {#if showVolumeMixer}
-                    <VolumeMixer participants={chat.users} />
+                    <div id="volume-mixer">
+                        <VolumeMixer participants={chat.users} />
+                    </div>
                 {/if}
                 <Button
+                    hook="button-call-volume-mixer"
                     tooltip="Volume Mixer"
                     icon
                     appearance={showVolumeMixer ? Appearance.Primary : Appearance.Alt}
@@ -223,36 +268,41 @@
         </Controls>
         <Controls>
             <Button
+                hook="button-call-mute"
                 icon
                 appearance={muted ? Appearance.Error : Appearance.Alt}
                 tooltip={muted ? $_("call.unmute") : $_("call.mute")}
                 on:click={_ => {
-                    updateMuted()
+                    Store.updateMuted(!muted)
                 }}>
                 <Icon icon={muted ? Shape.MicrophoneSlash : Shape.Microphone} />
             </Button>
             <Button
+                hook="button-call-deafen"
                 icon
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
                 tooltip={$_("call.deafen")}
                 on:click={_ => {
-                    VoiceRTCInstance.turnOnOffDeafened()
+                    Store.updateDeafened(!deafened)
+                    // VoiceRTCInstance.turnOnOffDeafened()
                 }}>
                 <Icon icon={deafened ? Shape.HeadphoneSlash : Shape.Headphones} />
             </Button>
-            <Button appearance={Appearance.Alt} icon tooltip={$_("call.stream")}>
+            <Button hook="button-call-stream" appearance={Appearance.Alt} icon tooltip={$_("call.stream")}>
                 <Icon icon={Shape.Stream} />
             </Button>
             <Button
+                hook="button-call-video"
                 appearance={cameraEnabled ? Appearance.Alt : Appearance.Error}
                 icon
                 tooltip={cameraEnabled ? $_("call.disable_video") : $_("call.enable_video")}
                 on:click={_ => {
-                    updateCameraEnabled()
+                    Store.updateCameraEnabled(!cameraEnabled)
                 }}>
                 <Icon icon={cameraEnabled ? Shape.VideoCamera : Shape.VideoCameraSlash} />
             </Button>
             <Button
+                hook="button-call-end"
                 appearance={Appearance.Error}
                 icon
                 tooltip={$_("call.end")}
@@ -264,14 +314,14 @@
             </Button>
         </Controls>
         <Controls>
-            <Button appearance={Appearance.Alt} icon outline tooltip={expanded ? $_("call.collapse") : $_("call.expand")} on:click={toggleExanded}>
+            <Button hook="button-call-collapse-expand" appearance={Appearance.Alt} icon outline tooltip={expanded ? $_("call.collapse") : $_("call.expand")} on:click={toggleExanded}>
                 {#if expanded}
                     <Icon icon={Shape.ChevronsUp} />
                 {:else}
                     <Icon icon={Shape.ChevronsDown} />
                 {/if}
             </Button>
-            <Button appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")}>
+            <Button hook="button-call-fullscreen" appearance={Appearance.Alt} icon outline tooltip={$_("call.fullscreen")} on:click={toggleFullscreen}>
                 <Icon icon={Shape.ArrowsOut} />
             </Button>
         </Controls>
@@ -314,6 +364,12 @@
             padding: var(--padding);
             align-items: center;
             justify-content: center;
+        }
+
+        video {
+            object-fit: contain;
+            border-radius: 12px;
+            background-color: var(--black);
         }
     }
 </style>

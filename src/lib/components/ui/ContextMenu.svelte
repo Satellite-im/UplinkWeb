@@ -32,12 +32,17 @@
         let offsetY = evt.pageY
         let screenWidth = evt.view!.innerWidth
         let screenHeight = evt.view!.innerHeight
-        let overFlowY = screenHeight < height + offsetY
         let overFlowX = screenWidth < width + offsetX
-        let topX = overFlowX ? screenWidth - width - 5 : Math.max(5, offsetX)
-        let topY = Math.max(5, overFlowY ? offsetY - height : offsetY)
-
-        return [topX, topY]
+        let overFlowY = screenHeight < height + offsetY
+        let topX = overFlowX ? Math.max(5, screenWidth - width - 5) : Math.max(5, offsetX)
+        if (screenHeight - offsetY < height + 30) {
+            let adjustedY = offsetY - height
+            let topY = Math.max(5, adjustedY)
+            return [topX, topY]
+        } else {
+            let topY = Math.max(5, overFlowY ? offsetY - height : offsetY)
+            return [topX, topY]
+        }
     }
 
     async function openContext(evt: MouseEvent) {

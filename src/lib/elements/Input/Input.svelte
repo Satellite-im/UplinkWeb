@@ -50,7 +50,7 @@
         let isValid = isValidInput()
         dispatch("isValid", isValid)
         dispatch("input", value)
-    }, 300)
+    }, 5)
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -67,6 +67,7 @@
 
     let onsend: any[] = []
     let editor: MarkdownEditor
+
     if (rich) {
         onMount(() => {
             if (autoFocus) input.focus()
@@ -86,7 +87,7 @@
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
                 writableValue.set(val)
-                debouncedOnInput()
+                onInput()
             })
             onsend.push(() => {
                 editor.value("")
@@ -134,34 +135,38 @@
     }
 </script>
 
-<div
-    class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
-    data-tooltip={tooltip}
-    role="none"
-    on:click={async _ => {
-        if (copyOnInteract) {
-            await navigator.clipboard.writeText(`${value}`)
-        }
-    }}>
-    <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''} {rich ? 'multiline' : ''}">
-        <slot></slot>
-        <input
-            data-cy={hook}
-            class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
-            type="text"
-            disabled={disabled}
-            bind:this={input}
-            on:focus={handleFocus}
-            bind:value={$writableValue}
-            placeholder={placeholder}
-            on:keydown={onKeyDown}
-            on:input={onInput}
-            on:blur={onBlur} />
+{#key hook}
+    <div
+        class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
+        data-tooltip={tooltip}
+        role="none"
+        on:click={async _ => {
+            if (copyOnInteract) {
+                await navigator.clipboard.writeText(`${value}`)
+            }
+        }}>
+        <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''} {rich ? 'multiline' : ''}">
+            <slot></slot>
+            <!-- svelte-ignore a11y-autofocus -->
+            <input
+                id={hook}
+                data-cy={hook}
+                class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
+                type="text"
+                bind:this={input}
+                on:focus={handleFocus}
+                bind:value={$writableValue}
+                placeholder={placeholder}
+                on:keydown={onKeyDown}
+                on:input={onInput}
+                on:blur={onBlur}
+                autofocus={autoFocus} />
+        </div>
     </div>
-</div>
-{#if errorMessage}
-    <Text appearance={Appearance.Warning}>{errorMessage}</Text>
-{/if}
+    {#if errorMessage}
+        <Text appearance={Appearance.Warning}>{errorMessage}</Text>
+    {/if}
+{/key}
 
 <style lang="scss">
     .input-group {
@@ -228,6 +233,13 @@
                 opacity: 0.75;
                 font-size: var(--label-size);
             }
+        }
+
+        .input.disabled {
+            cursor: not-allowed;
+            background-color: var(--disabled-color);
+            color: var(--disabled-color);
+            opacity: 0.6;
         }
 
         &.alt {

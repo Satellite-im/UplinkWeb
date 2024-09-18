@@ -6,7 +6,7 @@
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
-    import { EmojiFont, Font, KeybindAction, KeybindState, Route, Theme } from "$lib/enums"
+    import { EmojiFont, Font, KeybindAction, KeybindState, Theme } from "$lib/enums"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
@@ -14,7 +14,6 @@
     import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import "/src/app.scss"
     import TimeAgo from "javascript-time-ago"
     import en from "javascript-time-ago/locale/en"
@@ -25,8 +24,9 @@
     import CircularProgressIndicator from "$lib/components/loading/CircularProgressIndicator.svelte"
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
-    import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import type { FontOption } from "$lib/state/settings/default"
+    import InstallBanner from "$lib/components/ui/InstallBanner.svelte"
+    import Market from "$lib/components/market/Market.svelte"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -54,10 +54,16 @@
                 UIStore.decreaseFontSize()
                 break
             case KeybindAction.ToggleMute:
-                Store.updateMuted(!muted)
+                if (VoiceRTCInstance.isInCall) {
+                    Store.updateMuted(!muted)
+                    VoiceRTCInstance.toggleMute(!muted)
+                }
                 break
             case KeybindAction.ToggleDeafen:
-                Store.updateDeafened(!deafened)
+                if (VoiceRTCInstance.isInCall) {
+                    Store.updateDeafened(!deafened)
+                    VoiceRTCInstance.toggleDeafen(!deafened)
+                }
                 break
             case KeybindAction.OpenInspector:
                 log.info("todo")
@@ -69,16 +75,25 @@
                 log.info("todo")
                 break
             case KeybindAction.PushToTalk:
-                playSound(Sounds.Press)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Press)
+                    VoiceRTCInstance.toggleMute(false)
+                }
                 break
             case KeybindAction.PushToMute:
-                playSound(Sounds.Press)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Press)
+                    VoiceRTCInstance.toggleMute(true)
+                }
                 break
             case KeybindAction.PushToDeafen:
-                playSound(Sounds.Press)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Press)
+                    VoiceRTCInstance.toggleDeafen(true)
+                }
                 break
             default:
-                console.warn("unhandled keybind", keybind)
+                log.info("unhandled keybind " + keybind.action)
         }
     }
     function handleKeybindMatchRelease(event: CustomEvent<any>) {
@@ -87,16 +102,25 @@
 
         switch (keybind.action) {
             case KeybindAction.PushToTalk:
-                playSound(Sounds.Release)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Release)
+                    VoiceRTCInstance.toggleMute(true)
+                }
                 break
             case KeybindAction.PushToMute:
-                playSound(Sounds.Release)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Release)
+                    VoiceRTCInstance.toggleMute(false)
+                }
                 break
             case KeybindAction.PushToDeafen:
-                playSound(Sounds.Release)
+                if (VoiceRTCInstance.isInCall) {
+                    playSound(Sounds.Release)
+                    VoiceRTCInstance.toggleDeafen(false)
+                }
                 break
             default:
-                log.warn(`unhandled keybind ${keybind}`)
+                log.info("unhandled keybind " + keybind.action)
         }
     }
 
@@ -234,6 +258,8 @@
         <IncomingCall />
         <VideoPreview />
         <GamepadListener />
+        <Market on:close={() => UIStore.toggleMarket()} />
+        <InstallBanner />
         <slot></slot>
     </div>
 {:else}

@@ -14,6 +14,7 @@
     export let name = info.name
     export let isRenaming: OperationState = OperationState.Initial
     export let hook: string = ""
+    export let onRename: (name: string, cancel: boolean) => Promise<boolean> = _ => Promise.resolve(true)
     let hasFocus = false
     let oldName = name
 
@@ -26,15 +27,6 @@
     $: if (isRenaming === OperationState.Success) {
         hasFocus = false
         oldName = name
-        storeFiles.update(items => {
-            const updatedItems = items.map(item => {
-                if (item.id === info.id) {
-                    return { ...item, name: name }
-                }
-                return item
-            })
-            return updatedItems
-        })
         isRenaming = OperationState.Initial
     } else if (isRenaming === OperationState.Error) {
         hasFocus = false
@@ -62,7 +54,6 @@
                 return Shape.Beaker
         }
     }
-    let storeFiles = Store.state.files
     function updateName(
         event: Event & {
             currentTarget: EventTarget & HTMLInputElement
@@ -72,42 +63,39 @@
         name = input.value
     }
 
-    function onRename() {
-        dispatch("rename", name)
-        isRenaming = OperationState.Initial
-    }
-
     onMount(() => {
         if (inputRef) {
             inputRef.focus()
         }
     })
 
-    function onKeydown(event: KeyboardEvent) {
+    async function onKeydown(event: KeyboardEvent) {
         if (event.key === "Escape") {
             isEnterOrEscapeKeyPressed = true
+            await onRename(name, true)
             isRenaming = OperationState.Initial
-            name = oldName
             return
         }
         if (event.key === "Enter") {
             isEnterOrEscapeKeyPressed = true
-            if (name === "" || name === oldName) {
+            let rename = await onRename(name, false)
+            if (!rename) {
                 name = oldName
                 isRenaming = OperationState.Initial
                 return
             }
-            onRename()
+            isRenaming = OperationState.Initial
         }
     }
 
-    function onBlur() {
-        if (name === "" || name === oldName) {
-            name = oldName
-            isRenaming = OperationState.Initial
-        } else if (!isEnterOrEscapeKeyPressed) {
-            onRename()
+    async function onBlur() {
+        if (!isEnterOrEscapeKeyPressed) {
+            let rename = await onRename(name, isEnterOrEscapeKeyPressed)
+            if (!rename) {
+                name = oldName
+            }
         }
+        isRenaming = OperationState.Initial
         isEnterOrEscapeKeyPressed = false
     }
 

@@ -392,7 +392,7 @@
         <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e)} bind:this={themeUpload} />
     </SettingSection>
     <SettingSection hook="section-primary-color" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")} wrapContent>
-        <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")}>
+        <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")} color={hex}>
             <ColorPicker textInputModes={["hex"]} isDialog={false} isAlpha={false} bind:hex={hex} />
             <div slot="icon" class="control">
                 <Icon icon={Shape.Eyedropper} />
@@ -430,6 +430,7 @@
         <textarea
             data-cy="text-area-custom-css"
             bind:value={cssOverride}
+            placeholder={`body { background-color: #000; }`}
             on:change={_ => {
                 UIStore.setCssOverride(cssOverride)
             }}></textarea>
@@ -453,25 +454,27 @@
             display: none;
         }
 
-        :global(.input-container) {
-            height: var(--input-height);
+        :global(.wrapper) {
+            padding: 0;
+            margin: 0;
         }
 
-        :global(input) {
+        :global(.modal .body) {
+            min-width: unset;
+        }
+
+        :global(input),
+        textarea {
             border-radius: var(--border-radius-minimal);
-            background-color: var(--alt-color);
+            background-color: var(--alt-color) !important;
             color: var(--color);
         }
 
         textarea {
-            height: var(--min-scrollable-height);
-            padding: var(--padding-less);
-            border: var(--border-width) solid var(--border-color);
-            border-radius: var(--border-radius);
-            background-color: var(--alt-color);
-            color: var(--color);
-            outline: none;
             width: 100%;
+            min-height: 250px;
+            border: var(--border-width) solid var(--border-color);
+            padding: var(--padding-minimal);
         }
     }
 </style>
