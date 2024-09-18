@@ -4,13 +4,13 @@ import { createPersistentState } from ".."
 import { EmojiFont, Font, Identicon, Theme } from "$lib/enums"
 import { Store as MainStore } from "../Store"
 import { mchats } from "$lib/mock/users"
+import type { FontOption } from "../settings/default"
 
-export type FontOption = { text: string; value: string }
 export interface IUIState {
     color: Writable<string>
     fontSize: Writable<number>
     cssOverride: Writable<string>
-    font: Writable<Font>
+    font: Writable<FontOption>
     allFonts: Writable<FontOption[]>
     theme: Writable<Theme>
     emojiFont: Writable<EmojiFont>
@@ -26,7 +26,7 @@ class Store {
         this.state = {
             color: createPersistentState("uplink.color", "#4d4dff"),
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
-            font: createPersistentState("uplink.ui.font", Font.Poppins),
+            font: createPersistentState("uplink.ui.font", { text: Font.Poppins, value: Font.Poppins }),
             allFonts: createPersistentState("uplink.ui.allFonts", [] as FontOption[]),
             theme: createPersistentState("uplink.ui.theme", Theme.Default),
             identicon: createPersistentState("uplink.ui.identicon", Identicon.PixelArtNeutral),
@@ -58,7 +58,7 @@ class Store {
         this.state.color.set(color)
     }
 
-    setFont(font: Font) {
+    setFont(font: FontOption) {
         this.state.font.set(font)
     }
 

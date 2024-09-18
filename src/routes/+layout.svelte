@@ -11,7 +11,7 @@
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
     import { Store } from "$lib/state/Store"
-    import { UIStore, type FontOption } from "$lib/state/ui"
+    import { UIStore } from "$lib/state/ui"
     import type { Keybind } from "$lib/types"
     import { log } from "$lib/utils/Logger"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -26,6 +26,7 @@
     import VideoPreview from "$lib/components/calling/VideoPreview.svelte"
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
+    import type { FontOption } from "$lib/state/settings/default"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -33,7 +34,7 @@
     let devmode: boolean = get(SettingsStore.state).devmode
     let color: string = get(UIStore.state.color)
     let fontSize: number = get(UIStore.state.fontSize)
-    let font: Font = get(UIStore.state.font)
+    let font: FontOption = get(UIStore.state.font)
     let allFonts: FontOption[] = get(UIStore.state.allFonts)
     let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
     let theme: Theme = get(UIStore.state.theme)
@@ -98,38 +99,20 @@
                 log.warn(`unhandled keybind ${keybind}`)
         }
     }
-    // const fontFaceRule = !isSystemFont
-    //     ? `@font-face {
-    //        font-family: '${font}';
-    //        src: url('${userFontPath}${font}.ttf');
-    //      }`
-    //     : ""
 
-    let calledBuilDelay = false
-    function callBuildStyleAfterDelay() {
-        if (!calledBuilDelay) {
-            setTimeout(() => {
-                const style = buildStyle()
-                injectStyle(style)
-                calledBuilDelay = true
-            }, 5000)
-        }
-    }
     function buildStyle() {
-        console.log(font)
-
-        let isUserFontFam
-        let fontFaceRules = get(UIStore.state.allFonts)
+        const activeFont = get(UIStore.state.font)
+        const allFontsFromStore = get(UIStore.state.allFonts)
+        let fontFaceRules = ""
+        fontFaceRules = allFontsFromStore
             .map(({ text, value }) => {
-                const fontFamily = text.replace(/'/g, "\\'")
+                const isActiveFont = activeFont && activeFont.value === value
 
-                if (font === value) {
-                    if (value.startsWith("blob:")) {
-                        console.log(text, value, font)
-                        isUserFontFam = text
+                if (text !== value) {
+                    if (value.startsWith("blob:") && isActiveFont) {
                         return `
                     @font-face {
-                        font-family: '${fontFamily}';
+                        font-family: '${text}';
                         src: url('${value}'); // Use the blob URL directly
                         font-weight: normal;
                         font-style: normal;
@@ -137,25 +120,29 @@
                     `
                     }
                 } else {
-                    return `
-                @font-face {
-                    font-family: '${fontFamily}';
-                    src: url('/assets/font/${text}.woff2') format('woff2'), 
-                         url('/assets/font/${text}.woff') format('woff'); // Example static asset paths
-                    font-weight: normal;
-                    font-style: normal;
-                }
-                `
+                    if (isActiveFont) {
+                        return `
+                    @font-face {
+                        font-family: '${font.text}';
+                        src: url('/assets/font/${font.text}.woff2') format('woff2'), 
+                             url('/assets/font/${font.text}.woff') format('woff'); // Example static asset paths
+                        font-weight: normal;
+                        font-style: normal;
+                    }
+                    `
+                    }
                 }
             })
             .join("\n")
-        const primaryFont = isUserFontFam || font
+
+        const primaryFont = activeFont.text || font.text
+
         return `
     ${fontFaceRules}
     :root {
         --font-size: ${fontSize.toFixed(2)}rem;
         --primary-color: ${color};
-        --primary-font: '${primaryFont}'; // Ensure font is properly set
+        --primary-font: '${primaryFont}'; // Ensure primary font is set
     }
     .emoji {
         font-family: '${emojiFont}';
@@ -173,7 +160,6 @@
     }
 
     let style: string = buildStyle()
-    // document.head.insertAdjacentHTML("beforeend", `<style>${style}</style>`)
     injectStyle(buildStyle())
     UIStore.state.color.subscribe(v => {
         color = v
