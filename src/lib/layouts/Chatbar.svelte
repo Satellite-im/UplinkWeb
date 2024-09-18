@@ -270,12 +270,22 @@
             padding-right: var(--padding);
             background-color: var(--alt-color-alt);
             border-radius: var(--border-radius) var(--border-radius) 0 0;
+            max-height: 160px;
             .reply-message {
                 display: flex;
                 align-items: center;
                 gap: var(--gap);
                 margin-top: var(--padding-less);
                 margin-bottom: var(--padding-less);
+                :global(.text) {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    text-align: left;
+                }
             }
             :global(.button) {
                 position: absolute;
