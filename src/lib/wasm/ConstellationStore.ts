@@ -261,23 +261,6 @@ class ConstellationStore {
     }
 
     /**
-     * Goes back to the previous directory in the constellation.
-     * @returns A Result containing either success or failure with a WarpError.
-     */
-    async goToRootPath(): Promise<Result<WarpError, void>> {
-        const constellation = get(this.constellationWritable)
-        if (constellation) {
-            try {
-                await constellation.set_path("")
-                return success(undefined)
-            } catch (error) {
-                return failure(handleErrors(error))
-            }
-        }
-        return failure(WarpError.CONSTELLATION_NOT_FOUND)
-    }
-
-    /**
      * Checks if the given path is in a valid format.
      * @param path - The path to be validated.
      * @returns A boolean indicating whether the path is in a valid format.
