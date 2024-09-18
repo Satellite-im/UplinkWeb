@@ -240,6 +240,14 @@
                         }
                     }
                 }
+                &:hover {
+                    background-color: var(--primary-color-alt);
+                    color: var(--color-alt);
+                }
+
+                &.alt {
+                    color: var(--color) !important;
+                }
             }
 
             &.transparent {

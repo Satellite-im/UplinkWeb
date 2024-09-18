@@ -86,6 +86,7 @@
         </div>
         <Controls>
             <Button appearance={Appearance.Success} outline text={platformButtonProps[platform].text}>
+
                 <Icon icon={platformButtonProps[platform].icon} highlight={Appearance.Success} />
             </Button>
         </Controls>
