@@ -42,15 +42,21 @@
                 <Icon icon={Shape.Search} />
             </Input>
         </div>
-        <div class="stickers">
+        <div class="stickers" data-cy="stickers-contents">
             {#each stickers as collection}
-                <section id={collection.name}>
-                    <Label hook="sticker-selection-label" text={`${collection.name} (${collection.author})`} />
+                <section data-cy="sticker-collection" id={collection.name}>
+                    <Label hook="sticker-collection-label" text={`${collection.name} (${collection.author})`} />
                     <div class="collection-items">
                         {#each collection.assets as sticker}
-                            <button data-cy="sticker-item" class="sticker-item" on:click={() => handleStickerClick(sticker)} on:keydown={event => handleKeyDown(event, sticker)} tabindex="0" aria-label={`Select sticker ${sticker.name}`}>
+                            <button
+                                data-cy="sticker-collection-item"
+                                class="sticker-item"
+                                on:click={() => handleStickerClick(sticker)}
+                                on:keydown={event => handleKeyDown(event, sticker)}
+                                tabindex="0"
+                                aria-label={`Select sticker ${sticker.name}`}>
                                 <img src={`${tempCDN}${sticker.path}`} alt={sticker.name} />
-                                <Label class="label" text={sticker.name} />
+                                <Label hook="sticker-collection-item-name" class="label" text={sticker.name} />
                             </button>
                         {/each}
                     </div>

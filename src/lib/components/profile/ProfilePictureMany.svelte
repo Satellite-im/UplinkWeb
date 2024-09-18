@@ -25,15 +25,15 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="profile-picture-many" on:click={_ => dispatch("click")}>
+<div class="profile-picture-many" data-cy="profile-picture-many" on:click={_ => dispatch("click")}>
     {#each users as user, i}
         {#if i < 3}
-            <ProfilePicture id={user.key} size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
+            <ProfilePicture hook="profile-picture-many-single-pic" id={user.key} size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
         {/if}
     {/each}
-    <div class="count">
+    <div class="count" data-cy="profile-picture-many-count">
         <Icon icon={Shape.Users} size={Size.Smaller} />
-        <Text size={Size.Smaller}>
+        <Text hook="profile-picture-many-length" size={Size.Smaller}>
             {users.length}
         </Text>
     </div>

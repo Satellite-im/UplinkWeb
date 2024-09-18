@@ -110,31 +110,31 @@
 
 <div id="emoji-container" data-cy="emoji-container">
     <div class="input-group">
-        <Input hook="emoji-container-input-search" alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
+        <Input hook="emoji-container-search-input" alt placeholder={$_("generic.search_placeholder")} bind:value={searchQuery} on:input={filterEmojis}>
             <Icon icon={Shape.Search} />
         </Input>
-        <button data-cy="emoji-container-skin-tone-selector" class="skin-tone-selector" on:click={toggleSkinTonePopup} aria-haspopup="true" aria-expanded={showSkinTonePopup}>
+        <button data-cy="skin-tone-selector" class="skin-tone-selector" on:click={toggleSkinTonePopup} aria-haspopup="true" aria-expanded={showSkinTonePopup}>
             <span class="emoji">{skinToneEmoji}</span>
         </button>
         {#if showSkinTonePopup}
             <div class="skin-tone-popup">
                 {#each skinTones as tone}
-                    <button class="skin-tone" on:click={() => selectSkinTone(tone)} aria-label={tone === "🚫" ? "No skin tone" : "Select skin tone"}>
+                    <button data-cy="skin-tone-selector-button" class="skin-tone" on:click={() => selectSkinTone(tone)} aria-label={tone === "🚫" ? "No skin tone" : "Select skin tone"}>
                         <span class="emoji">{getEmojiWithSkinTone(randomEmoji, tone === "🚫" ? "" : tone)}</span>
                     </button>
                 {/each}
             </div>
         {/if}
     </div>
-    <div class="slider-container">
-        <Label text="Size" />
+    <div class="slider-container" data-cy="emoji-container-size-section">
+        <Label hook="emoji-container-size-label" text="Size" />
         <RangeSelector min={16} max={45} bind:value={$emojiSize} />
     </div>
     <Spacer less />
-    <div id="emoji-selector">
-        <section id="frequently_used">
-            <Label text="Frequently Used" />
-            <div class="emoji-list frequently-used-list">
+    <div id="emoji-selector" data-cy="emoji-selector">
+        <section id="frequently_used" data-cy="frequently-used-section">
+            <Label hook="frequently-used-label" text="Frequently Used" />
+            <div data-cy="frequently-used-list" class="emoji-list frequently-used-list">
                 {#each frequentlyUsed as emoji}
                     <span
                         class="emoji"
@@ -150,9 +150,9 @@
             </div>
         </section>
         {#each Object.keys(filteredEmojiData) as category}
-            <section id={category}>
-                <Label text={category.replaceAll("_", " ")} />
-                <div class="emoji-list">
+            <section id={category} data-cy="{category.replaceAll('_', '-')}-section">
+                <Label hook="{category.replaceAll('_', '-')}-label" text={category.replaceAll("_", " ")} />
+                <div class="emoji-list" data-cy="emoji-list">
                     {#each filteredEmojiData[category] as emoji}
                         <span
                             class="emoji"
@@ -170,10 +170,10 @@
             </section>
         {/each}
     </div>
-    <div id="category-nav">
-        <a href="#frequently_used" class="category-link">Frequently Used</a>
+    <div id="category-nav" data-cy="emoji-category-nav">
+        <a href="#frequently_used" class="category-link" data-cy="category-link-frequently-used">Frequently Used</a>
         {#each Object.keys(filteredEmojiData) as category}
-            <a href={`#${category}`} class="category-link">
+            <a href={`#${category}`} class="category-link" data-cy="category-link-{category.replaceAll('_', '-')}">
                 {category.replaceAll("_", " ")}
             </a>
         {/each}
