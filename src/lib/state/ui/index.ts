@@ -71,7 +71,6 @@ class Store {
         this.state.emojiFont.set(font)
     }
     setTheme(theme: Theme) {
-        console.log(this.state.theme)
         this.state.theme.set(theme)
     }
     increaseFontSize(amount: number = 0.025) {
