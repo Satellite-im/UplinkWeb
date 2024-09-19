@@ -33,7 +33,6 @@ class Store {
             theme: createPersistentState("uplink.ui.theme", Theme.Default),
             identicon: createPersistentState("uplink.ui.identicon", Identicon.PixelArtNeutral),
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
-            theme: createPersistentState("uplink.ui.theme", "default"),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
             sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),
             chats: createPersistentState("uplink.ui.chats", [], {
@@ -79,9 +78,7 @@ class Store {
     setEmojiFont(font: EmojiFont) {
         this.state.emojiFont.set(font)
     }
-    setTheme(theme: Theme) {
-        this.state.theme.set(theme)
-    }
+
     increaseFontSize(amount: number = 0.025) {
         this.state.fontSize.update(s => (s + amount <= 1.5 ? (s += amount) : s))
     }
