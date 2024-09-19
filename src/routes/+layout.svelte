@@ -240,11 +240,14 @@
     $: if ($locale) {
         isLocaleSet = true
     }
+
+    $: theme = UIStore.state.theme
 </script>
 
 {#if isLocaleSet}
     <div id="app">
         {@html `<style>${style}</style>`}
+        <link rel="stylesheet" href={`/assets/themes/${$theme}.css`} />
         {@html `<style>${cssOverride}</style>`}
         <Polling rate={5000} />
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />

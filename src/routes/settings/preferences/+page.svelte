@@ -10,6 +10,7 @@
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
+    import ThemeSelector from "$lib/themes/ThemeSelector.svelte"
     import { onMount } from "svelte"
     import { writable } from "svelte/store"
     import { Store } from "$lib/state/Store"
@@ -387,28 +388,7 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-theme" name={$_("settings.preferences.theme")} description={$_("settings.preferences.themeDescription")}>
-        <Button hook="button-theme-moon" icon appearance={Appearance.Alt}>
-            <Icon icon={Shape.Moon} />
-        </Button>
-        <Select
-            hook="selector-theme"
-            alt
-            selected={theme}
-            options={$availableThemesStore}
-            on:change={v => {
-                console.log(v)
-                UIStore.setTheme(v.detail)
-            }} />
-        <Button
-            hook="button-theme-open-folder"
-            icon
-            appearance={Appearance.Alt}
-            on:click={async event => {
-                themeUpload?.click()
-            }}>
-            <Icon icon={Shape.FolderOpen} />
-        </Button>
-        <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => saveFile(e)} bind:this={themeUpload} />
+        <ThemeSelector />
     </SettingSection>
     <SettingSection hook="section-primary-color" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")} wrapContent>
         <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")} color={hex}>

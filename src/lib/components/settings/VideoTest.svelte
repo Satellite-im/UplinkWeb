@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
-    import { Shape } from "$lib/enums"
+    import { Appearance, Shape } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
@@ -68,8 +68,8 @@
 <div class="video-preview">
     <!-- svelte-ignore a11y-media-has-caption -->
     <video data-cy="test-video-preview" autoplay id="test" bind:this={video} muted> </video>
-    <Button hook="button-test-video" text={$_("settings.audio.testVideo")} on:click={_ => startVideoTest()}>
-        <Icon icon={Shape.Beaker}></Icon>
+    <Button hook="button-test-video" text={$_("settings.audio.testVideo")} appearance={Appearance.Primary} on:click={_ => startVideoTest()}>
+        <Icon icon={Shape.Beaker} alt />
     </Button>
 </div>
 

@@ -56,7 +56,7 @@
         <slot></slot>
     {/if}
     {#if text.length > 0}
-        <Text class={hideTextOnMobile ? "hidden-text" : ""} loading={loading} appearance={outline ? appearance : Appearance.Alt}>{text}</Text>
+        <Text class={hideTextOnMobile ? "hidden-text" : ""} loading={loading} appearance={appearance === Appearance.Primary ? Appearance.Alt : Appearance.Default}>{text}</Text>
     {/if}
 </button>
 
@@ -214,6 +214,10 @@
                 }
             }
 
+            &.alt {
+                color: var(--color);
+            }
+
             &.outlined {
                 background-color: transparent;
                 border-color: var(--primary-color);
@@ -236,7 +240,6 @@
                         }
                     }
                 }
-
                 &:hover {
                     background-color: var(--primary-color-alt);
                     color: var(--color-alt);
@@ -270,6 +273,10 @@
             }
         }
 
+        &.primary {
+            color: var(--color-alt);
+        }
+
         // Accessibility support
         &:focus,
         &:active {
@@ -278,6 +285,7 @@
             border: var(--border-width) solid var(--focus-color);
         }
     }
+
     @media (max-width: 800px) {
         .button {
             &.hidden-text {

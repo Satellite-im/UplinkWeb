@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from "$lib/elements/Icon.svelte"
     import Text from "$lib/elements/Text.svelte"
-    import { Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types"
     import { createEventDispatcher } from "svelte"
     import ProfilePicture from "./ProfilePicture.svelte"
@@ -32,8 +32,8 @@
         {/if}
     {/each}
     <div class="count">
-        <Icon icon={Shape.Users} size={Size.Smaller} />
-        <Text size={Size.Smaller}>
+        <Icon icon={Shape.Users} size={Size.Smaller} alt />
+        <Text size={Size.Smaller} appearance={Appearance.Alt}>
             {users.length}
         </Text>
     </div>

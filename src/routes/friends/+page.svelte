@@ -162,8 +162,8 @@
         -->
         <div class="content-header">
             <Label hook="label-chats" text={$_("chat.chat_plural")} />
-            <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
-                <Icon icon={Shape.ChatPlus} />
+            <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} appearance={Appearance.Primary} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
+                <Icon icon={Shape.ChatPlus} alt />
             </Button>
         </div>
 
@@ -195,7 +195,7 @@
             <svelte:fragment slot="controls">
                 {#if tab === "all"}
                     <Button hook="button-friends-all" appearance={Appearance.Primary} text={$_("friends.all")} on:click={_ => (tab = "all")}>
-                        <Icon icon={Shape.Users} />
+                        <Icon icon={Shape.Users} alt />
                     </Button>
                 {:else}
                     <Button hook="button-friends-all" appearance={Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
@@ -204,7 +204,7 @@
                 {/if}
                 {#if tab === "active"}
                     <Button badge={incomingRequests.length} hook="button-friends-active" appearance={Appearance.Primary} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
-                        <Icon icon={Shape.ArrowsLeftRight} />
+                        <Icon icon={Shape.ArrowsLeftRight} alt />
                     </Button>
                 {:else}
                     <Button badge={incomingRequests.length} hook="button-friends-active" appearance={Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
@@ -213,7 +213,7 @@
                 {/if}
                 {#if tab === "blocked"}
                     <Button hook="button-friends-blocked" appearance={Appearance.Primary} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")} hideTextOnMobile>
-                        <Icon icon={Shape.NoSymbol} />
+                        <Icon icon={Shape.NoSymbol} alt />
                     </Button>
                 {:else}
                     <Button hook="button-friends-blocked" appearance={Appearance.Alt} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")} hideTextOnMobile>
@@ -344,6 +344,7 @@
                                         <svelte:fragment slot="controls">
                                             <Button
                                                 hook="button-friend-chat"
+                                                appearance={Appearance.Primary}
                                                 text={$_("chat.chat")}
                                                 on:click={async _ => {
                                                     let chat = Store.getChatForUser(friend.key)
@@ -368,7 +369,7 @@
                                                         })
                                                     }
                                                 }}>
-                                                <Icon icon={Shape.ChatBubble} />
+                                                <Icon icon={Shape.ChatBubble} alt />
                                             </Button>
                                             <Button hook="button-friend-remove" icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => removeFriend(friend.key)}>
                                                 <Icon icon={Shape.UserMinus} />
@@ -435,10 +436,10 @@
         </div>
     </div>
     {#if newGroup}
-    <Modal on:close={() => (newGroup = false)}>
-        <CreateGroup on:create={() => (newGroup = false)} />
-    </Modal>
-{/if}
+        <Modal on:close={() => (newGroup = false)}>
+            <CreateGroup on:create={() => (newGroup = false)} />
+        </Modal>
+    {/if}
 </div>
 
 <style lang="scss">
