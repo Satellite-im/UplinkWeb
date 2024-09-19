@@ -681,7 +681,7 @@ export class VoiceRTC {
             let peer = this.peerMesh.getPeer(p => p.remotePeerId === call.peer)
             if (peer) {
                 if (this.remoteVideoCreator) this.remoteVideoCreator.create({ user: peer.getUser(), stream: remoteStream })
-                await peer.handleRemoteStream(remoteStream, this.remoteVideoCreator?.delete)
+                await peer.handleRemoteStream(remoteStream)
             }
         })
         this.acceptedIncomingCall = true
