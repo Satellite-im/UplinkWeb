@@ -223,7 +223,7 @@ export class PeerMesh {
                     log.debug(`Not possible to connect to ${peer.remotePeerId}, trying again.`)
                     continue
                 }
-                // Call after successfuly connect. But dont wait for it
+                // Call after successfully connect. But dont wait for it
                 new Promise(async () => {
                     let meta: CallMeta = {
                         channel: VoiceRTCInstance.channel!,
