@@ -20,15 +20,17 @@
 
     $: users = Store.getUsers(chat.users)
 
-    $: chatName = chat.kind === ChatType.Group ? chat.name : $users[1]?.name ?? $users[0].name
+    $: chatName = chat.kind === ChatType.Group ? chat.name : ($users[1]?.name ?? $users[0].name)
     $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
     $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
-    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
+    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
 
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
 
+    $: messagePreview = chat.last_message_id === "" ? "No messages sent yet." : chat.last_message_id !== "" && chat.last_message_preview === "" ? "New Attachment" : chat.last_message_preview
     function getTimeAgo(dateInput: string | Date) {
+        console.log(chat.last_message_preview, chat)
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
@@ -84,7 +86,7 @@
                 </div>
             {:else}
                 <Text hook="chat-preview-last-message" size={Size.Small} loading={loading}>
-                    {chat.last_message_preview || "No messages sent yet."}
+                    {messagePreview}
                 </Text>
             {/if}
         </p>
