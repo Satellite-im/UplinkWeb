@@ -18,7 +18,7 @@
     const dispatch = createEventDispatcher()
 </script>
 
-<div id="combined-selector">
+<div id="combined-selector" data-cy="combined-selector">
     <div class="body">
         {#if active.name == tabs[0].name}
             <EmojiSelector on:emoji={e => dispatch("emoji", e.detail)} />

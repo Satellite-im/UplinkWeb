@@ -97,10 +97,10 @@
     })
 </script>
 
-<div class="settings">
-    <Label text={$_("chat.group.settings.photo")} />
+<div class="settings" data-cy="group-settings">
+    <Label hook="group-settings-change-photo-label" text={$_("chat.group.settings.photo")} />
     <div class="profile-picture-container">
-        <ProfilePicture noIndicator image={groupPicture} size={Size.Large} />
+        <ProfilePicture hook="group-settings-profile-picture" noIndicator image={groupPicture} size={Size.Large} />
         <FileUploadButton
             icon
             disabled={!isAdmin}
@@ -111,19 +111,21 @@
                 propertiesChangedList.pictureChanged = true
             }} />
     </div>
-    <Label text={$_("chat.group.settings.name")} />
+    <Label hook="group-settings-name-label" text={$_("chat.group.settings.name")} />
     <Input
+        hook="group-settings-name-input"
         bind:value={groupChatToBeChanged.name}
         disabled={!isAdmin}
         on:input={_ => {
             propertiesChangedList.groupName = groupChatToBeChanged.name !== groupChatOriginal.name
         }} />
-    <Label text={$_("chat.group.settings.description")} />
-    <Input disabled={!isAdmin} value={$_("chat.group.settings.description.placeholder")} />
+    <Label hook="group-settings-description-label" text={$_("chat.group.settings.description")} />
+    <Input hook="group-settings-description-input" disabled={!isAdmin} value={$_("chat.group.settings.description.placeholder")} />
     <Spacer />
-    <Label text={$_("generic.settings")} />
-    <SettingSection name={$_("chat.group.settings.add")} description={$_("chat.group.settings.add.description")}>
+    <Label hook="group-settings-generic-label" text={$_("generic.settings")} />
+    <SettingSection hook="settings-section-add-members" name={$_("chat.group.settings.add")} description={$_("chat.group.settings.add.description")}>
         <Switch
+            hook="switch-add-members"
             on={groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers}
             disabled={!isAdmin}
             on:toggle={_ => {
@@ -131,8 +133,9 @@
                 propertiesChangedList.addMembersSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers !== groupChatOriginal.settings.permissions.allowAnyoneToAddUsers
             }} />
     </SettingSection>
-    <SettingSection name={$_("chat.group.settings.details")} description={$_("chat.group.settings.details.description")}>
+    <SettingSection hook="settings-section-change-details" name={$_("chat.group.settings.details")} description={$_("chat.group.settings.details.description")}>
         <Switch
+            hook="switch-change-details"
             on={groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName}
             disabled={!isAdmin}
             on:toggle={_ => {
@@ -140,8 +143,9 @@
                 propertiesChangedList.changeDetailsSwitch = groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName !== groupChatOriginal.settings.permissions.allowAnyoneToModifyName
             }} />
     </SettingSection>
-    <SettingSection name={$_("chat.group.settings.photo")} description={$_("chat.group.settings.photo.description")}>
+    <SettingSection hook="settings-section-change-photo" name={$_("chat.group.settings.photo")} description={$_("chat.group.settings.photo.description")}>
         <Switch
+            hook="switch-change-photo"
             on={groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto}
             disabled={!isAdmin}
             on:toggle={_ => {

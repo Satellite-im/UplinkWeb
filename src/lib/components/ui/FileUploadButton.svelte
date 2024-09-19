@@ -68,7 +68,7 @@
     }}>
     <Icon icon={Shape.Plus} />
 </Button>
-<input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
+<input data-cy="input-file-upload" style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
 
 <style lang="scss">
 </style>

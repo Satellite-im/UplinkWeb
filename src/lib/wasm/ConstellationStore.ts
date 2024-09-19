@@ -238,6 +238,20 @@ class ConstellationStore {
         return failure(WarpError.CONSTELLATION_NOT_FOUND)
     }
 
+    async canGoBack(): Promise<Result<WarpError, boolean>> {
+        const constellation = get(this.constellationWritable)
+        if (constellation) {
+            try {
+                let currentPath = (await constellation.current_directory()).path()
+                let root = (await constellation.root_directory()).path()
+                return success(root !== currentPath)
+            } catch (error) {
+                return failure(handleErrors(error))
+            }
+        }
+        return failure(WarpError.CONSTELLATION_NOT_FOUND)
+    }
+
     /**
      * Goes back to the previous directory in the constellation.
      * @returns A Result containing either success or failure with a WarpError.
@@ -247,6 +261,11 @@ class ConstellationStore {
         if (constellation) {
             try {
                 let currentPath = (await constellation.current_directory()).path()
+                let root = (await constellation.root_directory()).path()
+                if (root === currentPath) {
+                    log.error("Already at root. Cannot go back more")
+                    return failure(WarpError.GENERAL_ERROR)
+                }
                 if (this.isValidFormat(currentPath)) {
                     await constellation.set_path("")
                 } else {
