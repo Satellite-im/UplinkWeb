@@ -158,9 +158,7 @@
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.makingCall && VoiceRTCInstance.peerMesh.readyForCalling()) {
-                await VoiceRTCInstance.makeCall().catch(e => {
-                    console.log("call err ", e)
-                })
+                await VoiceRTCInstance.makeCall()
             }
             if (VoiceRTCInstance.acceptedIncomingCall) {
                 await VoiceRTCInstance.acceptCall(true)
@@ -191,7 +189,7 @@
         <Topbar simple>
             <svelte:fragment slot="content">
                 <Text hook="text-users-in-call" muted size={Size.Smaller}>
-                    ({chat.users.length}) users in the call
+                    ({Object.keys($remoteStreams).length + 1}) users in the call
                 </Text>
             </svelte:fragment>
         </Topbar>
@@ -208,10 +206,9 @@
             </video>
 
             {#each chat.users as user}
-                {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
+                {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
-                {/if}
-                {#if $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
                     {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
                         <Participant
                             participant={$userCache[user]}

@@ -15,7 +15,6 @@
     let callSound: SoundHandler | undefined = undefined
     let pending = false
     let user: User = defaultUser
-    let interval: NodeJS.Timeout
 
     Store.state.pendingCall.subscribe(async _ => {
         if (VoiceRTCInstance.incomingCall) {
@@ -49,7 +48,7 @@
         pending = false
         callSound?.stop()
         callSound = undefined
-        VoiceRTCInstance.leaveCall()
+        VoiceRTCInstance.leaveCall(false)
         VoiceRTCInstance.incomingCall = null
     }
 </script>

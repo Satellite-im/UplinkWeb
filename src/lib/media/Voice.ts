@@ -47,8 +47,9 @@ export type VoiceRTCUser = {
 
 type VoiceMessage = {
     type: VoiceRTCMessageType
-    channel: string
+    channel: string | undefined
     userInfo: VoiceRTCUser
+    peers: string[]
     other?: any
 }
 
@@ -67,7 +68,6 @@ type CallMeta = {
         audioEnabled: boolean
         isDeafened: boolean
     }
-    peers: string[]
 }
 
 export type CallUpdater = {
@@ -107,14 +107,15 @@ export class PeerMesh {
      */
     async join(users?: string[] | VoiceRTCUser) {
         if (users) {
+            let self = get(Store.state.user).key
             if (Array.isArray(users)) {
                 users.forEach(did => {
-                    if (!this.remotePeers.find(p => p.did in users)) {
+                    if (self !== did && !this.remotePeers.find(p => p.did in users)) {
                         let peer = new RemotePeer(did)
                         this.remotePeers.push(peer)
                     }
                 })
-            } else if (!this.remotePeers.find(p => p.did === users.did)) {
+            } else if (self !== users.did && !this.remotePeers.find(p => p.did === users.did)) {
                 let peer = new RemotePeer(users.did)
                 peer.updateUserData(users)
                 this.remotePeers.push(peer)
@@ -140,8 +141,19 @@ export class PeerMesh {
     /**
      * Leave this mesh. Will disconnect from all peers
      */
-    async leave() {
-        this.clear()
+    async leave(peerId?: string) {
+        if (peerId) {
+            this.connectedPeers.delete(peerId)
+            this.remotePeers = this.remotePeers.filter(p => {
+                if (p.remotePeerId !== peerId) {
+                    return true
+                }
+                p.close()
+                return false
+            })
+        } else {
+            this.clear()
+        }
     }
 
     async clear() {
@@ -202,14 +214,8 @@ export class PeerMesh {
                     VoiceRTCInstance.handleWithDataReceived(data as VoiceMessage)
                 })
                 peer.dataConnection.on("close", () => {
-                    this.connectedPeers.delete(peer.remotePeerId)
-                    this.remotePeers = this.remotePeers.filter(p => {
-                        if (p.remotePeerId !== peer.remotePeerId) {
-                            return true
-                        }
-                        p.close()
-                        return false
-                    })
+                    console.log("closing ", peer.remotePeerId)
+                    this.leave(peer.remotePeerId)
                     if (this.empty()) {
                         VoiceRTCInstance.leaveCall(true)
                     }
@@ -220,30 +226,32 @@ export class PeerMesh {
                         log.error(`Connection to ${peer.remotePeerId} failed.`)
                         return false
                     }
-                    log.debug(`Not possible to connect to ${peer.remotePeerId}, trying again.`)
+                    log.debug(`Not possible to connect to ${peer.remotePeerId}, trying again. ${attempts}`)
+                    attempts += 1
                     continue
                 }
                 // Call after successfully connect. But dont wait for it
                 new Promise(async () => {
                     let meta: CallMeta = {
-                        channel: VoiceRTCInstance.channel!,
+                        channel: channel,
                         userInfo: {
                             did: get(Store.state.user).key,
                             username: get(Store.state.user).name,
-                            videoEnabled: VoiceRTCInstance.callOptions.video.enabled,
-                            audioEnabled: VoiceRTCInstance.callOptions.audio.enabled,
-                            isDeafened: VoiceRTCInstance.callOptions.audio.deafened,
+                            videoEnabled: callOptions.video.enabled,
+                            audioEnabled: callOptions.audio.enabled,
+                            isDeafened: callOptions.audio.deafened,
                         },
-                        peers: this.remotePeers.filter(p => p.remotePeerId !== peer.remotePeerId).map(p => p.did),
                     }
                     peer.activeCall = VoiceRTCInstance.localPeer!.call(peer.remotePeerId!, await VoiceRTCInstance.getLocalStream(), {
                         metadata: meta,
                     })
                     peer.activeCall!.on("stream", async remoteStream => {
                         this.inCall = true
+                        // Tell the mesh that someone successfully joined the call
+                        this.notify(VoiceRTCMessageType.JoinedCall)
                         if (!this.callStartTime) this.callStartTime = new Date()
                         if (VoiceRTCInstance.remoteVideoCreator) VoiceRTCInstance.remoteVideoCreator.create({ user: peer.getUser(), stream: remoteStream })
-                        await peer.handleRemoteStream(remoteStream, VoiceRTCInstance.remoteVideoCreator?.delete)
+                        await peer.handleRemoteStream(remoteStream)
                     })
                 })
                 return true
@@ -261,23 +269,21 @@ export class PeerMesh {
     }
 
     async notify(type: VoiceRTCMessageType, other?: any) {
-        await Promise.all(
-            this.remotePeers.map(p =>
-                p.dataConnection?.send({
-                    type: type,
-                    channel: VoiceRTCInstance.channel,
-                    userInfo: {
-                        did: VoiceRTCInstance.localPeer!.id,
-                        username: get(Store.state.user).name,
-                        videoEnabled: VoiceRTCInstance.callOptions.video.enabled,
-                        audioEnabled: VoiceRTCInstance.callOptions.audio.enabled,
-                        isDeafened: VoiceRTCInstance.callOptions.audio.deafened,
-                    },
-                    peers: [VoiceRTCInstance.localPeer!.id, ...VoiceRTCInstance.peerMesh.connectedPeers],
-                    other,
-                })
-            )
-        )
+        let user = get(Store.state.user)
+        let data: VoiceMessage = {
+            type: type,
+            channel: VoiceRTCInstance.channel,
+            userInfo: {
+                did: user.key,
+                username: user.name,
+                videoEnabled: VoiceRTCInstance.callOptions.video.enabled,
+                audioEnabled: VoiceRTCInstance.callOptions.audio.enabled,
+                isDeafened: VoiceRTCInstance.callOptions.audio.deafened,
+            },
+            peers: this.remotePeers.filter(p => p.remotePeerId in VoiceRTCInstance.peerMesh.connectedPeers).map(p => p.did),
+            other,
+        }
+        await Promise.all(this.remotePeers.map(p => p.dataConnection?.send(data)))
     }
 
     getPeer(predicate: (p: RemotePeer) => boolean) {
@@ -398,7 +404,7 @@ export class RemotePeer {
         this.streamHandler = [checker, analyser]
     }
 
-    async handleRemoteStream(stream: MediaStream, remove: ((user: string) => void) | undefined) {
+    async handleRemoteStream(stream: MediaStream) {
         this.handleStreamMeta(stream)
         this.stream = stream
         /// Here will receive data from user that made the call
@@ -414,6 +420,7 @@ export class RemotePeer {
         }
         if (this.activeCall) this.activeCall.close()
         if (this.dataConnection) this.dataConnection.close()
+        VoiceRTCInstance.remoteVideoCreator.delete(this.did)
     }
 }
 
@@ -440,12 +447,14 @@ export class VoiceRTC {
         this.remoteVideoCreator = {
             create: stream => {
                 Store.state.activeCallMeta.update(s => {
+                    console.log("adding ", stream, s)
                     s[stream.user.did] = stream
                     return s
                 })
             },
             delete: user => {
                 Store.state.activeCallMeta.update(s => {
+                    console.log("removing ", user, s)
                     if (s[user]) s[user].stream = null
                     return s
                 })
@@ -592,6 +601,7 @@ export class VoiceRTC {
             // Joins and calls all peers. The mesh contains the to calling peers from #startToMakeACall
             this.peerMesh.join()
             setTimeout(() => {
+                console.log("timeout ", this.peerMesh.callStartTime)
                 if (this.peerMesh.callStartTime === null) {
                     this.leaveCall(true)
                 }
@@ -639,7 +649,8 @@ export class VoiceRTC {
         this.callOptions.call.onlyAudioCall = audioOnly
         // If in a existing call leave it first
         this.peerMesh.leave()
-        this.peerMesh.init(this.incomingCall.metadata.peers)
+        let meta: CallMeta = this.incomingCall.metadata
+        this.peerMesh.init([meta.userInfo.did])
         this.acceptCallInternal(this.incomingCall)
         this.incomingConnections.forEach(conn => {
             let peer = this.peerMesh.getPeer(p => p.remotePeerId === conn.metadata.id)
@@ -679,7 +690,7 @@ export class VoiceRTC {
 
     async leaveCall(sendEndCallMessage = true) {
         await this.peerMesh.notify(VoiceRTCMessageType.LeavingCall)
-
+        sendEndCallMessage = sendEndCallMessage && this.channel !== undefined
         if (sendEndCallMessage && this.peerMesh.callStartTime) {
             const now = new Date()
             const duration = this.getDuration(now)
@@ -701,7 +712,7 @@ export class VoiceRTC {
             Store.denyCall()
         }
 
-        log.info("Call ended and resources cleaned up.")
+        log.error("Call ended and resources cleaned up.")
         this.setupLocalPeer()
     }
 
@@ -810,10 +821,12 @@ export class VoiceRTC {
                 this.channel = dataReceived.channel
                 break
             case VoiceRTCMessageType.LeavingCall:
+                this.peerMesh.leave(new RemotePeer(dataReceived.userInfo.did).remotePeerId)
                 if (this.peerMesh.empty()) this.leaveCall(false)
                 break
             case VoiceRTCMessageType.JoinedCall:
                 this.peerMesh.join(dataReceived.userInfo)
+                this.peerMesh.join(dataReceived.peers)
                 break
             case VoiceRTCMessageType.EnabledVideo:
             case VoiceRTCMessageType.DisabledVideo:
