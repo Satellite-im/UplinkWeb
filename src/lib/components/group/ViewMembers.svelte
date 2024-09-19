@@ -94,36 +94,36 @@
     }
 </script>
 
-<div class="members">
+<div class="members" data-cy="group-chat-members">
     {#if adminControls}
-        <Label hook="label-create-group-add-members" text={$_("chat.group.members")} />
-        <div class="recipient-list">
+        <Label hook="label-group-chat-members" text={$_("chat.group.members")} />
+        <div class="recipient-list" data-cy="recipients-list">
             {#each members as recipient}
-                <div class="mini-recipient">
-                    <ProfilePicture size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
-                    <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
+                <div class="mini-recipient" data-cy="mini-recipient">
+                    <ProfilePicture hook="mini-recipient-profile-picture" size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
+                    <Text hook="mini-recipient-name" singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Button small icon on:click={() => remove_member(recipient)} appearance={Appearance.Alt}>
+                    <Button hook="mini-recipient-button" small icon on:click={() => remove_member(recipient)} appearance={Appearance.Alt}>
                         <Icon icon={Shape.XMark} alt class="control" />
                     </Button>
                 </div>
             {/each}
         </div>
-        <Label text={$_("chat.group.settings.edit")} />
-        <div class="recipient-selection-list">
+        <Label hook="label-edit-members" text={$_("chat.group.settings.edit")} />
+        <div class="recipient-selection-list" data-cy="recipient-selection-list">
             {#each allRecipients as recipient (recipient.key)}
-                <button class="recipient" on:click={() => update_members(recipient)}>
-                    <ProfilePicture size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
-                    <div class="info">
-                        <Text singleLine size={Size.Medium}>
+                <button data-cy="recipient-single" class="recipient" on:click={() => update_members(recipient)}>
+                    <ProfilePicture hook="recipient-single-profile-picture" size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
+                    <div data-cy="recipient-single-info" class="info">
+                        <Text hook="recipient-single-name" singleLine size={Size.Medium}>
                             {recipient.name}
                         </Text>
-                        <Text singleLine muted>
+                        <Text hook="recipient-single-key" singleLine muted>
                             {recipient.key}
                         </Text>
                     </div>
-                    <Checkbox checked={contains_user(members, recipient)} />
+                    <Checkbox hook="recipient-single-checkbox" checked={contains_user(members, recipient)} />
                 </button>
             {/each}
         </div>
