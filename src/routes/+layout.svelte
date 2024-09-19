@@ -234,7 +234,6 @@
     $: if ($locale) {
         isLocaleSet = true
     }
-    // $: theme = UIStore.state.theme
 
     onMount(async () => {
         await checkIfUserIsLogged($page.route.id)

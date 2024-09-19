@@ -344,7 +344,6 @@
         <Button
             hook="button-emoji-font-open-folder"
             on:click={async event => {
-                // let emojiUpload = event.dataTransfer?.files
                 emojiUpload?.click()
             }}
             icon
