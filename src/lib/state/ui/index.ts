@@ -13,7 +13,7 @@ export interface IUIState {
     allFonts: Writable<FontOption[]>
     emojiFont: Writable<EmojiFont>
     identicon: Writable<Identicon>
-    theme: Writable<string>
+    theme: Writable<Theme>
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
     hiddenChats: Writable<Chat[]>
@@ -67,12 +67,12 @@ class Store {
         this.state.font.set(font)
     }
 
-    setTheme(theme: string) {
+    setTheme(theme: Theme) {
         this.state.theme.set(theme)
     }
 
     clearTheme() {
-        this.state.theme.set("default")
+        this.state.theme.set(Theme.Default)
     }
 
     setEmojiFont(font: EmojiFont) {

@@ -229,25 +229,24 @@
 
     console.log("Arriving here on +layout")
 
-    onMount(async () => {
-        await checkIfUserIsLogged($page.route.id)
-        await initializeLocale()
-        buildStyle()
-    })
-
     let isLocaleSet = false
 
     $: if ($locale) {
         isLocaleSet = true
     }
+    // $: theme = UIStore.state.theme
 
-    $: theme = UIStore.state.theme
+    onMount(async () => {
+        await checkIfUserIsLogged($page.route.id)
+        await initializeLocale()
+        buildStyle()
+    })
 </script>
 
 {#if isLocaleSet}
     <div id="app">
         {@html `<style>${style}</style>`}
-        <link rel="stylesheet" href={`/assets/themes/${$theme}.css`} />
+        <link rel="stylesheet" href={`/assets/themes/${theme}.css`} />
         {@html `<style>${cssOverride}</style>`}
         <Polling rate={5000} />
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
