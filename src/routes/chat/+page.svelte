@@ -369,8 +369,8 @@
         -->
         <div class="content-header">
             <Label hook="label-sidebar-chats" text={$_("chat.chat_plural")} />
-            <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
-                <Icon icon={Shape.ChatPlus} />
+            <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} appearance={Appearance.Primary} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
+                <Icon icon={Shape.ChatPlus} alt />
             </Button>
         </div>
 
@@ -479,7 +479,7 @@
                         on:click={_ => {
                             Store.toggleFavorite($activeChat)
                         }}>
-                        <Icon icon={Shape.Heart} />
+                        <Icon icon={Shape.Heart} alt={$isFavorite} />
                     </Button>
                     <Button
                         hook="button-chat-pin"
@@ -507,7 +507,7 @@
                             on:click={_ => {
                                 showUsers = true
                             }}>
-                            <Icon icon={Shape.Users} />
+                            <Icon icon={Shape.Users} alt={showUsers} />
                         </Button>
                         <Button
                             hook="button-chat-group-settings"
@@ -519,7 +519,7 @@
                             on:click={_ => {
                                 groupSettings = true
                             }}>
-                            <Icon icon={Shape.Cog} />
+                            <Icon icon={Shape.Cog} alt={groupSettings} />
                         </Button>
                     {/if}
                     {#if $activeChat.users.length === 1}
@@ -530,7 +530,7 @@
                             on:click={_ => {
                                 contentAsideOpen = !contentAsideOpen
                             }}>
-                            <Icon icon={Shape.Profile} />
+                            <Icon icon={Shape.Profile} alt={contentAsideOpen} />
                         </Button>
                     {/if}
                 </svelte:fragment>

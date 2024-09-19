@@ -11,6 +11,7 @@
     import { UIStore } from "$lib/state/ui"
     import { SettingsStore, type ISettingsState } from "$lib/state"
     import ProfilePicture from "$lib/components/profile/ProfilePicture.svelte"
+    import ThemeSelector from "$lib/themes/ThemeSelector.svelte"
 
     let hex = get(UIStore.state.color)
     let font: Font = get(UIStore.state.font)
@@ -148,13 +149,7 @@
         </Button>
     </SettingSection>
     <SettingSection hook="section-theme" name={$_("settings.preferences.theme")} description={$_("settings.preferences.themeDescription")}>
-        <Button hook="button-theme-moon" icon appearance={Appearance.Alt}>
-            <Icon icon={Shape.Moon} />
-        </Button>
-        <Select hook="selector-theme" alt options={[{ text: "Default", value: "default" }]} />
-        <Button hook="button-theme-open-folder" icon appearance={Appearance.Alt}>
-            <Icon icon={Shape.FolderOpen} />
-        </Button>
+        <ThemeSelector />
     </SettingSection>
     <SettingSection hook="section-primary-color" name={$_("settings.preferences.primaryColor")} description={$_("settings.preferences.primaryColorDescription")} wrapContent>
         <PopupButton hook="primary-color-popup-button" name={$_("settings.preferences.pick")} color={hex}>
