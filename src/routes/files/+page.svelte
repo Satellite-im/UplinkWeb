@@ -56,6 +56,7 @@
     $: files = Store.state.files
     let currentFolderIdStore = writable<string>("")
     let rename: string | undefined
+    let canGoBack = writable(false)
 
     async function openFolder(folder: FileInfo) {
         let res = await ConstellationStoreInstance.openDirectory(folder.name)
@@ -65,6 +66,10 @@
                 currentFolderIdStore.set(folder.id)
                 updateCurrentDirectory()
             }
+        )
+        ;(await ConstellationStoreInstance.canGoBack()).fold(
+            _ => {},
+            res => canGoBack.set(res)
         )
     }
 
@@ -76,6 +81,10 @@
                 currentFolderIdStore.set(id)
                 updateCurrentDirectory()
             }
+        )
+        ;(await ConstellationStoreInstance.canGoBack()).fold(
+            _ => {},
+            res => canGoBack.set(res)
         )
     }
 
@@ -195,6 +204,10 @@
             Store.updateFileOrder(Array.from(filesSet))
             $files = Array.from(filesSet)
         })
+        ;(await ConstellationStoreInstance.canGoBack()).fold(
+            _ => {},
+            res => canGoBack.set(res)
+        )
     }
     function updateFilesFromFolder(folder: FileInfo): void {
         if (folder.items && folder.items.length > 0) {
@@ -590,9 +603,11 @@
                 <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
             </svelte:fragment>
         </Topbar>
-        <div class="folder-back">
-            <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>{$_("controls.go_back")}</Button>
-        </div>
+        {#if $canGoBack}
+            <div class="folder-back">
+                <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>{$_("controls.go_back")}</Button>
+            </div>
+        {/if}
         <div class="files">
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             {#each $files as item}
