@@ -30,7 +30,6 @@
 
     $: messagePreview = chat.last_message_id === "" ? "No messages sent yet." : chat.last_message_id !== "" && chat.last_message_preview === "" ? "New Attachment" : chat.last_message_preview
     function getTimeAgo(dateInput: string | Date) {
-        console.log(chat.last_message_preview, chat)
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
