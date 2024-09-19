@@ -51,7 +51,7 @@
             icon: Shape.MicrosoftWindows,
         },
         [Platform.MacOS]: {
-            text: "Download for MacOS",
+            text: "Download for macOS",
             icon: Shape.AppleAppStore,
         },
         [Platform.Android]: {
