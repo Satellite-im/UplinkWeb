@@ -23,10 +23,7 @@
                 callSound.play()
             }
             pending = true
-            const callingChat = Store.getCallingChat(VoiceRTCInstance.channel!)
-            if (callingChat) {
-                user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
-            }
+            user = (await MultipassStoreInstance.identity_from_did(VoiceRTCInstance.incomingCall.metadata.userInfo.did)) ?? defaultUser
         } else if (!VoiceRTCInstance.incomingCall && !VoiceRTCInstance.makingCall) {
             pending = false
             callSound?.stop()
