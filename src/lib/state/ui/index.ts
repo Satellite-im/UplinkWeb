@@ -13,7 +13,7 @@ export interface IUIState {
     allFonts: Writable<FontOption[]>
     emojiFont: Writable<EmojiFont>
     identicon: Writable<Identicon>
-    theme: Writable<Theme>
+    theme: Writable<string>
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
     hiddenChats: Writable<Chat[]>
@@ -30,9 +30,9 @@ class Store {
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
             font: createPersistentState("uplink.ui.font", { text: Font.Poppins, value: Font.Poppins }),
             allFonts: createPersistentState("uplink.ui.allFonts", [] as FontOption[]),
-            theme: createPersistentState("uplink.ui.theme", Theme.Default),
             identicon: createPersistentState("uplink.ui.identicon", Identicon.PixelArtNeutral),
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
+            theme: createPersistentState("uplink.ui.theme", "default"),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
             sidebarOpen: createPersistentState("uplink.ui.sidebarOpen", true),
             chats: createPersistentState("uplink.ui.chats", [], {
@@ -67,18 +67,17 @@ class Store {
         this.state.font.set(font)
     }
 
-    setTheme(theme: Theme) {
+    setTheme(theme: string) {
         this.state.theme.set(theme)
     }
 
     clearTheme() {
-        this.state.theme.set(Theme.Default)
+        this.state.theme.set("default")
     }
 
     setEmojiFont(font: EmojiFont) {
         this.state.emojiFont.set(font)
     }
-
     increaseFontSize(amount: number = 0.025) {
         this.state.fontSize.update(s => (s + amount <= 1.5 ? (s += amount) : s))
     }

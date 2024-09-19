@@ -6,7 +6,7 @@
     import GamepadListener from "$lib/components/ui/GamepadListener.svelte"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
-    import { EmojiFont, Font, KeybindAction, KeybindState, Theme } from "$lib/enums"
+    import { EmojiFont, Font, KeybindAction, KeybindState } from "$lib/enums"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { checkIfUserIsLogged } from "$lib/state/auth"
@@ -34,7 +34,7 @@
     let font: FontOption = get(UIStore.state.font)
     let allFonts: FontOption[] = get(UIStore.state.allFonts)
     let emojiFont: EmojiFont = get(UIStore.state.emojiFont)
-    let theme: Theme = get(UIStore.state.theme)
+    let theme: string = get(UIStore.state.theme)
     let cssOverride: string = get(UIStore.state.cssOverride)
     let muted: boolean = get(Store.state.devices.muted)
     let deafened: boolean = get(Store.state.devices.deafened)

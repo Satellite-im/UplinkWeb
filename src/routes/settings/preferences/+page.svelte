@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Appearance, EmojiFont, Font, Identicon, Shape, Theme } from "$lib/enums"
+    import { Appearance, EmojiFont, Font, Identicon, Shape } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import { ColorSwatch } from "$lib/components"
     import { SettingSection } from "$lib/layouts"
@@ -15,7 +15,7 @@
     import ThemeSelector from "$lib/themes/ThemeSelector.svelte"
     import { Store } from "$lib/state/Store"
     import { ToastMessage } from "$lib/state/ui/toast"
-    import { availableEmoji, availableFonts, availableIdenticons, availableThemes } from "$lib/state/settings/default"
+    import { availableEmoji, availableFonts, availableIdenticons } from "$lib/state/settings/default"
     import * as opentype from "opentype.js"
     import type { FontOption } from "$lib/types"
 

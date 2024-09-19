@@ -105,8 +105,6 @@ export const availableEmoji = [
     { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
     { text: EmojiFont.Fluent.split(".")[0], value: EmojiFont.Fluent },
 ]
-export const availableThemes = [{ text: "Default", value: "Default" }]
-
 export let defaultSettings = {
     lang: Locale.EN_US,
     friends: [],
