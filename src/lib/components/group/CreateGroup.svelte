@@ -90,14 +90,14 @@
         {/if}
 
         <Label hook="label-create-group-members" text={$_("chat.group.members")} />
-        <div class="user-list">
+        <div class="user-list" data-cy="create-group-users-list">
             {#each recipients as recipient}
-                <div class="mini-user">
-                    <ProfilePicture id={recipient.key} size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
-                    <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
+                <div class="mini-user" data-cy="mini-user">
+                    <ProfilePicture hook="mini-user-profile-picture" id={recipient.key} size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
+                    <Text hook="mini-user-name" singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Button small outline icon on:click={() => update_recipients(recipient)}>
+                    <Button hook="mini-user-button" small outline icon on:click={() => update_recipients(recipient)}>
                         <Icon icon={Shape.XMark} alt class="control" />
                     </Button>
                 </div>
@@ -105,26 +105,26 @@
         </div>
 
         <Label hook="label-create-group-select-members" text={$_("chat.group.select")} />
-        <div class="user-selection-list {embedded ? 'embedded' : ''}">
+        <div class="user-selection-list {embedded ? 'embedded' : ''}" data-cy="user-selection-list">
             {#each $friends as recipient}
-                <button class="user" on:click={() => update_recipients(recipient)}>
-                    <ProfilePicture id={recipient.key} size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
-                    <div class="info">
-                        <Text singleLine size={Size.Medium}>
+                <button data-cy="single-user" class="user" on:click={() => update_recipients(recipient)}>
+                    <ProfilePicture hook="single-user-profile-picture" id={recipient.key} size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
+                    <div class="info" data-cy="single-user-info">
+                        <Text hook="single-user-name" singleLine size={Size.Medium}>
                             {recipient.name}
                         </Text>
-                        <Text singleLine muted>
+                        <Text hook="single-user-key" singleLine muted>
                             {recipient.key}
                         </Text>
                     </div>
-                    <Checkbox checked={contains_recipient(recipients, recipient)} />
+                    <Checkbox hook="single-user-checkbox" checked={contains_recipient(recipients, recipient)} />
                 </button>
             {/each}
         </div>
 
         <!-- Display error message if no recipients are selected -->
         {#if error}
-            <Text appearance={Appearance.Error} size={Size.Small}>
+            <Text hook="text-error-create-group" appearance={Appearance.Error} size={Size.Small}>
                 {error}
             </Text>
         {/if}
