@@ -15,8 +15,9 @@
     import ThemeSelector from "$lib/themes/ThemeSelector.svelte"
     import { Store } from "$lib/state/Store"
     import { ToastMessage } from "$lib/state/ui/toast"
-    import { availableEmoji, availableFonts, availableIdenticons, availableThemes, type FontOption } from "$lib/state/settings/default"
+    import { availableEmoji, availableFonts, availableIdenticons, availableThemes } from "$lib/state/settings/default"
     import * as opentype from "opentype.js"
+    import type { FontOption } from "$lib/types"
 
     let hex = get(UIStore.state.color)
     $: font = get(UIStore.state.font)
@@ -27,7 +28,6 @@
     let cssOverride = get(UIStore.state.cssOverride)
     let fontSize = get(UIStore.state.fontSize)
     let emojiUpload: HTMLInputElement
-    let themeUpload: HTMLInputElement
     let fontUpload: HTMLInputElement
     let identiconUpload: HTMLInputElement
 
