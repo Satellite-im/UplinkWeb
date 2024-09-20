@@ -2,29 +2,27 @@
     import { Button, Icon, Text, Spacer } from "$lib/elements"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { Controls } from "$lib/layouts"
-    import { defaultUser, type Chat, type User } from "$lib/types"
-    import { onMount, onDestroy } from "svelte"
+    import { defaultUser } from "$lib/types"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
-    import { get } from "svelte/store"
+    import { writable } from "svelte/store"
 
     let callSound: SoundHandler | undefined = undefined
     let pending = false
-    let user: User = defaultUser
+    let user = writable(defaultUser)
 
     Store.state.pendingCall.subscribe(async _ => {
-        if (VoiceRTCInstance.incomingCall) {
+        if (VoiceRTCInstance.incomingCall && !VoiceRTCInstance.makingCall) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)
                 callSound.play()
             }
             pending = true
-            user = (await MultipassStoreInstance.identity_from_did(VoiceRTCInstance.incomingCall.metadata.userInfo.did)) ?? defaultUser
-        } else if (!VoiceRTCInstance.incomingCall && !VoiceRTCInstance.makingCall) {
+            user = Store.getUser(VoiceRTCInstance.incomingCall.metadata.userInfo.did)
+        } else {
             pending = false
             callSound?.stop()
             callSound = undefined
@@ -54,9 +52,9 @@
     <div id="incoming-call">
         <div class="body">
             <div class="content">
-                <ProfilePicture id={user.key} hook="friend-profile-picture" size={Size.Large} image={user.profile.photo.image} status={user.profile.status} />
-                <Text>{user.name}</Text>
-                <Text muted>{user.profile.status_message}</Text>
+                <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                <Text>{$user.name}</Text>
+                <Text muted>{$user.profile.status_message}</Text>
                 <Spacer />
                 <Controls>
                     <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>

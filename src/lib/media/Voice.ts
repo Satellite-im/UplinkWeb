@@ -186,7 +186,7 @@ export class PeerMesh {
 
     private async connectWithRetryFor(localPeer: Peer, channel: string, callOptions: VoiceRTCOptions, peer: RemotePeer) {
         if (this.connectedPeers.has(peer.remotePeerId)) return true
-        const maxRetries = 5
+        const maxRetries = 5 // TODO: Failing to connect after 2 attemps (or just throwing errors twitce for the local peer?) breaks ALL connections...
         let attempts = 0
         let connected = false
 
@@ -214,7 +214,6 @@ export class PeerMesh {
                     VoiceRTCInstance.handleWithDataReceived(data as VoiceMessage)
                 })
                 peer.dataConnection.on("close", () => {
-                    console.log("closing ", peer.remotePeerId)
                     this.leave(peer.remotePeerId)
                     if (this.empty()) {
                         VoiceRTCInstance.leaveCall(true)
@@ -228,6 +227,7 @@ export class PeerMesh {
                     }
                     log.debug(`Not possible to connect to ${peer.remotePeerId}, trying again. ${attempts}`)
                     attempts += 1
+                    await new Promise(resolve => setTimeout(resolve, 5000))
                     continue
                 }
                 // Call after successfully connect. But dont wait for it
@@ -250,7 +250,9 @@ export class PeerMesh {
                         // Tell the mesh that someone successfully joined the call
                         this.notify(VoiceRTCMessageType.JoinedCall)
                         if (!this.callStartTime) this.callStartTime = new Date()
-                        if (VoiceRTCInstance.remoteVideoCreator) VoiceRTCInstance.remoteVideoCreator.create({ user: peer.getUser(), stream: remoteStream })
+                        if (VoiceRTCInstance.remoteVideoCreator) {
+                            VoiceRTCInstance.remoteVideoCreator.create({ user: peer.getUser(), stream: remoteStream })
+                        }
                         await peer.handleRemoteStream(remoteStream)
                     })
                 })
@@ -407,8 +409,6 @@ export class RemotePeer {
     async handleRemoteStream(stream: MediaStream) {
         this.handleStreamMeta(stream)
         this.stream = stream
-        /// Here will receive data from user that made the call
-        // TODO: decide which video to play?
     }
 
     close() {
@@ -447,14 +447,12 @@ export class VoiceRTC {
         this.remoteVideoCreator = {
             create: stream => {
                 Store.state.activeCallMeta.update(s => {
-                    console.log("adding ", stream, s)
                     s[stream.user.did] = stream
                     return s
                 })
             },
             delete: user => {
                 Store.state.activeCallMeta.update(s => {
-                    console.log("removing ", user, s)
                     if (s[user]) s[user].stream = null
                     return s
                 })
@@ -601,7 +599,6 @@ export class VoiceRTC {
             // Joins and calls all peers. The mesh contains the to calling peers from #startToMakeACall
             this.peerMesh.join()
             setTimeout(() => {
-                console.log("timeout ", this.peerMesh.callStartTime)
                 if (this.peerMesh.callStartTime === null) {
                     this.leaveCall(true)
                 }

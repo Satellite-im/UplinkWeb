@@ -16,6 +16,7 @@
     import { onDestroy, onMount } from "svelte"
     import { VoiceRTCInstance, type VoiceRTCUser } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
+    import { debounce } from "$lib/utils/Functions"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -140,8 +141,10 @@
         node.play()
         return {
             update(_: MediaStream) {
-                node.srcObject = stream
-                node.play()
+                debounce(() => {
+                    node.srcObject = stream
+                    node.play()
+                }, 3)
             },
         }
     }
@@ -166,10 +169,6 @@
             }
         }
 
-        // if (VoiceRTCInstance.remoteVideoElement) {
-        //     remoteVideoElement.srcObject = VoiceRTCInstance.remotePeersHolder.remotePeers[0]?.activeCall?.remoteStream!
-        //     remoteVideoElement.play()
-        // }
         if (VoiceRTCInstance.localVideoCurrentSrc) {
             await VoiceRTCInstance.getLocalStream(true)
         }
