@@ -69,7 +69,6 @@
     const availableFontsStore = writable<FontOption[]>([])
     const availableEmojiStore = writable<FontOption[]>([])
     const availableIdenticonsStore = writable<FontOption[]>([])
-    const availableThemesStore = writable<FontOption[]>([])
     $: if (hex !== undefined) {
         UIStore.setThemeColor(hex)
     }
@@ -107,7 +106,6 @@
         availableFontsStore.set([...availableFonts])
         availableEmojiStore.set([...availableEmoji])
         availableIdenticonsStore.set([...availableIdenticons])
-        availableThemesStore.set([...availableThemes])
     }
 
     async function loadBlobUrlMap(): Promise<void> {
@@ -163,6 +161,19 @@
 
     async function saveFontToDB(fileName: string, fileData: Blob): Promise<boolean> {
         const db = await openDatabase()
+        const MAX_FILE_SIZE = 1 * 1024 * 1024
+        if (fileData.size > MAX_FILE_SIZE) {
+            Store.addToastNotification(new ToastMessage("", "Font file is too large to store", 2))
+            return Promise.resolve(false)
+        }
+        const ACCEPTABLE_FORMATS = ["ttf", "otf", "woff2", "woff"]
+        const fileExtensionMatch = fileData.name.match(/\.([0-9a-z]+)$/i)
+        const fileExtension = fileExtensionMatch ? fileExtensionMatch[1].toLowerCase() : null
+
+        if (!fileExtension || !ACCEPTABLE_FORMATS.includes(fileExtension)) {
+            Store.addToastNotification(new ToastMessage("", `Unreadable font. Acceptable font types are {'${ACCEPTABLE_FORMATS.join("', '")}'}`, 2))
+            return Promise.resolve(false)
+        }
 
         return new Promise((resolve, reject) => {
             const transaction = db.transaction("fonts", "readwrite")
@@ -197,6 +208,7 @@
             }
         })
     }
+
     availableFontsStore.subscribe(value => {
         UIStore.state.allFonts.set([...value])
     })
@@ -259,23 +271,34 @@
         if (target && target.files) {
             for (let i = 0; i < target.files.length; i++) {
                 const file = target.files[i]
+                const MAX_FILE_SIZE = 1 * 1024 * 1024 // 1MB
+                if (file.size > MAX_FILE_SIZE) {
+                    Store.addToastNotification(new ToastMessage("", "Font file is too large to store", 2))
+                    continue
+                }
+
+                const ACCEPTABLE_FORMATS = ["ttf", "otf", "woff2", "woff"]
+                const fileExtension = file.name.split(".").pop()?.toLowerCase()
+
+                if (!fileExtension || !ACCEPTABLE_FORMATS.includes(fileExtension)) {
+                    Store.addToastNotification(new ToastMessage("", `Unreadable font. Acceptable font types are {'${ACCEPTABLE_FORMATS.join("', '")}'}`, 2))
+                    continue
+                }
 
                 const fontFam = (await getFontFamilyName(file)).replace(/\s+/g, "")
-
                 const isSaved = await saveFontToDB(fontFam, file)
 
                 if (!isSaved) continue
 
                 const fileData = await blobToArrayBuffer(file)
-
                 const base64Url = generateBase64Url(fileData, "font/tts")
+
                 newFontUploadTitle = fontFam
                 availableFontsStore.update(availableFonts => [...availableFonts, { text: fontFam, value: base64Url }])
                 await updateFontBlobUrls()
                 UIStore.state.font.set({ text: fontFam, value: base64Url })
             }
         }
-
         target.value = ""
     }
     $: {
