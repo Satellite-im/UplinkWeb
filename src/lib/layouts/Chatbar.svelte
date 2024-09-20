@@ -30,7 +30,7 @@
     export let filesSelected: [File?, string?][] = []
     export let emojiClickHook: (emoji: string) => boolean
     export let activeChat: Chat
-    export let typing: User[]
+    export const typing: User[] = []
 
     const dispatch = createEventDispatcher()
 
