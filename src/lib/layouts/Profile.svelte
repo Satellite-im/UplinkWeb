@@ -6,14 +6,19 @@
     import type { User } from "$lib/types"
     import { Notes } from "$lib/utils/Notes"
     import { get } from "svelte/store"
-    import { wallet } from "$lib/utils/Wallet"
     import { _ } from "svelte-i18n"
     import { getIntegrationColor, identityColor } from "$lib/utils/ProfileUtils"
+    import { createEventDispatcher } from "svelte"
 
     export let user: User | null = null
 
     $: friends = Store.state.friends
     $: currentUserShortId = get(Store.state.user)?.id.short
+
+    const dispatch = createEventDispatcher()
+    function onClose() {
+        dispatch("close")
+    }
 
     function isFriended(targetUser: User) {
         return $friends.some(friend => friend === targetUser.key)
@@ -42,6 +47,11 @@
     </div>
     {#if user}
         <div class="content">
+            <div class="exit">
+                <Button hook="button-quick-profile-exit" icon appearance={Appearance.Primary} on:click={_ => onClose()}>
+                    <Icon icon={Shape.XMark} />
+                </Button>
+            </div>
             <div class="section">
                 <Label hook="label-quick-profile-status" text={$_("generic.status_message")} />
                 <Text hook="text-quick-profile-status">{user.profile.status_message}</Text>
@@ -87,6 +97,13 @@
         gap: var(--gap);
         padding: var(--padding);
         margin-right: var(--gap-less);
+        position: relative;
+
+        .exit {
+            position: absolute;
+            top: var(--padding);
+            right: var(--padding);
+        }
 
         .section {
             display: inline-flex;

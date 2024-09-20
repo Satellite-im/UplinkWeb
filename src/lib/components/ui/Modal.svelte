@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, onDestroy, onMount } from "svelte"
     import Controls from "../../layouts/Controls.svelte"
 
     const dispatch = createEventDispatcher()
@@ -12,9 +12,24 @@
     export let padded: boolean = false
     export let withControls: boolean = false
     export let hook: string = ""
+    export let escape: boolean = false
 
     let clazz = ""
     export { clazz as class }
+
+    let keyListener: any
+    onMount(() => {
+        keyListener = (e: KeyboardEvent) => {
+            if (escape && e.code === "Escape") {
+                dispatch("close")
+            }
+        }
+        document.addEventListener("keypress", keyListener)
+    })
+
+    onDestroy(() => {
+        document.removeEventListener("keypress", keyListener)
+    })
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
