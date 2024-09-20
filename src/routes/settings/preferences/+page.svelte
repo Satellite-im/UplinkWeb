@@ -215,7 +215,7 @@
     function generateBase64Url(arrayBuffer: ArrayBuffer, mimeType: string): string {
         const bytes = new Uint8Array(arrayBuffer)
         const binary = bytes.reduce((data, byte) => data + String.fromCharCode(byte), "")
-        const base64String = btoa(binary) // Convert binary to base64
+        const base64String = btoa(binary)
 
         return `data:${mimeType};base64,${base64String}`
     }
