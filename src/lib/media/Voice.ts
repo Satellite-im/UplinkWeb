@@ -11,6 +11,7 @@ export enum VoiceRTCMessageType {
     Calling = "CALLING_USER",
     LeavingCall = "LEAVING_CALL",
     JoinedCall = "JOINED_CALL",
+    SyncPeers = "SYNC_PEERS",
     EnabledVideo = "ENABLED_VIDEO",
     DisabledVideo = "DISABLED_VIDEO",
     EnabledAudio = "ENABLED_AUDIO",
@@ -43,6 +44,7 @@ export type VoiceRTCUser = {
     videoEnabled: boolean
     audioEnabled: boolean
     isDeafened: boolean
+    joined: boolean
 }
 
 type VoiceMessage = {
@@ -50,7 +52,6 @@ type VoiceMessage = {
     channel: string | undefined
     userInfo: VoiceRTCUser
     peers: string[]
-    other?: any
 }
 
 enum ToggleType {
@@ -61,13 +62,7 @@ enum ToggleType {
 
 type CallMeta = {
     channel: string
-    userInfo: {
-        did: string
-        username: string
-        videoEnabled: boolean
-        audioEnabled: boolean
-        isDeafened: boolean
-    }
+    userInfo: VoiceRTCUser
 }
 
 export type CallUpdater = {
@@ -105,8 +100,9 @@ export class PeerMesh {
     /**
      * Joins this mesh. Will connect and call all peers that are not connected still
      */
-    async join(users?: string[] | VoiceRTCUser) {
-        if (users) {
+    async join(options: { users?: string[] | VoiceRTCUser; connect?: boolean } = { connect: true }) {
+        if (options.users) {
+            let users = options.users
             let self = get(Store.state.user).key
             if (Array.isArray(users)) {
                 users.forEach(did => {
@@ -121,7 +117,7 @@ export class PeerMesh {
                 this.remotePeers.push(peer)
             }
         }
-        await this.connectWithRetry(VoiceRTCInstance.localPeer!, VoiceRTCInstance.channel!, VoiceRTCInstance.callOptions)
+        if (options.connect) await this.connectWithRetry(VoiceRTCInstance.localPeer!, VoiceRTCInstance.channel!, VoiceRTCInstance.callOptions)
     }
 
     /**
@@ -237,6 +233,7 @@ export class PeerMesh {
                         userInfo: {
                             did: get(Store.state.user).key,
                             username: get(Store.state.user).name,
+                            joined: true,
                             videoEnabled: callOptions.video.enabled,
                             audioEnabled: callOptions.audio.enabled,
                             isDeafened: callOptions.audio.deafened,
@@ -247,8 +244,6 @@ export class PeerMesh {
                     })
                     peer.activeCall!.on("stream", async remoteStream => {
                         this.inCall = true
-                        // Tell the mesh that someone successfully joined the call
-                        this.notify(VoiceRTCMessageType.JoinedCall)
                         if (!this.callStartTime) this.callStartTime = new Date()
                         if (VoiceRTCInstance.remoteVideoCreator) {
                             VoiceRTCInstance.remoteVideoCreator.create({ user: peer.getUser(), stream: remoteStream })
@@ -270,7 +265,7 @@ export class PeerMesh {
         return false
     }
 
-    async notify(type: VoiceRTCMessageType, other?: any) {
+    async notify(type: VoiceRTCMessageType, to?: string) {
         let user = get(Store.state.user)
         let data: VoiceMessage = {
             type: type,
@@ -278,14 +273,19 @@ export class PeerMesh {
             userInfo: {
                 did: user.key,
                 username: user.name,
+                joined: VoiceRTCInstance.acceptedIncomingCall,
                 videoEnabled: VoiceRTCInstance.callOptions.video.enabled,
                 audioEnabled: VoiceRTCInstance.callOptions.audio.enabled,
                 isDeafened: VoiceRTCInstance.callOptions.audio.deafened,
             },
-            peers: this.remotePeers.filter(p => p.remotePeerId in VoiceRTCInstance.peerMesh.connectedPeers).map(p => p.did),
-            other,
+            peers: this.remotePeers.filter(p => this.connectedPeers.has(p.remotePeerId)).map(p => p.did),
         }
-        await Promise.all(this.remotePeers.map(p => p.dataConnection?.send(data)))
+        if (to) {
+            let peer = this.remotePeers.find(p => p.remotePeerId === to)
+            await peer?.dataConnection?.send(data)
+        } else {
+            await Promise.all(this.remotePeers.map(p => p.dataConnection?.send(data)))
+        }
     }
 
     getPeer(predicate: (p: RemotePeer) => boolean) {
@@ -307,6 +307,7 @@ export class RemotePeer {
         videoEnabled: false,
         audioEnabled: false,
         isDeafened: false,
+        joined: false,
     }
     activeCall: MediaConnection | null = null
     dataConnection: DataConnection | null = null
@@ -621,7 +622,7 @@ export class VoiceRTC {
         try {
             await this.setupLocalPeer()
             // Joins and calls all peers. The mesh contains the to calling peers from #startToMakeACall
-            this.peerMesh.join(dids)
+            this.peerMesh.join({ users: dids, connect: true })
             setTimeout(() => {
                 if (this.peerMesh.callStartTime === null) {
                     this.leaveCall(true)
@@ -664,6 +665,7 @@ export class VoiceRTC {
 
     private async acceptCallInternal(call: MediaConnection) {
         let meta: CallMeta = call.metadata
+        console.log(`accepting call from ${meta}`)
         this.peerMesh.connect(meta.userInfo)
         this.channel = meta.channel
         call.answer!(await this.getLocalStream()!)
@@ -682,10 +684,13 @@ export class VoiceRTC {
             }
         })
         this.acceptedIncomingCall = true
+        // Tell the mesh that you successfully joined the call
         await this.peerMesh.join()
+        this.peerMesh.notify(VoiceRTCMessageType.JoinedCall, call.peer)
     }
 
     async leaveCall(sendEndCallMessage = true) {
+        console.error("leaving call")
         await this.peerMesh.notify(VoiceRTCMessageType.LeavingCall)
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined
         if (sendEndCallMessage && this.peerMesh.callStartTime) {
@@ -822,8 +827,13 @@ export class VoiceRTC {
                 if (this.peerMesh.empty()) this.leaveCall(false)
                 break
             case VoiceRTCMessageType.JoinedCall:
-                this.peerMesh.join(dataReceived.userInfo)
-                this.peerMesh.join(dataReceived.peers)
+                this.peerMesh.join({ users: dataReceived.userInfo })
+                this.peerMesh.join({ users: dataReceived.peers, connect: true })
+                this.peerMesh.notify(VoiceRTCMessageType.SyncPeers)
+                break
+            case VoiceRTCMessageType.SyncPeers:
+                this.peerMesh.join({ users: dataReceived.userInfo })
+                this.peerMesh.join({ users: dataReceived.peers, connect: true })
                 break
             case VoiceRTCMessageType.EnabledVideo:
             case VoiceRTCMessageType.DisabledVideo:
