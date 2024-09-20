@@ -4,11 +4,8 @@ const config: CapacitorConfig = {
     appId: "com.uplink.app",
     appName: "Uplink",
     webDir: "build",
-    bundledWebRuntime: false,
     server: {
-        // TODO(Mobile): Replace <your-machine-ip> with your machine's IP address
-        url: "http://<your-machine-ip>:5173",
-        cleartext: true,
+        url: "https://chat.satellite.im",
     },
 }
 
