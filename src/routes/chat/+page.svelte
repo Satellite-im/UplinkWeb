@@ -674,7 +674,11 @@
         </Conversation>
 
         {#if files.length > 0}
-            <FileUploadPreview filesSelected={files} />
+            <FileUploadPreview
+                filesSelected={files}
+                on:remove={e => {
+                    files = files.filter(([f, p]) => f !== e.detail && p !== e.detail)
+                }} />
         {/if}
 
         {#if $activeChat.users.length > 0}

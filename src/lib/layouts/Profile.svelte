@@ -19,7 +19,7 @@
         return $friends.some(friend => friend === targetUser.key)
     }
 
-    let note: string = user ? new Notes().get(user?.name) : ""
+    let note: string = user ? new Notes().get(user?.key) : ""
 </script>
 
 <div class="profile" data-cy="quick-profile">
@@ -50,10 +50,10 @@
                 <Label text={$_("settings.profile.integration.title")} />
                 <div class="integrations">
                     {#each user.integrations as integration}
-                        <div class="integration" style={`border-color: ${getIntegrationColor(integration)};`}>
-                            <img class="integration-logo" src="/assets/brand/{integration.kind}.png" alt="Platform Logo" />
-                            <Text singleLine>{integration.location}</Text>
-                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration)}>
+                        <div class="integration" style={`border-color: ${getIntegrationColor(integration[0])};`}>
+                            <img class="integration-logo" src="/assets/brand/{integration[0]}.png" alt="Platform Logo" />
+                            <Text singleLine>{integration[1]}</Text>
+                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration[0])}>
                                 <Icon icon={Shape.Popout} />
                             </Button>
                         </div>
@@ -68,7 +68,7 @@
                     placeholder={$_("settings.profile.setNote")}
                     value={note}
                     on:input={e => {
-                        if (user) new Notes().set(user?.name, e.detail)
+                        if (user) new Notes().set(user?.key, e.detail)
                     }} />
             </div>
         </div>
