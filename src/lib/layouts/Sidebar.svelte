@@ -137,6 +137,7 @@
         }
         .sidebar-layout.closed {
             min-width: 0;
+            width: 0;
             :global(.slimbar) {
                 display: none;
             }
