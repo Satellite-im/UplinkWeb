@@ -20,10 +20,10 @@
 
     $: users = Store.getUsers(chat.users)
 
-    $: chatName = chat.kind === ChatType.Group ? chat.name : $users[1]?.name ?? $users[0].name
+    $: chatName = chat.kind === ChatType.Group ? chat.name : ($users[1]?.name ?? $users[0].name)
     $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
     $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
-    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
+    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
 
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
@@ -195,6 +195,12 @@
                 overflow: hidden;
                 font-size: var(--font-size-smaller);
             }
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        .chat-preview {
+            min-width: 0;
         }
     }
 </style>

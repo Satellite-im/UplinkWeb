@@ -47,27 +47,27 @@
 
     const platformButtonProps = {
         [Platform.Windows]: {
-            text: "Download for Windows",
+            text: "Windows",
             icon: Shape.MicrosoftWindows,
         },
         [Platform.MacOS]: {
-            text: "Download for MacOS",
+            text: "MacOS",
             icon: Shape.AppleAppStore,
         },
         [Platform.Android]: {
-            text: "Download for Android",
+            text: "Android",
             icon: Shape.Android,
         },
         [Platform.iOS]: {
-            text: "Download for iPhone",
+            text: "iPhone",
             icon: Shape.Apple,
         },
         [Platform.Linux]: {
-            text: "Download for Linux",
+            text: "Linux",
             icon: Shape.Code,
         },
         [Platform.Other]: {
-            text: "Download for Other",
+            text: "Download",
             icon: Shape.Download,
         },
     }
@@ -86,7 +86,6 @@
         </div>
         <Controls>
             <Button appearance={Appearance.Success} outline text={platformButtonProps[platform].text}>
-
                 <Icon icon={platformButtonProps[platform].icon} highlight={Appearance.Success} />
             </Button>
         </Controls>

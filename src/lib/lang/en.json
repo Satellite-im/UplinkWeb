@@ -220,7 +220,7 @@
                 "title": "Backup your seed!",
                 "save_warning": "Please ensure you write down this message with all words recorded in the order they appear. It can be helpful to write down the numbers along with the words.",
                 "download": "Download Backup",
-                "next_step": "Saved It, Next Step"
+                "next_step": "Next Step"
             },
             "new_account": {
                 "title": "Make It Yours",
