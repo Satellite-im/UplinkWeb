@@ -60,10 +60,10 @@
                 <Label text={$_("settings.profile.integration.title")} />
                 <div class="integrations">
                     {#each user.integrations as integration}
-                        <div class="integration" style={`border-color: ${getIntegrationColor(integration)};`}>
-                            <img class="integration-logo" src="/assets/brand/{integration.kind}.png" alt="Platform Logo" />
-                            <Text singleLine>{integration.location}</Text>
-                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration)}>
+                        <div class="integration" style={`border-color: ${getIntegrationColor(integration[0])};`}>
+                            <img class="integration-logo" src="/assets/brand/{integration[0]}.png" alt="Platform Logo" />
+                            <Text singleLine>{integration[1]}</Text>
+                            <Button small icon appearance={Appearance.Alt} color={getIntegrationColor(integration[0])}>
                                 <Icon icon={Shape.Popout} />
                             </Button>
                         </div>
