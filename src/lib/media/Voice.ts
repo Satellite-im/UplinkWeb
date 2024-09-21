@@ -182,7 +182,7 @@ export class PeerMesh {
 
     private async connectWithRetryFor(localPeer: Peer, channel: string, callOptions: VoiceRTCOptions, peer: RemotePeer) {
         if (this.connectedPeers.has(peer.remotePeerId)) return true
-        const maxRetries = 5 // TODO: Failing to connect after 2 attemps (or just throwing errors twitce for the local peer?) breaks ALL connections...
+        const maxRetries = 5 // TODO: Failing to connect after 2 attempts (or just throwing errors twice for the local peer?) breaks ALL connections...
         let attempts = 0
         let connected = false
 
