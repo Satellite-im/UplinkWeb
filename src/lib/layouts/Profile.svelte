@@ -24,7 +24,7 @@
         return $friends.some(friend => friend === targetUser.key)
     }
 
-    let note: string = user ? new Notes().get(user?.name) : ""
+    let note: string = user ? new Notes().get(user?.key) : ""
 </script>
 
 <div class="profile" data-cy="quick-profile">
@@ -78,7 +78,7 @@
                     placeholder={$_("settings.profile.setNote")}
                     value={note}
                     on:input={e => {
-                        if (user) new Notes().set(user?.name, e.detail)
+                        if (user) new Notes().set(user?.key, e.detail)
                     }} />
             </div>
         </div>
