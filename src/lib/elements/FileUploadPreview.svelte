@@ -1,12 +1,14 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
+    import { createEventDispatcher } from "svelte"
 
     import { _ } from "svelte-i18n"
 
     export let filesSelected: [File?, string?][] = []
+    const dispatcher = createEventDispatcher()
     function removeFile(file: File | string) {
-        filesSelected = filesSelected.filter(([f, p]) => f !== file && p !== file)
+        dispatcher("remove", file)
     }
 </script>
 
