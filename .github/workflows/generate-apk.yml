@@ -23,6 +23,20 @@ jobs:
         
       - name: Run sync command 🔨
         run: npx cap sync
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleDebug  
         
       - name: Generate Android APK 🔨
         run: npx cap build android
