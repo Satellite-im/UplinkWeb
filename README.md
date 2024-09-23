@@ -61,6 +61,24 @@ npm run dev
 
 3. In UplinkWeb, once you selected the asset (and ID if applicable), enter an amount. Then click the `Request` button. A clickable message will appear in the chat. Anyone clicking this message will get a prompt via the Chrome extension to make the transfer. (Expect at least 10 seconds for a transfer to go through on the Ethereum network).
 
+## Mobile Builds
+
+`npm i`
+
+`npm run build`
+
+`npx cap sync`
+
+- then for Android
+
+`npx cap open android`
+
+
+- for iOS
+  
+`npx cap open ios`
+
+
 ## Contributing
 
 All contributions are welcome! Please keep in mind we're still a relatively small team, and any work done to ensure contributions don't cause bugs or issues in the application is much appreciated.
