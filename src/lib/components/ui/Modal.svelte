@@ -24,11 +24,11 @@
                 dispatch("close")
             }
         }
-        document.addEventListener("keypress", keyListener)
+        document.addEventListener("keydown", keyListener)
     })
 
     onDestroy(() => {
-        document.removeEventListener("keypress", keyListener)
+        document.removeEventListener("keydown", keyListener)
     })
 </script>
 
