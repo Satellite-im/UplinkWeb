@@ -17,8 +17,13 @@ jobs:
 
       - name: Install stuff 🔨
         run: npm i
+        
       - name: Build app 🔨
         run: npm run build
+        
+      - name: Run sync command 🔨
+        run: npx cap sync
+        
       - name: Generate Android APK 🔨
         run: npx cap build android
 
