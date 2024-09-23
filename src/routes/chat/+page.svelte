@@ -53,6 +53,7 @@
     import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import { checkMobile } from "$lib/utils/Mobile"
 
     let loading = false
     let contentAsideOpen = false
@@ -591,10 +592,10 @@
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
                                                         {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
-                                                            <Text hook="text-chat-message" markdown={line} />
+                                                            <Text hook="text-chat-message" markdown={line} appearance={group.details.remote ? Appearance.Default : Appearance.Alt} />
                                                         {:else if line.includes(tempCDN)}
                                                             <div class="sticker">
-                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} appearance={group.details.remote ? Appearance.Default : Appearance.Alt} />
                                                             </div>
                                                         {/if}
                                                     {/each}
@@ -723,21 +724,23 @@
                     </ContextMenu>
                 </svelte:fragment>
 
-                <Controls>
-                    <Button
-                        hook="button-chat-transact"
-                        tooltip={$_("chat.send-coin")}
-                        icon
-                        outline
-                        appearance={transact ? Appearance.Primary : Appearance.Alt}
-                        disabled={$activeChat.users.length === 0}
-                        loading={loading}
-                        on:click={_ => {
-                            transact = true
-                        }}>
-                        <Icon icon={Shape.SendCoin} />
-                    </Button>
-                </Controls>
+                {#if !checkMobile()}
+                    <Controls>
+                        <Button
+                            hook="button-chat-transact"
+                            tooltip={$_("chat.send-coin")}
+                            icon
+                            outline
+                            appearance={transact ? Appearance.Primary : Appearance.Alt}
+                            disabled={$activeChat.users.length === 0}
+                            loading={loading}
+                            on:click={_ => {
+                                transact = true
+                            }}>
+                            <Icon icon={Shape.SendCoin} />
+                        </Button>
+                    </Controls>
+                {/if}
             </Chatbar>
         {/if}
     </div>
