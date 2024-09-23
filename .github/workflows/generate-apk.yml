@@ -1,0 +1,28 @@
+name: Generate Android APK
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🔖
+        uses: actions/checkout@v4.1.7
+
+      - name: Setup Node.js 🔨
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: 20
+
+      - name: Install stuff 🔨
+        run: npm i
+      - name: Build app 🔨
+        run: npm run build
+      - name: Generate Android APK 🔨
+        run: npx cap build android
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
