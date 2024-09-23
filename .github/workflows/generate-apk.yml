@@ -15,14 +15,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install stuff 🔨
-        run: npm i
+      - name: Install Dependencies 🔨
+        run: npm ci
         
-      - name: Build app 🔨
+      - name: Build Web Assets 🔨
         run: npm run build
         
-      - name: Run sync command 🔨
-        run: npx cap sync
+      - name: Sync Capacitor Assets 🔨
+        run: npx cap sync android
 
       - name: Set up JDK
         uses: actions/setup-java@v2
@@ -33,15 +33,13 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: Build APK
+      - name: Build APK using Gradle 🔨
         run: |
           cd android
           ./gradlew assembleDebug  
-        
-      - name: Generate Android APK 🔨
-        run: npx cap build android
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
