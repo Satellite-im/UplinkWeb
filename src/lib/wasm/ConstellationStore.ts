@@ -266,7 +266,7 @@ class ConstellationStore {
                     log.error("Already at root. Cannot go back more")
                     return failure(WarpError.GENERAL_ERROR)
                 }
-                if (this.isValidFormat(currentPath)) {
+                if (this.oneDepth(currentPath)) {
                     await constellation.set_path("")
                 } else {
                     await constellation.go_back()
@@ -280,12 +280,11 @@ class ConstellationStore {
     }
 
     /**
-     * Checks if the given path is in a valid format.
-     * @param path - The path to be validated.
-     * @returns A boolean indicating whether the path is in a valid format.
+     * Checks if the given path is one directory deep. E.g. /foo/
+     * @param path - The path to be checked.
      */
-    private isValidFormat(path: string): boolean {
-        const regex = /^\/[a-zA-Z0-9]+\/$/
+    private oneDepth(path: string): boolean {
+        const regex = /^\/[A-z0-9.-_~!$&'()*+,;=:@]+\/$/
         return regex.test(path)
     }
 
