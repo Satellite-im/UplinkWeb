@@ -71,7 +71,7 @@ npm run dev
 
 - then for Android
 
-`npx cap open android`
+`npx cap open android` or `npx cap run android`
 
 
 - for iOS
