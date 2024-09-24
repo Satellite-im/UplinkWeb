@@ -158,7 +158,10 @@
         bind:value={$message}
         rounded
         rich={markdown}
-        on:input={_ => replaceEmojis($message)}
+        on:input={_ => {
+            UIStore.updateTypingIndicators(activeChat)
+            replaceEmojis($message)
+        }}
         on:enter={_ => sendMessage($message)} />
 
     <slot></slot>

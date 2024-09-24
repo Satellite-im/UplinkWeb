@@ -189,7 +189,9 @@ export class TypingIndicator {
      */
     add(user: string) {
         this.typingIndicator[user] = new Date()
-        this._size = Object.keys(this.typingIndicator).length
+
+        // If a user is typing, we set the size to at least 1
+        this._size = 1
     }
 
     /**
@@ -199,7 +201,9 @@ export class TypingIndicator {
     remove(user: string): boolean {
         let has: boolean = user in this.typingIndicator
         delete this.typingIndicator[user]
-        this._size = Object.keys(this.typingIndicator).length
+
+        // Update size to the current count or reset to 0 if no users are typing
+        this._size = Object.keys(this.typingIndicator).length > 0 ? 1 : 0
         return has
     }
 
@@ -231,7 +235,9 @@ export class TypingIndicator {
             obj[id] = date
             return obj
         }, {})
-        this._size = updated.length
+
+        // Set size to 1 if there's any typing users, else reset to 0
+        this._size = updated.length > 0 ? 1 : 0
         return old_len != this._size
     }
 
