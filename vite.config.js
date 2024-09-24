@@ -18,6 +18,10 @@ function getCommitHash() {
 const IS_PRODUCTION = process.env.NODE_ENV === "production"
 
 export default defineConfig({
+    server: {
+        host: "0.0.0.0",
+        port: 5173,
+    },
     resolve: {
         alias: {
             $lib: path.resolve(__dirname, "src/lib"),
