@@ -39,15 +39,8 @@ jobs:
           name: debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Get artifact URL
-        id: get_artifact
-        run: |
-          artifact_id=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name=="debug-apk") | .id')
-          download_url=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/actions/artifacts/$artifact_id/zip --jq '.archive_download_url')
-          echo "::set-output name=apk_url::$download_url"
-
       - name: Post APK download link comment
-        if: success()  # Only run if the build and upload succeed
+        if: success()
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
