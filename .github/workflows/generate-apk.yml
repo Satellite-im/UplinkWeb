@@ -39,12 +39,3 @@ jobs:
         with:
           name: debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Post APK download link comment
-        if: success()
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          message: |
-            Download the .APK for this pull request:
-            [debug-apk.zip](${{ steps.get_artifact.outputs.apk_url }})
