@@ -129,6 +129,7 @@
             .pinned-sender {
                 display: flex;
                 flex-direction: column;
+                width: min-content;
                 .sender-time {
                     color: var(--color-muted);
                 }
