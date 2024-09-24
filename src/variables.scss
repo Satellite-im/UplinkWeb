@@ -115,3 +115,7 @@
     --sticker-width: 8.5rem;
     --sticker-width-rendered: 18rem;
 }
+
+select option {
+    background: var(--background);
+}
