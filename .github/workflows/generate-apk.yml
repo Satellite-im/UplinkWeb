@@ -21,9 +21,6 @@ jobs:
       - name: Build Web Assets 🔨
         run: npm run build
         
-      - name: Sync Capacitor Assets 🔨
-        run: npx cap sync android
-
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
@@ -32,11 +29,9 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
-
-      - name: Build APK using Gradle 🔨
-        run: |
-          cd android
-          ./gradlew assembleDebug  
+    
+      - name: Sync Capacitor Assets 🔨
+        run: npx cap copy android && cd android && ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
