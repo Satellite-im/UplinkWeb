@@ -38,3 +38,22 @@ jobs:
         with:
           name: debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Post APK download link
+        if: success()  # Only run if the build and upload succeed
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          header: APK Download
+          message: |
+            Download the [APK artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifact_debug-apk) for testing.
+
+      - name: Post APK download link comment
+        if: success()  # Only run if the build and upload succeed
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          header: nightly-link
+          message: |
+            Download the .APK for this pull request:
+            * [debug-apk.zip](${{ steps.get_artifact.outputs.apk_url }})
