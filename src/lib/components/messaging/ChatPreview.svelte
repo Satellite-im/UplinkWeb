@@ -31,6 +31,7 @@
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
 
+    $: messagePreview = chat.last_message_id === "" ? "No messages sent yet." : chat.last_message_id !== "" && chat.last_message_preview === "" ? "New Attachment" : chat.last_message_preview
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
@@ -91,7 +92,7 @@
                 </div>
             {:else}
                 <Text hook="chat-preview-last-message" size={Size.Small} loading={loading}>
-                    {chat.last_message_preview || "No messages sent yet."}
+                    {messagePreview}
                 </Text>
             {/if}
         </p>

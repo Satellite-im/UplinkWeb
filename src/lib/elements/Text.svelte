@@ -4,6 +4,7 @@
     import { Appearance, Size } from "$lib/enums"
     import { Loader } from "./"
     import { TextRenderer, HtmlRenderer } from "./renderer/index"
+    import LinkRenderer from "./renderer/LinkRenderer.svelte"
 
     export let appearance: Appearance = Appearance.Default
     export let muted: boolean = false
@@ -43,7 +44,7 @@
     {#if loading}
         <Loader text />
     {:else if markdown}
-        <SvelteMarkdown source={markdown} renderers={{ text: TextRenderer, html: HtmlRenderer }} />
+        <SvelteMarkdown source={markdown} renderers={{ text: TextRenderer, html: HtmlRenderer, link: LinkRenderer }} />
     {:else}
         <slot></slot>
     {/if}
