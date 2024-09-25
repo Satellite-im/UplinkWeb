@@ -50,7 +50,7 @@
 
     $: activeCall = Store.state.activeCall
     $: activeChat = Store.state.activeChat
-    $: pending = settings.calling.minimalCallingAlerts && VoiceRTCInstance.incomingCall != null
+    $: pending = settings.calling.minimalCallingAlerts && VoiceRTCInstance.incomingCallFrom != null
 </script>
 
 {#if $activeCall || pending}

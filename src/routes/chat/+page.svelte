@@ -237,7 +237,7 @@
 
     onMount(() => {
         setInterval(() => {
-            if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
+            if (VoiceRTCInstance.call) {
                 activeCallInProgress = true
                 activeCallDid = VoiceRTCInstance.channel!
             } else {
@@ -590,7 +590,7 @@
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.LeavingCall) && !line.includes(tempCDN)}
+                                                        {:else if !line.includes(tempCDN)}
                                                             <Text hook="text-chat-message" markdown={line} />
                                                         {:else if line.includes(tempCDN)}
                                                             <div class="sticker">

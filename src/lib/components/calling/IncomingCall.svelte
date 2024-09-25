@@ -15,13 +15,13 @@
     let user = writable(defaultUser)
 
     Store.state.pendingCall.subscribe(async _ => {
-        if (VoiceRTCInstance.incomingCall && !VoiceRTCInstance.makingCall) {
+        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)
                 callSound.play()
             }
             pending = true
-            user = Store.getUser(VoiceRTCInstance.incomingCall.metadata.userInfo.did)
+            user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.userInfo.did)
         } else {
             pending = false
             callSound?.stop()
@@ -34,7 +34,6 @@
         await VoiceRTCInstance.acceptCall(true)
         Store.setActiveChat(Store.getCallingChat(VoiceRTCInstance.channel!)!)
         pending = false
-        VoiceRTCInstance.incomingCall = null
         callSound?.stop()
         callSound = undefined
     }
@@ -44,7 +43,6 @@
         callSound?.stop()
         callSound = undefined
         VoiceRTCInstance.leaveCall(false)
-        VoiceRTCInstance.incomingCall = null
     }
 </script>
 

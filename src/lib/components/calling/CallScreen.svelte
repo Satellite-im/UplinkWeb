@@ -160,12 +160,8 @@
 
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
-            if (VoiceRTCInstance.makingCall && VoiceRTCInstance.peerMesh.readyForCalling()) {
+            if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
                 await VoiceRTCInstance.makeCall()
-            }
-            if (VoiceRTCInstance.acceptedIncomingCall) {
-                await VoiceRTCInstance.acceptCall(true)
-                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel!)!)
             }
         }
 
@@ -207,7 +203,7 @@
             {#each chat.users as user}
                 {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
-                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user] && $remoteStreams[user].user.joined}
+                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
                     {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
                         <Participant
                             participant={$userCache[user]}
