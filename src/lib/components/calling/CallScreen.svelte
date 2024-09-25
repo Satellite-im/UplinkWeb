@@ -49,7 +49,6 @@
         userCallOptions = userCallOptions
     }
 
-    let permissionsGranted = false
     let isFullScreen = false
 
     $: chats = UIStore.state.chats
@@ -75,47 +74,6 @@
     let subscribeFour = Store.state.activeCall.subscribe(state => {
         userCallOptions = VoiceRTCInstance.callOptions
     })
-
-    const checkPermissions = async () => {
-        try {
-            const cameraPermission = await navigator.permissions.query({ name: "camera" as PermissionName })
-            const microphonePermission = await navigator.permissions.query({ name: "microphone" as PermissionName })
-
-            if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                permissionsGranted = true
-            } else {
-                permissionsGranted = false
-            }
-
-            cameraPermission.onchange = () => {
-                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                    permissionsGranted = true
-                } else {
-                    permissionsGranted = false
-                }
-            }
-
-            microphonePermission.onchange = () => {
-                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                    permissionsGranted = true
-                } else {
-                    permissionsGranted = false
-                }
-            }
-        } catch (err) {
-            log.error(`Error checking permissions: ${err}`)
-        }
-    }
-
-    const requestPermissions = async () => {
-        try {
-            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            permissionsGranted = true
-        } catch (err) {
-            log.error(`Error requesting permissions: ${err}`)
-            permissionsGranted = false
-        }
-    }
 
     let localVideoCurrentSrc: HTMLVideoElement
 
@@ -151,12 +109,7 @@
 
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
-        await checkPermissions()
         await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
-
-        if (!permissionsGranted) {
-            requestPermissions()
-        }
 
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {

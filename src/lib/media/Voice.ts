@@ -568,10 +568,17 @@ export class VoiceRTC {
 
     async getLocalStream(replace = false) {
         if (!this.localStream || replace) {
-            if (replace && this.call && this.localStream) {
-                this.call.room.removeStream(this.localStream)
+            if (this.localStream) {
+                this.localStream.getTracks().forEach(track => track.stop())
+                if (replace && this.call) {
+                    this.call.room.removeStream(this.localStream)
+                }
             }
             this.localStream = await this.createLocalStream()
+            if (this.localVideoCurrentSrc) {
+                this.localVideoCurrentSrc.srcObject = this.localStream
+                await this.localVideoCurrentSrc.play()
+            }
             this.call?.room.addStream(this.localStream)
         }
 
