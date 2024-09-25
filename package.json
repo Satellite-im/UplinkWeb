@@ -14,6 +14,7 @@
         "write-commit-hash": "node ./scripts/write-commit-hash.cjs"
     },
     "devDependencies": {
+        "@capacitor/assets": "^3.0.5",
         "@castlenine/vite-remove-attribute": "^1.0.2",
         "@sveltejs/adapter-auto": "^3.0.0",
         "@sveltejs/adapter-static": "^3.0.1",
@@ -33,6 +34,11 @@
     },
     "type": "module",
     "dependencies": {
+        "@capacitor/android": "^6.1.2",
+        "@capacitor/cli": "^6.1.2",
+        "@capacitor/core": "^6.1.2",
+        "@capacitor/ios": "^6.1.2",
+        "@capacitor/splash-screen": "^6.0.2",
         "@dicebear/collection": "^9.0.1",
         "@dicebear/core": "^9.0.1",
         "@dicebear/identicon": "^9.0.1",
