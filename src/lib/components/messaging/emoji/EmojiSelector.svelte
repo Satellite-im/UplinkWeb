@@ -243,7 +243,7 @@
                 .emoji-list {
                     display: flex;
                     flex-wrap: wrap;
-                    justify-content: space-between;
+                    justify-content: left;
                     gap: var(--gap-less);
 
                     .emoji {
