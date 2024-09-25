@@ -31,11 +31,15 @@ jobs:
         run: |
           sed -n '/building for production.../,/modules transformed./p' dev-build-log.txt > relevant-dev-log.txt
 
-      - name: Save extracted dev log as artifact
+      - name: Clean up ANSI color codes from dev log
+        run: |
+          sed -r 's/\x1B\[[0-9;]*[mGKH]//g' relevant-dev-log.txt > cleaned-dev-log.txt
+
+      - name: Save extracted and cleaned dev log as artifact
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: relevant-dev-log
-          path: relevant-dev-log.txt
+          name: relevant-cleaned-dev-log
+          path: cleaned-dev-log.txt
 
       - name: Checkout PR branch
         run: git checkout ${{ github.head_ref }}
@@ -50,18 +54,25 @@ jobs:
         run: |
           sed -n '/building for production.../,/modules transformed./p' pr-build-log.txt > relevant-pr-log.txt
 
-      - name: Save extracted PR log as artifact
+      - name: Clean up ANSI color codes from PR log
+        run: |
+          sed -r 's/\x1B\[[0-9;]*[mGKH]//g' relevant-pr-log.txt > cleaned-pr-log.txt
+
+      - name: Save extracted and cleaned PR log as artifact
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: relevant-pr-log
-          path: relevant-pr-log.txt
+          name: relevant-cleaned-pr-log
+          path: cleaned-pr-log.txt
 
-      - name: Compare extracted sections for differences
+      - name: Compare cleaned logs for differences
         id: diff_check
         run: |
-          echo "Comparing relevant sections for differences..."
-          diff relevant-dev-log.txt relevant-pr-log.txt > log-diff.txt || true
+          echo "Comparing cleaned logs for differences..."
 
+          # Use diff and ignore lines containing "modules transformed"
+          diff -I "modules transformed" cleaned-dev-log.txt cleaned-pr-log.txt > log-diff.txt || true
+
+          # Check if diff output is non-empty
           if [ -s log-diff.txt ]; then
             echo "Differences detected."
             echo "diff_found=true" >> $GITHUB_ENV
