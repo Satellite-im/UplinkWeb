@@ -295,8 +295,9 @@
         <Modal
             on:close={_ => {
                 previewProfile = null
-            }}>
-            <Profile user={previewProfile} />
+            }}
+            escape>
+            <Profile user={previewProfile} on:close={_ => (previewProfile = null)} />
         </Modal>
     {/if}
 

@@ -1,0 +1,84 @@
+name: Generate Android APK
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🔖
+        uses: actions/checkout@v4.1.7
+
+      - name: Setup Node.js 🔨
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies 🔨
+        run: npm i
+        
+      - name: Build Web Assets 🔨
+        run: npm run build
+        
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+    
+      - name: Sync Capacitor Assets 🔨
+        run: npx cap sync && npx cap copy android && cd android && ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Post Download Links for Artifacts
+        if: success()  # Only run if previous steps were successful
+        uses: actions/github-script@v6  # Specify the action to use
+        with:
+          script: |
+            async function upsertComment(owner, repo, issue_number, purpose, body) {
+              const {data: comments} = await github.rest.issues.listComments(
+                {owner, repo, issue_number});
+              const marker = `<!-- bot: ${purpose} -->`;
+              body = marker + "\n" + body;
+              const existing = comments.filter((c) => c.body.includes(marker));
+              if (existing.length > 0) {
+                const last = existing[existing.length - 1];
+                console.info(`Updating comment ${last.id}`);
+                await github.rest.issues.updateComment({
+                  owner, repo,
+                  body,
+                  comment_id: last.id,
+                });
+              } else {
+                console.info(`Creating a comment in issue / PR #${issue_number}`);
+                await github.rest.issues.createComment({issue_number, body, owner, repo});
+              }
+            }
+            const {owner, repo} = context.repo;
+            const run_id = ${{github.run_id}};  // Use current run id
+            const pull_requests = ${{ toJSON(github.event.pull_request) }};  // Access pull request info directly
+            if (!pull_requests) {
+              return core.error("This workflow doesn't match any pull requests!");
+            }
+            const artifacts = await github.paginate(
+              github.rest.actions.listWorkflowRunArtifacts, {owner, repo, run_id});
+            if (!artifacts.length) {
+              return core.error(`No artifacts found`);
+            }
+            let body = `Download the .APK for this pull request:\n`;
+            for (const art of artifacts) {
+              body += `\n* [${art.name}.zip](https://nightly.link/${owner}/${repo}/actions/artifacts/${art.id}.zip)`;
+            }
+            console.info("Review thread message body:", body);
+            await upsertComment(owner, repo, pull_requests.number,
+              "nightly-link", body);
