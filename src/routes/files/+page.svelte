@@ -24,6 +24,7 @@
     import { OperationState } from "$lib/types"
     import { Store } from "$lib/state/Store"
     import path from "path"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
@@ -196,10 +197,25 @@
         return { name, extension }
     }
 
+    async function updateFilesInfo(newFilesInfo: FileInfo[]) {
+        const updatedFilesInfo = await Promise.all(
+            newFilesInfo.map(async element => {
+                const chat = UIStore.getChat(element.name)
+                if (chat && chat.name === "") {
+                    const user = await MultipassStoreInstance.identity_from_did(chat.users[1])
+                    element.name = user?.name ?? ""
+                }
+                return element
+            })
+        )
+
+        return updatedFilesInfo
+    }
+
     async function updateCurrentDirectory() {
         let files = await ConstellationStoreInstance.getCurrentDirectoryFiles()
-        files.onSuccess(items => {
-            let newFilesInfo = itemsToFileInfo(items)
+        files.onSuccess(async items => {
+            let newFilesInfo = await updateFilesInfo(itemsToFileInfo(items))
             let filesSet = new Set(newFilesInfo)
             Store.updateFileOrder(Array.from(filesSet))
             $files = Array.from(filesSet)
