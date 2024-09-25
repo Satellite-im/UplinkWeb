@@ -10,7 +10,6 @@
     import { tempCDN } from "$lib/utils/CommonVariables"
     import Fuse from "fuse.js"
 
-    // const stickers = defaultManifest.stickers
     const stickers = writable(defaultManifest.stickers)
     const searchQuery = writable("")
     const dispatch = createEventDispatcher()
