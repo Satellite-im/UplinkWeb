@@ -53,6 +53,7 @@
     import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import Aar from "$lib/components/ui/AAR.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -168,7 +169,11 @@
             },
             ...(message.details.origin === $own_user.key
                 ? [
-                      ...(!message.text.some(text => text.includes("giphy.com")) && !message.text.some(text => text.includes(tempCDN))
+                      ...(!message.text.some(text => text.includes("giphy.com")) &&
+                      !message.text.some(text => text.includes(tempCDN)) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.callMissed"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.endCallMessage"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.startCallMessage")))
                           ? [
                                 {
                                     id: "edit",
@@ -182,15 +187,21 @@
                                 },
                             ]
                           : []),
-                      {
-                          id: "delete",
-                          icon: Shape.Trash,
-                          text: $_("generic.delete"),
-                          appearance: Appearance.Default,
-                          onClick: async () => {
-                              await delete_message(message.id)
-                          },
-                      },
+                      ...(!message.text.some(text => text.includes(get(_)("settings.calling.callMissed"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.endCallMessage"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.startCallMessage")))
+                          ? [
+                                {
+                                    id: "delete",
+                                    icon: Shape.Trash,
+                                    text: $_("generic.delete"),
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        await delete_message(message.id)
+                                    },
+                                },
+                            ]
+                          : []),
                   ]
                 : []),
         ]
