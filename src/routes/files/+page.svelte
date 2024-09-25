@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
-    import { Appearance, FilesItemKind, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, ChatType, FilesItemKind, Route, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
 
     import Sidebar from "$lib/layouts/Sidebar.svelte"
@@ -8,11 +8,11 @@
     import Text from "$lib/elements/Text.svelte"
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
-    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu, ChatFilter } from "$lib/components"
+    import { ChatPreview, ImageEmbed, ImageFile, Modal, FileFolder, ProgressButton, ContextMenu, ChatFilter, ProfilePicture, ProfilePictureMany } from "$lib/components"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { onDestroy, onMount } from "svelte"
-    import type { Chat, FileInfo } from "$lib/types"
-    import { get, writable } from "svelte/store"
+    import { onMount } from "svelte"
+    import type { FileInfo, User } from "$lib/types"
+    import { writable, readable } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import FolderItem from "./FolderItem.svelte"
     import { v4 as uuidv4 } from "uuid"
@@ -32,6 +32,7 @@
     let isDraggingFromLocal = false
     let filesCount = 0
     $: isFadingOutDragDropOverlay = false
+    $: users = Store.getUsersLookup($activeChat.users)
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
@@ -204,6 +205,10 @@
                 if (chat && chat.name === "") {
                     const user = await MultipassStoreInstance.identity_from_did(chat.users[1])
                     element.name = user?.name ?? ""
+                    element.chat = chat
+                } else if (chat) {
+                    element.name = chat?.name ?? element.name
+                    element.chat = chat
                 }
                 return element
             })
@@ -237,7 +242,7 @@
         /// HACK: This is a hack to make sure the wasm is loaded before we call the functions
         await ConstellationStoreInstance.checkLoaded()
         await ConstellationStoreInstance.getStorageFreeSpaceSize()
-        updateCurrentDirectory()
+        await updateCurrentDirectory()
 
         let lastClickTime = 0
         let lastClickTarget: HTMLElement | null = null
@@ -695,6 +700,25 @@
                                     info={item} />
                             </ContextMenu>
                         {:else if item.type === "folder"}
+                            {#if item.chat}
+                                {#if item.chat.kind === ChatType.DirectMessage}
+                                    <div class="profile-picture-folder">
+                                        <ProfilePicture
+                                            hook="chat-topbar-profile-picture"
+                                            typing={item.chat.typing_indicator.size > 0}
+                                            id={$users[item.chat.users[1]]?.key}
+                                            image={$users[item.chat.users[1]]?.profile.photo.image}
+                                            frame={$users[item.chat.users[1]]?.profile.photo.frame}
+                                            size={Size.Smaller}
+                                            noIndicator={true}
+                                            loading={loading} />
+                                    </div>
+                                {:else}
+                                    <div class="profile-picture-many-folder">
+                                        <ProfilePictureMany users={Object.values($users)} size={Size.Smaller} forceSize={true} />
+                                    </div>
+                                {/if}
+                            {/if}
                             <ContextMenu
                                 hook="context-menu-folder"
                                 on:close={_ => {
@@ -898,6 +922,26 @@
                 color: var(--text-color-muted);
                 padding-left: 24px;
             }
+        }
+
+        .profile-picture-folder {
+            position: absolute;
+            height: 10px;
+            width: 10px;
+            top: 40px;
+            left: 70px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .profile-picture-many-folder {
+            position: absolute;
+            height: 10px;
+            width: 10px;
+            top: 20px;
+            left: 70px;
+            pointer-events: none;
+            z-index: 1;
         }
     }
 </style>

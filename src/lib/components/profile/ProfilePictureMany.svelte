@@ -7,9 +7,16 @@
     import ProfilePicture from "./ProfilePicture.svelte"
 
     export let users: User[]
+    export let size: Size = Size.Medium
+    export let forceSize: boolean = false
+
     const dispatch = createEventDispatcher()
 
     function getSize(index: number) {
+        if (forceSize) {
+            return size
+        }
+
         switch (index) {
             case 0:
                 return Size.Small

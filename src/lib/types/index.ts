@@ -320,6 +320,7 @@ export type FileInfo = {
     remotePath: string
     source: string
     isRenaming: OperationState
+    chat?: Chat
     imageThumbnail?: string
     extension?: string
     items?: FileInfo[]
