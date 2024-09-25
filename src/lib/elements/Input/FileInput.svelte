@@ -16,6 +16,7 @@
         }
         dispatch("select", files)
         fileInput = null
+        refSelf.value = ""
     }
 
     export function click() {
