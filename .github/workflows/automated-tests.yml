@@ -23,16 +23,16 @@ jobs:
             issues: read
         steps:
             - name: Checkout Uplink Web directory 🔖
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.2.0
 
             - name: Checkout Automated Tests directory 🔖
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.2.0
               with:
                   repository: Satellite-im/automated-tests-web
                   path: automated-tests
 
             - name: Setup Node.js for Uplink Web 🔨
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v4.0.4
               with:
                   node-version: 20
 
@@ -62,7 +62,7 @@ jobs:
                   job-summary: false
                   comment-title: "Automated Test Results"
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v4.4.0
               if: always()
               with:
                   name: playwright-report
@@ -71,7 +71,7 @@ jobs:
 
             - name: Upload Allure results as artifact
               if: always()
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v4.4.0
               with:
                   name: allure-results
                   path: automated-tests/allure-results
@@ -97,13 +97,13 @@ jobs:
             issues: read
         steps:
             - name: Download Allure results artifact
-              uses: actions/download-artifact@v4
+              uses: actions/download-artifact@v4.1.8
               with:
                   name: allure-results
                   path: automated-tests/allure
 
             - name: Get Allure history
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.2.0
               if: always()
               continue-on-error: true
               with:
@@ -132,7 +132,7 @@ jobs:
 
             - name: Comment PR with Allure test results
               if: always() && github.event_name == 'pull_request'
-              uses: mshick/add-pr-comment@v2
+              uses: mshick/add-pr-comment@v2.8.2
               with:
                   message: |
                       Playwright test execution is complete! You can find the test results report [here](https://satellite-im.github.io/test-reports/${{ github.run_number }})
@@ -150,10 +150,10 @@ jobs:
 
         steps:
             - name: Checkout directory 🔖
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.2.0
 
             - name: Delete artifacts required on failed execution
-              uses: geekyeggo/delete-artifact@v2
+              uses: geekyeggo/delete-artifact@v5.1.0
               with:
                   name: |
                       playwright-report
