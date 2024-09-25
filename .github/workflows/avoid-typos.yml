@@ -14,9 +14,9 @@ jobs:
             issues: read
         steps:
             - name: Check out code.
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.2.0
             - name: misspell
-              uses: reviewdog/action-misspell@v1
+              uses: reviewdog/action-misspell@v1.23.0
               with:
                   github_token: ${{ secrets.github_token }}
                   locale: "US"
