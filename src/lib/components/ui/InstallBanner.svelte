@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DOWNLOAD_LINKS } from "$lib/config"
     import { Icon } from "$lib/elements"
     import Button from "$lib/elements/Button.svelte"
     import Label from "$lib/elements/Label.svelte"
@@ -49,26 +50,32 @@
         [Platform.Windows]: {
             text: "Windows",
             icon: Shape.MicrosoftWindows,
+            download: DOWNLOAD_LINKS.Windows,
         },
         [Platform.MacOS]: {
             text: "MacOS",
             icon: Shape.AppleAppStore,
+            download: DOWNLOAD_LINKS.Mac,
         },
         [Platform.Android]: {
             text: "Android",
             icon: Shape.Android,
+            download: DOWNLOAD_LINKS.Android,
         },
         [Platform.iOS]: {
             text: "iPhone",
             icon: Shape.Apple,
+            download: DOWNLOAD_LINKS.iOS,
         },
         [Platform.Linux]: {
             text: "Linux",
             icon: Shape.Code,
+            download: DOWNLOAD_LINKS.Linux,
         },
         [Platform.Other]: {
             text: "Download",
             icon: Shape.Download,
+            download: DOWNLOAD_LINKS.Linux,
         },
     }
 </script>
@@ -85,7 +92,13 @@
             </div>
         </div>
         <Controls>
-            <Button appearance={Appearance.Success} outline text={platformButtonProps[platform].text}>
+            <Button
+                appearance={Appearance.Success}
+                outline
+                text={platformButtonProps[platform].text}
+                on:click={_ => {
+                    window.open(platformButtonProps[platform].download)
+                }}>
                 <Icon icon={platformButtonProps[platform].icon} highlight={Appearance.Success} />
             </Button>
         </Controls>
