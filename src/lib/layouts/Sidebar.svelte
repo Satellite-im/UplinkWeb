@@ -14,7 +14,6 @@
     import { Slimbar } from "."
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-    import { UIStore } from "$lib/state/ui"
 
     export let activeRoute: Route = Route.Chat
     export let open: boolean = true

@@ -34,11 +34,15 @@
         return typeof window !== "undefined" && "__TAURI__" in window
     }
 
+    function isCapacitor(): boolean {
+        return typeof window !== "undefined" && "Capacitor" in window
+    }
+
     function isBannerClosed(): boolean {
         return localStorage.getItem("install-banner-dismissed") === "true"
     }
 
-    let showBanner = !(isElectron() || isTauri() || isBannerClosed())
+    let showBanner = !(isElectron() || isTauri() || isCapacitor() || isBannerClosed())
     let platform = detectPlatform()
 
     function closeBanner() {
@@ -96,7 +100,7 @@
                 appearance={Appearance.Success}
                 outline
                 text={platformButtonProps[platform].text}
-                on:click={_ => {
+                on:click={() => {
                     window.open(platformButtonProps[platform].download)
                 }}>
                 <Icon icon={platformButtonProps[platform].icon} highlight={Appearance.Success} />
