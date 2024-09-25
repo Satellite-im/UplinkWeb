@@ -13,8 +13,8 @@ jobs:
             contents: write
             issues: read
         steps:
-            - uses: actions/checkout@v4
-            - uses: delivery-much/actions-assigner@v1
+            - uses: actions/checkout@v4.2.0
+            - uses: delivery-much/actions-assigner@v1.0.2
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
             - uses: christianvuerings/add-labels@v1.1
