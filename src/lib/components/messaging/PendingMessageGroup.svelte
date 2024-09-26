@@ -8,7 +8,6 @@
     $: users = Store.getUsersLookup($activeChat.users)
     $: typingMessage = is_friend_typing()
     $: is_friend_typing = () => {
-        const typingUsers = $activeChat.typing_indicator.users
         if ($activeChat.typing_indicator.size === 0) {
             return ""
         } else if ($activeChat.typing_indicator.size === 1) {
