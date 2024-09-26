@@ -2,6 +2,7 @@
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { Store } from "$lib/state/Store"
+    import { _ } from "svelte-i18n"
     const compact: boolean = get(SettingsStore.state).messaging.compact
 
     $: activeChat = Store.state.activeChat
@@ -12,9 +13,9 @@
             return ""
         } else if ($activeChat.typing_indicator.size === 1) {
             const user = $activeChat.typing_indicator.users().map(u => $users[u])
-            return `${user[0].name} is typing`
+            return $_("chat.user-typing", { values: { user: user[0].name } })
         } else {
-            return "Multiple users are typing"
+            return $_("chat.multiple-users-typing")
         }
     }
 </script>
