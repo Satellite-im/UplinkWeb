@@ -40,7 +40,7 @@
 <li on:click={createClickHandler(file, false)} data-cy={`tree-node-${file.name}`}>
     <div class="tree" data-cy={`tree-item-${file.name}`}>
         <Icon icon={folderOpenClosedIcon()} muted filled></Icon>
-        {file.extension === "" ? `${file.name}` : `${file.name}.${file.extension}`}
+        {file.extension === "" ? `${file.displayName}` : `${file.displayName}.${file.extension}`}
         {#if openFolders[file.id] && file.items && file.items.length > 0}
             <ul data-cy={`tree-folder-${file.name}`}>
                 {#each file.items as item}

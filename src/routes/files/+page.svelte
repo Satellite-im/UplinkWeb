@@ -123,6 +123,7 @@
             icon: Shape.Folder,
             remotePath: "",
             name: "",
+            displayName: "",
             source: "",
             extension: "",
             isRenaming: OperationState.Loading,
@@ -156,6 +157,7 @@
         icon: Shape.Folder,
         remotePath: "",
         name: "",
+        displayName: "",
         source: "",
         isRenaming: OperationState.Initial,
         items: [],
@@ -169,6 +171,7 @@
                 type: item.is_file() ? "file" : "folder",
                 icon: item.is_file() ? Shape.Document : Shape.Folder,
                 name: item.is_file() ? splitFileName(item.name()).name : item!.name(),
+                displayName: item.is_file() ? splitFileName(item.name()).name : item!.name(),
                 size: item!.size(),
                 remotePath: item!.path(),
                 imageThumbnail: item.is_file() && item.thumbnail().length > 0 ? to_base64(item.thumbnail()) : undefined,
@@ -204,10 +207,10 @@
                 const chat = UIStore.getChat(element.name)
                 if (chat && chat.name === "") {
                     const user = await MultipassStoreInstance.identity_from_did(chat.users[1])
-                    element.name = user?.name ?? ""
+                    element.displayName = user?.name ?? ""
                     element.chat = chat
                 } else if (chat) {
-                    element.name = chat?.name ?? element.name
+                    element.displayName = chat?.name ?? element.name
                     element.chat = chat
                 }
                 return element
