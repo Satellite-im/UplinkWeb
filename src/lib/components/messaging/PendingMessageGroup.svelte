@@ -42,9 +42,6 @@
             display: inline-flex;
             flex-direction: column;
         }
-        .pending-message-buffer {
-            width: var(--input-height);
-        }
     }
 
     .loading {
