@@ -34,7 +34,7 @@
                 on:click={_ => {
                     showControls = !showControls
                 }}>
-                <Icon icon={Shape.VerticalElipsis} />
+                <Icon icon={Shape.VerticalEllipsis} />
             </Button>
 
             {#if showControls}
