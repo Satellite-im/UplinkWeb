@@ -198,7 +198,7 @@
         <Topbar>
             <svelte:fragment slot="controls">
                 {#if tab === "all"}
-                    <Button hook="button-friends-all" appearance={Appearance.Primary} text={$_("friends.all")} on:click={_ => (tab = "all")}>
+                    <Button hook="button-friends-all" appearance={Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
                         <Icon icon={Shape.Users} alt />
                     </Button>
                 {:else}
