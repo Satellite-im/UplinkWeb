@@ -53,6 +53,7 @@
     import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import Aar from "$lib/components/ui/AAR.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -66,7 +67,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -168,25 +169,39 @@
             },
             ...(message.details.origin === $own_user.key
                 ? [
-                      {
-                          id: "edit",
-                          icon: Shape.Pencil,
-                          text: $_("messages.edit"),
-                          appearance: Appearance.Default,
-                          onClick: () => {
-                              editing_message = message.id
-                              editing_text = message.text.join("\n")
-                          },
-                      },
-                      {
-                          id: "delete",
-                          icon: Shape.Trash,
-                          text: $_("generic.delete"),
-                          appearance: Appearance.Default,
-                          onClick: async () => {
-                              await delete_message(message.id)
-                          },
-                      },
+                      ...(!message.text.some(text => text.includes("giphy.com")) &&
+                      !message.text.some(text => text.includes(tempCDN)) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.callMissed"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.endCallMessage"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.startCallMessage")))
+                          ? [
+                                {
+                                    id: "edit",
+                                    icon: Shape.Pencil,
+                                    text: $_("messages.edit"),
+                                    appearance: Appearance.Default,
+                                    onClick: () => {
+                                        editing_message = message.id
+                                        editing_text = message.text.join("\n")
+                                    },
+                                },
+                            ]
+                          : []),
+                      ...(!message.text.some(text => text.includes(get(_)("settings.calling.callMissed"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.endCallMessage"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.startCallMessage")))
+                          ? [
+                                {
+                                    id: "delete",
+                                    icon: Shape.Trash,
+                                    text: $_("generic.delete"),
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        await delete_message(message.id)
+                                    },
+                                },
+                            ]
+                          : []),
                   ]
                 : []),
         ]
