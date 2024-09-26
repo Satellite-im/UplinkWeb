@@ -1,7 +1,7 @@
-import { TypingIndicator, type Chat } from "$lib/types"
+import { TypingIndicator, type Chat, type FontOption } from "$lib/types"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
-import { EmojiFont, Font } from "$lib/enums"
+import { EmojiFont, Font, Identicon } from "$lib/enums"
 import { Store as MainStore } from "../Store"
 import { mchats } from "$lib/mock/users"
 
@@ -9,8 +9,10 @@ export interface IUIState {
     color: Writable<string>
     fontSize: Writable<number>
     cssOverride: Writable<string>
-    font: Writable<Font>
+    font: Writable<FontOption>
+    allFonts: Writable<FontOption[]>
     emojiFont: Writable<EmojiFont>
+    identicon: Writable<Identicon>
     theme: Writable<string>
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
@@ -19,7 +21,6 @@ export interface IUIState {
     emojiCounter: Writable<{ [emoji: string]: number }>
     marketOpen: Writable<boolean>
 }
-
 class Store {
     state: IUIState
 
@@ -27,7 +28,9 @@ class Store {
         this.state = {
             color: createPersistentState("uplink.color", "#4d4dff"),
             fontSize: createPersistentState("uplink.ui.fontSize", 1.0),
-            font: createPersistentState("uplink.ui.font", Font.Poppins),
+            font: createPersistentState("uplink.ui.font", { text: Font.Poppins, value: Font.Poppins }),
+            allFonts: createPersistentState("uplink.ui.allFonts", [] as FontOption[]),
+            identicon: createPersistentState("uplink.ui.identicon", Identicon.PixelArtNeutral),
             emojiFont: createPersistentState("uplink.ui.emojiFont", EmojiFont.Fluent),
             theme: createPersistentState("uplink.ui.theme", "default"),
             cssOverride: createPersistentState("uplink.ui.cssOverride", ""),
@@ -48,6 +51,10 @@ class Store {
         }
     }
 
+    setAllAvailableFonts(fonts: FontOption[]) {
+        this.state.allFonts.set(fonts)
+    }
+
     setCssOverride(css: string) {
         this.state.cssOverride.set(css)
     }
@@ -56,7 +63,7 @@ class Store {
         this.state.color.set(color)
     }
 
-    setFont(font: Font) {
+    setFont(font: FontOption) {
         this.state.font.set(font)
     }
 
@@ -71,7 +78,6 @@ class Store {
     setEmojiFont(font: EmojiFont) {
         this.state.emojiFont.set(font)
     }
-
     increaseFontSize(amount: number = 0.025) {
         this.state.fontSize.update(s => (s + amount <= 1.5 ? (s += amount) : s))
     }

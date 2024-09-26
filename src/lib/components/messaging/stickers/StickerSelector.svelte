@@ -212,6 +212,12 @@
                     }
                 }
             }
+
+            .sticker-item {
+                img {
+                    width: calc(var(--sticker-width) / 1.5) !important;
+                }
+            }
         }
     }
 </style>

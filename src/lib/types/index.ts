@@ -57,6 +57,11 @@ export type SelectOption = {
     text: string
 }
 
+export interface FontOption {
+    text: string
+    value: string
+}
+
 export type Reaction = {
     reactors: Set<string>
     emoji: string

@@ -22,8 +22,19 @@
     // Allow parent to override / add classes
     let clazz = ""
     export { clazz as class }
+    let buttonElement: HTMLElement
 
-    function tooltipPositionClass() {
+    function tooltipPositionClass(button: HTMLElement) {
+        const rect = button.getBoundingClientRect()
+        const tooltipHeight = 40
+        const viewportHeight = window.innerHeight
+
+        if (rect.top - tooltipHeight < 0) {
+            return "tooltip-bottom"
+        } else if (rect.bottom + tooltipHeight > viewportHeight) {
+            return "tooltip-top"
+        }
+
         switch (tooltipPosition) {
             case TooltipPosition.LEFT:
                 return "tooltip-left"
@@ -32,14 +43,15 @@
             case TooltipPosition.BOTTOM:
                 return "tooltip-bottom"
             default:
-                return ""
+                return "tooltip-top"
         }
     }
 </script>
 
 <button
+    bind:this={buttonElement}
     class="button {fill ? 'fill' : ''} {hideTextOnMobile ? 'hidden-text' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip
-        ? 'tooltip ' + tooltipPositionClass()
+        ? 'tooltip ' + (buttonElement ? tooltipPositionClass(buttonElement) : '')
         : ''} {small ? 'small' : ''} {clazz || ''}"
     style={color.length ? `background-color: ${color}` : ""}
     data-cy={hook}
@@ -109,7 +121,6 @@
             pointer-events: none;
         }
 
-        // Modifier classes for icon and round buttons
         &.icon,
         &.round {
             min-width: unset;
@@ -124,13 +135,11 @@
             }
         }
 
-        // Styles for button:hover
         &:hover {
             cursor: pointer;
             background-color: var(--primary-color-alt);
         }
 
-        // Tooltip styles
         &.tooltip {
             position: relative;
 
@@ -172,7 +181,8 @@
             }
 
             &.tooltip-bottom:before {
-                top: calc(100% + var(--gap));
+                top: calc(100% + var(--gap) - 2px); /* 2px added for tangent with top bar*/
+                bottom: unset;
             }
 
             &:hover:before {
