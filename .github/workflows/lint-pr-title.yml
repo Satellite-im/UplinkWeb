@@ -16,9 +16,9 @@ jobs:
             contents: write
             issues: read
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v4.2.0
 
-            - uses: actions-ecosystem/action-regex-match@v2
+            - uses: actions-ecosystem/action-regex-match@v2.0.2
               id: regex-match
               with:
                   text: ${{ github.event.pull_request.title }}

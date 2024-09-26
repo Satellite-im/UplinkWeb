@@ -10,6 +10,9 @@
     import { goto } from "$app/navigation"
     import { get } from "svelte/store"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import { UIStore } from "$lib/state/ui"
+    import { t } from "svelte-i18n"
+    import { checkMobile } from "$lib/utils/Mobile"
 
     export let chat: Chat
     export let cta: boolean = false
@@ -49,6 +52,10 @@
     on:click={_ => {
         dispatch("click")
         Store.setActiveChat(chat)
+        let isMobile = checkMobile()
+        if (isMobile) {
+            UIStore.toggleSidebar()
+        }
         goto(Route.Chat)
     }}>
     {#if chat.kind === ChatType.DirectMessage}
@@ -197,6 +204,12 @@
                 overflow: hidden;
                 font-size: var(--font-size-smaller);
             }
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        .chat-preview {
+            min-width: 0;
         }
     }
 </style>

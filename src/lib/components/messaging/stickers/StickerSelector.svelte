@@ -8,10 +8,11 @@
     import { writable } from "svelte/store"
     import Spacer from "$lib/elements/Spacer.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import Fuse from "fuse.js"
 
-    const stickers = defaultManifest.stickers
-    const dispatch = createEventDispatcher()
+    const stickers = writable(defaultManifest.stickers)
     const searchQuery = writable("")
+    const dispatch = createEventDispatcher()
 
     function handleStickerClick(sticker: any) {
         dispatch("sticker", { sticker })
@@ -23,13 +24,49 @@
             handleStickerClick(sticker)
         }
     }
+
+    function filterStickers(query: string) {
+        if (!query) {
+            stickers.set(defaultManifest.stickers)
+            return
+        }
+
+        const fuseOptions = {
+            keys: ["name", "assets.name"],
+            threshold: 0.3,
+        }
+
+        const filteredCollections = defaultManifest.stickers
+            .map(collection => {
+                const fuse = new Fuse(collection.assets, { keys: ["name"], threshold: 0.3 })
+                const filteredStickers = fuse.search(query).map(result => result.item)
+
+                if (filteredStickers.length > 0) {
+                    return {
+                        ...collection,
+                        assets: filteredStickers,
+                    }
+                }
+
+                return null
+            })
+            .filter(collection => collection !== null)
+
+        stickers.set(filteredCollections)
+    }
+
+    $: if ($searchQuery) {
+        filterStickers($searchQuery)
+    } else {
+        stickers.set(defaultManifest.stickers)
+    }
 </script>
 
 <div class="sticker-selector" data-cy="sticker-selector">
     <div class="sidebar" data-cy="sticker-selector-sidebar">
         <Label hook="sticker-selector-sidebar-label" text="Packs" />
 
-        {#each stickers as collection}
+        {#each $stickers as collection}
             <a href={`#${collection.name}`} class="collection-link" aria-label={`Jump to ${collection.name}`}>
                 <img data-cy="sticker-sidebar-collection" src={`${tempCDN}${collection.assets[0].path}`} alt={collection.name} />
             </a>
@@ -43,7 +80,7 @@
             </Input>
         </div>
         <div class="stickers" data-cy="stickers-contents">
-            {#each stickers as collection}
+            {#each $stickers as collection}
                 <section data-cy="sticker-collection" id={collection.name}>
                     <Label hook="sticker-collection-label" text={`${collection.name} (${collection.author})`} />
                     <div class="collection-items">
@@ -71,7 +108,7 @@
     .sticker-selector {
         display: flex;
         height: var(--emoji-selector-height);
-        width: 100%;
+        width: calc(var(--min-component-width) * 2);
         max-width: var(--max-component-width);
     }
 
@@ -173,6 +210,12 @@
                         width: 32px;
                         height: 32px;
                     }
+                }
+            }
+
+            .sticker-item {
+                img {
+                    width: calc(var(--sticker-width) / 1.5) !important;
                 }
             }
         }

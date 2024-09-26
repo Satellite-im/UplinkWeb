@@ -142,5 +142,9 @@
             flex-direction: column;
             gap: var(--gap);
         }
+
+        :global(.controls) {
+            width: 100%;
+        }
     }
 </style>

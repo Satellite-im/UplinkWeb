@@ -14,7 +14,6 @@
     import { Slimbar } from "."
     import WidgetBar from "$lib/components/widgets/WidgetBar.svelte"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-    import { UIStore } from "$lib/state/ui"
 
     export let activeRoute: Route = Route.Chat
     export let open: boolean = true
@@ -128,10 +127,16 @@
 
     @media (max-width: 800px) {
         .sidebar-layout {
-            min-width: 100%;
+            width: 100vw;
+            overflow: hidden;
+
+            .sidebar {
+                min-width: 0;
+            }
         }
         .sidebar-layout.closed {
             min-width: 0;
+            width: 0;
             :global(.slimbar) {
                 display: none;
             }
