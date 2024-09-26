@@ -46,9 +46,17 @@
                 </button>
                 <div
                     class="controls-dropdown"
+                    role="button"
+                    tabindex="0"
                     on:click={_ => {
                         showControls = false
-                    }}>
+                    }}
+                    on:keydown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            showControls = false
+                        }
+                    }}
+                >
                     <slot name="controls" />
                 </div>
             {/if}
