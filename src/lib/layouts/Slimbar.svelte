@@ -16,6 +16,7 @@
     import { _ } from "svelte-i18n"
     import { SettingsStore } from "$lib/state"
     import { UIStore } from "$lib/state/ui"
+    import { checkMobile } from "$lib/utils/Mobile"
 
     export let sidebarOpen: boolean = true
     export let activeRoute: Route = Route.Chat
@@ -40,14 +41,14 @@
 
     <div class="content">
         {#if $settings.devmode}
-          <Button
-              appearance={Appearance.Alt}
-              on:click={() => {
-                  UIStore.toggleMarket()
-              }}
-              icon>
-              <Icon icon={Shape.Shop} />
-          </Button>
+            <Button
+                appearance={Appearance.Alt}
+                on:click={() => {
+                    UIStore.toggleMarket()
+                }}
+                icon>
+                <Icon icon={Shape.Shop} />
+            </Button>
         {/if}
         {#if $favorites.length}
             <Label hook="label-favorites" text={$_("generic.faves")} />
@@ -60,6 +61,9 @@
                         data-cy="favorite-circle"
                         on:click={_ => {
                             Store.setActiveChat(favorite)
+                            if (checkMobile()) {
+                                UIStore.toggleSidebar()
+                            }
                             goto(Route.Chat)
                         }}>
                         {#if favorite.kind === ChatType.DirectMessage}

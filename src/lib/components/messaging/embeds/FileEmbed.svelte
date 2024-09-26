@@ -40,12 +40,14 @@
             <Button hook="file-embed-download-button" icon tooltip={$_("files.download")} on:click={download}>
                 <Icon icon={Shape.Download} />
             </Button>
+            <!-- TODO: Needs implementation 
             <Button hook="file-embed-share-button" icon appearance={Appearance.Alt} tooltip={$_("files.share")}>
                 <Icon icon={Shape.Share} />
             </Button>
             <Button hook="file-embed-add-to-files-button" appearance={Appearance.Alt} text={$_("files.addFiles")}>
                 <Icon icon={Shape.Plus} />
             </Button>
+            -->
         </Controls>
     </div>
 </div>

@@ -26,6 +26,7 @@
     import MouseListener from "$lib/components/ui/MouseListener.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import InstallBanner from "$lib/components/ui/InstallBanner.svelte"
+    import { swipe } from "$lib/components/ui/Swipe"
 
     TimeAgo.addDefaultLocale(en)
 
@@ -186,13 +187,22 @@
 </script>
 
 {#if isLocaleSet}
-    <div id="app">
+    <div
+        id="app"
+        use:swipe
+        on:swipeleft={_ => {
+            UIStore.closeSidebar()
+        }}
+        on:swiperight={_ => {
+            UIStore.openSidebar()
+        }}>
         {@html `<style>${style}</style>`}
         <link rel="stylesheet" href={`/assets/themes/${$theme}.css`} />
         {@html `<style>${cssOverride}</style>`}
         <Polling rate={5000} />
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
         <MouseListener on:clicked={() => {}} />
+
         <Toasts />
         <IncomingCall />
         <VideoPreview />
