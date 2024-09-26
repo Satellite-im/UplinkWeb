@@ -53,6 +53,7 @@
     import { debounce, getTimeAgo } from "$lib/utils/Functions"
     import Controls from "$lib/layouts/Controls.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
+    import { checkMobile } from "$lib/utils/Mobile"
 
     let loading = false
     let contentAsideOpen = false
@@ -66,7 +67,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -168,25 +169,39 @@
             },
             ...(message.details.origin === $own_user.key
                 ? [
-                      {
-                          id: "edit",
-                          icon: Shape.Pencil,
-                          text: $_("messages.edit"),
-                          appearance: Appearance.Default,
-                          onClick: () => {
-                              editing_message = message.id
-                              editing_text = message.text.join("\n")
-                          },
-                      },
-                      {
-                          id: "delete",
-                          icon: Shape.Trash,
-                          text: $_("generic.delete"),
-                          appearance: Appearance.Default,
-                          onClick: async () => {
-                              await delete_message(message.id)
-                          },
-                      },
+                      ...(!message.text.some(text => text.includes("giphy.com")) &&
+                      !message.text.some(text => text.includes(tempCDN)) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.callMissed"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.endCallMessage"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.startCallMessage")))
+                          ? [
+                                {
+                                    id: "edit",
+                                    icon: Shape.Pencil,
+                                    text: $_("messages.edit"),
+                                    appearance: Appearance.Default,
+                                    onClick: () => {
+                                        editing_message = message.id
+                                        editing_text = message.text.join("\n")
+                                    },
+                                },
+                            ]
+                          : []),
+                      ...(!message.text.some(text => text.includes(get(_)("settings.calling.callMissed"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.endCallMessage"))) &&
+                      !message.text.some(text => text.includes(get(_)("settings.calling.startCallMessage")))
+                          ? [
+                                {
+                                    id: "delete",
+                                    icon: Shape.Trash,
+                                    text: $_("generic.delete"),
+                                    appearance: Appearance.Default,
+                                    onClick: async () => {
+                                        await delete_message(message.id)
+                                    },
+                                },
+                            ]
+                          : []),
                   ]
                 : []),
         ]
@@ -592,10 +607,10 @@
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
                                                         {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
-                                                            <Text hook="text-chat-message" markdown={line} />
+                                                            <Text hook="text-chat-message" markdown={line} appearance={group.details.remote ? Appearance.Default : Appearance.Alt} />
                                                         {:else if line.includes(tempCDN)}
                                                             <div class="sticker">
-                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                                                <Text hook="text-chat-message" markdown={line} size={Size.Smallest} appearance={group.details.remote ? Appearance.Default : Appearance.Alt} />
                                                             </div>
                                                         {/if}
                                                     {/each}
@@ -728,21 +743,23 @@
                     </ContextMenu>
                 </svelte:fragment>
 
-                <Controls>
-                    <Button
-                        hook="button-chat-transact"
-                        tooltip={$_("chat.send-coin")}
-                        icon
-                        outline
-                        appearance={transact ? Appearance.Primary : Appearance.Alt}
-                        disabled={$activeChat.users.length === 0}
-                        loading={loading}
-                        on:click={_ => {
-                            transact = true
-                        }}>
-                        <Icon icon={Shape.SendCoin} />
-                    </Button>
-                </Controls>
+                {#if !checkMobile()}
+                    <Controls>
+                        <Button
+                            hook="button-chat-transact"
+                            tooltip={$_("chat.send-coin")}
+                            icon
+                            outline
+                            appearance={transact ? Appearance.Primary : Appearance.Alt}
+                            disabled={$activeChat.users.length === 0}
+                            loading={loading}
+                            on:click={_ => {
+                                transact = true
+                            }}>
+                            <Icon icon={Shape.SendCoin} />
+                        </Button>
+                    </Controls>
+                {/if}
             </Chatbar>
         {/if}
     </div>
