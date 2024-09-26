@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let url: string = ""
+    export const url: string = ""
 </script>
 
 <div class="site-embed"></div>

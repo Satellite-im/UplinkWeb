@@ -4,36 +4,50 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import { Appearance, Shape, Size } from "$lib/enums"
-    import type { FileInfo } from "$lib/types"
+    import { OperationState, type FileInfo } from "$lib/types"
     import prettyBytes from "pretty-bytes"
+    import { createEventDispatcher } from "svelte"
+    import { _ } from "svelte-i18n"
+
+    const dispatch = createEventDispatcher()
 
     export let fileInfo: FileInfo = {
+        id: "1",
+        isRenaming: OperationState.Initial,
+        source: "unknown",
         name: "unknown",
         size: 999999999999999,
         icon: Shape.Document,
         type: "unknown/unknown",
+        remotePath: "",
+    }
+
+    function download() {
+        dispatch("download")
     }
 </script>
 
-<div class="file-embed">
+<div class="file-embed" data-cy="file-embed">
     <Icon icon={fileInfo.icon} size={Size.Larger} />
     <div class="body">
         <div class="details">
-            <Text>{fileInfo.name}</Text>
-            <Text size={Size.Smaller} singleLine>
+            <Text hook="file-embed-name">{fileInfo.name}</Text>
+            <Text hook="file-embed-size" size={Size.Smaller} singleLine>
                 {prettyBytes(fileInfo.size)}
             </Text>
         </div>
         <Controls>
-            <Button icon tooltip="Download">
+            <Button hook="file-embed-download-button" icon tooltip={$_("files.download")} on:click={download}>
                 <Icon icon={Shape.Download} />
             </Button>
-            <Button icon appearance={Appearance.Alt} tooltip="Share">
+            <!-- TODO: Needs implementation 
+            <Button hook="file-embed-share-button" icon appearance={Appearance.Alt} tooltip={$_("files.share")}>
                 <Icon icon={Shape.Share} />
             </Button>
-            <Button appearance={Appearance.Alt} text="Add to Files">
+            <Button hook="file-embed-add-to-files-button" appearance={Appearance.Alt} text={$_("files.addFiles")}>
                 <Icon icon={Shape.Plus} />
             </Button>
+            -->
         </Controls>
     </div>
 </div>

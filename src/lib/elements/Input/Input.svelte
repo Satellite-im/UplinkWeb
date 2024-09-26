@@ -1,12 +1,14 @@
 <script lang="ts">
+    import { InputRules } from "./inputRules"
     import { Appearance } from "../../enums/index"
     import { MarkdownEditor } from "markdown-editor"
     import "./markdown.scss"
     import { createEventDispatcher, onMount } from "svelte"
     import { EditorView } from "@codemirror/view"
-    import type { FormEventHandler } from "svelte/elements"
+    import { writable } from "svelte/store"
+    import Text from "../Text.svelte"
+    import { debounce } from "$lib/utils/Functions"
 
-    // export let loading: boolean = false;
     export let placeholder: string = ""
     export let hook: string = ""
     export let alt: boolean = false
@@ -18,6 +20,37 @@
     export let copyOnInteract: boolean = false
     export let centered: boolean = false
     export let rich: boolean = false
+    export let autoFocus: boolean = false
+    export let rules: InputRules = new InputRules()
+
+    let errorMessage: string = ""
+
+    function isValidInput(): boolean {
+        if (rules.required && !value) {
+            errorMessage = "This field is required."
+            return false
+        }
+        if (value.length < rules.minLength) {
+            errorMessage = `Minimum length is ${rules.minLength} characters.`
+            return false
+        }
+        if (value.length > rules.maxLength) {
+            errorMessage = `Maximum length is ${rules.maxLength} characters.`
+            return false
+        }
+        if (rules.pattern && !rules.pattern.test(value)) {
+            errorMessage = "Invalid format."
+            return false
+        }
+        errorMessage = ""
+        return true
+    }
+
+    const debouncedOnInput = debounce(() => {
+        let isValid = isValidInput()
+        dispatch("isValid", isValid)
+        dispatch("input", value)
+    }, 5)
 
     if (copyOnInteract) {
         tooltip = "Copy"
@@ -26,34 +59,55 @@
 
     let clazz = ""
     let input: HTMLElement
+    const dispatch = createEventDispatcher()
+    const writableValue = writable(value)
+
+    $: writableValue.set(value)
+    $: value = $writableValue
 
     let onsend: any[] = []
+    let editor: MarkdownEditor
+
     if (rich) {
         onMount(() => {
-            let editor = new MarkdownEditor(input, {
+            if (autoFocus) input.focus()
+            editor = new MarkdownEditor(input, {
                 keys: MarkdownEditor.ChatEditorKeys(() => send()),
                 only_autolink: true,
                 extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
             })
+            // Init editor with initial value
+            editor.value(value)
+            var line = editor.codemirror.state.doc.line(editor.codemirror.state.doc.lines)
+            editor.codemirror.dispatch({
+                selection: { head: line.to, anchor: line.to },
+            })
+            if (autoFocus) editor.codemirror.focus()
             // @ts-ignore
             editor.updatePlaceholder(input.placeholder)
             editor.registerListener("input", ({ value: val }: { value: string }) => {
-                value = val
+                writableValue.set(val)
+                onInput()
             })
             onsend.push(() => {
                 editor.value("")
             })
         })
     }
+
+    $: if (rich && editor) {
+        editor.value($writableValue)
+    }
+
     export { clazz as class }
 
-    const dispatch = createEventDispatcher()
     const send = () => {
         dispatch("enter", value)
         onsend.forEach(e => e())
     }
+
     function onInput() {
-        dispatch("input", value)
+        debouncedOnInput()
     }
 
     function onBlur() {
@@ -65,27 +119,58 @@
             send()
         }
     }
+
+    function handleFocus(event: FocusEvent) {
+        const input = event.target as HTMLInputElement
+        requestAnimationFrame(() => {
+            input.select()
+
+            const mouseupListener = () => {
+                input.removeEventListener("mouseup", mouseupListener)
+                return false
+            }
+
+            input.addEventListener("mouseup", mouseupListener)
+        })
+    }
 </script>
 
-<div class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''}" data-tooltip={tooltip}>
-    <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''}">
-        <slot></slot>
-        <input
-            data-cy={hook}
-            class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
-            type="text"
-            disabled={disabled}
-            bind:this={input}
-            bind:value={value}
-            placeholder={placeholder}
-            on:keydown={onKeyDown}
-            on:input={onInput}
-            on:blur={onBlur} />
+{#key hook}
+    <div
+        class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
+        data-tooltip={tooltip}
+        role="none"
+        on:click={async _ => {
+            if (copyOnInteract) {
+                await navigator.clipboard.writeText(`${value}`)
+            }
+        }}>
+        <div class="input-container {rounded ? 'rounded' : ''} {clazz || ''} {rich ? 'multiline' : ''}">
+            <slot></slot>
+            <!-- svelte-ignore a11y-autofocus -->
+            <input
+                id={hook}
+                data-cy={hook}
+                class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
+                type="text"
+                bind:this={input}
+                on:focus={handleFocus}
+                bind:value={$writableValue}
+                placeholder={placeholder}
+                on:keydown={onKeyDown}
+                on:input={onInput}
+                on:blur={onBlur}
+                autofocus={autoFocus} />
+        </div>
     </div>
-</div>
+    {#if errorMessage}
+        <Text appearance={Appearance.Warning}>{errorMessage}</Text>
+    {/if}
+{/key}
 
 <style lang="scss">
     .input-group {
+        min-height: var(--input-height);
         height: var(--input-height);
         display: inline-flex;
         flex-direction: row;
@@ -101,6 +186,7 @@
             gap: var(--gap);
             align-items: center;
             width: fit-content;
+            min-height: var(--input-height);
             height: var(--input-height);
             transition: all var(--animation-speed);
             padding: 0 var(--padding);
@@ -109,6 +195,14 @@
             &.rounded {
                 border-radius: var(--border-radius-more);
             }
+
+            &.multiline {
+                height: fit-content;
+            }
+        }
+
+        &.multiline {
+            height: fit-content;
         }
 
         .input {
@@ -139,6 +233,13 @@
                 opacity: 0.75;
                 font-size: var(--label-size);
             }
+        }
+
+        .input.disabled {
+            cursor: not-allowed;
+            background-color: var(--disabled-color);
+            color: var(--disabled-color);
+            opacity: 0.6;
         }
 
         &.alt {

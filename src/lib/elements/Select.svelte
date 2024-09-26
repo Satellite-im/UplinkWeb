@@ -7,20 +7,22 @@
     export let options: Array<SelectOption> = []
     export let highlight: Appearance = Appearance.Default
     export let alt: boolean = false
-    export let selected: string = options[0].value
+    export let selected: string = options.length > 0 ? options[0].value : ""
+    export let hook: string = ""
 
     const dispatch = createEventDispatcher()
 
-    function onChange(value: string) {
-        dispatch("change", value)
+    function onChange(event: Event) {
+        const target = event.target as HTMLSelectElement
+        dispatch("change", target.value)
     }
 </script>
 
-<div class="select-group {highlight !== null ? `highlight-${highlight}` : ''} {alt ? 'alt' : ''}">
+<div data-cy={hook} class="select-group {highlight !== null ? `highlight-${highlight}` : ''} {alt ? 'alt' : ''}">
     <slot></slot>
-    <select name="generic-select" class="select" bind:value={selected} on:change={() => onChange(selected)}>
+    <select name="generic-select" class="select" bind:value={selected} on:change={onChange}>
         {#each options as option}
-            <option value={option.value}>{option.text}</option>
+            <option data-cy="select-option" value={option.value}>{option.text}</option>
         {/each}
     </select>
     <Icon icon={Shape.ChevronDown} />
@@ -39,12 +41,12 @@
         align-items: center;
         outline: none;
         cursor: pointer;
-        pointer-events: none;
+        pointer-events: none; // This disables all pointer events on the parent element.
         gap: var(--gap);
         width: 100%;
 
         .select {
-            pointer-events: all;
+            pointer-events: all; // Ensure the select element can receive pointer events.
             appearance: none;
             height: var(--input-height);
             color: var(--color-alt);

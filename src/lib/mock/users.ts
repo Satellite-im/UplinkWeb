@@ -1,5 +1,5 @@
-import { ChatType, Status } from "$lib/enums"
-import { defaultUser, type Chat, type User, hashChat, defaultChat } from "$lib/types"
+import { ChatType, Integrations, Status } from "$lib/enums"
+import { defaultUser, type Chat, type User, hashChat, defaultChat, TypingIndicator } from "$lib/types"
 
 export const mock_users: Array<User> = [
     {
@@ -12,11 +12,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/moon.png",
-                frame: { name: "Water", image: "/assets/frames/water.png" },
+                image: "",
+                frame: { name: "", image: "" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "",
                 overlay: "",
             },
             status: Status.Online,
@@ -37,11 +37,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/blue_marble.png",
-                frame: { name: "", image: "" },
+                image: "",
+                frame: { name: "Moon", image: "/frames/moon.png" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "",
                 overlay: "",
             },
             status: Status.Online,
@@ -53,6 +53,16 @@ export const mock_users: Array<User> = [
             is_muted: true,
             is_deafened: true,
         },
+        integrations: new Map<string, string>([
+            [Integrations.Twitch, "https://twitch.tv/SpaceKev"],
+            [Integrations.Steam, "https://steamcommunity.com/id/SpaceKev/"],
+            [Integrations.YouTube, "https://youtube.com/c/SpaceKev/"],
+            [Integrations.Spotify, "@SpaceKev"],
+            [Integrations.Generic, "https://satellite.im"],
+            [Integrations.BTC, "1cwI2h8ETSROxAihiRDB5QqfDc3EDxWsf0"],
+            [Integrations.ETH, "0x0000000000000000000000000000000000000000"],
+            [Integrations.SOL, "26AKqj1Au1jGrHFm7RXVJJeu7nsbqqin5Ff3vjPxM4QK"],
+        ]),
     },
     {
         ...defaultUser,
@@ -64,11 +74,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/saturn.png",
-                frame: { name: "Fire", image: "/assets/frames/fire.png" },
+                image: "",
+                frame: { name: "", image: "" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "",
                 overlay: "",
             },
             status: Status.Online,
@@ -85,8 +95,8 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/pluto.png",
-                frame: { name: "Gold Ring", image: "/assets/frames/gold.png" },
+                image: "",
+                frame: { name: "", image: "" },
             },
             status: Status.Offline,
             status_message: "I am also testing a bunch of things a bunch of the time!",
@@ -106,11 +116,11 @@ export const mock_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/neptune.png",
-                frame: { name: "Mustache", image: "/assets/frames/mustache.png" },
+                image: "",
+                frame: { name: "", image: "" },
             },
             banner: {
-                image: "/assets/space.jpg",
+                image: "",
                 overlay: "",
             },
             status: Status.DoNotDisturb,
@@ -130,7 +140,7 @@ export const blocked_users: Array<User> = [
         profile: {
             ...defaultUser.profile,
             photo: {
-                image: "/assets/uranis.png",
+                image: "",
                 frame: { name: "", image: "" },
             },
             status: Status.DoNotDisturb,
@@ -149,7 +159,7 @@ export const fake_user_array: Array<User> = [
         },
         profile: {
             photo: {
-                image: "/assets/neptune.png",
+                image: "",
                 frame: { name: "", image: "" },
             },
             banner: {
@@ -170,8 +180,7 @@ let mock_chats: Chat[] = [
         motd: "A place for people who love RC",
         kind: ChatType.Group,
         notifications: 0,
-        activity: false,
-        users: [mock_users[0], mock_users[1], mock_users[3]],
+        users: [mock_users[0].key, mock_users[1].key, mock_users[3].key],
         last_message_at: new Date(),
         last_message_preview: "Wow! I had no idea that you could fly that well, good work!",
     },
@@ -181,8 +190,7 @@ let mock_chats: Chat[] = [
         name: "",
         motd: "",
         notifications: 4,
-        activity: false,
-        users: [mock_users[0]],
+        users: [defaultUser.key, mock_users[0].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
@@ -192,8 +200,8 @@ let mock_chats: Chat[] = [
         name: "",
         motd: "",
         notifications: 2,
-        activity: true,
-        users: [mock_users[1]],
+        typing_indicator: mockIndicator(mock_users[1].key),
+        users: [defaultUser.key, mock_users[1].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
@@ -202,9 +210,8 @@ let mock_chats: Chat[] = [
         id: "s12",
         name: "",
         motd: "",
-        activity: false,
         notifications: 0,
-        users: [mock_users[2]],
+        users: [defaultUser.key, mock_users[2].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
@@ -213,9 +220,8 @@ let mock_chats: Chat[] = [
         id: "12s",
         name: "",
         motd: "",
-        activity: false,
-        notifications: 0,
-        users: [mock_users[3]],
+        notifications: 13,
+        users: [defaultUser.key, mock_users[3].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
@@ -224,13 +230,18 @@ let mock_chats: Chat[] = [
         id: "as5",
         name: "",
         motd: "",
-        activity: false,
         notifications: 0,
-        users: [mock_users[4]],
+        users: [defaultUser.key, mock_users[4].key],
         last_message_at: new Date(),
         last_message_preview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
 ]
+
+function mockIndicator(user: string): TypingIndicator {
+    let indicator = new TypingIndicator()
+    indicator.add(user)
+    return indicator
+}
 
 mock_chats[0].id = hashChat(mock_chats[0])
 mock_chats[1].id = hashChat(mock_chats[1])

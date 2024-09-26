@@ -2,28 +2,35 @@
     import Button from "$lib/elements/Button.svelte"
     import Icon from "$lib/elements/Icon.svelte"
     import { Appearance, Shape } from "$lib/enums"
+    import { UIStore } from "$lib/state/ui"
+    import { createEventDispatcher } from "svelte"
 
     export let emojis: string[]
-    export let close: (event: CustomEvent<MouseEvent>) => void
+    export let close: (event: MouseEvent) => void
+    export let emojiPick: (emoji: string) => void
+    const dispatcher = createEventDispatcher()
 </script>
 
-<div class="emoji-group">
+<div class="emoji-group" data-cy="emoji-group">
     {#each emojis as emoji}
         <Button
+            hook="button-emoji-{emoji}"
             class="emoji"
             appearance={Appearance.Alt}
             text={emoji}
             on:click={e => {
-                // TODO add reaction
+                emojiPick(emoji)
                 close(e)
             }} />
     {/each}
     <Button
+        hook="button-emoji-picker"
         class="emoji-picker"
         appearance={Appearance.Alt}
         on:click={e => {
-            // Open emoji picker
             close(e)
+            dispatcher("openPicker")
+            UIStore.state.emojiSelector.set(true)
         }}><Icon icon={Shape.Plus} /></Button>
 </div>
 

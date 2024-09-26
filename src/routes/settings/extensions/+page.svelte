@@ -2,42 +2,38 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { Button, Icon, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { _ } from "svelte-i18n"
     import UnderConstruction from "$lib/elements/UnderConstruction.svelte"
-
-    initLocale()
 </script>
 
 <div id="page">
     <Controls>
-        <Button text="Installed" appearance={Appearance.Alt}>
+        <Button hook="button-installed" text={$_("settings.extensions.installed")} appearance={Appearance.Alt}>
             <Icon icon={Shape.CheckMark} />
         </Button>
-        <Button text="Explore" appearance={Appearance.Alt} outline>
+        <Button hook="button-explore" text={$_("settings.extensions.explore")} appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Beaker} />
         </Button>
-        <Button text="Settings" appearance={Appearance.Alt} outline>
+        <Button hook="button-settings" text={$_("settings.extensions.settings")} appearance={Appearance.Alt} outline hideTextOnMobile>
             <Icon icon={Shape.Cog} />
         </Button>
     </Controls>
 
     <div class="content">
         <UnderConstruction />
-        <Label text="No extensions installed." />
+        <Label hook="label-no-extensions-installed" text={$_("settings.extensions.none")} />
     </div>
 </div>
 
 <style lang="scss">
     #page {
-        display: flex;
-        flex-direction: column;
-        margin: 0;
         flex: 1;
+        width: 100%;
+        display: inline-flex;
+        flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        padding-right: var(--padding);
+        padding: var(--padding);
 
         .content {
             display: inline-flex;
@@ -47,6 +43,7 @@
             height: 100%;
             align-items: center;
             justify-content: center;
+            min-width: 0;
         }
     }
 </style>

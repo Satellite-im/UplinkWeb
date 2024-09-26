@@ -1,16 +1,13 @@
 <script lang="ts">
-    import { initLocale } from "$lib/lang"
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { Button, Switch, Select } from "$lib/elements"
     import { Meter, VideoTest } from "$lib/components"
     import { Appearance } from "$lib/enums"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { onMount } from "svelte"
     import { get } from "svelte/store"
     import { SettingsStore, type ISettingsState } from "$lib/state"
-
-    initLocale()
 
     let inputDevices: MediaDeviceInfo[] = []
     let videoInputDevices: MediaDeviceInfo[] = []
@@ -39,8 +36,8 @@
     Store.state.devices.input.subscribe(d => {
         selectedInput = d
     })
-    Store.state.devices.input.subscribe(d => {
-        selectedInput = d
+    Store.state.devices.video.subscribe(d => {
+        selectedVideoInput = d
     })
 
     let settings: ISettingsState = get(SettingsStore.state)
@@ -139,8 +136,9 @@
 </script>
 
 <div id="page">
-    <SettingSection name="Input Device" description="Select your input device, this is usually your microphone.">
+    <SettingSection hook="section-input-device" name={$_("settings.audio.inputDevice")} description={$_("settings.audio.inputDeviceDescription")}>
         <Select
+            hook="selector-input-device"
             selected={selectedInput}
             options={inputOptions}
             alt
@@ -153,8 +151,9 @@
         <Meter percent={audioLevel} />
     </div>
 
-    <SettingSection name="Output Device" description="Select your output device, this is usually your headphones or speakers.">
+    <SettingSection hook="section-output-device" name={$_("settings.audio.outputDevice")} description={$_("settings.audio.outputDeviceDescription")}>
         <Select
+            hook="selector-output-device"
             selected={selectedOutput}
             options={outputOptions}
             alt
@@ -164,16 +163,18 @@
     </SettingSection>
 
     <div class="flex-row">
-        <Button small text="Test" appearance={Appearance.Alt} on:click={startAudioOutputMonitoring} />
+        <Button hook="button-output-device-test" small text={$_("settings.audio.test")} appearance={Appearance.Alt} on:click={startAudioOutputMonitoring} />
         <Meter percent={audioOutputLevel} />
     </div>
 
-    <SettingSection name="Video Device" description="Select your video device, this is usually your webcam.">
+    <SettingSection hook="section-video-device" name={$_("settings.audio.videoDevice")} description={$_("settings.audio.videoDeviceDescription")}>
         <Select
+            hook="selector-video-device"
             selected={selectedVideoInput}
             options={videoInputOptions}
             alt
             on:change={v => {
+                console.log("Video input device:", v.detail)
                 Store.setVideoInputDevice(v.detail)
             }} />
     </SettingSection>
@@ -181,36 +182,41 @@
         <VideoTest audioInput={selectedInput} videoInput={undefined} />
     </div>
 
-    <SettingSection name="Echo Cancellation" description="Helps minimize feedback from your headphones/speakers into your microphone.">
+    <SettingSection hook="section-echo-cancellation" name={$_("settings.audio.echoCancellation")} description={$_("settings.audio.echoCancellationDescription")}>
         <Switch
-            on={settings ? settings.audio.echoCancellation : true}
+            hook="switch-echo-cancellation"
+            on={settings ? settings.calling.echoCancellation : true}
             on:toggle={on => {
-                SettingsStore.update({ ...settings, audio: { ...settings.audio, echoCancellation: on.detail } })
+                SettingsStore.update({ ...settings, calling: { ...settings.calling, echoCancellation: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Interface Sounds" description="Play sounds when interacting with UI elements.">
+    <SettingSection hook="section-interface-sounds" name={$_("settings.audio.interfaceSounds")} description={$_("settings.audio.interfaceSoundsDescription")}>
         <Switch
+            hook="switch-interface-sounds"
             on={settings ? settings.audio.interfaceSounds : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, interfaceSounds: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Control Sounds" description="When enabled you will hear a sound when turning controls on or off, such as muting and unmuting.">
+    <SettingSection hook="section-control-sounds" name={$_("settings.audio.controlSounds")} description={$_("settings.audio.controlSoundsDescription")}>
         <Switch
+            hook="switch-control-sounds"
             on={settings ? settings.audio.controlSounds : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, controlSounds: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Message Sounds" description="Play a notification sound when a new message is received.">
+    <SettingSection hook="section-message-sounds" name={$_("settings.audio.messageSounds")} description={$_("settings.audio.messageSoundsDescription")}>
         <Switch
+            hook="switch-message-sounds"
             on={settings ? settings.audio.messageSounds : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, messageSounds: on.detail } })
             }} />
     </SettingSection>
-    <SettingSection name="Call Timer" description="Show the duration of an active call in the UI.">
+    <SettingSection hook="section-call-timer" name={$_("settings.audio.callTimer")} description={$_("settings.audio.callTimerDescription")}>
         <Switch
+            hook="switch-call-timer"
             on={settings ? settings.audio.callTimer : true}
             on:toggle={on => {
                 SettingsStore.update({ ...settings, audio: { ...settings.audio, callTimer: on.detail } })
@@ -225,9 +231,6 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        padding-right: var(--padding);
+        padding: var(--padding);
     }
 </style>

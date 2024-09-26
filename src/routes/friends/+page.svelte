@@ -1,27 +1,44 @@
 <script lang="ts">
     import { Button, Icon, Label, Text, Input } from "$lib/elements"
     import { ChatPreview, ContextMenu, Modal } from "$lib/components"
-    import { Sidebar, Slimbar, Topbar } from "$lib/layouts"
-    import { Appearance, Route, Shape, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+    import { Sidebar, Topbar } from "$lib/layouts"
+    import { Appearance, Route, Shape, TooltipPosition } from "$lib/enums"
+
     import { _ } from "svelte-i18n"
     import type { Chat, User } from "$lib/types"
     import Fuse from "fuse.js"
     import Friend from "$lib/components/friends/Friend.svelte"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
     import { goto } from "$app/navigation"
     import { UIStore } from "$lib/state/ui"
-
-    // Initialize locale
-    initLocale()
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { WarpError } from "$lib/wasm/HandleWarpErrors"
+    import { log } from "$lib/utils/Logger"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { ToastMessage } from "$lib/state/ui/toast"
+    import { CommonInputRules } from "$lib/utils/CommonInputRules"
+    import { page } from "$app/stores"
+    import CreateGroup from "$lib/components/group/CreateGroup.svelte"
 
     let loading: boolean = false
-    let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
-    let friends: User[] = get(Store.state.friends)
-    let blocked: User[] = get(Store.state.blocked)
+    $: sidebarOpen = UIStore.state.sidebarOpen
+    $: friends = Store.getUsers(Store.state.friends)
+    $: blocked = Store.getUsers(Store.state.blocked)
+    $: activeRequests = Store.state.activeRequests
+    $: incomingRequests = Store.inboundRequests($activeRequests)
+    $: outgoingRequests = Store.outboundRequests($activeRequests)
+    let isValidFriendDid: boolean = false
+    let newGroup: boolean = false
 
-    let tab: string = "all"
+    let tab: "all" | "active" | "blocked" = "all"
+
+    $: {
+        let state = $page.state as any
+        if (state.tab) {
+            tab = state.tab
+        }
+    }
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
@@ -40,10 +57,66 @@
         return groupedUsers
     }
 
-    let sentRequest: boolean
     let requestString: string
-    let submitRequest = function () {
-        sentRequest = true
+    let submitRequest = async function () {
+        log.info("Sending friend request to " + requestString)
+        if (!isValidFriendDid) {
+            return
+        }
+        let requestSent = await MultipassStoreInstance.sendFriendRequest(requestString)
+        requestSent.fold(
+            (e: WarpError) => {
+                requestString = ""
+                Store.addToastNotification(new ToastMessage("", e, 3, Shape.XMark, Appearance.Error))
+            },
+            () => {
+                requestString = ""
+                Store.addToastNotification(new ToastMessage("", `Your request is making it's way!`, 3, Shape.CheckMark, Appearance.Success))
+            }
+        )
+        isValidFriendDid = false
+    }
+
+    let acceptRequest = async function (friendUser: string) {
+        let friendRequestAccepted = await MultipassStoreInstance.acceptFriendRequest(friendUser)
+        friendRequestAccepted.onSuccess(() => {
+            Store.acceptRequest(friendUser)
+        })
+    }
+
+    let denyRequest = async function (friendUser: string) {
+        let friendRequestDenied = await MultipassStoreInstance.denyFriendRequest(friendUser)
+        friendRequestDenied.onSuccess(() => {
+            Store.denyRequest(friendUser)
+        })
+    }
+
+    let cancelRequest = async function (friendUser: string) {
+        let friendRequestCancelled = await MultipassStoreInstance.cancelFriendRequest(friendUser)
+        friendRequestCancelled.onSuccess(() => {
+            Store.cancelRequest(friendUser)
+        })
+    }
+
+    let removeFriend = async function (friendUser: string) {
+        let friendRemoved = await MultipassStoreInstance.removeFriend(friendUser)
+        friendRemoved.onSuccess(() => {
+            Store.removeFriend(friendUser)
+        })
+    }
+
+    let blockUser = async function (friendUser: string) {
+        let userBlocked = await MultipassStoreInstance.blockUser(friendUser)
+        userBlocked.onSuccess(() => {
+            Store.blockUser(friendUser)
+        })
+    }
+
+    let unblockUser = async function (friendUser: string) {
+        let userUnblocked = await MultipassStoreInstance.unblockUser(friendUser)
+        userUnblocked.onSuccess(() => {
+            Store.unblockUser(friendUser)
+        })
     }
 
     let searchString: string = ""
@@ -59,16 +132,12 @@
         keys: ["name"],
     }
 
-    const fuse = new Fuse(friends, fuseOptions)
-    let searchResult = fuse.search("")
-
+    $: fuse = new Fuse($friends, fuseOptions)
+    $: searchResult = fuse.search("")
     $: if (searchString !== undefined) {
         searchResult = fuse.search(searchString)
     }
 
-    Store.state.friends.subscribe(f => (friends = f))
-    Store.state.blocked.subscribe(u => (blocked = u))
-    UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
     let chats: Chat[] = get(UIStore.state.chats)
     UIStore.state.chats.subscribe(sc => (chats = sc))
     let activeChat: Chat = get(Store.state.activeChat)
@@ -85,57 +154,38 @@
 </script>
 
 <div id="page">
-    <!-- Modals -->
-    {#if sentRequest}
-        <Modal
-            on:close={_ => {
-                sentRequest = false
-            }}>
-            <svelte:fragment slot="controls">
-                <Button
-                    icon
-                    small
-                    appearance={Appearance.Alt}
-                    on:click={_ => {
-                        sentRequest = false
-                    }}>
-                    <Icon icon={Shape.XMark} />
-                </Button>
-            </svelte:fragment>
-            <div class="request-sent">
-                <Icon size={Size.Largest} icon={Shape.CheckMark} highlight={Appearance.Success} />
-                <Text size={Size.Large}>Request Dispatched!</Text>
-                <Text muted>Your request is making it's way to {requestString}.</Text>
-            </div>
-        </Modal>
-    {/if}
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Friends} />
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Friends}>
-        <Button hook="button-marketplace" outline appearance={Appearance.Alt} text={$_("market.market")}>
-            <Icon icon={Shape.Shop} />
-        </Button>
-
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={$sidebarOpen} activeRoute={Route.Friends}>
+        <!--
+            <Button hook="button-marketplace" outline appearance={Appearance.Alt} text={$_("market.market")}>
+                <Icon icon={Shape.Shop} />
+            </Button>
+        -->
         <div class="content-header">
-            <Label text={$_("chat.chat_plural")} />
-            <Button hook="button-create-group-chat" icon small tooltip={$_("chat.create")}>
-                <Icon icon={Shape.ChatPlus} />
+            <Label hook="label-chats" text={$_("chat.chat_plural")} />
+            <Button hook="button-create-group-chat" icon small tooltipPosition={TooltipPosition.LEFT} appearance={Appearance.Primary} tooltip={$_("chat.create")} on:click={_ => (newGroup = true)}>
+                <Icon icon={Shape.ChatPlus} alt />
             </Button>
         </div>
 
-        {#each chats as chat}
+        {#each chats.slice().sort((a, b) => {
+            const dateA = new Date(a.last_message_at || 0)
+            const dateB = new Date(b.last_message_at || 0)
+            return dateB.getTime() - dateA.getTime()
+        }) as chat}
             <ContextMenu
+                hook="context-menu-sidebar-chat"
                 items={[
                     {
                         id: "hide",
                         icon: Shape.EyeSlash,
-                        text: "Hide",
+                        text: $_("chat.hide"),
                         appearance: Appearance.Default,
                         onClick: () => UIStore.removeSidebarChat(chat),
                     },
                     {
                         id: "mark_read",
                         icon: Shape.CheckMark,
-                        text: "Mark Read",
+                        text: $_("chat.markRead"),
                         appearance: Appearance.Default,
                         onClick: () => {},
                     },
@@ -147,29 +197,57 @@
     <div class="content">
         <Topbar>
             <svelte:fragment slot="controls">
-                <Button appearance={tab === "all" ? Appearance.Primary : Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
-                    <Icon icon={Shape.Users} />
-                </Button>
-                <Button appearance={tab === "active" ? Appearance.Primary : Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")}>
-                    <Icon icon={Shape.ArrowsLeftRight} />
-                </Button>
-                <Button appearance={tab === "blocked" ? Appearance.Primary : Appearance.Alt} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")}>
-                    <Icon icon={Shape.NoSymbol} />
-                </Button>
+                {#if tab === "all"}
+                    <Button hook="button-friends-all" appearance={Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
+                        <Icon icon={Shape.Users} alt />
+                    </Button>
+                {:else}
+                    <Button hook="button-friends-all" appearance={Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
+                        <Icon icon={Shape.Users} />
+                    </Button>
+                {/if}
+                {#if tab === "active"}
+                    <Button badge={incomingRequests.length} hook="button-friends-active" appearance={Appearance.Primary} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
+                        <Icon icon={Shape.ArrowsLeftRight} alt />
+                    </Button>
+                {:else}
+                    <Button badge={incomingRequests.length} hook="button-friends-active" appearance={Appearance.Alt} text={$_("friends.active")} on:click={_ => (tab = "active")} hideTextOnMobile>
+                        <Icon icon={Shape.ArrowsLeftRight} />
+                    </Button>
+                {/if}
+                {#if tab === "blocked"}
+                    <Button hook="button-friends-blocked" appearance={Appearance.Primary} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")} hideTextOnMobile>
+                        <Icon icon={Shape.NoSymbol} alt />
+                    </Button>
+                {:else}
+                    <Button hook="button-friends-blocked" appearance={Appearance.Alt} text={$_("friends.blocked")} on:click={_ => (tab = "blocked")} hideTextOnMobile>
+                        <Icon icon={Shape.NoSymbol} />
+                    </Button>
+                {/if}
             </svelte:fragment>
         </Topbar>
 
         <div class="body">
             {#if tab === "all"}
-                <Label text={$_("friends.add_someone")} />
-                <div class="section">
-                    <Input alt placeholder={$_("friends.find_placeholder")} on:enter={submitRequest} bind:value={requestString}>
+                <Label hook="label-add-someone" text={$_("friends.add_someone")} />
+                <div class="section" data-cy="friends-section-all">
+                    <Input
+                        hook="input-add-friend"
+                        alt
+                        placeholder={$_("friends.find_placeholder")}
+                        on:isValid={e => {
+                            isValidFriendDid = e.detail
+                        }}
+                        rules={CommonInputRules.friendRequestDid}
+                        on:enter={submitRequest}
+                        bind:value={requestString}>
                         <Icon icon={Shape.Search} />
                     </Input>
-                    <Button appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
+                    <Button hook="button-add-friend" disabled={!isValidFriendDid} appearance={Appearance.Alt} text={$_("friends.add")} on:click={submitRequest}>
                         <Icon icon={Shape.Plus} />
                     </Button>
                     <ContextMenu
+                        hook="context-menu-copy-id"
                         items={[
                             {
                                 id: "copy-id",
@@ -186,49 +264,69 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <Button slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
+                        <Button hook="button-copy-id" slot="content" appearance={Appearance.Alt} icon tooltip={$_("friends.copy_did")} let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
                             <Icon icon={Shape.Clipboard} />
                         </Button>
                     </ContextMenu>
                 </div>
 
-                <Label text={$_("friends.search_friends_placeholder")} />
+                <Label hook="label-search-friends" text={$_("friends.search_friends_placeholder")} />
                 <div class="section">
-                    <Input alt placeholder={$_("friends.search_friends_placeholder")} bind:value={searchString}>
+                    <Input hook="input-search-friends" alt placeholder={$_("friends.search_friends_placeholder")} bind:value={searchString}>
                         <Icon icon={Shape.Search} />
                     </Input>
                 </div>
 
                 {#if searchResult.length || searchString.length}
                     <div class="section column search-results">
-                        <Label text={$_("generic.search_results")} />
+                        <Label hook="label-search-results" text={$_("generic.search_results")} />
                         {#if searchResult.length}
                             {#each searchResult as result}
                                 <Friend friend={result.item}>
                                     <svelte:fragment slot="controls">
                                         <Button
+                                            hook="button-search-friend-chat"
                                             text={$_("chat.chat")}
-                                            on:click={_ => {
-                                                Store.setActiveDM(result.item)
+                                            on:click={async _ => {
+                                                let chat = Store.getChatForUser(result.item.key)
+                                                if (chat) {
+                                                    Store.setActiveChat(chat)
+                                                } else {
+                                                    let conversation = await RaygunStoreInstance.createConversation(result.item)
+                                                    conversation.onSuccess(chat => {
+                                                        Store.setActiveChat(chat)
+                                                    })
+                                                    conversation.onFailure(async e => {
+                                                        let conversations = await RaygunStoreInstance.listConversations()
+                                                        conversations.onSuccess(conversations => {
+                                                            let chat = conversations.find(c => c.users.includes(result.item.key))
+                                                            if (chat) {
+                                                                Store.setActiveChat(chat)
+                                                            }
+                                                        })
+                                                    })
+                                                }
                                                 goto(Route.Chat)
                                             }}>
                                             <Icon icon={Shape.ChatBubble} />
                                         </Button>
                                         <Button
                                             icon
+                                            hook="button-search-friend-remove"
                                             appearance={Appearance.Alt}
                                             tooltip={$_("generic.remove")}
                                             on:click={_ => {
-                                                Store.removeFriend(result.item)
+                                                removeFriend(result.item.key)
                                             }}>
                                             <Icon icon={Shape.UserMinus} />
                                         </Button>
                                         <Button
                                             icon
+                                            hook="button-search-friend-block"
                                             appearance={Appearance.Alt}
                                             tooltip={$_("friends.block")}
                                             on:click={_ => {
-                                                Store.blockUser(result.item)
+                                                blockUser(result.item.key)
                                             }}>
                                             <Icon icon={Shape.NoSymbol} />
                                         </Button>
@@ -236,88 +334,116 @@
                                 </Friend>
                             {/each}
                         {:else}
-                            <Text>{$_("generic.no_results")}</Text>
+                            <Text hook="text-search-friend-no-results">{$_("generic.no_results")}</Text>
                         {/if}
                     </div>
                 {/if}
-                <div class="section column">
-                    {#each Object.keys(groupUsersAlphabetically(friends)).sort() as letter}
-                        {#if groupUsersAlphabetically(friends)[letter].length > 0}
-                            <Label text={letter} />
-                            {#each groupUsersAlphabetically(friends)[letter] as friend}
-                                <Friend friend={friend}>
-                                    <svelte:fragment slot="controls">
-                                        <Button
-                                            text={$_("chat.chat")}
-                                            on:click={_ => {
-                                                Store.setActiveDM(friend)
-                                                goto(Route.Chat)
-                                            }}>
-                                            <Icon icon={Shape.ChatBubble} />
-                                        </Button>
-                                        <Button icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => Store.removeFriend(friend)}>
-                                            <Icon icon={Shape.UserMinus} />
-                                        </Button>
-                                        <Button icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => Store.blockUser(friend)}>
-                                            <Icon icon={Shape.NoSymbol} />
-                                        </Button>
-                                    </svelte:fragment>
-                                </Friend>
-                            {/each}
-                        {/if}
-                    {/each}
+                <div class="test">
+                    <div class="friends-section section column">
+                        {#each Object.keys(groupUsersAlphabetically($friends)).sort() as letter}
+                            {#if groupUsersAlphabetically($friends)[letter].length > 0}
+                                <Label hook="label-friend-list-{letter}" text={letter} />
+                                {#each groupUsersAlphabetically($friends)[letter] as friend}
+                                    <Friend friend={friend}>
+                                        <svelte:fragment slot="controls">
+                                            <Button
+                                                hook="button-friend-chat"
+                                                appearance={Appearance.Primary}
+                                                text={$_("chat.chat")}
+                                                on:click={async _ => {
+                                                    let chat = Store.getChatForUser(friend.key)
+                                                    if (chat) {
+                                                        Store.setActiveChat(chat)
+                                                        goto(Route.Chat)
+                                                    } else {
+                                                        let conversation = await RaygunStoreInstance.createConversation(friend)
+                                                        conversation.onSuccess(chat => {
+                                                            Store.setActiveChat(chat)
+                                                            goto(Route.Chat)
+                                                        })
+                                                        conversation.onFailure(async e => {
+                                                            let conversations = await RaygunStoreInstance.listConversations()
+                                                            conversations.onSuccess(conversations => {
+                                                                let chat = conversations.find(c => c.users.includes(friend.key))
+                                                                if (chat) {
+                                                                    Store.setActiveChat(chat)
+                                                                    goto(Route.Chat)
+                                                                }
+                                                            })
+                                                        })
+                                                    }
+                                                }}>
+                                                <Icon icon={Shape.ChatBubble} alt />
+                                            </Button>
+                                            <Button hook="button-friend-remove" icon appearance={Appearance.Alt} tooltip={$_("generic.remove")} on:click={_ => removeFriend(friend.key)}>
+                                                <Icon icon={Shape.UserMinus} />
+                                            </Button>
+                                            <Button hook="button-friend-block" icon appearance={Appearance.Alt} tooltip={$_("friends.block")} on:click={_ => blockUser(friend.key)}>
+                                                <Icon icon={Shape.NoSymbol} />
+                                            </Button>
+                                        </svelte:fragment>
+                                    </Friend>
+                                {/each}
+                            {/if}
+                        {/each}
+                    </div>
                 </div>
             {:else if tab === "active"}
-                <div class="section column">
-                    <Label text={$_("friends.outgoing_requests")} />
-                    {#each Store.outboundRequests as request}
-                        <Friend friend={request.to}>
+                <div class="section column" data-cy="friends-section-requests">
+                    <Label hook="label-outgoing-requests" text={$_("friends.outgoing_requests")} />
+                    {#each outgoingRequests as request}
+                        <Friend friend={get(Store.getUser(request.to))}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Alt} text={$_("generic.cancel")} on:click={_ => Store.cancelRequest(request.to)}>
+                                <Button hook="button-friend-cancel" appearance={Appearance.Alt} text={$_("generic.cancel")} on:click={_ => cancelRequest(request.to)}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
-                    {#if Store.outboundRequests.length === 0}
-                        <Text>No outbound requests.</Text>
+                    {#if outgoingRequests.length === 0}
+                        <Text hook="text-no-outbound-requests">{$_("friends.noOutgoing")}</Text>
                     {/if}
-                    <Label text={$_("friends.incoming_requests")} />
-                    {#each Store.inboundRequests as request}
-                        <Friend friend={request.from}>
+                    <Label hook="label-incoming-requests" text={$_("friends.incoming_requests")} />
+                    {#each incomingRequests as request}
+                        <Friend friend={get(Store.getUser(request.from))}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Success} text={$_("generic.accept")} on:click={_ => Store.acceptRequest(request.from)}>
+                                <Button hook="button-friend-accept" appearance={Appearance.Success} text={$_("generic.accept")} on:click={_ => acceptRequest(request.from)}>
                                     <Icon icon={Shape.CheckMark} />
                                 </Button>
-                                <Button appearance={Appearance.Alt} text={$_("generic.deny")} on:click={_ => Store.denyRequest(request.from)}>
+                                <Button hook="button-friend-deny" appearance={Appearance.Alt} text={$_("generic.deny")} on:click={_ => denyRequest(request.from)}>
                                     <Icon icon={Shape.XMark} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
-                    {#if Store.inboundRequests.length === 0}
-                        <Text>No inbound requests.</Text>
+                    {#if incomingRequests.length === 0}
+                        <Text hook="text-no-incoming-requests">{$_("friends.noIncoming")}</Text>
                     {/if}
                 </div>
             {:else if tab === "blocked"}
-                <div class="section column">
-                    <Label text={$_("friends.blocked_users")} />
-                    {#each blocked as user}
+                <div class="section column" data-cy="friends-section-blocked">
+                    <Label hook="label-blocked-users" text={$_("friends.blocked_users")} />
+                    {#each $blocked as user}
                         <Friend friend={user}>
                             <svelte:fragment slot="controls">
-                                <Button appearance={Appearance.Alt} text={$_("friends.unblock")} on:click={_ => Store.unblockUser(user)}>
+                                <Button hook="button-friend-unblock" appearance={Appearance.Alt} text={$_("friends.unblock")} on:click={_ => unblockUser(user.key)}>
                                     <Icon icon={Shape.NoSymbol} />
                                 </Button>
                             </svelte:fragment>
                         </Friend>
                     {/each}
-                    {#if Store.blockedUsers.length === 0}
-                        <Text>No users blocked.</Text>
+                    {#if $blocked.length === 0}
+                        <Text hook="text-no-blocked-users">{$_("friends.noBlocked")}</Text>
                     {/if}
                 </div>
             {/if}
         </div>
     </div>
+    {#if newGroup}
+        <Modal on:close={() => (newGroup = false)}>
+            <CreateGroup on:create={() => (newGroup = false)} />
+        </Modal>
+    {/if}
 </div>
 
 <style lang="scss">
@@ -328,27 +454,19 @@
         height: 100%;
         overflow: hidden;
 
-        .request-sent {
-            display: inline-flex;
-            justify-content: center;
-            flex-direction: column;
-            gap: var(--gap);
-            align-items: center;
-        }
-
         .content-header {
             display: inline-flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: flex-end;
         }
-
         .content {
             display: flex;
             min-height: 0;
             display: flex;
             flex-direction: column;
             flex: 1;
+            min-width: 0;
 
             .body {
                 width: 100%;
@@ -356,12 +474,36 @@
                 flex-direction: column;
                 padding: var(--padding);
                 gap: var(--gap-less);
+                height: 100%;
 
                 .search-results {
                     border: var(--border-width) solid var(--border-color);
                     padding: var(--padding);
                     border-radius: var(--border-radius);
                 }
+
+                .test {
+                    min-height: 0;
+                    width: 100%;
+                    height: 35px;
+                    display: flex;
+                    flex-direction: column;
+                    padding-right: var(--gap);
+                    flex-grow: 1;
+                    overflow: hidden;
+                }
+
+                .friends-section {
+                    padding-top: 15px;
+                    min-height: 0;
+                    width: 100%;
+                    overflow-y: scroll;
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                    padding-right: var(--gap);
+                }
+
                 .section {
                     display: inline-flex;
                     gap: var(--gap);
@@ -369,9 +511,7 @@
 
                     &.column {
                         flex-direction: column;
-                        min-height: var(--min-scroll-height);
-                        overflow-y: scroll;
-                        overflow-x: hidden;
+                        min-height: var(--min-scroll-height) + var(--gap);
                         padding-right: var(--padding);
                     }
                 }

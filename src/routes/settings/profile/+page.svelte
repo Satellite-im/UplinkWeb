@@ -1,40 +1,80 @@
 <script lang="ts">
-    import { Appearance, Route, Shape, Size, Status } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+    import { Appearance, Integrations, Route, Shape, Size, Status } from "$lib/enums"
+
     import { _ } from "svelte-i18n"
     import { SettingSection } from "$lib/layouts"
     import { ProfilePicture, OrderedPhrase, ContextMenu } from "$lib/components"
     import { Button, Icon, Label, Input, Text, Select, Checkbox } from "$lib/elements"
-    import { Store } from "$lib/state/store"
-    import type { User } from "$lib/types"
+    import { Store } from "$lib/state/Store"
+    import type { Integration, User } from "$lib/types"
     import FileUploadButton from "$lib/components/ui/FileUploadButton.svelte"
     import Controls from "$lib/layouts/Controls.svelte"
-    import { get } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { goto } from "$app/navigation"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
     import { onDestroy, onMount } from "svelte"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
+    import { AuthStore } from "$lib/state/auth"
+    import { CommonInputRules } from "$lib/utils/CommonInputRules"
+    import { compressImageToUpload, MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE } from "$lib/components/utils/CompressImage"
+    import IntegrationDisplay from "$lib/components/ui/IntegrationDisplay.svelte"
+    import { identityColor, toIntegrationIconSrc, toIntegrationKind } from "$lib/utils/ProfileUtils"
+    import { log } from "$lib/utils/Logger"
+    import Modal from "$lib/components/ui/Modal.svelte"
 
-    initLocale()
+    enum SeedState {
+        Hidden,
+        Shown,
+        Missing,
+    }
 
     let loading = true
-    let showSeed = false
+    let isValidUsernameToUpdate = false
+    let isValidStatusMessageToUpdate = true
+    let seedPhrase = TesseractStoreInstance.fetchSeed()?.split(" ")
 
     function toggleSeedPhrase() {
-        showSeed = !showSeed
+        if (showSeed === SeedState.Missing) return
+        showSeed = showSeed === SeedState.Hidden ? SeedState.Shown : SeedState.Hidden
         if (loading) setTimeout(() => (loading = false), 200)
     }
 
-    function logOut() {
+    function handleCopyClick() {
+        if (!seedPhrase) return
+        copyToClipboard(seedPhrase.join(" "))
+    }
+
+    function copyToClipboard(text: string) {
+        navigator.clipboard
+            .writeText(text)
+            .then(() => {
+                log.info("Text copied to clipboard")
+            })
+            .catch(err => {
+                log.info(`Failed to copy text: ${err}`)
+            })
+    }
+    async function logOut() {
+        AuthStore.setStayLogged(false)
+        AuthStore.logIn(false)
+        await TesseractStoreInstance.lock()
         goto(Route.Unlock)
     }
 
     async function updateProfilePicture(picture: string) {
         await MultipassStoreInstance.updateProfilePhoto(picture)
+        if (picture === "/0") {
+            Store.setPhoto("")
+            return
+        }
         Store.setPhoto(picture)
     }
 
     async function updateUsername(newUsername: string) {
+        if (!isValidUsernameToUpdate) {
+            return
+        }
         userReference.name = newUsername
         Store.setUsername(newUsername)
         await MultipassStoreInstance.updateUsername(newUsername)
@@ -42,6 +82,9 @@
     }
 
     async function updateStatusMessage(newStatusMessage: string) {
+        if (!isValidStatusMessageToUpdate) {
+            return
+        }
         userReference.profile.status_message = newStatusMessage
         Store.setStatusMessage(newStatusMessage)
         await MultipassStoreInstance.updateStatusMessage(newStatusMessage)
@@ -53,16 +96,21 @@
         changeList.statusMessage = false
 
         unsavedChanges = changeList.username || changeList.statusMessage
+        isValidStatusMessageToUpdate = false
+        isValidUsernameToUpdate = false
     }
 
-    let samplePhrase = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
+    $: auth = AuthStore.state
+    $: saveSeedPhrase = $auth.saveSeedPhrase
+    $: showSeed = seedPhrase ? SeedState.Hidden : SeedState.Missing
 
-    let userReference: User
-    let statusMessage: string
+    let userReference: User = { ...get(Store.state.user) }
+    let statusMessage: string = { ...get(Store.state.user) }.profile.status_message
+    let seedWarning = false
 
     onMount(() => {
         userReference = { ...get(Store.state.user) }
-        statusMessage = userReference.profile.status_message
+        statusMessage = { ...get(Store.state.user) }.profile.status_message
     })
 
     onDestroy(() => {
@@ -70,26 +118,45 @@
         Store.setStatusMessage(userReference.profile.status_message)
     })
 
-    let user: User = get(Store.state.user)
-    let activityStatus: Status = user.profile.status
+    $: user = Store.state.user
+    let key: string = ""
+    let activityStatus: Status = Status.Offline
 
-    Store.state.user.subscribe(val => {
-        user = val
+    const userSub = Store.state.user.subscribe(val => {
+        let user = val
+        statusMessage = user.profile.status_message
         activityStatus = user.profile.status
+        key = user.key
     })
 
-    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif"
+    onDestroy(() => {
+        Store.setUsername(userReference.name)
+        Store.setStatusMessage(userReference.profile.status_message)
+        userSub()
+    })
+
+    let acceptableFiles: string = ".jpg, .jpeg, .png, .avif, .webp"
     let fileinput: HTMLElement
 
-    const onFileSelected = (e: any) => {
+    const onFileSelected = async (e: any) => {
         let image = e.target.files[0]
-        let reader = new FileReader()
-        reader.readAsDataURL(image)
-        reader.onload = async e => {
-            let imageString = e.target?.result?.toString()
-            await MultipassStoreInstance.updateBannerPicture(imageString || "")
-            Store.setBanner(imageString || "")
+        let quality = 0.9
+
+        while (true) {
+            let compressedImage = await compressImageToUpload(image, quality)
+            if (compressedImage!.size <= MAX_SIZE_IMAGE_TO_UPLOAD_ON_PROFILE || quality <= 0.1) {
+                let reader = new FileReader()
+                reader.readAsDataURL(compressedImage!)
+                reader.onload = async e => {
+                    let imageString = e.target?.result?.toString()
+                    await MultipassStoreInstance.updateBannerPicture(imageString || "")
+                    Store.setBanner(imageString || "")
+                }
+                break
+            }
+            quality -= 0.1
         }
+        e.target.value = ""
     }
 
     let changeList = {
@@ -107,13 +174,86 @@
             await navigator.clipboard.writeText(`${userReference.key}`)
         }
     }
+
+    let showEditIntegrations = writable(false)
+    let selectedKind = Integrations.Generic
+    let selectedKey: string
+    let selectedKeyEditValue: string
+
+    function startEditingIntegration(key: string, value: string) {
+        selectedKey = key
+        selectedKeyEditValue = value
+        selectedKind = toIntegrationKind(key)
+        showEditIntegrations.set(true)
+    }
+
+    function setIntegration() {
+        if (selectedKey !== "" && selectedKeyEditValue !== "") {
+            MultipassStoreInstance.setMetadata(selectedKey, selectedKeyEditValue)
+            resetSelection()
+        }
+    }
+
+    function removeIntegration(key: string) {
+        MultipassStoreInstance.removeMetadata(key)
+        resetSelection()
+    }
+
+    function resetSelection() {
+        showEditIntegrations.set(false)
+        selectedKey = ""
+        selectedKeyEditValue = ""
+    }
+
+    function toggleSeedPhraseSave(val: boolean) {
+        if (!val && !seedWarning) {
+            seedWarning = true
+            return false
+        } else {
+            seedWarning = false
+            saveSeedPhrase = val
+            AuthStore.setSaveSeedPhrase(val)
+            seedPhrase = TesseractStoreInstance.fetchSeed()?.split(" ")
+            return true
+        }
+    }
 </script>
 
 <div id="page">
+    {#if seedWarning}
+        <Modal on:close={() => (seedWarning = false)}>
+            <div class="seed-phrase-modal">
+                <Text hook="text-create-description">
+                    {$_("settings.profile.seed.remove")}
+                </Text>
+                <Controls>
+                    <Button
+                        text={$_("settings.profile.seed.remove.yes")}
+                        hook="button-seed-remove-confirm"
+                        on:click={_ => {
+                            toggleSeedPhraseSave(false)
+                        }}
+                        appearance={Appearance.Error}>
+                        <Icon icon={Shape.CheckMark} />
+                    </Button>
+                    <Button
+                        text={$_("settings.profile.seed.remove.no")}
+                        hook="button-seed-remove-cancel"
+                        on:click={_ => {
+                            seedWarning = false
+                        }}
+                        appearance={Appearance.Alt}>
+                        <Icon icon={Shape.XMark} />
+                    </Button>
+                </Controls>
+            </div>
+        </Modal>
+    {/if}
     {#if unsavedChanges}
-        <div class="save-controls">
+        <div class="save-controls" data-cy="save-controls">
             <Controls>
                 <Button
+                    hook="button-cancel"
                     text={$_("generic.cancel")}
                     appearance={Appearance.Alt}
                     on:click={_ => {
@@ -125,13 +265,19 @@
                     <Icon icon={Shape.XMark} />
                 </Button>
                 <Button
+                    hook="button-save"
                     text={$_("generic.save")}
+                    disabled={(!isValidUsernameToUpdate && changeList.username) || (!isValidStatusMessageToUpdate && changeList.statusMessage)}
                     appearance={Appearance.Primary}
                     on:click={async _ => {
-                        await updateUsername(user.name)
-                        await updateStatusMessage(statusMessage)
+                        if (changeList.statusMessage) {
+                            await updateStatusMessage(statusMessage)
+                        }
+                        if (changeList.username) {
+                            await updateUsername($user.name)
+                        }
+
                         updatePendentItemsToSave()
-                        Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                     }}>
                     <Icon icon={Shape.CheckMark} />
                 </Button>
@@ -142,37 +288,73 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="profile">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div
-            class="profile-header"
-            style="background-image: url('{user.profile.banner.image}')"
-            on:click={_ => {
-                fileinput.click()
-            }}>
-        </div>
-
-        <div class="profile-picture-container">
-            <ProfilePicture image={user.profile.photo.image} size={Size.Large} status={user.profile.status} frame={user.profile.photo.frame} noIndicator />
-            <FileUploadButton
-                icon
-                tooltip={$_("settings.profile.change_profile_photo")}
-                on:upload={async picture => {
-                    await updateProfilePicture(picture.detail)
-                }} />
-        </div>
-
-        <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
-
+        <ContextMenu
+            hook="context-menu-banner-picture"
+            items={[
+                {
+                    id: "clear-banner-picture",
+                    icon: Shape.Trash,
+                    text: $_("settings.profile.deleteBanner"),
+                    appearance: Appearance.Default,
+                    onClick: async () => {
+                        await MultipassStoreInstance.updateBannerPicture("/0")
+                        Store.setBanner("")
+                    },
+                },
+            ]}>
+            <div
+                slot="content"
+                let:open
+                on:contextmenu={open}
+                class="profile-header"
+                data-cy="profile-banner"
+                style={`background-image: url(${$user.profile.banner.image}); background-color: ${identityColor($user.key)};)`}
+                on:click={_ => {
+                    fileinput.click()
+                }}>
+                <input style="display:none" type="file" accept={acceptableFiles} on:change={e => onFileSelected(e)} bind:this={fileinput} />
+            </div>
+        </ContextMenu>
+        <ContextMenu
+            hook="context-menu-profile-picture"
+            items={[
+                {
+                    id: "clear-profile-picture",
+                    icon: Shape.Trash,
+                    text: $_("settings.profile.deleteProfile"),
+                    disabled: $user.profile.photo.image === "",
+                    appearance: Appearance.Default,
+                    onClick: () => {
+                        updateProfilePicture("/0")
+                    },
+                },
+            ]}>
+            <div slot="content" let:open on:contextmenu={open} class="profile-picture-container">
+                <ProfilePicture id={key} image={$user.profile.photo.image} size={Size.Larger} status={$user.profile.status} frame={$user.profile.photo.frame} noIndicator />
+                <FileUploadButton
+                    icon
+                    tooltip={$_("settings.profile.change_profile_photo")}
+                    on:upload={async picture => {
+                        await updateProfilePicture(picture.detail)
+                    }} />
+            </div>
+        </ContextMenu>
         <div class="content">
             <div class="section">
-                <Label text={$_("generic.username")} />
+                <Label hook="label-settings-profile-username" text={$_("generic.username")} />
                 <div class="username-section">
                     <div class="username">
                         <Input
+                            hook="input-settings-profile-username"
                             alt
-                            bind:value={user.name}
+                            bind:value={$user.name}
                             highlight={changeList.username ? Appearance.Warning : Appearance.Default}
+                            on:isValid={e => {
+                                isValidUsernameToUpdate = e.detail
+                            }}
+                            rules={CommonInputRules.username}
                             on:enter={async _ => {
-                                await updateUsername(user.name)
+                                await updateUsername($user.name)
                                 updatePendentItemsToSave()
                             }}
                             on:input={_ => {
@@ -181,6 +363,7 @@
                             }} />
                     </div>
                     <ContextMenu
+                        hook="context-menu-copy-id"
                         items={[
                             {
                                 id: "copy-id",
@@ -197,8 +380,8 @@
                                 onClick: async () => await copy_did(false),
                             },
                         ]}>
-                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(true)}>
-                            <Input alt value={user.id.short} disabled copyOnInteract>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
+                            <Input hook="input-settings-profile-short-id" alt value={$user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
                         </div>
@@ -206,12 +389,17 @@
                 </div>
             </div>
             <div class="section">
-                <Label text={$_("user.status_message")} />
+                <Label hook="label-settings-profile-status-message" text={$_("user.status_message")} />
                 <Input
+                    hook="input-settings-profile-status-message"
                     alt
                     bind:value={statusMessage}
                     placeholder={$_("user.set_status_message")}
                     highlight={changeList.statusMessage ? Appearance.Warning : Appearance.Default}
+                    on:isValid={e => {
+                        isValidStatusMessageToUpdate = e.detail
+                    }}
+                    rules={CommonInputRules.statusMessage}
                     on:enter={async _ => {
                         await updateStatusMessage(statusMessage)
                         updatePendentItemsToSave()
@@ -222,15 +410,18 @@
                     }} />
             </div>
             <div class="section">
-                <SettingSection name={$_("user.status.label")} description={$_("user.set_status")}>
+                <SettingSection hook="section-online-status" name={$_("user.status.label")} description={$_("user.set_status")}>
                     <Select
+                        hook="selector-current-status-{$user.profile.status}"
                         options={[
                             { text: $_("user.status.online"), value: "online" },
                             { text: $_("user.status.offline"), value: "offline" },
                             { text: $_("user.status.idle"), value: "idle" },
                             { text: $_("user.status.do_not_disturb"), value: "do-not-disturb" },
                         ]}
-                        on:change={v => {
+                        on:change={async v => {
+                            await MultipassStoreInstance.updateStatus(v.detail)
+                            Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
                             switch (v.detail) {
                                 case "online":
                                     return Store.setActivityStatus(Status.Online)
@@ -241,9 +432,9 @@
                                 case "do-not-disturb":
                                     return Store.setActivityStatus(Status.DoNotDisturb)
                             }
-                            Store.addToastNotification(new ToastMessage("", profile_update_txt, 2))
+                            2
                         }}
-                        bind:selected={user.profile.status}>
+                        bind:selected={$user.profile.status}>
                         {#if activityStatus === Status.Online}
                             <Icon icon={Shape.Circle} filled highlight={Appearance.Success} />
                         {:else if activityStatus === Status.Idle}
@@ -257,38 +448,120 @@
                 </SettingSection>
             </div>
 
-            <div class="section">
-                <SettingSection name={$_("settings.profile.reveal_phrase.label")} description={$_("settings.profile.reveal_phrase.description")}>
+            <div class="section integrations" data-cy="section-account-integrations">
+                <Label hook="label-settings-profile-integrations" text={$_("settings.profile.integration.title")} />
+                <Text hook="text-settings-profile-integrations">{$_("settings.profile.integration.description")}</Text>
+                <div class="active">
+                    {#each $user.integrations as [key, value]}
+                        <div class="integration-item">
+                            <IntegrationDisplay key={key} value={value} />
+                            <Button hook="button-account-integrations-item-edit" appearance={Appearance.Alt} icon on:click={() => startEditingIntegration(key, value)}>
+                                <Icon icon={Shape.Pencil} />
+                            </Button>
+                            <Button hook="button-account-integrations-item-delete" appearance={Appearance.Error} icon on:click={() => removeIntegration(key)}>
+                                <Icon icon={Shape.XMark} />
+                            </Button>
+                        </div>
+                    {/each}
+                </div>
+
+                {#if $showEditIntegrations}
+                    <Label hook="label-account-integrations-new" text={$user.integrations.has(selectedKey) ? $_("settings.profile.integration.editIntegration") : $_("settings.profile.integration.addNew")} />
+
+                    <div class="add">
+                        <div class="left">
+                            {#if !$user.integrations.has(selectedKey)}
+                                <Label hook="label-account-integrations-new-platform" text={$_("generic.platform")} />
+                                <Select
+                                    hook="selector-account-integrations-new-platform"
+                                    alt
+                                    options={Object.entries(Integrations).map(([key, value]) => ({ value: key, text: value }))}
+                                    bind:selected={selectedKind}
+                                    on:change={e => {
+                                        if (e.detail === Integrations.Generic) {
+                                            selectedKey = ""
+                                        } else {
+                                            selectedKey = selectedKind
+                                        }
+                                    }} />
+                            {/if}
+                        </div>
+                        <img class="integration-logo" data-cy="logo-account-integrations-new" src={toIntegrationIconSrc(selectedKey)} alt="Platform Logo" />
+                        {#if selectedKind === Integrations.Generic}
+                            <div class="label">
+                                <Label hook="label-account-integration-new-address" text={$_("generic.label")} />
+                                <Input hook="input-account-integrations-new-generic" alt bind:value={selectedKey} disabled={$user.integrations.has(selectedKey)} />
+                            </div>
+                        {/if}
+                        <div class="right">
+                            <Label hook="label-account-integration-new-address" text={$_("generic.address")} />
+                            <Input hook="input-account-integrations-new-address" alt bind:value={selectedKeyEditValue} />
+                        </div>
+
+                        <Button hook="button-account-integrations-new-add" text={$user.integrations.has(selectedKey) ? $_("generic.save") : $_("generic.add")} on:click={setIntegration}>
+                            <Icon icon={$user.integrations.has(selectedKey) ? Shape.CheckMark : Shape.Plus} />
+                        </Button>
+                        <Button
+                            hook="button-account-integrations-new-cancel"
+                            text={$_("generic.cancel")}
+                            appearance={Appearance.Alt}
+                            on:click={_ => {
+                                resetSelection()
+                            }}>
+                            <Icon icon={Shape.XMark} />
+                        </Button>
+                    </div>
+                {:else}
                     <Button
-                        appearance={!showSeed ? Appearance.Error : Appearance.Alt}
-                        text={!showSeed ? $_("settings.profile.reveal_phrase.show") : $_("settings.profile.reveal_phrase.hide")}
+                        hook="button-integrations-add"
+                        text={$_("generic.add")}
+                        appearance={Appearance.Primary}
+                        on:click={_ => {
+                            startEditingIntegration("", "")
+                        }}>
+                        <Icon icon={Shape.Plus} alt />
+                    </Button>
+                {/if}
+            </div>
+
+            <div class="section">
+                <SettingSection
+                    hook="section-reveal-phrase"
+                    name={$_("settings.profile.reveal_phrase.label")}
+                    description={showSeed !== SeedState.Missing ? $_("settings.profile.reveal_phrase.description") : $_("settings.profile.reveal_phrase.description.missing")}>
+                    <Button
+                        hook={showSeed === SeedState.Hidden ? "button-reveal-phrase" : showSeed === SeedState.Shown ? "button-hide-phrase" : "button-missing-phrase"}
+                        appearance={showSeed === SeedState.Hidden || showSeed === SeedState.Missing ? Appearance.Error : Appearance.Alt}
+                        text={showSeed === SeedState.Hidden ? $_("settings.profile.reveal_phrase.show") : showSeed === SeedState.Shown ? $_("settings.profile.reveal_phrase.hide") : $_("settings.profile.reveal_phrase.missing")}
+                        disabled={showSeed === SeedState.Missing}
                         on:click={_ => {
                             toggleSeedPhrase()
                         }}>
                         <Icon icon={showSeed ? Shape.EyeSlash : Shape.Eye} />
                     </Button>
                 </SettingSection>
-                {#if showSeed}
-                    {#each samplePhrase as word, i}
+                {#if showSeed === SeedState.Shown && seedPhrase}
+                    {#each seedPhrase as word, i}
                         <OrderedPhrase number={i + 1} word={word} loading={loading} />
                     {/each}
                     <div class="full-width flex-end">
-                        <Button appearance={Appearance.Alt} text={$_("generic.copy")}>
+                        <Button hook="button-copy-phrase" appearance={Appearance.Alt} text={$_("generic.copy")} on:click={handleCopyClick}>
                             <Icon icon={Shape.Clipboard} />
                         </Button>
                     </div>
                 {/if}
             </div>
-
+            {#if showSeed !== SeedState.Missing}
+                <div class="section" data-cy="section-store-recovery-seed">
+                    <Checkbox hook="checkbox-store-recovery-seed" checked={saveSeedPhrase} disabled={seedPhrase === undefined} onToggle={e => toggleSeedPhraseSave(e)}>
+                        <Text hook="text-store-recovery-seed" muted>{$_("settings.profile.should_store")}</Text>
+                    </Checkbox>
+                </div>
+            {/if}
             <div class="section">
-                <Checkbox checked>
-                    <Text muted>{$_("settings.profile.should_store")}</Text>
-                </Checkbox>
-            </div>
-
-            <div class="section">
-                <SettingSection name={$_("settings.profile.log_out.label")} description={$_("settings.profile.log_out.description")}>
+                <SettingSection hook="section-log-out" name={$_("settings.profile.log_out.label")} description={$_("settings.profile.log_out.description")}>
                     <Button
+                        hook="button-log-out"
                         appearance={Appearance.Alt}
                         text={$_("settings.profile.log_out.label")}
                         on:click={_ => {
@@ -309,9 +582,7 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        padding-right: var(--padding);
+        padding: var(--padding);
 
         .save-controls {
             z-index: 2;
@@ -333,7 +604,7 @@
             .content {
                 display: inline-flex;
                 flex-direction: column;
-                gap: var(--gap);
+                gap: calc(var(--gap) * 2);
                 width: 100%;
             }
 
@@ -346,6 +617,46 @@
                 flex-wrap: wrap;
                 align-items: center;
                 flex: 1;
+            }
+
+            .add {
+                width: 100%;
+                flex: 1;
+                display: inline-flex;
+                gap: var(--gap);
+                align-items: flex-end;
+                background-color: var(--background-alt);
+                padding: var(--padding);
+                border-radius: var(--border-radius);
+                border: var(--border-width) solid var(--primary-color);
+
+                .integration-logo {
+                    width: var(--input-height);
+                    height: var(--input-height);
+                }
+
+                .right {
+                    flex: 1;
+                }
+            }
+
+            .integrations {
+                display: inline-flex;
+                flex-direction: column;
+                align-items: flex-start;
+
+                .integration-item {
+                    display: inline-flex;
+                    align-items: flex-end;
+                    gap: var(--gap);
+                }
+                .active {
+                    flex: 1;
+                    display: inline-flex;
+                    flex-direction: column;
+                    width: 100%;
+                    gap: var(--gap);
+                }
             }
 
             .username-section {
@@ -370,26 +681,26 @@
             }
 
             .profile-picture-container {
-                pointer-events: none;
                 position: absolute;
                 z-index: 2;
-                top: calc((var(--profile-width) / 1.5) - (var(--profile-picture-size) * 2 / 2));
+                top: calc(256px - (var(--profile-picture-size) * 4 / 2));
                 height: calc(var(--profile-picture-size) * 2);
-                margin-bottom: calc((var(--profile-picture-size) * 2) * -0.5);
+                margin-bottom: calc((var(--profile-picture-size) * 3) * -0.5);
                 :global(.button) {
                     position: absolute;
-                    bottom: calc(var(--padding-less) * -0.75);
-                    right: calc(var(--padding-less) * -0.75);
+                    bottom: calc(var(--padding-less) * -6.3);
+                    right: calc(var(--padding-less) * -1);
                     z-index: 2;
                 }
             }
 
             .profile-header {
-                height: calc(var(--profile-width) / 1.5);
+                height: 256px;
                 background-color: var(--background-alt);
                 background-size: cover;
                 padding: var(--padding-less);
                 width: 100%;
+                z-index: 1;
                 border-radius: var(--border-radius);
                 display: inline-flex;
                 align-items: flex-end;
@@ -420,6 +731,15 @@
                     }
                 }
             }
+        }
+        .seed-phrase-modal {
+            display: flex;
+            flex-direction: column;
+            width: var(--max-component-width);
+            overflow: hidden;
+            align-items: center;
+            gap: var(--gap);
+            padding: var(--padding);
         }
     }
 </style>

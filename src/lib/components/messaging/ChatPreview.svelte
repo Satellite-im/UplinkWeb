@@ -1,53 +1,75 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
-    import { Route, Size } from "$lib/enums"
+    import { ChatType, Route, Size, Status } from "$lib/enums"
     import type { Chat } from "$lib/types"
     import { Text, Loader } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
-    import { createEventDispatcher } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
+    import { get } from "svelte/store"
+    import { tempCDN } from "$lib/utils/CommonVariables"
+    import { UIStore } from "$lib/state/ui"
+    import { t } from "svelte-i18n"
+    import { checkMobile } from "$lib/utils/Mobile"
 
     export let chat: Chat
     export let cta: boolean = false
     export let simpleUnreads: boolean = false
-    export let loading: boolean = false
+    export let loading: boolean
 
     const timeAgo = new TimeAgo("en-US")
 
-    let photo = chat.users.length > 1 ? "todo" : chat.users[0].profile.photo.image
-    let name = chat.users.length > 1 ? chat.name : chat.users[0].name
+    $: users = Store.getUsers(chat.users)
 
+    $: chatName = chat.kind === ChatType.Group ? chat.name : ($users[1]?.name ?? $users[0].name)
+    $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
+    $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
+    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
+
+    let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
 
+    $: messagePreview = chat.last_message_id === "" ? "No messages sent yet." : chat.last_message_id !== "" && chat.last_message_preview === "" ? "New Attachment" : chat.last_message_preview
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
+
+    onMount(() => {
+        setInterval(() => {
+            timeago = getTimeAgo(chat.last_message_at)
+        }, 500)
+    })
 </script>
 
 <button
-    class="chat-preview {cta ? 'cta' : ''}"
+    data-cy="chat-preview"
+    class="chat-preview {cta ? 'cta' : ''} {get(Store.state.activeChat)?.id === chat.id ? 'active-chat' : ''}"
     on:contextmenu
     on:click={_ => {
         dispatch("click")
         Store.setActiveChat(chat)
+        let isMobile = checkMobile()
+        if (isMobile) {
+            UIStore.toggleSidebar()
+        }
         goto(Route.Chat)
     }}>
-    {#if chat.users.length === 1}
-        <ProfilePicture typing={chat.activity} image={photo} status={chat.users[0].profile.status} size={Size.Medium} loading={loading} frame={chat.users[0].profile.photo.frame} />
+    {#if chat.kind === ChatType.DirectMessage}
+        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.typing_indicator.size > 0} image={directChatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
     {:else}
-        <ProfilePictureMany users={chat.users} />
+        <ProfilePictureMany users={$users} />
     {/if}
     <div class="content">
         <div class="heading">
-            <Text class="chat-user" singleLine loading={loading}>
-                {name}
+            <Text hook="chat-preview-name" class="chat-user min-text" singleLine loading={loading}>
+                {chatName}
             </Text>
             <div class="right">
-                <Text class="timestamp" loading={loading} size={Size.Smallest} muted>
-                    {getTimeAgo(chat.last_message_at)}
+                <Text hook="chat-preview-timestamp" class="timestamp min-text" loading={loading} size={Size.Smallest} muted>
+                    {timeago}
                 </Text>
                 {#if !loading}
                     {#if chat.notifications > 0 && !simpleUnreads}
@@ -64,9 +86,13 @@
             {#if loading}
                 <Loader text small />
                 <Loader text small />
+            {:else if chat.last_message_preview.includes(tempCDN) || chat.last_message_preview.includes("giphy.com")}
+                <div class="sticker">
+                    <Text hook="chat-preview-last-message" size={Size.Small} loading={loading} markdown={chat.last_message_preview}></Text>
+                </div>
             {:else}
-                <Text size={Size.Small} loading={loading}>
-                    {chat.last_message_preview || "No messages sent yet."}
+                <Text hook="chat-preview-last-message" size={Size.Small} loading={loading}>
+                    {messagePreview}
                 </Text>
             {/if}
         </p>
@@ -74,6 +100,10 @@
 </button>
 
 <style lang="scss">
+    .sticker {
+        width: 40px;
+    }
+
     .chat-preview {
         display: inline-flex;
         flex-direction: row;
@@ -85,6 +115,10 @@
         user-select: none;
         transition: all var(--animation-speed);
         min-width: var(--min-component-width);
+
+        &.active-chat {
+            border-color: var(--primary-color-alt);
+        }
 
         &.cta {
             background-color: var(--alt-color);
@@ -106,6 +140,7 @@
         .content {
             flex: 1;
             width: 1%;
+            pointer-events: none;
 
             .heading {
                 display: inline-flex;
@@ -119,6 +154,11 @@
                     display: inline-flex;
                     gap: var(--gap);
                     align-items: center;
+                }
+
+                :global(.chat-user),
+                :global(.timestamp) {
+                    min-width: 50px;
                 }
 
                 .unreads {
@@ -163,6 +203,12 @@
                 overflow: hidden;
                 font-size: var(--font-size-smaller);
             }
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        .chat-preview {
+            min-width: 0;
         }
     }
 </style>

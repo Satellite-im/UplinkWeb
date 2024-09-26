@@ -20,26 +20,26 @@
     }
 </script>
 
-<div class="participant">
+<div class="participant" data-cy="call-participant">
     {#if hasVideo}
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video class="{isMuted ? 'muted' : ''} {isDeafened ? 'deafened' : ''}" autoplay muted src="/assets/mp4/sample.mp4" on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}> </video>
+        <video data-cy="participant-video" class="{isMuted ? 'muted' : ''} {isDeafened ? 'deafened' : ''}" autoplay muted on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}> </video>
         {#if showDetails}
             <div class="details" in:fade={{ duration: animationDuration }}>
-                <div class="user">
-                    <ProfilePicture image={mock_users[1].profile.photo.image} noIndicator size={Size.Smallest} />
+                <div data-cy="participant-user" class="user">
+                    <ProfilePicture hook="participant-profile-picture" id={mock_users[1].key} image={mock_users[1].profile.photo.image} noIndicator size={Size.Smallest} />
                     <Text withShadow size={Size.Smaller}>{mock_users[1].name}</Text>
                 </div>
             </div>
             <div class="state" in:fade={{ duration: animationDuration }}>
                 <Controls>
                     {#if isMuted}
-                        <Button appearance={Appearance.Alt} small icon>
+                        <Button hook="button-participant-mute" appearance={Appearance.Alt} small icon>
                             <Icon icon={Shape.MicrophoneSlash} />
                         </Button>
                     {/if}
                     {#if isDeafened}
-                        <Button appearance={Appearance.Alt} small icon>
+                        <Button hook="button-participant-deafen" appearance={Appearance.Alt} small icon>
                             <Icon icon={Shape.HeadphoneSlash} />
                         </Button>
                     {/if}
@@ -49,24 +49,30 @@
     {:else}
         <!-- svelte-ignore a11y-mouse-events-have-key-events -->
         <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class="simple" on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}>
+        <div data-cy="participant-without-video" class="simple" on:mouseover={() => toggleDetails(true)} on:mouseleave={() => toggleDetails(false)}>
             {#if showDetails}
                 <div class="state centered" in:fade={{ duration: animationDuration }}>
                     <Controls>
                         {#if isMuted}
-                            <Button appearance={Appearance.Alt} small icon>
+                            <Button hook="button-participant-mute" appearance={Appearance.Alt} icon disabled>
                                 <Icon icon={Shape.MicrophoneSlash} />
                             </Button>
                         {/if}
                         {#if isDeafened}
-                            <Button appearance={Appearance.Alt} small icon>
+                            <Button hook="button-participant-deafen" appearance={Appearance.Alt} icon>
                                 <Icon icon={Shape.HeadphoneSlash} />
                             </Button>
                         {/if}
                     </Controls>
                 </div>
             {/if}
-            <ProfilePicture image={participant.profile.photo.image} size={Size.Larger} noIndicator highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
+            <ProfilePicture
+                hook="participant-profile-picture"
+                id={participant.key}
+                image={participant.profile.photo.image}
+                size={Size.Larger}
+                noIndicator
+                highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
         </div>
     {/if}
 </div>

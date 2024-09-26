@@ -4,15 +4,17 @@
     export let name: string = "Setting"
     export let description: string = "Some setting description"
     export let fullWidth: boolean = false
+    export let hook: string = ""
+    export let wrapContent: boolean = false
 </script>
 
-<div class="setting-section {fullWidth ? 'full-width' : ''}">
+<div data-cy={hook} class="setting-section {fullWidth ? 'full-width' : ''}">
     <div class="body">
         <div class="description">
-            <Label text={name} />
-            <Text doubleLine>{description}</Text>
+            <Label hook="setting-section-label" text={name} />
+            <Text hook="setting-section-text" doubleLine>{description}</Text>
         </div>
-        <div class="content">
+        <div class="content {wrapContent ? 'wrap' : ''}">
             <slot></slot>
         </div>
     </div>
@@ -25,6 +27,7 @@
         width: 100%;
         gap: var(--gap);
         padding: var(--padding-less) 0;
+        align-items: center;
 
         .body {
             display: inline-flex;
@@ -32,6 +35,7 @@
             width: 100%;
             align-items: center;
             flex-wrap: wrap;
+            align-items: center;
 
             .description {
                 flex: 1;
@@ -40,12 +44,15 @@
 
             .content {
                 width: fit-content;
-                min-width: 50%;
                 justify-content: flex-end;
                 display: inline-flex;
                 flex-direction: row;
-                min-width: var(--min-component-width);
                 gap: var(--gap);
+                align-items: center;
+
+                &.wrap {
+                    flex-wrap: wrap;
+                }
             }
         }
 
@@ -53,6 +60,16 @@
             .body {
                 .content {
                     width: 100%;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 800px) {
+        .setting-section {
+            .body {
+                .content {
+                    min-width: fit-content !important;
                 }
             }
         }

@@ -1,0 +1,114 @@
+/* theme: Light */
+
+:root {
+    --primary-font: "Poppins";
+
+    --black: #000;
+    --background: white;
+    --background-alt: color-mix(in srgb, var(--background) 50%, #bebebe);
+
+    --color: #000000;
+    --color-bright: #676767;
+    --color-muted: #333333;
+    --color-alt: #000;
+    --placeholder-color: var(--color-muted);
+    --link-color: #ff860d;
+
+    --focus-color: var(--primary-color);
+    --highlight-color: #d9d9d9;
+
+    --primary-color: #c0c6fc;
+    --primary-color-alt: color-mix(in srgb, var(--primary-color) 95%, black);
+
+    --alt-color: #e4edf6;
+    --alt-color-alt: color-mix(in srgb, var(--secondary) 90%, black);
+
+    --success-color: #17b7ba;
+    --success-color-alt: #079a7c;
+
+    --warning-color: #df9d10;
+    --warning-color-alt: #d67c22;
+
+    --error-color: #f93854;
+    --error-color-alt: #fa4662;
+
+    --border-color: #eee;
+    --border-color-alt: #dbdbdb;
+
+    --tooltip-color: #0f121b;
+
+    --animation-speed: 0.2s;
+    --animation-speed-mid: 1s;
+    --animation-speed-slow: 2s;
+    --animation-style: ease;
+
+    --cp-bg-color: transparent;
+    --input-size: var(--input-height);
+    --cp-border-color: transparent;
+    --cp-input-color: var(--color);
+
+    --info-color: #0771fa; /* No equivalent in old CSS, keeping original */
+    --info-color-alt: color-mix(in srgb, var(--info-color) 90%, white);
+
+    --disabled-opacity: 0.75;
+
+    --opaque-color: rgba(224, 224, 224, 0.9); /* From --background-modal in old CSS */
+    --blur-radius: 4px;
+
+    /* Border Radius / Corners */
+    --border-width: 1px;
+    --border-width-more: 3px;
+    --border-radius-medium: 1rem;
+    --border-radius: 0.5rem;
+    --border-radius-more: 1.5rem;
+    --border-radius-less: 0.35rem;
+    --border-radius-minimal: 0.25rem;
+
+    /* Elements */
+    --button-border-radius: 2rem;
+    --progress-bar-height: 0.75rem;
+    --meter-bar-height: 0.5rem;
+    --slider-height: 0.75rem;
+
+    --margin: 2rem;
+    --padding: 1rem;
+    --padding-less: 0.6rem;
+    --padding-minimal: 0.33rem;
+    --gap: 0.75rem;
+    --gap-more: 1rem;
+    --gap-less: 0.45rem;
+
+    --font-size-max: calc(var(--font-size) * 3);
+    --font-size-large: calc(var(--font-size) + 0.5rem);
+    --font-size: 1rem;
+    --font-size-smaller: calc(var(--font-size) - 0.15rem);
+    --font-size-smallest: calc(var(--font-size) - 0.25rem);
+    --emoji-size: 2rem;
+    --icon-size: 1.15rem;
+    --icon-size-large: 1.7rem;
+    --icon-size-larger: 3rem;
+    --icon-size-largest: 4rem;
+    --label-size: calc(var(--font-size) - 0.2rem);
+    --code-size: calc(var(--font-size) - 0.1rem);
+    --profile-picture-size: 3.5rem;
+
+    --file-folder-size: 125px;
+    --checkbox-size: 1.25rem;
+    --switch-size: 1.5rem;
+    --sidebar-width: 350px;
+    --profile-width: 720px;
+
+    --shadow-depth: 1px;
+    --min-scrollable-height: 200px;
+    --base-scrollable-height: 350px;
+    --max-component-width: 600px;
+    --min-component-width: 300px;
+
+    --context-width: 300px;
+    --mini-user-width: 130px;
+    --popup-width: 30rem;
+    --popup-height: 20rem;
+    --min-call-screen-height: 15rem;
+    --emoji-selector-height: 30rem;
+    --sticker-width: 8.5rem;
+}

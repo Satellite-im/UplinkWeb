@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { goto } from "$app/navigation"
+    import { page } from "$app/stores"
+    import { checkIfUserIsLogged } from "$lib/state/auth"
+    import "$lib/lang"
 
-    goto("/auth/unlock")
+    checkIfUserIsLogged($page.route.id, true)
 </script>

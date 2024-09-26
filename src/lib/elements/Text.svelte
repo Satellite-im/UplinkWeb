@@ -3,6 +3,8 @@
 
     import { Appearance, Size } from "$lib/enums"
     import { Loader } from "./"
+    import { TextRenderer, HtmlRenderer } from "./renderer/index"
+    import LinkRenderer from "./renderer/LinkRenderer.svelte"
 
     export let appearance: Appearance = Appearance.Default
     export let muted: boolean = false
@@ -10,11 +12,15 @@
     export let size: Size = Size.Medium
     export let singleLine: boolean = false
     export let doubleLine: boolean = false
+    export let ellipsis: boolean = false
     export let markdown: string = ""
     export let secondaryFont: boolean = false
     export let withShadow: boolean = false
+    export let textWidth: number = 0
     export let noWrap: boolean = false
     export let hook: string = ""
+    export let centered: boolean = false
+    export let color: string = ""
 
     let clazz = ""
     export { clazz as class }
@@ -22,11 +28,23 @@
 
 <p
     data-cy={hook}
-    class="text {withShadow ? 'shadow' : ''} {noWrap ? 'no-wrap' : ''} {muted ? 'muted' : ''} {appearance} {size} {singleLine ? 'single-line' : ''} {doubleLine ? 'double-line' : ''} {secondaryFont ? 'secondary-font' : ''} {clazz}">
+    style={`${textWidth === 0 ? "" : `width: ${textWidth}px`} ${color === "" ? "" : `color: ${color}`}`}
+    class="text
+        {withShadow ? 'shadow' : ''}
+        {noWrap ? 'no-wrap' : ''}
+        {muted ? 'muted' : ''}
+        {centered ? 'centered' : ''}
+        {appearance === Appearance.Alt ? 'alt' : ''}
+        {size}
+        {singleLine ? 'single-line' : ''}
+        {doubleLine ? 'double-line' : ''}
+        {secondaryFont ? 'secondary-font' : ''}
+        {ellipsis ? 'ellipsis' : ''}
+        {clazz}">
     {#if loading}
         <Loader text />
     {:else if markdown}
-        <SvelteMarkdown source={markdown} />
+        <SvelteMarkdown source={markdown} renderers={{ text: TextRenderer, html: HtmlRenderer, link: LinkRenderer }} />
     {:else}
         <slot></slot>
     {/if}
@@ -40,6 +58,16 @@
         font-size: var(--font-size);
         text-align: left;
         max-width: fit-content;
+
+        &.centered {
+            text-align: center;
+        }
+
+        &.ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         &.no-wrap {
             text-wrap: nowrap;
@@ -92,7 +120,7 @@
         }
 
         &.alt {
-            color: var(--color);
+            color: var(--color-alt) !important;
         }
 
         &.shadow {

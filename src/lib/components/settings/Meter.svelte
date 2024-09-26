@@ -3,7 +3,7 @@
 </script>
 
 <div class="meter-container">
-    <div class="meter"></div>
+    <div data-cy="meter" class="meter"></div>
     <div class="meter-mask" style="width: {100 - percent}%"></div>
 </div>
 

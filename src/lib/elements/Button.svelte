@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte"
-    import { Appearance } from "../enums/index"
+    import { Appearance, TooltipPosition } from "../enums/index"
 
     import { Loader, Text } from "./"
 
     export let tooltip: string | null = ""
+    export let tooltipPosition: TooltipPosition = TooltipPosition.MIDDLE
     export let disabled: boolean = false
     export let rotateOnHover: boolean = false
     export let text: string = ""
@@ -15,26 +15,60 @@
     export let small: boolean = false
     export let fill: boolean = false
     export let hook: string = ""
+    export let hideTextOnMobile: boolean = false
+    export let color: string = ""
+    export let badge: number = 0
 
     // Allow parent to override / add classes
     let clazz = ""
     export { clazz as class }
+    let buttonElement: HTMLElement
+
+    function tooltipPositionClass(button: HTMLElement) {
+        const rect = button.getBoundingClientRect()
+        const tooltipHeight = 40
+        const viewportHeight = window.innerHeight
+
+        if (rect.top - tooltipHeight < 0) {
+            return "tooltip-bottom"
+        } else if (rect.bottom + tooltipHeight > viewportHeight) {
+            return "tooltip-top"
+        }
+
+        switch (tooltipPosition) {
+            case TooltipPosition.LEFT:
+                return "tooltip-left"
+            case TooltipPosition.RIGHT:
+                return "tooltip-right"
+            case TooltipPosition.BOTTOM:
+                return "tooltip-bottom"
+            default:
+                return "tooltip-top"
+        }
+    }
 </script>
 
 <button
-    class="button {fill ? 'fill' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip ? 'tooltip' : ''} {small ? 'small' : ''} {clazz || ''}"
+    bind:this={buttonElement}
+    class="button {fill ? 'fill' : ''} {hideTextOnMobile ? 'hidden-text' : ''} {appearance} {rotateOnHover ? 'rotate_on_hover' : ''} {outline ? 'outlined' : ''} {icon ? 'icon' : ''} {tooltip
+        ? 'tooltip ' + (buttonElement ? tooltipPositionClass(buttonElement) : '')
+        : ''} {small ? 'small' : ''} {clazz || ''}"
+    style={color.length ? `background-color: ${color}` : ""}
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click
     on:contextmenu>
+    {#if badge > 0}
+        <span class="badge">{badge}</span>
+    {/if}
     {#if loading}
         <Loader />
     {:else}
         <slot></slot>
     {/if}
     {#if text.length > 0}
-        <Text loading={loading} appearance={outline ? appearance : Appearance.Alt}>{text}</Text>
+        <Text class={hideTextOnMobile ? "hidden-text" : ""} loading={loading} appearance={appearance === Appearance.Primary ? Appearance.Alt : Appearance.Default}>{text}</Text>
     {/if}
 </button>
 
@@ -52,12 +86,25 @@
         gap: var(--gap);
         display: inline-flex;
         justify-content: center;
+        position: relative;
         align-items: center;
         transition:
             background-color var(--animation-speed) var(--animation-style),
             color var(--animation-speed) var(--animation-style),
             border-color var(--animation-speed) var(--animation-style),
             all var(--animation-speed);
+
+        .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-color);
+            padding: 0 var(--padding-minimal);
+            color: var(--color);
+            border-radius: var(--border-radius-minimal);
+            font-size: var(--font-size-smaller);
+            transform: translate(33%, -33%);
+        }
 
         &.fill {
             flex: 1;
@@ -74,7 +121,6 @@
             pointer-events: none;
         }
 
-        // Modifier classes for icon and round buttons
         &.icon,
         &.round {
             min-width: unset;
@@ -89,21 +135,18 @@
             }
         }
 
-        // Styles for button:hover
         &:hover {
             cursor: pointer;
             background-color: var(--primary-color-alt);
         }
 
-        // Tooltip styles
         &.tooltip {
             position: relative;
 
             &:before {
-                display: none;
                 content: attr(data-tooltip);
                 position: absolute;
-                bottom: calc(100% + var(--gap));
+                bottom: calc(90% + var(--gap));
                 white-space: nowrap;
                 width: fit-content;
                 padding: var(--padding-minimal) var(--padding-less);
@@ -114,7 +157,7 @@
                 text-align: center;
                 opacity: 0;
                 pointer-events: none;
-                z-index: 2;
+                z-index: 3;
                 transition: all var(--animation-speed);
                 background-color: var(--opaque-color);
                 backdrop-filter: blur(var(--blur-radius));
@@ -138,7 +181,8 @@
             }
 
             &.tooltip-bottom:before {
-                top: calc(100% + var(--gap));
+                top: calc(100% + var(--gap) - 2px); /* 2px added for tangent with top bar*/
+                bottom: unset;
             }
 
             &:hover:before {
@@ -180,15 +224,14 @@
                 }
             }
 
+            &.alt {
+                color: var(--color);
+            }
+
             &.outlined {
                 background-color: transparent;
                 border-color: var(--primary-color);
                 color: var(--primary-color);
-
-                &:hover {
-                    background-color: var(--primary-color-alt);
-                    color: var(--color-alt);
-                }
 
                 &.alt,
                 &.success,
@@ -201,11 +244,15 @@
                             color: var(--#{$type}-color);
 
                             &:hover {
-                                background-color: var(--#{$type}-color-alt);
+                                background-color: var(--alt-color);
                                 color: var(--color-alt);
                             }
                         }
                     }
+                }
+                &:hover {
+                    background-color: var(--primary-color-alt);
+                    color: var(--color-alt);
                 }
 
                 &.alt {
@@ -236,12 +283,32 @@
             }
         }
 
+        &.primary {
+            color: var(--color-alt);
+        }
+
         // Accessibility support
         &:focus,
         &:active {
             box-shadow: 0 0 0 var(--shadow-depth) var(--focus-color) inset;
             outline: none;
             border: var(--border-width) solid var(--focus-color);
+        }
+    }
+
+    @media (max-width: 800px) {
+        .button {
+            &.hidden-text {
+                min-width: unset;
+                padding: unset;
+                min-width: var(--input-height);
+                min-height: var(--input-height);
+                max-width: var(--input-height);
+                max-height: var(--input-height);
+            }
+            :global(.hidden-text) {
+                display: none;
+            }
         }
     }
 </style>

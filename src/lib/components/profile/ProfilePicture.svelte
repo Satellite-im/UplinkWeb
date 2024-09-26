@@ -1,8 +1,15 @@
 <script lang="ts">
+    import { onDestroy, onMount } from "svelte"
+    import { createEventDispatcher } from "svelte"
     import { Appearance, Size, Status } from "$lib/enums"
     import { Loader } from "$lib/elements"
-    import { createEventDispatcher } from "svelte"
     import type { Frame } from "$lib/types"
+    import { createAvatar } from "@dicebear/core"
+    import { getIdenticonGenerator } from "$lib/utils/ProfileUtils"
+    import { get } from "svelte/store"
+    import { SettingsStore } from "$lib/state"
+
+    let tempCDN: string = "https://cdn.deepspaceshipping.co"
 
     export let image: string = ""
     export let notifications: number = 0
@@ -14,8 +21,71 @@
     export let noIndicator: boolean = false
     export let frame: Frame = { name: "", image: "" }
     export let hook: string = ""
+    export let id: string = ""
+
+    let identiconSrc: string = ""
+
+    const updateIdenticon = () => {
+        let identiconStyle = get(SettingsStore.state).messaging.identiconStyle
+
+        if (!image || image.length < 16) {
+            let identiconSize: number
+
+            switch (size) {
+                case Size.Smallest:
+                    identiconSize = 80
+                    break
+                case Size.Smaller:
+                    identiconSize = 100
+                    break
+                case Size.Small:
+                    identiconSize = 100
+                    break
+                case Size.Medium:
+                    identiconSize = 120
+                    break
+                case Size.Large:
+                    identiconSize = 150
+                    break
+                case Size.Larger:
+                    identiconSize = 180
+                    break
+                case Size.Largest:
+                    identiconSize = 200
+                    break
+                default:
+                    identiconSize = 100
+            }
+
+            let generator = getIdenticonGenerator(identiconStyle)
+            // @ts-ignore
+            const svg = createAvatar(generator, {
+                seed: id,
+                size: identiconSize,
+                scale: 80,
+                backgroundType: ["solid"],
+            }).toString()
+
+            identiconSrc = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+        }
+    }
 
     const dispatch = createEventDispatcher()
+
+    onMount(() => {
+        updateIdenticon()
+    })
+
+    $: {
+        const unsubscribe = SettingsStore.state.subscribe(() => {
+            updateIdenticon()
+        })
+        onDestroy(() => {
+            unsubscribe()
+        })
+    }
+
+    $: id, updateIdenticon()
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -25,15 +95,21 @@
         <Loader />
     {:else}
         {#if frame && frame.name}
-            <img class="profile-image-frame" src={frame.image} alt="" />
+            <img data-cy="profile-image-frame" class="profile-image-frame" src={`${tempCDN}${frame.image}`} alt="" />
         {/if}
-        <img class="profile-image" src={image} alt="" />
+        {#if image}
+            <img data-cy="profile-image" class="profile-image" src={image} alt="" />
+        {:else}
+            <div class="identicon">
+                <img src={identiconSrc} alt="identicon" />
+            </div>
+        {/if}
     {/if}
     {#if typing}
         <div class="typing-indicator"></div>
     {/if}
     {#if !noIndicator}
-        <div class="status-indicator {status}"></div>
+        <div data-cy="status-indicator" class="status-indicator {status}"></div>
     {/if}
     {#if notifications > 0}
         <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -54,6 +130,13 @@
         align-items: center;
         justify-content: center;
 
+        .identicon {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
         .profile-image-frame {
             position: absolute;
             z-index: 2;
@@ -64,15 +147,15 @@
         }
 
         &.larger {
-            height: calc(var(--profile-picture-size) * 2);
-            width: calc(var(--profile-picture-size) * 2);
-            min-height: calc(var(--profile-picture-size) * 2);
-            min-width: calc(var(--profile-picture-size) * 2);
+            height: calc(var(--profile-picture-size) * 3);
+            width: calc(var(--profile-picture-size) * 3);
+            min-height: calc(var(--profile-picture-size) * 3);
+            min-width: calc(var(--profile-picture-size) * 3);
 
             .profile-image-frame {
-                height: calc(var(--profile-picture-size) * 2.2);
-                width: calc(var(--profile-picture-size) * 2.2);
-                min-width: calc(var(--profile-picture-size) * 2.2);
+                height: calc(var(--profile-picture-size) * 3.75);
+                width: calc(var(--profile-picture-size) * 3.75);
+                min-width: calc(var(--profile-picture-size) * 3.75);
             }
         }
 
@@ -134,7 +217,7 @@
             }
 
             &.offline {
-                background-color: var(--alt-color);
+                background-color: var (--alt-color);
             }
 
             &.do-not-disturb {
@@ -182,7 +265,7 @@
         }
 
         &.highlight-info {
-            border: var(--border-width-more) solid var(--info-color);
+            border: var(--border-width-more) solid var (--info-color);
         }
 
         &.highlight-warning {

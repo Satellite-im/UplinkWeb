@@ -2,23 +2,28 @@
     export let min: number = 0
     export let max: number = 100
     export let value: number = 0
+
+    function handleChange(event: any) {
+        value = event.target.value
+    }
 </script>
 
-<div class="range-selector">
-    <input type="range" min={min} max={max} value={value} class="range" />
+<div class="range-selector" data-cy="range-selector">
+    <input data-cy="range-selector-input" type="range" min={min} max={max} value={value} class="range" on:input={handleChange} />
 </div>
 
 <style lang="scss">
     .range-selector {
+        flex: 1;
         .range {
             -webkit-appearance: none;
             appearance: none;
             background-color: var(--alt-color);
             height: var(--slider-height);
             overflow: hidden;
-            width: 400px;
             border-radius: calc(var(--slider-height) / 1.5);
             border: var(--border-width) solid var(--border-color);
+            width: 100%;
 
             &::-webkit-slider-runnable-track {
                 -webkit-appearance: none;
@@ -29,11 +34,11 @@
             &::-webkit-slider-thumb {
                 -webkit-appearance: none;
                 background: var(--color);
-                box-shadow: -210px 0 0 200px var(--primary-color);
+                box-shadow: -1210px 0 0 1200px var(--primary-color);
                 cursor: pointer;
                 height: calc(var(--slider-height) - var(--border-width));
                 width: calc(var(--slider-height) * 1.5);
-                border-radius: calc(var(--slider-height) / 2);
+                border-radius: calc(var(--slider-height) / 1.5);
                 border: var(--border-width) solid var(--border-color);
             }
 

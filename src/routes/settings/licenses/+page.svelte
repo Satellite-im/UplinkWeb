@@ -1,16 +1,14 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import { SettingSection } from "$lib/layouts"
     import { _ } from "svelte-i18n"
-
-    initLocale()
 </script>
 
 <div id="page">
-    <SettingSection name={$_("generic.uplink")} description={$_("settings.licenses.description")}>
-        <Button text={$_("settings.licenses.view")} appearance={Appearance.Alt}>
+    <SettingSection hook="section-licenses-uplink" name={$_("generic.uplink")} description={$_("settings.licenses.description")}>
+        <Button hook="button-view-license" text={$_("settings.licenses.view")} appearance={Appearance.Alt} on:click={() => window.open("https://github.com/Satellite-im/UplinkWeb/blob/dev/LICENSE-MIT", "_blank")}>
             <Icon icon={Shape.Document} />
         </Button>
     </SettingSection>
@@ -23,9 +21,6 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        padding-right: var(--padding);
+        padding: var(--padding);
     }
 </style>

@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { Sidebar, Slimbar } from "$lib/layouts"
+    import { Sidebar } from "$lib/layouts"
     import { Route } from "$lib/enums"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
-
-    import { VoiceRTC } from "$lib/media/Voice"
-
     import { Input, Label, Button } from "$lib/elements"
     import Stream from "$lib/elements/Stream.svelte"
     import { onMount } from "svelte"
+    import { log } from "$lib/utils/Logger"
+    import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
+    import { _ } from "svelte-i18n"
 
     let loading: boolean = false
     let channel: string = "SHFDKLSDF"
@@ -16,17 +16,8 @@
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
 
-    let RTC = new VoiceRTC(channel, {
-        audio: true,
-        video: {
-            enabled: false,
-            selfie: false,
-        },
-    })
-
-    console.log(RTC.local)
-
     let localStream: MediaStream
+    let remoteStream: MediaStream
 
     export let audioInput: string | undefined
     export let videoInput: string | undefined
@@ -42,12 +33,42 @@
             return
         }
         try {
-            const stream = await navigator.mediaDevices.getUserMedia(constraints)
-            localStream = stream
+            localStream = await navigator.mediaDevices.getUserMedia(constraints)
+            // initPeer()
         } catch (err) {
             console.error("Accessing the microphone failed:", err)
         }
     }
+
+    // function initPeer(): void {
+    //     peer = new SimplePeer({
+    //         initiator: location.hash === "#init",
+    //         trickle: false,
+    //         stream: localStream,
+    //     })
+
+    //     peer.on("signal", (_data: any) => {
+    //         // log.info("SIGNAL", JSON.stringify(data))
+    //         // Send this data to the remote peer via signaling server
+    //     })
+
+    //     peer.on("connect", () => {
+    //         log.info("CONNECT")
+    //         peer?.send("whatever" + Math.random())
+    //     })
+
+    //     peer.on("data", (data: any) => {
+    //         log.info("data: " + data)
+    //     })
+
+    //     peer.on("stream", (stream: MediaStream) => {
+    //         remoteStream = stream
+    //     })
+    // }
+
+    // function connectToPeer(signalData: any): void {
+    //     peer?.signal(signalData)
+    // }
 
     onMount(() => {
         startVideoTest()
@@ -55,23 +76,26 @@
 </script>
 
 <div id="page">
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={() => UIStore.toggleSidebar()} activeRoute={Route.Friends} />
     <Sidebar loading={loading} on:toggle={() => UIStore.toggleSidebar()} open={sidebarOpen} activeRoute={Route.Friends}></Sidebar>
     <div class="content">
-        <Label text="Channel" />
+        <Label text={$_("settings.developer.voice.channel")} />
         <div class="row">
-            <Input bind:value={channel} on:input={_ => RTC.setChannel(channel)} />
-            <Button text="Set Channel"></Button>
+            <Input
+                bind:value={channel}
+                on:input={_ => {
+                    /* Add logic if needed */
+                }} />
+            <Button text={$_("settings.developer.voice.setChannel")}></Button>
         </div>
 
         <div class="participants">
             <div class="local">
-                <Label text="Local Stream" />
+                <Label text={$_("settings.developer.voice.localStream")} />
                 <Stream stream={localStream} />
             </div>
             <div class="remote">
-                <Label text="Remote Stream" />
-                <Stream stream={null} />
+                <Label text={$_("settings.developer.voice.remoteStream")} />
+                <Stream stream={remoteStream} />
             </div>
         </div>
     </div>
@@ -90,6 +114,7 @@
             flex-direction: column;
             gap: var(--gap);
             padding: var(--padding);
+            min-width: 0;
         }
 
         .row {

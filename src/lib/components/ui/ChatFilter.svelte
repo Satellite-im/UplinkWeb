@@ -1,33 +1,33 @@
 <script lang="ts">
-    import { ChatType, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+    import { ChatType, Route, Size } from "$lib/enums"
+
     import { _ } from "svelte-i18n"
     import { ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { type Chat, type User } from "$lib/types"
-    import { Store } from "$lib/state/store"
+    import { Store } from "$lib/state/Store"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
-
-    initLocale()
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
+    import { goto } from "$app/navigation"
+    import StoreResolver from "../utils/StoreResolver.svelte"
 
     export let filter: string
 
     let loading = false
-    let chats: Chat[] = get(UIStore.state.chats)
-    let friends: User[] = get(Store.state.friends)
-    UIStore.state.chats.subscribe(c => (chats = c))
-    Store.state.friends.subscribe(f => (friends = f))
+    $: chats = UIStore.state.chats
+    $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
+    $: friends = Store.getUsers(Store.state.friends)
 
     let searched_chats: [Chat, string, User[]][] = []
     let searched_friends: [User, Chat | undefined][] = []
 
     export function filter_chat() {
         if (filter) {
-            searched_chats = chats
+            searched_chats = $chats
                 .filter(c => c.kind == ChatType.Group)
-                .map<[Chat, string, User[]]>(c => [c, get_chat_name(c), c.users.filter(u => u.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()))])
+                .map<[Chat, string, User[]]>(c => [c, get_chat_name(c), c.users.map(user => $userCache[user]).filter(u => u.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()))])
                 .filter(entry => entry[1].toLocaleLowerCase().startsWith(filter.toLocaleLowerCase()) || entry[2].length > 0)
-            searched_friends = friends.filter(f => f.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase())).map(f => [f, chats.find(c => c.kind == ChatType.DirectMessage && c.users[0].id === f.id)])
+            searched_friends = $friends.filter(f => f.name.toLocaleLowerCase().startsWith(filter.toLocaleLowerCase())).map(f => [f, $chats.find(c => c.kind == ChatType.DirectMessage && c.users[0] === f.key)])
         } else {
             searched_chats = []
             searched_friends = []
@@ -43,22 +43,35 @@
     }
 
     function is_friend_typing(friend: User) {
-        let dm = chats.find(c => c.kind === ChatType.DirectMessage && c.users[0].id === friend.id)
-        return dm && dm.activity
+        let dm = $chats.find(c => c.kind === ChatType.DirectMessage && c.users[0] === friend.key)
+        return dm && dm.typing_indicator.has(friend.key)
     }
 
     function get_chat_name(chat: Chat): string {
         if (chat.name) return chat.name
-        return chat.users.map(u => u.name).join(", ")
+        return chat.users
+            .map(user => Store.getUser(user))
+            .map(u => get(u).name)
+            .join(", ")
     }
 
-    function select_chat(chat: Chat | undefined, user: User | undefined) {
+    async function select_chat(chat: Chat | undefined, user: User | undefined) {
         filter = ""
         filter_chat()
         if (chat !== undefined) {
             Store.setActiveChat(chat!)
         } else if (user !== undefined) {
-            Store.setActiveDM(user!)
+            let chat = Store.getChatForUser(user.key)
+            if (chat) {
+                Store.setActiveChat(chat)
+                goto(Route.Chat)
+            } else {
+                let result = await RaygunStoreInstance.createConversation(user)
+                result.onSuccess(chat => {
+                    Store.setActiveChat(chat)
+                    goto(Route.Chat)
+                })
+            }
         }
     }
 </script>
@@ -72,7 +85,7 @@
             {#each searched_friends as [friend, chat]}
                 <div class="searchbar-entry" role="none" on:click={() => select_chat(chat, friend)}>
                     <div class="profile-picture-wrap">
-                        <ProfilePicture typing={is_friend_typing(friend)} image={friend.profile.photo.image} status={friend.profile.status} size={Size.Medium} loading={loading} frame={friend.profile.photo.frame} />
+                        <ProfilePicture id={friend.key} typing={is_friend_typing(friend)} image={friend.profile.photo.image} status={friend.profile.status} size={Size.Medium} loading={loading} frame={friend.profile.photo.frame} />
                     </div>
                     <span class="entry-title">
                         <span class="highlight-search-typed-chars">
@@ -96,10 +109,17 @@
                 <div class="searchbar-entry searchbar-entry-group">
                     <div class="group" role="none" on:click={() => select_chat(chat, undefined)}>
                         <div class="profile-picture-wrap">
-                            {#if chat.users.length === 1}
-                                <ProfilePicture typing={chat.activity} image={chat.users[0].profile.photo.image} status={chat.users[0].profile.status} size={Size.Medium} loading={loading} frame={chat.users[0].profile.photo.frame} />
+                            {#if chat.users.length === 2}
+                                <ProfilePicture
+                                    typing={chat.typing_indicator.size > 0}
+                                    image={$userCache[chat.users[0]].profile.photo.image}
+                                    status={$userCache[chat.users[0]].profile.status}
+                                    size={Size.Medium}
+                                    loading={loading}
+                                    id={$userCache[chat.users[0]].key}
+                                    frame={$userCache[chat.users[0]].profile.photo.frame} />
                             {:else}
-                                <ProfilePictureMany users={chat.users} />
+                                <ProfilePictureMany users={chat.users.map(u => $userCache[u])} />
                             {/if}
                         </div>
                         {#if name.startsWith(filter.toLocaleLowerCase())}
@@ -121,7 +141,7 @@
                         {#each users as user}
                             <div class="searchbar-entry-group-user">
                                 <div class="profile-picture-wrap">
-                                    <ProfilePicture typing={is_friend_typing(user)} image={user.profile.photo.image} status={user.profile.status} size={Size.Medium} loading={loading} frame={user.profile.photo.frame} />
+                                    <ProfilePicture id={user.key} typing={is_friend_typing(user)} image={user.profile.photo.image} status={user.profile.status} size={Size.Medium} loading={loading} frame={user.profile.photo.frame} />
                                 </div>
                                 <span class="entry-title">
                                     <span class="highlight-search-typed-chars">

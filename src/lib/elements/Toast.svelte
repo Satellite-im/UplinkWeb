@@ -5,21 +5,33 @@
     import Label from "$lib/elements/Label.svelte"
 
     export let toast: ToastMessage
+    export let remove: () => void
 </script>
 
-<div class="toast" role="none" on:mouseleave on:mouseenter>
+<div
+    class="toast"
+    data-cy="toast-notification"
+    role="none"
+    on:mouseleave
+    on:mouseenter
+    on:click={_ => {
+        if (toast.onclick) {
+            toast.onclick()
+            remove()
+        }
+    }}>
     {#if toast.icon}
         <div class="toast-icon">
-            <Icon icon={toast.icon} />
+            <Icon icon={toast.icon} highlight={toast.appearance} />
         </div>
     {/if}
     <div class="toast-content">
         <Label text={toast.title}></Label>
-        <p>
+        <p data-cy="toast-notification-text">
             {toast.content}
         </p>
     </div>
-    <Button small icon appearance={Appearance.Alt} on:click>
+    <Button hook="toast-notification-button" small icon appearance={Appearance.Alt} on:click={remove}>
         <Icon icon={Shape.XMark} />
     </Button>
 </div>

@@ -1,17 +1,33 @@
 <script lang="ts">
-    import { MessagePosition } from "$lib/enums"
+    import Icon from "$lib/elements/Icon.svelte"
+    import { MessagePosition, Shape } from "$lib/enums"
+    import { SettingsStore } from "$lib/state"
+    import { get } from "svelte/store"
 
+    export let id: string = ""
     export let remote: boolean = false
     export let reply: boolean = false
     export let localSide: boolean = false
     export let morePadding: boolean = false
+    export let pinned = false
 
     export let position: MessagePosition = MessagePosition.Middle
+
+    const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div on:contextmenu class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''}">
-    <div class="content">
+<div
+    on:contextmenu
+    id={id !== "" ? `message-${id}` : undefined}
+    data-cy="message-bubble-{remote ? 'remote' : 'local'}"
+    class="message-bubble {remote ? 'remote' : 'local'} {position} {morePadding ? 'more-padding' : ''} {reply ? 'reply' : ''} {localSide ? 'position-local' : ''} {compact ? 'compact' : ''}">
+    {#if pinned}
+        <div data-cy="message-pin-indicator" class="pin-indicator">
+            <Icon icon={Shape.Pin} />
+        </div>
+    {/if}
+    <div data-cy="message-bubble-content" class="content">
         <slot></slot>
     </div>
 </div>
@@ -19,6 +35,7 @@
 <style lang="scss">
     .message-bubble {
         background-color: var(--primary-color);
+        color: var(--color-alt);
         padding: var(--padding-less) var(--padding);
         border-radius: var(--border-radius-more);
         border-bottom-right-radius: var(--border-radius-minimal);
@@ -28,7 +45,21 @@
         justify-content: center;
         display: inline-flex;
         gap: var(--gap);
-        color: var(--color);
+        position: relative;
+
+        :global(img) {
+            margin: var(--padding-less) 0;
+            border-radius: var(--border-radius);
+        }
+
+        .pin-indicator {
+            position: absolute;
+            right: -6px;
+            top: -6px;
+            height: 12px;
+            width: 12px;
+            color: var(--text-color);
+        }
 
         .content {
             display: inline-flex;
@@ -37,6 +68,7 @@
             gap: var(--gap-less);
             cursor: default;
             max-width: var(--max-component-width);
+            word-break: break-all;
         }
 
         &.more-padding {
@@ -45,10 +77,10 @@
 
         &.remote {
             background-color: var(--alt-color);
+            color: var(--color);
             border-radius: var(--border-radius-more);
             border-bottom-left-radius: var(--border-radius-minimal);
             align-self: flex-start;
-            color: var(--color);
         }
 
         &.highlight-success {
@@ -107,6 +139,20 @@
             &.position-local {
                 align-self: flex-end;
             }
+        }
+
+        &.compact {
+            padding: 0;
+            background-color: transparent;
+
+            &.reply {
+                padding: 0;
+            }
+        }
+
+        &:has(.sticker) {
+            padding: 0;
+            background-color: transparent;
         }
     }
 </style>

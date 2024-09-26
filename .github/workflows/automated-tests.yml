@@ -1,0 +1,168 @@
+name: Automated Tests
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, edited]
+        paths-ignore:
+            - ".github/workflows/**"
+            - "!.github/workflows/automated-tests.yml"
+            - ".gitignore"
+            - ".prettierrc.json"
+            - "PULL_REQUEST_TEMPLATE.md"
+            - "README.md"
+    workflow_dispatch:
+
+jobs:
+    playwright-run:
+        timeout-minutes: 60
+        runs-on: macos-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
+        steps:
+            - name: Checkout Uplink Web directory 🔖
+              uses: actions/checkout@v4.2.0
+
+            - name: Checkout Automated Tests directory 🔖
+              uses: actions/checkout@v4.2.0
+              with:
+                  repository: Satellite-im/automated-tests-web
+                  path: automated-tests
+
+            - name: Setup Node.js for Uplink Web 🔨
+              uses: actions/setup-node@v4.0.4
+              with:
+                  node-version: 20
+
+            - name: Install dependencies for Uplink Web 📦
+              run: npm install
+
+            - name: Install dependencies for Testing Repo 📦
+              working-directory: automated-tests
+              run: npm install
+
+            - name: Install Playwright Browsers
+              working-directory: automated-tests
+              run: npx playwright install --with-deps
+
+            - name: Run server for Uplink Web
+              run: npm run dev &
+
+            - name: Run Playwright tests
+              working-directory: automated-tests
+              run: PLAYWRIGHT_JSON_OUTPUT_NAME=report.json npx playwright test
+
+            - uses: daun/playwright-report-summary@v3
+              if: always()
+              with:
+                  github-token: ${{ secrets.github_token }}
+                  report-file: ./automated-tests/playwright-report/report.json
+                  job-summary: false
+                  comment-title: "Automated Test Results"
+
+            - uses: actions/upload-artifact@v4.4.0
+              if: always()
+              with:
+                  name: playwright-report
+                  path: automated-tests/playwright-report/
+                  retention-days: 5
+
+            - name: Upload Allure results as artifact
+              if: always()
+              uses: actions/upload-artifact@v4.4.0
+              with:
+                  name: allure-results
+                  path: automated-tests/allure-results
+                  retention-days: 5
+
+            - name: Add label if any of build jobs failed
+              if: failure()
+              uses: buildsville/add-remove-label@v2.0.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  labels: |
+                      Failed Automated Test
+                  type: add
+
+    generate-report:
+        if: always()
+        needs: playwright-run
+        runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
+        steps:
+            - name: Download Allure results artifact
+              uses: actions/download-artifact@v4.1.8
+              with:
+                  name: allure-results
+                  path: automated-tests/allure
+
+            - name: Get Allure history
+              uses: actions/checkout@v4.2.0
+              if: always()
+              continue-on-error: true
+              with:
+                  repository: Satellite-im/test-reports
+                  ref: gh-pages
+                  path: gh-pages
+
+            - name: Generate Allure Report
+              if: always()
+              uses: simple-elf/allure-report-action@master
+              with:
+                  gh_pages: gh-pages
+                  allure_results: automated-tests/allure
+                  allure_report: allure-report
+                  allure_history: allure-history
+                  keep_reports: 100
+
+            - name: Deploy report to Github Pages
+              if: success()
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+                  external_repository: Satellite-im/test-reports
+                  publish_branch: gh-pages
+                  publish_dir: allure-history
+
+            - name: Comment PR with Allure test results
+              if: always() && github.event_name == 'pull_request'
+              uses: mshick/add-pr-comment@v2.8.2
+              with:
+                  message: |
+                      Playwright test execution is complete! You can find the test results report [here](https://satellite-im.github.io/test-reports/${{ github.run_number }})
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    remove-label:
+        needs: [playwright-run, generate-report]
+        runs-on: ubuntu-latest
+        permissions:
+            checks: write
+            pull-requests: write
+            contents: write
+            issues: read
+
+        steps:
+            - name: Checkout directory 🔖
+              uses: actions/checkout@v4.2.0
+
+            - name: Delete artifacts required on failed execution
+              uses: geekyeggo/delete-artifact@v5.1.0
+              with:
+                  name: |
+                      playwright-report
+                      allure-results
+
+            - name: Remove label if all test jobs succeeded
+              uses: buildsville/add-remove-label@v2.0.1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  labels: |
+                      Failed Automated Test
+                  type: remove

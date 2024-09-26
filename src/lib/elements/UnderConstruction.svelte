@@ -2,12 +2,13 @@
     import { Appearance, Shape, Size } from "$lib/enums"
     import Icon from "./Icon.svelte"
     import Text from "./Text.svelte"
+    import { _ } from "svelte-i18n"
 </script>
 
-<div class="under-construction">
+<div data-cy="under-construction" class="under-construction">
     <div class="container">
         <Icon icon={Shape.Construction} highlight={Appearance.Warning} size={Size.Large} />
-        <Text appearance={Appearance.Warning}>Under Construction</Text>
+        <Text appearance={Appearance.Warning}>{$_("generic.underConstruction")}</Text>
     </div>
 </div>
 

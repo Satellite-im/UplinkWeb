@@ -2,13 +2,14 @@
     import { goto } from "$app/navigation"
     import { page } from "$app/stores"
     import { Route, SettingsRoute, Shape } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+
     import Navigation from "$lib/layouts/Navigation.svelte"
     import Sidebar from "$lib/layouts/Sidebar.svelte"
-    import Slimbar from "$lib/layouts/Slimbar.svelte"
+    import Topbar from "$lib/layouts/Topbar.svelte"
     import { SettingsStore } from "$lib/state"
     import { UIStore } from "$lib/state/ui"
-    import type { ContextItem, NavRoute } from "$lib/types"
+    import type { NavRoute } from "$lib/types"
+    import { checkMobile } from "$lib/utils/Mobile"
     import { onMount } from "svelte"
     import { _ } from "svelte-i18n"
     import { get, writable, type Writable } from "svelte/store"
@@ -17,61 +18,64 @@
         {
             to: SettingsRoute.Profile,
             icon: Shape.Profile,
-            name: "Profile",
-        },
-        {
-            to: SettingsRoute.Inventory,
-            icon: Shape.Inventory,
-            name: "Inventory",
+            name: $_("settings.profile.name"),
         },
         {
             to: SettingsRoute.Preferences,
             icon: Shape.Brush,
-            name: "Customization",
+            name: $_("settings.customization.name"),
         },
         {
             to: SettingsRoute.Messages,
             icon: Shape.ChatBubble,
-            name: "Messages",
+            name: $_("settings.messages.name"),
         },
         {
             to: SettingsRoute.AudioVideo,
             icon: Shape.Speaker,
-            name: "Audio & Video",
+            name: $_("settings.audio.name"),
         },
         {
             to: SettingsRoute.Extensions,
             icon: Shape.Beaker,
-            name: "Extensions",
+            name: $_("settings.extensions.name"),
         },
         {
             to: SettingsRoute.Keybinds,
             icon: Shape.Keybind,
-            name: "Keybinds",
+            name: $_("settings.keybinds.name"),
         },
         {
-            to: SettingsRoute.Accessability,
+            to: SettingsRoute.Gamepad,
+            icon: Shape.Gamepad,
+            name: $_("settings.gamepad.name"),
+        },
+        {
+            to: SettingsRoute.Accessibility,
             icon: Shape.Eye,
-            name: "Accessability",
+            name: $_("settings.accessibility.name"),
         },
         {
             to: SettingsRoute.Notifications,
             icon: Shape.BellAlert,
-            name: "Notifications",
+            name: $_("settings.notifications.name"),
+        },
+        {
+            to: SettingsRoute.Network,
+            icon: Shape.Relay,
+            name: $_("settings.network.name"),
         },
         {
             to: SettingsRoute.About,
             icon: Shape.Info,
-            name: "About",
+            name: $_("settings.about.name"),
         },
         {
             to: SettingsRoute.Licenses,
             icon: Shape.Document,
-            name: "Licenses",
+            name: $_("settings.licenses.name"),
         },
     ])
-
-    initLocale()
 
     let loading = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -103,6 +107,10 @@
                 activeRoute = SettingsRoute.Keybinds
                 break
             }
+            case "/settings/network": {
+                activeRoute = SettingsRoute.Network
+                break
+            }
             case "/settings/extensions": {
                 activeRoute = SettingsRoute.Extensions
                 break
@@ -127,24 +135,46 @@
     })
 
     UIStore.state.sidebarOpen.subscribe(s => (sidebarOpen = s))
-
-    $: {
-        let devmode = get(SettingsStore.state).devmode
-        if (devmode) {
+    $: setRoutes = get(settingsRoutes)
+    SettingsStore.state.subscribe(value => {
+        let isMobile: boolean = checkMobile()
+        if (value.devmode) {
             if (!get(settingsRoutes).find(route => route.to === SettingsRoute.Developer)) {
-                settingsRoutes.set([
-                    ...get(settingsRoutes),
+                settingsRoutes.update(routes => [
+                    {
+                        to: SettingsRoute.Inventory,
+                        icon: Shape.Inventory,
+                        name: $_("settings.inventory.name"),
+                    },
+                    ...routes,
                     {
                         to: SettingsRoute.Developer,
                         icon: Shape.Code,
-                        name: "Developer",
+                        name: $_("settings.developer.name"),
+                    },
+                    {
+                        to: SettingsRoute.Realms,
+                        icon: Shape.Beaker,
+                        name: $_("settings.realms.name"),
                     },
                 ])
             }
         } else {
-            settingsRoutes.set(get(settingsRoutes).filter(route => route.to !== SettingsRoute.Developer))
+            settingsRoutes.update(routes => routes.filter(route => route.to !== SettingsRoute.Developer))
         }
-    }
+
+        if (isMobile) {
+            settingsRoutes.update(routes => routes.filter(route => route.to !== SettingsRoute.Keybinds))
+        }
+    })
+
+    onMount(() => {
+        // Ensure settingsRoutes is reactive
+        const unsubscribe = settingsRoutes.subscribe(routes => {
+            setRoutes = routes
+        })
+        return () => unsubscribe()
+    })
 </script>
 
 <div id="settings">
@@ -152,10 +182,9 @@
     <!-- Unused atm -->
     <!-- <ContextMenu visible={contextData.length > 0} items={contextData} coords={contextPosition} on:close={_ => (contextData = [])} /> -->
 
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Settings} />
     <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Settings}>
         <Navigation
-            routes={get(settingsRoutes)}
+            routes={setRoutes}
             vertical
             on:navigate={e => {
                 goto(e.detail)
@@ -165,7 +194,12 @@
     </Sidebar>
 
     <div class="content">
-        <slot></slot>
+        {#if checkMobile()}
+            <Topbar />
+        {/if}
+        <div class="slot">
+            <slot></slot>
+        </div>
     </div>
 </div>
 
@@ -179,7 +213,17 @@
 
         .content {
             flex: 1;
-            padding: var(--padding);
+            min-width: 0;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+
+            .slot {
+                width: 100%;
+                display: inline-flex;
+                flex-direction: column;
+                gap: var(--gap);
+            }
         }
     }
 </style>

@@ -2,29 +2,32 @@
     import InventoryItem from "$lib/components/inventory/InventoryItem.svelte"
     import Label from "$lib/elements/Label.svelte"
     import { InventoryKind } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
-    import { mock_frames } from "$lib/mock/inventory"
-    import { Store } from "$lib/state/store"
+
+    import { Store } from "$lib/state/Store"
     import type { User } from "$lib/types"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
+    import defaultManifest from "$lib/cdn.json"
 
-    initLocale()
+    const tempCDN = "https://cdn.deepspaceshipping.co"
 
     let user: User = get(Store.state.user)
+
+    const frames = defaultManifest.frames
 </script>
 
 <div id="page">
     <div class="equipped">
-        <Label text="Equipped Items" />
+        <Label hook="label-inventory-equipped-items" text={$_("settings.inventory.equippedItems")} />
         <div class="items">
             <div class="item">
-                <Label text="Frame" />
+                <Label hook="label-inventory-frame" text={$_("settings.inventory.frame")} />
                 <InventoryItem
+                    hook="inventory-profile-picture-frame"
                     equipped={true}
                     kind={InventoryKind.Frame}
                     name={user.profile.photo.frame.name}
-                    preview={user.profile.photo.frame.image}
+                    preview={`${tempCDN}${user.profile.photo.frame.image}`}
                     noButton
                     unequip
                     empty={user.profile.photo.frame.image === ""}
@@ -35,21 +38,29 @@
             </div>
         </div>
     </div>
-    <Label text="Frames" />
+    <Label hook="label-inventory-frames" text={$_("settings.inventory.frames")} />
     <div class="frames">
-        {#each mock_frames as frame}
-            <InventoryItem
-                equipped={user.profile.photo.frame.image === frame.image}
-                kind={InventoryKind.Frame}
-                name={frame.name}
-                preview={frame.image}
-                on:apply={() => {
-                    Store.setFrame(frame)
-                    user = get(Store.state.user)
-                }} />
+        {#each Object.entries(frames) as [category, frameList]}
+            <div class="frame-section">
+                <Label text={category} />
+                <div class="frame-items">
+                    {#each frameList as frame}
+                        <InventoryItem
+                            hook="inventory-frame"
+                            equipped={user.profile.photo.frame.image === frame.image}
+                            kind={InventoryKind.Frame}
+                            name={frame.name}
+                            preview={`${tempCDN}${frame.image}`}
+                            on:apply={() => {
+                                Store.setFrame(frame)
+                                user = get(Store.state.user)
+                            }} />
+                    {/each}
+                </div>
+            </div>
         {/each}
     </div>
-    <Label text="Profile Overlays" />
+    <Label hook="label-profile-overlays" text={$_("settings.inventory.overlays")} />
 </div>
 
 <style lang="scss">
@@ -59,15 +70,26 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        padding-right: var(--padding);
+        padding: var(--padding);
 
         .frames {
-            display: inline-flex;
+            display: flex;
+            flex-direction: column;
             gap: var(--gap);
-            flex-wrap: wrap;
+
+            .frame-section {
+                display: inline-flex;
+                flex-direction: column;
+
+                gap: var(--gap);
+                margin-bottom: var(--padding);
+            }
+
+            .frame-items {
+                display: inline-flex;
+                gap: var(--gap);
+                flex-wrap: wrap;
+            }
         }
 
         .equipped {

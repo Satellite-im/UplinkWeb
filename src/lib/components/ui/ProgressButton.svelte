@@ -7,7 +7,7 @@
 </script>
 
 <div class="progress-button">
-    <Button icon appearance={appearance}>
+    <Button hook="progress-button" icon appearance={appearance}>
         <Icon icon={icon} />
     </Button>
     <!-- TODO: Convert percent to stroke-dasharray value to properly display 0-100% -->

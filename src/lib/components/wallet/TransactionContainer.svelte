@@ -1,23 +1,24 @@
 <script>
     import Label from "$lib/elements/Label.svelte"
+    import { _ } from "svelte-i18n"
 </script>
 
 <table class="transactions-container">
     <tr>
         <th>
-            <Label text="Amount" />
+            <Label text={$_("payments.amount")} />
         </th>
         <th>
-            <Label text="From" />
+            <Label text={$_("payments.from")} />
         </th>
         <th>
-            <Label text="To" />
+            <Label text={$_("payments.to")} />
         </th>
         <th>
-            <Label text="Note" />
+            <Label text={$_("payments.note")} />
         </th>
         <th>
-            <Label text="Date" />
+            <Label text={$_("payments.date")} />
         </th>
     </tr>
     <slot></slot>

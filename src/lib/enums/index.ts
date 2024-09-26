@@ -1,8 +1,49 @@
 export * from "./icons"
 
+export enum Color {
+    BLACK = "&0",
+    DARK_BLUE = "&1",
+    DARK_GREEN = "&2",
+    DARK_AQUA = "&3",
+    DARK_RED = "&4",
+    DARK_PURPLE = "&5",
+    GOLD = "&6",
+    GRAY = "&7",
+    DARK_GRAY = "&8",
+    BLUE = "&9",
+    GREEN = "&a",
+    AQUA = "&b",
+    RED = "&c",
+    LIGHT_PURPLE = "&d",
+    YELLOW = "&e",
+    WHITE = "&f",
+    RESET = "&r",
+}
+
+export enum Format {
+    BOLD = "&l",
+    STRIKETHROUGH = "&m",
+    UNDERLINE = "&n",
+    ITALIC = "&o",
+    OBFSUCATED = "&k",
+    RESET = "&r",
+}
+
 export const enum ChatType {
     Group,
     DirectMessage,
+}
+
+export const enum CallDirection {
+    Inbound,
+    Outbound,
+}
+
+export const enum CallEvent {
+    Started,
+    Ended,
+    Missed,
+    Declined,
 }
 
 export const enum Locale {
@@ -36,6 +77,14 @@ export const enum Font {
     OpenDyslexic = "OpenDyslexic",
 }
 
+export const enum EmojiFont {
+    Twemoji = "Twemoji",
+    NotoEmoji = "NotoEmoji",
+    OpenMoji = "OpenMoji",
+    Blobmoji = "Blobmoji",
+    Fluent = "Fluent",
+}
+
 export const enum Route {
     Home = "/",
     Chat = "/chat",
@@ -43,9 +92,7 @@ export const enum Route {
     Friends = "/friends",
     Wallet = "/wallet",
     Settings = "/settings/profile",
-    Unlock = "/auth/unlock",
-    RecoverySeed = "/auth/recovery",
-    NewAccount = "/auth/new_account",
+    Unlock = "/auth",
     Pre = "/pre",
 }
 
@@ -62,12 +109,26 @@ export const enum SettingsRoute {
     AudioVideo = "/settings/audio_video",
     Extensions = "/settings/extensions",
     Keybinds = "/settings/keybinds",
-    Accessability = "/settings/accessability",
+    Accessibility = "/settings/accessibility",
     Notifications = "/settings/notifications",
     About = "/settings/about",
     Licenses = "/settings/licenses",
     Developer = "/settings/developer",
     Inventory = "/settings/inventory",
+    Network = "/settings/network",
+    Realms = "/settings/realms",
+    Gamepad = "/settings/gamepad",
+}
+
+export const enum CommunitySettingsRoute {
+    Roles = "roles",
+    Tags = "tags",
+    Users = "Users",
+    Details = "Details",
+    Extensions = "Extensions",
+    Moderation = "Moderation",
+    Security = "Security",
+    Bots = "Bots",
 }
 
 export const enum Appearance {
@@ -91,6 +152,13 @@ export const enum Size {
     Largest = "largest",
 }
 
+export const enum TooltipPosition {
+    LEFT,
+    MIDDLE,
+    RIGHT,
+    BOTTOM,
+}
+
 export const enum MessagePosition {
     First = "first",
     Middle = "middle",
@@ -105,6 +173,7 @@ export const enum MessageAttachmentKind {
     STL = "STL",
     Audio = "Audio",
     Video = "Video",
+    Text = "Text",
 }
 
 export const enum Status {
@@ -119,9 +188,25 @@ export const enum KeybindAction {
     DecreaseFontSize = "Decrease font size within Uplink.",
     ToggleMute = "Mute & un-mute your microphone.",
     ToggleDeafen = "Toggle turning off all sounds including your microphone and headphones.",
-    OpenInspector = "Open/Close Web Inspector",
-    ToggleDevmode = "Toggle Developer Mode",
-    FocusUplink = "Hide/Focus Uplink",
+    OpenInspector = "Open/Close Web Inspector.",
+    ToggleDevmode = "Toggle Developer Mode.",
+    FocusUplink = "Hide/Focus Uplink.",
+    PushToTalk = "Push to talk.",
+    PushToMute = "Push to mute.",
+    PushToDeafen = "Push to deafen.",
+}
+
+export const enum KeybindState {
+    Pressed,
+    Released,
+}
+
+export enum MouseButtons {
+    LeftClick = 0,
+    MiddleClick = 1,
+    RightClick = 2,
+    BackButton = 3,
+    ForwardButton = 4,
 }
 
 export enum MessageDirection {
@@ -135,4 +220,45 @@ export enum InventoryKind {
     Overlay = "Profile Overlay",
     Theme = "Application Theme",
     Item = "Item",
+}
+
+export enum CommunityChannelKind {
+    Text,
+    Voice,
+    Photo,
+    Files,
+    Bot,
+}
+
+export enum Integrations {
+    Generic = "Generic",
+    Twitch = "Twitch.tv",
+    YouTube = "YouTube",
+    Steam = "Steam",
+    Spotify = "Spotify",
+    BTC = "Bitcoin",
+    ETH = "Ethereum",
+    SOL = "Solana",
+}
+
+export enum IntegrationDisplays {
+    Text,
+    WalletAddress,
+    URL,
+    ApplicationURI,
+}
+
+export enum Identicon {
+    Identicon = "identicon",
+    Shapes = "shapes",
+    PixelArtNeutral = "pixelArtNeutral",
+    PixelArt = "pixelArt",
+    OpenPeeps = "openPeeps",
+    Notionists = "notionists",
+    Lorelei = "lorelei",
+    Icons = "icons",
+    Bots = "bottts",
+    BotsNeutral = "botttsNeutral",
+    Avataaars = "avataaars",
+    AvataaarsNeutral = "avataaarsNeutral",
 }

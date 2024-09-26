@@ -2,10 +2,13 @@
     export let text: string = ""
     export let small: boolean = false
     export let hook: string = ""
+
+    let clazz = ""
+    export { clazz as class }
 </script>
 
 <!-- svelte-ignore a11y-label-has-associated-control -->
-<label class="label {small ? 'small' : ''}" data-cy={hook}>
+<label class="label {small ? 'small' : ''} {clazz}" data-cy={hook}>
     {text}
 </label>
 

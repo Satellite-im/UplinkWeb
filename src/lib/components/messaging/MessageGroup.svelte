@@ -3,17 +3,25 @@
     import type { ProfilePictureRequirements } from "$lib/types"
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher } from "svelte"
+    import { get } from "svelte/store"
+    import { SettingsStore } from "$lib/state"
+    import { Label } from "$lib/elements"
 
     export let remote: boolean = false
     export let subtext: string | null = ""
     export let profilePictureRequirements: ProfilePictureRequirements | null = null
+    export let username: string = ""
+
     const dispatch = createEventDispatcher()
+    const compact: boolean = get(SettingsStore.state).messaging.compact
 </script>
 
-<div class="message-group">
+<div data-cy="message-group-{remote ? 'remote' : 'local'}" class={`message-group ${compact ? "compact" : ""}`}>
     {#if profilePictureRequirements && remote}
         <div class="aside">
             <ProfilePicture
+                id={profilePictureRequirements.id}
+                hook="message-group-remote-profile-picture"
                 size={Size.Small}
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
@@ -28,6 +36,8 @@
     {#if profilePictureRequirements && !remote}
         <div class="aside">
             <ProfilePicture
+                id={profilePictureRequirements.id}
+                hook="message-group-local-profile-picture"
                 size={Size.Small}
                 image={profilePictureRequirements.image}
                 status={profilePictureRequirements.status}
@@ -39,7 +49,7 @@
     {/if}
 
     {#if subtext}
-        <span class="subtext {remote ? 'remote' : 'local'}">{subtext}</span>
+        <span data-cy="message-group-timestamp" class="subtext {remote ? 'remote' : 'local'}">{`${username} - ${subtext}`}</span>
     {/if}
 </div>
 
@@ -59,6 +69,7 @@
             display: inline-flex;
             flex-direction: column;
         }
+
         .aside {
             width: fit-content;
             height: 100%;
@@ -77,6 +88,10 @@
                 margin-left: 0;
                 margin-right: var(--profile-picture-size);
             }
+        }
+
+        :global(.username-local) {
+            align-self: end;
         }
     }
 </style>

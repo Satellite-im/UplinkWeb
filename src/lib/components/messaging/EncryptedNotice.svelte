@@ -1,11 +1,12 @@
 <script lang="ts">
     import { Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
+    import { _ } from "svelte-i18n"
 </script>
 
-<div class="encrypted-notice">
+<div class="encrypted-notice" data-cy="chat-encrypted-notice">
     <Icon icon={Shape.Lock} />
-    <Text size={Size.Smaller}>Messages are secured by end-to-end encryption, sent over a peer-to-peer network.</Text>
+    <Text hook="chat-encrypted-text" size={Size.Smaller}>{$_("chat.encrypted")}</Text>
 </div>
 
 <style lang="scss">

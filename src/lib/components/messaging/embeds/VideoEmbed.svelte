@@ -3,6 +3,7 @@
     import Text from "$lib/elements/Text.svelte"
     import { Appearance, Shape, Size } from "$lib/enums"
     import prettyBytes from "pretty-bytes"
+    import { _ } from "svelte-i18n"
 
     export let location: string = ""
     export let name: string = ""
@@ -16,7 +17,7 @@
     </video>
     <div class="details">
         <Text size={Size.Smaller}>{name} ({prettyBytes(size)})</Text>
-        <Button text="Download" appearance={Appearance.Alt}>
+        <Button text={$_("files.download")} appearance={Appearance.Alt}>
             <Icon icon={Shape.ArrowDown} />
         </Button>
     </div>

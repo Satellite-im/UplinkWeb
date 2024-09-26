@@ -2,8 +2,8 @@
     export let character: string = "A"
 </script>
 
-<div class="key">
-    <span>
+<div data-cy="key-button" class="key">
+    <span data-cy="key-button-text">
         {character}
     </span>
 </div>
@@ -12,6 +12,7 @@
     div.key {
         min-width: var(--input-height);
         height: var(--input-height);
+        text-transform: uppercase;
 
         > span {
             background-color: var(--alt-color);

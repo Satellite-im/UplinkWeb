@@ -1,15 +1,22 @@
 <script lang="ts">
     import Icon from "$lib/elements/Icon.svelte"
     import Text from "$lib/elements/Text.svelte"
-    import { Shape, Size } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import type { User } from "$lib/types"
     import { createEventDispatcher } from "svelte"
     import ProfilePicture from "./ProfilePicture.svelte"
 
     export let users: User[]
+    export let size: Size = Size.Medium
+    export let forceSize: boolean = false
+
     const dispatch = createEventDispatcher()
 
     function getSize(index: number) {
+        if (forceSize) {
+            return size
+        }
+
         switch (index) {
             case 0:
                 return Size.Small
@@ -25,15 +32,15 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="profile-picture-many" on:click={_ => dispatch("click")}>
+<div class="profile-picture-many" data-cy="profile-picture-many" on:click={_ => dispatch("click")}>
     {#each users as user, i}
         {#if i < 3}
-            <ProfilePicture size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
+            <ProfilePicture hook="profile-picture-many-single-pic" id={user.key} size={getSize(i)} image={user.profile.photo.image} status={user.profile.status} noIndicator />
         {/if}
     {/each}
     <div class="count">
-        <Icon icon={Shape.Users} size={Size.Smaller} />
-        <Text size={Size.Smaller}>
+        <Icon icon={Shape.Users} size={Size.Smaller} alt />
+        <Text hook="profile-picture-many-length" size={Size.Smaller} appearance={Appearance.Alt}>
             {users.length}
         </Text>
     </div>
@@ -57,6 +64,7 @@
             align-items: center;
             gap: var(--gap-less);
             z-index: 2;
+            cursor: pointer;
         }
 
         :global(.profile-picture) {

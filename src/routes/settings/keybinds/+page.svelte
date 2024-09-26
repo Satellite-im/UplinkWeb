@@ -2,15 +2,13 @@
     import { Banner, Key } from "$lib/components"
     import KeyboardListener from "$lib/components/ui/KeyboardListener.svelte"
     import { Button, Icon, Label, Select, Spacer, Text } from "$lib/elements"
-    import { Appearance, KeybindAction, Shape, Size } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+    import { Appearance, KeybindAction, KeybindState, Shape, Size } from "$lib/enums"
+
     import { SettingSection } from "$lib/layouts"
     import { defaultKeybinds, SettingsStore, type ISettingsState } from "$lib/state"
     import type { Keybind } from "$lib/types"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
-
-    initLocale()
 
     let settings: ISettingsState = get(SettingsStore.state)
     let keybinds: Keybind[] = defaultKeybinds
@@ -30,6 +28,7 @@
                     action: recordedAction,
                     key: keyboardRecording.key,
                     modifiers: keyboardRecording.modifiers,
+                    state: KeybindState.Pressed,
                 }
             }
             return keybind
@@ -69,6 +68,14 @@
         // If both checks pass, the keybinds match
         return true
     }
+
+    $: {
+        // Update the recordedAction to match the current key and modifiers
+        const matchingKeybind = keybinds.find(keybind => isKeybindMatching(keyboardRecording, keybind))
+        if (matchingKeybind) {
+            recordedAction = matchingKeybind.action
+        }
+    }
 </script>
 
 <div id="page">
@@ -79,25 +86,26 @@
     </Banner>
 
     <Spacer />
-    <Label text={$_("settings.keybinds.recordKeybind")} />
-    <Text>{$_("settings.keybinds.instructions")}</Text>
-    <div class="new-keybind">
+    <Label hook="label-record-keybind" text={$_("settings.keybinds.recordKeybind")} />
+    <Text hook="text-keybind-instructions">{$_("settings.keybinds.instructions")}</Text>
+    <div data-cy="section-new-keybind" class="new-keybind">
         <div class="recorded-keys">
-            <Label text="Recorded Keys"></Label>
+            <Label hook="label-keybind-recorded-keys" text={$_("settings.keybinds.recordedKeys")}></Label>
             <div class="binding">
                 {#if keyboardRecording.key}
-                    <Key character={keyboardRecording.key} />
                     {#each keyboardRecording.modifiers as modifier}
                         <Key character={modifier} />
                     {/each}
+                    <Key character={keyboardRecording.key} />
                 {:else}
                     <Key character={$_("settings.keybinds.pressAKey")} />
                 {/if}
             </div>
         </div>
         <div class="action">
-            <Label text={$_("settings.keybinds.action")}></Label>
+            <Label hook="label-keybind-action" text={$_("settings.keybinds.action")}></Label>
             <Select
+                hook="selector-keybind-action"
                 alt
                 bind:selected={recordedAction}
                 options={keybinds.map(keybind => {
@@ -105,8 +113,9 @@
                 })}></Select>
         </div>
         <div>
-            <Button text={$_("generic.save")} disabled={keyboardRecording.key === ""} appearance={keyboardRecording.key !== "" ? Appearance.Success : Appearance.Alt} on:click={handleNewKeybind}></Button>
+            <Button hook="button-keybind-save" text={$_("generic.save")} disabled={keyboardRecording.key === ""} appearance={keyboardRecording.key !== "" ? Appearance.Success : Appearance.Alt} on:click={handleNewKeybind}></Button>
             <Button
+                hook="button-keybind-cancel"
                 text={$_("generic.cancel")}
                 appearance={Appearance.Alt}
                 on:click={_ => {
@@ -116,8 +125,9 @@
     </div>
     <Spacer />
 
-    <SettingSection name={$_("settings.keybinds.revert")} description={$_("settings.keybinds.revertDescription")}>
+    <SettingSection hook="section-keybind-revert" name={$_("settings.keybinds.revert")} description={$_("settings.keybinds.revertDescription")}>
         <Button
+            hook="button-keybind-revert-all"
             appearance={Appearance.Alt}
             text={$_("settings.keybinds.revert_plural")}
             on:click={_ => {
@@ -129,8 +139,8 @@
 
     {#if keybinds}
         {#each keybinds as keybind}
-            <div class="keybind {isKeybindMatching(keyboardRecording, keybind) ? 'highlight' : ''}">
-                <Text>{keybind.action}</Text>
+            <div data-cy="keybind" class="keybind {isKeybindMatching(keyboardRecording, keybind) ? 'highlight' : ''}">
+                <Text hook="text-keybind-action">{keybind.action}</Text>
                 <div class="controls">
                     <div class="binding">
                         <Key character={keybind.key} />
@@ -140,6 +150,7 @@
                     </div>
 
                     <Button
+                        hook="button-keybind-revert-single"
                         icon
                         appearance={Appearance.Alt}
                         on:click={_ => {
@@ -160,10 +171,7 @@
         display: inline-flex;
         flex-direction: column;
         gap: var(--gap);
-        height: 100%;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        padding-right: var(--padding);
+        padding: var(--padding);
 
         .new-keybind {
             width: 100%;

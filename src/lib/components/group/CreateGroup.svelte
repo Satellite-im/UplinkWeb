@@ -1,93 +1,136 @@
 <script lang="ts">
-    import { Appearance, ChatType, Shape, Size } from "$lib/enums"
-    import { defaultChat, type Chat, type User, hashChat } from "$lib/types"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import { type User } from "$lib/types"
     import { ProfilePicture } from "$lib/components"
     import { Button, Checkbox, Icon, Input, Label } from "$lib/elements"
     import Text from "$lib/elements/Text.svelte"
-    import { get } from "svelte/store"
-    import { Store } from "$lib/state/store"
+    import { _ } from "svelte-i18n"
+    import { Store } from "$lib/state/Store"
     import Controls from "$lib/layouts/Controls.svelte"
     import { createEventDispatcher } from "svelte"
+    import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 
     export let embedded: boolean = false
-    let chat: Chat = defaultChat
 
-    chat.kind = ChatType.Group
+    let name = ""
+    let recipients: User[] = []
+    let nameError = false
+    let error: string | null = null
 
-    let update_recipients = function (recipient: User) {
-        let new_recipient_list = chat.users
+    function update_recipients(recipient: User) {
+        let new_recipient_list = [...recipients]
 
-        if (chat.users.includes(recipient)) {
+        if (recipients.map(r => r.key).includes(recipient.key)) {
             new_recipient_list.splice(new_recipient_list.indexOf(recipient), 1)
         } else {
             new_recipient_list.push(recipient)
         }
 
-        chat.users = new_recipient_list
+        recipients = new_recipient_list
+
+        // Clear error when the user updates the recipient list
+        if (recipients.length > 0) {
+            error = null
+        }
     }
 
     function contains_recipient(list: User[], recipient: User): boolean {
-        return list.includes(recipient)
+        return list.map(r => r.key).includes(recipient.key)
     }
 
-    let friends: User[] = get(Store.state.friends)
+    function validateGroupName(name: string): boolean {
+        if (name.trim().length === 0) {
+            nameError = true
+            return false
+        } else {
+            nameError = false
+            return true
+        }
+    }
+
+    $: friends = Store.getUsers(Store.state.friends)
     const dispatch = createEventDispatcher()
-    function onCreate() {
-        chat = defaultChat
+
+    async function onCreate() {
+        if (recipients.length === 0) {
+            // Validate before creating group chat
+            error = $_("chat.group.noMembers") || "Please select at least one member."
+            return
+        }
+
+        if (validateGroupName(name)) {
+            let conversation = await RaygunStoreInstance.createGroupConversation(name, recipients)
+            conversation.onSuccess(chat => {
+                Store.setActiveChat(chat)
+            })
+            onCreateComplete()
+        }
+    }
+
+    function onCreateComplete() {
+        name = ""
+        recipients = []
+        error = null
         dispatch("create")
     }
 </script>
 
 <div class="new-chat" data-cy="modal-create-group-chat">
     <div class="select-user">
-        <Label hook="label-create-group-name" text="Group Name:" />
-        <Input hook="input-create-group-name" alt bind:value={chat.name} />
-        <Label hook="label-create-group-members" text="Group Members:" />
-        <div class="user-list">
-            {#each chat.users as recipient}
-                <div class="mini-user">
-                    <ProfilePicture size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
-                    <Text singleLine size={Size.Small} appearance={Appearance.Alt}>
+        <Label hook="label-create-group-name" text={$_("chat.group.name")} />
+        <Input hook="input-create-group-name" alt bind:value={name} on:input={() => validateGroupName(name)} />
+
+        <!-- Error message for invalid group name -->
+        {#if nameError}
+            <div class="error-message">
+                <Text size={Size.Small} appearance={Appearance.Error}>
+                    {$_("chat.group.error")}
+                </Text>
+            </div>
+        {/if}
+
+        <Label hook="label-create-group-members" text={$_("chat.group.members")} />
+        <div class="user-list" data-cy="create-group-users-list">
+            {#each recipients as recipient}
+                <div class="mini-user" data-cy="mini-user">
+                    <ProfilePicture hook="mini-user-profile-picture" id={recipient.key} size={Size.Smaller} noIndicator image={recipient.profile.photo.image} />
+                    <Text hook="mini-user-name" singleLine size={Size.Small} appearance={Appearance.Alt}>
                         {recipient.name}
                     </Text>
-                    <Button
-                        small
-                        outline
-                        icon
-                        on:click={_ => {
-                            update_recipients(recipient)
-                        }}>
+                    <Button hook="mini-user-button" small outline icon on:click={() => update_recipients(recipient)}>
                         <Icon icon={Shape.XMark} alt class="control" />
                     </Button>
                 </div>
             {/each}
         </div>
-        <Label hook="label-create-group-select-members" text="Select member(s)" />
-        <div class="user-selection-list {embedded ? 'embedded' : ''}">
-            {#each friends as recipient}
-                <button class="user" on:click={() => update_recipients(recipient)}>
-                    <ProfilePicture size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
-                    <div class="info">
-                        <Text singleLine size={Size.Medium}>
+
+        <Label hook="label-create-group-select-members" text={$_("chat.group.select")} />
+        <div class="user-selection-list {embedded ? 'embedded' : ''}" data-cy="user-selection-list">
+            {#each $friends as recipient}
+                <button data-cy="single-user" class="user" on:click={() => update_recipients(recipient)}>
+                    <ProfilePicture hook="single-user-profile-picture" id={recipient.key} size={Size.Small} image={recipient.profile.photo.image} status={recipient.profile.status} />
+                    <div class="info" data-cy="single-user-info">
+                        <Text hook="single-user-name" singleLine size={Size.Medium}>
                             {recipient.name}
                         </Text>
-                        <Text singleLine muted>
+                        <Text hook="single-user-key" singleLine muted>
                             {recipient.key}
                         </Text>
                     </div>
-                    <Checkbox checked={contains_recipient(chat.users, recipient)} />
+                    <Checkbox hook="single-user-checkbox" checked={contains_recipient(recipients, recipient)} />
                 </button>
             {/each}
         </div>
+
+        <!-- Display error message if no recipients are selected -->
+        {#if error}
+            <Text hook="text-error-create-group" appearance={Appearance.Error} size={Size.Small}>
+                {error}
+            </Text>
+        {/if}
+
         <Controls>
-            <Button
-                hook="button-create-group"
-                text="Create Group"
-                on:click={_ => {
-                    chat.id = hashChat(chat)
-                    Store.setActiveChat(chat)
-                    onCreate()
-                }}>
+            <Button hook="button-create-group" text={$_("chat.group.create")} fill disabled={nameError} on:click={onCreate}>
                 <Icon icon={Shape.ChatPlus} />
             </Button>
         </Controls>
@@ -109,8 +152,6 @@
         .select-user {
             min-height: fit-content;
             flex: 1;
-            border: var(--border-width) solid var(--border-color);
-            border-radius: var(--border-radius-less);
             padding: var(--gap);
             gap: var(--gap);
             display: inline-flex;
@@ -147,7 +188,8 @@
                 display: inline-flex;
                 flex-direction: column;
                 gap: var(--gap);
-                height: var(--min-scrollable-height);
+                min-height: var(--input-height);
+                max-height: var(--min-scrollable-height);
                 overflow-y: auto;
                 overflow-x: hidden;
                 padding-right: var(--padding-less);
@@ -201,5 +243,9 @@
                 }
             }
         }
+    }
+
+    .error-message {
+        margin-top: var(--gap-less);
     }
 </style>

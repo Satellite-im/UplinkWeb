@@ -1,15 +1,19 @@
 <script lang="ts">
-    import { Route } from "$lib/enums"
-    import { initLocale } from "$lib/lang"
+    import { Appearance, CommunityChannelKind, Route, Shape, Size } from "$lib/enums"
+
     import { _ } from "svelte-i18n"
-    import { Sidebar, Slimbar } from "$lib/layouts"
+    import { Sidebar } from "$lib/layouts"
     import { ImageEmbed, Modal } from "$lib/components"
-    import ContextMenu from "$lib/components/ui/ContextMenu.svelte"
-    import { type ContextItem } from "$lib/types"
     import { get } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
-
-    initLocale()
+    import type { CommunityChannel, CommunityChannelGroup } from "$lib/types"
+    import Channel from "$lib/components/community/channel/Channel.svelte"
+    import Label from "$lib/elements/Label.svelte"
+    import { communityChannelGroups } from "$lib/mock/community"
+    import Icon from "$lib/elements/Icon.svelte"
+    import Button from "$lib/elements/Button.svelte"
+    import ChannelGroup from "$lib/components/community/channel/ChannelGroup.svelte"
+    import Spacer from "$lib/elements/Spacer.svelte"
 
     let loading = false
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
@@ -39,11 +43,15 @@
     {/if}
 
     <!-- Sidebar -->
-    <Slimbar sidebarOpen={sidebarOpen} on:toggle={toggleSidebar} activeRoute={Route.Chat}></Slimbar>
+    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}>
+        {#each communityChannelGroups as group}
+            <ChannelGroup group={group} />
+        {/each}
+    </Sidebar>
 
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={sidebarOpen} activeRoute={Route.Chat}></Sidebar>
-
-    <div class="content"></div>
+    <div class="content">
+        <slot></slot>
+    </div>
 </div>
 
 <style lang="scss">
@@ -53,5 +61,10 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
+
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
     }
 </style>

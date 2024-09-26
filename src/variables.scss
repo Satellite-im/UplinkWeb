@@ -1,6 +1,6 @@
 :root {
     --primary-font: "Poppins";
-    
+
     --black: #000;
     --background: #0d0e16;
     --background-alt: color-mix(in srgb, var(--background) 60%, #21263a);
@@ -9,11 +9,11 @@
     --animation-speed-mid: 1s;
     --animation-speed-slow: 2s;
     --animation-style: ease;
-    
+
     --color: #d7e2ff;
     --color-bright: #fff;
     --color-muted: #a2b2ee;
-    --color-alt: #000;
+    --color-alt: #d7e2ff;
     --placeholder-color: #97a7e4;
     --link-color: #8d8dfc;
 
@@ -37,12 +37,12 @@
     --info-color: #0771fa;
     --info-color-alt: color-mix(in srgb, var(--info-color) 90%, white);
 
-    --error-color: #F93854;
+    --error-color: #f93854;
     --error-color-alt: color-mix(in srgb, var(--error-color) 90%, white);
-    
-    --warning-color: #FECA57;
-    --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%,white);
-    
+
+    --warning-color: #feca57;
+    --warning-color-alt: color-mix(in srgb, var(--warning-color) 90%, white);
+
     --border-color: #1c1d2b;
     --border-color-alt: color-mix(in srgb, var(--border-color) 90%, white);
 
@@ -79,12 +79,13 @@
     --gap: 0.75rem;
     --gap-more: 1rem;
     --gap-less: 0.45rem;
-    
+
     --font-size-max: calc(var(--font-size) * 3);
     --font-size-large: calc(var(--font-size) + 0.5rem);
     --font-size: 1rem;
     --font-size-smaller: calc(var(--font-size) - 0.15rem);
     --font-size-smallest: calc(var(--font-size) - 0.25rem);
+    --emoji-size: 2rem;
     --icon-size: 1.15rem;
     --icon-size-large: 1.7rem;
     --icon-size-larger: 3rem;
@@ -97,16 +98,20 @@
     --checkbox-size: 1.25rem;
     --switch-size: 1.5rem;
     --sidebar-width: 350px;
-    --profile-width: 420px;
+    --profile-width: 720px;
 
     --shadow-depth: 1px;
     --min-scrollable-height: 200px;
+    --base-scrollable-height: 350px;
     --max-component-width: 600px;
-    --min-component-width: 250px;
+    --min-component-width: 300px;
 
     --context-width: 300px;
     --mini-user-width: 130px;
     --popup-width: 30rem;
     --popup-height: 20rem;
     --min-call-screen-height: 15rem;
+    --emoji-selector-height: 30rem;
+    --sticker-width: 8.5rem;
+    --sticker-width-rendered: 18rem;
 }

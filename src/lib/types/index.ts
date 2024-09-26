@@ -1,7 +1,36 @@
-import { Status, type Appearance, type Route, type SettingsRoute, type Shape, MessageAttachmentKind, KeybindAction, MessageDirection, ChatType } from "$lib/enums"
+import {
+    Status,
+    type Appearance,
+    type Route,
+    type SettingsRoute,
+    type Shape,
+    MessageAttachmentKind,
+    KeybindAction,
+    MessageDirection,
+    ChatType,
+    CommunityChannelKind,
+    KeybindState,
+    Integrations,
+    CallDirection,
+    CommunitySettingsRoute,
+} from "$lib/enums"
+import type { Cancellable } from "$lib/utils/CancellablePromise"
+import type { Writable } from "svelte/store"
+
+export interface Serialize {
+    serialize(): any
+}
+
+export enum OperationState {
+    Initial = "Initial",
+    Loading = "Loading",
+    Success = "Success",
+    Error = "Error",
+}
 
 export type Frame = {
     image: string
+    author?: string
     name: string
 }
 
@@ -12,10 +41,15 @@ export type ProfileOverlay = {
 
 export type Bundle = {
     name: string
+    image: string
+    description: string
+    price: number
     frames: Frame[]
-    profileOverlays: ProfileOverlay[]
-    // themes: []
-    // fonts: []
+    overlays: ProfileOverlay[]
+    themes: []
+    fonts: []
+    titles: []
+    trinkets: []
 }
 
 export type SelectOption = {
@@ -23,19 +57,41 @@ export type SelectOption = {
     text: string
 }
 
+export interface FontOption {
+    text: string
+    value: string
+}
+
 export type Reaction = {
-    count: number
+    reactors: Set<string>
     emoji: string
     highlight: Appearance
     description: string
 }
 
 export type ProfilePictureRequirements = {
+    id: string | undefined
     image: string
     status: Status // TODO: Remove this
     notifications: number
     highlight: Appearance
     frame: Frame
+}
+
+export type SimpleRoute = {
+    name: string
+    icon: Shape
+}
+
+export let defaultProfileData = {
+    photo: { image: "", frame: { name: "", image: "" } },
+    banner: { image: "", overlay: "" },
+    status: Status.Offline,
+    status_message: "Unknown status message.",
+}
+
+export type Id = {
+    short: string
 }
 
 export type ProfilePicture = {
@@ -55,17 +111,6 @@ export type ProfileData = {
     status_message: string
 }
 
-export let defaultProfileData = {
-    photo: { image: "", frame: { name: "", image: "" } },
-    banner: { image: "", overlay: "" },
-    status: Status.Offline,
-    status_message: "Unknown status message.",
-}
-
-export type Id = {
-    short: string
-}
-
 export type MediaMeta = {
     is_playing_audio: boolean
     is_streaming_video: boolean
@@ -76,10 +121,12 @@ export type MediaMeta = {
 
 export type User = {
     id: Id
+    loading?: boolean
     key: string
     name: string
     profile: ProfileData
     media: MediaMeta
+    integrations: Map<string, string>
 }
 
 export let defaultUser: User = {
@@ -94,11 +141,12 @@ export let defaultUser: User = {
         is_streaming_video: false,
         is_playing_audio: false,
     },
+    integrations: new Map<string, string>(),
 }
 
 export type ChatSettings = {
     displayOwnerBadge: boolean
-    readReciepts: boolean
+    readReceipts: boolean
     permissions: {
         allowAnyoneToAddUsers: boolean
         allowAnyoneToModifyPhoto: boolean
@@ -109,28 +157,110 @@ export type ChatSettings = {
 export type NavRoute = {
     name: string
     icon: Shape
-    to: Route | SettingsRoute
+    to: Route | SettingsRoute | CommunitySettingsRoute
 }
 
 export type Chat = {
     id: string
     name: string
     motd: string
+    unread: number
     kind: ChatType
     settings: ChatSettings
-    creator: User
+    creator?: string
     notifications: number
-    activity: boolean
-    users: User[]
+    users: string[]
+    typing_indicator: TypingIndicator
+    last_message_id: string
     last_message_at: Date
     last_message_preview: string
+}
+
+const typingDuration = 5
+
+/**
+ * Helper class for typing indicator. So the size is known all the time
+ */
+export class TypingIndicator {
+    private typingIndicator: { [key: string]: Date }
+    private _size = 0
+
+    constructor() {
+        this.typingIndicator = {}
+    }
+
+    /**
+     * Add a user indicating the user is typing
+     */
+    add(user: string) {
+        this.typingIndicator[user] = new Date()
+        this._size = Object.keys(this.typingIndicator).length
+    }
+
+    /**
+     * Add a user indicating the user stopped typing (e.g. cause they sent a message)
+     * @returns If the user was typing
+     */
+    remove(user: string): boolean {
+        let has: boolean = user in this.typingIndicator
+        delete this.typingIndicator[user]
+        this._size = Object.keys(this.typingIndicator).length
+        return has
+    }
+
+    /**
+     * Add a user indicating the user is typing
+     */
+    has(user: string): boolean {
+        return user in this.typingIndicator
+    }
+
+    /**
+     * @returns The typing user ids
+     */
+    users(): string[] {
+        return Object.keys(this.typingIndicator)
+    }
+
+    /**
+     * Update the typing indicator by removing all users that have not typed in the last 5 seconds
+     * @returns True if something changed
+     */
+    update(): boolean {
+        let time = new Date()
+        time.setSeconds(time.getSeconds() - 5)
+        let it = Object.entries(this.typingIndicator)
+        let old_len = it.length
+        let updated = it.filter(([_, d]) => d <= time)
+        this.typingIndicator = updated.reduce<{ [key: string]: Date }>((obj, [id, date]) => {
+            obj[id] = date
+            return obj
+        }, {})
+        this._size = updated.length
+        return old_len != this._size
+    }
+
+    get size(): number {
+        return this._size
+    }
+}
+
+export type CommunityChannel = {
+    icon: Shape
+    name: string
+    kind: CommunityChannelKind
+}
+
+export type CommunityChannelGroup = {
+    name: string
+    channels: CommunityChannel[]
 }
 
 export function hashChat(chat: Chat): string {
     const dataString =
         chat.name +
         chat.users
-            .map(user => user.name)
+            .map(user => user)
             .sort()
             .join("")
 
@@ -146,24 +276,26 @@ export function hashChat(chat: Chat): string {
     return hash.toString()
 }
 
-export let defaultChat = {
+export let defaultChat: Chat = {
     id: "",
     name: "",
     motd: "",
+    unread: 0,
     notifications: 0,
     kind: ChatType.DirectMessage,
-    creator: defaultUser,
+    creator: undefined,
     settings: {
         displayOwnerBadge: true,
-        readReciepts: true,
+        readReceipts: true,
         permissions: {
             allowAnyoneToAddUsers: false,
             allowAnyoneToModifyPhoto: false,
             allowAnyoneToModifyName: false,
         },
     },
-    activity: false,
     users: [],
+    typing_indicator: new TypingIndicator(),
+    last_message_id: "",
     last_message_at: new Date(),
     last_message_preview: "",
 }
@@ -172,22 +304,33 @@ export type Call = {
     startedAt: Date
     chat: Chat
     inCall: boolean
+    direction: CallDirection
 }
 
 export type ContextItem = {
     id: string
     icon: Shape
     text: string
+    disabled?: boolean
     appearance: Appearance
     onClick: () => void
 }
 
 export type FileInfo = {
+    icon: Shape
     id: string
     type: string
     size: number
     name: string
+    displayName: string
+    remotePath: string
     source: string
+    isRenaming: OperationState
+    chat?: Chat
+    imageThumbnail?: string
+    extension?: string
+    items?: FileInfo[]
+    parentId?: string
 }
 
 export type Attachment = {
@@ -200,13 +343,13 @@ export type Attachment = {
 export type FriendRequest = {
     at: Date
     direction: MessageDirection
-    to: User
-    from: User
+    to: string
+    from: string
 }
 
 export type MessageDetails = {
     at: Date
-    origin: User
+    origin: string
     remote: boolean
 }
 
@@ -214,9 +357,39 @@ export type Message = {
     id: string
     details: MessageDetails
     inReplyTo: Message | null
-    reactions: Reaction[]
+    reactions: { [key: string]: Reaction }
     attachments: Attachment[]
     text: string[]
+    pinned: boolean
+}
+
+export function mentions_user(message: Message, user: string): boolean {
+    // TODO
+    return false
+}
+
+export type PendingMessage = {
+    message: {
+        id: string
+        at: Date
+        text: string[]
+    }
+    attachmentProgress: Writable<{ [file: string]: FileProgress }>
+}
+
+export type FileProgress = {
+    // The name of the file
+    name: string
+    // The current progressed size of the file
+    size: number
+    // The total size of the file
+    total?: number
+    // Call this to abort the progress
+    cancellation?: Cancellable
+    // If true the progress has been finished
+    done?: boolean
+    // Returns the error that occurred during filetransfer if present
+    error?: string
 }
 
 export type MessageGroup = {
@@ -226,8 +399,8 @@ export type MessageGroup = {
 
 export type Transaction = {
     at: Date
-    to: User
-    from: User
+    to: string
+    from: string
     amount: number
     note: string
 }
@@ -236,4 +409,41 @@ export type Keybind = {
     action: KeybindAction
     key: string
     modifiers: string[]
+    state: KeybindState
 }
+
+export type GiphyImage = {
+    url: string
+}
+
+export type GiphyGif = {
+    id: string
+    uniqueKey: string
+    images: {
+        fixed_height_small: GiphyImage
+        original: GiphyImage
+    }
+    title: string
+    loaded?: boolean
+}
+
+export type Sticker = {
+    name: string
+    path: string
+}
+
+export type StickerCollection = {
+    name: string
+    author: string
+    assets: Sticker[]
+}
+
+export type StickerManifest = StickerCollection[]
+
+export type Integration = {
+    kind: Integrations
+    location: string
+    meta: any
+}
+
+export * from "./community"

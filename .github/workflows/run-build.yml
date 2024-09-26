@@ -1,0 +1,111 @@
+name: Compare Build Logs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  compare-build-logs:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+      issues: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.0
+        with:
+          fetch-depth: 0  # Fetch all history for accurate comparisons
+
+      - name: Checkout dev branch
+        run: git checkout dev
+
+      - name: Install dependencies (dev branch)
+        run: npm install
+
+      - name: Build project (dev branch) and save log
+        run: npm run build > dev-build-log.txt 2>&1
+
+      - name: Extract relevant section from dev log
+        run: |
+          sed -n '/building for production.../,/modules transformed./p' dev-build-log.txt > relevant-dev-log.txt
+
+      - name: Clean up ANSI color codes from dev log
+        run: |
+          sed -r 's/\x1B\[[0-9;]*[mGKH]//g' relevant-dev-log.txt > cleaned-dev-log.txt
+
+      - name: Save extracted and cleaned dev log as artifact
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: relevant-cleaned-dev-log
+          path: cleaned-dev-log.txt
+
+      - name: Checkout PR branch
+        run: git checkout ${{ github.head_ref }}
+
+      - name: Install dependencies (PR branch)
+        run: npm install
+
+      - name: Build project (PR branch) and save log
+        run: npm run build > pr-build-log.txt 2>&1
+
+      - name: Extract relevant section from PR log
+        run: |
+          sed -n '/building for production.../,/modules transformed./p' pr-build-log.txt > relevant-pr-log.txt
+
+      - name: Clean up ANSI color codes from PR log
+        run: |
+          sed -r 's/\x1B\[[0-9;]*[mGKH]//g' relevant-pr-log.txt > cleaned-pr-log.txt
+
+      - name: Save extracted and cleaned PR log as artifact
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: relevant-cleaned-pr-log
+          path: cleaned-pr-log.txt
+
+      - name: Compare cleaned logs for differences
+        id: diff_check
+        run: |
+          echo "Comparing cleaned logs for differences..."
+
+          # Use diff and ignore lines containing "modules transformed"
+          diff -I "modules transformed" cleaned-dev-log.txt cleaned-pr-log.txt > log-diff.txt || true
+
+          # Check if diff output is non-empty
+          if [ -s log-diff.txt ]; then
+            echo "Differences detected."
+            echo "diff_found=true" >> $GITHUB_ENV
+          else
+            echo "No differences found." > log-diff.txt
+            echo "diff_found=false" >> $GITHUB_ENV
+          fi
+
+      - name: Upload diff as artifact for review
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: build-log-diff
+          path: log-diff.txt
+
+      - name: Read log-diff.txt content
+        id: read_diff
+        run: |
+          if [ -f log-diff.txt ]; then
+            echo "DIFF_CONTENT<<EOF" >> $GITHUB_ENV
+            cat log-diff.txt >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "No diff file found." >> $GITHUB_ENV
+          fi
+
+      - name: Comment PR with build log differences
+        if: env.diff_found == 'true'
+        uses: actions-ecosystem/action-create-comment@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            **Build Log Differences Found**:
+
+            ```diff
+            ${{ env.DIFF_CONTENT }}
+            ```

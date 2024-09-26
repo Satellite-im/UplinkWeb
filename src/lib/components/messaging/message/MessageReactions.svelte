@@ -1,18 +1,21 @@
 <script lang="ts">
+    import { Store } from "$lib/state/Store"
     import type { Reaction } from "$lib/types"
 
     export let reactions: Array<Reaction> = []
     export let remote: boolean = false
+    export let onClick: (emoji: string) => void
+    $: own = Store.state.user
 </script>
 
-<div class="message-reactions {remote ? 'remote' : 'local'}">
+<div data-cy="message-reactions-{remote ? 'remote' : 'local'}" class="message-reactions {remote ? 'remote' : 'local'}">
     {#each reactions as reaction}
-        <div class="reaction highlight-{reaction.highlight.toLowerCase()}">
+        <div data-cy="emoji-reaction-{reaction.emoji}" role="none" class="reaction highlight-{reaction.highlight.toLowerCase()} {reaction.reactors.has($own.key) ? 'reacted' : ''}" on:click={_ => onClick(reaction.emoji)}>
             <div class="reaction-hover">
-                {reaction.emoji} <span class="description">{reaction.description}</span>
+                <span class="emoji">{reaction.emoji}</span> <span class="description">{reaction.description}</span>
             </div>
-            <span class="emoji">{reaction.emoji}</span>
-            <span class="count">{reaction.count}</span>
+            <span data-cy="emoji-reaction" class="reaction-emoji">{reaction.emoji}</span>
+            <span data-cy="emoji-count" class="count">{reaction.reactors.size}</span>
         </div>
     {/each}
 </div>
@@ -29,10 +32,11 @@
 
         .reaction {
             position: relative;
+            display: inline-flex;
             border: var(--border-width) solid var(--border-color);
             background-color: var(--alt-color-alt);
             width: fit-content;
-            padding: var(--padding-minimal) var(--padding-less);
+            padding: 0 var(--padding-less);
             border-radius: var(--border-radius-more);
             align-self: flex-end;
             cursor: pointer;
@@ -40,6 +44,15 @@
             justify-content: center;
             align-items: center;
             user-select: none;
+            gap: var(--gap);
+
+            &.reacted {
+                border: var(--border-width) solid var(--color);
+            }
+
+            .reaction-emoji {
+                font-size: calc(var(--emoji-size) / 1.65);
+            }
 
             .reaction-hover {
                 position: absolute;
