@@ -2,64 +2,28 @@
     import { get } from "svelte/store"
     import { SettingsStore } from "$lib/state"
     import { Store } from "$lib/state/Store"
-    import { UIStore } from "$lib/state/ui"
-    import type { Chat, User } from "$lib/types"
-    import { ChatType } from "$lib/enums"
-    import { debounce } from "$lib/utils/Functions"
-    import { onMount } from "svelte"
-
     const compact: boolean = get(SettingsStore.state).messaging.compact
 
     $: activeChat = Store.state.activeChat
     $: users = Store.getUsersLookup($activeChat.users)
-    $: chats = UIStore.state.chats
-    $: typingMessage = $activeChat.typing_indicator.size
-    // let isType = $activeChat.typing_indicator !== undefined
-    // let isTyping: boolean = false
-    // $: is_friend_typing = () => {
-    //     UIStore.updateTypingIndicators()
-    //     console.log(typingMessage)
-    //     // typingMessage = `{$activeChat.typing_indicator} + "JIMBO"`
-    //     // return "FUCK"
-    //     if ($activeChat.typing_indicator.size !== undefined) {
-    //         return "FUCK ${users[0].name} is typing"
-    //     }
-    //     isTyping = $activeChat.typing_indicator.size > 0
-    //     // let dm = $chats.find(c => c.kind === ChatType.DirectMessage && c.users[0] === users.key)
-    //     // return dm && dm.typing_indicator.has(users.key)
-    // }
-    // let typing = debounce(async () => {
-    //     console.log(users, chats)
-    //     if ($activeChat.typing_indicator.size > 0) {
-    //         console.log("SUCCESS")
-    //     }
-    //     // await RaygunStoreInstance.sendEvent($activeChat.id, MessageEvent.Typing)
-    // }, 50)
-
-    onMount(() => {
-        setInterval(() => {
-            // UIStore.updateTypingIndicators()
-            // console.log($activeChat.typing_indicator.size !== 0)
-            // if ($activeChat.typing_indicator.size > 0) {
-            //     console.log("SUCCESS")
-            // }
-            // is_friend_typing()
-            // console.log(isTyping, $activeChat.typing_indicator)
-            // console.log($activeChat.typing_indicator.size)
-            // timeago = getTimeAgo(chat.last_message_at)
-        }, 500)
-    })
+    $: typingMessage = is_friend_typing()
+    $: is_friend_typing = () => {
+        const typingUsers = $activeChat.typing_indicator.users
+        if ($activeChat.typing_indicator.size === 0) {
+            return ""
+        } else if ($activeChat.typing_indicator.size === 1) {
+            const user = $activeChat.typing_indicator.users().map(u => $users[u])
+            return `${user[0].name} is typing`
+        } else {
+            return "Multiple users are typing"
+        }
+    }
 </script>
 
 <div data-cy="pending-message-group" class={`pending-message-group ${compact ? "compact" : ""}`}>
     <div class="flex">
-        <slot></slot>
+        <p class={typingMessage !== "" ? "loading" : ""}>{typingMessage}</p>
     </div>
-    <div class="pending-message-buffer"></div>
-</div>
-
-<div class="flex">
-    <p>wtrf ${$activeChat.typing_indicator.size}</p>
 </div>
 
 <style lang="scss">
@@ -70,7 +34,7 @@
         gap: var(--gap);
         width: 100%;
         position: relative;
-        margin-bottom: calc(var(--padding) * 2);
+        margin-top: 10px;
 
         .flex {
             flex: 1;
@@ -80,6 +44,34 @@
         }
         .pending-message-buffer {
             width: var(--input-height);
+        }
+    }
+
+    .loading {
+        font-size: 10px;
+        position: absolute;
+        bottom: 0;
+    }
+
+    .loading:after {
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: bottom;
+        -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+        animation: ellipsis steps(4, end) 900ms infinite;
+        content: "\2026";
+        width: 0px;
+    }
+
+    @keyframes ellipsis {
+        to {
+            width: 1.25em;
+        }
+    }
+
+    @-webkit-keyframes ellipsis {
+        to {
+            width: 1.25em;
         }
     }
 </style>
