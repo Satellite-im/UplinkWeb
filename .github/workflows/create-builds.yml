@@ -1,4 +1,4 @@
-name: Generate Desktop Installers
+name: Generate App Installers
 on:
     pull_request:
         types: [opened, synchronize, reopened, edited]
@@ -8,7 +8,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    publish-tauri:
+    build-installers:
         permissions: write-all
         strategy:
             fail-fast: false
@@ -149,7 +149,7 @@ jobs:
                       if (!artifacts.length) {
                         return core.error(`No artifacts found`);
                       }
-                      let body = `Download the desktop installers for this pull request:\n`;
+                      let body = `Download the app installers for this pull request:\n`;
                       for (const art of artifacts) {
                         body += `\n* [${art.name}.zip](https://nightly.link/${owner}/${repo}/actions/artifacts/${art.id}.zip)`;
                       }
