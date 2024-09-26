@@ -41,7 +41,6 @@
         </svelte:fragment>
     </Topbar>
     <div class="content">asdf</div>
-    <!-- <Chatbar /> -->
 </div>
 
 <style lang="scss">
