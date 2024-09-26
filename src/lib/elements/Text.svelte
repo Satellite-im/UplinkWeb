@@ -34,7 +34,7 @@
         {noWrap ? 'no-wrap' : ''}
         {muted ? 'muted' : ''}
         {centered ? 'centered' : ''}
-        {appearance === Appearance.Alt ? 'alt' : ''}
+        {appearance}
         {size}
         {singleLine ? 'single-line' : ''}
         {doubleLine ? 'double-line' : ''}
