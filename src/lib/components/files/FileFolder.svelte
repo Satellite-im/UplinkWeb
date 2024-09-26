@@ -11,7 +11,7 @@
     export let itemId: string
     export let kind: FilesItemKind = FilesItemKind.File
     export let info: FileInfo
-    export let name = info.name
+    export let name = info.displayName
     export let isRenaming: OperationState = OperationState.Initial
     export let hook: string = ""
     export let onRename: (name: string, cancel: boolean) => Promise<boolean> = _ => Promise.resolve(true)

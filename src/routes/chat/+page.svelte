@@ -624,6 +624,7 @@
                                                                         isRenaming: OperationState.Initial,
                                                                         source: "unknown",
                                                                         name: attachment.name,
+                                                                        displayName: attachment.name,
                                                                         size: attachment.size,
                                                                         icon: Shape.Document,
                                                                         type: "unknown/unknown",

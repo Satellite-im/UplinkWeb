@@ -322,9 +322,11 @@ export type FileInfo = {
     type: string
     size: number
     name: string
+    displayName: string
     remotePath: string
     source: string
     isRenaming: OperationState
+    chat?: Chat
     imageThumbnail?: string
     extension?: string
     items?: FileInfo[]

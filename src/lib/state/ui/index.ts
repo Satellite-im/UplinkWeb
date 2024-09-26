@@ -104,6 +104,10 @@ class Store {
         this.state.marketOpen.set(!current)
     }
 
+    getChat(conversationId: string): Chat | undefined {
+        return get(this.state.chats).find(c => c.id === conversationId)
+    }
+
     addSidebarChat(chat: Chat) {
         const currentchats = get(this.state.chats)
         if (!currentchats.some(c => c.id === chat.id)) {
