@@ -99,4 +99,11 @@
             }
         }
     }
+    @media (max-width: 400px) {
+        .files-selected {
+            width: unset;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    }
 </style>
