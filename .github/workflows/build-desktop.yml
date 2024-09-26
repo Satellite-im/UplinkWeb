@@ -45,21 +45,21 @@ jobs:
               uses: actions/upload-artifact@v4.4.0
               with:
                   name: build-dmg
-                  path: src-tauri/target/release/build/bundle/macos/*.dmg
+                  path: src-tauri/target/release/bundle/dmg/*.dmg
 
             - name: Upload MSI installer
               if: matrix.os == 'windows-latest'
               uses: actions/upload-artifact@v4.4.0
               with:
                   name: build-msi
-                  path: src-tauri/target/release/build/uplink.exe
+                  path: src-tauri/target/release/bundle/msi/*.msi
 
             - name: Upload Ubuntu installer
               if: matrix.os == 'ubuntu-latest'
               uses: actions/upload-artifact@v4.4.0
               with:
                   name: build-ubuntu
-                  path: src-tauri/target/release/uplink
+                  path: src-tauri/target/release/bundle/deb/*.deb
 
             - name: Post Download Links for Artifacts
               if: success()
