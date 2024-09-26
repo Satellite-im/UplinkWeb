@@ -309,14 +309,18 @@ class Conversations {
     getMessage(chat: string, messageId: string): Message | null {
         const conversations = get(this.conversations)
         const conversation = conversations[chat]
+
         if (conversation) {
-            get(conversation).messages.forEach(group => {
-                const messageIndex = group.messages.findIndex(m => m.id === messageId)
-                if (messageIndex !== -1) {
-                    return group.messages[messageIndex]
+            const messageGroups = get(conversation).messages
+
+            for (const group of messageGroups) {
+                const message = group.messages.find(m => m.id === messageId)
+                if (message) {
+                    return message
                 }
-            })
+            }
         }
+
         return null
     }
 

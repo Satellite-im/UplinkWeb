@@ -57,6 +57,11 @@ export type SelectOption = {
     text: string
 }
 
+export interface FontOption {
+    text: string
+    value: string
+}
+
 export type Reaction = {
     reactors: Set<string>
     emoji: string
@@ -319,9 +324,11 @@ export type FileInfo = {
     type: string
     size: number
     name: string
+    displayName: string
     remotePath: string
     source: string
     isRenaming: OperationState
+    chat?: Chat
     imageThumbnail?: string
     extension?: string
     items?: FileInfo[]

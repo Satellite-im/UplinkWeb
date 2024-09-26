@@ -167,7 +167,11 @@
             </Button>
         </div>
 
-        {#each chats as chat}
+        {#each chats.slice().sort((a, b) => {
+            const dateA = new Date(a.last_message_at || 0)
+            const dateB = new Date(b.last_message_at || 0)
+            return dateB.getTime() - dateA.getTime()
+        }) as chat}
             <ContextMenu
                 hook="context-menu-sidebar-chat"
                 items={[
@@ -194,7 +198,7 @@
         <Topbar>
             <svelte:fragment slot="controls">
                 {#if tab === "all"}
-                    <Button hook="button-friends-all" appearance={Appearance.Primary} text={$_("friends.all")} on:click={_ => (tab = "all")}>
+                    <Button hook="button-friends-all" appearance={Appearance.Alt} text={$_("friends.all")} on:click={_ => (tab = "all")}>
                         <Icon icon={Shape.Users} alt />
                     </Button>
                 {:else}

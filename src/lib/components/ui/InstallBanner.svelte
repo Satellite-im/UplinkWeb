@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { DOWNLOAD_LINKS } from "$lib/config"
     import { Icon } from "$lib/elements"
     import Button from "$lib/elements/Button.svelte"
     import Label from "$lib/elements/Label.svelte"
@@ -33,11 +34,15 @@
         return typeof window !== "undefined" && "__TAURI__" in window
     }
 
+    function isCapacitor(): boolean {
+        return typeof window !== "undefined" && "Capacitor" in window
+    }
+
     function isBannerClosed(): boolean {
         return localStorage.getItem("install-banner-dismissed") === "true"
     }
 
-    let showBanner = !(isElectron() || isTauri() || isBannerClosed())
+    let showBanner = !(isElectron() || isTauri() || isCapacitor() || isBannerClosed())
     let platform = detectPlatform()
 
     function closeBanner() {
@@ -47,28 +52,34 @@
 
     const platformButtonProps = {
         [Platform.Windows]: {
-            text: "Download for Windows",
+            text: "Windows",
             icon: Shape.MicrosoftWindows,
+            download: DOWNLOAD_LINKS.Windows,
         },
         [Platform.MacOS]: {
-            text: "Download for macOS",
+            text: "MacOS",
             icon: Shape.AppleAppStore,
+            download: DOWNLOAD_LINKS.Mac,
         },
         [Platform.Android]: {
-            text: "Download for Android",
+            text: "Android",
             icon: Shape.Android,
+            download: DOWNLOAD_LINKS.Android,
         },
         [Platform.iOS]: {
-            text: "Download for iPhone",
+            text: "iPhone",
             icon: Shape.Apple,
+            download: DOWNLOAD_LINKS.iOS,
         },
         [Platform.Linux]: {
-            text: "Download for Linux",
+            text: "Linux",
             icon: Shape.Code,
+            download: DOWNLOAD_LINKS.Linux,
         },
         [Platform.Other]: {
-            text: "Download for Other",
+            text: "Download",
             icon: Shape.Download,
+            download: DOWNLOAD_LINKS.Linux,
         },
     }
 </script>
@@ -85,8 +96,13 @@
             </div>
         </div>
         <Controls>
-            <Button appearance={Appearance.Success} outline text={platformButtonProps[platform].text}>
-
+            <Button
+                appearance={Appearance.Success}
+                outline
+                text={platformButtonProps[platform].text}
+                on:click={() => {
+                    window.open(platformButtonProps[platform].download)
+                }}>
                 <Icon icon={platformButtonProps[platform].icon} highlight={Appearance.Success} />
             </Button>
         </Controls>

@@ -26,9 +26,11 @@
         flex-direction: row;
         align-items: center;
         gap: var(--gap);
+        justify-content: flex-end;
+        padding-right: 24px;
 
         &.remote {
-            justify-content: flex-end;
+            padding-right: 0px;
         }
     }
 </style>

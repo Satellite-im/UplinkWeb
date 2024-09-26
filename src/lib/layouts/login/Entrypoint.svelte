@@ -58,8 +58,12 @@
         </Text>
         <Spacer />
         <Controls breakpoint={1000}>
-            <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} />
-            <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} />
+            <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} fill>
+                <Icon icon={Shape.Plus} />
+            </Button>
+            <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} fill>
+                <Icon icon={Shape.ArrowUp} />
+            </Button>
         </Controls>
     </div>
 
@@ -95,7 +99,7 @@
         .create-content {
             display: flex;
             flex-direction: column;
-            width: 40%;
+            max-width: var(--max-component-width);
             gap: var(--gap);
             background-color: var(--background-alt);
             border-radius: var(--border-radius);
@@ -108,6 +112,7 @@
 
             :global(.controls) {
                 align-self: center;
+                width: 100%;
             }
         }
 
