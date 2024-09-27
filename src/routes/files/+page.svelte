@@ -91,6 +91,7 @@
     }
 
     async function createNewDirectory(folder: FileInfo) {
+        folder.isRenaming = OperationState.Success
         if (folder.name === "") {
             updateCurrentDirectory()
             folder.isRenaming = OperationState.Error
@@ -102,14 +103,13 @@
                 folder.isRenaming = OperationState.Error
                 if (err === WarpError.DIRECTORY_ALREADY_EXIST) {
                     updateCurrentDirectory()
-                    Store.addToastNotification(new ToastMessage("", `Other item already exists with this name`, 2))
+                    Store.addToastNotification(new ToastMessage("", $_("files.itemAlreadyExistsWithSameName"), 2))
                     return
                 }
                 updateCurrentDirectory()
                 Store.addToastNotification(new ToastMessage("", err, 2))
             },
             async _ => {
-                folder.isRenaming = OperationState.Success
                 updateCurrentDirectory()
             }
         )
