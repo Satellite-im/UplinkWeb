@@ -1,0 +1,44 @@
+name: Generate App Installers
+on:
+    pull_request: # this is only temporarily for testing the action
+        types: [opened, synchronize, reopened, edited] # this is only temporarily for testing the action
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    build-releases:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4.2.0
+
+            - name: setup node
+              uses: actions/setup-node@v4.0.4
+              with:
+                  node-version: lts/*
+
+            - name: install Rust stable
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: install dependencies (ubuntu only)
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+            - name: install frontend dependencies
+              run: npm install
+
+            - uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Upload Ubuntu installer
+              uses: actions/upload-artifact@v4.4.0
+              with:
+                  name: build-ubuntu
+                  path: src-tauri/target/release/bundle/deb/*.deb
+                  retention-days: 5
+
+            - name: Build Linux Installer
+              run: bash build_linux_installer.sh uplink ${{ github.ref_name }} amd64

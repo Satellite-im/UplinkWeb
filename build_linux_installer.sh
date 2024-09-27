@@ -29,7 +29,7 @@ mkdir -p                                ${BUILD_DIR}/opt/im.satellite/extra
 mkdir -p                                ${BUILD_DIR}/usr/share/icons/im.satellite/
 mkdir                                   ${BUILD_DIR}/opt/im.satellite/extensions
 
-cp target/release/${PACKAGE_NAME}       ${BUILD_DIR}/opt/im.satellite/${PACKAGE_NAME}
+cp target/release/bundle/deb/${PACKAGE_NAME}       ${BUILD_DIR}/opt/im.satellite/${PACKAGE_NAME}
 
-dpkg-deb -Z gzip --root-owner-group --build ${BUILD_DIR} target/release/${FULL_NAME}.deb
-sha256sum target/release/${FULL_NAME}.deb > target/release/SHA256SUM
+dpkg-deb -Z gzip --root-owner-group --build ${BUILD_DIR} target/release/bundle/deb/${FULL_NAME}.deb
+sha256sum target/release/bundle/deb/${FULL_NAME}.deb > target/release/bundle/deb/SHA256SUM
