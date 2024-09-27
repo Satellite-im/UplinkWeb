@@ -49,7 +49,7 @@ jobs:
                   security find-identity -p codesigning -v
                   security list-keychains
                   codesign --deep --force --verify --verbose --sign "$MACOS_CERT_ID" ./src-tauri/target/release/bundle/macos/*.app
-                  codesign --deep --force --verify --verbose --sign "$MACOS_CERT_ID" ./src-tauri/target/release/bundle/macos/*.dmg
+                  codesign --deep --force --verify --verbose --sign "$MACOS_CERT_ID" ./src-tauri/target/release/bundle/dmg/*.dmg
 
             - name: "Notarize executable MacOS"
               env:

@@ -41,4 +41,6 @@ jobs:
                   retention-days: 5
 
             - name: Build Linux Installer
-              run: bash build_linux_installer.sh uplink ${{ github.ref_name }} amd64
+              run: |
+                  mv src-tauri/target/release/bundle/deb/*.deb src-tauri/target/release/bundle/deb/uplink.deb
+                  bash build_linux_installer.sh uplink ${{ github.ref_name }} amd64
