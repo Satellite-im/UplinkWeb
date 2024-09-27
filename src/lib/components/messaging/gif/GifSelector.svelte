@@ -213,6 +213,7 @@
                     </button>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                     <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" style="height: {$gifHeight}px;" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
