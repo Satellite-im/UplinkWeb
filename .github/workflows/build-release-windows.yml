@@ -8,7 +8,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    build-releases:
+    build-windows-release:
         permissions: write-all
         runs-on: windows-latest
         steps:

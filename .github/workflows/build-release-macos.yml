@@ -1,4 +1,4 @@
-name: Generate App Installers
+name: Build MacOS Release
 on:
     pull_request: # this is only temporarily for testing the action
         types: [opened, synchronize, reopened, edited] # this is only temporarily for testing the action
@@ -8,7 +8,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    build-releases:
+    build-macos-release:
         permissions: write-all
         runs-on: macos-latest
         steps:
