@@ -201,7 +201,6 @@
     {:else if $activeTab === "favorites"}
         <div class="gifs" data-cy="giphy-selector-favorites">
             {#each $favorites as gif (gif.uniqueKey)}
-                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                 <div data-cy="gif-container" class="gif-container" style="height: {$gifHeight}px;">
                     <button
                         data-cy="gif-container-favorite-button"
@@ -211,10 +210,18 @@
                         aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
                     </button>
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" style="height: {$gifHeight}px;" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
+                    <!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
+                    <img
+                        src={gif.images.fixed_height_small.url}
+                        alt={gif.title}
+                        class="gif"
+                        style="height: {$gifHeight}px;"
+                        role="button"
+                        aria-pressed="false"
+                        on:click={() => selectGif(gif)}
+                        on:keydown={e => (e.key === "Enter" ? selectGif(gif) : null)}
+                        on:load={() => (gif.loaded = true)}
+                        tabindex="0" />
                 </div>
             {/each}
 
