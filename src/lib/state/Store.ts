@@ -298,7 +298,7 @@ class GlobalStore {
 
         UIStore.state.chats.update(chats => {
             chatToRemove = chats.find(c => c.users.includes(user) && c.kind === ChatType.DirectMessage)
-            return chats.filter(c => !c.users.includes(user))
+            return chats.filter(c => (!c.users.includes(user) && c.kind === ChatType.DirectMessage) || c.kind === ChatType.Group)
         })
         this.state.activeChat.set(defaultChat)
         if (chatToRemove) {
