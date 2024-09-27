@@ -11,6 +11,7 @@
     import Button from "$lib/elements/Button.svelte"
     import { createPersistentState } from "$lib/state"
     import type { GiphyGif } from "$lib/types"
+    import { log } from "$lib/utils/Logger"
 
     const gf = new GiphyFetch(GIPHY_API_KEY)
     const searchQuery = writable("")
@@ -72,7 +73,7 @@
                 )
             )
         } catch (error) {
-            console.error("GIF fetch failed", error)
+            log.error(`"GIF fetch failed:" ${error}`)
         } finally {
             loading.set(false)
         }
@@ -199,9 +200,9 @@
         </div>
     {:else if $activeTab === "favorites"}
         <div class="gifs" data-cy="giphy-selector-favorites">
-            {#each $gifs as gif, index (gif.id + "-" + index)}
-                <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                <div data-cy="gif-container" class="gif-container">
+            {#each $favorites as gif (gif.uniqueKey)}
+                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                <div data-cy="gif-container" class="gif-container" style="height: {$gifHeight}px;">
                     <button
                         data-cy="gif-container-favorite-button"
                         class="icon-container"
