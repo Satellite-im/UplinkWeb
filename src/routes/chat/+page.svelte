@@ -54,9 +54,11 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { checkMobile } from "$lib/utils/Mobile"
+    import FilesPage from "../files/+page.svelte"
 
     let loading = false
     let contentAsideOpen = false
+    let showBrowseFilesModal = false
 
     $: sidebarOpen = UIStore.state.sidebarOpen
     $: activeChat = Store.state.activeChat
@@ -718,6 +720,11 @@
                 }}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
+                    {#if showBrowseFilesModal}
+                        <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
+                            <FilesPage browseFilesForChatMode={true} />
+                        </Modal>
+                    {/if}
                     <ContextMenu
                         hook="context-menu-chat-add-attachment"
                         items={[
@@ -735,7 +742,9 @@
                                 icon: Shape.Eye,
                                 text: $_("files.browse"),
                                 appearance: Appearance.Default,
-                                onClick: () => {},
+                                onClick: () => {
+                                    showBrowseFilesModal = true
+                                },
                             },
                         ]}>
                         <Button hook="button-chat-add-attachment" slot="content" let:open on:click={open} on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>
