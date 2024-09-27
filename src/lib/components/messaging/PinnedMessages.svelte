@@ -53,8 +53,8 @@
                                     </div>
                                 </StoreResolver>
                                 <div class="pinned-button-container">
-                                    <Button hook="pinned-message-button-go-to" class="pinned-buttons" text={$_("messages.pinnedGoto")} on:click={_ => scrollTo(message.id)}></Button>
-                                    <Button hook="pinned-message-button-unpin" class="pinned-buttons" text={$_("messages.pinnedUnpin")} on:click={_ => unpin(message.id)}></Button>
+                                    <Button small hook="pinned-message-button-go-to" class="pinned-buttons" text={$_("messages.pinnedGoto")} on:click={_ => scrollTo(message.id)}></Button>
+                                    <Button small hook="pinned-message-button-unpin" class="pinned-buttons" text={$_("messages.pinnedUnpin")} on:click={_ => unpin(message.id)}></Button>
                                 </div>
                             </div>
                             {#each message.text as line}
@@ -72,6 +72,7 @@
                                             name: attachment.name,
                                             size: attachment.size,
                                             icon: Shape.Document,
+                                            displayName: attachment.name,
                                             type: "unknown/unknown",
                                             remotePath: "",
                                         }}
