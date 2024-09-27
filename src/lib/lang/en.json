@@ -173,7 +173,8 @@
         "rentSpace": "Rent Space",
         "createNode": "Create Node",
         "freeSpace": "Free Space",
-        "totalSpace": "Total Space"
+        "totalSpace": "Total Space",
+        "itemAlreadyExistsWithSameName": "Other item already exists with this name."
     },
     "payments": {
         "send": "Send",
