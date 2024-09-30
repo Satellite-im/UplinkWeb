@@ -191,7 +191,6 @@ export class CallRoom {
             }
         })
         room.onPeerStream((stream, peer, _meta) => {
-            console.log("on stream ", stream, peer, _meta)
             let participant = Object.entries(this.participants).find(p => p[1].remotePeerId === peer)
             if (participant) {
                 VoiceRTCInstance.remoteVideoCreator.create({ user: participant[1].getUser(), stream: stream })
@@ -221,7 +220,6 @@ export class CallRoom {
     }
 
     updateUserData(user: VoiceRTCUser) {
-        console.log("updating user ", user)
         let participant = Object.values(this.participants).find(p => p.did === user.did)
         if (participant) {
             participant.updateUserData(user)
@@ -245,7 +243,6 @@ export class CallRoom {
                 isDeafened: VoiceRTCInstance.callOptions.audio.deafened,
             },
         }
-        console.log("notify ", data)
         this.send(data, to)
     }
 
@@ -286,7 +283,11 @@ export class VoiceRTC {
             },
             delete: user => {
                 Store.state.activeCallMeta.update(s => {
-                    if (s[user]) s[user].stream = null
+                    if (s[user]) {
+                        s[user].stream?.getTracks().forEach(t => t.stop())
+                        s[user].stream = null
+                        delete s[user]
+                    }
                     return s
                 })
             },

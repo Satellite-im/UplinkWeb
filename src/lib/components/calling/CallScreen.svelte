@@ -51,8 +51,7 @@
 
     let isFullScreen = false
 
-    $: chats = UIStore.state.chats
-    $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
+    $: userCache = Store.getUsersLookup(chat.users)
     $: userCallOptions = VoiceRTCInstance.callOptions
     $: remoteStreams = Store.state.activeCallMeta
 
@@ -100,6 +99,7 @@
         return {
             update(_: MediaStream) {
                 debounce(() => {
+                    if (node.srcObject) (node.srcObject as MediaStream).getTracks().forEach(t => t.stop())
                     node.srcObject = stream
                     node.play()
                 }, 3)
@@ -164,8 +164,7 @@
                             isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
                             isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
                             isTalking={$userCache[user].media.is_playing_audio} />
-                    {/if}
-                    {#if $remoteStreams[user] && $remoteStreams[user].stream}
+                    {:else if $remoteStreams[user].stream}
                         <video
                             data-cy="remote-user-video"
                             id="remote-user-video"
