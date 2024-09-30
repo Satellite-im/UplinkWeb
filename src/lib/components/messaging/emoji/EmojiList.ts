@@ -19,3 +19,21 @@ export const emojiList = {
     symbols,
     flags,
 }
+
+class EmojiRegex {
+    private regex: { [i: string]: RegExp } = {}
+
+    private escapeRegExp(input: string) {
+        return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") // Escape special characters
+    }
+    getRegexFor(emoji: { name: string; glyph: string; text: string; shortname: string }): RegExp {
+        let regex = this.regex[emoji.shortname]
+        if (!regex) {
+            regex = new RegExp(`(${this.escapeRegExp(emoji.shortname)}|${this.escapeRegExp(emoji.text)})( |$)`)
+            this.regex[emoji.shortname] = regex
+        }
+        return regex
+    }
+}
+
+export const emojiRegexMap = new EmojiRegex()
