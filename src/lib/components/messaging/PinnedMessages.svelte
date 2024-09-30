@@ -123,24 +123,38 @@
         background: var(--background-alt);
         padding: var(--padding-less);
         border-radius: var(--border-radius);
+        width: 100%;
         .pinned-sender-container {
             display: flex;
-            gap: var(--gap);
-            margin-bottom: var(--padding-less);
+            width: 100%;
+            // margin-bottom: var(--padding-less);
             .pinned-sender {
+                padding-left: var(--padding);
                 display: flex;
+                width: 100%;
                 flex-direction: column;
-                width: min-content;
+                // width: min-content;
                 .sender-time {
                     color: var(--color-muted);
+                    font-size: small;
                 }
             }
         }
     }
-
-    .pinned-button-container {
-        display: flex;
-        gap: var(--gap-less);
-        margin-left: auto;
+    // .pinned-button-container {
+    //     display: inline-flex;
+    //     min-width: fit-content;
+    //     height: fit-content;
+    //     gap: var(--gap-less);
+    // }
+    @media only screen and (max-width: 600px) {
+        .pinned-button-container {
+            display: grid;
+            // margin: var(--gap-less);
+        }
+        .button {
+            height: 100%;
+            // gap: var(--gap-less);
+        }
     }
 </style>
