@@ -12,7 +12,9 @@
         if ($activeChat.typing_indicator.size === 0) {
             return ""
         } else if ($activeChat.typing_indicator.size === 1) {
-            const user = $activeChat.typing_indicator.users().map(u => $users[u])
+            const user = $activeChat.typing_indicator.users().map(u => {
+                return $users[u]
+            })
             return $_("chat.user-typing", { values: { user: user[0].name } })
         } else {
             return $_("chat.multiple-users-typing")
