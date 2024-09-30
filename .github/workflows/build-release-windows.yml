@@ -1,0 +1,77 @@
+name: Build Windows Release
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    build-windows-release:
+        permissions: write-all
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v4.2.0
+
+            - name: setup node
+              uses: actions/setup-node@v4.0.4
+              with:
+                  node-version: lts/*
+
+            - name: install Rust stable
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: install frontend dependencies
+              run: npm install
+
+            - uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Setup Certificate for Windows Signing
+              run: |
+                  echo "${{ secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > certificate.p12
+              shell: bash
+
+            - name: Set variables for Windows Signing
+              id: variables
+              run: |
+                  dir
+                  echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+                  echo "KEYPAIR_NAME=gt-standard-keypair" >> $GITHUB_OUTPUT
+                  echo "CERTIFICATE_NAME=gt-certificate" >> $GITHUB_OUTPUT
+                  echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
+                  echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
+                  echo "SM_CLIENT_CERT_FILE=certificate.p12" >> "$GITHUB_ENV"
+                  echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
+                  echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
+                  echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
+                  echo "C:\Program Files\DigiCert\DigiCert Keylocker Tools" >> $GITHUB_PATH
+              shell: bash
+
+            - name: Setup Keylocker KSP on windows
+              run: |
+                  curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/Keylockertools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o Keylockertools-windows-x64.msi 
+                  msiexec /i Keylockertools-windows-x64.msi /quiet /qn
+                  smksp_registrar.exe list 
+                  smctl.exe keypair ls 
+                  C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
+              shell: cmd
+
+            - name: Certificates Sync
+              run: |
+                  smctl windows certsync
+              shell: cmd
+
+            - name: Signing using Signtool
+              run: |
+                  signtool.exe sign /sha1 ${{ secrets.SM_CODE_SIGNING_CERT_SHA1_HASH }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "./src-tauri/target/release/bundle/msi/*.msi"
+
+            - name: Delete cert file
+              run: Remove-Item -Force certificate.p12
+
+            - name: Upload signed Windows Installer
+              uses: actions/upload-artifact@v4.4.0
+              with:
+                  name: build-windows
+                  path: src-tauri/target/release/bundle/msi/*.msi
+                  retention-days: 5
