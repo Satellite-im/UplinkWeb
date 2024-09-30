@@ -62,10 +62,9 @@
         width: 100%;
         display: inline-flex;
         padding: var(--padding);
-        background-color: var(--background); /* Default background */
+        background-color: var(--background);
         border-radius: var(--border-radius-medium);
 
-        /* When the alternate background is needed */
         &.alt-bg {
             background: var(--alt-color);
         }
