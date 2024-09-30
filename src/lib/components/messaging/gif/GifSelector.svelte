@@ -11,6 +11,7 @@
     import Button from "$lib/elements/Button.svelte"
     import { createPersistentState } from "$lib/state"
     import type { GiphyGif } from "$lib/types"
+    import { log } from "$lib/utils/Logger"
 
     const gf = new GiphyFetch(GIPHY_API_KEY)
     const searchQuery = writable("")
@@ -52,25 +53,30 @@
 
     const fetchSearchGifs = async (query: string, offsetValue: number) => {
         loading.set(true)
-        const { data } = await gf.search(query, { limit, offset: offsetValue })
-        gifs.update(gifs =>
-            gifs.concat(
-                data.map((gif: any, index: number) => ({
-                    id: gif.id,
-                    uniqueKey: generateUniqueKey(gif.id, offsetValue + index),
-                    images: {
-                        fixed_height_small: {
-                            url: gif.images.fixed_height_small.url,
+        try {
+            const { data } = await gf.search(query, { limit, offset: offsetValue })
+            gifs.update(gifs =>
+                gifs.concat(
+                    data.map((gif: any, index: number) => ({
+                        id: gif.id,
+                        uniqueKey: generateUniqueKey(gif.id, offsetValue + index),
+                        images: {
+                            fixed_height_small: {
+                                url: gif.images.fixed_height_small.url,
+                            },
+                            original: {
+                                url: gif.images.original.url,
+                            },
                         },
-                        original: {
-                            url: gif.images.original.url,
-                        },
-                    },
-                    title: gif.title,
-                }))
+                        title: gif.title,
+                    }))
+                )
             )
-        )
-        loading.set(false)
+        } catch (error) {
+            log.error(`"GIF fetch failed:" ${error}`)
+        } finally {
+            loading.set(false)
+        }
     }
 
     $: if ($searchQuery) {
@@ -168,7 +174,7 @@
 
     {#if $activeTab === "search"}
         <div class="gifs" data-cy="giphy-selector-gifs">
-            {#each $gifs as gif (gif.uniqueKey)}
+            {#each $gifs as gif, index (gif.id + "-" + index)}
                 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                 <div data-cy="gif-container" class="gif-container">
                     <button
@@ -184,6 +190,7 @@
                     <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" style="height: {$gifHeight}px;" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
                 </div>
             {/each}
+
             {#if $loading}
                 <div class="loader-container">
                     <Loader />
@@ -194,7 +201,6 @@
     {:else if $activeTab === "favorites"}
         <div class="gifs" data-cy="giphy-selector-favorites">
             {#each $favorites as gif (gif.uniqueKey)}
-                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                 <div data-cy="gif-container" class="gif-container" style="height: {$gifHeight}px;">
                     <button
                         data-cy="gif-container-favorite-button"
@@ -204,11 +210,21 @@
                         aria-label={$isFavorite(gif) ? "Remove from favorites" : "Add to favorites"}>
                         <Icon icon={Shape.Heart} class="heart-icon {$isFavorite(gif) ? 'favorited' : ''}" />
                     </button>
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                    <img src={gif.images.fixed_height_small.url} alt={gif.title} class="gif" on:click={() => selectGif(gif)} on:load={() => (gif.loaded = true)} tabindex="0" />
+                    <!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
+                    <img
+                        src={gif.images.fixed_height_small.url}
+                        alt={gif.title}
+                        class="gif"
+                        style="height: {$gifHeight}px;"
+                        role="button"
+                        aria-pressed="false"
+                        on:click={() => selectGif(gif)}
+                        on:keydown={e => (e.key === "Enter" ? selectGif(gif) : null)}
+                        on:load={() => (gif.loaded = true)}
+                        tabindex="0" />
                 </div>
             {/each}
+
             {#if $favorites.length === 0}
                 <p data-cy="text-no-favorites-yet">No favorites yet.</p>
             {/if}

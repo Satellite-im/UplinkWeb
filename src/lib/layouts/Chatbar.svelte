@@ -16,7 +16,7 @@
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
     import { UIStore } from "$lib/state/ui"
-    import { emojiList } from "$lib/components/messaging/emoji/EmojiList"
+    import { emojiList, emojiRegexMap } from "$lib/components/messaging/emoji/EmojiList"
     import { tempCDN } from "$lib/utils/CommonVariables"
     import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
@@ -26,6 +26,7 @@
     import { MessageEvent } from "warp-wasm"
     import Text from "$lib/elements/Text.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
+    import { emojiRegex } from "$lib/components/utils/Emoji"
 
     export let replyTo: MessageType | undefined = undefined
     export let filesSelected: [File?, string?][] = []
@@ -130,12 +131,9 @@
         let isThereEmoji = false
 
         emojiList.smileys_and_emotion.forEach(emoji => {
-            if (emoji.text && result.includes(emoji.text)) {
-                result = result.replaceAll(emoji.text, emoji.glyph)
-                isThereEmoji = true
-            }
-            if (emoji.shortname && result.includes(emoji.shortname)) {
-                result = result.replaceAll(emoji.shortname, emoji.glyph)
+            let reg = emojiRegexMap.getRegexFor(emoji)
+            if (result.match(reg)) {
+                result = result.replace(reg, _ => emoji.glyph)
                 isThereEmoji = true
             }
         })
