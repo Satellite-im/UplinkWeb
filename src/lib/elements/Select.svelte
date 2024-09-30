@@ -32,7 +32,7 @@
     .select-group {
         height: var(--input-height);
         color: var(--color-alt);
-        background-color: var(--color);
+        background-color: var(--alt-color-alt);
         border: var(--border-width) solid var(--border-color);
         border-radius: var(--button-border-radius);
         padding: 0 var(--padding);
