@@ -54,7 +54,7 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { checkMobile } from "$lib/utils/Mobile"
-    import FilesPage from "../files/+page.svelte"
+    import BrowseFiles from "../files/BrowseFiles.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -722,7 +722,7 @@
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     {#if showBrowseFilesModal}
                         <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
-                            <FilesPage browseFilesForChatMode={true} />
+                            <BrowseFiles />
                         </Modal>
                     {/if}
                     <ContextMenu
