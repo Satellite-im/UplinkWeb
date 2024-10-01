@@ -137,25 +137,27 @@
         border-radius: var(--border-radius);
         width: 100%;
         .pinned-message {
-            .pinned-sender-container {
-                display: flex;
-                width: 100%;
-                .pinned-sender {
-                    padding-left: var(--padding);
+            .pinned-content-container {
+                .pinned-sender-container {
                     display: flex;
                     width: 100%;
-                    flex-direction: column;
-                    flex: 1;
-                    .sender-time {
-                        color: var(--color-muted);
-                        font-size: small;
+                    .pinned-sender {
+                        padding-left: var(--padding);
+                        display: flex;
+                        width: 100%;
+                        flex-direction: column;
+                        flex: 1;
+                        .sender-time {
+                            color: var(--color-muted);
+                            font-size: small;
+                        }
                     }
                 }
-            }
-            .pinned-button-container {
-                display: flex;
-                height: 100%;
-                gap: var(--gap-less);
+                .pinned-button-container {
+                    display: flex;
+                    height: 100%;
+                    gap: var(--gap-less);
+                }
             }
         }
     }
