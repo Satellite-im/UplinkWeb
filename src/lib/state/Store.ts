@@ -9,7 +9,7 @@ import { UIStore } from "./ui"
 import * as wasm from "warp-wasm"
 import { ToastMessage } from "./ui/toast"
 import { v4 as uuidv4 } from "uuid"
-import { Logger } from "$lib/utils/Logger"
+import { log, Logger } from "$lib/utils/Logger"
 import { ConversationStore } from "./conversation"
 import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
 import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -340,18 +340,27 @@ class GlobalStore {
                 ...defaultUser,
                 loading: true,
             })
-            MultipassStoreInstance.identity_from_did(did)
-                .then(fetched => {
-                    if (fetched) {
-                        create.set(fetched)
-                    } else create.set({ ...get(create), loading: false })
-                })
-                .catch(_ => create.set({ ...get(create), loading: false }))
+            this.fetchIdentity(did, create)
             cache[did] = create
             this.state.userCache.set(cache)
             return create
         }
         return cached
+    }
+
+    private async fetchIdentity(did: string, writable: Writable<User>) {
+        const MAX_TRIES = 3
+        let user: User | undefined
+        for (let tries = 0; tries < MAX_TRIES; tries++) {
+            user = await MultipassStoreInstance.identity_from_did(did)
+            if (user) {
+                writable.set(user)
+                return
+            } else {
+                await new Promise(resolve => setTimeout(resolve, 3000))
+            }
+        }
+        log.error(`Couldn't fetch identity ${did} after multiple attempts`)
     }
 
     /**
