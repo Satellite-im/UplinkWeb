@@ -46,6 +46,7 @@ class GlobalStore {
             openFolders: createPersistentState<Record<string, boolean>>("uplink.openFolders", {}),
             toasts: writable({}),
             userCache: writable({}),
+            pageState: writable(""),
         }
     }
 

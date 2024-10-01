@@ -74,7 +74,8 @@ class MultipassStore {
                             if (incoming) {
                                 Store.addToastNotification(
                                     new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2, undefined, undefined, () => {
-                                        goto(Route.Friends, { state: { tab: "active" } })
+                                        goto(Route.Friends)
+                                        Store.state.pageState.set("active")
                                     }),
                                     Sounds.Notification
                                 )
@@ -82,7 +83,8 @@ class MultipassStore {
                             } else {
                                 Store.addToastNotification(
                                     new ToastMessage("New friend request.", `You received a new friend request.`, 2, undefined, undefined, () => {
-                                        goto(Route.Friends, { state: { tab: "active" } })
+                                        goto(Route.Friends)
+                                        Store.state.pageState.set("active")
                                     }),
                                     Sounds.Notification
                                 )
@@ -595,7 +597,7 @@ class MultipassStore {
                             overlay: "",
                         },
                         status: status,
-                        status_message: identity === undefined ? "" : identity.status_message ?? "",
+                        status_message: identity === undefined ? "" : (identity.status_message ?? ""),
                     },
                     integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
                     media: {
