@@ -556,12 +556,6 @@
         {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
-        <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
-            <BrowseFiles
-                on:onSelectedFiles={filesPath => {
-                    files = [...files, filesPath.detail]
-                }} />
-        </Modal>
         <Conversation loading={loading}>
             {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
@@ -729,6 +723,7 @@
                             <BrowseFiles
                                 on:onSelectedFiles={filesPath => {
                                     files = [...files, filesPath.detail]
+                                    console.log(files)
                                 }} />
                         </Modal>
                     {/if}
