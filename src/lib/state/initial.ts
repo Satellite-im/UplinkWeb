@@ -28,4 +28,5 @@ export interface IState {
     // A cache of all fetched user data
     // We use a Writable<User> to also allow easy subscription to changes if only that user interests us
     userCache: Writable<{ [key: string]: Writable<User> }>
+    pageState: Writable<string>
 }
