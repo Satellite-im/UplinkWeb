@@ -18,8 +18,8 @@
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { ToastMessage } from "$lib/state/ui/toast"
     import { CommonInputRules } from "$lib/utils/CommonInputRules"
-    import { page } from "$app/stores"
     import CreateGroup from "$lib/components/group/CreateGroup.svelte"
+    import { onDestroy } from "svelte"
 
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
@@ -33,12 +33,18 @@
 
     let tab: "all" | "active" | "blocked" = "all"
 
-    $: {
-        let state = $page.state as any
-        if (state.tab) {
-            tab = state.tab
+    let unsub = Store.state.pageState.subscribe(s => {
+        function isTab(value: string): value is "all" | "active" | "blocked" {
+            return value === "all" || value === "active" || value === "blocked"
         }
-    }
+        if (isTab(s)) {
+            tab = s
+        }
+    })
+
+    onDestroy(() => {
+        unsub()
+    })
 
     function toggleSidebar(): void {
         UIStore.toggleSidebar()
