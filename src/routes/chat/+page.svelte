@@ -391,7 +391,6 @@
                 <Icon icon={Shape.ChatPlus} alt />
             </Button>
         </div>
-
         {#each $chats.slice().sort((a, b) => {
             const dateA = new Date(a.last_message_at || 0)
             const dateB = new Date(b.last_message_at || 0)
@@ -557,7 +556,12 @@
         {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
-
+        <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
+            <BrowseFiles
+                on:onSelectedFiles={filesPath => {
+                    files = [...files, filesPath.detail]
+                }} />
+        </Modal>
         <Conversation loading={loading}>
             {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
@@ -722,7 +726,10 @@
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     {#if showBrowseFilesModal}
                         <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
-                            <BrowseFiles />
+                            <BrowseFiles
+                                on:onSelectedFiles={filesPath => {
+                                    files = [...files, filesPath.detail]
+                                }} />
                         </Modal>
                     {/if}
                     <ContextMenu

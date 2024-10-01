@@ -8,7 +8,7 @@
     import Label from "$lib/elements/Label.svelte"
     import prettyBytes from "pretty-bytes"
     import { ImageEmbed, ImageFile, Modal, FileFolder, ContextMenu, ChatFilter, ProfilePicture, ProfilePictureMany } from "$lib/components"
-    import { onMount } from "svelte"
+    import { createEventDispatcher, onMount } from "svelte"
     import type { FileInfo } from "$lib/types"
     import { writable } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
@@ -23,35 +23,17 @@
     import path from "path"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
+    let dispatch = createEventDispatcher()
+
+    function onSend(filesToSend: string[]) {
+        dispatch("selectedFiles", filesToSend)
+    }
+
     let loading: boolean = false
-    let isContextMenuOpen: boolean = false
-    let isDraggingFromLocal = false
-    let filesCount = 0
-    $: isFadingOutDragDropOverlay = false
     $: users = Store.getUsersLookup($activeChat.users)
 
-    function toggleSidebar(): void {
-        UIStore.toggleSidebar()
-    }
-
-    let tabRoutes: string[] = ["chats", "files"]
-    $: openFolders = Store.state.openFolders
-    function toggleFolder(folderId: string | number) {
-        const currentOpenFolders = $openFolders
-        const updatedOpenFolders = {
-            ...currentOpenFolders,
-            [folderId]: !currentOpenFolders[folderId],
-        }
-        Store.updateFolderTree(updatedOpenFolders)
-    }
-
-    let dragging_files = 0
-    let previewImage: string | null
-    let search_filter: string
-    let search_component: ChatFilter
     $: files = Store.state.files
     let currentFolderIdStore = writable<string>("")
-    let rename: string | undefined
     let canGoBack = writable(false)
 
     async function openFolder(folder: FileInfo) {
@@ -224,33 +206,26 @@
         const cleanedBase64String = base64String.replace("dataimage/jpegbase64", "")
         return `data:image/jpeg;base64,${cleanedBase64String}`
     }
+
+    let selectedItems = new Set<string>()
+
+    function toggleSelect(remotePath: string) {
+        if (selectedItems.has(remotePath)) {
+            selectedItems.delete(remotePath)
+        } else {
+            selectedItems.add(remotePath)
+        }
+        selectedItems = new Set(selectedItems)
+        console.log(selectedItems)
+    }
+
+    function isSelected(remotePath: string) {
+        return selectedItems.has(remotePath)
+    }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div id="page" on:dragover|preventDefault>
-    <!-- Modals -->
-    {#if previewImage}
-        <Modal
-            hook="preview-image-modal"
-            on:close={_ => {
-                previewImage = null
-            }}>
-            <svelte:fragment slot="controls">
-                <Button
-                    hook="button-close-preview-image-modal"
-                    icon
-                    small
-                    appearance={Appearance.Alt}
-                    on:click={_ => {
-                        previewImage = null
-                    }}>
-                    <Icon icon={Shape.XMark} />
-                </Button>
-            </svelte:fragment>
-            <ImageEmbed big source={previewImage} />
-        </Modal>
-    {/if}
-
     <div class="content">
         <Topbar>
             <div slot="before" class="before">
@@ -264,6 +239,17 @@
                         {prettyBytes(ConstellationStoreInstance.MAX_STORAGE_SIZE)}
                     </Text>
                 </button>
+                <Button
+                    hook="button-select_files"
+                    tooltip="Answer"
+                    text="Send"
+                    appearance={Appearance.Default}
+                    loading={loading}
+                    on:click={_ => {
+                        onSend(Array.from(selectedItems))
+                    }}>
+                    <Icon icon={Shape.ArrowRight} />
+                </Button>
             </div>
         </Topbar>
         {#if $canGoBack}
@@ -275,18 +261,24 @@
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             {#each $files as item}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                {#key item}
+                {#key item.id && selectedItems.has(item.remotePath)}
                     <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                         {#if item.type === "file"}
-                            <FileFolder
-                                itemId={item.id}
-                                hook="file-{item.name}"
-                                onRename={async _ => {
-                                    return false
-                                }}
-                                isRenaming={item.isRenaming}
-                                kind={item.imageThumbnail ? FilesItemKind.Image : FilesItemKind.File}
-                                info={item} />
+                            <div class="item-with-checkbox" role="button" tabindex="0" on:click={() => toggleSelect(item.remotePath)}>
+                                <div class="file-item">
+                                    <input type="checkbox" checked={isSelected(item.remotePath)} />
+                                </div>
+                                <FileFolder
+                                    itemId={item.id}
+                                    avoidOpenImageModal={true}
+                                    hook="file-{item.name}"
+                                    onRename={async _ => {
+                                        return false
+                                    }}
+                                    isRenaming={item.isRenaming}
+                                    kind={item.imageThumbnail ? FilesItemKind.Image : FilesItemKind.File}
+                                    info={item} />
+                            </div>
                         {:else if item.type === "folder"}
                             {#if item.chat}
                                 {#if item.chat.kind === ChatType.DirectMessage}
@@ -317,13 +309,7 @@
                                 }}
                                 isRenaming={item.isRenaming} />
                         {:else if item.type === "image"}
-                            <ImageFile
-                                filesize={item.size}
-                                name={item.name}
-                                ImgSource={item.source}
-                                on:click={_ => {
-                                    previewImage = item.source
-                                }} />
+                            <ImageFile filesize={item.size} name={item.name} ImgSource={item.source} on:click={_ => {}} />
                         {/if}
                     </div>
                 {/key}
@@ -405,6 +391,17 @@
         }
         .folderList {
             margin-left: -20px;
+        }
+
+        .item-with-checkbox:hover {
+            border: 1px solid var(--primary-color);
+            cursor: pointer;
+        }
+
+        .file-item {
+            position: absolute;
+            top: 5px;
+            left: 15px;
         }
 
         .content {
