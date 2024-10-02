@@ -71,6 +71,12 @@
                 })
             }
         })
+
+        filesSelectedFromStorage.forEach(file => {
+            attachments.push({
+                file: file.remotePath,
+            })
+        })
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)

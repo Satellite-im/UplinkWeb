@@ -211,7 +211,6 @@
             selectedItems.add(item)
         }
         selectedItems = new Set(selectedItems)
-        console.log(selectedItems)
     }
 
     function isSelected(item: FileInfo) {

@@ -15,8 +15,6 @@
     function removeFileFromStorage(file: FileInfo) {
         dispatcher("removeFileFromStorage", file)
     }
-
-    console.log("filesSelectedFromStorage: ---> ", filesSelectedFromStorage)
 </script>
 
 <div class="files-selected">

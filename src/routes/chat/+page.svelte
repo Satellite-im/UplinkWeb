@@ -718,7 +718,7 @@
                     }
                     return false
                 }}
-                on:onsend={_ => (files = [])}
+                on:onsend={_ => ((files = []), (filesFromStorage = []))}
                 on:input={_ => {
                     typing()
                 }}>
@@ -728,11 +728,8 @@
                         <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
                             <BrowseFiles
                                 on:selectedFiles={filesFromStorageSelected => {
-                                    console.log("0 -- FILES: ", filesFromStorageSelected.detail)
-
                                     showBrowseFilesModal = false
                                     filesFromStorage = [...filesFromStorage, ...filesFromStorageSelected.detail]
-                                    console.log("FILES: ", filesFromStorage)
                                 }} />
                         </Modal>
                     {/if}
