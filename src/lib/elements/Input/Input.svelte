@@ -97,7 +97,7 @@
     }
 
     $: if (rich && editor) {
-        editor.value($writableValue)
+        if (editor.value() !== $writableValue) editor.value($writableValue)
     }
 
     export { clazz as class }
@@ -138,6 +138,8 @@
 
 {#key hook}
     <div
+        id={hook}
+        data-cy={hook}
         class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
         data-tooltip={tooltip}
         role="none"
@@ -150,8 +152,6 @@
             <slot></slot>
             <!-- svelte-ignore a11y-autofocus -->
             <input
-                id={hook}
-                data-cy={hook}
                 class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
                 type="text"
                 bind:this={$input}
