@@ -96,9 +96,6 @@
     let replyTo: MessageType | undefined = undefined
     let reactingTo: string | undefined
     let fileUpload: FileInput
-    let files: [File?, string?][] = []
-    let filesFromStorage: FileInfo[] = []
-    let browseFiles: boolean = false
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
@@ -114,21 +111,42 @@
 
     function dragDrop(event: DragEvent) {
         event.preventDefault()
+        let files: [File?, string?][] = []
         dragging_files = 0
         // upload files
         for (let file of event.dataTransfer?.files!) {
             files.push([file, undefined])
         }
-        // Force an update
-        files = files
+        Store.state.chatAttachmentsToSend.update(attachments => {
+            const currentChatFiles = attachments[$activeChat.id] || { localFiles: [], storageFiles: [] }
+
+            return {
+                ...attachments,
+                [$activeChat.id]: {
+                    localFiles: [...currentChatFiles.localFiles, ...files],
+                    storageFiles: [...currentChatFiles.storageFiles],
+                },
+            }
+        })
     }
 
     function addFilesToUpload(selected: File[]) {
+        let files: [File?, string?][] = []
         for (let file of selected) {
             files.push([file, undefined])
         }
-        // Force an update
-        files = files
+
+        Store.state.chatAttachmentsToSend.update(attachments => {
+            const currentChatFiles = attachments[$activeChat.id] || { localFiles: [], storageFiles: [] }
+
+            return {
+                ...attachments,
+                [$activeChat.id]: {
+                    localFiles: [...currentChatFiles.localFiles, ...files],
+                    storageFiles: [...currentChatFiles.storageFiles],
+                },
+            }
+        })
     }
 
     function build_context_items(message: MessageType) {
@@ -691,22 +709,42 @@
             {/if}
         </Conversation>
 
-        {#if files.length > 0 || filesFromStorage.length > 0}
+        {#if (get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.localFiles?.length || 0) > 0 || (get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.storageFiles?.length || 0) > 0}
             <FileUploadPreview
-                filesSelected={files}
-                filesSelectedFromStorage={filesFromStorage}
+                activeChat={$activeChat}
                 on:removeFileFromStorage={e => {
-                    filesFromStorage = filesFromStorage.filter(f => f.remotePath !== e.detail.remotePath)
+                    Store.state.chatAttachmentsToSend.update(files => {
+                        const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
+                        const filteredStorageFiles = currentChatFiles.storageFiles.filter(f => f.remotePath !== e.detail.remotePath)
+
+                        return {
+                            ...files,
+                            [$activeChat.id]: {
+                                localFiles: [...currentChatFiles.localFiles],
+                                storageFiles: [...filteredStorageFiles],
+                            },
+                        }
+                    })
                 }}
                 on:remove={e => {
-                    files = files.filter(([f, p]) => f !== e.detail && p !== e.detail)
+                    Store.state.chatAttachmentsToSend.update(files => {
+                        const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
+                        const filteredLocalFiles = currentChatFiles.localFiles.filter(([f, p]) => f !== e.detail && p !== e.detail)
+                        return {
+                            ...files,
+                            [$activeChat.id]: {
+                                localFiles: [...filteredLocalFiles],
+                                storageFiles: [...currentChatFiles.storageFiles],
+                            },
+                        }
+                    })
                 }} />
         {/if}
 
         {#if $activeChat.users.length > 0}
             <Chatbar
-                filesSelected={files}
-                filesSelectedFromStorage={filesFromStorage}
+                filesSelected={get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.localFiles}
+                filesSelectedFromStorage={get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.storageFiles}
                 replyTo={replyTo}
                 activeChat={$activeChat}
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
@@ -718,7 +756,16 @@
                     }
                     return false
                 }}
-                on:onsend={_ => ((files = []), (filesFromStorage = []))}
+                on:onsend={_ =>
+                    Store.state.chatAttachmentsToSend.update(files => {
+                        return {
+                            ...files,
+                            [$activeChat.id]: {
+                                localFiles: [],
+                                storageFiles: [],
+                            },
+                        }
+                    })}
                 on:input={_ => {
                     typing()
                 }}>
@@ -729,7 +776,17 @@
                             <BrowseFiles
                                 on:selectedFiles={filesFromStorageSelected => {
                                     showBrowseFilesModal = false
-                                    filesFromStorage = [...filesFromStorage, ...filesFromStorageSelected.detail]
+                                    Store.state.chatAttachmentsToSend.update(files => {
+                                        const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
+
+                                        return {
+                                            ...files,
+                                            [$activeChat.id]: {
+                                                localFiles: [...currentChatFiles.localFiles],
+                                                storageFiles: [...currentChatFiles.storageFiles, ...filesFromStorageSelected.detail],
+                                            },
+                                        }
+                                    })
                                 }} />
                         </Modal>
                     {/if}

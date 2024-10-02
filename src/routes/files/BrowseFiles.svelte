@@ -102,6 +102,10 @@
     async function updateFilesInfo(newFilesInfo: FileInfo[]) {
         const updatedFilesInfo = await Promise.all(
             newFilesInfo.map(async element => {
+                if (!element.remotePath.includes("chat_media")) {
+                    return element
+                }
+
                 const chat = UIStore.getChat(element.name)
                 if (chat && chat.name === "") {
                     const user = await MultipassStoreInstance.identity_from_did(chat.users[1])

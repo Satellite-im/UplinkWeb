@@ -1,13 +1,25 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
-    import type { FileInfo } from "$lib/types"
+    import { Store } from "$lib/state/Store"
+    import type { Chat, FileInfo } from "$lib/types"
     import { createEventDispatcher } from "svelte"
 
     import { _ } from "svelte-i18n"
+    import { get, writable } from "svelte/store"
 
-    export let filesSelected: [File?, string?][] = []
-    export let filesSelectedFromStorage: FileInfo[] = []
+    export let activeChat: Chat
+
+    let chatAttachmentsToSend = Store.state.chatAttachmentsToSend
+
+    let filesSelectedFromStorage = writable<FileInfo[]>([])
+    let filesSelected = writable<[File?, string?][]>([])
+
+    Store.state.chatAttachmentsToSend.subscribe(_ => {
+        filesSelectedFromStorage.set(get(chatAttachmentsToSend)[activeChat.id]?.storageFiles || [])
+        filesSelected.set(get(chatAttachmentsToSend)[activeChat.id]?.localFiles || [])
+    })
+
     const dispatcher = createEventDispatcher()
     function removeFile(file: File | string) {
         dispatcher("remove", file)
@@ -18,7 +30,7 @@
 </script>
 
 <div class="files-selected">
-    {#each filesSelected as [file, path]}
+    {#each $filesSelected as [file, path]}
         <div class="selected-file">
             <div class="file-preview">
                 {#if file && typeof file === "object" && file.type.startsWith("image")}
@@ -45,7 +57,7 @@
             </div>
         </div>
     {/each}
-    {#each filesSelectedFromStorage as remoteFile}
+    {#each $filesSelectedFromStorage as remoteFile}
         <div class="selected-file">
             <div class="file-preview">
                 {#if remoteFile && remoteFile.imageThumbnail?.startsWith("data:image")}
