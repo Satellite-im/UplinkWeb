@@ -571,46 +571,53 @@ class MultipassStore {
         }
     }
 
-    async identity_from_did(id: string): Promise<User | undefined> {
+    async identity_from_did(id: string, maxRetries = 3): Promise<User | undefined> {
         let multipass = get(this.multipassWritable)
+        let lastErr
         if (multipass) {
-            try {
-                let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
-                let profilePicture = await this.getUserProfilePicture(id)
-                let bannerPicture = await this.getUserBannerPicture(id)
-                let status = await this.getUserStatus(id)
-                return {
-                    ...defaultUser,
-                    key: identity === undefined ? id : identity.did_key,
-                    name: identity === undefined ? id : identity.username,
-                    profile: {
-                        ...defaultProfileData,
-                        photo: {
-                            image: profilePicture,
-                            frame: {
-                                name: "",
-                                image: "",
+            for (let tries = 0; tries < maxRetries; tries++) {
+                try {
+                    let identity = (await multipass.get_identity(wasm.Identifier.DID, id))[0]
+                    let profilePicture = await this.getUserProfilePicture(id)
+                    let bannerPicture = await this.getUserBannerPicture(id)
+                    let status = await this.getUserStatus(id)
+                    return {
+                        ...defaultUser,
+                        key: identity === undefined ? id : identity.did_key,
+                        name: identity === undefined ? id : identity.username,
+                        profile: {
+                            ...defaultProfileData,
+                            photo: {
+                                image: profilePicture,
+                                frame: {
+                                    name: "",
+                                    image: "",
+                                },
                             },
+                            banner: {
+                                image: bannerPicture,
+                                overlay: "",
+                            },
+                            status: status,
+                            status_message: identity === undefined ? "" : (identity.status_message ?? ""),
                         },
-                        banner: {
-                            image: bannerPicture,
-                            overlay: "",
+                        integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
+                        media: {
+                            is_playing_audio: false,
+                            is_streaming_video: false,
+                            is_muted: false,
+                            is_deafened: false,
+                            is_unknown_status: false,
                         },
-                        status: status,
-                        status_message: identity === undefined ? "" : (identity.status_message ?? ""),
-                    },
-                    integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
-                    media: {
-                        is_playing_audio: false,
-                        is_streaming_video: false,
-                        is_muted: false,
-                        is_deafened: false,
-                        is_unknown_status: false,
-                    },
+                    }
+                } catch (error) {
+                    lastErr = error
+                    await new Promise(resolve => setTimeout(resolve, 3000))
                 }
-            } catch (error) {
-                log.error(`Couldn't fetch identity ${id}: ${error}`)
             }
+        }
+        if (lastErr) {
+            log.error(`Couldn't fetch identity ${id}: ${lastErr}`)
         }
         return undefined
     }
