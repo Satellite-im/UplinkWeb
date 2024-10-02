@@ -58,7 +58,7 @@
     }
 
     let clazz = ""
-    let input: HTMLElement
+    $: input = writable<HTMLElement | null>(null)
     const dispatch = createEventDispatcher()
     const writableValue = writable(value)
 
@@ -68,35 +68,36 @@
     let onsend: any[] = []
     let editor: MarkdownEditor
 
-    if (rich) {
-        onMount(() => {
-            if (autoFocus) input.focus()
-            editor = new MarkdownEditor(input, {
-                keys: MarkdownEditor.ChatEditorKeys(() => send()),
-                only_autolink: true,
-                extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
-            })
-            // Init editor with initial value
-            editor.value(value)
-            var line = editor.codemirror.state.doc.line(editor.codemirror.state.doc.lines)
-            editor.codemirror.dispatch({
-                selection: { head: line.to, anchor: line.to },
-            })
-            if (autoFocus) editor.codemirror.focus()
-            // @ts-ignore
-            editor.updatePlaceholder(input.placeholder)
-            editor.registerListener("input", ({ value: val }: { value: string }) => {
-                writableValue.set(val)
-                onInput()
-            })
-            onsend.push(() => {
-                editor.value("")
-            })
+    $: if (rich && $input && (!editor || !Array.from($input.parentNode!.children).some(el => el === editor.codemirror.dom))) {
+        if (editor) {
+            editor.codemirror.destroy()
+        }
+        let input = $input
+        editor = new MarkdownEditor(input, {
+            keys: MarkdownEditor.ChatEditorKeys(() => send()),
+            only_autolink: true,
+            extensions: [EditorView.editorAttributes.of({ class: input.classList.toString() })],
+        })
+        // Init editor with initial value
+        editor.value(value)
+        let line = editor.codemirror.state.doc.line(editor.codemirror.state.doc.lines)
+        editor.codemirror.dispatch({
+            selection: { head: line.to, anchor: line.to },
+        })
+        if (autoFocus) editor.codemirror.focus()
+        // @ts-ignore
+        editor.updatePlaceholder(input.placeholder)
+        editor.registerListener("input", ({ value: val }: { value: string }) => {
+            writableValue.set(val)
+            onInput()
+        })
+        onsend.push(() => {
+            editor.value("")
         })
     }
 
     $: if (rich && editor) {
-        editor.value($writableValue)
+        if (editor.value() !== $writableValue) editor.value($writableValue)
     }
 
     export { clazz as class }
@@ -137,6 +138,8 @@
 
 {#key hook}
     <div
+        id={hook}
+        data-cy={hook}
         class="input-group {alt ? 'alt' : ''} {highlight !== null ? `highlight-${highlight}` : ''} {tooltip ? 'tooltip' : ''} {clazz || ''} {rich ? 'multiline' : ''}"
         data-tooltip={tooltip}
         role="none"
@@ -149,11 +152,9 @@
             <slot></slot>
             <!-- svelte-ignore a11y-autofocus -->
             <input
-                id={hook}
-                data-cy={hook}
                 class="input {centered ? 'centered' : ''} {disabled ? 'disabled' : ''}"
                 type="text"
-                bind:this={input}
+                bind:this={$input}
                 on:focus={handleFocus}
                 bind:value={$writableValue}
                 placeholder={placeholder}
