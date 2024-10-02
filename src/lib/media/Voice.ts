@@ -444,9 +444,9 @@ export class VoiceRTC {
         let accepted = false
 
         let conn: DataConnection | undefined
+        let connected = false
         while (!handled && !accepted && attempts < maxRetries) {
             try {
-                let connected = conn !== undefined
                 if (!conn) {
                     log.debug(`Trying to send invitation send out to ${peer} ${conn}`)
                     conn = this.localPeer!.connect(peer, {
@@ -482,10 +482,8 @@ export class VoiceRTC {
                         }
                     })
                 }
-                await new Promise(resolve => setTimeout(resolve, 1000))
-                if (!connected) {
-                    conn = undefined
-                } else {
+                await new Promise(resolve => setTimeout(resolve, 5000))
+                if (connected) {
                     // If connection has been made let it ring for 30 sec.
                     await new Promise(resolve => setTimeout(resolve, 30000))
                     conn.close()
