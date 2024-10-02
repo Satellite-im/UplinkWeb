@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
-    import { Appearance, ChatType, FilesItemKind, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, ChatType, FilesItemKind, Shape, Size } from "$lib/enums"
     import { Topbar } from "$lib/layouts"
 
     import { _ } from "svelte-i18n"
@@ -20,7 +20,7 @@
 
     let dispatch = createEventDispatcher()
 
-    function onSend(filesToSend: string[]) {
+    function onSend(filesToSend: FileInfo[]) {
         dispatch("selectedFiles", filesToSend)
     }
 
@@ -202,20 +202,20 @@
         return `data:image/jpeg;base64,${cleanedBase64String}`
     }
 
-    let selectedItems = new Set<string>()
+    let selectedItems = new Set<FileInfo>()
 
-    function toggleSelect(remotePath: string) {
-        if (selectedItems.has(remotePath)) {
-            selectedItems.delete(remotePath)
+    function toggleSelect(item: FileInfo) {
+        if (selectedItems.has(item)) {
+            selectedItems.delete(item)
         } else {
-            selectedItems.add(remotePath)
+            selectedItems.add(item)
         }
         selectedItems = new Set(selectedItems)
         console.log(selectedItems)
     }
 
-    function isSelected(remotePath: string) {
-        return selectedItems.has(remotePath)
+    function isSelected(item: FileInfo) {
+        return selectedItems.has(item)
     }
 </script>
 
@@ -256,12 +256,12 @@
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             {#each $files as item}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                {#key item.id && selectedItems.has(item.remotePath)}
+                {#key item.id && selectedItems.has(item)}
                     <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                         {#if item.type === "file"}
-                            <div class="item-with-checkbox" role="button" tabindex="0" on:click={() => toggleSelect(item.remotePath)}>
+                            <div class="item-with-checkbox" role="button" tabindex="0" on:click={() => toggleSelect(item)}>
                                 <div class="file-item">
-                                    <input type="checkbox" checked={isSelected(item.remotePath)} />
+                                    <input type="checkbox" checked={isSelected(item)} />
                                 </div>
                                 <FileFolder
                                     itemId={item.id}

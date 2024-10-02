@@ -9,7 +9,7 @@
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { Chat, GiphyGif, User } from "$lib/types"
+    import type { Chat, FileInfo, GiphyGif, User } from "$lib/types"
     import { Message, PopupButton } from "$lib/components"
     import { OperationState, type Message as MessageType } from "$lib/types"
     import { FileEmbed, ImageEmbed, ProfilePicture, STLViewer } from "$lib/components"
@@ -25,10 +25,10 @@
     import { VoiceRTCMessageType } from "$lib/media/Voice"
     import Text from "$lib/elements/Text.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
-    import { emojiRegex } from "$lib/components/utils/Emoji"
 
     export let replyTo: MessageType | undefined = undefined
     export let filesSelected: [File?, string?][] = []
+    export let filesSelectedFromStorage: FileInfo[] = []
     export let emojiClickHook: (emoji: string) => boolean
     export let activeChat: Chat
     export const typing: User[] = []
@@ -191,6 +191,7 @@
                                             icon: Shape.Document,
                                             type: "unknown/unknown",
                                             remotePath: "",
+                                            displayName: attachment.name,
                                         }} />
                                 {:else if attachment.kind === MessageAttachmentKind.Image}
                                     <ImageEmbed source={attachment.location} name={attachment.name} filesize={attachment.size} />

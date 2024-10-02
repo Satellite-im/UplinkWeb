@@ -39,7 +39,7 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import type { Attachment, Message as MessageType, User } from "$lib/types"
+    import type { Attachment, FileInfo, Message as MessageType, User } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
     import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
@@ -97,6 +97,7 @@
     let reactingTo: string | undefined
     let fileUpload: FileInput
     let files: [File?, string?][] = []
+    let filesFromStorage: FileInfo[] = []
     let browseFiles: boolean = false
 
     $: chats = UIStore.state.chats
@@ -690,9 +691,13 @@
             {/if}
         </Conversation>
 
-        {#if files.length > 0}
+        {#if files.length > 0 || filesFromStorage.length > 0}
             <FileUploadPreview
                 filesSelected={files}
+                filesSelectedFromStorage={filesFromStorage}
+                on:removeFileFromStorage={e => {
+                    filesFromStorage = filesFromStorage.filter(f => f.remotePath !== e.detail.remotePath)
+                }}
                 on:remove={e => {
                     files = files.filter(([f, p]) => f !== e.detail && p !== e.detail)
                 }} />
@@ -701,6 +706,7 @@
         {#if $activeChat.users.length > 0}
             <Chatbar
                 filesSelected={files}
+                filesSelectedFromStorage={filesFromStorage}
                 replyTo={replyTo}
                 activeChat={$activeChat}
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
@@ -721,9 +727,12 @@
                     {#if showBrowseFilesModal}
                         <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
                             <BrowseFiles
-                                on:onSelectedFiles={filesPath => {
-                                    files = [...files, filesPath.detail]
-                                    console.log(files)
+                                on:selectedFiles={filesFromStorageSelected => {
+                                    console.log("0 -- FILES: ", filesFromStorageSelected.detail)
+
+                                    showBrowseFilesModal = false
+                                    filesFromStorage = [...filesFromStorage, ...filesFromStorageSelected.detail]
+                                    console.log("FILES: ", filesFromStorage)
                                 }} />
                         </Modal>
                     {/if}

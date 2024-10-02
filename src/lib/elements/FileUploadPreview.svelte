@@ -1,29 +1,36 @@
 <script lang="ts">
     import { Button, Icon, Text } from "$lib/elements"
     import { Shape, Size } from "$lib/enums"
+    import type { FileInfo } from "$lib/types"
     import { createEventDispatcher } from "svelte"
 
     import { _ } from "svelte-i18n"
 
     export let filesSelected: [File?, string?][] = []
+    export let filesSelectedFromStorage: FileInfo[] = []
     const dispatcher = createEventDispatcher()
     function removeFile(file: File | string) {
         dispatcher("remove", file)
     }
+    function removeFileFromStorage(file: FileInfo) {
+        dispatcher("removeFileFromStorage", file)
+    }
+
+    console.log("filesSelectedFromStorage: ---> ", filesSelectedFromStorage)
 </script>
 
 <div class="files-selected">
     {#each filesSelected as [file, path]}
         <div class="selected-file">
             <div class="file-preview">
-                {#if file && file.type.startsWith("image")}
+                {#if file && typeof file === "object" && file.type.startsWith("image")}
                     <img class="file-preview-image" src={URL.createObjectURL(file)} alt="" />
                 {:else}
                     <Icon icon={Shape.Document} />
                 {/if}
             </div>
             <div class="details">
-                <Text size={Size.Smallest}>{file ? file.name : path}</Text>
+                <Text size={Size.Smallest}>{file && typeof file === "object" ? file.name : path}</Text>
             </div>
             <div class="control">
                 <Button
@@ -34,6 +41,29 @@
                         } else if (path) {
                             removeFile(path)
                         }
+                    }}>
+                    <Icon icon={Shape.Trash} />
+                </Button>
+            </div>
+        </div>
+    {/each}
+    {#each filesSelectedFromStorage as remoteFile}
+        <div class="selected-file">
+            <div class="file-preview">
+                {#if remoteFile && remoteFile.imageThumbnail?.startsWith("data:image")}
+                    <img class="file-preview-image" src={remoteFile.imageThumbnail} alt="" />
+                {:else}
+                    <Icon icon={Shape.Document} />
+                {/if}
+            </div>
+            <div class="details">
+                <Text size={Size.Smallest}>{remoteFile.displayName ?? remoteFile.name}</Text>
+            </div>
+            <div class="control">
+                <Button
+                    icon
+                    on:click={_ => {
+                        removeFileFromStorage(remoteFile)
                     }}>
                     <Icon icon={Shape.Trash} />
                 </Button>
