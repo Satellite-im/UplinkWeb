@@ -772,19 +772,9 @@
                     {#if showBrowseFilesModal}
                         <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded large>
                             <BrowseFiles
-                                on:selectedFiles={filesFromStorageSelected => {
+                                activeChat={$activeChat}
+                                on:selectedFiles={_ => {
                                     showBrowseFilesModal = false
-                                    Store.state.chatAttachmentsToSend.update(files => {
-                                        const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
-
-                                        return {
-                                            ...files,
-                                            [$activeChat.id]: {
-                                                localFiles: [...currentChatFiles.localFiles],
-                                                storageFiles: [...currentChatFiles.storageFiles, ...filesFromStorageSelected.detail],
-                                            },
-                                        }
-                                    })
                                 }} />
                         </Modal>
                     {/if}

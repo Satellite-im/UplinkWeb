@@ -6,7 +6,7 @@
     import { createEventDispatcher } from "svelte"
 
     import { _ } from "svelte-i18n"
-    import { derived, get, writable } from "svelte/store"
+    import { derived } from "svelte/store"
 
     export let activeChat: Chat
 

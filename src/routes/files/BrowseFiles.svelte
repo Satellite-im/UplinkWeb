@@ -1,31 +1,39 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
     import { Appearance, ChatType, FilesItemKind, Shape, Size } from "$lib/enums"
-    import { Controls, Topbar } from "$lib/layouts"
+    import { Controls } from "$lib/layouts"
 
     import { _ } from "svelte-i18n"
-    import Text from "$lib/elements/Text.svelte"
-    import Label from "$lib/elements/Label.svelte"
-    import prettyBytes from "pretty-bytes"
     import { ImageFile, FileFolder, ProfilePicture, ProfilePictureMany } from "$lib/components"
     import { createEventDispatcher, onMount } from "svelte"
     import type { FileInfo } from "$lib/types"
-    import { writable } from "svelte/store"
+    import { get, writable } from "svelte/store"
     import { UIStore } from "$lib/state/ui"
     import { ConstellationStoreInstance } from "$lib/wasm/ConstellationStore"
     import { type Item } from "warp-wasm"
-    import { OperationState } from "$lib/types"
+    import { OperationState, type Chat } from "$lib/types"
     import { Store } from "$lib/state/Store"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
+    export let activeChat: Chat
     let dispatch = createEventDispatcher()
 
     function onSend(filesToSend: FileInfo[]) {
-        dispatch("selectedFiles", filesToSend)
+        Store.state.chatAttachmentsToSend.update(files => {
+            const currentChatFiles = files[activeChat.id] || { localFiles: [], storageFiles: [] }
+            return {
+                ...files,
+                [activeChat.id]: {
+                    localFiles: [...currentChatFiles.localFiles],
+                    storageFiles: filesToSend,
+                },
+            }
+        })
+        dispatch("selectedFiles")
     }
 
     let loading: boolean = false
-    $: users = Store.getUsersLookup($activeChat.users)
+    $: users = Store.getUsersLookup(activeChat.users)
 
     $: files = Store.state.files
     let currentFolderIdStore = writable<string>("")
@@ -142,8 +150,6 @@
         )
     }
 
-    $: freeSpace = ConstellationStoreInstance.freeStorageSpace
-
     let folderClicked: FileInfo = {
         id: "",
         type: "",
@@ -195,8 +201,6 @@
         })
     })
 
-    $: activeChat = Store.state.activeChat
-
     function to_base64(data: Uint8Array): string | undefined {
         const binaryString = Array.from(data)
             .map(byte => String.fromCharCode(byte))
@@ -206,11 +210,13 @@
         return `data:image/jpeg;base64,${cleanedBase64String}`
     }
 
-    let selectedItems = new Set<FileInfo>()
+    let filesAlreadySelected = get(Store.state.chatAttachmentsToSend)?.[activeChat?.id]?.storageFiles || []
+
+    let selectedItems = new Set<FileInfo>(filesAlreadySelected)
 
     function toggleSelect(item: FileInfo) {
-        if (selectedItems.has(item)) {
-            selectedItems.delete(item)
+        if (Array.from(selectedItems).some(selectedItem => selectedItem.remotePath === item.remotePath)) {
+            selectedItems = new Set(Array.from(selectedItems).filter(selectedItem => selectedItem.remotePath !== item.remotePath))
         } else {
             selectedItems.add(item)
         }
@@ -218,7 +224,7 @@
     }
 
     function isSelected(item: FileInfo) {
-        return selectedItems.has(item)
+        return Array.from(selectedItems).some(selectedItem => selectedItem.remotePath === item.remotePath)
     }
 </script>
 
