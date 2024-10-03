@@ -772,7 +772,7 @@
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
                     {#if showBrowseFilesModal}
-                        <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded>
+                        <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded large>
                             <BrowseFiles
                                 on:selectedFiles={filesFromStorageSelected => {
                                     showBrowseFilesModal = false
