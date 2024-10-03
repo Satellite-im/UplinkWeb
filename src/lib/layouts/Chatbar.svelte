@@ -187,31 +187,10 @@
                         {/each}
 
                         {#if replyTo.attachments.length > 0}
-                            {#each replyTo.attachments as attachment}
-                                {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
-                                    <FileEmbed
-                                        fileInfo={{
-                                            id: "1",
-                                            isRenaming: OperationState.Initial,
-                                            source: "unknown",
-                                            name: attachment.name,
-                                            size: attachment.size,
-                                            icon: Shape.Document,
-                                            type: "unknown/unknown",
-                                            remotePath: "",
-                                        }} />
-                                {:else if attachment.kind === MessageAttachmentKind.Image}
-                                    <ImageEmbed source={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                {:else if attachment.kind === MessageAttachmentKind.Text}
-                                    <TextDocument />
-                                {:else if attachment.kind === MessageAttachmentKind.STL}
-                                    <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                    <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                {:else if attachment.kind === MessageAttachmentKind.Video}
-                                    <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                {/if}
-                            {/each}
+                            <div class="attachment-container">
+                                <Icon icon={Shape.Document} size={Size.Large} />
+                                {$_("chat.attachments-count", { values: { amount: replyTo.attachments.length } })}
+                            </div>
                         {/if}
                     </Message>
                     <ProfilePicture id={resolved.key} hook="message-group-remote-profile-picture" size={Size.Small} image={resolved.profile.photo.image} status={resolved.profile.status} highlight={Appearance.Default} notifications={0} />
@@ -293,6 +272,16 @@
                     text-overflow: ellipsis;
                     overflow: hidden;
                     text-align: left;
+                }
+                .attachment-container {
+                    display: flex;
+                    align-items: center;
+                    background-color: var(--alt-color);
+                    padding: var(--padding-minimal);
+                    border-radius: var(--border-radius-less);
+                }
+                .sticker {
+                    width: 45px;
                 }
             }
             :global(.button) {
