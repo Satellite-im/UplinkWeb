@@ -46,7 +46,6 @@
     }
 
     $: if (message) {
-        let messages = get(Store.state.chatMessagesToSend)
         chatMessages.update(messages => {
             messages[activeChat.id] = $message
             return messages
@@ -55,25 +54,36 @@
     }
 
     async function sendMessage(text: string, isStickerOrGif: boolean = false) {
-        let attachments: FileAttachment[] = []
-        filesSelected.forEach(([file, path]) => {
-            if (file) {
-                attachments.push({
-                    file: file.name,
-                    attachment: [file.stream(), file.size],
-                })
-            } else if (path) {
-                attachments.push({
-                    file: path,
-                })
-            }
-        })
+        message.set("")
+        if (!text || text.trim() === "") {
+            return
+        }
 
-        filesSelectedFromStorage.forEach(file => {
-            attachments.push({
-                file: file.remotePath,
+        let attachments: FileAttachment[] = []
+
+        if (filesSelected && filesSelected.length > 0) {
+            filesSelected.forEach(([file, path]) => {
+                if (file) {
+                    attachments.push({
+                        file: file.name,
+                        attachment: [file.stream(), file.size],
+                    })
+                } else if (path) {
+                    attachments.push({
+                        file: path,
+                    })
+                }
             })
-        })
+        }
+
+        if (filesSelectedFromStorage && filesSelectedFromStorage.length > 0) {
+            filesSelectedFromStorage.forEach(file => {
+                attachments.push({
+                    file: file.remotePath,
+                })
+            })
+        }
+
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
