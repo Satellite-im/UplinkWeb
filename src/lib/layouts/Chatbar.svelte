@@ -55,7 +55,7 @@
 
     async function sendMessage(text: string, isStickerOrGif: boolean = false) {
         message.set("")
-        if (!text || text.trim() === "") {
+        if (text.trim() === "" && filesSelected && filesSelected.length > 0 && filesSelectedFromStorage && filesSelectedFromStorage.length > 0) {
             return
         }
 
