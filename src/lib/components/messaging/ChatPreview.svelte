@@ -11,11 +11,9 @@
     import { get } from "svelte/store"
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { UIStore } from "$lib/state/ui"
-    import { t } from "svelte-i18n"
+    import { _ } from "svelte-i18n"
     import { checkMobile } from "$lib/utils/Mobile"
-    import Page from "../../../routes/+page.svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
     export let chat: Chat
     export let cta: boolean = false
@@ -36,9 +34,9 @@
     let ownId = get(Store.state.user)
     $: messagePreview =
         chat.last_message_id === ""
-            ? "No messages sent yet."
+            ? $_("message_previews.none")
             : chat.last_message_id !== "" && chat.last_message_preview === ""
-              ? "New Attachment"
+              ? $_("message_previews.attachment")
               : chat.last_message_preview.startsWith("/request")
                 ? (() => {
                       try {
@@ -47,9 +45,9 @@
                           const request = JSON.parse(chat.last_message_preview.slice(8))
                           const { amountPreview } = request
                           if (sendingUserId !== ownId.key) {
-                              return `${sendingUserDetails.name} has requested ${amountPreview}`
+                              return $_("message_previews.coin_requested", { values: { username: sendingUserDetails.name, amount: amountPreview } })
                           } else {
-                              return `You sent a request for ${amountPreview}`
+                              return $_("message_previews.request_sent", { values: { amount: amountPreview } })
                           }
                       } catch (error) {
                           return "Invalid message format"
@@ -61,13 +59,9 @@
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
-    // $: {
-    //     console.log(chat.last_message_preview, chat)
-    // }
 
     onMount(() => {
         setInterval(() => {
-            // console.log(chat.last_message_preview)
             timeago = getTimeAgo(chat.last_message_at)
         }, 500)
     })
