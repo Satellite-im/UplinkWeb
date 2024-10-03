@@ -1,46 +1,27 @@
-name: Auto-assign Issues to Project
+name: Auto-add Issues to Project
 
 on:
-  issues:
-    types: [opened]
+    issues:
+        types: [opened]
 
 jobs:
-  add_to_project:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Add issue to GitHub project
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const projectOwner = 'Satellite-im';
-            const projectNumber = 19; 
+    add_to_project:
+        runs-on: ubuntu-latest
+        steps:
+            # Checkout the repository
+            - name: Checkout repository
+              uses: actions/checkout@v2
 
-            const issueId = context.payload.issue.node_id;
+            # Set up GitHub CLI
+            - name: Install GitHub CLI
+              run: sudo apt-get install gh -y
 
-            const { organization } = await github.graphql(`
-              query($login: String!, $number: Int!) {
-                organization(login: $login) {
-                  projectV2(number: $number) {
-                    id
-                  }
-                }
-              }
-            `, {
-              login: projectOwner,
-              number: projectNumber
-            });
+            # Authenticate using the GITHUB_TOKEN
+            - name: Authenticate GitHub CLI
+              run: gh auth login --with-token <<< "$GITHUB_TOKEN"
 
-            const projectId = organization.projectV2.id;
-
-            await github.graphql(`
-              mutation($projectId: ID!, $issueId: ID!) {
-                addProjectV2ItemById(input: { projectId: $projectId, contentId: $issueId }) {
-                  item {
-                    id
-                  }
-                }
-              }
-            `, {
-              projectId: projectId,
-              issueId: issueId
-            });
+            # Add Issue to Project
+            - name: Add Issue to Project
+              run: gh project item-add --project "19" --url "${{ github.event.issue.html_url }}"
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
