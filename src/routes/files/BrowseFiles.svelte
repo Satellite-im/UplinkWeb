@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button, Icon } from "$lib/elements"
     import { Appearance, ChatType, FilesItemKind, Shape, Size } from "$lib/enums"
-    import { Topbar } from "$lib/layouts"
+    import { Controls, Topbar } from "$lib/layouts"
 
     import { _ } from "svelte-i18n"
     import Text from "$lib/elements/Text.svelte"
@@ -225,31 +225,6 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div id="page" on:dragover|preventDefault>
     <div class="content">
-        <Topbar>
-            <div slot="before" class="before">
-                <button class="stat">
-                    <Label hook="label-files-free-space" text={$_("files.freeSpace")} /><Text hook="text-files-free-space" singleLine>
-                        {$freeSpace}
-                    </Text>
-                </button>
-                <button class="stat">
-                    <Label hook="label-files-total-space" text={$_("files.totalSpace")} /><Text hook="text-files-total-space" singleLine>
-                        {prettyBytes(ConstellationStoreInstance.MAX_STORAGE_SIZE)}
-                    </Text>
-                </button>
-                <Button
-                    hook="button-select_files"
-                    tooltip="Answer"
-                    text="Send"
-                    appearance={Appearance.Default}
-                    loading={loading}
-                    on:click={_ => {
-                        onSend(Array.from(selectedItems))
-                    }}>
-                    <Icon icon={Shape.ArrowRight} />
-                </Button>
-            </div>
-        </Topbar>
         {#if $canGoBack}
             <div class="folder-back">
                 <Button hook="button-folder-back" small appearance={Appearance.Alt} class="folder-back" on:click={goBack}>{$_("controls.go_back")}</Button>
@@ -313,6 +288,19 @@
                 {/key}
             {/each}
         </div>
+        <Controls>
+            <Button
+                hook="button-select_files"
+                tooltip="Send"
+                text="Send Selected"
+                appearance={Appearance.Default}
+                loading={loading}
+                on:click={_ => {
+                    onSend(Array.from(selectedItems))
+                }}>
+                <Icon icon={Shape.ArrowRight} />
+            </Button>
+        </Controls>
     </div>
 </div>
 
@@ -323,6 +311,9 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
+        width: calc(var(--max-component-width) * 2);
+        min-width: var(--min-component-width);
+        height: var(--max-component-width);
 
         .overlay {
             position: fixed;
