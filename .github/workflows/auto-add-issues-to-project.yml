@@ -1,0 +1,46 @@
+name: Auto-assign Issues to Project
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add_to_project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add issue to GitHub project
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const projectOwner = 'Satellite-im';
+            const projectNumber = 19; 
+
+            const issueId = context.payload.issue.node_id;
+
+            const { organization } = await github.graphql(`
+              query($login: String!, $number: Int!) {
+                organization(login: $login) {
+                  projectV2(number: $number) {
+                    id
+                  }
+                }
+              }
+            `, {
+              login: projectOwner,
+              number: projectNumber
+            });
+
+            const projectId = organization.projectV2.id;
+
+            await github.graphql(`
+              mutation($projectId: ID!, $issueId: ID!) {
+                addProjectV2ItemById(input: { projectId: $projectId, contentId: $issueId }) {
+                  item {
+                    id
+                  }
+                }
+              }
+            `, {
+              projectId: projectId,
+              issueId: issueId
+            });
