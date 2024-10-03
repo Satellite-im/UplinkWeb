@@ -11,6 +11,8 @@
     import RelaySelector from "$lib/components/ui/RelaySelector.svelte"
     import { Controls } from "$lib/layouts"
     import { LoginPage } from "$lib/layouts/login"
+    import { SettingsStore } from "$lib/state"
+    import { get } from "svelte/store"
 
     export let page: LoginPage
 
@@ -61,9 +63,11 @@
             <Button text={$_("pages.auth.create.new")} hook="button-create-account" on:click={_ => (page = LoginPage.Username)} appearance={Appearance.Primary} fill>
                 <Icon icon={Shape.Plus} />
             </Button>
-            <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} fill>
-                <Icon icon={Shape.ArrowUp} />
-            </Button>
+            {#if get(SettingsStore.state).devmode}
+                <Button text={$_("pages.auth.create.import")} hook="button-import-account" on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt} fill>
+                    <Icon icon={Shape.ArrowUp} />
+                </Button>
+            {/if}
         </Controls>
     </div>
 
