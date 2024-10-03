@@ -12,12 +12,11 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const projectOwner = 'Satellite-im'; // Nome da organização
-            const projectNumber = 19; // Número do projeto
+            const projectOwner = 'Satellite-im';
+            const projectNumber = 19; 
 
             const issueId = context.payload.issue.node_id;
 
-            // Busca o projeto pelo número
             const { organization } = await github.graphql(`
               query($login: String!, $number: Int!) {
                 organization(login: $login) {
@@ -33,7 +32,6 @@ jobs:
 
             const projectId = organization.projectV2.id;
 
-            // Adiciona o Issue ao projeto
             await github.graphql(`
               mutation($projectId: ID!, $issueId: ID!) {
                 addProjectV2ItemById(input: { projectId: $projectId, contentId: $issueId }) {
