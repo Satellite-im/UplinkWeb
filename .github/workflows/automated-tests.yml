@@ -15,7 +15,9 @@ on:
 jobs:
     playwright-run:
         timeout-minutes: 60
-        runs-on: macos-latest
+        runs-on: ubuntu-latest
+        container:
+            image: mcr.microsoft.com/playwright:v1.47.2-jammy
         permissions:
             checks: write
             pull-requests: write
@@ -41,18 +43,11 @@ jobs:
 
             - name: Install dependencies for Testing Repo 📦
               working-directory: automated-tests
-              run: npm install
-
-            - name: Install Playwright Browsers
-              working-directory: automated-tests
-              run: npx playwright install --with-deps
-
-            - name: Run server for Uplink Web
-              run: npm run dev &
+              run: npm ci
 
             - name: Run Playwright tests
               working-directory: automated-tests
-              run: PLAYWRIGHT_JSON_OUTPUT_NAME=report.json npx playwright test
+              run: PLAYWRIGHT_JSON_OUTPUT_NAME=report.json npx playwright test -c playwright.ci.config.ts
 
             - uses: daun/playwright-report-summary@v3
               if: always()
