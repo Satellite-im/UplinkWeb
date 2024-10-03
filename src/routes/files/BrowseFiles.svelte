@@ -311,9 +311,6 @@
         flex: 1;
         height: 100%;
         overflow: hidden;
-        width: calc(var(--max-component-width) * 2);
-        min-width: var(--min-component-width);
-        height: var(--max-component-width);
 
         .overlay {
             position: fixed;
