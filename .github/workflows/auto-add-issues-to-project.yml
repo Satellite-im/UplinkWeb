@@ -16,12 +16,14 @@ jobs:
             - name: Install GitHub CLI
               run: sudo apt-get install gh -y
 
-            # Authenticate using the GITHUB_TOKEN
+            # Authenticate using the PAT instead of GITHUB_TOKEN
             - name: Authenticate GitHub CLI
-              run: gh auth login --with-token <<< "$GITHUB_TOKEN"
-
-            # Add Issue to Project
-            - name: Add Issue to Project
-              run: gh project item-add --project "19" --url "${{ github.event.issue.html_url }}"
+              run: gh auth login --with-token <<< "$PAT"
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+            # Add Issue to Project (Replace with the correct slug)
+            - name: Add Issue to Project
+              run: gh project item-add --project "Satellite-im/UplinkWeb" --url "${{ github.event.issue.html_url }}"
+              env:
+                  PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
