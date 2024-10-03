@@ -25,6 +25,7 @@ export default defineConfig({
     resolve: {
         alias: {
             $lib: path.resolve(__dirname, "src/lib"),
+            "@": path.resolve(__dirname, "src"),
         },
     },
     plugins: [
@@ -43,7 +44,11 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                additionalData: '@use "src/variables.scss" as *;',
+                additionalData: '@use "@/variables.scss" as *;',
+                api: "modern-compiler",
+                importers: [
+                    // ...
+                ],
             },
         },
     },
