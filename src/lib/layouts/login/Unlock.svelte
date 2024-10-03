@@ -13,6 +13,7 @@
     import { Controls } from "$lib/layouts"
     import { AuthStore } from "$lib/state/auth"
     import { createEventDispatcher } from "svelte"
+    import { SettingsStore } from "$lib/state"
 
     export let create: boolean = false
 
@@ -76,9 +77,11 @@
 
     <div class="unlock-controls">
         <Controls>
-            <Button tooltip={$_("pages.auth.changeUser")} hook="button-change-user" icon on:click={_ => (showAccounts = true)} appearance={Appearance.Alt}>
-                <Icon icon={Shape.Profile} />
-            </Button>
+            {#if get(SettingsStore.state).devmode}
+                <Button tooltip={$_("pages.auth.changeUser")} hook="button-change-user" icon on:click={_ => (showAccounts = true)} appearance={Appearance.Alt}>
+                    <Icon icon={Shape.Profile} />
+                </Button>
+            {/if}
             <Button tooltip={$_("pages.auth.relay")} hook="button-configure-relay" icon on:click={_ => (showConfigureRelay = true)} appearance={Appearance.Alt}>
                 <Icon icon={Shape.Relay} />
             </Button>
