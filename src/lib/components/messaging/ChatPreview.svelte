@@ -13,6 +13,9 @@
     import { UIStore } from "$lib/state/ui"
     import { t } from "svelte-i18n"
     import { checkMobile } from "$lib/utils/Mobile"
+    import Page from "../../../routes/+page.svelte"
+    import { ConversationStore } from "$lib/state/conversation"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
     export let chat: Chat
     export let cta: boolean = false
@@ -30,15 +33,41 @@
 
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
+    let ownId = get(Store.state.user)
+    $: messagePreview =
+        chat.last_message_id === ""
+            ? "No messages sent yet."
+            : chat.last_message_id !== "" && chat.last_message_preview === ""
+              ? "New Attachment"
+              : chat.last_message_preview.startsWith("/request")
+                ? (() => {
+                      try {
+                          const sendingUserId = ConversationStore.getMessage(chat.id, chat.last_message_id)?.details.origin
+                          const sendingUserDetails = get(Store.getUser(sendingUserId!))
+                          const request = JSON.parse(chat.last_message_preview.slice(8))
+                          const { amountPreview } = request
+                          if (sendingUserId !== ownId.key) {
+                              return `${sendingUserDetails.name} has requested ${amountPreview}`
+                          } else {
+                              return `You sent a request for ${amountPreview}`
+                          }
+                      } catch (error) {
+                          return "Invalid message format"
+                      }
+                  })()
+                : chat.last_message_preview
 
-    $: messagePreview = chat.last_message_id === "" ? "No messages sent yet." : chat.last_message_id !== "" && chat.last_message_preview === "" ? "New Attachment" : chat.last_message_preview
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
     }
+    // $: {
+    //     console.log(chat.last_message_preview, chat)
+    // }
 
     onMount(() => {
         setInterval(() => {
+            // console.log(chat.last_message_preview)
             timeago = getTimeAgo(chat.last_message_at)
         }, 500)
     })
