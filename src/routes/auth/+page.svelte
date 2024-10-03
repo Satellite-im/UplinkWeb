@@ -24,7 +24,6 @@
     let username: string = ""
     let statusMessage: string = ""
     let profilePicture: string = ""
-    let phrase: string[] = "agree alarm acid actual actress acid album admit absurd adjust adjust air".split(" ")
 
     async function auth(pin: string) {
         let addressed = Object.values(get(RelayStore.state))
@@ -93,7 +92,7 @@
             e.detail.done()
         }} />
 {:else if currentPage == LoginPage.RecoveryCopy}
-    <RecoveryCopy phrase={phrase} on:click={finalizeLogin} />
+    <RecoveryCopy on:click={finalizeLogin} />
 {/if}
 
 <style lang="scss">

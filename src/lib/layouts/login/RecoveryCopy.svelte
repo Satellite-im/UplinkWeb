@@ -7,11 +7,30 @@
 
     import { _ } from "svelte-i18n"
     import { createEventDispatcher } from "svelte"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
 
     const dispatch = createEventDispatcher()
 
-    export let phrase: string[]
+    let phrase = TesseractStoreInstance.fetchSeed()?.split(" ")
     let loading = false
+
+    // Function to handle downloading the seed phrase as a txt file
+    function downloadPhrase() {
+        if (!phrase) return
+        
+        // Join the phrase array into a single string
+        const phraseText = phrase.join(" ")
+
+        const blob = new Blob([phraseText], { type: "text/plain" })
+
+        const link = document.createElement("a")
+        
+        link.href = URL.createObjectURL(blob)
+        link.download = "seed-phrase.txt" // Filename for the download
+        link.click()
+
+        URL.revokeObjectURL(link.href)
+    }
 </script>
 
 <div id="auth-recover">
@@ -19,11 +38,20 @@
         <Title hook="title-recovery-page">{$_("pages.auth.recovery.title")}</Title>
         <Text hook="text-recovery-page-warning" muted>{$_("pages.auth.recovery.save_warning")}</Text>
     </div>
-    {#each phrase as word, i}
-        <OrderedPhrase number={i + 1} word={word} loading={loading} />
-    {/each}
+    {#if phrase}
+        {#each phrase as word, i}
+            <OrderedPhrase number={i + 1} word={word} loading={loading} />
+        {/each}
+    {/if}
     <Controls>
-        <Button hook="button-download-phrase" class="full-width" text={$_("pages.auth.recovery.download")} appearance={Appearance.Alt} loading={loading}>
+        <Button
+            hook="button-download-phrase"
+            class="full-width"
+            text={$_("pages.auth.recovery.download")}
+            appearance={Appearance.Alt}
+            loading={loading}
+            on:click={downloadPhrase}
+        >
             <Icon icon={Shape.Download} />
         </Button>
         <Button
