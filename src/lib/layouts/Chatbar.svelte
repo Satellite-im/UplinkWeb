@@ -92,7 +92,6 @@
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         if (!isStickerOrGif) {
-            message.set("")
             chatMessages.update(messages => {
                 messages[activeChat.id] = ""
                 return messages
