@@ -7,10 +7,11 @@
 
     import { _ } from "svelte-i18n"
     import { createEventDispatcher } from "svelte"
+    import { TesseractStoreInstance } from "$lib/wasm/TesseractStore"
 
     const dispatch = createEventDispatcher()
 
-    export let phrase: string[]
+    let phrase = TesseractStoreInstance.fetchSeed()?.split(" ")
     let loading = false
 </script>
 
@@ -19,9 +20,11 @@
         <Title hook="title-recovery-page">{$_("pages.auth.recovery.title")}</Title>
         <Text hook="text-recovery-page-warning" muted>{$_("pages.auth.recovery.save_warning")}</Text>
     </div>
-    {#each phrase as word, i}
-        <OrderedPhrase number={i + 1} word={word} loading={loading} />
-    {/each}
+    {#if phrase}
+        {#each phrase as word, i}
+            <OrderedPhrase number={i + 1} word={word} loading={loading} />
+        {/each}
+    {/if}
     <Controls>
         <Button hook="button-download-phrase" class="full-width" text={$_("pages.auth.recovery.download")} appearance={Appearance.Alt} loading={loading}>
             <Icon icon={Shape.Download} />

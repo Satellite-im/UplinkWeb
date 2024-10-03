@@ -93,7 +93,7 @@
             e.detail.done()
         }} />
 {:else if currentPage == LoginPage.RecoveryCopy}
-    <RecoveryCopy phrase={phrase} on:click={finalizeLogin} />
+    <RecoveryCopy on:click={finalizeLogin} />
 {/if}
 
 <style lang="scss">
