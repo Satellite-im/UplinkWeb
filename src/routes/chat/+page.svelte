@@ -69,7 +69,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -709,37 +709,35 @@
             {/if}
         </Conversation>
 
-        {#if (get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.localFiles?.length || 0) > 0 || (get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.storageFiles?.length || 0) > 0}
-            <FileUploadPreview
-                activeChat={$activeChat}
-                on:removeFileFromStorage={e => {
-                    Store.state.chatAttachmentsToSend.update(files => {
-                        const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
-                        const filteredStorageFiles = currentChatFiles.storageFiles.filter(f => f.remotePath !== e.detail.remotePath)
+        <FileUploadPreview
+            activeChat={$activeChat}
+            on:removeFileFromStorage={e => {
+                Store.state.chatAttachmentsToSend.update(files => {
+                    const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
+                    const filteredStorageFiles = currentChatFiles.storageFiles.filter(f => f.remotePath !== e.detail.remotePath)
 
-                        return {
-                            ...files,
-                            [$activeChat.id]: {
-                                localFiles: [...currentChatFiles.localFiles],
-                                storageFiles: [...filteredStorageFiles],
-                            },
-                        }
-                    })
-                }}
-                on:remove={e => {
-                    Store.state.chatAttachmentsToSend.update(files => {
-                        const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
-                        const filteredLocalFiles = currentChatFiles.localFiles.filter(([f, p]) => f !== e.detail && p !== e.detail)
-                        return {
-                            ...files,
-                            [$activeChat.id]: {
-                                localFiles: [...filteredLocalFiles],
-                                storageFiles: [...currentChatFiles.storageFiles],
-                            },
-                        }
-                    })
-                }} />
-        {/if}
+                    return {
+                        ...files,
+                        [$activeChat.id]: {
+                            localFiles: [...currentChatFiles.localFiles],
+                            storageFiles: [...filteredStorageFiles],
+                        },
+                    }
+                })
+            }}
+            on:remove={e => {
+                Store.state.chatAttachmentsToSend.update(files => {
+                    const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
+                    const filteredLocalFiles = currentChatFiles.localFiles.filter(([f, p]) => f !== e.detail && p !== e.detail)
+                    return {
+                        ...files,
+                        [$activeChat.id]: {
+                            localFiles: [...filteredLocalFiles],
+                            storageFiles: [...currentChatFiles.storageFiles],
+                        },
+                    }
+                })
+            }} />
 
         {#if $activeChat.users.length > 0}
             <Chatbar

@@ -6,20 +6,19 @@
     import { createEventDispatcher } from "svelte"
 
     import { _ } from "svelte-i18n"
-    import { get, writable } from "svelte/store"
+    import { derived, get, writable } from "svelte/store"
 
     export let activeChat: Chat
 
     let chatAttachmentsToSend = Store.state.chatAttachmentsToSend
 
-    let filesSelectedFromStorage = writable<FileInfo[]>([])
-    let filesSelected = writable<[File?, string?][]>([])
-
-    Store.state.chatAttachmentsToSend.subscribe(_ => {
-        filesSelectedFromStorage.set(get(chatAttachmentsToSend)[activeChat.id]?.storageFiles || [])
-        filesSelected.set(get(chatAttachmentsToSend)[activeChat.id]?.localFiles || [])
+    let filesSelectedFromStorage = derived(chatAttachmentsToSend, $chatAttachmentsToSend => {
+        return $chatAttachmentsToSend[activeChat.id]?.storageFiles || []
     })
 
+    let filesSelected = derived(chatAttachmentsToSend, $chatAttachmentsToSend => {
+        return $chatAttachmentsToSend[activeChat.id]?.localFiles || []
+    })
     const dispatcher = createEventDispatcher()
     function removeFile(file: File | string) {
         dispatcher("remove", file)
@@ -29,58 +28,63 @@
     }
 </script>
 
-<div class="files-selected">
-    {#each $filesSelected as [file, path]}
-        <div class="selected-file">
-            <div class="file-preview">
-                {#if file && typeof file === "object" && file.type.startsWith("image")}
-                    <img class="file-preview-image" src={URL.createObjectURL(file)} alt="" />
-                {:else}
-                    <Icon icon={Shape.Document} />
-                {/if}
+{#if $filesSelected.length > 0 || $filesSelectedFromStorage.length > 0}
+    <div class="files-selected">
+        {#if $filesSelected.length > 0}
+            {#each $filesSelected as [file, path] (path)}
+                <div class="selected-file">
+                    <div class="file-preview">
+                        {#if file && typeof file === "object" && file.type.startsWith("image")}
+                            <img class="file-preview-image" src={URL.createObjectURL(file)} alt="" />
+                        {:else}
+                            <Icon icon={Shape.Document} />
+                        {/if}
+                    </div>
+                    <div class="details">
+                        <Text size={Size.Smallest}>{file && typeof file === "object" ? file.name : path}</Text>
+                    </div>
+                    <div class="control">
+                        <Button
+                            icon
+                            on:click={_ => {
+                                if (file) {
+                                    removeFile(file)
+                                } else if (path) {
+                                    removeFile(path)
+                                }
+                            }}>
+                            <Icon icon={Shape.Trash} />
+                        </Button>
+                    </div>
+                </div>
+            {/each}
+        {/if}
+
+        {#each $filesSelectedFromStorage as remoteFile (remoteFile.id)}
+            <div class="selected-file">
+                <div class="file-preview">
+                    {#if remoteFile && remoteFile.imageThumbnail?.startsWith("data:image")}
+                        <img class="file-preview-image" src={remoteFile.imageThumbnail} alt="" />
+                    {:else}
+                        <Icon icon={Shape.Document} />
+                    {/if}
+                </div>
+                <div class="details">
+                    <Text size={Size.Smallest}>{remoteFile.displayName ?? remoteFile.name}</Text>
+                </div>
+                <div class="control">
+                    <Button
+                        icon
+                        on:click={_ => {
+                            removeFileFromStorage(remoteFile)
+                        }}>
+                        <Icon icon={Shape.Trash} />
+                    </Button>
+                </div>
             </div>
-            <div class="details">
-                <Text size={Size.Smallest}>{file && typeof file === "object" ? file.name : path}</Text>
-            </div>
-            <div class="control">
-                <Button
-                    icon
-                    on:click={_ => {
-                        if (file) {
-                            removeFile(file)
-                        } else if (path) {
-                            removeFile(path)
-                        }
-                    }}>
-                    <Icon icon={Shape.Trash} />
-                </Button>
-            </div>
-        </div>
-    {/each}
-    {#each $filesSelectedFromStorage as remoteFile}
-        <div class="selected-file">
-            <div class="file-preview">
-                {#if remoteFile && remoteFile.imageThumbnail?.startsWith("data:image")}
-                    <img class="file-preview-image" src={remoteFile.imageThumbnail} alt="" />
-                {:else}
-                    <Icon icon={Shape.Document} />
-                {/if}
-            </div>
-            <div class="details">
-                <Text size={Size.Smallest}>{remoteFile.displayName ?? remoteFile.name}</Text>
-            </div>
-            <div class="control">
-                <Button
-                    icon
-                    on:click={_ => {
-                        removeFileFromStorage(remoteFile)
-                    }}>
-                    <Icon icon={Shape.Trash} />
-                </Button>
-            </div>
-        </div>
-    {/each}
-</div>
+        {/each}
+    </div>
+{/if}
 
 <style lang="scss">
     .files-selected {
