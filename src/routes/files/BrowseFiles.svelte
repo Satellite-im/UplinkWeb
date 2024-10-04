@@ -240,7 +240,7 @@
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             {#each $files as item}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                {#key item.id && selectedItems.has(item)}
+                {#key item.id && Array.from(selectedItems).some(selectedItem => selectedItem.remotePath === item.remotePath)}
                     <div class="draggable-item {item.id} {item.type === 'folder' ? 'folder-draggable droppable' : ''}" draggable="true" data-id={item.id}>
                         {#if item.type === "file"}
                             <div class="item-with-checkbox" role="button" tabindex="0" on:click={() => toggleSelect(item)}>
