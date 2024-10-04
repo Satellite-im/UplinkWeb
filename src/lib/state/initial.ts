@@ -20,6 +20,12 @@ export interface IState {
     }
     activeChat: Writable<Chat>
     chatMessagesToSend: Writable<{ [key: string]: string }>
+    chatAttachmentsToSend: Writable<{
+        [key: string]: {
+            localFiles: [File?, string?][]
+            storageFiles: FileInfo[]
+        }
+    }>
     activeCall: Writable<Call | null>
     pendingCall: Writable<Call | null>
     toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>

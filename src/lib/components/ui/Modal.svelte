@@ -13,6 +13,7 @@
     export let withControls: boolean = false
     export let hook: string = ""
     export let escape: boolean = false
+    export let large: boolean = false
 
     let clazz = ""
     export { clazz as class }
@@ -40,7 +41,7 @@
             <slot></slot>
         </div>
     {:else}
-        <div class="body {padded ? 'padded' : ''} {clazz}" on:click|stopPropagation>
+        <div class="body {padded ? 'padded' : ''} {large ? 'large' : ''} {clazz}" on:click|stopPropagation>
             {#if withControls}
                 <Controls>
                     <slot name="controls"></slot>
@@ -104,6 +105,17 @@
                 justify-content: flex-end;
                 align-items: center;
                 padding: var(--padding-minimal);
+            }
+
+            &.large {
+                min-width: 0;
+                width: calc(var(--max-component-width) * 2);
+                height: var(--max-component-width);
+
+                .content {
+                    width: 100%;
+                    height: 100%;
+                }
             }
         }
     }
