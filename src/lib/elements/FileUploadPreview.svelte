@@ -31,7 +31,7 @@
 {#if $filesSelected.length > 0 || $filesSelectedFromStorage.length > 0}
     <div class="files-selected">
         {#if $filesSelected.length > 0}
-            {#each $filesSelected as [file, path] (path)}
+            {#each $filesSelected as [file, path]}
                 <div class="selected-file">
                     <div class="file-preview">
                         {#if file && typeof file === "object" && file.type.startsWith("image")}
@@ -60,7 +60,7 @@
             {/each}
         {/if}
 
-        {#each $filesSelectedFromStorage as remoteFile (remoteFile.id)}
+        {#each $filesSelectedFromStorage as remoteFile (remoteFile.remotePath)}
             <div class="selected-file">
                 <div class="file-preview">
                     {#if remoteFile && remoteFile.imageThumbnail?.startsWith("data:image")}
