@@ -164,7 +164,8 @@
                             isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
                             isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
                             isTalking={$userCache[user].media.is_playing_audio} />
-                    {:else if $remoteStreams[user].stream}
+                    {/if}
+                    {#if $remoteStreams[user].stream}
                         <video
                             data-cy="remote-user-video"
                             id="remote-user-video"
