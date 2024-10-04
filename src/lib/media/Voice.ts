@@ -174,7 +174,9 @@ export class CallRoom {
             log.debug(`Peer ${peer} joined the room`)
             did_ch(get(Store.state.user).key, peer)
             this.notify(VoiceRTCMessageType.UpdateUser, peer)
-            room.addStream(await VoiceRTCInstance.getLocalStream(), peer)
+            let stream = await VoiceRTCInstance.getLocalStream()
+            log.debug(`Sending local stream ${stream} to ${peer}`)
+            room.addStream(stream, peer)
             if (!this.start) {
                 this.start = new Date()
             }
@@ -192,6 +194,7 @@ export class CallRoom {
         })
         room.onPeerStream((stream, peer, _meta) => {
             let participant = Object.entries(this.participants).find(p => p[1].remotePeerId === peer)
+            log.debug(`Receiving stream from ${peer} - ${participant?.[1].getUser()}`)
             if (participant) {
                 VoiceRTCInstance.remoteVideoCreator.create({ user: participant[1].getUser(), stream: stream })
                 participant[1].handleRemoteStream(stream)
@@ -221,6 +224,7 @@ export class CallRoom {
 
     updateUserData(user: VoiceRTCUser) {
         let participant = Object.values(this.participants).find(p => p.did === user.did)
+        log.debug(`Updating user data ${user} for ${participant}`)
         if (participant) {
             participant.updateUserData(user)
         }
