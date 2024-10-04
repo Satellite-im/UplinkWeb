@@ -57,6 +57,20 @@
 
     let loading = false
     let contentAsideOpen = false
+    let clipboardWrite = false
+
+    const checkClipboardPermission = async () => {
+        try {
+            let items = await navigator.clipboard.read()
+            await navigator.clipboard.write(items)
+            clipboardWrite = true
+        } catch (err) {
+            clipboardWrite = false
+        }
+    }
+    onMount(async () => {
+        await checkClipboardPermission()
+    })
 
     $: sidebarOpen = UIStore.state.sidebarOpen
     $: activeChat = Store.state.activeChat
@@ -128,7 +142,7 @@
         files = files
     }
 
-    function build_context_items(message: MessageType) {
+    function build_context_items(message: MessageType, file?: Attachment) {
         return [
             message.pinned
                 ? {
@@ -167,6 +181,19 @@
                     copy(message.text.join("\n"))
                 },
             },
+            ...(file && clipboardWrite
+                ? [
+                      {
+                          id: "copy-file",
+                          icon: Shape.Clipboard,
+                          text: $_("generic.copy.file"),
+                          appearance: Appearance.Default,
+                          onClick: () => {
+                              copyFile(message.id, file)
+                          },
+                      },
+                  ]
+                : []),
             ...(message.details.origin === $own_user.key
                 ? [
                       ...(!message.text.some(text => text.includes("giphy.com")) &&
@@ -229,6 +256,18 @@
 
     async function copy(txt: string) {
         await navigator.clipboard.writeText(txt)
+    }
+
+    async function copyFile(message: string, attachment: Attachment) {
+        if (attachment.kind !== MessageAttachmentKind.Image) return
+        let result = await RaygunStoreInstance.getAttachmentRaw($conversation!.id, message, attachment.name, attachment.size)
+        result.onSuccess(async blob => {
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    "image/png": blob,
+                }),
+            ])
+        })
     }
 
     async function download_attachment(message: string, attachment: Attachment) {
@@ -617,38 +656,48 @@
 
                                                     {#if message.attachments.length > 0}
                                                         {#each message.attachments as attachment}
-                                                            {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
-                                                                <FileEmbed
-                                                                    fileInfo={{
-                                                                        id: "1",
-                                                                        isRenaming: OperationState.Initial,
-                                                                        source: "unknown",
-                                                                        name: attachment.name,
-                                                                        displayName: attachment.name,
-                                                                        size: attachment.size,
-                                                                        icon: Shape.Document,
-                                                                        type: "unknown/unknown",
-                                                                        remotePath: "",
-                                                                    }}
-                                                                    on:download={_ => download_attachment(message.id, attachment)} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Image}
-                                                                <ImageEmbed
-                                                                    source={attachment.location}
-                                                                    name={attachment.name}
-                                                                    filesize={attachment.size}
-                                                                    on:click={_ => {
-                                                                        previewImage = attachment.location
-                                                                    }}
-                                                                    on:download={_ => download_attachment(message.id, attachment)} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Text}
-                                                                <TextDocument />
-                                                            {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                                <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                                                <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Video}
-                                                                <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                            {/if}
+                                                            <ContextMenu hook="context-menu-chat-attachment" items={build_context_items(message, attachment)}>
+                                                                <div
+                                                                    slot="content"
+                                                                    let:open
+                                                                    on:contextmenu={e => {
+                                                                        e.stopPropagation()
+                                                                        open(e)
+                                                                    }}>
+                                                                    {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
+                                                                        <FileEmbed
+                                                                            fileInfo={{
+                                                                                id: "1",
+                                                                                isRenaming: OperationState.Initial,
+                                                                                source: "unknown",
+                                                                                name: attachment.name,
+                                                                                displayName: attachment.name,
+                                                                                size: attachment.size,
+                                                                                icon: Shape.Document,
+                                                                                type: "unknown/unknown",
+                                                                                remotePath: "",
+                                                                            }}
+                                                                            on:download={_ => download_attachment(message.id, attachment)} />
+                                                                    {:else if attachment.kind === MessageAttachmentKind.Image}
+                                                                        <ImageEmbed
+                                                                            source={attachment.location}
+                                                                            name={attachment.name}
+                                                                            filesize={attachment.size}
+                                                                            on:click={_ => {
+                                                                                previewImage = attachment.location
+                                                                            }}
+                                                                            on:download={_ => download_attachment(message.id, attachment)} />
+                                                                    {:else if attachment.kind === MessageAttachmentKind.Text}
+                                                                        <TextDocument />
+                                                                    {:else if attachment.kind === MessageAttachmentKind.STL}
+                                                                        <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
+                                                                    {:else if attachment.kind === MessageAttachmentKind.Audio}
+                                                                        <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                                                    {:else if attachment.kind === MessageAttachmentKind.Video}
+                                                                        <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
+                                                                    {/if}
+                                                                </div>
+                                                            </ContextMenu>
                                                         {/each}
                                                     {/if}
                                                 {/if}
