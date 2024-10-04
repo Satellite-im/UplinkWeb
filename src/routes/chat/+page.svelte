@@ -181,12 +181,12 @@
                     copy(message.text.join("\n"))
                 },
             },
-            ...(file && clipboardWrite
+            ...(file && file.kind === MessageAttachmentKind.Image && clipboardWrite
                 ? [
                       {
-                          id: "copy-file",
+                          id: "copy-image",
                           icon: Shape.Clipboard,
-                          text: $_("generic.copy.file"),
+                          text: $_("generic.copy.image"),
                           appearance: Appearance.Default,
                           onClick: () => {
                               copyFile(message.id, file)
@@ -264,7 +264,7 @@
         result.onSuccess(async blob => {
             await navigator.clipboard.write([
                 new ClipboardItem({
-                    "image/png": blob,
+                    [attachment.mime || ""]: blob,
                 }),
             ])
         })
