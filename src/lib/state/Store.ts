@@ -30,6 +30,7 @@ class GlobalStore {
             }),
             activeCallMeta: writable({}),
             chatMessagesToSend: createPersistentState("uplink.chatMessagesToSend", {}),
+            chatAttachmentsToSend: createPersistentState("uplink.chatAttachmentsToSend", {}),
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
                 video: createPersistentState("uplink.devices.videoInput", "default"),

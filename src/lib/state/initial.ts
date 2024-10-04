@@ -21,6 +21,12 @@ export interface IState {
     }
     activeChat: Writable<Chat>
     chatMessagesToSend: Writable<{ [key: string]: string }>
+    chatAttachmentsToSend: Writable<{
+        [key: string]: {
+            localFiles: [File?, string?][]
+            storageFiles: FileInfo[]
+        }
+    }>
     activeCall: Writable<Call | null>
     activeCallMeta: Writable<{ [key: string]: { user: VoiceRTCUser; stream: MediaStream | null } | undefined }>
     pendingCall: Writable<Call | null>

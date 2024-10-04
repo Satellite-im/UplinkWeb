@@ -14,6 +14,7 @@
     export let name = info.displayName
     export let isRenaming: OperationState = OperationState.Initial
     export let hook: string = ""
+    export let avoidOpenImageModal: boolean = false
     export let onRename: (name: string, cancel: boolean) => Promise<boolean> = _ => Promise.resolve(true)
     let hasFocus = false
     let oldName = name
@@ -133,7 +134,7 @@
     </div>
 </section>
 
-{#if openImageModal}
+{#if openImageModal && !avoidOpenImageModal}
     <Modal on:close={onCloseModal}>
         <img class="img-preview-on-storage-on-modal" src={info.imageThumbnail} alt={name} />
     </Modal>
