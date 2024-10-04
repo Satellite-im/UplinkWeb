@@ -1,6 +1,7 @@
 import type { Call, Chat, FileInfo, FriendRequest, User } from "$lib/types"
 import type { Writable } from "svelte/store"
 import type { ToastMessage } from "./ui/toast"
+import type { VoiceRTCUser } from "$lib/media/Voice"
 
 export interface IState {
     user: Writable<User>
@@ -27,6 +28,7 @@ export interface IState {
         }
     }>
     activeCall: Writable<Call | null>
+    activeCallMeta: Writable<{ [key: string]: { user: VoiceRTCUser; stream: MediaStream | null } | undefined }>
     pendingCall: Writable<Call | null>
     toasts: Writable<{ [key: string]: [ToastMessage, NodeJS.Timeout] }>
     // A cache of all fetched user data

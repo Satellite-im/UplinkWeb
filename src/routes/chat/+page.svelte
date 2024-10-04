@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
@@ -273,9 +273,9 @@
 
     onMount(() => {
         setInterval(() => {
-            if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
+            if (VoiceRTCInstance.call) {
                 activeCallInProgress = true
-                activeCallDid = VoiceRTCInstance.channel
+                activeCallDid = VoiceRTCInstance.channel!
             } else {
                 activeCallInProgress = false
             }
@@ -484,7 +484,7 @@
                         disabled={$activeChat.users.length === 0}
                         on:click={async _ => {
                             Store.setActiveCall($activeChat)
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id, true)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id, true)
                             activeCallInProgress = true
                         }}>
                         <Icon icon={Shape.PhoneCall} />
@@ -498,7 +498,7 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id)
                             activeCallInProgress = true
                             Store.setActiveCall($activeChat)
                         }}>
@@ -625,7 +625,7 @@
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
+                                                        {:else if !line.includes(tempCDN)}
                                                             <Text hook="text-chat-message" markdown={line} appearance={group.details.remote ? Appearance.Default : Appearance.Alt} />
                                                         {:else if line.includes(tempCDN)}
                                                             <div class="sticker">

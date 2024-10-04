@@ -5,7 +5,7 @@
     import { Meter, VideoTest } from "$lib/components"
     import { Appearance } from "$lib/enums"
     import { Store } from "$lib/state/Store"
-    import { onMount } from "svelte"
+    import { onDestroy, onMount } from "svelte"
     import { get } from "svelte/store"
     import { SettingsStore, type ISettingsState } from "$lib/state"
 
@@ -19,11 +19,12 @@
 
     let getDevices = async () => {
         try {
-            await navigator.mediaDevices.getUserMedia({ audio: true })
+            let stream = await navigator.mediaDevices.getUserMedia({ audio: true })
             let devices = await navigator.mediaDevices.enumerateDevices()
             inputDevices = devices.filter(device => device.kind === "audioinput")
             videoInputDevices = devices.filter(device => device.kind === "videoinput")
             outputDevices = devices.filter(device => device.kind === "audiooutput")
+            stream.getTracks().forEach(t => t.stop())
         } catch (error) {
             console.error("Error accessing media devices:", error)
         }
@@ -48,6 +49,7 @@
     getDevices()
 
     let audioLevel = 0
+    let stream: MediaStream
 
     async function startAudioMonitoring() {
         // Check for user media support
@@ -58,7 +60,7 @@
 
         try {
             // Request access to the microphone
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
             const audioContext = new AudioContext()
             const analyser = audioContext.createAnalyser()
             const microphone = audioContext.createMediaStreamSource(stream)
@@ -132,6 +134,10 @@
 
     onMount(() => {
         startAudioMonitoring()
+    })
+
+    onDestroy(() => {
+        stream.getTracks().forEach(t => t.stop())
     })
 </script>
 
