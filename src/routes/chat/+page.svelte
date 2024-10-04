@@ -741,8 +741,6 @@
 
         {#if $activeChat.users.length > 0}
             <Chatbar
-                filesSelected={get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.localFiles}
-                filesSelectedFromStorage={get(Store.state.chatAttachmentsToSend)[$activeChat.id]?.storageFiles}
                 replyTo={replyTo}
                 activeChat={$activeChat}
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}

@@ -24,8 +24,6 @@
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
 
     export let replyTo: MessageType | undefined = undefined
-    export let filesSelected: [File?, string?][] = []
-    export let filesSelectedFromStorage: FileInfo[] = []
     export let emojiClickHook: (emoji: string) => boolean
     export let activeChat: Chat
     export const typing: User[] = []
@@ -55,6 +53,9 @@
 
     async function sendMessage(text: string, isStickerOrGif: boolean = false) {
         message.set("")
+        let filesSelected = get(Store.state.chatAttachmentsToSend)[activeChat.id]?.localFiles
+        let filesSelectedFromStorage: FileInfo[] = get(Store.state.chatAttachmentsToSend)[activeChat.id]?.storageFiles
+
         if (text.trim() === "" && filesSelected && filesSelected.length > 0 && filesSelectedFromStorage && filesSelectedFromStorage.length > 0) {
             return
         }
