@@ -40,8 +40,6 @@
     }
 
     Store.state.activeCall.subscribe(c => (activeCall = c))
-
-    $: pending = Store.state.pendingCall
 </script>
 
 <div class="sidebar-layout {open ? 'open' : 'closed'}" data-cy="sidebar">
