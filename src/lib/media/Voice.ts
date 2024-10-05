@@ -1,22 +1,25 @@
 import { CallDirection } from "$lib/enums"
 import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
+import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-import Peer, { DataConnection, MediaConnection } from "peerjs"
-import { get } from "svelte/store"
+import Peer, { DataConnection } from "peerjs"
 import { _ } from "svelte-i18n"
+import { get } from "svelte/store"
+import type { Room } from "trystero"
+import { joinRoom } from "trystero/ipfs"
+
+const CALL_ACK = "CALL_ACCEPT"
 
 export enum VoiceRTCMessageType {
-    Calling = "CALLING_USER",
-    EndingCall = "ENDING_CALL",
-    IncomingCall = "INCOMING_CALL",
-    AcceptedCall = "ACCEPTED_CALL",
-    EnabledVideo = "ENABLED_VIDEO",
-    DisabledVideo = "DISABLED_VIDEO",
-    EnabledAudio = "ENABLED_AUDIO",
-    DisabledAudio = "DISABLED_AUDIO",
+    UpdateUser = "UPDATE_USER",
     None = "NONE",
+}
+
+export type RemoteStream = {
+    user: VoiceRTCUser
+    stream: MediaStream | null
 }
 
 type VoiceRTCOptions = {
@@ -33,7 +36,7 @@ type VoiceRTCOptions = {
     }
 }
 
-type VoiceRTCUser = {
+export type VoiceRTCUser = {
     did: string
     username: string
     videoEnabled: boolean
@@ -47,32 +50,261 @@ type VoiceMessage = {
     userInfo: VoiceRTCUser
 }
 
-export class VoiceRTC {
-    channel: string
-    localPeer: Peer | null = null
-    remoteVideoElement: HTMLVideoElement | null = null
-    localVideoCurrentSrc: HTMLVideoElement | null = null
-    remotePeerId: string | null = null
-    remoteVoiceUser: VoiceRTCUser = {
+enum ToggleType {
+    Video,
+    Mute,
+    Deafen,
+}
+
+export type CallUpdater = {
+    create: (stream: RemoteStream) => void
+    update: (did: string, data: { user?: VoiceRTCUser; stream?: MediaStream }) => void
+    delete: (user: string) => void
+}
+
+export class Participant {
+    did: string
+    remotePeerId: string
+    private remoteVoiceUser: VoiceRTCUser = {
         did: "",
         username: "unknown",
         videoEnabled: false,
         audioEnabled: false,
         isDeafened: false,
     }
-    activeCall: MediaConnection | null = null
+
+    stream?: MediaStream
+    streamHandler?: [ReturnType<typeof setInterval>, AnalyserNode]
+    remove?: (user: string) => void
+
+    constructor(id: string, peer: string) {
+        this.did = id
+        this.remotePeerId = peer
+        this.remoteVoiceUser = {
+            ...this.remoteVoiceUser,
+            did: this.did,
+            audioEnabled: true,
+        }
+    }
+
+    updateUserData(userData: VoiceRTCUser) {
+        this.remoteVoiceUser = userData
+        VoiceRTCInstance.remoteVideoCreator?.update(this.did, { user: userData })
+    }
+
+    getUser(): VoiceRTCUser {
+        return this.remoteVoiceUser
+    }
+
+    private async handleStreamMeta(stream: MediaStream) {
+        if (this.streamHandler) {
+            this.streamHandler[1].disconnect()
+            clearInterval(this.streamHandler[0] as any) // IDE is complaining for some reason
+        }
+        const audioContext = new window.AudioContext()
+        const mediaStreamSource = audioContext.createMediaStreamSource(stream)
+        const analyser = audioContext.createAnalyser()
+        analyser.fftSize = AUDIO_WINDOW_SIZE
+        mediaStreamSource.connect(analyser)
+        const dataArray = new Uint8Array(analyser.frequencyBinCount)
+        function volume() {
+            analyser.getByteFrequencyData(dataArray)
+            return dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length
+        }
+
+        function updateMeta(did: string) {
+            let muted = stream.getTracks().find(track => !track.enabled || track.readyState === "ended") !== undefined
+            let speaking = false
+            let user = Store.getUser(did)
+            let current = get(user)
+            if (!muted && volume() < VOLUME_THRESHOLD) {
+                speaking = true
+            }
+            if (current.media.is_muted !== muted || current.media.is_playing_audio !== speaking) {
+                user.update(u => {
+                    return {
+                        ...u,
+                        media: {
+                            ...u.media,
+                            is_muted: muted,
+                            is_playing_audio: speaking,
+                        },
+                    }
+                })
+            }
+        }
+        const checker = setInterval(() => updateMeta(this.did), 3000)
+        this.streamHandler = [checker, analyser]
+    }
+
+    async handleRemoteStream(stream: MediaStream) {
+        this.handleStreamMeta(stream)
+        this.stream = stream
+    }
+
+    close() {
+        this.stream?.getTracks().forEach(track => track.stop())
+        if (this.streamHandler) {
+            this.streamHandler[1].disconnect()
+            clearInterval(this.streamHandler[0] as any) // IDE is complaining for some reason
+        }
+        VoiceRTCInstance.remoteVideoCreator.delete(this.did)
+    }
+}
+
+export class CallRoom {
+    room: Room
+    participants: { [did: string]: Participant } = {}
+    start: Date | null = null
+    private messageCh: (message: VoiceMessage, to?: string) => void
+
+    constructor(room: Room) {
+        this.room = room
+        let [ch, rv] = room.makeAction<VoiceMessage>("messages")
+        this.messageCh = ch
+        this.notify(VoiceRTCMessageType.UpdateUser)
+        rv((msg, _) => {
+            VoiceRTCInstance.handleWithDataReceived(msg)
+        })
+        let [did_ch, did_rv] = room.makeAction<string>("did_sync")
+        did_rv((did, peer) => {
+            this.participants[did] = new Participant(did, peer)
+        })
+        room.onPeerJoin(async peer => {
+            log.debug(`Peer ${peer} joined the room`)
+            did_ch(get(Store.state.user).key, peer)
+            this.notify(VoiceRTCMessageType.UpdateUser, peer)
+            let stream = await VoiceRTCInstance.getLocalStream()
+            log.debug(`Sending local stream ${stream} to ${peer}`)
+            room.addStream(stream, peer)
+            if (!this.start) {
+                this.start = new Date()
+            }
+        })
+        room.onPeerLeave(peer => {
+            log.debug(`Peer ${peer} left the room`)
+            let participant = Object.entries(this.participants).find(p => p[1].remotePeerId === peer)
+            if (participant) {
+                VoiceRTCInstance.remoteVideoCreator.delete(participant[0])
+                delete this.participants[participant[0]]
+            }
+            if (this.empty) {
+                VoiceRTCInstance.leaveCall(true)
+            }
+        })
+        room.onPeerStream((stream, peer, _meta) => {
+            let participant = Object.entries(this.participants).find(p => p[1].remotePeerId === peer)
+            log.debug(`Receiving stream from ${peer} - ${participant?.[1].getUser()}`)
+            if (participant) {
+                VoiceRTCInstance.remoteVideoCreator.create({ user: participant[1].getUser(), stream: stream })
+                participant[1].handleRemoteStream(stream)
+            }
+        })
+        // room.onPeerTrack((stream, peer, meta) => {})
+    }
+
+    toggleStreams(state: boolean, type: ToggleType) {
+        switch (type) {
+            case ToggleType.Video: {
+                VoiceRTCInstance.localStream?.getVideoTracks().forEach(track => (track.enabled = state))
+                break
+            }
+            case ToggleType.Mute: {
+                VoiceRTCInstance.localStream?.getAudioTracks().forEach(track => (track.enabled = !state))
+                break
+            }
+            case ToggleType.Deafen: {
+                let participants = Object.values(this.participants)
+                participants.forEach(p => p.stream?.getAudioTracks().forEach(track => (track.enabled = !state)))
+                VoiceRTCInstance.localStream?.getAudioTracks().forEach(track => (track.enabled = !state))
+                break
+            }
+        }
+    }
+
+    updateUserData(user: VoiceRTCUser) {
+        let participant = Object.values(this.participants).find(p => p.did === user.did)
+        log.debug(`Updating user data ${user} for ${participant}`)
+        if (participant) {
+            participant.updateUserData(user)
+        }
+    }
+
+    get send(): (message: VoiceMessage, to?: string) => void {
+        return this.messageCh
+    }
+
+    notify(type: VoiceRTCMessageType, to?: string) {
+        let user = get(Store.state.user)
+        let data: VoiceMessage = {
+            type: type,
+            channel: VoiceRTCInstance.channel!,
+            userInfo: {
+                did: user.key,
+                username: user.name,
+                videoEnabled: VoiceRTCInstance.callOptions.video.enabled,
+                audioEnabled: VoiceRTCInstance.callOptions.audio.enabled,
+                isDeafened: VoiceRTCInstance.callOptions.audio.deafened,
+            },
+        }
+        this.send(data, to)
+    }
+
+    get empty(): boolean {
+        return Object.keys(this.room.getPeers()).length === 0
+    }
+}
+
+const AUDIO_WINDOW_SIZE = 256
+const VOLUME_THRESHOLD = 20
+
+export class VoiceRTC {
+    channel?: string
+    // Local peer that is used to handle incoming call requests
+    localPeer: Peer | null = null
+    toCall: string[] | null = null
+    localStream: MediaStream | null = null
+    localVideoCurrentSrc: HTMLVideoElement | null = null
+    remoteVideoCreator: CallUpdater
+
+    call: CallRoom | null = null
+
     callOptions: VoiceRTCOptions
-    private callStartTime: Date | null = null
-    isReceivingCall = false
-    makingCall = false
-    acceptedIncomingCall = false
-    dataConnection: DataConnection | null = null
 
-    constructor(channel: string, options: VoiceRTCOptions) {
-        this.channel = channel
+    incomingConnections: DataConnection[] = []
+    incomingCallFrom: [string, DataConnection] | null = null
+    invitations: Cancellable[] = []
+
+    constructor(options: VoiceRTCOptions) {
         this.callOptions = { ...options }
-        this.setupPeerEvents()
-
+        this.setupLocalPeer()
+        this.remoteVideoCreator = {
+            create: stream => {
+                Store.state.activeCallMeta.update(s => {
+                    s[stream.user.did] = stream
+                    return s
+                })
+            },
+            delete: user => {
+                Store.state.activeCallMeta.update(s => {
+                    if (s[user]) {
+                        s[user].stream?.getTracks().forEach(t => t.stop())
+                        s[user].stream = null
+                        delete s[user]
+                    }
+                    return s
+                })
+            },
+            update: (did: string, data: { user?: VoiceRTCUser; stream?: MediaStream }) => {
+                Store.state.activeCallMeta.update(s => {
+                    if (s[did]) {
+                        if (data.user) s[did].user = data.user
+                        if (data.stream) s[did].stream = data.stream
+                    }
+                    return s
+                })
+            },
+        }
         this.subscribe()
     }
 
@@ -82,315 +314,291 @@ export class VoiceRTC {
         Store.state.devices.deafened.subscribe(async value => this.toggleDeafen(value))
     }
 
-    toggleVideo(state: boolean) {
+    async toggleVideo(state: boolean) {
         this.callOptions.video.enabled = state
+        if (this.localStream) await this.getLocalStream(true)
 
-        if (state) {
-            this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = true))
-        } else {
-            this.activeCall?.localStream?.getVideoTracks().forEach(track => (track.enabled = false))
-        }
-
-        this.dataConnection?.send({
-            type: this.callOptions.video.enabled ? VoiceRTCMessageType.EnabledVideo : VoiceRTCMessageType.DisabledVideo,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio,
-            },
-        })
+        this.call?.toggleStreams(state, ToggleType.Video)
+        this.call?.notify(VoiceRTCMessageType.UpdateUser)
     }
 
-    toggleMute(state: boolean) {
-        this.callOptions.audio.enabled = state
+    async toggleMute(state: boolean) {
+        this.callOptions.audio.enabled = !state
+        if (this.localStream) await this.getLocalStream(true)
 
-        if (state) {
-            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
-        } else {
-            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
-        }
-
-        this.dataConnection?.send({
-            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio.enabled,
-                isDeafened: this.callOptions.audio.deafened,
-            },
-        })
+        this.call?.toggleStreams(state, ToggleType.Mute)
+        this.call?.notify(VoiceRTCMessageType.UpdateUser)
     }
 
-    toggleDeafen(state: boolean) {
+    async toggleDeafen(state: boolean) {
         // TODO: This isn't perfect because if you mute yourself, and then deafen yourself, un-deafaning will also unmute you which could be unexpected
-        this.callOptions.audio.enabled = state
+        this.callOptions.audio.enabled = !state
 
-        if (state) {
-            this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = false))
-            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = false))
-        } else {
-            this.activeCall?.remoteStream.getAudioTracks().forEach(track => (track.enabled = true))
-            this.activeCall?.localStream.getAudioTracks().forEach(track => (track.enabled = true))
-        }
-
-        this.dataConnection?.send({
-            type: this.callOptions.audio.enabled ? VoiceRTCMessageType.EnabledAudio : VoiceRTCMessageType.DisabledAudio,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio.enabled,
-                isDeafened: this.callOptions.audio.deafened,
-            },
-        })
+        this.call?.toggleStreams(state, ToggleType.Deafen)
+        this.call?.notify(VoiceRTCMessageType.UpdateUser)
     }
 
-    async setVideoElements(remoteVideoElement: HTMLVideoElement, localVideoCurrentSrc: HTMLVideoElement) {
-        this.remoteVideoElement = remoteVideoElement
+    async setVideoElements(localVideoCurrentSrc: HTMLVideoElement) {
         this.localVideoCurrentSrc = localVideoCurrentSrc
         new Promise(resolve => setTimeout(resolve, 500))
     }
 
-    private async setupPeerEvents() {
-        let userId = get(Store.state.user).key
-        while (userId === "0x0") {
-            userId = get(Store.state.user).key
-            await new Promise(resolve => setTimeout(resolve, 500))
+    private async setupLocalPeer(reset?: boolean) {
+        if ((reset && this.localPeer) || this.localPeer?.disconnected || this.localPeer?.destroyed) {
+            this.localPeer.destroy()
+            this.localPeer = null
         }
-        const peerId = userId.replace("did:key:", "")
-
         if (this.localPeer === null) {
+            let userId = get(Store.state.user).key
+            while (userId === "0x0") {
+                userId = get(Store.state.user).key
+                await new Promise(resolve => setTimeout(resolve, 500))
+            }
+            const peerId = userId.replace("did:key:", "")
             this.localPeer = new Peer(peerId)
+
+            this.localPeer!.on("open", id => {
+                log.debug(`My peer ID is: ${id}`)
+            })
+
+            // Handle incoming connections
+            this.localPeer!.on("connection", conn => {
+                conn.on("open", () => {
+                    /// It will appear to user that is receiving the call
+                    log.info(`Receiving connection on channel: ${conn.metadata.channel} from ${conn.metadata.id}, username: ${conn.metadata.username}`)
+                    this.incomingConnections.push(conn)
+                    this.incomingCallFrom = [conn.metadata.channel, conn]
+                    Store.setPendingCall(Store.getCallingChat(this.channel!)!, CallDirection.Inbound)
+                })
+            })
+            this.localPeer!.on("error", this.handleError.bind(this))
         }
-
-        this.localPeer!.on("open", id => {
-            log.debug(`My peer ID is: ${id}`)
-        })
-
-        this.localPeer!.on("connection", this.handlePeerConnection.bind(this))
-        this.localPeer!.on("call", async call => {
-            this.activeCall = call
-            this.channel = call.metadata.channel
-        })
-        this.localPeer!.on("error", this.handleError.bind(this))
     }
 
-    private handlePeerConnection(conn: DataConnection) {
-        this.remoteVoiceUser = {
-            did: conn.metadata.did,
-            username: conn.metadata.username,
-            videoEnabled: conn.metadata.videoEnabled,
-            audioEnabled: conn.metadata.audioEnabled,
-            isDeafened: conn.metadata.isDeafened,
-        }
-
-        this.callOptions.call.onlyAudioCall = conn.metadata.onlyAudioCall
-        this.callOptions.video.enabled = !conn.metadata.onlyAudioCall && this.callOptions.video.enabled
-
-        this.channel = conn.metadata.channel
-        this.callStartTime = conn.metadata.callStartTime ? new Date(conn.metadata.callStartTime) : null
-        this.dataConnection = conn
-
-        conn.on("open", () => {
-            /// It will appear to user that is receiving the call
-            if (!this.makingCall) {
-                log.info(`Receiving call on channel: ${conn.metadata.channel} from ${conn.metadata.did}, username: ${conn.metadata.username}`)
-                this.isReceivingCall = true
-                Store.setPendingCall(Store.getCallingChat(this.channel)!, CallDirection.Inbound)
-            }
-        })
-
-        this.sendData(VoiceRTCMessageType.IncomingCall)
-
-        conn.on("data", data => {
-            let dataReceived = data as VoiceMessage
-            this.handleWithDataReceived(dataReceived)
-        })
-    }
-
-    updateRemoteUserInfo(dataReceived: VoiceMessage) {
-        this.channel = dataReceived.channel
-        this.remoteVoiceUser = dataReceived.userInfo
-        Store.setActiveCall(Store.getCallingChat(this.channel)!)
-    }
-
-    public async acceptIncomingCall() {
-        this.callOptions.audio.enabled = true
-        Store.updateMuted(false)
-        this.acceptedIncomingCall = true
-    }
-
-    public async acceptCall() {
-        let localStream = await this.updateLocalStream()
-
-        await this.sendData(VoiceRTCMessageType.AcceptedCall)
-
-        this.activeCall!.answer(localStream!)
-
-        this.activeCall!.on("stream", async remoteStream => {
-            /// Here will receive data from user that made the call
-            if (this.remoteVideoElement) {
-                this.remoteVideoElement.srcObject = remoteStream
-                if (this.remoteVideoElement.readyState >= 2) {
-                    await this.remoteVideoElement.play()
-                }
-            }
-        })
-    }
-
-    async startToMakeACall(remotePeerId: string, chatID: string, onlyAudioCall: boolean = false) {
+    /**
+     * Setup a call to make
+     * @param recipients users to call
+     * @param chatID the chat to make the call in
+     * @param onlyAudioCall
+     */
+    startToMakeACall(recipients: string[], chatID: string, onlyAudioCall: boolean = false) {
+        let own = get(Store.state.user).key
+        recipients = recipients.filter(r => r !== own)
         this.callOptions.video.enabled = !onlyAudioCall
+        Store.state.devices.cameraEnabled.set(!onlyAudioCall)
         this.callOptions.call.onlyAudioCall = onlyAudioCall
         this.callOptions.audio.enabled = true
 
         this.channel = chatID
-        this.makingCall = true
-        const remotePeerIdEdited = remotePeerId.replace("did:key:", "")
-        this.remotePeerId = remotePeerIdEdited
+        this.toCall = recipients
     }
 
-    private async sendMessageCallStarted(chatID: string) {
-        const now = new Date()
-        this.callStartTime = now
-        const formattedTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
-        const text = get(_)("settings.calling.startCallMessage", { values: { value: formattedTime } })
-        this.channel = chatID
-        await RaygunStoreInstance.send(chatID, text.split("\n"), [])
-    }
-
-    public async makeCall() {
+    /**
+     * Actually making the call
+     */
+    async makeCall(call: boolean = true) {
+        if (!this.toCall) {
+            log.error("Calling not setup")
+            return
+        }
+        // If in call leave the current one first
+        if (this.call) {
+            this.call.room.leave()
+            this.call = null
+        }
         try {
-            await this.setupPeerEvents()
-
-            this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
-                reliable: true,
-                metadata: {
-                    did: this.localPeer!.id,
-                    username: get(Store.state.user).name,
-                    videoEnabled: this.callOptions.video.enabled,
-                    audioEnabled: this.callOptions.audio.enabled,
-                    isDeafened: this.callOptions.audio.deafened,
-                    onlyAudioCall: this.callOptions.call.onlyAudioCall,
-                    channel: this.channel,
-                },
-            })
-            await this.connectWithRetry()
-
-            setTimeout(() => {
-                if (this.callStartTime === null) {
-                    this.endCall(true)
-                }
-            }, 10000)
-
-            await this.sendData(VoiceRTCMessageType.Calling)
-
-            if (this.dataConnection) {
-                this.dataConnection.on("data", data => {
-                    let dataReceived = data as VoiceMessage
-                    this.handleWithDataReceived(dataReceived)
-                })
+            await this.setupLocalPeer()
+            // Create a new call room
+            this.createAndSetRoom()
+            if (call) {
+                this.inviteToCall(this.toCall)
             }
-
-            let localStream = await this.updateLocalStream()
-
-            this.activeCall = this.localPeer!.call(this.remotePeerId!, localStream!, {
-                metadata: {
-                    channel: this.channel,
-                    userInfo: {
-                        did: this.localPeer!.id,
-                        username: get(Store.state.user).name,
-                        videoEnabled: this.callOptions.video.enabled,
-                        audioEnabled: this.callOptions.audio.enabled,
-                    },
-                },
-            })
-
-            this.activeCall!.on("stream", async remoteStream => {
-                /// Here will receive data from user that accepted the call
-                if (this.remoteVideoElement) {
-                    this.remoteVideoElement.srcObject = remoteStream
-                    if (this.remoteVideoElement.readyState >= 2) {
-                        await this.remoteVideoElement.play()
-                    }
+            setTimeout(() => {
+                if (this.call === null || this.call.empty) {
+                    this.leaveCall(true)
                 }
-            })
-            Store.setActiveCall(Store.getCallingChat(this.channel)!)
+            }, 100000)
+            Store.setActiveCall(Store.getCallingChat(this.channel!)!, CallDirection.Outbound)
         } catch (error) {
             log.error(`Error making call: ${error}`)
         }
-
-        this.dataConnection?.send({
-            type: VoiceRTCMessageType.Calling,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio.enabled,
-                isDeafened: this.callOptions.audio.deafened,
-            },
-        })
-
         if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = this.activeCall?.localStream!
+            this.localVideoCurrentSrc.srcObject = await this.getLocalStream()!
             await this.localVideoCurrentSrc.play()
         }
-        /// Let it commented for now.
-        // await this.improveAudioQuality()
     }
 
-    async connectWithRetry() {
+    // Sends a call invitation to the given dids
+    // It will keep trying to send the invitation out until the other end accepts or denies it
+    async inviteToCall(dids: string[]) {
+        if (this.call == null) {
+            log.error("Not in a call")
+            return
+        }
+        await this.setupLocalPeer()
+        let peers: [string, string][] = dids.map(did => [did, did.replace("did:key:", "")])
+        this.invitations.forEach(c => c.cancel())
+        this.invitations = peers.map(([did, peer]) => create_cancellable_handler(() => this.sendAndHandleInviteTo(did, peer)))
+    }
+
+    private async sendAndHandleInviteTo(did: string, peer: string) {
         const maxRetries = 5
         let attempts = 0
+        let handled = false
+        let accepted = false
+
+        let conn: DataConnection | undefined
         let connected = false
-
-        while (!connected && attempts < maxRetries) {
+        while (!handled && !accepted && attempts < maxRetries) {
             try {
-                this.dataConnection = this.localPeer!.connect(this.remotePeerId!, {
-                    reliable: true,
-                    metadata: {
-                        did: this.localPeer!.id,
-                        username: get(Store.state.user).name,
-                        videoEnabled: this.callOptions.video.enabled,
-                        audioEnabled: this.callOptions.audio.enabled,
-                        isDeafened: this.callOptions.audio.deafened,
-                        channel: this.channel,
-                        callStartTime: this.callStartTime,
-                    },
-                })
-
-                this.dataConnection.on("open", () => {
-                    connected = true
-                    log.debug("Connection established successfully.")
-                })
-
-                await new Promise(resolve => setTimeout(resolve, 2000))
-                log.debug("Not possible to connect, trying again.")
-
-                if (!connected && attempts === maxRetries) {
-                    log.error("Connection attempt failed. Ending call.")
-                    this.endCall(false)
+                if (!conn) {
+                    log.debug(`Trying to send invitation send out to ${peer} ${conn}`)
+                    conn = this.localPeer!.connect(peer, {
+                        metadata: {
+                            did: get(Store.state.user).key,
+                            username: get(Store.state.user).name,
+                            channel: this.channel,
+                        },
+                    })
+                    conn.on("open", () => {
+                        connected = true
+                    })
+                    conn.once("data", d => {
+                        if (d === CALL_ACK) {
+                            accepted = true
+                        }
+                    })
+                    conn.on("close", () => {
+                        conn = undefined
+                        if (!accepted) {
+                            log.info(`Recipient ${did} didn't accept`)
+                            // Do something else?
+                            handled = true
+                        }
+                    })
+                    conn.on("error", e => {
+                        attempts += 1
+                        conn = undefined
+                        log.debug(`${e}: Attempt ${attempts} failed. Retrying...`)
+                        if (attempts >= maxRetries) {
+                            log.error("Max retries reached. Connection failed.")
+                            handled = true
+                        }
+                    })
+                }
+                await new Promise(resolve => setTimeout(resolve, 5000))
+                if (connected) {
+                    // If connection has been made let it ring for 30 sec.
+                    await new Promise(resolve => setTimeout(resolve, 30000))
+                    conn.close()
+                    break
                 }
             } catch (error) {
                 attempts += 1
                 log.debug(`Attempt ${attempts} failed. Retrying...`)
-
                 if (attempts >= maxRetries) {
                     log.error("Max retries reached. Connection failed.")
                     break
                 }
             }
         }
+        return accepted
     }
 
-    async updateLocalStream(updatingCallSetting = false) {
+    private createAndSetRoom() {
+        log.debug(`Creating/Joining room in channel ${this.channel}`)
+        this.call = new CallRoom(
+            joinRoom(
+                {
+                    appId: "uplink",
+                },
+                this.channel!
+            )
+        )
+    }
+
+    /**
+     * Accept an incoming call with the options
+     */
+    async acceptCall(audioOnly: boolean = false) {
+        if (!this.incomingCallFrom) {
+            log.error("No call to accept")
+            return
+        }
+        this.callOptions.audio.enabled = audioOnly
+        this.callOptions.video.enabled = !audioOnly
+        Store.state.devices.cameraEnabled.set(!audioOnly)
+        this.callOptions.call.onlyAudioCall = audioOnly
+        // If in a existing call leave it first
+        this.call?.room.leave()
+        this.call = null
+        this.channel = this.incomingCallFrom[0]
+        // Tell the other end you accepted the call
+        this.incomingCallFrom[1].send(CALL_ACK)
+        this.createAndSetRoom()
+        this.incomingConnections.forEach(conn => {
+            conn.close()
+        })
+        this.incomingConnections = []
+        this.incomingCallFrom = null
+        if (this.localVideoCurrentSrc) {
+            this.localVideoCurrentSrc.srcObject = await this.getLocalStream()!
+            await this.localVideoCurrentSrc.play()
+        }
+    }
+
+    async leaveCall(sendEndCallMessage = false) {
+        sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
+        if (sendEndCallMessage && this.call?.start) {
+            const now = new Date()
+            const duration = this.getDuration(now)
+            const formattedEndTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+            const endText = get(_)("settings.calling.endCallMessage", { values: { formattedEndTime: formattedEndTime, duration: duration } })
+            await RaygunStoreInstance.send(this.channel!, endText.split("\n"), [])
+        } else if (sendEndCallMessage && this.call?.start === null) {
+            const text = get(_)("settings.calling.callMissed")
+            await RaygunStoreInstance.send(this.channel!, text.split("\n"), [])
+        }
+
+        this.clearResources()
+
+        if (get(Store.state.activeCall)) {
+            Store.endCall()
+        }
+
+        if (get(Store.state.pendingCall)) {
+            Store.denyCall()
+        }
+
+        log.info("Call ended and resources cleaned up.")
+        this.setupLocalPeer()
+    }
+
+    async getLocalStream(replace = false) {
+        if (!this.localStream || replace) {
+            if (this.localStream) {
+                this.localStream.getTracks().forEach(track => track.stop())
+                if (replace && this.call) {
+                    this.call.room.removeStream(this.localStream)
+                }
+            }
+            this.localStream = await this.createLocalStream()
+            if (this.localVideoCurrentSrc) {
+                this.localVideoCurrentSrc.srcObject = this.localStream
+                await this.localVideoCurrentSrc.play()
+            }
+            this.call?.room.addStream(this.localStream)
+        }
+
+        return this.localStream
+    }
+
+    private async createLocalStream() {
         let localStream
         try {
             let videoInputDevice = get(Store.state.devices.video)
             let audioInputDevice = get(Store.state.devices.input)
             let settingsStore = get(SettingsStore.state)
-
             localStream = await navigator.mediaDevices.getUserMedia({
                 video: this.callOptions.video.enabled
                     ? {
@@ -421,83 +629,49 @@ export class VoiceRTC {
                 audio: true,
             })
         }
-        await this.sendData(VoiceRTCMessageType.Calling)
-
-        if (this.localVideoCurrentSrc) {
-            this.localVideoCurrentSrc.srcObject = localStream!
-            await this.localVideoCurrentSrc.play()
-        }
-
-        if (this.activeCall !== null && updatingCallSetting) {
-            this.activeCall?.peerConnection.getSenders().forEach(sender => {
-                if (sender.track?.kind === "video") {
-                    sender.replaceTrack(localStream.getVideoTracks()[0])
-                } else if (sender.track?.kind === "audio") {
-                    sender.replaceTrack(localStream.getAudioTracks()[0])
-                }
-            })
-        }
 
         return localStream
         /// Let it commented for now.
         // await this.improveAudioQuality()
     }
 
-    private async improveAudioQuality() {
-        const audioContext = new window.AudioContext()
-        const source = audioContext.createMediaStreamSource(this.activeCall?.localStream!)
-        const destination = audioContext.createMediaStreamDestination()
+    // private async improveAudioQuality() {
+    //     const audioContext = new window.AudioContext()
+    //     const source = audioContext.createMediaStreamSource(this.activeCall?.localStream!)
+    //     const destination = audioContext.createMediaStreamDestination()
 
-        const gainNode = audioContext.createGain()
-        const echoCancellation = audioContext.createBiquadFilter()
-        const noiseSuppression = audioContext.createBiquadFilter()
+    //     const gainNode = audioContext.createGain()
+    //     const echoCancellation = audioContext.createBiquadFilter()
+    //     const noiseSuppression = audioContext.createBiquadFilter()
 
-        echoCancellation.type = "lowshelf"
-        echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
-        echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
+    //     echoCancellation.type = "lowshelf"
+    //     echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
+    //     echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
 
-        noiseSuppression.type = "highpass"
-        noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
-        noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
+    //     noiseSuppression.type = "highpass"
+    //     noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
+    //     noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
 
-        source.connect(echoCancellation)
-        echoCancellation.connect(noiseSuppression)
-        noiseSuppression.connect(gainNode)
-        gainNode.connect(destination)
+    //     source.connect(echoCancellation)
+    //     echoCancellation.connect(noiseSuppression)
+    //     noiseSuppression.connect(gainNode)
+    //     gainNode.connect(destination)
 
-        const processedStream = new MediaStream()
-        processedStream.addTrack(destination.stream.getAudioTracks()[0])
-        processedStream.addTrack(this.activeCall?.localStream!.getVideoTracks()[0]!)
-        this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
-    }
+    //     const processedStream = new MediaStream()
+    //     processedStream.addTrack(destination.stream.getAudioTracks()[0])
+    //     processedStream.addTrack(this.activeCall?.localStream!.getVideoTracks()[0]!)
+    //     this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
+    // }
 
     get isInCall(): boolean {
-        return this.activeCall !== null
-    }    
+        return this.call != null
+    }
 
     handleWithDataReceived(dataReceived: VoiceMessage) {
-        log.debug(`Data received: ${dataReceived.type}`)
+        log.debug(`Data received from ${dataReceived.userInfo.username}: ${dataReceived.type}`)
         switch (dataReceived.type) {
-            case VoiceRTCMessageType.EndingCall:
-                this.endCall(false)
-                break
-            case VoiceRTCMessageType.Calling:
-                if (!this.makingCall) {
-                    this.isReceivingCall = true
-                }
-                this.remoteVoiceUser = dataReceived.userInfo
-                this.channel = dataReceived.channel
-                break
-            case VoiceRTCMessageType.AcceptedCall:
-                this.sendMessageCallStarted(this.channel)
-                this.updateRemoteUserInfo(dataReceived)
-                break
-            case VoiceRTCMessageType.IncomingCall:
-            case VoiceRTCMessageType.EnabledVideo:
-            case VoiceRTCMessageType.DisabledVideo:
-            case VoiceRTCMessageType.EnabledAudio:
-            case VoiceRTCMessageType.DisabledAudio:
-                this.updateRemoteUserInfo(dataReceived)
+            case VoiceRTCMessageType.UpdateUser:
+                this.call?.updateUserData(dataReceived.userInfo)
                 break
             case VoiceRTCMessageType.None:
                 break
@@ -506,24 +680,10 @@ export class VoiceRTC {
         }
     }
 
-    async sendData(type: VoiceRTCMessageType) {
-        await this.dataConnection?.send({
-            type: type,
-            channel: this.channel,
-            userInfo: {
-                did: this.localPeer!.id,
-                username: get(Store.state.user).name,
-                videoEnabled: this.callOptions.video.enabled,
-                audioEnabled: this.callOptions.audio.enabled,
-                isDeafened: this.callOptions.audio.deafened,
-            },
-        })
-    }
-
     private getDuration(endTime: Date): string {
-        if (!this.callStartTime) return "0:00"
+        if (!this.call?.start) return "0:00"
 
-        const durationMs = endTime.getTime() - this.callStartTime.getTime()
+        const durationMs = endTime.getTime() - this.call.start.getTime()
         const totalSeconds = Math.floor(durationMs / 1000)
         const minutes = Math.floor(totalSeconds / 60)
         const seconds = totalSeconds % 60
@@ -537,72 +697,23 @@ export class VoiceRTC {
         }
     }
 
-    async endCall(sendEndCallMessage = true) {
-        await this.sendData(VoiceRTCMessageType.EndingCall)
-
-        if (sendEndCallMessage && this.callStartTime) {
-            const now = new Date()
-            const duration = this.getDuration(now)
-            const formattedEndTime = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
-            const endText = get(_)("settings.calling.endCallMessage", { values: { formattedEndTime: formattedEndTime, duration: duration } })
-            await RaygunStoreInstance.send(this.channel, endText.split("\n"), [])
-        } else if (sendEndCallMessage && this.callStartTime === null) {
-            const text = get(_)("settings.calling.callMissed")
-            await RaygunStoreInstance.send(this.channel, text.split("\n"), [])
-        }
-
-        this.clearResources()
-
-        if (get(Store.state.activeCall)) {
-            Store.endCall()
-        }
-
-        if (get(Store.state.pendingCall)) {
-            Store.denyCall()
-        }
-
-        log.info("Call ended and resources cleaned up.")
-        this.setupPeerEvents()
-    }
-
     private clearResources() {
-        this.channel = ""
-        this.activeCall?.localStream?.getTracks().forEach(track => track.stop())
-        this.makingCall = false
-        this.acceptedIncomingCall = false
-        this.isReceivingCall = false
-        this.callStartTime = null
-
-        this.activeCall?.remoteStream?.getTracks().forEach(track => track.stop())
-
-        if (this.activeCall) {
-            this.activeCall.close()
-            this.activeCall = null
-        }
-
-        if (this.dataConnection) {
-            this.dataConnection.close()
-            this.dataConnection = null
-        }
-
-        this.remoteVoiceUser = {
-            did: "",
-            username: "unknown",
-            videoEnabled: false,
-            audioEnabled: false,
-            isDeafened: false,
-        }
-
-        if (this.remoteVideoElement) {
-            this.remoteVideoElement.pause()
-            this.remoteVideoElement.srcObject = null
-            this.remoteVideoElement = null
-        }
+        this.channel = undefined
+        this.toCall = null
+        this.incomingConnections = []
+        this.incomingCallFrom = null
+        this.invitations.forEach(c => c.cancel())
+        this.invitations = []
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.pause()
             this.localVideoCurrentSrc.srcObject = null
             this.localVideoCurrentSrc = null
         }
+        if (this.localStream) this.localStream.getTracks().forEach(track => track.stop())
+        this.localStream = null
+        this.call?.room.leave()
+        this.call = null
+        Store.state.activeCallMeta.set({})
     }
 
     handleError(error: Error) {
@@ -610,7 +721,7 @@ export class VoiceRTC {
     }
 }
 
-export const VoiceRTCInstance = new VoiceRTC("default", {
+export const VoiceRTCInstance = new VoiceRTC({
     audio: {
         enabled: get(Store.state.devices.muted),
         deafened: false,

@@ -2,6 +2,7 @@
     import { Button, Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { Store } from "$lib/state/Store"
+    import { onDestroy } from "svelte"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
 
@@ -18,18 +19,16 @@
 
     async function switchCamera(selectedVideoDeviceId: string) {
         try {
-            const videoConstraints = {
-                deviceId: selectedVideoDeviceId ? { exact: selectedVideoDeviceId } : undefined,
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop())
+                const videoConstraints = {
+                    deviceId: selectedVideoDeviceId ? { exact: selectedVideoDeviceId } : undefined,
+                }
+
+                stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints })
+
+                video.srcObject = stream
             }
-
-            const newStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints })
-            const videoTrack = newStream.getVideoTracks()[0]
-            const sender = stream.getVideoTracks()[0]
-
-            stream.removeTrack(sender)
-            stream.addTrack(videoTrack)
-
-            video.srcObject = stream
         } catch (err) {
             console.error(`Error: ${err}`)
         }
@@ -51,6 +50,7 @@
             return
         }
         try {
+            if (stream) stream.getTracks().forEach(t => t.stop())
             stream = await navigator.mediaDevices.getUserMedia(constraints)
             navigator.mediaDevices.enumerateDevices().then(devices => {
                 devices.forEach(device => {
@@ -63,6 +63,10 @@
             console.error("Accessing the microphone failed:", err)
         }
     }
+
+    onDestroy(() => {
+        stream.getTracks().forEach(t => t.stop())
+    })
 </script>
 
 <div class="video-preview">

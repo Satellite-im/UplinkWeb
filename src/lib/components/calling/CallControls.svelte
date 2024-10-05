@@ -50,7 +50,7 @@
 
     $: activeCall = Store.state.activeCall
     $: activeChat = Store.state.activeChat
-    $: pending = settings.calling.minimalCallingAlerts && VoiceRTCInstance.isReceivingCall
+    $: pending = settings.calling.minimalCallingAlerts && VoiceRTCInstance.incomingCallFrom != null
 </script>
 
 {#if $activeCall || pending}
@@ -121,7 +121,7 @@
                     loading={loading}
                     on:click={_ => {
                         Store.endCall()
-                        VoiceRTCInstance.endCall()
+                        VoiceRTCInstance.leaveCall()
                     }}>
                     <Icon icon={Shape.PhoneXMark} />
                 </Button>
