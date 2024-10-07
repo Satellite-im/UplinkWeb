@@ -62,7 +62,7 @@
                                 <div class="pinned-button-container">
                                     <Button icon hook="pinned-message-button-unpin" tooltip={$_("messages.pinnedUnpin")} appearance={Appearance.Alt} class="pinned-buttons" on:click={_ => unpin(message.id)}
                                         ><Icon icon={Shape.PinSlash} /></Button>
-                                    <Button icon hook="pinned-message-button-go-to" tooltip={$_("messages.pinnedGoto")} class="pinned-buttons" on:click={_ => scrollTo(message.id)}><Icon icon={Shape.GoTO} /></Button>
+                                    <Button icon hook="pinned-message-button-go-to" tooltip={$_("messages.pinnedGoto")} class="pinned-buttons" on:click={_ => scrollTo(message.id)}><Icon icon={Shape.GoTo} /></Button>
                                 </div>
                             </div>
                         </div>
