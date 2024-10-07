@@ -2,7 +2,6 @@
     import Select from "$lib/elements/Select.svelte"
     import Switch from "$lib/elements/Switch.svelte"
     import { SettingSection } from "$lib/layouts"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
     import { SettingsStore } from "$lib/state"
     import { Store } from "$lib/state/Store"
     import { createEventDispatcher, onMount, onDestroy } from "svelte"
@@ -27,11 +26,11 @@
 
     onMount(async () => {
         await fetchDevices()
-        document.addEventListener('click', handleClickOutside)
+        document.addEventListener("click", handleClickOutside)
     })
 
     onDestroy(() => {
-        document.removeEventListener('click', handleClickOutside)
+        document.removeEventListener("click", handleClickOutside)
     })
 
     function handleClickOutside(event: MouseEvent) {

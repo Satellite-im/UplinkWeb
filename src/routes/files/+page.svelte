@@ -26,6 +26,8 @@
     import path from "path"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
+    export let browseFilesForChatMode: boolean = false
+
     let loading: boolean = false
     $: sidebarOpen = UIStore.state.sidebarOpen
     let isContextMenuOpen: boolean = false
@@ -522,64 +524,66 @@
         </Modal>
     {/if}
 
-    <Sidebar loading={loading} on:toggle={toggleSidebar} open={$sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
-        <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
-        <Controls>
-            <Button
-                appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
-                hook="button-sidebar-chats"
-                text={$_("chat.chat_plural")}
-                on:click={_ => {
-                    activeTabRoute = "chats"
-                }}>
-                <Icon icon={Shape.ChatBubble} />
-            </Button>
-            <Button
-                appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
-                hook="button-sidebar-files"
-                text={$_("files.file_plural")}
-                on:click={_ => {
-                    activeTabRoute = "files"
-                }}>
-                <Icon icon={Shape.Folder} />
-            </Button>
-        </Controls>
-        {#if activeTabRoute === "chats"}
-            {#each $chats.slice().sort((a, b) => {
-                const dateA = new Date(a.last_message_at || 0)
-                const dateB = new Date(b.last_message_at || 0)
-                return dateB.getTime() - dateA.getTime()
-            }) as chat}
-                <ContextMenu
-                    hook="context-menu-sidebar-chat"
-                    items={[
-                        {
-                            id: "hide",
-                            icon: Shape.EyeSlash,
-                            text: $_("chat.hide"),
-                            appearance: Appearance.Default,
-                            onClick: () => UIStore.removeSidebarChat(chat),
-                        },
-                        {
-                            id: "mark_read",
-                            icon: Shape.CheckMark,
-                            text: $_("chat.markRead"),
-                            appearance: Appearance.Default,
-                            onClick: () => {},
-                        },
-                    ]}>
-                    <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
-                </ContextMenu>
-            {/each}
-        {/if}
-        {#if activeTabRoute === "files"}
-            <ul class="folderList" data-cy="folder-list">
-                {#each $files as file}
-                    <FolderItem file={file} openFolders={$openFolders} toggleFolder={toggleFolder} />
+    {#if !browseFilesForChatMode}
+        <Sidebar loading={loading} on:toggle={toggleSidebar} open={$sidebarOpen} activeRoute={Route.Files} bind:search={search_filter} on:search={() => search_component.filter_chat()} on:enter={onSearchEnter}>
+            <ChatFilter bind:this={search_component} bind:filter={search_filter}></ChatFilter>
+            <Controls>
+                <Button
+                    appearance={activeTabRoute === "chats" ? Appearance.Primary : Appearance.Alt}
+                    hook="button-sidebar-chats"
+                    text={$_("chat.chat_plural")}
+                    on:click={_ => {
+                        activeTabRoute = "chats"
+                    }}>
+                    <Icon icon={Shape.ChatBubble} />
+                </Button>
+                <Button
+                    appearance={activeTabRoute === "files" ? Appearance.Primary : Appearance.Alt}
+                    hook="button-sidebar-files"
+                    text={$_("files.file_plural")}
+                    on:click={_ => {
+                        activeTabRoute = "files"
+                    }}>
+                    <Icon icon={Shape.Folder} />
+                </Button>
+            </Controls>
+            {#if activeTabRoute === "chats"}
+                {#each $chats.slice().sort((a, b) => {
+                    const dateA = new Date(a.last_message_at || 0)
+                    const dateB = new Date(b.last_message_at || 0)
+                    return dateB.getTime() - dateA.getTime()
+                }) as chat}
+                    <ContextMenu
+                        hook="context-menu-sidebar-chat"
+                        items={[
+                            {
+                                id: "hide",
+                                icon: Shape.EyeSlash,
+                                text: $_("chat.hide"),
+                                appearance: Appearance.Default,
+                                onClick: () => UIStore.removeSidebarChat(chat),
+                            },
+                            {
+                                id: "mark_read",
+                                icon: Shape.CheckMark,
+                                text: $_("chat.markRead"),
+                                appearance: Appearance.Default,
+                                onClick: () => {},
+                            },
+                        ]}>
+                        <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
+                    </ContextMenu>
                 {/each}
-            </ul>
-        {/if}
-    </Sidebar>
+            {/if}
+            {#if activeTabRoute === "files"}
+                <ul class="folderList" data-cy="folder-list">
+                    {#each $files as file}
+                        <FolderItem file={file} openFolders={$openFolders} toggleFolder={toggleFolder} />
+                    {/each}
+                </ul>
+            {/if}
+        </Sidebar>
+    {/if}
     <div class="content">
         <!-- <Topbar>
             <div slot="before" class="before flex-column">
@@ -614,21 +618,23 @@
                 </button>
             </div>
             <svelte:fragment slot="controls">
-                <Button hook="button-new-folder" appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
-                    <Icon icon={Shape.FolderPlus} />
-                </Button>
-                <Button
-                    appearance={Appearance.Alt}
-                    hook="button-upload-file"
-                    icon
-                    tooltip={$_("files.upload")}
-                    on:click={async () => {
-                        filesToUpload?.click()
-                    }}>
-                    <Icon icon={Shape.Plus} />
-                </Button>
-                <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
-                <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
+                {#if !browseFilesForChatMode}
+                    <Button hook="button-new-folder" appearance={Appearance.Alt} on:click={newFolder} icon tooltip={$_("files.new_folder")}>
+                        <Icon icon={Shape.FolderPlus} />
+                    </Button>
+                    <Button
+                        appearance={Appearance.Alt}
+                        hook="button-upload-file"
+                        icon
+                        tooltip={$_("files.upload")}
+                        on:click={async () => {
+                            filesToUpload?.click()
+                        }}>
+                        <Icon icon={Shape.Plus} />
+                    </Button>
+                    <input data-cy="input=upload-files" style="display:none" multiple type="file" on:change={e => onFileSelected(e)} bind:this={filesToUpload} />
+                    <ProgressButton appearance={Appearance.Alt} icon={Shape.ArrowsUpDown} />
+                {/if}
             </svelte:fragment>
         </Topbar>
         {#if $canGoBack}

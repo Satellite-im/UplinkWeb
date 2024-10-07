@@ -263,7 +263,7 @@
 
         <Toasts />
         <IncomingCall />
-        <VideoPreview />
+        <!-- <VideoPreview /> This needs a rework as atm it only supports one to one calling. Maybe add ability to select source? -->
         <GamepadListener />
         <Market on:close={() => UIStore.toggleMarket()} />
         <InstallBanner />

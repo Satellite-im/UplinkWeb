@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Icon, Input, Label } from "$lib/elements"
-    import { Appearance, MessageAttachmentKind, MessagePosition, Shape, Size } from "$lib/enums"
+    import { Appearance, MessagePosition, Shape, Size } from "$lib/enums"
     import { _ } from "svelte-i18n"
     import Controls from "./Controls.svelte"
     import { Store } from "$lib/state/Store"
@@ -9,26 +9,21 @@
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher, onMount } from "svelte"
     import { ConversationStore } from "$lib/state/conversation"
-    import type { Chat, GiphyGif, User } from "$lib/types"
+    import type { Chat, FileInfo, GiphyGif, User } from "$lib/types"
     import { Message, PopupButton } from "$lib/components"
-    import { OperationState, type Message as MessageType } from "$lib/types"
-    import { FileEmbed, ImageEmbed, ProfilePicture, STLViewer } from "$lib/components"
+    import { type Message as MessageType } from "$lib/types"
+    import { ProfilePicture } from "$lib/components"
     import CombinedSelector from "$lib/components/messaging/CombinedSelector.svelte"
     import { checkMobile } from "$lib/utils/Mobile"
     import { UIStore } from "$lib/state/ui"
     import { emojiList, emojiRegexMap } from "$lib/components/messaging/emoji/EmojiList"
     import { tempCDN } from "$lib/utils/CommonVariables"
-    import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
-    import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
-    import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import { getValidPaymentRequest } from "$lib/utils/Wallet"
     import { VoiceRTCMessageType } from "$lib/media/Voice"
     import Text from "$lib/elements/Text.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
-    import { emojiRegex } from "$lib/components/utils/Emoji"
 
     export let replyTo: MessageType | undefined = undefined
-    export let filesSelected: [File?, string?][] = []
     export let emojiClickHook: (emoji: string) => boolean
     export let activeChat: Chat
     export const typing: User[] = []
@@ -49,7 +44,6 @@
     }
 
     $: if (message) {
-        let messages = get(Store.state.chatMessagesToSend)
         chatMessages.update(messages => {
             messages[activeChat.id] = $message
             return messages
@@ -58,19 +52,39 @@
     }
 
     async function sendMessage(text: string, isStickerOrGif: boolean = false) {
+        message.set("")
+        let filesSelected = get(Store.state.chatAttachmentsToSend)[activeChat.id]?.localFiles
+        let filesSelectedFromStorage: FileInfo[] = get(Store.state.chatAttachmentsToSend)[activeChat.id]?.storageFiles
+
+        if (text.trim() === "" && filesSelected && filesSelected.length > 0 && filesSelectedFromStorage && filesSelectedFromStorage.length > 0) {
+            return
+        }
+
         let attachments: FileAttachment[] = []
-        filesSelected.forEach(([file, path]) => {
-            if (file) {
+
+        if (filesSelected && filesSelected.length > 0) {
+            filesSelected.forEach(([file, path]) => {
+                if (file) {
+                    attachments.push({
+                        file: file.name,
+                        attachment: [file.stream(), file.size],
+                    })
+                } else if (path) {
+                    attachments.push({
+                        file: path,
+                    })
+                }
+            })
+        }
+
+        if (filesSelectedFromStorage && filesSelectedFromStorage.length > 0) {
+            filesSelectedFromStorage.forEach(file => {
                 attachments.push({
-                    file: file.name,
-                    attachment: [file.stream(), file.size],
+                    file: file.remotePath,
                 })
-            } else if (path) {
-                attachments.push({
-                    file: path,
-                })
-            }
-        })
+            })
+        }
+
         let chat = get(Store.state.activeChat)
         let txt = text.split("\n")
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
@@ -79,7 +93,6 @@
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         if (!isStickerOrGif) {
-            message.set("")
             chatMessages.update(messages => {
                 messages[activeChat.id] = ""
                 return messages
@@ -179,31 +192,10 @@
                         {/each}
 
                         {#if replyTo.attachments.length > 0}
-                            {#each replyTo.attachments as attachment}
-                                {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
-                                    <FileEmbed
-                                        fileInfo={{
-                                            id: "1",
-                                            isRenaming: OperationState.Initial,
-                                            source: "unknown",
-                                            name: attachment.name,
-                                            size: attachment.size,
-                                            icon: Shape.Document,
-                                            type: "unknown/unknown",
-                                            remotePath: "",
-                                        }} />
-                                {:else if attachment.kind === MessageAttachmentKind.Image}
-                                    <ImageEmbed source={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                {:else if attachment.kind === MessageAttachmentKind.Text}
-                                    <TextDocument />
-                                {:else if attachment.kind === MessageAttachmentKind.STL}
-                                    <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                    <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                {:else if attachment.kind === MessageAttachmentKind.Video}
-                                    <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                {/if}
-                            {/each}
+                            <div class="attachment-container">
+                                <Icon icon={Shape.Document} size={Size.Large} />
+                                {$_("chat.attachments-count", { values: { amount: replyTo.attachments.length } })}
+                            </div>
                         {/if}
                     </Message>
                     <ProfilePicture id={resolved.key} hook="message-group-remote-profile-picture" size={Size.Small} image={resolved.profile.photo.image} status={resolved.profile.status} highlight={Appearance.Default} notifications={0} />
@@ -285,6 +277,16 @@
                     text-overflow: ellipsis;
                     overflow: hidden;
                     text-align: left;
+                }
+                .attachment-container {
+                    display: flex;
+                    align-items: center;
+                    background-color: var(--alt-color);
+                    padding: var(--padding-minimal);
+                    border-radius: var(--border-radius-less);
+                }
+                .sticker {
+                    width: 45px;
                 }
             }
             :global(.button) {

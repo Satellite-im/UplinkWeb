@@ -25,6 +25,7 @@ export default defineConfig({
     resolve: {
         alias: {
             $lib: path.resolve(__dirname, "src/lib"),
+            "@": path.resolve(__dirname, "src"),
         },
     },
     plugins: [
@@ -43,7 +44,11 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                additionalData: '@use "src/variables.scss" as *;',
+                additionalData: '@use "@/variables.scss" as *;',
+                api: "modern-compiler",
+                importers: [
+                    // ...
+                ],
             },
         },
     },
@@ -55,5 +60,10 @@ export default defineConfig({
         target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
         minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
         sourcemap: !!process.env.TAURI_DEBUG,
+    },
+    esbuild: {
+        supported: {
+            bigint: true,
+        },
     },
 })
