@@ -28,7 +28,9 @@ class GlobalStore {
                     return chat
                 },
             }),
+            activeCallMeta: writable({}),
             chatMessagesToSend: createPersistentState("uplink.chatMessagesToSend", {}),
+            chatAttachmentsToSend: createPersistentState("uplink.chatAttachmentsToSend", {}),
             devices: {
                 input: createPersistentState("uplink.devices.input", "default"),
                 video: createPersistentState("uplink.devices.videoInput", "default"),
@@ -323,7 +325,7 @@ class GlobalStore {
      * @param did The did of the user to lookup
      * @returns The looked up user in the cache
      */
-    getUser(did: string): Readable<User> {
+    getUser(did: string): Writable<User> {
         // Handle special cases like mock data or default user
         if (did === defaultUser.key) return writable(defaultUser)
         let mock = mock_users.find(user => user.key === did)

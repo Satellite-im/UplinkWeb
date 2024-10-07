@@ -64,7 +64,7 @@
     onDestroy(() => {
         setTimeout(() => {
             if (get(Store.state.activeCall)) {
-                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
+                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel!)!)
             }
         }, 100)
 
