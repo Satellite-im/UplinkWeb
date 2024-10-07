@@ -1,26 +1,20 @@
 <script lang="ts">
     import Text from "$lib/elements/Text.svelte"
-    import { FileEmbed, ImageEmbed, STLViewer, ProfilePicture } from "$lib/components"
-    import { Appearance, MessageAttachmentKind, Shape, Size } from "$lib/enums"
-    import { OperationState, type Attachment, type Message } from "$lib/types"
+    import { ProfilePicture } from "$lib/components"
+    import { Appearance, Shape, Size } from "$lib/enums"
+    import { type Message } from "$lib/types"
     import { _ } from "svelte-i18n"
-    import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
-    import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
-    import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import { Store } from "$lib/state/Store"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
     import Label from "$lib/elements/Label.svelte"
     import Button from "$lib/elements/Button.svelte"
     import { Icon } from "$lib/elements"
+    import AttachmentRenderer from "./AttachmentRenderer.svelte"
 
     export let chatID: string
     export let messages: Message[]
     export let top: number | string = "var(--padding)"
-
-    async function download_attachment(message: string, attachment: Attachment) {
-        await RaygunStoreInstance.downloadAttachment(chatID, message, attachment.name, attachment.size)
-    }
 
     async function unpin(message: string) {
         await RaygunStoreInstance.pin(chatID, message, false)
@@ -71,34 +65,7 @@
                                 <Text hook="pinned-message-text" markdown={line} />
                             {/each}
                             {#if message.attachments.length > 0}
-                                {#each message.attachments as attachment}
-                                    {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
-                                        <FileEmbed
-                                            altBackgroundColor={true}
-                                            fileInfo={{
-                                                id: "1",
-                                                isRenaming: OperationState.Initial,
-                                                source: "unknown",
-                                                name: attachment.name,
-                                                size: attachment.size,
-                                                icon: Shape.Document,
-                                                displayName: attachment.name,
-                                                type: "unknown/unknown",
-                                                remotePath: "",
-                                            }}
-                                            on:download={_ => download_attachment(message.id, attachment)} />
-                                    {:else if attachment.kind === MessageAttachmentKind.Image}
-                                        <ImageEmbed source={attachment.location} name={attachment.name} filesize={attachment.size} on:download={_ => download_attachment(message.id, attachment)} />
-                                    {:else if attachment.kind === MessageAttachmentKind.Text}
-                                        <TextDocument />
-                                    {:else if attachment.kind === MessageAttachmentKind.STL}
-                                        <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                    {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                        <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                    {:else if attachment.kind === MessageAttachmentKind.Video}
-                                        <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                    {/if}
-                                {/each}
+                                <AttachmentRenderer attachments={message.attachments} messageId={message.id} chatID={chatID}></AttachmentRenderer>
                             {/if}
                         </div>
                     </div>

@@ -55,6 +55,7 @@
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { checkMobile } from "$lib/utils/Mobile"
     import BrowseFiles from "../files/BrowseFiles.svelte"
+    import AttachmentRenderer from "$lib/components/messaging/AttachmentRenderer.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -69,7 +70,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -635,40 +636,7 @@
                                                     {/each}
 
                                                     {#if message.attachments.length > 0}
-                                                        {#each message.attachments as attachment}
-                                                            {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
-                                                                <FileEmbed
-                                                                    fileInfo={{
-                                                                        id: "1",
-                                                                        isRenaming: OperationState.Initial,
-                                                                        source: "unknown",
-                                                                        name: attachment.name,
-                                                                        displayName: attachment.name,
-                                                                        size: attachment.size,
-                                                                        icon: Shape.Document,
-                                                                        type: "unknown/unknown",
-                                                                        remotePath: "",
-                                                                    }}
-                                                                    on:download={_ => download_attachment(message.id, attachment)} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Image}
-                                                                <ImageEmbed
-                                                                    source={attachment.location}
-                                                                    name={attachment.name}
-                                                                    filesize={attachment.size}
-                                                                    on:click={_ => {
-                                                                        previewImage = attachment.location
-                                                                    }}
-                                                                    on:download={_ => download_attachment(message.id, attachment)} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Text}
-                                                                <TextDocument />
-                                                            {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                                <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                                                <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Video}
-                                                                <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                            {/if}
-                                                        {/each}
+                                                        <AttachmentRenderer attachments={message.attachments} messageId={message.id} chatID={$activeChat.id}></AttachmentRenderer>
                                                     {/if}
                                                 {/if}
                                             </Message>
