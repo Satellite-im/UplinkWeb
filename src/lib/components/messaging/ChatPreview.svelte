@@ -32,28 +32,31 @@
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
     let ownId = get(Store.state.user)
-    $: messagePreview =
-        chat.last_message_id === ""
-            ? $_("message_previews.none")
-            : chat.last_message_id !== "" && chat.last_message_preview === ""
-              ? $_("message_previews.attachment")
-              : chat.last_message_preview.startsWith("/request")
-                ? (() => {
-                      try {
-                          const sendingUserId = ConversationStore.getMessage(chat.id, chat.last_message_id)?.details.origin
-                          const sendingUserDetails = get(Store.getUser(sendingUserId!))
-                          const request = JSON.parse(chat.last_message_preview.slice(8))
-                          const { amountPreview } = request
-                          if (sendingUserId !== ownId.key) {
-                              return $_("message_previews.coin_requested", { values: { username: sendingUserDetails.name, amount: amountPreview } })
-                          } else {
-                              return $_("message_previews.request_sent", { values: { amount: amountPreview } })
-                          }
-                      } catch (error) {
-                          return "Invalid message format"
-                      }
-                  })()
-                : chat.last_message_preview
+    $: messagePreview = (() => {
+        if (!chat.last_message_id) {
+            return $_("message_previews.none")
+        }
+
+        if (chat.last_message_id && !chat.last_message_preview) {
+            return $_("message_previews.attachment")
+        }
+
+        if (chat.last_message_preview.startsWith("/request")) {
+            try {
+                const sendingUserId = ConversationStore.getMessage(chat.id, chat.last_message_id)?.details.origin
+                const sendingUserDetails = get(Store.getUser(sendingUserId!))
+                const { amountPreview } = JSON.parse(chat.last_message_preview.slice(8))
+
+                return sendingUserId !== ownId.key
+                    ? $_("message_previews.coin_requested", { values: { username: sendingUserDetails.name, amount: amountPreview } })
+                    : $_("message_previews.request_sent", { values: { amount: amountPreview } })
+            } catch (error) {
+                return "Invalid message format"
+            }
+        }
+
+        return chat.last_message_preview
+    })()
 
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
