@@ -39,7 +39,6 @@
 
     onMount(() => {
         setInterval(() => {
-            // console.log(chat, "HEREREFLEKNFD")
             timeago = getTimeAgo(chat.last_message_at)
         }, 500)
     })

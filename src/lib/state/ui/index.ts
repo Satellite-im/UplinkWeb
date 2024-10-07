@@ -180,6 +180,7 @@ class Store {
                 }
                 return c
             })
+            chat.typing_indicator.update()
         }
     }
 
