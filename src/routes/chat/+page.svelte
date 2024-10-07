@@ -264,7 +264,7 @@
         result.onSuccess(async blob => {
             await navigator.clipboard.write([
                 new ClipboardItem({
-                    [attachment.mime || ""]: blob,
+                    ["image/png"]: blob,
                 }),
             ])
         })
