@@ -59,7 +59,6 @@
             nameError = true
         }
 
-        // If there's an error, stop the addition process
         if (addressError || nameError) return
 
         if (verifyName(nameToAdd) && verifyAddress(relayToAdd)) {
