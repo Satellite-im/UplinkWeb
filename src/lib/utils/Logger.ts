@@ -13,6 +13,7 @@ export type LogItem = {
     timestamp: number
     level: LogLevel
     message: string
+    other?: any[]
 }
 
 export type LoggerSettings = {
@@ -29,51 +30,52 @@ export class Logger {
         this.log = []
     }
 
-    write(level: LogLevel, message: string) {
+    write(level: LogLevel, message: string, ...other: any[]) {
         let settings = get(this.settings)
         if (Object.values(LogLevel).indexOf(level) < Object.values(LogLevel).indexOf(settings.level)) return
         this.log.push({
             timestamp: Date.now(),
             level,
             message,
+            other,
         })
 
         if (settings.relay_to_js_console) {
             switch (level) {
                 case LogLevel.Error: {
-                    console.error(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message)
+                    console.error(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message, ...other)
                     break
                 }
                 case LogLevel.Warning: {
-                    console.warn(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message)
+                    console.warn(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message, ...other)
                     break
                 }
                 default: {
-                    console.log(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message)
+                    console.log(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message, ...other)
                     break
                 }
             }
         }
     }
 
-    info(message: string) {
-        this.write(LogLevel.Info, message)
+    info(message: string, ...other: any) {
+        this.write(LogLevel.Info, message, ...other)
     }
 
-    dev(message: string) {
-        this.write(LogLevel.Developer, message)
+    dev(message: string, ...other: any) {
+        this.write(LogLevel.Developer, message, ...other)
     }
 
-    debug(message: string) {
-        this.write(LogLevel.Debug, message)
+    debug(message: string, ...other: any[]) {
+        this.write(LogLevel.Debug, message, ...other)
     }
 
-    warn(message: string) {
-        this.write(LogLevel.Warning, message)
+    warn(message: string, ...other: any[]) {
+        this.write(LogLevel.Warning, message, ...other)
     }
 
-    error(message: string) {
-        this.write(LogLevel.Error, message)
+    error(message: string, ...other: any[]) {
+        this.write(LogLevel.Error, message, ...other)
     }
 }
 
