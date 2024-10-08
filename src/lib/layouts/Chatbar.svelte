@@ -267,7 +267,7 @@
                 }
                 :global(img) {
                     max-width: 100%;
-                    max-height: 100px;
+                    max-height: 75px;
                     width: auto;
                     height: auto;
                     object-fit: contain;
