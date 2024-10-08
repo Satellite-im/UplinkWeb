@@ -1,6 +1,6 @@
 <script lang="ts">
     import { MessageAttachmentKind, Shape } from "$lib/enums"
-    import { FileEmbed, ImageEmbed, STLViewer } from "$lib/components"
+    import { FileEmbed, ImageEmbed, Modal, STLViewer } from "$lib/components"
     import { OperationState, type Attachment } from "$lib/types"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import TextDocument from "./embeds/TextDocument.svelte"
@@ -10,11 +10,20 @@
     export let messageId
     export let chatID: string
 
+    let previewImage: string | null
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment(chatID, message, attachment.name, attachment.size)
     }
 </script>
 
+{#if previewImage}
+    <Modal
+        on:close={_ => {
+            previewImage = null
+        }}>
+        <ImageEmbed big source={previewImage} />
+    </Modal>
+{/if}
 {#each attachments as attachment}
     {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
         <FileEmbed
@@ -32,7 +41,14 @@
             }}
             on:download={() => download_attachment(messageId, attachment)} />
     {:else if attachment.kind === MessageAttachmentKind.Image}
-        <ImageEmbed source={attachment.location} name={attachment.name} filesize={attachment.size} on:download={() => download_attachment(messageId, attachment)} />
+        <ImageEmbed
+            source={attachment.location}
+            name={attachment.name}
+            filesize={attachment.size}
+            on:click={_ => {
+                previewImage = attachment.location
+            }}
+            on:download={() => download_attachment(messageId, attachment)} />
     {:else if attachment.kind === MessageAttachmentKind.Text}
         <TextDocument />
     {:else if attachment.kind === MessageAttachmentKind.STL}
