@@ -284,10 +284,6 @@
             }
         }
 
-        .filling {
-            width: 100%;
-        }
-
         .error {
             font-size: var(--font-size-smallest);
             color: var(--error-color);
