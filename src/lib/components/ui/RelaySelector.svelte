@@ -47,7 +47,6 @@
     }
 
     function add() {
-        // Reset error states
         addressError = false
         nameError = false
 
