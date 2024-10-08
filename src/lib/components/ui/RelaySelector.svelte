@@ -51,7 +51,6 @@
         addressError = false
         nameError = false
 
-        // Check if either the name or address is missing
         if (relayToAdd === "") {
             addressError = true
         }
