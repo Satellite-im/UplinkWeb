@@ -28,6 +28,8 @@
 
     let nameToAdd: string = ""
     let relayToAdd: string = ""
+    let addressError = false  // Track if address input is empty
+    let nameError = false  // Track if name input is empty
 
     async function saveAndUpdate() {
         const WarpStore = (await warpImport()).WarpStore
@@ -45,6 +47,21 @@
     }
 
     function add() {
+        // Reset error states
+        addressError = false
+        nameError = false
+
+        // Check if either the name or address is missing
+        if (relayToAdd === "") {
+            addressError = true
+        }
+        if (nameToAdd === "") {
+            nameError = true
+        }
+
+        // If there's an error, stop the addition process
+        if (addressError || nameError) return
+
         if (verifyName(nameToAdd) && verifyAddress(relayToAdd)) {
             let active = true
             if (editing) {
@@ -120,16 +137,41 @@
             <Modal hook="modal-relay-add">
                 <div class="relay-add-modal">
                     <Label hook="label-relay-name" text={$_("settings.network.relay.name")} />
-                    <Input hook="input-relay-name" bind:value={nameToAdd}></Input>
+                    <Input 
+                        hook="input-relay-name" 
+                        bind:value={nameToAdd}
+                        on:input={() => { 
+                            nameError = false
+                        }}
+                    ></Input>
+
+                    {#if nameError}
+                        <div class="error">{$_("settings.network.relay.name_required")}</div>
+                    {/if}
+
                     {#if nameToAdd !== "" && !verifyName(nameToAdd)}
                         <div class="error">{$_("settings.network.relay.name_exist")}</div>
                     {/if}
+
                     <Label hook="label-relay-address" text={$_("settings.network.relay.address")} />
 
-                    <Input hook="input-relay-address" bind:value={relayToAdd} on:enter={add}></Input>
+                    <Input 
+                        hook="input-relay-address" 
+                        bind:value={relayToAdd}
+                        on:input={() => { 
+                            addressError = false
+                        }}
+                        on:enter={add}
+                    ></Input>
+
+                    {#if addressError}
+                        <div class="error">{$_("settings.network.relay.address_required")}</div>
+                    {/if}
+
                     {#if relayToAdd !== "" && !verifyAddress(relayToAdd)}
                         <div class="error">{$_("settings.network.relay.invalid_address")}</div>
                     {/if}
+
                     <Controls>
                         <Button
                             hook="button-relay-modal-cancel"
@@ -141,10 +183,18 @@
                                 relayToAdd = ""
                                 adding = false
                                 editing = undefined
+                                addressError = false
+                                nameError = false
                             }}>
                             <Icon icon={Shape.XMark} />
                         </Button>
-                        <Button hook="button-relay-modal-save" class="save" appearance={Appearance.Primary} on:click={add} text={$_("generic.add")}>
+                        <Button 
+                            hook="button-relay-modal-save" 
+                            class="save" 
+                            appearance={Appearance.Primary} 
+                            on:click={add} 
+                            text={$_("generic.add")}
+                        >
                             <Icon icon={Shape.CheckMark} />
                         </Button>
                     </Controls>
@@ -186,6 +236,8 @@
                                 editing = name
                                 nameToAdd = name
                                 relayToAdd = relay.address
+                                nameError = false
+                                addressError = false
                             }}
                             text={$_("generic.edit")}>
                             <Icon icon={Shape.Pencil} />
@@ -250,7 +302,6 @@
 <style lang="scss">
     .relay-selector {
         width: 100%;
-        // padding: var(--padding);
         display: flex;
         flex-direction: column;
         gap: var(--gap);
