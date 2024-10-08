@@ -119,7 +119,9 @@
         "show-participants": "Participants",
         "group-settings": "Settings",
         "replyTo": "Replying to: {user}",
-        "attachments-count": "Attachments: {amount}"
+        "attachments-count": "Attachments: {amount}",
+        "newMessageSince": "New messages since {time} - {date}",
+        "newMessageSinceAmount": "{amount} new messages since {time} - {date}"
     },
     "community": {
         "title": "Satellite Community - General",
