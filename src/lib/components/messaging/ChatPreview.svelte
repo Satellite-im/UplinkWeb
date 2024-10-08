@@ -11,8 +11,9 @@
     import { get } from "svelte/store"
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { UIStore } from "$lib/state/ui"
-    import { t } from "svelte-i18n"
+    import { _ } from "svelte-i18n"
     import { checkMobile } from "$lib/utils/Mobile"
+    import { ConversationStore } from "$lib/state/conversation"
 
     export let chat: Chat
     export let cta: boolean = false
@@ -30,8 +31,33 @@
 
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
+    let ownId = get(Store.state.user)
+    $: messagePreview = (() => {
+        if (!chat.last_message_id) {
+            return $_("message_previews.none")
+        }
 
-    $: messagePreview = chat.last_message_id === "" ? "No messages sent yet." : chat.last_message_id !== "" && chat.last_message_preview === "" ? "New Attachment" : chat.last_message_preview
+        if (chat.last_message_id && !chat.last_message_preview) {
+            return $_("message_previews.attachment")
+        }
+
+        if (chat.last_message_preview.startsWith("/request")) {
+            try {
+                const sendingUserId = ConversationStore.getMessage(chat.id, chat.last_message_id)?.details.origin
+                const sendingUserDetails = get(Store.getUser(sendingUserId!))
+                const { amountPreview } = JSON.parse(chat.last_message_preview.slice(8))
+
+                return sendingUserId !== ownId.key
+                    ? $_("message_previews.coin_requested", { values: { username: sendingUserDetails.name, amount: amountPreview } })
+                    : $_("message_previews.request_sent", { values: { amount: amountPreview } })
+            } catch (error) {
+                return "Invalid message format"
+            }
+        }
+
+        return chat.last_message_preview
+    })()
+
     function getTimeAgo(dateInput: string | Date) {
         const date: Date = typeof dateInput === "string" ? new Date(dateInput) : dateInput
         return timeAgo.format(date)
