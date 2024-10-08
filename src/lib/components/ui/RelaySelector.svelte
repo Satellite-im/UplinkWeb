@@ -102,6 +102,19 @@
 
 <div class="relay-selector">
     <Label hook="label-relay" text={$_("settings.network.relay.title")} />
+    <Controls>
+        <Button
+            hook="button-relay-add"
+            class="relay-add"
+            appearance={Appearance.Success}
+            text={$_("generic.add")}
+            on:click={_ => {
+                adding = true
+            }}>
+            <Icon icon={Shape.Plus} />
+        </Button>
+    </Controls>
+
     <div class="relay-content">
         {#if adding || editing}
             <Modal hook="modal-relay-add">
@@ -138,6 +151,7 @@
                 </div>
             </Modal>
         {/if}
+
         {#each getRelays(relays) as [name, relay]}
             <div class="relay-entry">
                 <div class="relay-info">
@@ -167,23 +181,23 @@
                         <Button
                             hook="button-relay-edit"
                             class="relay-edit"
-                            icon
                             appearance={Appearance.Alt}
                             on:click={_ => {
                                 editing = name
                                 nameToAdd = name
                                 relayToAdd = relay.address
-                            }}>
+                            }}
+                            text={$_("generic.edit")}>
                             <Icon icon={Shape.Pencil} />
                         </Button>
                         <Button
                             hook="button-relay-delete"
-                            icon
                             class="relay-delete"
                             appearance={Appearance.Error}
                             on:click={_ => {
                                 deleteRelay(name)
-                            }}>
+                            }}
+                            text={$_("generic.delete")}>
                             <Icon icon={Shape.Trash} />
                         </Button>
                     {/if}
@@ -199,17 +213,6 @@
         <Spacer />
 
         <Controls>
-            <Button
-                hook="button-relay-add"
-                class="relay-add"
-                appearance={Appearance.Alt}
-                text={$_("generic.add")}
-                on:click={_ => {
-                    adding = true
-                }}>
-                <Icon icon={Shape.Plus} />
-            </Button>
-            <div class="filling"></div>
             {#if changed}
                 <Button hook="button-relay-revert" icon class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
                     <Icon icon={Shape.UTurn} />
