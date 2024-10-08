@@ -29,7 +29,7 @@
     let nameToAdd: string = ""
     let relayToAdd: string = ""
     let addressError = false
-    let nameError = false  // Track if name input is empty
+    let nameError = false
 
     async function saveAndUpdate() {
         const WarpStore = (await warpImport()).WarpStore
