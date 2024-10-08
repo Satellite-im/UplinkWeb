@@ -46,14 +46,7 @@
                         <div class="pinned-content-container">
                             <div class="pinned-sender-container">
                                 <StoreResolver value={message.details.origin} resolver={v => Store.getUser(v)} let:resolved>
-                                    <ProfilePicture
-                                        hook="pinned-message-profile-picture"
-                                        size={Size.Small}
-                                        noIndicator
-                                        image={resolved.profile.photo.image}
-                                        status={resolved.profile.status}
-                                        highlight={Appearance.Default}
-                                        notifications={0} />
+                                    <ProfilePicture hook="pinned-message-profile-picture" size={Size.Small} image={resolved.profile.photo.image} status={resolved.profile.status} highlight={Appearance.Default} notifications={0} />
                                     <div class="pinned-sender">
                                         <Text singleLine hook="pinned-message-sender">{resolved.name}</Text>
                                         <Text muted singleLine hook="pinned-message-timestamp" class="sender-time">{message.details.at.toLocaleString()}</Text>
