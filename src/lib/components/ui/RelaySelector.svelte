@@ -28,7 +28,7 @@
 
     let nameToAdd: string = ""
     let relayToAdd: string = ""
-    let addressError = false  // Track if address input is empty
+    let addressError = false
     let nameError = false  // Track if name input is empty
 
     async function saveAndUpdate() {
