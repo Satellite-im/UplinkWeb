@@ -5,7 +5,7 @@
     import { Appearance, Shape } from "$lib/enums"
     import { fade } from "svelte/transition"
     import { SettingsStore } from "$lib/state"
-    import { get } from "svelte/store"
+    import { derived, get } from "svelte/store"
     import { _, date, time } from "svelte-i18n"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
@@ -20,6 +20,11 @@
     let lastUnread: { unread: number; since: Date; last_viewed: string } | undefined
     $: chat = Store.state.activeChat
     let setup: boolean = false
+    $: derived(chat, _ => {
+        if (setup) {
+            if (scrollContainer.scrollHeight <= scrollContainer.clientHeight) markAsRead($chat.id)
+        }
+    })
     const scrollToBottom = (node: Element) => {
         if (node) node.scrollTop = node.scrollHeight
     }
@@ -73,6 +78,10 @@
             c.notifications = 0
         })
     }
+
+    onDestroy(() => {
+        if (scrollContainer.scrollHeight <= scrollContainer.clientHeight) markAsRead($chat.id)
+    })
 </script>
 
 <div class={`conversation ${compact ? "compact" : ""}`}>
@@ -141,7 +150,6 @@
                 position: absolute;
                 top: 0;
                 left: 0;
-                position: relative;
                 height: 60px;
                 -webkit-transform: rotate(0deg) skew(0deg);
                 transform: rotate(0deg) skew(0deg);
