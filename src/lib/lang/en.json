@@ -6,6 +6,7 @@
         "add": "Add",
         "remove": "Remove",
         "save": "Save",
+        "edit": "Edit",
         "confirm": "Confirm",
         "cancel": "Cancel",
         "undo": "Undo",
@@ -137,6 +138,12 @@
         "pinnedGoto": "Go to",
         "pinnedUnpin": "Unpin",
         "pinnedNone": "There are no pinned messages in this chat"
+    },
+    "message_previews": {
+        "none": "No messages sent yet.",
+        "attachment": "New attachment",
+        "coin_requested": "{username} has requested {amount}",
+        "request_sent": "You sent a request for {amount}"
     },
     "friends": {
         "copy_did": "Copy ID",
