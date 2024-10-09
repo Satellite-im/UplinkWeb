@@ -474,8 +474,10 @@
             "relay": {
                 "title": "Relay config",
                 "name": "Relay name",
-                "address": "Address",
+                "name_required": "Name is required",
                 "name_exist": "Name already exists",
+                "address": "Address",
+                "address_required": "Address is required",
                 "invalid_address": "Invalid address"
             }
         }
