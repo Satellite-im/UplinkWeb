@@ -281,11 +281,11 @@
 
     async function copyFile(message: string, attachment: Attachment) {
         if (attachment.kind !== MessageAttachmentKind.Image) return
-        let result = await RaygunStoreInstance.getAttachmentRaw($conversation!.id, message, attachment.name, attachment.size)
+        let result = await RaygunStoreInstance.getAttachmentRaw($conversation!.id, message, attachment.name, { size: attachment.size, type: "image/png" })
         result.onSuccess(async blob => {
             await navigator.clipboard.write([
                 new ClipboardItem({
-                    ["image/png"]: blob,
+                    [blob.type]: blob,
                 }),
             ])
         })
