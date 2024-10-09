@@ -24,6 +24,7 @@
         <ImageEmbed big source={previewImage} />
     </Modal>
 {/if}
+<!-- <div id="page"> -->
 {#each attachments as attachment}
     {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
         <FileEmbed
@@ -59,3 +60,16 @@
         <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
     {/if}
 {/each}
+
+<style lang="scss">
+    #page {
+        display: flex;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        transition: all var(--animation-duration);
+        min-width: 0;
+    }
+</style>

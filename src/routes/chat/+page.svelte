@@ -318,14 +318,14 @@
         </Modal>
     {/if}
 
-    {#if previewImage}
+    <!-- {#if previewImage}
         <Modal
             on:close={_ => {
                 previewImage = null
             }}>
             <ImageEmbed big source={previewImage} />
         </Modal>
-    {/if}
+    {/if} -->
 
     {#if previewProfile}
         <Modal
