@@ -296,12 +296,38 @@
     }
 
     function splitUnreads(groups: MessageGroupType[]): [MessageGroupType[], MessageGroupType[]] {
+        let splitMessages = (group: MessageGroupType) => {
+            return group.messages.reduce<[MessageType[], MessageType[]]>(
+                ([read, unreads], message) => {
+                    if (message.details.at > $activeChat.last_view_date) {
+                        unreads.push(message)
+                    } else {
+                        read.push(message)
+                    }
+                    return [read, unreads]
+                },
+                [[], []]
+            )
+        }
         return groups.reduce<[MessageGroupType[], MessageGroupType[]]>(
             ([read, unreads], group) => {
                 if (group.details.at > $activeChat.last_view_date) {
                     unreads.push(group)
                 } else {
-                    read.push(group)
+                    // Individual messages in a group can still be new since messages are grouped each min
+                    let [readMessages, unreadsMessages] = splitMessages(group)
+                    if (unreadsMessages.length > 0) {
+                        unreads.push({
+                            ...group,
+                            messages: unreadsMessages,
+                        })
+                        read.push({
+                            ...group,
+                            messages: readMessages,
+                        })
+                    } else {
+                        read.push(group)
+                    }
                 }
                 return [read, unreads]
             },
