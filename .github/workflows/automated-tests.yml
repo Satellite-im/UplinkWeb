@@ -18,6 +18,10 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: mcr.microsoft.com/playwright:v1.47.2-jammy
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ["desktop-chrome", "mobile-chrome"]
         permissions:
             checks: write
             pull-requests: write
@@ -32,6 +36,7 @@ jobs:
               with:
                   repository: Satellite-im/automated-tests-web
                   path: automated-tests
+                  ref: luis/mobile-oct-8
 
             - name: Setup Node.js for Uplink Web 🔨
               uses: actions/setup-node@v4.0.4
@@ -47,20 +52,12 @@ jobs:
 
             - name: Run Playwright tests
               working-directory: automated-tests
-              run: PLAYWRIGHT_JSON_OUTPUT_NAME=report.json npx playwright test -c playwright.ci.config.ts
-
-            - uses: daun/playwright-report-summary@v3
-              if: always()
-              with:
-                  github-token: ${{ secrets.github_token }}
-                  report-file: ./automated-tests/playwright-report/report.json
-                  job-summary: false
-                  comment-title: "Automated Test Results"
+              run: npx playwright test -c playwright.ci.config.ts --project=${{ matrix.project }}
 
             - uses: actions/upload-artifact@v4.4.0
               if: always()
               with:
-                  name: playwright-report
+                  name: playwright-report-${{ matrix.project }}
                   path: automated-tests/playwright-report/
                   retention-days: 5
 
@@ -68,7 +65,7 @@ jobs:
               if: always()
               uses: actions/upload-artifact@v4.4.0
               with:
-                  name: allure-results
+                  name: allure-results-${{ matrix.project }}
                   path: automated-tests/allure-results
                   retention-days: 5
 
@@ -91,11 +88,23 @@ jobs:
             contents: write
             issues: read
         steps:
-            - name: Download Allure results artifact
+            - name: Download Allure results artifact for desktop
               uses: actions/download-artifact@v4.1.8
               with:
-                  name: allure-results
-                  path: automated-tests/allure
+                  name: allure-results-desktop-chrome
+                  path: automated-tests/allure/desktop-chrome
+
+            - name: Download Allure results artifact for mobile
+              uses: actions/download-artifact@v4.1.8
+              with:
+                  name: allure-results-mobile-chrome
+                  path: automated-tests/allure/mobile-chrome
+
+            - name: Merge Allure results
+              run: |
+                  mkdir -p automated-tests/allure-results
+                  cp -r automated-tests/allure/desktop-chrome/* automated-tests/allure-results/
+                  cp -r automated-tests/allure/mobile-chrome/* automated-tests/allure-results/
 
             - name: Get Allure history
               uses: actions/checkout@v4.2.0
@@ -111,7 +120,7 @@ jobs:
               uses: simple-elf/allure-report-action@master
               with:
                   gh_pages: gh-pages
-                  allure_results: automated-tests/allure
+                  allure_results: automated-tests/allure-results
                   allure_report: allure-report
                   allure_history: allure-history
                   keep_reports: 100
@@ -151,8 +160,10 @@ jobs:
               uses: geekyeggo/delete-artifact@v5.1.0
               with:
                   name: |
-                      playwright-report
-                      allure-results
+                      playwright-report-desktop-chrome
+                      playwright-report-mobile-chrome
+                      allure-results-desktop-chrome
+                      allure-results-mobile-chrome
 
             - name: Remove label if all test jobs succeeded
               uses: buildsville/add-remove-label@v2.0.1
