@@ -2,7 +2,6 @@
     import { Button, Icon, Text, Label } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import { CommunitySettings } from "$lib/components"
-    import Chatbar from "$lib/layouts/Chatbar.svelte"
     import Topbar from "$lib/layouts/Topbar.svelte"
     import { _ } from "svelte-i18n"
     import Modal from "$lib/components/ui/Modal.svelte"
@@ -42,7 +41,6 @@
         </svelte:fragment>
     </Topbar>
     <div class="content">asdf</div>
-    <Chatbar />
 </div>
 
 <style lang="scss">
