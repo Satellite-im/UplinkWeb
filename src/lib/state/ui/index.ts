@@ -1,9 +1,10 @@
 import { TypingIndicator, type Chat, type FontOption } from "$lib/types"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
-import { EmojiFont, Font, Identicon } from "$lib/enums"
+import { EmojiFont, Font, Identicon, Route } from "$lib/enums"
 import { Store as MainStore } from "../Store"
 import { mchats } from "$lib/mock/users"
+import { page } from "$app/stores"
 
 export interface IUIState {
     color: Writable<string>
@@ -142,7 +143,7 @@ class Store {
     }
 
     addNotification(conversationId: string) {
-        if (get(MainStore.state.activeChat).id !== conversationId) {
+        if (get(page).route.id !== Route.Chat || get(MainStore.state.activeChat).id !== conversationId) {
             this.mutateChat(conversationId, chat => {
                 chat.notifications++
             })
