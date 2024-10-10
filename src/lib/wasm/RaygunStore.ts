@@ -120,8 +120,6 @@ class RaygunStore {
 
     async createGroupConversation(name: string | undefined, recipients: User[]) {
         const permissions = new wasm.GroupPermissions()
-        let user = get(Store.state.user)
-        permissions.set_permissions(user.key, [wasm.GroupPermission.AddParticipants, wasm.GroupPermission.SetGroupName])
         return await this.get(
             async r =>
                 this.convertWarpConversation(
