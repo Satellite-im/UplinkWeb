@@ -6,25 +6,19 @@
     import TextDocument from "./embeds/TextDocument.svelte"
     import AudioEmbed from "./embeds/AudioEmbed.svelte"
     import VideoEmbed from "./embeds/VideoEmbed.svelte"
+    import { createEventDispatcher } from "svelte"
     export let attachments: Attachment[] = []
     export let messageId
     export let chatID: string
-
-    let previewImage: string | null
+    const dispatch = createEventDispatcher()
+    const dispatcher = (event: string, detail: string) => {
+        dispatch(event, detail)
+    }
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment(chatID, message, attachment.name, attachment.size)
     }
 </script>
 
-{#if previewImage}
-    <Modal
-        on:close={_ => {
-            previewImage = null
-        }}>
-        <ImageEmbed big source={previewImage} />
-    </Modal>
-{/if}
-<!-- <div id="page"> -->
 {#each attachments as attachment}
     {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
         <FileEmbed
@@ -46,8 +40,8 @@
             source={attachment.location}
             name={attachment.name}
             filesize={attachment.size}
-            on:click={_ => {
-                previewImage = attachment.location
+            on:click={() => {
+                dispatcher("openAttachment", attachment.location)
             }}
             on:download={() => download_attachment(messageId, attachment)} />
     {:else if attachment.kind === MessageAttachmentKind.Text}
@@ -60,9 +54,3 @@
         <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
     {/if}
 {/each}
-
-<style lang="scss">
-    :global(.modal) {
-        z-index: 10;
-    }
-</style>

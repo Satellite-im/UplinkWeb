@@ -318,14 +318,14 @@
         </Modal>
     {/if}
 
-    <!-- {#if previewImage}
+    {#if previewImage}
         <Modal
             on:close={_ => {
                 previewImage = null
             }}>
             <ImageEmbed big source={previewImage} />
         </Modal>
-    {/if} -->
+    {/if}
 
     {#if previewProfile}
         <Modal
@@ -636,7 +636,13 @@
                                                     {/each}
 
                                                     {#if message.attachments.length > 0}
-                                                        <AttachmentRenderer attachments={message.attachments} messageId={message.id} chatID={$activeChat.id}></AttachmentRenderer>
+                                                        <AttachmentRenderer
+                                                            attachments={message.attachments}
+                                                            on:openAttachment={event => {
+                                                                previewImage = event.detail
+                                                            }}
+                                                            messageId={message.id}
+                                                            chatID={$activeChat.id} />
                                                     {/if}
                                                 {/if}
                                             </Message>
