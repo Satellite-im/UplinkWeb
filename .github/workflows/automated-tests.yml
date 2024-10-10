@@ -36,7 +36,6 @@ jobs:
               with:
                   repository: Satellite-im/automated-tests-web
                   path: automated-tests
-                  ref: luis/mobile-oct-8
 
             - name: Setup Node.js for Uplink Web 🔨
               uses: actions/setup-node@v4.0.4
