@@ -28,6 +28,8 @@
 
     let nameToAdd: string = ""
     let relayToAdd: string = ""
+    let addressError = false
+    let nameError = false
 
     async function saveAndUpdate() {
         const WarpStore = (await warpImport()).WarpStore
@@ -45,6 +47,18 @@
     }
 
     function add() {
+        addressError = false
+        nameError = false
+
+        if (relayToAdd === "") {
+            addressError = true
+        }
+        if (nameToAdd === "") {
+            nameError = true
+        }
+
+        if (addressError || nameError) return
+
         if (verifyName(nameToAdd) && verifyAddress(relayToAdd)) {
             let active = true
             if (editing) {
@@ -102,21 +116,59 @@
 
 <div class="relay-selector">
     <Label hook="label-relay" text={$_("settings.network.relay.title")} />
+    <Controls>
+        <Button
+            hook="button-relay-add"
+            class="relay-add"
+            appearance={Appearance.Success}
+            text={$_("generic.add")}
+            on:click={_ => {
+                adding = true
+            }}>
+            <Icon icon={Shape.Plus} />
+        </Button>
+    </Controls>
+
     <div class="relay-content">
         {#if adding || editing}
             <Modal hook="modal-relay-add">
                 <div class="relay-add-modal">
                     <Label hook="label-relay-name" text={$_("settings.network.relay.name")} />
-                    <Input hook="input-relay-name" bind:value={nameToAdd}></Input>
+                    <Input 
+                        hook="input-relay-name" 
+                        bind:value={nameToAdd}
+                        on:input={() => { 
+                            nameError = false
+                        }}
+                    ></Input>
+
+                    {#if nameError}
+                        <div class="error">{$_("settings.network.relay.name_required")}</div>
+                    {/if}
+
                     {#if nameToAdd !== "" && !verifyName(nameToAdd)}
                         <div class="error">{$_("settings.network.relay.name_exist")}</div>
                     {/if}
+
                     <Label hook="label-relay-address" text={$_("settings.network.relay.address")} />
 
-                    <Input hook="input-relay-address" bind:value={relayToAdd} on:enter={add}></Input>
+                    <Input 
+                        hook="input-relay-address" 
+                        bind:value={relayToAdd}
+                        on:input={() => { 
+                            addressError = false
+                        }}
+                        on:enter={add}
+                    ></Input>
+
+                    {#if addressError}
+                        <div class="error">{$_("settings.network.relay.address_required")}</div>
+                    {/if}
+
                     {#if relayToAdd !== "" && !verifyAddress(relayToAdd)}
                         <div class="error">{$_("settings.network.relay.invalid_address")}</div>
                     {/if}
+
                     <Controls>
                         <Button
                             hook="button-relay-modal-cancel"
@@ -128,16 +180,25 @@
                                 relayToAdd = ""
                                 adding = false
                                 editing = undefined
+                                addressError = false
+                                nameError = false
                             }}>
                             <Icon icon={Shape.XMark} />
                         </Button>
-                        <Button hook="button-relay-modal-save" class="save" appearance={Appearance.Primary} on:click={add} text={$_("generic.add")}>
+                        <Button 
+                            hook="button-relay-modal-save" 
+                            class="save" 
+                            appearance={Appearance.Primary} 
+                            on:click={add} 
+                            text={$_("generic.add")}
+                        >
                             <Icon icon={Shape.CheckMark} />
                         </Button>
                     </Controls>
                 </div>
             </Modal>
         {/if}
+
         {#each getRelays(relays) as [name, relay]}
             <div class="relay-entry">
                 <div class="relay-info">
@@ -167,23 +228,25 @@
                         <Button
                             hook="button-relay-edit"
                             class="relay-edit"
-                            icon
                             appearance={Appearance.Alt}
                             on:click={_ => {
                                 editing = name
                                 nameToAdd = name
                                 relayToAdd = relay.address
-                            }}>
+                                nameError = false
+                                addressError = false
+                            }}
+                            text={$_("generic.edit")}>
                             <Icon icon={Shape.Pencil} />
                         </Button>
                         <Button
                             hook="button-relay-delete"
-                            icon
                             class="relay-delete"
                             appearance={Appearance.Error}
                             on:click={_ => {
                                 deleteRelay(name)
-                            }}>
+                            }}
+                            text={$_("generic.delete")}>
                             <Icon icon={Shape.Trash} />
                         </Button>
                     {/if}
@@ -199,17 +262,6 @@
         <Spacer />
 
         <Controls>
-            <Button
-                hook="button-relay-add"
-                class="relay-add"
-                appearance={Appearance.Alt}
-                text={$_("generic.add")}
-                on:click={_ => {
-                    adding = true
-                }}>
-                <Icon icon={Shape.Plus} />
-            </Button>
-            <div class="filling"></div>
             {#if changed}
                 <Button hook="button-relay-revert" icon class="revert" appearance={Appearance.Alt} tooltip={$_("generic.undo")} on:click={revert}>
                     <Icon icon={Shape.UTurn} />
@@ -247,7 +299,6 @@
 <style lang="scss">
     .relay-selector {
         width: 100%;
-        // padding: var(--padding);
         display: flex;
         flex-direction: column;
         gap: var(--gap);
@@ -279,10 +330,6 @@
                 width: fit-content;
                 align-self: flex-end;
             }
-        }
-
-        .filling {
-            width: 100%;
         }
 
         .error {
