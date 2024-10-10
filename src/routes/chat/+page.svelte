@@ -636,15 +636,13 @@
                                                     {/each}
 
                                                     {#if message.attachments.length > 0}
-                                                        {#if message.attachments.length > 0}
-                                                            <AttachmentRenderer
-                                                                attachments={message.attachments}
-                                                                on:openAttachment={event => {
-                                                                    previewImage = event.detail // Access event detail
-                                                                }}
-                                                                messageId={message.id}
-                                                                chatID={$activeChat.id} />
-                                                        {/if}
+                                                        <AttachmentRenderer
+                                                            attachments={message.attachments}
+                                                            on:openAttachment={event => {
+                                                                previewImage = event.detail
+                                                            }}
+                                                            messageId={message.id}
+                                                            chatID={$activeChat.id} />
                                                     {/if}
                                                 {/if}
                                             </Message>

@@ -11,7 +11,6 @@
     export let messageId
     export let chatID: string
 
-    let previewImage: string | null
     async function download_attachment(message: string, attachment: Attachment) {
         await RaygunStoreInstance.downloadAttachment(chatID, message, attachment.name, attachment.size)
     }
@@ -21,14 +20,6 @@
     }
 </script>
 
-{#if previewImage}
-    <Modal
-        on:close={_ => {
-            previewImage = null
-        }}>
-        <ImageEmbed big source={previewImage} />
-    </Modal>
-{/if}
 {#each attachments as attachment}
     {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
         <FileEmbed
@@ -51,7 +42,7 @@
             name={attachment.name}
             filesize={attachment.size}
             on:click={() => {
-                dispatcher("openAttachment", attachment.location) // Dispatch event
+                dispatcher("openAttachment", attachment.location)
             }}
             on:download={() => download_attachment(messageId, attachment)} />
     {:else if attachment.kind === MessageAttachmentKind.Text}
@@ -64,9 +55,3 @@
         <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
     {/if}
 {/each}
-
-<style lang="scss">
-    :global(.modal) {
-        z-index: 10;
-    }
-</style>
