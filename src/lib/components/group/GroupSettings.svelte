@@ -64,13 +64,7 @@
             RaygunStoreInstance.updateConversationName(groupChatToBeChanged.id, groupChatToBeChanged.name)
         }
         if (propertiesChangedList.addMembersSwitch || propertiesChangedList.changeDetailsSwitch || propertiesChangedList.allowOtherToChangePictureSwitch) {
-            RaygunStoreInstance.updateConversationSettings(groupChatToBeChanged.id, {
-                group: {
-                    members_can_add_participants: groupChatToBeChanged.settings.permissions.allowAnyoneToAddUsers,
-                    members_can_change_photo: groupChatToBeChanged.settings.permissions.allowAnyoneToModifyPhoto,
-                    members_can_change_name: groupChatToBeChanged.settings.permissions.allowAnyoneToModifyName,
-                },
-            })
+            RaygunStoreInstance.updateConversationPermissions(groupChatToBeChanged.id, [])
         }
         propertiesChangedList = {
             groupName: false,

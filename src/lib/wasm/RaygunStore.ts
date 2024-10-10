@@ -4,7 +4,7 @@ import { WarpStore } from "./WarpStore"
 import { Store } from "../state/Store"
 import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
-import { MessageOptions } from "warp-wasm"
+import { GroupPermissions, MessageOptions } from "warp-wasm"
 import { ChatType, MessageAttachmentKind, Route } from "$lib/enums"
 import { type User, type Chat, defaultChat, type Message, mentions_user, type Attachment } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
@@ -119,13 +119,16 @@ class RaygunStore {
     }
 
     async createGroupConversation(name: string | undefined, recipients: User[]) {
+        const permissions = new wasm.GroupPermissions()
+        let user = get(Store.state.user)
+        permissions.set_permissions(user.key, [wasm.GroupPermission.AddParticipants, wasm.GroupPermission.SetGroupName])
         return await this.get(
             async r =>
                 this.convertWarpConversation(
                     await r.create_group_conversation(
                         name,
                         recipients.map(r => r.key),
-                        new wasm.GroupSettings()
+                        permissions
                     ),
                     r
                 ),
@@ -158,8 +161,12 @@ class RaygunStore {
         }, "Error updating conversation name")
     }
 
-    async updateConversationSettings(conversation_id: string, settings: ConversationSettings) {
-        return await this.get(r => r.update_conversation_settings(conversation_id, settings), "Error updating conversation settings")
+    async updateConversationPermissions(conversation_id: string, permissions: []) {
+        let groupPermissions = new wasm.GroupPermissions()
+        let permissionsLog = groupPermissions.get_permissions(conversation_id)
+        console.log("Permissions: ", permissionsLog)
+        groupPermissions.set_permissions(conversation_id, [])
+        return await this.get(r => r.update_conversation_permissions(conversation_id, groupPermissions), "Error updating conversation settings")
     }
 
     /**
@@ -177,7 +184,7 @@ class RaygunStore {
             let convs = await r.list_conversations()
             convs
                 .convs()
-                .filter(c => parseJSValue(c.settings()).type === "direct" && recipient in c.recipients())
+                .filter(c => parseJSValue(c.permissions()).type === "direct" && recipient in c.recipients())
                 .forEach(async conv => {
                     await this.get(r => r.delete(conv.id(), undefined), "Error deleting message")
                 })
@@ -786,8 +793,8 @@ class RaygunStore {
      * Converts warp message to ui message
      */
     private async convertWarpConversation(chat: wasm.Conversation, raygun: wasm.RayGunBox): Promise<Chat> {
-        let setting = parseJSValue(chat.settings())
-        let direct = setting.type === "direct"
+        let permissions = parseJSValue(chat.permissions())
+        let direct = permissions.type === "direct"
         let msg = await this.getMessages(raygun, chat.id(), new MessageOptions())
         chat.recipients().forEach(async recipient => {
             let user = await MultipassStoreInstance.identity_from_did(recipient)
@@ -804,9 +811,9 @@ class RaygunStore {
                 displayOwnerBadge: true,
                 readReceipts: true,
                 permissions: {
-                    allowAnyoneToAddUsers: !direct && (setting.values["members_can_add_participants"] as boolean),
+                    allowAnyoneToAddUsers: !direct && (permissions.values["members_can_add_participants"] as boolean),
                     allowAnyoneToModifyPhoto: false,
-                    allowAnyoneToModifyName: !direct && (setting.values["members_can_change_name"] as boolean),
+                    allowAnyoneToModifyName: !direct && (permissions.values["members_can_change_name"] as boolean),
                 },
             },
             creator: chat.creator(),
