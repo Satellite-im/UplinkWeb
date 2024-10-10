@@ -7,6 +7,8 @@
     import { _ } from "svelte-i18n"
     import { createEventDispatcher, tick } from "svelte"
     import { createPersistentState } from "$lib/state"
+    import { UIStore } from "$lib/state/ui"
+    import { derived } from "svelte/store"
 
     interface Emoji {
         skin_tone: boolean
@@ -24,12 +26,7 @@
     let searchQuery: string = ""
     let filteredEmojiData: EmojiCategory = { ...emojiData }
     let showSkinTonePopup: boolean = false
-    let selectedSkinTone: string = "" // No skin tone by default
-
-    interface FrequentlyUsedEmoji {
-        [glyph: string]: number
-    }
-    const frequentlyUsedEmojis = createPersistentState<FrequentlyUsedEmoji>("emoji.history", {})
+    $: selectedSkinTone = UIStore.state.selectedSkinTone
 
     const skinTones: string[] = ["🚫", "🏿", "🏾", "🏽", "🏼", "🏻"]
     const sampleEmojis: string[] = ["👍", "👋", "👏", "👌", "✌️"]
@@ -64,7 +61,7 @@
     }
 
     function selectSkinTone(tone: string) {
-        selectedSkinTone = tone === "🚫" ? "" : tone
+        selectedSkinTone.set(tone === "🚫" ? "" : tone)
         randomEmoji = sampleEmojis[Math.floor(Math.random() * sampleEmojis.length)]
         showSkinTonePopup = false
         tick().then(filterEmojis) // Re-filter emojis to trigger re-render
@@ -86,7 +83,7 @@
     }
 
     function trackEmojiUsage(emoji: string) {
-        frequentlyUsedEmojis.update(current => {
+        UIStore.state.emojiCounter.update(current => {
             if (current[emoji]) {
                 current[emoji]++
             } else {
@@ -96,14 +93,12 @@
         })
     }
 
-    let frequentlyUsed: { glyph: string }[] = []
-
-    frequentlyUsedEmojis.subscribe(value => {
-        const sortedEmojis = Object.entries(value).sort((a, b) => b[1] - a[1])
-        frequentlyUsed = sortedEmojis.slice(0, 20).map(([glyph]) => ({ glyph }))
+    $: frequentlyUsed = derived(UIStore.state.emojiCounter, counter => {
+        const sortedEmojis = Object.entries(counter).sort((a, b) => b[1] - a[1])
+        return sortedEmojis.slice(0, 20).map(([glyph]) => ({ glyph }))
     })
 
-    $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, selectedSkinTone)
+    $: skinToneEmoji = getEmojiWithSkinTone(randomEmoji, $selectedSkinTone)
 
     const emojiSize = createPersistentState("emoji.selectorsize", 44)
 </script>
@@ -135,7 +130,7 @@
         <section id="frequently_used" data-cy="frequently-used-section">
             <Label hook="frequently-used-label" text="Frequently Used" />
             <div data-cy="frequently-used-list" class="emoji-list frequently-used-list">
-                {#each frequentlyUsed as emoji}
+                {#each $frequentlyUsed as emoji}
                     <span
                         class="emoji"
                         role="button"
@@ -160,11 +155,11 @@
                             tabindex="0"
                             title={emoji.name}
                             aria-label={emoji.name}
-                            on:click={() => handleEmojiClick(emoji.glyph, emoji.skin_tone ? selectedSkinTone : "")}
+                            on:click={() => handleEmojiClick(emoji.glyph, emoji.skin_tone ? $selectedSkinTone : "")}
                             on:keydown={e => {
-                                if (e.key === "Enter") handleEmojiClick(emoji.glyph, emoji.skin_tone ? selectedSkinTone : "")
+                                if (e.key === "Enter") handleEmojiClick(emoji.glyph, emoji.skin_tone ? $selectedSkinTone : "")
                             }}
-                            style="font-size: {$emojiSize}px">{emoji.skin_tone ? getEmojiWithSkinTone(emoji.glyph, selectedSkinTone) : emoji.glyph}</span>
+                            style="font-size: {$emojiSize}px">{emoji.skin_tone ? getEmojiWithSkinTone(emoji.glyph, $selectedSkinTone) : emoji.glyph}</span>
                     {/each}
                 </div>
             </section>

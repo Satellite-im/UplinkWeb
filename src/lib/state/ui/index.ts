@@ -19,6 +19,7 @@ export interface IUIState {
     hiddenChats: Writable<Chat[]>
     emojiSelector: Writable<boolean>
     emojiCounter: Writable<{ [emoji: string]: number }>
+    selectedSkinTone: Writable<string>
     marketOpen: Writable<boolean>
 }
 class Store {
@@ -47,6 +48,7 @@ class Store {
             hiddenChats: createPersistentState("uplink.ui.hiddenChats", []),
             emojiSelector: writable(false),
             emojiCounter: createPersistentState("uplink.ui.emojiCounter", { "👍": 0, "👎": 0, "❤️": 0, "🖖": 0, "😂": 0 }),
+            selectedSkinTone: createPersistentState("uplink.ui.emojiSkintone", ""),
             marketOpen: writable(false),
         }
     }
