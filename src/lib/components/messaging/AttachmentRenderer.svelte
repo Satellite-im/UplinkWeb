@@ -62,14 +62,7 @@
 {/each}
 
 <style lang="scss">
-    #page {
-        display: flex;
-        min-width: 0;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        transition: all var(--animation-duration);
-        min-width: 0;
+    :global(.modal) {
+        z-index: 10;
     }
 </style>
