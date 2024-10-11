@@ -44,6 +44,10 @@ export type VoiceRTCUser = {
     isDeafened: boolean
 }
 
+export function voiceRTCUserToString(user: VoiceRTCUser): string {
+    return `User: ${user.username} (ID: ${user.did}), Video: ${user.videoEnabled}, Audio: ${user.audioEnabled}, Deafened: ${user.isDeafened}`
+}
+
 type VoiceMessage = {
     type: VoiceRTCMessageType
     channel: string
@@ -224,7 +228,8 @@ export class CallRoom {
 
     updateUserData(user: VoiceRTCUser) {
         let participant = Object.values(this.participants).find(p => p.did === user.did)
-        log.debug(`Updating user data ${user} for ${participant}`)
+        let voideRTCUserAsString = voiceRTCUserToString(user)
+        log.debug(`Updating user data ${voideRTCUserAsString} for ${participant}`)
         if (participant) {
             participant.updateUserData(user)
         }
@@ -302,6 +307,7 @@ export class VoiceRTC {
                         if (data.stream) s[did].stream = data.stream
                         const videoElement = document.getElementById(`remote-user-video-${did}`) as HTMLVideoElement
                         if (videoElement) {
+                            log.debug(`Updating video element for user ${did}`)
                             videoElement.srcObject = s[did].stream
                             videoElement.play().catch(error => {
                                 log.error("Error playing the video, for user: ", data.user?.did, error)
