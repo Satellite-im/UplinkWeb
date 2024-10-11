@@ -169,6 +169,7 @@ export type Chat = {
     settings: ChatSettings
     creator?: string
     notifications: number
+    last_view_date: Date
     users: string[]
     typing_indicator: TypingIndicator
     last_message_id: string
@@ -284,6 +285,7 @@ export let defaultChat: Chat = {
     motd: "",
     unread: 0,
     notifications: 0,
+    last_view_date: new Date(),
     kind: ChatType.DirectMessage,
     creator: undefined,
     settings: {

@@ -44,6 +44,14 @@
                 SettingsStore.update({ ...settings, messaging: { ...settings.messaging, compact: on.detail } })
             }} />
     </SettingSection>
+    <SettingSection hook="section-siple-unreads" name={$_("settings.messages.simpleUnreads")} description={$_("settings.messages.simpleUnreadsDescription")}>
+        <Switch
+            hook="switch-siple-unreads"
+            on={settings.messaging.simpleUnreads}
+            on:toggle={on => {
+                SettingsStore.update({ ...settings, messaging: { ...settings.messaging, simpleUnreads: on.detail } })
+            }} />
+    </SettingSection>
     <SettingSection hook="section-quick-chat" name={$_("settings.messages.quick")} description={$_("settings.messages.quickDescription")}>
         <Switch
             hook="switch-quick-chat"
