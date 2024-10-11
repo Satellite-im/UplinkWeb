@@ -6,7 +6,7 @@ import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection } from "peerjs"
 import { _ } from "svelte-i18n"
-import { get } from "svelte/store"
+import { get, writable } from "svelte/store"
 import type { Room } from "trystero"
 import { joinRoom } from "trystero/ipfs"
 
@@ -263,6 +263,8 @@ export class CallRoom {
 const AUDIO_WINDOW_SIZE = 256
 const VOLUME_THRESHOLD = 20
 
+export const callTimeout = writable(false)
+
 export class VoiceRTC {
     channel?: string
     // Local peer that is used to handle incoming call requests
@@ -428,9 +430,13 @@ export class VoiceRTC {
             }
             setTimeout(() => {
                 if (this.call === null || this.call.empty) {
-                    this.leaveCall(true)
+                    log.debug("No one joined the call, leaving")
+                    callTimeout.set(true)
+                    setTimeout(() => {
+                        this.leaveCall(true)
+                    }, 3500)
                 }
-            }, 100000)
+            }, 20000)
             Store.setActiveCall(Store.getCallingChat(this.channel!)!, CallDirection.Outbound)
         } catch (error) {
             log.error(`Error making call: ${error}`)

@@ -7,16 +7,14 @@
     import Participant from "./Participant.svelte"
     import Text from "$lib/elements/Text.svelte"
     import CallSettings from "./CallSettings.svelte"
-    import { get, writable, type Writable } from "svelte/store"
+    import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
     import type { Chat } from "$lib/types"
-    import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance, type VoiceRTCUser } from "$lib/media/Voice"
+    import { callTimeout, VoiceRTCInstance, type VoiceRTCUser } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
-    import { debounce } from "$lib/utils/Functions"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -113,13 +111,13 @@
             },
         }
     }
+
     let showAnimation = true
     let message = "Connecting..."
 
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
         await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
-
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
@@ -154,53 +152,61 @@
                 </Text>
             </svelte:fragment>
         </Topbar>
-        <div id="participants">
-            <video
-                data-cy="local-user-video"
-                id="local-user-video"
-                bind:this={localVideoCurrentSrc}
-                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
-                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
-                muted
-                autoplay>
-                <track kind="captions" src="" />
-            </video>
 
-            {#each chat.users as user (user)}
-                {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
-                    <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
-                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
-                    {#if showAnimation}
-                        <div class="calling-animation">
-                            <div class="shaking-participant">
+        {#if !$callTimeout}
+            <div id="participants">
+                <video
+                    data-cy="local-user-video"
+                    id="local-user-video"
+                    bind:this={localVideoCurrentSrc}
+                    width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
+                    height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
+                    muted
+                    autoplay>
+                    <track kind="captions" src="" />
+                </video>
+
+                {#each chat.users as user (user)}
+                    {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
+                        <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
+                        {#if showAnimation}
+                            <div class="calling-animation">
+                                <div class="shaking-participant">
+                                    <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                    <p>{message}</p>
+                                </div>
+                            </div>
+                        {:else}
+                            <div class="no-response">
                                 <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                 <p>{message}</p>
                             </div>
-                        </div>
-                    {:else}
-                        <div class="no-response">
-                            <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
-                            <p>{message}</p>
-                        </div>
-                    {/if}
-                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
-                    {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
-                        <Participant
-                            participant={$userCache[user]}
-                            hasVideo={$userCache[user].media.is_streaming_video}
-                            isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
-                            isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
-                            isTalking={$userCache[user].media.is_playing_audio} />
-                    {/if}
+                        {/if}
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                        {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
+                            <Participant
+                                participant={$userCache[user]}
+                                hasVideo={$userCache[user].media.is_streaming_video}
+                                isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
+                                isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
+                                isTalking={$userCache[user].media.is_playing_audio} />
+                        {/if}
 
-                    {#if $remoteStreams[user] && $remoteStreams[user].stream && $remoteStreams[user].user.videoEnabled}
-                        <video data-cy="remote-user-video" id="remote-user-video-{user}" width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 400} height={isFullScreen ? "50%" : 400} autoplay use:attachStream={user}>
-                            <track kind="captions" src="" />
-                        </video>
+                        {#if $remoteStreams[user] && $remoteStreams[user].stream && $remoteStreams[user].user.videoEnabled}
+                            <video data-cy="remote-user-video" id="remote-user-video-{user}" width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 400} height={isFullScreen ? "50%" : 400} autoplay use:attachStream={user}>
+                                <track kind="captions" src="" />
+                            </video>
+                        {/if}
                     {/if}
-                {/if}
-            {/each}
-        </div>
+                {/each}
+            </div>
+        {:else}
+            <div class="loading-when-no-answer">
+                <div class="spinner"></div>
+                <p>{$_("settings.calling.noAnswer")}</p>
+            </div>
+        {/if}
     {/if}
     <div class="toolbar">
         <Controls>
@@ -399,6 +405,37 @@
             font-size: 1.2rem;
             color: #666;
             font-weight: bold;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-when-no-answer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            margin: 32px;
+        }
+
+        .loading-when-no-answer p {
+            margin-top: 16px;
         }
     }
 </style>
