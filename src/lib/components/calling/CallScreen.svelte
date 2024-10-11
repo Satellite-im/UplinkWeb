@@ -92,17 +92,24 @@
     }
 
     function attachStream(node: HTMLMediaElement, user: string) {
-        if (!$remoteStreams[user]) return
-        let stream = $remoteStreams[user].stream
-        node.srcObject = stream
-        node.play()
+        const stream = $remoteStreams[user]?.stream
+
+        if (stream) {
+            node.srcObject = stream
+            stream.onremovetrack = () => {
+                log.dev("Stream removed: ", user)
+            }
+        }
+
         return {
-            update(_: MediaStream) {
-                debounce(() => {
-                    if (node.srcObject) (node.srcObject as MediaStream).getTracks().forEach(t => t.stop())
-                    node.srcObject = stream
-                    node.play()
-                }, 3)
+            update(newUser: string) {
+                const newStream = $remoteStreams[newUser]?.stream
+                if (newStream && node.srcObject !== newStream) {
+                    node.srcObject = newStream
+                }
+            },
+            destroy() {
+                node.srcObject = null
             },
         }
     }
@@ -153,7 +160,7 @@
                 <track kind="captions" src="" />
             </video>
 
-            {#each chat.users as user}
+            {#each chat.users as user (user)}
                 {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                 {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
@@ -165,16 +172,14 @@
                             isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
                             isTalking={$userCache[user].media.is_playing_audio} />
                     {/if}
-                    {#if $remoteStreams[user].stream}
-                        <video
-                            data-cy="remote-user-video"
-                            id="remote-user-video"
-                            width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                            height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
-                            autoplay
-                            use:attachStream={user}>
+                    {#if $remoteStreams[user] && $remoteStreams[user].stream && $remoteStreams[user].user.videoEnabled}
+                        <video data-cy="remote-user-video" id="remote-user-video-{user}" width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 400} height={isFullScreen ? "50%" : 400} autoplay use:attachStream={user}>
                             <track kind="captions" src="" />
                         </video>
+                    {:else}
+                        <div class="loading-placeholder">
+                            Carregando vídeo de {$userCache[user].name}...
+                        </div>
                     {/if}
                 {/if}
             {/each}
