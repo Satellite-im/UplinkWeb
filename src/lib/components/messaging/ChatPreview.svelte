@@ -8,16 +8,16 @@
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
     import { Store } from "$lib/state/Store"
     import { goto } from "$app/navigation"
-    import { get } from "svelte/store"
+    import { derived, get } from "svelte/store"
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { UIStore } from "$lib/state/ui"
     import { _ } from "svelte-i18n"
     import { checkMobile } from "$lib/utils/Mobile"
     import { ConversationStore } from "$lib/state/conversation"
+    import { SettingsStore } from "$lib/state"
 
     export let chat: Chat
     export let cta: boolean = false
-    export let simpleUnreads: boolean = false
     export let loading: boolean
 
     const timeAgo = new TimeAgo("en-US")
@@ -28,6 +28,7 @@
     $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
     $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
     $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
+    $: simpleUnreads = derived(SettingsStore.state, s => s.messaging.simpleUnreads)
 
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
@@ -98,11 +99,11 @@
                     {timeago}
                 </Text>
                 {#if !loading}
-                    {#if chat.notifications > 0 && !simpleUnreads}
+                    {#if chat.notifications > 0 && !$simpleUnreads}
                         <span class="unreads">
                             {chat.notifications}
                         </span>
-                    {:else if chat.notifications > 0 && simpleUnreads}
+                    {:else if chat.notifications > 0 && $simpleUnreads}
                         <span class="unreads simple"></span>
                     {/if}
                 {/if}
