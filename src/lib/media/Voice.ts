@@ -6,7 +6,7 @@ import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection } from "peerjs"
 import { _ } from "svelte-i18n"
-import { get } from "svelte/store"
+import { get, writable } from "svelte/store"
 import type { Room } from "trystero"
 import { joinRoom } from "trystero/ipfs"
 
@@ -16,6 +16,8 @@ export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
     None = "NONE",
 }
+
+export const connectionOpened = writable(false)
 
 export type RemoteStream = {
     user: VoiceRTCUser
@@ -365,10 +367,19 @@ export class VoiceRTC {
             this.localPeer!.on("connection", conn => {
                 conn.on("open", () => {
                     /// It will appear to user that is receiving the call
+                    connectionOpened.set(true)
                     log.info(`Receiving connection on channel: ${conn.metadata.channel} from ${conn.metadata.id}, username: ${conn.metadata.username}`)
                     this.incomingConnections.push(conn)
                     this.incomingCallFrom = [conn.metadata.channel, conn]
                     Store.setPendingCall(Store.getCallingChat(this.channel!)!, CallDirection.Inbound)
+                })
+
+                conn.on("close", () => {
+                    log.info(`Connection closed by ${conn.metadata.username}`)
+                    connectionOpened.set(false)
+                    Store.state.pendingCall.set(null)
+                    this.incomingConnections = this.incomingConnections.filter(c => c !== conn)
+                    this.incomingCallFrom = null
                 })
             })
             this.localPeer!.on("error", this.handleError.bind(this))
@@ -548,6 +559,7 @@ export class VoiceRTC {
     }
 
     async leaveCall(sendEndCallMessage = false) {
+        connectionOpened.set(false)
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
         if (sendEndCallMessage && this.call?.start) {
             const now = new Date()

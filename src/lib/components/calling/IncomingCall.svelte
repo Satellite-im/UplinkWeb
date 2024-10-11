@@ -6,7 +6,7 @@
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { connectionOpened, VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
     import { writable } from "svelte/store"
 
@@ -15,7 +15,7 @@
     let user = writable(defaultUser)
 
     Store.state.pendingCall.subscribe(async _ => {
-        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall) {
+        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall && connectionOpened) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)
                 callSound.play()
