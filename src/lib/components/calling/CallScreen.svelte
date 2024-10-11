@@ -113,6 +113,8 @@
             },
         }
     }
+    let showAnimation = true
+    let message = "Connecting..."
 
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
@@ -122,6 +124,10 @@
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
                 await VoiceRTCInstance.makeCall()
+                setTimeout(() => {
+                    showAnimation = false
+                    message = "No response"
+                }, 15000)
             }
         }
 
@@ -163,6 +169,20 @@
             {#each chat.users as user (user)}
                 {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
+                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
+                    {#if showAnimation}
+                        <div class="calling-animation">
+                            <div class="shaking-participant">
+                                <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                <p>{message}</p>
+                            </div>
+                        </div>
+                    {:else}
+                        <div class="no-response">
+                            <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                            <p>{message}</p>
+                        </div>
+                    {/if}
                 {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
                     {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
                         <Participant
@@ -328,6 +348,57 @@
             object-fit: contain;
             border-radius: 12px;
             background-color: var(--black);
+        }
+
+        .calling-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        .shaking-participant {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-2px);
+            }
+            50% {
+                transform: translateX(2px);
+            }
+            75% {
+                transform: translateX(-2px);
+            }
+        }
+
+        .calling-animation p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .no-response {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .no-response p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: bold;
         }
     }
 </style>
