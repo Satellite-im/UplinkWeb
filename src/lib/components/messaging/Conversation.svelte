@@ -1,32 +1,63 @@
 <script lang="ts">
-    import { afterUpdate, onMount } from "svelte"
+    import { afterUpdate, onDestroy, onMount } from "svelte"
     import Button from "$lib/elements/Button.svelte"
     import { Icon, Text, Label } from "$lib/elements"
-    import { ProfilePicture } from "$lib/components"
     import { Appearance, Shape } from "$lib/enums"
     import { fade } from "svelte/transition"
     import { SettingsStore } from "$lib/state"
-    import { get } from "svelte/store"
-    import MessageSkeleton from "./message/MessageSkeleton.svelte"
+    import { derived, get } from "svelte/store"
+    import { _, date, time } from "svelte-i18n"
+    import { Store } from "$lib/state/Store"
+    import { UIStore } from "$lib/state/ui"
 
     let scrollContainer: Element
 
+    let scrolledUp: boolean = false
     let showScrollToBottom: boolean = false
+    let clearUnreads = true
     export let loading: boolean = false
+    export let unreads: { unread: number; since: Date; last_viewed: string } | undefined
 
+    let lastUnread: { unread: number; since: Date; last_viewed: string } | undefined
+    $: chat = Store.state.activeChat
+    let setup: boolean = false
+    $: derived(chat, _ => {
+        if (setup) {
+            if (scrollContainer.scrollHeight <= scrollContainer.clientHeight) markAsRead($chat.id)
+        }
+    })
     const scrollToBottom = (node: Element) => {
         if (node) node.scrollTop = node.scrollHeight
     }
 
+    function scrollCheck(threshold: number) {
+        return scrollContainer.scrollHeight - scrollContainer.scrollTop > scrollContainer.clientHeight * threshold
+    }
+
     const handleScroll = () => {
-        const isScrolledUp = scrollContainer.scrollHeight - scrollContainer.scrollTop > scrollContainer.clientHeight * 1.5
-        showScrollToBottom = isScrolledUp
+        if (!setup) return
+        showScrollToBottom = scrollCheck(1.5)
+        let current = scrolledUp
+        scrolledUp = scrollCheck(1.1)
+        if (current != scrolledUp && !scrolledUp && unreads && unreads.unread > 0) {
+            // Clear unreads if scrolled to the bottom
+            if (clearUnreads) markAsRead($chat.id)
+            clearUnreads = true
+        }
     }
 
     const compact: boolean = get(SettingsStore.state).messaging.compact
 
     afterUpdate(() => {
-        if (!showScrollToBottom) scrollToBottom(scrollContainer)
+        if (!scrolledUp) {
+            scrollToBottom(scrollContainer)
+        }
+        // Mark as read current is already read and messages are incoming
+        if (setup && lastUnread !== unreads && lastUnread === undefined) {
+            if (scrolledUp) clearUnreads = false
+            else markAsRead($chat.id)
+        }
+        lastUnread = unreads
     })
 
     onMount(() => {
@@ -34,8 +65,27 @@
         //     loading = false
         // }, 3000)
         setTimeout(() => {
-            scrollToBottom(scrollContainer)
+            if (scrollContainer) {
+                if (unreads) {
+                    let element = document.getElementById(`message-${unreads.last_viewed}`)
+                    if (element) element.scrollIntoView({ behavior: "smooth" })
+                } else {
+                    scrollContainer.scrollTop = scrollContainer.scrollHeight
+                }
+            }
+            setup = true
         }, 250)
+    })
+
+    function markAsRead(chat: string) {
+        UIStore.mutateChat(chat, c => {
+            c.last_view_date = new Date()
+            c.notifications = 0
+        })
+    }
+
+    onDestroy(() => {
+        if (scrollContainer.scrollHeight <= scrollContainer.clientHeight) markAsRead($chat.id)
     })
 </script>
 
@@ -47,6 +97,12 @@
             <Text class="min-text" loading={true} />
         </div>
     {:else}
+        {#if unreads && unreads.unread > 0}
+            <div class="unreads">
+                <div class="bookmark"></div>
+                {$_("chat.newMessageSinceAmount", { values: { amount: unreads.unread, date: $date(unreads.since, { format: "medium" }), time: $time(unreads.since) } })}
+            </div>
+        {/if}
         <div bind:this={scrollContainer} class="scroll" on:scroll={handleScroll}>
             <div class="spacer"></div>
             <slot></slot>
@@ -85,6 +141,28 @@
             justify-content: center;
         }
 
+        .unreads {
+            position: absolute;
+            right: 0;
+            top: 0;
+            text-align: center;
+            padding: var(--padding-minimal);
+            padding-left: calc(var(--padding-minimal) + 30px);
+            background-color: var(--focus-color);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            z-index: 1;
+            .bookmark {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 60px;
+                -webkit-transform: rotate(0deg) skew(0deg);
+                transform: rotate(0deg) skew(0deg);
+                border-left: 15px solid color-mix(in srgb, var(--focus-color) 40%, #000000);
+                border-right: 15px solid color-mix(in srgb, var(--focus-color) 40%, #000000);
+                border-bottom: 15px solid transparent;
+            }
+        }
         .scroll {
             display: flex;
             align-items: flex-end;
