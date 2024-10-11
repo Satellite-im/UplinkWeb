@@ -337,7 +337,9 @@
             "startCallMessage": "📞 A call started at {value}.",
             "endCallMessage": "📴 The call ended at {formattedEndTime}. Duration: {duration}.",
             "callMissed": "📞 Missed call",
-            "noAnswer": "No answer, leaving the call..."
+            "noAnswer": "No answer, leaving the call...",
+            "connecting": "Connecting...",
+            "noResponse": "No response"
         },
         "notifications": {
             "name": "Notifications",

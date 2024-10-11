@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { callTimeout, VoiceRTCInstance, type VoiceRTCUser } from "$lib/media/Voice"
+    import { callTimeout, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -113,7 +113,9 @@
     }
 
     let showAnimation = true
-    let message = "Connecting..."
+    let message = $_("settings.calling.connecting")
+
+    let timeout: NodeJS.Timeout | undefined
 
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
@@ -122,9 +124,9 @@
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
                 await VoiceRTCInstance.makeCall()
-                setTimeout(() => {
+                timeout = setTimeout(() => {
                     showAnimation = false
-                    message = "No response"
+                    message = $_("settings.calling.noResponse")
                 }, 15000)
             }
         }
@@ -140,6 +142,9 @@
         subscribeTwo()
         subscribeThree()
         subscribeFour()
+        if (timeout) {
+            clearTimeout(timeout)
+        }
     })
 </script>
 
@@ -362,11 +367,11 @@
             justify-content: center;
             flex-direction: column;
             text-align: center;
-            animation: shake 0.5s ease-in-out infinite;
+            animation: shake 0.4s ease-in-out infinite;
         }
 
         .shaking-participant {
-            animation: shake 0.5s ease-in-out infinite;
+            animation: shake 0.4s ease-in-out infinite;
         }
 
         @keyframes shake {
@@ -375,13 +380,13 @@
                 transform: translateX(0);
             }
             25% {
-                transform: translateX(-2px);
+                transform: translateX(-0.75px);
             }
             50% {
-                transform: translateX(2px);
+                transform: translateX(0.75px);
             }
             75% {
-                transform: translateX(-2px);
+                transform: translateX(-0.75px);
             }
         }
 

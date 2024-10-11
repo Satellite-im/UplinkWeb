@@ -12,6 +12,8 @@ import { joinRoom } from "trystero/ipfs"
 
 const CALL_ACK = "CALL_ACCEPT"
 
+let timeOuts: NodeJS.Timeout[] = []
+
 export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
     None = "NONE",
@@ -428,15 +430,18 @@ export class VoiceRTC {
             if (call) {
                 this.inviteToCall(this.toCall)
             }
-            setTimeout(() => {
+            const timeoutWhenCallIsNull = setTimeout(() => {
                 if (this.call === null || this.call.empty) {
                     log.debug("No one joined the call, leaving")
                     callTimeout.set(true)
-                    setTimeout(() => {
-                        this.leaveCall(true)
-                    }, 3500)
+                    timeOuts.push(
+                        setTimeout(() => {
+                            this.leaveCall(true)
+                        }, 3500)
+                    )
                 }
             }, 20000)
+            timeOuts.push(timeoutWhenCallIsNull)
             Store.setActiveCall(Store.getCallingChat(this.channel!)!, CallDirection.Outbound)
         } catch (error) {
             log.error(`Error making call: ${error}`)
@@ -505,10 +510,10 @@ export class VoiceRTC {
                         }
                     })
                 }
-                await new Promise(resolve => setTimeout(resolve, 5000))
+                await new Promise(resolve => timeOuts.push(setTimeout(resolve, 5000)))
                 if (connected) {
                     // If connection has been made let it ring for 30 sec.
-                    await new Promise(resolve => setTimeout(resolve, 30000))
+                    await new Promise(resolve => timeOuts.push(setTimeout(resolve, 30000)))
                     conn.close()
                     break
                 }
@@ -567,6 +572,7 @@ export class VoiceRTC {
     }
 
     async leaveCall(sendEndCallMessage = false) {
+        timeOuts.forEach(t => clearTimeout(t))
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
         if (sendEndCallMessage && this.call?.start) {
             const now = new Date()
