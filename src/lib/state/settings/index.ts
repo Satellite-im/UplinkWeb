@@ -16,6 +16,7 @@ export interface ISettingsState {
         compact: boolean
         quick: boolean
         identiconStyle: Identicon
+        simpleUnreads: boolean
     }
     audio: {
         inputDevice: string
