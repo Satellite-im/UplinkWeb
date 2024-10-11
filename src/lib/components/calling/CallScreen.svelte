@@ -171,12 +171,12 @@
                             isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
                             isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
                             isTalking={$userCache[user].media.is_playing_audio} />
+                    {/if}
 
-                        {#if $remoteStreams[user] && $remoteStreams[user].stream && $remoteStreams[user].user.videoEnabled}
-                            <video data-cy="remote-user-video" id="remote-user-video-{user}" width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 400} height={isFullScreen ? "50%" : 400} autoplay use:attachStream={user}>
-                                <track kind="captions" src="" />
-                            </video>
-                        {/if}
+                    {#if $remoteStreams[user] && $remoteStreams[user].stream && $remoteStreams[user].user.videoEnabled}
+                        <video data-cy="remote-user-video" id="remote-user-video-{user}" width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 400} height={isFullScreen ? "50%" : 400} autoplay use:attachStream={user}>
+                            <track kind="captions" src="" />
+                        </video>
                     {/if}
                 {/if}
             {/each}
