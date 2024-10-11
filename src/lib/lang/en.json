@@ -338,7 +338,8 @@
             "minimalCallingAlertsDescription": "Instead of displaying a full screen alert when a call is incoming, with this mode enabled the call dialog will show within the sidebar.",
             "startCallMessage": "📞 A call started at {value}.",
             "endCallMessage": "📴 The call ended at {formattedEndTime}. Duration: {duration}.",
-            "callMissed": "📞 Missed call"
+            "callMissed": "📞 Missed call",
+            "userInviteToAGroupCall": "is inviting you to join a group call"
         },
         "notifications": {
             "name": "Notifications",
