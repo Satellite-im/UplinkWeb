@@ -14,6 +14,7 @@
 
     let scrolledUp: boolean = false
     let showScrollToBottom: boolean = false
+    let clearUnreads = true
     export let loading: boolean = false
     export let unreads: { unread: number; since: Date; last_viewed: string } | undefined
 
@@ -40,7 +41,8 @@
         scrolledUp = scrollCheck(1.1)
         if (current != scrolledUp && !scrolledUp && unreads && unreads.unread > 0) {
             // Clear unreads if scrolled to the bottom
-            markAsRead($chat.id)
+            if (clearUnreads) markAsRead($chat.id)
+            clearUnreads = true
         }
     }
 
@@ -51,7 +53,10 @@
             scrollToBottom(scrollContainer)
         }
         // Mark as read current is already read and messages are incoming
-        if (setup && lastUnread !== unreads && lastUnread === undefined) markAsRead($chat.id)
+        if (setup && lastUnread !== unreads && lastUnread === undefined) {
+            if (scrolledUp) clearUnreads = false
+            else markAsRead($chat.id)
+        }
         lastUnread = unreads
     })
 
