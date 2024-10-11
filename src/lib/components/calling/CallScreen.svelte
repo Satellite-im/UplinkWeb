@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -127,7 +127,7 @@
                 timeout = setTimeout(() => {
                     showAnimation = false
                     message = $_("settings.calling.noResponse")
-                }, 15000)
+                }, TIME_TO_SHOW_CONNECTING)
             }
         }
 

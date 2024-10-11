@@ -12,6 +12,9 @@ import { joinRoom } from "trystero/ipfs"
 
 const CALL_ACK = "CALL_ACCEPT"
 
+const TIME_TO_WAIT_FOR_ANSWER = 35000
+export const TIME_TO_SHOW_CONNECTING = 30000
+
 let timeOuts: NodeJS.Timeout[] = []
 
 export enum VoiceRTCMessageType {
@@ -432,7 +435,7 @@ export class VoiceRTC {
                 if (this.call === null || this.call.empty) {
                     this.leaveCall(true)
                 }
-            }, 100000)
+            }, TIME_TO_WAIT_FOR_ANSWER)
             timeOuts.push(timeoutWhenCallIsNull)
             Store.setActiveCall(Store.getCallingChat(this.channel!)!, CallDirection.Outbound)
         } catch (error) {
