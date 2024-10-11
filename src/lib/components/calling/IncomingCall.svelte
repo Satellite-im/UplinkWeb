@@ -6,22 +6,44 @@
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { connectionOpened, VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
     import { writable } from "svelte/store"
+    import { onDestroy, onMount } from "svelte"
+    import { _ } from "svelte-i18n"
 
     let callSound: SoundHandler | undefined = undefined
     let pending = false
     let user = writable(defaultUser)
+    let timeOutToCancel: NodeJS.Timeout | undefined = undefined
+    $: cancelledCall = false
+
+    onMount(() => {
+        cancelledCall = false
+        clearTimeout(timeOutToCancel)
+    })
+
+    onDestroy(() => {
+        cancelledCall = false
+        clearTimeout(timeOutToCancel)
+    })
 
     Store.state.pendingCall.subscribe(async _ => {
-        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall) {
+        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall && $connectionOpened) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)
                 callSound.play()
             }
             pending = true
             user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.did)
+        } else if (!$connectionOpened) {
+            cancelledCall = true
+            timeOutToCancel = setTimeout(() => {
+                cancelledCall = false
+                pending = false
+                callSound?.stop()
+                callSound = undefined
+            }, 4000)
         } else {
             pending = false
             callSound?.stop()
@@ -49,19 +71,27 @@
 {#if pending}
     <div id="incoming-call">
         <div class="body">
-            <div class="content">
-                <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
-                <Text>{$user.name}</Text>
-                <Text muted>{$user.profile.status_message}</Text>
-                <Spacer />
-                <Controls>
-                    <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
-                        <Icon icon={Shape.PhoneCall} />
-                    </Button>
-                    <Button appearance={Appearance.Error} text="End" on:click={endCall}>
-                        <Icon icon={Shape.PhoneXMark} />
-                    </Button>
-                </Controls>
+            <div class="content" style={cancelledCall ? "border: var(--border-width) solid var(--warning-color);" : "border: var(--border-width) solid var(--success-color);"}>
+                {#if cancelledCall}
+                    <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                    <Text>{$user.name}</Text>
+                    <Text muted size={Size.Large}>{$_("settings.calling.hasCancelled")}</Text>
+                    <Text muted size={Size.Large}>{$_("settings.calling.disconnecting")}</Text>
+                    <Spacer />
+                {:else}
+                    <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                    <Text>{$user.name}</Text>
+                    <Text muted>{$user.profile.status_message}</Text>
+                    <Spacer />
+                    <Controls>
+                        <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
+                            <Icon icon={Shape.PhoneCall} />
+                        </Button>
+                        <Button appearance={Appearance.Error} text="End" on:click={endCall}>
+                            <Icon icon={Shape.PhoneXMark} />
+                        </Button>
+                    </Controls>
+                {/if}
             </div>
         </div>
     </div>
