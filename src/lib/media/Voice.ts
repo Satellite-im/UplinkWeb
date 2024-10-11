@@ -12,6 +12,11 @@ import { joinRoom } from "trystero/ipfs"
 
 const CALL_ACK = "CALL_ACCEPT"
 
+const TIME_TO_WAIT_FOR_ANSWER = 35000
+const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
+
+let timeOuts: NodeJS.Timeout[] = []
+
 export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
     None = "NONE",
@@ -44,6 +49,10 @@ export type VoiceRTCUser = {
     videoEnabled: boolean
     audioEnabled: boolean
     isDeafened: boolean
+}
+
+export function voiceRTCUserToString(user: VoiceRTCUser): string {
+    return `User: ${user.username} (ID: ${user.did}), Video: ${user.videoEnabled}, Audio: ${user.audioEnabled}, Deafened: ${user.isDeafened}`
 }
 
 type VoiceMessage = {
@@ -226,7 +235,8 @@ export class CallRoom {
 
     updateUserData(user: VoiceRTCUser) {
         let participant = Object.values(this.participants).find(p => p.did === user.did)
-        log.debug(`Updating user data ${user} for ${participant}`)
+        let voideRTCUserAsString = voiceRTCUserToString(user)
+        log.debug(`Updating user data ${voideRTCUserAsString} for ${participant}`)
         if (participant) {
             participant.updateUserData(user)
         }
@@ -259,6 +269,8 @@ export class CallRoom {
 
 const AUDIO_WINDOW_SIZE = 256
 const VOLUME_THRESHOLD = 20
+
+export const callTimeout = writable(false)
 
 export class VoiceRTC {
     channel?: string
@@ -302,6 +314,14 @@ export class VoiceRTC {
                     if (s[did]) {
                         if (data.user) s[did].user = data.user
                         if (data.stream) s[did].stream = data.stream
+                        const videoElement = document.getElementById(`remote-user-video-${did}`) as HTMLVideoElement
+                        if (videoElement) {
+                            log.debug(`Updating video element for user ${did}`)
+                            videoElement.srcObject = s[did].stream
+                            videoElement.play().catch(error => {
+                                log.error("Error playing the video, for user: ", data.user?.did, error)
+                            })
+                        }
                     }
                     return s
                 })
@@ -318,7 +338,7 @@ export class VoiceRTC {
 
     async toggleVideo(state: boolean) {
         this.callOptions.video.enabled = state
-        if (this.localStream) await this.getLocalStream(true)
+        this.localStream?.getVideoTracks().forEach(track => (track.enabled = state))
 
         this.call?.toggleStreams(state, ToggleType.Video)
         this.call?.notify(VoiceRTCMessageType.UpdateUser)
@@ -326,7 +346,7 @@ export class VoiceRTC {
 
     async toggleMute(state: boolean) {
         this.callOptions.audio.enabled = !state
-        if (this.localStream) await this.getLocalStream(true)
+        this.localStream?.getAudioTracks().forEach(track => (track.enabled = !state))
 
         this.call?.toggleStreams(state, ToggleType.Mute)
         this.call?.notify(VoiceRTCMessageType.UpdateUser)
@@ -376,7 +396,9 @@ export class VoiceRTC {
 
                 conn.on("close", () => {
                     log.info(`Connection closed by ${conn.metadata.username}`)
-                    connectionOpened.set(false)
+                    if (this.incomingConnections.length === 1) {
+                        connectionOpened.set(false)
+                    }
                     Store.state.pendingCall.set(null)
                     this.incomingConnections = this.incomingConnections.filter(c => c !== conn)
                     this.incomingCallFrom = null
@@ -424,11 +446,19 @@ export class VoiceRTC {
             if (call) {
                 this.inviteToCall(this.toCall)
             }
-            setTimeout(() => {
+            const timeoutWhenCallIsNull = setTimeout(() => {
                 if (this.call === null || this.call.empty) {
-                    this.leaveCall(true)
+                    log.debug("No one joined the call, leaving")
+                    callTimeout.set(true)
+                    timeOuts.push(
+                        setTimeout(() => {
+                            callTimeout.set(false)
+                            this.leaveCall(true)
+                        }, TIME_TO_SHOW_END_CALL_FEEDBACK)
+                    )
                 }
-            }, 100000)
+            }, TIME_TO_WAIT_FOR_ANSWER)
+            timeOuts.push(timeoutWhenCallIsNull)
             Store.setActiveCall(Store.getCallingChat(this.channel!)!, CallDirection.Outbound)
         } catch (error) {
             log.error(`Error making call: ${error}`)
@@ -497,10 +527,10 @@ export class VoiceRTC {
                         }
                     })
                 }
-                await new Promise(resolve => setTimeout(resolve, 5000))
+                await new Promise(resolve => timeOuts.push(setTimeout(resolve, 5000)))
                 if (connected) {
                     // If connection has been made let it ring for 30 sec.
-                    await new Promise(resolve => setTimeout(resolve, 30000))
+                    await new Promise(resolve => timeOuts.push(setTimeout(resolve, 30000)))
                     conn.close()
                     break
                 }
@@ -560,6 +590,7 @@ export class VoiceRTC {
 
     async leaveCall(sendEndCallMessage = false) {
         connectionOpened.set(false)
+        timeOuts.forEach(t => clearTimeout(t))
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
         if (sendEndCallMessage && this.call?.start) {
             const now = new Date()
@@ -607,73 +638,19 @@ export class VoiceRTC {
 
     private async createLocalStream() {
         let localStream
-        try {
-            let videoInputDevice = get(Store.state.devices.video)
-            let audioInputDevice = get(Store.state.devices.input)
-            let settingsStore = get(SettingsStore.state)
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: this.callOptions.video.enabled
-                    ? {
-                          aspectRatio: 16 / 9,
-                          facingMode: this.callOptions.video.selfie ? "user" : "environment",
-                          frameRate: 30,
-                          height: { ideal: 1080 },
-                          width: { ideal: 1920 },
-                          deviceId: videoInputDevice ? { exact: videoInputDevice } : undefined,
-                      }
-                    : false,
-                audio: this.callOptions.audio.enabled
-                    ? {
-                          echoCancellation: settingsStore.calling.echoCancellation ?? true,
-                          noiseSuppression: settingsStore.calling.noiseSuppression ?? true,
-                          autoGainControl: settingsStore.calling.automaticGainControl ?? true,
-                          sampleRate: settingsStore.calling.bitrate ?? 48000,
-                          sampleSize: settingsStore.calling.sampleSize ?? 16,
-                          channelCount: settingsStore.calling.channels ?? 2,
-                          deviceId: audioInputDevice ? { exact: audioInputDevice } : undefined,
-                      }
-                    : false,
-            })
-        } catch (error) {
-            log.error(`Error getting user media: ${error}`)
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
-            })
-        }
+        localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+        })
+        localStream.getVideoTracks().forEach(track => {
+            track.enabled = this.callOptions.video.enabled
+        })
+        localStream.getAudioTracks().forEach(track => {
+            track.enabled = this.callOptions.audio.enabled
+        })
 
         return localStream
-        /// Let it commented for now.
-        // await this.improveAudioQuality()
     }
-
-    // private async improveAudioQuality() {
-    //     const audioContext = new window.AudioContext()
-    //     const source = audioContext.createMediaStreamSource(this.activeCall?.localStream!)
-    //     const destination = audioContext.createMediaStreamDestination()
-
-    //     const gainNode = audioContext.createGain()
-    //     const echoCancellation = audioContext.createBiquadFilter()
-    //     const noiseSuppression = audioContext.createBiquadFilter()
-
-    //     echoCancellation.type = "lowshelf"
-    //     echoCancellation.frequency.setValueAtTime(1000, audioContext.currentTime)
-    //     echoCancellation.gain.setValueAtTime(-40, audioContext.currentTime)
-
-    //     noiseSuppression.type = "highpass"
-    //     noiseSuppression.frequency.setValueAtTime(2000, audioContext.currentTime)
-    //     noiseSuppression.gain.setValueAtTime(-30, audioContext.currentTime)
-
-    //     source.connect(echoCancellation)
-    //     echoCancellation.connect(noiseSuppression)
-    //     noiseSuppression.connect(gainNode)
-    //     gainNode.connect(destination)
-
-    //     const processedStream = new MediaStream()
-    //     processedStream.addTrack(destination.stream.getAudioTracks()[0])
-    //     processedStream.addTrack(this.activeCall?.localStream!.getVideoTracks()[0]!)
-    //     this.activeCall?.localStream!.getVideoTracks().forEach(track => processedStream.addTrack(track))
-    // }
 
     get isInCall(): boolean {
         return this.call != null
@@ -716,6 +693,7 @@ export class VoiceRTC {
         this.incomingCallFrom = null
         this.invitations.forEach(c => c.cancel())
         this.invitations = []
+        this.localPeer?.destroy()
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.pause()
             this.localVideoCurrentSrc.srcObject = null
