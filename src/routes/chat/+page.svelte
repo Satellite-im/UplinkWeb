@@ -482,7 +482,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} cta={$activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
