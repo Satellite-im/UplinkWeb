@@ -265,6 +265,10 @@ export class CallRoom {
     get empty(): boolean {
         return Object.keys(this.room.getPeers()).length === 0
     }
+
+    get peersQuantityOnCall(): number {
+        return Object.keys(this.room.getPeers()).length
+    }
 }
 
 const AUDIO_WINDOW_SIZE = 256

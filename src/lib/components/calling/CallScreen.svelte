@@ -120,9 +120,10 @@
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
         await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
+
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
-            if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
+            if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined && (VoiceRTCInstance.call?.peersQuantityOnCall ?? 0) < 1) {
                 await VoiceRTCInstance.makeCall()
                 timeout = setTimeout(() => {
                     showAnimation = false
