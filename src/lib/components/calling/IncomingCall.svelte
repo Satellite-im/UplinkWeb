@@ -47,18 +47,18 @@
 </script>
 
 {#if pending}
-    <div id="incoming-call">
+    <div id="incoming-call" data-cy="incoming-call">
         <div class="body">
             <div class="content">
                 <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
-                <Text>{$user.name}</Text>
-                <Text muted>{$user.profile.status_message}</Text>
+                <Text hook="incoming-call-username">{$user.name}</Text>
+                <Text hook="incoming-call-status" muted>{$user.profile.status_message}</Text>
                 <Spacer />
                 <Controls>
-                    <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
+                    <Button hook="button-accept-incoming-call" appearance={Appearance.Success} text="Answer" on:click={answerCall}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
-                    <Button appearance={Appearance.Error} text="End" on:click={endCall}>
+                    <Button hook="button-deny-incoming-call" appearance={Appearance.Error} text="End" on:click={endCall}>
                         <Icon icon={Shape.PhoneXMark} />
                     </Button>
                 </Controls>
