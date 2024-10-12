@@ -29,9 +29,9 @@
         }
     })
 
-    async function answerCall() {
+    async function answerCall(onlyAudio: boolean = true) {
         goto(Route.Chat)
-        await VoiceRTCInstance.acceptCall(true)
+        await VoiceRTCInstance.acceptCall(onlyAudio)
         Store.setActiveChat(Store.getCallingChat(VoiceRTCInstance.channel!)!)
         pending = false
         callSound?.stop()
@@ -55,13 +55,16 @@
                 <Text muted>{$user.profile.status_message}</Text>
                 <Spacer />
                 <Controls>
-                    <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
+                    <Button appearance={Appearance.Success} text="Voice" on:click={_ => answerCall(true)}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
-                    <Button appearance={Appearance.Error} text="End" on:click={endCall}>
-                        <Icon icon={Shape.PhoneXMark} />
+                    <Button appearance={Appearance.Success} text="Video" on:click={_ => answerCall(false)}>
+                        <Icon icon={Shape.VideoCamera} />
                     </Button>
                 </Controls>
+                <Button appearance={Appearance.Error} text="Decline" on:click={endCall}>
+                    <Icon icon={Shape.PhoneXMark} />
+                </Button>
             </div>
         </div>
     </div>
