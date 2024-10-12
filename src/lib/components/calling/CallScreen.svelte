@@ -162,8 +162,9 @@
                 data-cy="local-user-video"
                 id="local-user-video"
                 bind:this={localVideoCurrentSrc}
-                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
-                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
+                style="display: {userCallOptions.video.enabled ? 'block' : 'none'}"
+                width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 200}
+                height={isFullScreen ? "50%" : 200}
                 muted
                 autoplay>
                 <track kind="captions" src="" />
@@ -187,6 +188,17 @@
                         </div>
                     {/if}
                 {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                    <video
+                        data-cy="remote-user-video"
+                        id="remote-user-video-{user}"
+                        width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                        height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                        autoplay
+                        muted={false}
+                        use:attachStream={user}
+                        style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
+                        <track kind="captions" src="" />
+                    </video>
                     {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
                         <Participant
                             participant={$userCache[user]}
@@ -194,12 +206,6 @@
                             isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
                             isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
                             isTalking={$userCache[user].media.is_playing_audio} />
-                    {/if}
-
-                    {#if $remoteStreams[user] && $remoteStreams[user].stream && $remoteStreams[user].user.videoEnabled}
-                        <video data-cy="remote-user-video" id="remote-user-video-{user}" width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 400} height={isFullScreen ? "50%" : 400} autoplay use:attachStream={user}>
-                            <track kind="captions" src="" />
-                        </video>
                     {/if}
                 {/if}
             {/each}
