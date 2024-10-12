@@ -3,9 +3,24 @@
     import { Size } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
+    import { get } from "svelte/store"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
 
+    const standardVolumeLevel = 100
+
     export let participants: string[]
+    let currentUser = get(Store.state.user)
+    const activeCall = get(Store.state.activeCall)
+
+    $: if (participants) {
+        participants.forEach(user => {
+            if (activeCall) {
+                if (!activeCall.volumeParticipantsLevel[user]) {
+                    activeCall.volumeParticipantsLevel[user] = standardVolumeLevel
+                }
+            }
+        })
+    }
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
@@ -16,19 +31,30 @@
         <Label hook="label-master-volume" text="Master Volume" />
         <div class="control">
             <RangeSelector min={0} max={200} value={100} />
-            <Text hook="text-master-volume">100</Text>
+            <Text hook="text-master-volume">{standardVolumeLevel}</Text>
         </div>
     </div>
 
-    {#each participants as user}
+    {#each participants as user ($userCache[user].key)}
         <div class="user-volume" data-cy="{$userCache[user].name}-volume">
-            <Label hook="label-mixer-username" text={$userCache[user].name} />
+            <Label hook="label-mixer-username" text={currentUser.key === $userCache[user].key ? $userCache[user].name + " (You)" : $userCache[user].name} />
             <div class="control">
                 <ProfilePicture hook="mixer-user-picture" id={$userCache[user].key} size={Size.Smallest} image={$userCache[user].profile.photo.image} status={$userCache[user].profile.status} />
                 <div class="range">
-                    <RangeSelector min={0} max={200} value={100} />
+                    <RangeSelector
+                        min={0}
+                        max={200}
+                        value={activeCall ? activeCall.volumeParticipantsLevel[$userCache[user].key] : standardVolumeLevel}
+                        on:change={e => {
+                            if (activeCall) {
+                                activeCall.volumeParticipantsLevel[$userCache[user].key] = e.detail
+                                activeCall.volumeParticipantsLevel = { ...activeCall.volumeParticipantsLevel }
+                            }
+                        }} />
                 </div>
-                <Text hook="text-user-volume">100</Text>
+                <Text hook="text-user-volume">
+                    {activeCall ? activeCall.volumeParticipantsLevel[$userCache[user].key] : standardVolumeLevel}
+                </Text>
             </div>
         </div>
     {/each}
