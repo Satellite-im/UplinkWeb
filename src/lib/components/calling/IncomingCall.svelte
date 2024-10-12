@@ -9,6 +9,7 @@
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
     import { writable } from "svelte/store"
+    import { _ } from "svelte-i18n"
 
     let callSound: SoundHandler | undefined = undefined
     let pending = false
@@ -55,14 +56,14 @@
                 <Text muted>{$user.profile.status_message}</Text>
                 <Spacer />
                 <Controls>
-                    <Button appearance={Appearance.Success} text="Voice" on:click={_ => answerCall(true)}>
+                    <Button appearance={Appearance.Success} text={$_("settings.calling.voice")} on:click={_ => answerCall(true)}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
-                    <Button appearance={Appearance.Success} text="Video" on:click={_ => answerCall(false)}>
+                    <Button appearance={Appearance.Success} text={$_("settings.calling.video")} on:click={_ => answerCall(false)}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>
                 </Controls>
-                <Button appearance={Appearance.Error} text="Decline" on:click={endCall}>
+                <Button appearance={Appearance.Error} text={$_("settings.calling.decline")} on:click={endCall}>
                     <Icon icon={Shape.PhoneXMark} />
                 </Button>
             </div>
