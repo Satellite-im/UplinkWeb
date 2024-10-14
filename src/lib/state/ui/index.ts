@@ -21,6 +21,7 @@ export interface IUIState {
     simpleUnreads: Writable<boolean>
     emojiSelector: Writable<boolean>
     emojiCounter: Writable<{ [emoji: string]: number }>
+    selectedSkinTone: Writable<string>
     marketOpen: Writable<boolean>
 }
 class Store {
@@ -50,6 +51,7 @@ class Store {
             simpleUnreads: writable(true),
             emojiSelector: writable(false),
             emojiCounter: createPersistentState("uplink.ui.emojiCounter", { "👍": 0, "👎": 0, "❤️": 0, "🖖": 0, "😂": 0 }),
+            selectedSkinTone: createPersistentState("uplink.ui.emojiSkintone", ""),
             marketOpen: writable(false),
         }
     }
