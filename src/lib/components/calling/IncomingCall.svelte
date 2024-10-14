@@ -77,12 +77,14 @@
                     <Text>{$user.name}</Text>
                     <Text muted size={Size.Large}>{$_("settings.calling.hasCancelled")}</Text>
                     <Text muted size={Size.Large}>{$_("settings.calling.disconnecting")}</Text>
-                    <Spacer />
+                    <Spacer less={true} />
                 {:else}
                     <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
                     <Text>{$user.name}</Text>
-                    <Text muted>{$user.profile.status_message}</Text>
-                    <Spacer />
+                    {#if $user.profile.status_message !== ""}
+                        <Text muted>{$user.profile.status_message}</Text>
+                    {/if}
+                    <Spacer less={true} />
                     <Controls>
                         <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
                             <Icon icon={Shape.PhoneCall} />
