@@ -260,7 +260,11 @@
             <div class="relative">
                 {#if showVolumeMixer}
                     <div id="volume-mixer">
-                        <VolumeMixer participants={chat.users} />
+                        <VolumeMixer
+                            participants={chat.users}
+                            on:close={_ => {
+                                showVolumeMixer = false
+                            }} />
                     </div>
                 {/if}
                 <Button
