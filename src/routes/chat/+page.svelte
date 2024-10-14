@@ -55,6 +55,7 @@
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { checkMobile } from "$lib/utils/Mobile"
     import BrowseFiles from "../files/BrowseFiles.svelte"
+    import ShareFile from "$lib/components/files/ShareFile.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -97,6 +98,8 @@
     let replyTo: MessageType | undefined = undefined
     let reactingTo: string | undefined
     let fileUpload: FileInput
+
+    let fileToShare: [Attachment, string] | undefined
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
@@ -418,6 +421,23 @@
             }} />
     {/if}
 
+    {#if fileToShare}
+        <Modal
+            on:close={_ => {
+                fileToShare = undefined
+            }}>
+            <ShareFile
+                file={{
+                    type: "attachment",
+                    chat: fileToShare[1],
+                    attachment: fileToShare[0],
+                }}
+                on:close={_ => {
+                    fileToShare = undefined
+                }} />
+        </Modal>
+    {/if}
+
     {#if dragging_files > 0}
         <div class="upload-overlay">
             <div class="upload-element">
@@ -703,7 +723,8 @@
                                                                             type: "unknown/unknown",
                                                                             remotePath: "",
                                                                         }}
-                                                                        on:download={_ => download_attachment(message.id, attachment)} />
+                                                                        on:download={_ => download_attachment(message.id, attachment)}
+                                                                        on:share={_ => (fileToShare = [attachment, $activeChat.id])} />
                                                                 {:else if attachment.kind === MessageAttachmentKind.Image}
                                                                     <ImageEmbed
                                                                         source={attachment.location}
