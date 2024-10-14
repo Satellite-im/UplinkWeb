@@ -2,32 +2,27 @@
     import { Button, Icon, Text, Spacer } from "$lib/elements"
     import { Appearance, Route, Shape, Size } from "$lib/enums"
     import { Controls } from "$lib/layouts"
-    import { defaultUser, type Chat, type User } from "$lib/types"
-    import { onMount, onDestroy } from "svelte"
+    import { defaultUser } from "$lib/types"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
-    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
+    import { writable } from "svelte/store"
 
     let callSound: SoundHandler | undefined = undefined
     let pending = false
-    let user: User = defaultUser
-    let interval: NodeJS.Timeout
+    let user = writable(defaultUser)
 
     Store.state.pendingCall.subscribe(async _ => {
-        if (VoiceRTCInstance.isReceivingCall) {
+        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)
                 callSound.play()
             }
             pending = true
-            const callingChat = Store.getCallingChat(VoiceRTCInstance.channel)
-            if (callingChat) {
-                user = (await MultipassStoreInstance.identity_from_did(callingChat.users[1])) ?? defaultUser
-            }
-        } else if (!VoiceRTCInstance.isReceivingCall && !VoiceRTCInstance.makingCall) {
+            user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.did)
+        } else {
             pending = false
             callSound?.stop()
             callSound = undefined
@@ -36,10 +31,9 @@
 
     async function answerCall() {
         goto(Route.Chat)
-        await VoiceRTCInstance.acceptIncomingCall()
-        Store.setActiveChat(Store.getCallingChat(VoiceRTCInstance.channel)!)
+        await VoiceRTCInstance.acceptCall(true)
+        Store.setActiveChat(Store.getCallingChat(VoiceRTCInstance.channel!)!)
         pending = false
-        VoiceRTCInstance.isReceivingCall = false
         callSound?.stop()
         callSound = undefined
     }
@@ -48,8 +42,7 @@
         pending = false
         callSound?.stop()
         callSound = undefined
-        VoiceRTCInstance.endCall()
-        VoiceRTCInstance.isReceivingCall = false
+        VoiceRTCInstance.leaveCall(false)
     }
 </script>
 
@@ -57,9 +50,9 @@
     <div id="incoming-call">
         <div class="body">
             <div class="content">
-                <ProfilePicture id={user.key} hook="friend-profile-picture" size={Size.Large} image={user.profile.photo.image} status={user.profile.status} />
-                <Text>{user.name}</Text>
-                <Text muted>{user.profile.status_message}</Text>
+                <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                <Text>{$user.name}</Text>
+                <Text muted>{$user.profile.status_message}</Text>
                 <Spacer />
                 <Controls>
                     <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>

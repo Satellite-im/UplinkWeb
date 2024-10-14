@@ -5,7 +5,7 @@
     import { UIStore } from "$lib/state/ui"
     import { Input, Label, Button } from "$lib/elements"
     import Stream from "$lib/elements/Stream.svelte"
-    import { onMount } from "svelte"
+    import { onDestroy, onMount } from "svelte"
     import { log } from "$lib/utils/Logger"
     import BatteryIndicator from "$lib/components/widgets/BatteryIndicator.svelte"
     import { _ } from "svelte-i18n"
@@ -72,6 +72,10 @@
 
     onMount(() => {
         startVideoTest()
+    })
+
+    onDestroy(() => {
+        localStream.getTracks().forEach(t => t.stop())
     })
 </script>
 
