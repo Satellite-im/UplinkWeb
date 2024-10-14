@@ -64,7 +64,9 @@
                 {#if $callChat.kind === ChatType.DirectMessage}
                     <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
                     <Text>{$user.name}</Text>
-                    <Text muted>{$user.profile.status_message}</Text>
+                    {#if $user.profile.status_message !== ""}
+                        <Text muted>{$user.profile.status_message}</Text>
+                    {/if}
                 {:else}
                     <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
                     <Text>{$user.name}</Text>
@@ -73,7 +75,7 @@
                     <Text>{$callChat.name}</Text>
                 {/if}
 
-                <Spacer />
+                <Spacer less={true} />
                 <Controls>
                     <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
                         <Icon icon={Shape.PhoneCall} />

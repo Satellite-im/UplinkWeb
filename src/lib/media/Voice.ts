@@ -6,13 +6,14 @@ import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection } from "peerjs"
 import { _ } from "svelte-i18n"
-import { get } from "svelte/store"
+import { get, writable } from "svelte/store"
 import type { Room } from "trystero"
 import { joinRoom } from "trystero/ipfs"
 
 const CALL_ACK = "CALL_ACCEPT"
 
 const TIME_TO_WAIT_FOR_ANSWER = 35000
+const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
 export const TIME_TO_SHOW_CONNECTING = 30000
 
 let timeOuts: NodeJS.Timeout[] = []
@@ -268,6 +269,8 @@ export class CallRoom {
 const AUDIO_WINDOW_SIZE = 256
 const VOLUME_THRESHOLD = 20
 
+export const callTimeout = writable(false)
+
 export class VoiceRTC {
     channel?: string
     // Local peer that is used to handle incoming call requests
@@ -433,7 +436,14 @@ export class VoiceRTC {
             }
             const timeoutWhenCallIsNull = setTimeout(() => {
                 if (this.call === null || this.call.empty) {
-                    this.leaveCall(true)
+                    log.debug("No one joined the call, leaving")
+                    callTimeout.set(true)
+                    timeOuts.push(
+                        setTimeout(() => {
+                            callTimeout.set(false)
+                            this.leaveCall(true)
+                        }, TIME_TO_SHOW_END_CALL_FEEDBACK)
+                    )
                 }
             }, TIME_TO_WAIT_FOR_ANSWER)
             timeOuts.push(timeoutWhenCallIsNull)
