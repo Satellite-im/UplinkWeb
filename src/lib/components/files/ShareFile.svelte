@@ -55,12 +55,12 @@
 
 <div class="share-files-container">
     <div class="share-files-top">
-        <Button hook="share-files" text="Share files" appearance={selectedChats.length === 0 ? Appearance.Alt : Appearance.Default} disabled={selectedChats.length === 0} on:click={share}>
+        <Button hook="share-files" text={$_("files.share.files")} appearance={selectedChats.length === 0 ? Appearance.Alt : Appearance.Default} disabled={selectedChats.length === 0} on:click={share}>
             <Icon icon={Shape.Share} />
         </Button>
     </div>
     <div class="chats-select">
-        <Label text="Select Chats"></Label>
+        <Label text={$_("files.share.selectChats")}></Label>
         <div class="chats-select-scroll">
             {#each $chats as chat}
                 <button

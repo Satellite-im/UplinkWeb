@@ -176,6 +176,8 @@
         "download": "Download",
         "rename": "Rename",
         "share": "Share",
+        "share.selectChats": "Select Chats",
+        "share.files": "Share Files with Chats",
         "addFiles": "Add to Files",
         "quickActions": "Quick Actions",
         "sync": "Sync",
