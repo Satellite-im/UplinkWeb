@@ -200,12 +200,12 @@ class Store {
         })
     }
 
-    getMostUsed(top?: number) {
-        top = top ? top : 5
+    getMostUsed(top = 6) {
         return derived(this.state.emojiCounter, counter => {
             return Object.entries(counter)
-                .sort((f, s) => s[1] - f[1])
-                .map(v => v[0])
+                .sort(([, countA], [, countB]) => countB - countA)
+                .slice(0, top)
+                .map(([emoji]) => emoji)
         })
     }
 }
