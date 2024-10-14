@@ -68,7 +68,7 @@
             gap: var(--gap-less);
             cursor: default;
             max-width: var(--max-component-width);
-            word-break: break-all;
+            overflow-wrap: break-word;
         }
 
         &.more-padding {
