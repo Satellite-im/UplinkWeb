@@ -13,6 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
+    import { callTimeout } from "$lib/media/Voice"
     import { TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
@@ -113,13 +114,11 @@
     }
     let showAnimation = true
     let message = $_("settings.calling.connecting")
-
     let timeout: NodeJS.Timeout | undefined
 
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
         await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
-
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
@@ -157,59 +156,67 @@
                 </Text>
             </svelte:fragment>
         </Topbar>
-        <div id="participants">
-            <video
-                data-cy="local-user-video"
-                id="local-user-video"
-                bind:this={localVideoCurrentSrc}
-                style="display: {userCallOptions.video.enabled ? 'block' : 'none'}"
-                width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 200}
-                height={isFullScreen ? "50%" : 200}
-                muted
-                autoplay>
-                <track kind="captions" src="" />
-            </video>
 
-            {#each chat.users as user (user)}
-                {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
-                    <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
-                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
-                    {#if showAnimation}
-                        <div class="calling-animation">
-                            <div class="shaking-participant">
+        {#if !$callTimeout}
+            <div id="participants">
+                <video
+                    data-cy="local-user-video"
+                    id="local-user-video"
+                    bind:this={localVideoCurrentSrc}
+                    style="display: {userCallOptions.video.enabled ? 'block' : 'none'}"
+                    width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 200}
+                    height={isFullScreen ? "50%" : 200}
+                    muted
+                    autoplay>
+                    <track kind="captions" src="" />
+                </video>
+
+                {#each chat.users as user (user)}
+                    {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
+                        <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
+                        {#if showAnimation}
+                            <div class="calling-animation">
+                                <div class="shaking-participant">
+                                    <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                    <p>{message}</p>
+                                </div>
+                            </div>
+                        {:else}
+                            <div class="no-response">
                                 <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                 <p>{message}</p>
                             </div>
-                        </div>
-                    {:else}
-                        <div class="no-response">
-                            <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
-                            <p>{message}</p>
-                        </div>
+                        {/if}
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                        <video
+                            data-cy="remote-user-video"
+                            id="remote-user-video-{user}"
+                            width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                            height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                            autoplay
+                            muted={false}
+                            use:attachStream={user}
+                            style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
+                            <track kind="captions" src="" />
+                        </video>
+                        {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
+                            <Participant
+                                participant={$userCache[user]}
+                                hasVideo={$userCache[user].media.is_streaming_video}
+                                isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
+                                isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
+                                isTalking={$userCache[user].media.is_playing_audio} />
+                        {/if}
                     {/if}
-                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
-                    <video
-                        data-cy="remote-user-video"
-                        id="remote-user-video-{user}"
-                        width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                        height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
-                        autoplay
-                        muted={false}
-                        use:attachStream={user}
-                        style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
-                        <track kind="captions" src="" />
-                    </video>
-                    {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
-                        <Participant
-                            participant={$userCache[user]}
-                            hasVideo={$userCache[user].media.is_streaming_video}
-                            isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
-                            isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
-                            isTalking={$userCache[user].media.is_playing_audio} />
-                    {/if}
-                {/if}
-            {/each}
-        </div>
+                {/each}
+            </div>
+        {:else}
+            <div class="loading-when-no-answer">
+                <div class="spinner"></div>
+                <p>{$_("settings.calling.noAnswer")}</p>
+            </div>
+        {/if}
     {/if}
     <div class="toolbar">
         <Controls>
@@ -408,6 +415,37 @@
             font-size: 1.2rem;
             color: #666;
             font-weight: bold;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-when-no-answer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            margin: 32px;
+        }
+
+        .loading-when-no-answer p {
+            margin-top: 16px;
         }
     }
 </style>
