@@ -7,16 +7,14 @@
     import Participant from "./Participant.svelte"
     import Text from "$lib/elements/Text.svelte"
     import CallSettings from "./CallSettings.svelte"
-    import { get, writable, type Writable } from "svelte/store"
+    import { get } from "svelte/store"
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
     import type { Chat } from "$lib/types"
-    import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance, type VoiceRTCUser } from "$lib/media/Voice"
+    import { TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
-    import { debounce } from "$lib/utils/Functions"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -92,20 +90,31 @@
     }
 
     function attachStream(node: HTMLMediaElement, user: string) {
-        if (!$remoteStreams[user]) return
-        let stream = $remoteStreams[user].stream
-        node.srcObject = stream
-        node.play()
+        const stream = $remoteStreams[user]?.stream
+
+        if (stream) {
+            node.srcObject = stream
+            stream.onremovetrack = () => {
+                log.dev("Stream removed: ", user)
+            }
+        }
+
         return {
-            update(_: MediaStream) {
-                debounce(() => {
-                    if (node.srcObject) (node.srcObject as MediaStream).getTracks().forEach(t => t.stop())
-                    node.srcObject = stream
-                    node.play()
-                }, 3)
+            update(newUser: string) {
+                const newStream = $remoteStreams[newUser]?.stream
+                if (newStream && node.srcObject !== newStream) {
+                    node.srcObject = newStream
+                }
+            },
+            destroy() {
+                node.srcObject = null
             },
         }
     }
+    let showAnimation = true
+    let message = $_("settings.calling.connecting")
+
+    let timeout: NodeJS.Timeout | undefined
 
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
@@ -115,6 +124,10 @@
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
                 await VoiceRTCInstance.makeCall()
+                timeout = setTimeout(() => {
+                    showAnimation = false
+                    message = $_("settings.calling.noResponse")
+                }, TIME_TO_SHOW_CONNECTING)
             }
         }
 
@@ -129,6 +142,9 @@
         subscribeTwo()
         subscribeThree()
         subscribeFour()
+        if (timeout) {
+            clearTimeout(timeout)
+        }
     })
 </script>
 
@@ -146,17 +162,43 @@
                 data-cy="local-user-video"
                 id="local-user-video"
                 bind:this={localVideoCurrentSrc}
-                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
-                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
+                style="display: {userCallOptions.video.enabled ? 'block' : 'none'}"
+                width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 200}
+                height={isFullScreen ? "50%" : 200}
                 muted
                 autoplay>
                 <track kind="captions" src="" />
             </video>
 
-            {#each chat.users as user}
+            {#each chat.users as user (user)}
                 {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                     <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
+                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
+                    {#if showAnimation}
+                        <div class="calling-animation">
+                            <div class="shaking-participant">
+                                <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                <p>{message}</p>
+                            </div>
+                        </div>
+                    {:else}
+                        <div class="no-response">
+                            <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                            <p>{message}</p>
+                        </div>
+                    {/if}
                 {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                    <video
+                        data-cy="remote-user-video"
+                        id="remote-user-video-{user}"
+                        width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                        height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                        autoplay
+                        muted={false}
+                        use:attachStream={user}
+                        style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
+                        <track kind="captions" src="" />
+                    </video>
                     {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
                         <Participant
                             participant={$userCache[user]}
@@ -164,17 +206,6 @@
                             isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
                             isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
                             isTalking={$userCache[user].media.is_playing_audio} />
-                    {/if}
-                    {#if $remoteStreams[user].stream}
-                        <video
-                            data-cy="remote-user-video"
-                            id="remote-user-video"
-                            width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                            height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
-                            autoplay
-                            use:attachStream={user}>
-                            <track kind="captions" src="" />
-                        </video>
                     {/if}
                 {/if}
             {/each}
@@ -326,6 +357,57 @@
             object-fit: contain;
             border-radius: 12px;
             background-color: var(--black);
+        }
+
+        .calling-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            animation: shake 0.4s ease-in-out infinite;
+        }
+
+        .shaking-participant {
+            animation: shake 0.4s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-0.75px);
+            }
+            50% {
+                transform: translateX(0.75px);
+            }
+            75% {
+                transform: translateX(-0.75px);
+            }
+        }
+
+        .calling-animation p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .no-response {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .no-response p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: bold;
         }
     }
 </style>
