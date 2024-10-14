@@ -9,11 +9,14 @@
     import { createEventDispatcher } from "svelte"
     import { _ } from "svelte-i18n"
 
+    export let altBackgroundColor: boolean = false
+
     const dispatch = createEventDispatcher()
 
     export let fileInfo: FileInfo = {
         id: "1",
         isRenaming: OperationState.Initial,
+        displayName: "",
         source: "unknown",
         name: "unknown",
         size: 999999999999999,
@@ -27,7 +30,7 @@
     }
 </script>
 
-<div class="file-embed" data-cy="file-embed">
+<div class="file-embed {altBackgroundColor ? 'alt-bg' : ''}" data-cy="file-embed">
     <Icon icon={fileInfo.icon} size={Size.Larger} />
     <div class="body">
         <div class="details">
@@ -59,8 +62,12 @@
         width: 100%;
         display: inline-flex;
         padding: var(--padding);
-        background-color: var(--background-alt);
+        background-color: var(--background);
         border-radius: var(--border-radius-medium);
+
+        &.alt-bg {
+            background: var(--alt-color);
+        }
 
         .body {
             display: inline-flex;

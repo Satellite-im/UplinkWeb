@@ -11,10 +11,10 @@
     import { Store } from "$lib/state/Store"
     import { _ } from "svelte-i18n"
     import type { Chat } from "$lib/types"
-    import { UIStore } from "$lib/state/ui"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { onDestroy, onMount } from "svelte"
-    import { VoiceRTCInstance, VoiceRTCMessageType } from "$lib/media/Voice"
+    import { callTimeout } from "$lib/media/Voice"
+    import { TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
 
     export let expanded: boolean = false
@@ -45,84 +45,34 @@
                 isFullScreen = false
             }
         }
-        otherUserSettingsInCall.videoEnabled = otherUserSettingsInCall.videoEnabled
-        otherUserSettingsInCall = otherUserSettingsInCall
         userCallOptions = userCallOptions
     }
 
-    let permissionsGranted = false
     let isFullScreen = false
 
-    $: chats = UIStore.state.chats
-    $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
-    $: otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
+    $: userCache = Store.getUsersLookup(chat.users)
     $: userCallOptions = VoiceRTCInstance.callOptions
+    $: remoteStreams = Store.state.activeCallMeta
 
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
-        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
     let subscribeTwo = Store.state.devices.cameraEnabled.subscribe(state => {
         cameraEnabled = state
-        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
     let subscribeThree = Store.state.devices.deafened.subscribe(state => {
         deafened = state
-        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
     let subscribeFour = Store.state.activeCall.subscribe(state => {
-        otherUserSettingsInCall = VoiceRTCInstance.remoteVoiceUser
         userCallOptions = VoiceRTCInstance.callOptions
     })
 
-    const checkPermissions = async () => {
-        try {
-            const cameraPermission = await navigator.permissions.query({ name: "camera" as PermissionName })
-            const microphonePermission = await navigator.permissions.query({ name: "microphone" as PermissionName })
-
-            if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                permissionsGranted = true
-            } else {
-                permissionsGranted = false
-            }
-
-            cameraPermission.onchange = () => {
-                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                    permissionsGranted = true
-                } else {
-                    permissionsGranted = false
-                }
-            }
-
-            microphonePermission.onchange = () => {
-                if (cameraPermission.state === "granted" && microphonePermission.state === "granted") {
-                    permissionsGranted = true
-                } else {
-                    permissionsGranted = false
-                }
-            }
-        } catch (err) {
-            log.error(`Error checking permissions: ${err}`)
-        }
-    }
-
-    const requestPermissions = async () => {
-        try {
-            await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            permissionsGranted = true
-        } catch (err) {
-            log.error(`Error requesting permissions: ${err}`)
-            permissionsGranted = false
-        }
-    }
-
-    let remoteVideoElement: HTMLVideoElement
     let localVideoCurrentSrc: HTMLVideoElement
 
     function handleClickOutside(event: MouseEvent) {
@@ -140,32 +90,48 @@
         }
     }
 
+    function attachStream(node: HTMLMediaElement, user: string) {
+        const stream = $remoteStreams[user]?.stream
+
+        if (stream) {
+            node.srcObject = stream
+            stream.onremovetrack = () => {
+                log.dev("Stream removed: ", user)
+            }
+        }
+
+        return {
+            update(newUser: string) {
+                const newStream = $remoteStreams[newUser]?.stream
+                if (newStream && node.srcObject !== newStream) {
+                    node.srcObject = newStream
+                }
+            },
+            destroy() {
+                node.srcObject = null
+            },
+        }
+    }
+    let showAnimation = true
+    let message = $_("settings.calling.connecting")
+    let timeout: NodeJS.Timeout | undefined
+
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
-        await checkPermissions()
-        await VoiceRTCInstance.setVideoElements(remoteVideoElement, localVideoCurrentSrc)
-
-        if (!permissionsGranted) {
-            requestPermissions()
-        }
-
+        await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
         /// HACK: To make sure the video elements are loaded before we start the call
-        if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoElement) {
-            if (VoiceRTCInstance.makingCall && VoiceRTCInstance.remoteVoiceUser.did === "") {
+        if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
+            if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
                 await VoiceRTCInstance.makeCall()
-            }
-            if (VoiceRTCInstance.acceptedIncomingCall) {
-                await VoiceRTCInstance.acceptCall()
-                Store.setActiveCall(Store.getCallingChat(VoiceRTCInstance.channel)!)
+                timeout = setTimeout(() => {
+                    showAnimation = false
+                    message = $_("settings.calling.noResponse")
+                }, TIME_TO_SHOW_CONNECTING)
             }
         }
 
-        if (VoiceRTCInstance.remoteVideoElement) {
-            remoteVideoElement.srcObject = VoiceRTCInstance.activeCall?.remoteStream!
-            remoteVideoElement.play()
-        }
         if (VoiceRTCInstance.localVideoCurrentSrc) {
-            await VoiceRTCInstance.updateLocalStream()
+            await VoiceRTCInstance.getLocalStream(true)
         }
     })
 
@@ -175,6 +141,9 @@
         subscribeTwo()
         subscribeThree()
         subscribeFour()
+        if (timeout) {
+            clearTimeout(timeout)
+        }
     })
 </script>
 
@@ -183,46 +152,71 @@
         <Topbar simple>
             <svelte:fragment slot="content">
                 <Text hook="text-users-in-call" muted size={Size.Smaller}>
-                    ({chat.users.length}) users in the call
+                    ({Object.keys($remoteStreams).length + 1}) users in the call
                 </Text>
             </svelte:fragment>
         </Topbar>
-        <div id="participants">
-            <video
-                data-cy="remote-user-video"
-                id="remote-user-video"
-                bind:this={remoteVideoElement}
-                width={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                height={otherUserSettingsInCall?.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
-                autoplay>
-                <track kind="captions" src="" />
-            </video>
-            <br />
-            <video
-                data-cy="local-user-video"
-                id="local-user-video"
-                bind:this={localVideoCurrentSrc}
-                width={userCallOptions.video.enabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 200) : 0}
-                height={userCallOptions.video.enabled ? (isFullScreen ? "50%" : 200) : 0}
-                muted
-                autoplay>
-                <track kind="captions" src="" />
-            </video>
 
-            {#each chat.users as user}
-                {#if $userCache[user].key === get(Store.state.user).key && !userCallOptions.video.enabled}
-                    <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
-                {/if}
-                {#if $userCache[user].key !== get(Store.state.user).key && !otherUserSettingsInCall?.videoEnabled}
-                    <Participant
-                        participant={$userCache[user]}
-                        hasVideo={$userCache[user].media.is_streaming_video}
-                        isMuted={!otherUserSettingsInCall.audioEnabled}
-                        isDeafened={otherUserSettingsInCall.isDeafened}
-                        isTalking={$userCache[user].media.is_playing_audio} />
-                {/if}
-            {/each}
-        </div>
+        {#if !$callTimeout}
+            <div id="participants">
+                <video
+                    data-cy="local-user-video"
+                    id="local-user-video"
+                    bind:this={localVideoCurrentSrc}
+                    style="display: {userCallOptions.video.enabled ? 'block' : 'none'}"
+                    width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 200}
+                    height={isFullScreen ? "50%" : 200}
+                    muted
+                    autoplay>
+                    <track kind="captions" src="" />
+                </video>
+
+                {#each chat.users as user (user)}
+                    {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
+                        <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
+                        {#if showAnimation}
+                            <div class="calling-animation">
+                                <div class="shaking-participant">
+                                    <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                    <p>{message}</p>
+                                </div>
+                            </div>
+                        {:else}
+                            <div class="no-response">
+                                <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                <p>{message}</p>
+                            </div>
+                        {/if}
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                        <video
+                            data-cy="remote-user-video"
+                            id="remote-user-video-{user}"
+                            width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                            height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                            autoplay
+                            muted={false}
+                            use:attachStream={user}
+                            style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
+                            <track kind="captions" src="" />
+                        </video>
+                        {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
+                            <Participant
+                                participant={$userCache[user]}
+                                hasVideo={$userCache[user].media.is_streaming_video}
+                                isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
+                                isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
+                                isTalking={$userCache[user].media.is_playing_audio} />
+                        {/if}
+                    {/if}
+                {/each}
+            </div>
+        {:else}
+            <div class="loading-when-no-answer">
+                <div class="spinner"></div>
+                <p>{$_("settings.calling.noAnswer")}</p>
+            </div>
+        {/if}
     {/if}
     <div class="toolbar">
         <Controls>
@@ -231,7 +225,7 @@
                     <div id="call-settings">
                         <CallSettings
                             on:change={_ => {
-                                VoiceRTCInstance.updateLocalStream(true)
+                                VoiceRTCInstance.getLocalStream(true)
                             }} />
                     </div>
                 {/if}
@@ -308,7 +302,7 @@
                 tooltip={$_("call.end")}
                 on:click={_ => {
                     Store.endCall()
-                    VoiceRTCInstance.endCall()
+                    VoiceRTCInstance.leaveCall()
                 }}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>
@@ -370,6 +364,88 @@
             object-fit: contain;
             border-radius: 12px;
             background-color: var(--black);
+        }
+
+        .calling-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            animation: shake 0.4s ease-in-out infinite;
+        }
+
+        .shaking-participant {
+            animation: shake 0.4s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-0.75px);
+            }
+            50% {
+                transform: translateX(0.75px);
+            }
+            75% {
+                transform: translateX(-0.75px);
+            }
+        }
+
+        .calling-animation p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .no-response {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .no-response p {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-when-no-answer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            margin: 32px;
+        }
+
+        .loading-when-no-answer p {
+            margin-top: 16px;
         }
     }
 </style>

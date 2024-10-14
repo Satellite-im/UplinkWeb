@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { VoiceRTCInstance, VoiceRTCMessageType } from "./../../lib/media/Voice"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
-    import { _ } from "svelte-i18n"
+    import { _, date, time } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
     import { Chatbar, Sidebar, Topbar, Profile } from "$lib/layouts"
@@ -24,7 +24,7 @@
     } from "$lib/components"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { OperationState } from "$lib/types"
+    import { OperationState, type MessageGroup as MessageGroupType } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -38,7 +38,7 @@
     import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
-    import type { Attachment, Message as MessageType, User } from "$lib/types"
+    import type { Attachment, FileInfo, Message as MessageType, User } from "$lib/types"
     import Input from "$lib/elements/Input/Input.svelte"
     import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
@@ -53,20 +53,24 @@
     import Controls from "$lib/layouts/Controls.svelte"
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { checkMobile } from "$lib/utils/Mobile"
+    import BrowseFiles from "../files/BrowseFiles.svelte"
+    import AttachmentRenderer from "$lib/components/messaging/AttachmentRenderer.svelte"
 
     let loading = false
     let contentAsideOpen = false
+    let showBrowseFilesModal = false
 
     $: sidebarOpen = UIStore.state.sidebarOpen
     $: activeChat = Store.state.activeChat
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
+    $: messages = $conversation ? splitUnreads($conversation.messages) : undefined
     $: users = Store.getUsersLookup($activeChat.users)
 
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -93,8 +97,6 @@
     let replyTo: MessageType | undefined = undefined
     let reactingTo: string | undefined
     let fileUpload: FileInput
-    let files: [File?, string?][] = []
-    let browseFiles: boolean = false
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
@@ -110,21 +112,42 @@
 
     function dragDrop(event: DragEvent) {
         event.preventDefault()
+        let files: [File?, string?][] = []
         dragging_files = 0
         // upload files
         for (let file of event.dataTransfer?.files!) {
             files.push([file, undefined])
         }
-        // Force an update
-        files = files
+        Store.state.chatAttachmentsToSend.update(attachments => {
+            const currentChatFiles = attachments[$activeChat.id] || { localFiles: [], storageFiles: [] }
+
+            return {
+                ...attachments,
+                [$activeChat.id]: {
+                    localFiles: [...currentChatFiles.localFiles, ...files],
+                    storageFiles: [...currentChatFiles.storageFiles],
+                },
+            }
+        })
     }
 
     function addFilesToUpload(selected: File[]) {
+        let files: [File?, string?][] = []
         for (let file of selected) {
             files.push([file, undefined])
         }
-        // Force an update
-        files = files
+
+        Store.state.chatAttachmentsToSend.update(attachments => {
+            const currentChatFiles = attachments[$activeChat.id] || { localFiles: [], storageFiles: [] }
+
+            return {
+                ...attachments,
+                [$activeChat.id]: {
+                    localFiles: [...currentChatFiles.localFiles, ...files],
+                    storageFiles: [...currentChatFiles.storageFiles],
+                },
+            }
+        })
     }
 
     function build_context_items(message: MessageType) {
@@ -251,9 +274,9 @@
 
     onMount(() => {
         setInterval(() => {
-            if (VoiceRTCInstance.acceptedIncomingCall || VoiceRTCInstance.makingCall) {
+            if (VoiceRTCInstance.call) {
                 activeCallInProgress = true
-                activeCallDid = VoiceRTCInstance.channel
+                activeCallDid = VoiceRTCInstance.channel!
             } else {
                 activeCallInProgress = false
             }
@@ -271,6 +294,47 @@
             editing_message = undefined
         }
     }
+
+    function splitUnreads(groups: MessageGroupType[]): [MessageGroupType[], MessageGroupType[]] {
+        let splitMessages = (group: MessageGroupType) => {
+            return group.messages.reduce<[MessageType[], MessageType[]]>(
+                ([read, unreads], message) => {
+                    if (message.details.at > $activeChat.last_view_date) {
+                        unreads.push(message)
+                    } else {
+                        read.push(message)
+                    }
+                    return [read, unreads]
+                },
+                [[], []]
+            )
+        }
+        return groups.reduce<[MessageGroupType[], MessageGroupType[]]>(
+            ([read, unreads], group) => {
+                if (group.details.at > $activeChat.last_view_date) {
+                    unreads.push(group)
+                } else {
+                    // Individual messages in a group can still be new since messages are grouped each min
+                    let [readMessages, unreadsMessages] = splitMessages(group)
+                    if (unreadsMessages.length > 0) {
+                        unreads.push({
+                            ...group,
+                            messages: unreadsMessages,
+                        })
+                        read.push({
+                            ...group,
+                            messages: readMessages,
+                        })
+                    } else {
+                        read.push(group)
+                    }
+                }
+                return [read, unreads]
+            },
+            [[], []]
+        )
+    }
+
     document.addEventListener("click", handleClickOutsideEditInput)
 </script>
 
@@ -379,7 +443,6 @@
                 <Icon icon={Shape.ChatPlus} alt />
             </Button>
         </div>
-
         {#each $chats.slice().sort((a, b) => {
             const dateA = new Date(a.last_message_at || 0)
             const dateB = new Date(b.last_message_at || 0)
@@ -410,7 +473,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} cta={$activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
@@ -454,7 +517,7 @@
                         disabled={$activeChat.users.length === 0}
                         on:click={async _ => {
                             Store.setActiveCall($activeChat)
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id, true)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id, true)
                             activeCallInProgress = true
                         }}>
                         <Icon icon={Shape.PhoneCall} />
@@ -468,7 +531,7 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users[1], $activeChat.id)
+                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id)
                             activeCallInProgress = true
                             Store.setActiveCall($activeChat)
                         }}>
@@ -545,8 +608,9 @@
         {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
-
-        <Conversation loading={loading}>
+        <Conversation
+            loading={loading}
+            unreads={!messages || messages[1].length === 0 ? undefined : { unread: messages[1].reduce((total, g) => total + g.messages.length, 0), since: $activeChat.last_view_date, last_viewed: messages[1][0].messages[0].id }}>
             {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
@@ -596,7 +660,7 @@
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                        {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
+                                                        {:else if !line.includes(tempCDN)}
                                                             <Text hook="text-chat-message" markdown={line} appearance={group.details.remote ? Appearance.Default : Appearance.Alt} />
                                                         {:else if line.includes(tempCDN)}
                                                             <div class="sticker">
@@ -606,40 +670,13 @@
                                                     {/each}
 
                                                     {#if message.attachments.length > 0}
-                                                        {#each message.attachments as attachment}
-                                                            {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
-                                                                <FileEmbed
-                                                                    fileInfo={{
-                                                                        id: "1",
-                                                                        isRenaming: OperationState.Initial,
-                                                                        source: "unknown",
-                                                                        name: attachment.name,
-                                                                        displayName: attachment.name,
-                                                                        size: attachment.size,
-                                                                        icon: Shape.Document,
-                                                                        type: "unknown/unknown",
-                                                                        remotePath: "",
-                                                                    }}
-                                                                    on:download={_ => download_attachment(message.id, attachment)} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Image}
-                                                                <ImageEmbed
-                                                                    source={attachment.location}
-                                                                    name={attachment.name}
-                                                                    filesize={attachment.size}
-                                                                    on:click={_ => {
-                                                                        previewImage = attachment.location
-                                                                    }}
-                                                                    on:download={_ => download_attachment(message.id, attachment)} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Text}
-                                                                <TextDocument />
-                                                            {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                                <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                                                <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                            {:else if attachment.kind === MessageAttachmentKind.Video}
-                                                                <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                            {/if}
-                                                        {/each}
+                                                        <AttachmentRenderer
+                                                            attachments={message.attachments}
+                                                            on:openAttachment={event => {
+                                                                previewImage = event.detail
+                                                            }}
+                                                            messageId={message.id}
+                                                            chatID={$activeChat.id} />
                                                     {/if}
                                                 {/if}
                                             </Message>
@@ -680,17 +717,38 @@
             {/if}
         </Conversation>
 
-        {#if files.length > 0}
-            <FileUploadPreview
-                filesSelected={files}
-                on:remove={e => {
-                    files = files.filter(([f, p]) => f !== e.detail && p !== e.detail)
-                }} />
-        {/if}
+        <FileUploadPreview
+            activeChat={$activeChat}
+            on:removeFileFromStorage={e => {
+                Store.state.chatAttachmentsToSend.update(files => {
+                    const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
+                    const filteredStorageFiles = currentChatFiles.storageFiles.filter(f => f.remotePath !== e.detail.remotePath)
+
+                    return {
+                        ...files,
+                        [$activeChat.id]: {
+                            localFiles: [...currentChatFiles.localFiles],
+                            storageFiles: [...filteredStorageFiles],
+                        },
+                    }
+                })
+            }}
+            on:remove={e => {
+                Store.state.chatAttachmentsToSend.update(files => {
+                    const currentChatFiles = files[$activeChat.id] || { localFiles: [], storageFiles: [] }
+                    const filteredLocalFiles = currentChatFiles.localFiles.filter(([f, p]) => f !== e.detail && p !== e.detail)
+                    return {
+                        ...files,
+                        [$activeChat.id]: {
+                            localFiles: [...filteredLocalFiles],
+                            storageFiles: [...currentChatFiles.storageFiles],
+                        },
+                    }
+                })
+            }} />
 
         {#if $activeChat.users.length > 0}
             <Chatbar
-                filesSelected={files}
                 replyTo={replyTo}
                 activeChat={$activeChat}
                 typing={$activeChat.typing_indicator.users && $activeChat.typing_indicator.users().map(u => $users[u])}
@@ -702,12 +760,30 @@
                     }
                     return false
                 }}
-                on:onsend={_ => (files = [])}
+                on:onsend={_ =>
+                    Store.state.chatAttachmentsToSend.update(files => {
+                        return {
+                            ...files,
+                            [$activeChat.id]: {
+                                localFiles: [],
+                                storageFiles: [],
+                            },
+                        }
+                    })}
                 on:input={_ => {
                     typing()
                 }}>
                 <svelte:fragment slot="pre-controls">
                     <FileInput bind:this={fileUpload} hidden on:select={e => addFilesToUpload(e.detail)} />
+                    {#if showBrowseFilesModal}
+                        <Modal hook="modal-browse-files" on:close={_ => (showBrowseFilesModal = false)} padded large>
+                            <BrowseFiles
+                                activeChat={$activeChat}
+                                on:selectedFiles={_ => {
+                                    showBrowseFilesModal = false
+                                }} />
+                        </Modal>
+                    {/if}
                     <ContextMenu
                         hook="context-menu-chat-add-attachment"
                         items={[
@@ -725,7 +801,9 @@
                                 icon: Shape.Eye,
                                 text: $_("files.browse"),
                                 appearance: Appearance.Default,
-                                onClick: () => {},
+                                onClick: () => {
+                                    showBrowseFilesModal = true
+                                },
                             },
                         ]}>
                         <Button hook="button-chat-add-attachment" slot="content" let:open on:click={open} on:contextmenu={open} icon appearance={Appearance.Alt} tooltip={$_("chat.add_attachment")}>

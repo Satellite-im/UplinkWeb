@@ -267,7 +267,7 @@
         <MouseListener on:clicked={() => {}} />
         <Toasts />
         <IncomingCall />
-        <VideoPreview />
+        <!-- <VideoPreview /> This needs a rework as atm it only supports one to one calling. Maybe add ability to select source? -->
         <GamepadListener />
         {#if $showWallet}
             <Wallet position={{ top: $walletPosition[0], left: $walletPosition[1] }} />

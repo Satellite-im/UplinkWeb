@@ -33,6 +33,7 @@
     {#if $$slots.controls}
         {#if checkMobile()}
             <Button
+                hook="button-show-controls"
                 appearance={Appearance.Alt}
                 icon
                 on:click={_ => {
@@ -50,6 +51,7 @@
                 </button>
                 <div
                     class="controls-dropdown"
+                    data-cy="controls-dropdown"
                     role="button"
                     tabindex="0"
                     on:click={_ => {
