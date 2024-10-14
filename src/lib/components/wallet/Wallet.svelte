@@ -11,6 +11,7 @@
     import Input from "$lib/elements/Input/Input.svelte"
     import Label from "$lib/elements/Label.svelte"
     import { WalletStore } from "$lib/state/wallet"
+    import EthereumRpc from "$lib/components/wallet/platforms/ethereum/EthereumRPC.svelte"
 
     export let position = { top: 50, left: 50 } // Initial position
 
@@ -124,6 +125,7 @@
             <Icon icon={Shape.History} />
         </Button>
     </div>
+    <EthereumRpc />
 
     <BalanceDisplay selectedCurrency={selectedCurrency} />
     <ActionButtons on:send={handleSend} on:receive={handleReceive} activeButton={currentView} />
