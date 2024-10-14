@@ -53,8 +53,10 @@
             <div class="content">
                 <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
                 <Text>{$user.name}</Text>
-                <Text muted>{$user.profile.status_message}</Text>
-                <Spacer />
+                {#if $user.profile.status_message !== ""}
+                    <Text muted>{$user.profile.status_message}</Text>
+                {/if}
+                <Spacer less={true} />
                 <Controls>
                     <Button appearance={Appearance.Success} text={$_("settings.calling.voice")} on:click={_ => answerCall(true)}>
                         <Icon icon={Shape.PhoneCall} />

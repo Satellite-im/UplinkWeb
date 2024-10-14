@@ -342,6 +342,7 @@
             "voice": "Voice",
             "video": "Video",
             "decline": "Decline",
+            "noAnswer": "No answer, leaving the call...",
             "connecting": "Connecting...",
             "noResponse": "No response"
         },
