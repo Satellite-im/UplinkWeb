@@ -24,7 +24,7 @@
     let showVolumeMixer = false
     let showCallSettings = false
 
-    let muted: boolean = VoiceRTCInstance.callOptions.audio.enabled
+    let muted: boolean = !VoiceRTCInstance.callOptions.audio.enabled
     let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
 
     export let deafened: boolean = get(Store.state.devices.deafened)
@@ -52,15 +52,18 @@
     $: userCache = Store.getUsersLookup(chat.users)
     $: userCallOptions = VoiceRTCInstance.callOptions
     $: remoteStreams = Store.state.activeCallMeta
+    $: ownUserName = get(Store.state.user).name
 
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
         userCallOptions = VoiceRTCInstance.callOptions
+        userCallOptions.audio.enabled = !muted
     })
 
     let subscribeTwo = Store.state.devices.cameraEnabled.subscribe(state => {
         cameraEnabled = state
         userCallOptions = VoiceRTCInstance.callOptions
+        userCallOptions.video.enabled = cameraEnabled
     })
 
     let subscribeThree = Store.state.devices.deafened.subscribe(state => {
@@ -158,17 +161,25 @@
             </svelte:fragment>
         </Topbar>
         <div id="participants">
-            <video
-                data-cy="local-user-video"
-                id="local-user-video"
-                bind:this={localVideoCurrentSrc}
-                style="display: {userCallOptions.video.enabled ? 'block' : 'none'}"
-                width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 200}
-                height={isFullScreen ? "50%" : 200}
-                muted
-                autoplay>
-                <track kind="captions" src="" />
-            </video>
+            <div class="video-container">
+                <video
+                    data-cy="local-user-video"
+                    id="local-user-video"
+                    bind:this={localVideoCurrentSrc}
+                    style="display: {userCallOptions.video.enabled ? 'block' : 'none'}"
+                    width={isFullScreen ? "calc(50% - var(--gap) * 2)" : 200}
+                    height={isFullScreen ? "50%" : 200}
+                    muted
+                    autoplay>
+                    <track kind="captions" src="" />
+                </video>
+                <div class="user-name">{ownUserName}</div>
+                {#if !userCallOptions.audio.enabled}
+                    <div class="mute-status">
+                        <Icon icon={Shape.MicrophoneSlash}></Icon>
+                    </div>
+                {/if}
+            </div>
 
             {#each chat.users as user (user)}
                 {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
@@ -188,17 +199,26 @@
                         </div>
                     {/if}
                 {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
-                    <video
-                        data-cy="remote-user-video"
-                        id="remote-user-video-{user}"
-                        width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                        height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
-                        autoplay
-                        muted={false}
-                        use:attachStream={user}
-                        style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
-                        <track kind="captions" src="" />
-                    </video>
+                    <div class="video-container">
+                        <video
+                            data-cy="remote-user-video"
+                            id="remote-user-video-{user}"
+                            width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                            height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                            autoplay
+                            muted={false}
+                            use:attachStream={user}
+                            style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
+                            <track kind="captions" src="" />
+                        </video>
+                        <div class="user-name">{$userCache[user].name}</div>
+                        {#if !$remoteStreams[user].user.audioEnabled}
+                            <div class="mute-status">
+                                <Icon icon={Shape.MicrophoneSlash}></Icon>
+                            </div>
+                        {/if}
+                    </div>
+
                     {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
                         <Participant
                             participant={$userCache[user]}
@@ -408,6 +428,44 @@
             font-size: 1.2rem;
             color: #666;
             font-weight: bold;
+        }
+
+        .video-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--color-muted);
+        }
+
+        video {
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .user-name {
+            position: absolute;
+            bottom: 8px;
+            left: 12px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .mute-status {
+            position: absolute;
+            display: flex;
+            bottom: 8px;
+            right: 12px;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 14px;
         }
     }
 </style>
