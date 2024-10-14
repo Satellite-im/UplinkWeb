@@ -14,6 +14,7 @@ const CALL_ACK = "CALL_ACCEPT"
 
 const TIME_TO_WAIT_FOR_ANSWER = 35000
 const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
+export const TIME_TO_SHOW_CONNECTING = 30000
 
 let timeOuts: NodeJS.Timeout[] = []
 
