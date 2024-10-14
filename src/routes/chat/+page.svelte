@@ -970,29 +970,6 @@
                 }
             }
         }
-
-        .unreads-since-container {
-            display: flex;
-            height: fit-content;
-            width: 100%;
-            margin-bottom: var(--padding-less);
-
-            .unreads-since-line {
-                width: 100%;
-                height: 1px;
-                margin: auto;
-                background-color: var(--color-muted);
-            }
-            .unreads-since {
-                text-align: center;
-                width: 100%;
-                font-size: var(--font-size-smaller);
-                color: var(--color-muted);
-                white-space: nowrap;
-                margin-left: var(--padding-minimal);
-                margin-right: var(--padding-minimal);
-            }
-        }
     }
 
     .add-someone {
