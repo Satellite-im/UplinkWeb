@@ -131,6 +131,7 @@ export let defaultSettings = {
         compact: false,
         quick: false,
         identiconStyle: Identicon.BotsNeutral,
+        simpleUnreads: true,
     },
     audio: {
         inputDevice: "Default",

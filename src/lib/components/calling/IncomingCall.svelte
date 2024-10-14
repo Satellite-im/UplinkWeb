@@ -21,7 +21,7 @@
                 callSound.play()
             }
             pending = true
-            user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.userInfo.did)
+            user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.did)
         } else {
             pending = false
             callSound?.stop()

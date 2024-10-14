@@ -1,7 +1,7 @@
 <script lang="ts">
     import { VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
-    import { _ } from "svelte-i18n"
+    import { _, date, time } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
     import { Chatbar, Sidebar, Topbar, Profile } from "$lib/layouts"
@@ -25,7 +25,7 @@
     import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { OperationState } from "$lib/types"
+    import { OperationState, type MessageGroup as MessageGroupType } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -65,11 +65,13 @@
     $: activeChat = Store.state.activeChat
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
+    $: messages = $conversation ? splitUnreads($conversation.messages) : undefined
     $: users = Store.getUsersLookup($activeChat.users)
 
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
@@ -294,6 +296,47 @@
             editing_message = undefined
         }
     }
+
+    function splitUnreads(groups: MessageGroupType[]): [MessageGroupType[], MessageGroupType[]] {
+        let splitMessages = (group: MessageGroupType) => {
+            return group.messages.reduce<[MessageType[], MessageType[]]>(
+                ([read, unreads], message) => {
+                    if (message.details.at > $activeChat.last_view_date) {
+                        unreads.push(message)
+                    } else {
+                        read.push(message)
+                    }
+                    return [read, unreads]
+                },
+                [[], []]
+            )
+        }
+        return groups.reduce<[MessageGroupType[], MessageGroupType[]]>(
+            ([read, unreads], group) => {
+                if (group.details.at > $activeChat.last_view_date) {
+                    unreads.push(group)
+                } else {
+                    // Individual messages in a group can still be new since messages are grouped each min
+                    let [readMessages, unreadsMessages] = splitMessages(group)
+                    if (unreadsMessages.length > 0) {
+                        unreads.push({
+                            ...group,
+                            messages: unreadsMessages,
+                        })
+                        read.push({
+                            ...group,
+                            messages: readMessages,
+                        })
+                    } else {
+                        read.push(group)
+                    }
+                }
+                return [read, unreads]
+            },
+            [[], []]
+        )
+    }
+
     document.addEventListener("click", handleClickOutsideEditInput)
 </script>
 
@@ -441,7 +484,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} cta={$activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
@@ -576,7 +619,9 @@
         {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
-        <Conversation loading={loading}>
+        <Conversation
+            loading={loading}
+            unreads={!messages || messages[1].length === 0 ? undefined : { unread: messages[1].reduce((total, g) => total + g.messages.length, 0), since: $activeChat.last_view_date, last_viewed: messages[1][0].messages[0].id }}>
             {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
@@ -923,6 +968,29 @@
                             right top 15px;
                     }
                 }
+            }
+        }
+
+        .unreads-since-container {
+            display: flex;
+            height: fit-content;
+            width: 100%;
+            margin-bottom: var(--padding-less);
+
+            .unreads-since-line {
+                width: 100%;
+                height: 1px;
+                margin: auto;
+                background-color: var(--color-muted);
+            }
+            .unreads-since {
+                text-align: center;
+                width: 100%;
+                font-size: var(--font-size-smaller);
+                color: var(--color-muted);
+                white-space: nowrap;
+                margin-left: var(--padding-minimal);
+                margin-right: var(--padding-minimal);
             }
         }
     }

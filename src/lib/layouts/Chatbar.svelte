@@ -90,6 +90,9 @@
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
 
         result.onSuccess(res => {
+            UIStore.mutateChat(chat.id, c => {
+                c.last_view_date = new Date()
+            })
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         if (!isStickerOrGif) {
