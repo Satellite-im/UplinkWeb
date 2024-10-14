@@ -281,6 +281,13 @@
                     overflow: hidden;
                     text-align: left;
                 }
+                :global(img) {
+                    max-width: 100%;
+                    max-height: 75px;
+                    width: auto;
+                    height: auto;
+                    object-fit: contain;
+                }
                 .attachment-container {
                     display: flex;
                     align-items: center;
