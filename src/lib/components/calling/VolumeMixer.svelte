@@ -5,12 +5,13 @@
     import { UIStore } from "$lib/state/ui"
     import { get } from "svelte/store"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
+    import Spacer from "$lib/elements/Spacer.svelte"
 
     const standardVolumeLevel = 100
 
     export let participants: string[]
     let currentUser = get(Store.state.user)
-    const activeCall = get(Store.state.activeCall)
+    $: activeCall = get(Store.state.activeCall)
 
     $: if (participants) {
         participants.forEach(user => {
@@ -22,20 +23,30 @@
         })
     }
 
+    function updateRemoteUserVolume(user: string) {
+        if (activeCall) {
+            const videoElement = document.getElementById(`remote-user-video-${user}`) as HTMLVideoElement
+            let videoElementVolume = (get(Store.state.activeCall)?.volumeParticipantsLevel[user] ?? 100) / 200
+            if (videoElement && videoElement.volume !== videoElementVolume) {
+                videoElement.volume = (get(Store.state.activeCall)?.volumeParticipantsLevel[user] ?? 100) / 200
+            }
+        }
+    }
+
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
 </script>
 
 <div class="volume-mixer" data-cy="volume-mixer">
-    <div class="global">
+    <!-- <div class="global">
         <Label hook="label-master-volume" text="Master Volume" />
         <div class="control">
             <RangeSelector min={0} max={200} value={100} />
             <Text hook="text-master-volume">{standardVolumeLevel}</Text>
-        </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
 
-    {#each participants as user ($userCache[user].key)}
+    {#each participants.filter(user => currentUser.key !== $userCache[user].key) as user ($userCache[user].key)}
         <div class="user-volume" data-cy="{$userCache[user].name}-volume">
             <Label hook="label-mixer-username" text={currentUser.key === $userCache[user].key ? $userCache[user].name + " (You)" : $userCache[user].name} />
             <div class="control">
@@ -49,6 +60,7 @@
                             if (activeCall) {
                                 activeCall.volumeParticipantsLevel[$userCache[user].key] = e.detail
                                 activeCall.volumeParticipantsLevel = { ...activeCall.volumeParticipantsLevel }
+                                updateRemoteUserVolume($userCache[user].key)
                             }
                         }} />
                 </div>
@@ -58,6 +70,7 @@
             </div>
         </div>
     {/each}
+    <Spacer less={true} />
 </div>
 
 <style lang="scss">

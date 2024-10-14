@@ -137,6 +137,9 @@
         if (VoiceRTCInstance.localVideoCurrentSrc) {
             await VoiceRTCInstance.getLocalStream(true)
         }
+        if (get(Store.state.activeCall) === null) {
+            Store.setActiveCall(chat)
+        }
     })
 
     onDestroy(() => {
