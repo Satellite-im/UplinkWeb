@@ -339,6 +339,7 @@
             "startCallMessage": "📞 A call started at {value}.",
             "endCallMessage": "📴 The call ended at {formattedEndTime}. Duration: {duration}.",
             "callMissed": "📞 Missed call",
+            "userInviteToAGroupCall": "is inviting you to join a group call",
             "noAnswer": "No answer, leaving the call...",
             "connecting": "Connecting...",
             "noResponse": "No response"
