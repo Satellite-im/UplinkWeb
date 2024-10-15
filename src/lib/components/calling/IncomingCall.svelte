@@ -1,19 +1,23 @@
 <script lang="ts">
     import { Button, Icon, Text, Spacer } from "$lib/elements"
-    import { Appearance, Route, Shape, Size } from "$lib/enums"
+    import { Appearance, ChatType, Route, Shape, Size } from "$lib/enums"
     import { Controls } from "$lib/layouts"
-    import { defaultUser } from "$lib/types"
+    import { defaultChat, defaultUser } from "$lib/types"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
+    import { _ } from "svelte-i18n"
     import { VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
     import { writable } from "svelte/store"
-    import { _ } from "svelte-i18n"
+    import { UIStore } from "$lib/state/ui/index.js"
+    import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
 
     let callSound: SoundHandler | undefined = undefined
     let pending = false
     let user = writable(defaultUser)
+    const callChat = writable(defaultChat)
+    $: users = Store.getUsers($callChat.users)
 
     Store.state.pendingCall.subscribe(async _ => {
         if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall) {
@@ -22,6 +26,12 @@
                 callSound.play()
             }
             pending = true
+            let chat = UIStore.getChat(VoiceRTCInstance.incomingCallFrom[1].metadata.channel)
+            if (chat) {
+                callChat.set(chat)
+                users = Store.getUsers($callChat.users)
+            }
+
             user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.did)
         } else {
             pending = false
@@ -51,10 +61,18 @@
     <div id="incoming-call">
         <div class="body">
             <div class="content">
-                <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
-                <Text>{$user.name}</Text>
-                {#if $user.profile.status_message !== ""}
-                    <Text muted>{$user.profile.status_message}</Text>
+                {#if $callChat.kind === ChatType.DirectMessage}
+                    <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                    <Text>{$user.name}</Text>
+                    {#if $user.profile.status_message !== ""}
+                        <Text muted>{$user.profile.status_message}</Text>
+                    {/if}
+                {:else}
+                    <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                    <Text>{$user.name}</Text>
+                    <Text>{$_("settings.calling.userInviteToAGroupCall")}</Text>
+                    <ProfilePictureMany users={$users} />
+                    <Text>{$callChat.name}</Text>
                 {/if}
                 <Spacer less={true} />
                 <Controls>
