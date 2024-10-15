@@ -1,7 +1,7 @@
 <script lang="ts">
     import { VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
-    import { _ } from "svelte-i18n"
+    import { _, date, time } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
     import { Chatbar, Sidebar, Topbar, Profile } from "$lib/layouts"
@@ -25,7 +25,7 @@
     import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { OperationState } from "$lib/types"
+    import { OperationState, type MessageGroup as MessageGroupType } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -55,6 +55,7 @@
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { checkMobile } from "$lib/utils/Mobile"
     import BrowseFiles from "../files/BrowseFiles.svelte"
+    import AttachmentRenderer from "$lib/components/messaging/AttachmentRenderer.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -78,6 +79,7 @@
     $: activeChat = Store.state.activeChat
     $: isFavorite = derived(Store.state.favorites, favs => favs.some(f => f.id === $activeChat.id))
     $: conversation = ConversationStore.getConversation($activeChat)
+    $: messages = $conversation ? splitUnreads($conversation.messages) : undefined
     $: users = Store.getUsersLookup($activeChat.users)
 
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
@@ -332,6 +334,47 @@
             editing_message = undefined
         }
     }
+
+    function splitUnreads(groups: MessageGroupType[]): [MessageGroupType[], MessageGroupType[]] {
+        let splitMessages = (group: MessageGroupType) => {
+            return group.messages.reduce<[MessageType[], MessageType[]]>(
+                ([read, unreads], message) => {
+                    if (message.details.at > $activeChat.last_view_date) {
+                        unreads.push(message)
+                    } else {
+                        read.push(message)
+                    }
+                    return [read, unreads]
+                },
+                [[], []]
+            )
+        }
+        return groups.reduce<[MessageGroupType[], MessageGroupType[]]>(
+            ([read, unreads], group) => {
+                if (group.details.at > $activeChat.last_view_date) {
+                    unreads.push(group)
+                } else {
+                    // Individual messages in a group can still be new since messages are grouped each min
+                    let [readMessages, unreadsMessages] = splitMessages(group)
+                    if (unreadsMessages.length > 0) {
+                        unreads.push({
+                            ...group,
+                            messages: unreadsMessages,
+                        })
+                        read.push({
+                            ...group,
+                            messages: readMessages,
+                        })
+                    } else {
+                        read.push(group)
+                    }
+                }
+                return [read, unreads]
+            },
+            [[], []]
+        )
+    }
+
     document.addEventListener("click", handleClickOutsideEditInput)
 </script>
 
@@ -479,7 +522,7 @@
                         onClick: () => {},
                     },
                 ]}>
-                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} simpleUnreads cta={$activeChat === chat} />
+                <ChatPreview slot="content" let:open on:contextmenu={open} chat={chat} loading={loading} cta={$activeChat === chat} />
             </ContextMenu>
         {/each}
     </Sidebar>
@@ -614,7 +657,9 @@
         {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen chat={$activeChat} />
         {/if}
-        <Conversation loading={loading}>
+        <Conversation
+            loading={loading}
+            unreads={!messages || messages[1].length === 0 ? undefined : { unread: messages[1].reduce((total, g) => total + g.messages.length, 0), since: $activeChat.last_view_date, last_viewed: messages[1][0].messages[0].id }}>
             {#if $activeChat !== null && $activeChat.users.length > 0}
                 <EncryptedNotice />
                 {#if conversation}
@@ -674,50 +719,14 @@
                                                     {/each}
 
                                                     {#if message.attachments.length > 0}
-                                                        {#each message.attachments as attachment}
-                                                            <ContextMenu hook="context-menu-chat-attachment" items={build_context_items(message, attachment)}>
-                                                                <div
-                                                                    slot="content"
-                                                                    let:open
-                                                                    on:contextmenu={e => {
-                                                                        e.stopPropagation()
-                                                                        open(e)
-                                                                    }}>
-                                                                    {#if attachment.kind === MessageAttachmentKind.File || attachment.location.length == 0}
-                                                                        <FileEmbed
-                                                                            fileInfo={{
-                                                                                id: "1",
-                                                                                isRenaming: OperationState.Initial,
-                                                                                source: "unknown",
-                                                                                name: attachment.name,
-                                                                                displayName: attachment.name,
-                                                                                size: attachment.size,
-                                                                                icon: Shape.Document,
-                                                                                type: "unknown/unknown",
-                                                                                remotePath: "",
-                                                                            }}
-                                                                            on:download={_ => download_attachment(message.id, attachment)} />
-                                                                    {:else if attachment.kind === MessageAttachmentKind.Image}
-                                                                        <ImageEmbed
-                                                                            source={attachment.location}
-                                                                            name={attachment.name}
-                                                                            filesize={attachment.size}
-                                                                            on:click={_ => {
-                                                                                previewImage = attachment.location
-                                                                            }}
-                                                                            on:download={_ => download_attachment(message.id, attachment)} />
-                                                                    {:else if attachment.kind === MessageAttachmentKind.Text}
-                                                                        <TextDocument />
-                                                                    {:else if attachment.kind === MessageAttachmentKind.STL}
-                                                                        <STLViewer url={attachment.location} name={attachment.name} filesize={attachment.size} />
-                                                                    {:else if attachment.kind === MessageAttachmentKind.Audio}
-                                                                        <AudioEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                                    {:else if attachment.kind === MessageAttachmentKind.Video}
-                                                                        <VideoEmbed location={attachment.location} name={attachment.name} size={attachment.size} />
-                                                                    {/if}
-                                                                </div>
-                                                            </ContextMenu>
-                                                        {/each}
+                                                        <AttachmentRenderer
+                                                            attachments={message.attachments}
+                                                            on:openAttachment={event => {
+                                                                previewImage = event.detail
+                                                            }}
+                                                            messageId={message.id}
+                                                            chatID={$activeChat.id}
+                                                            contextBuilder={attachment => build_context_items(message, attachment)} />
                                                     {/if}
                                                 {/if}
                                             </Message>

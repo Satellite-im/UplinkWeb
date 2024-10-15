@@ -90,6 +90,9 @@
         let result = replyTo ? await RaygunStoreInstance.reply(chat.id, replyTo.id, txt) : await RaygunStoreInstance.send(get(Store.state.activeChat).id, text.split("\n"), attachments)
 
         result.onSuccess(res => {
+            UIStore.mutateChat(chat.id, c => {
+                c.last_view_date = new Date()
+            })
             ConversationStore.addPendingMessages(chat.id, res.message, txt)
         })
         if (!isStickerOrGif) {
@@ -277,6 +280,13 @@
                     text-overflow: ellipsis;
                     overflow: hidden;
                     text-align: left;
+                }
+                :global(img) {
+                    max-width: 100%;
+                    max-height: 75px;
+                    width: auto;
+                    height: auto;
+                    object-fit: contain;
                 }
                 .attachment-container {
                     display: flex;

@@ -121,7 +121,9 @@
         "show-participants": "Participants",
         "group-settings": "Settings",
         "replyTo": "Replying to: {user}",
-        "attachments-count": "Attachments: {amount}"
+        "attachments-count": "Attachments: {amount}",
+        "newMessageSince": "New messages since {time} - {date}",
+        "newMessageSinceAmount": "{amount} new messages since {time} - {date}"
     },
     "community": {
         "title": "Satellite Community - General",
@@ -337,7 +339,11 @@
             "minimalCallingAlertsDescription": "Instead of displaying a full screen alert when a call is incoming, with this mode enabled the call dialog will show within the sidebar.",
             "startCallMessage": "📞 A call started at {value}.",
             "endCallMessage": "📴 The call ended at {formattedEndTime}. Duration: {duration}.",
-            "callMissed": "📞 Missed call"
+            "callMissed": "📞 Missed call",
+            "userInviteToAGroupCall": "is inviting you to join a group call",
+            "noAnswer": "No answer, leaving the call...",
+            "connecting": "Connecting...",
+            "noResponse": "No response"
         },
         "notifications": {
             "name": "Notifications",
@@ -428,7 +434,9 @@
             "quick": "Quick Chat",
             "quickDescription": "When navigating back to the chats screen on mobile, quick chat will bring you back to your last conversation.",
             "showStatusWidgets": "Widget Panel",
-            "showStatusWidgetsDescription": "Enable the widget panel, which displays system information and other helpful data."
+            "showStatusWidgetsDescription": "Enable the widget panel, which displays system information and other helpful data.",
+            "simpleUnreads": "Simple Unreads",
+            "simpleUnreadsDescription": "Whether to show a simple unread badge for chats in the sidebar or not"
         },
         "preferences": {
             "appLanguage": "App Language",

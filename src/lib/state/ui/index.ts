@@ -1,9 +1,10 @@
 import { TypingIndicator, type Chat, type FontOption } from "$lib/types"
 import { derived, get, writable, type Writable } from "svelte/store"
 import { createPersistentState } from ".."
-import { EmojiFont, Font, Identicon } from "$lib/enums"
+import { EmojiFont, Font, Identicon, Route } from "$lib/enums"
 import { Store as MainStore } from "../Store"
 import { mchats } from "$lib/mock/users"
+import { page } from "$app/stores"
 
 export interface IUIState {
     color: Writable<string>
@@ -17,8 +18,10 @@ export interface IUIState {
     sidebarOpen: Writable<boolean>
     chats: Writable<Chat[]>
     hiddenChats: Writable<Chat[]>
+    simpleUnreads: Writable<boolean>
     emojiSelector: Writable<boolean>
     emojiCounter: Writable<{ [emoji: string]: number }>
+    selectedSkinTone: Writable<string>
     marketOpen: Writable<boolean>
 }
 class Store {
@@ -45,8 +48,10 @@ class Store {
                 },
             }),
             hiddenChats: createPersistentState("uplink.ui.hiddenChats", []),
+            simpleUnreads: writable(true),
             emojiSelector: writable(false),
             emojiCounter: createPersistentState("uplink.ui.emojiCounter", { "👍": 0, "👎": 0, "❤️": 0, "🖖": 0, "😂": 0 }),
+            selectedSkinTone: createPersistentState("uplink.ui.emojiSkintone", ""),
             marketOpen: writable(false),
         }
     }
@@ -142,7 +147,7 @@ class Store {
     }
 
     addNotification(conversationId: string) {
-        if (get(MainStore.state.activeChat).id !== conversationId) {
+        if (get(page).route.id !== Route.Chat || get(MainStore.state.activeChat).id !== conversationId) {
             this.mutateChat(conversationId, chat => {
                 chat.notifications++
             })
@@ -195,12 +200,12 @@ class Store {
         })
     }
 
-    getMostUsed(top?: number) {
-        top = top ? top : 5
+    getMostUsed(top = 6) {
         return derived(this.state.emojiCounter, counter => {
             return Object.entries(counter)
-                .sort((f, s) => s[1] - f[1])
-                .map(v => v[0])
+                .sort(([, countA], [, countB]) => countB - countA)
+                .slice(0, top)
+                .map(([emoji]) => emoji)
         })
     }
 }

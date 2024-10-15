@@ -512,6 +512,7 @@ class RaygunStore {
                                     settings.audio.messageSounds ? Sounds.Notification : undefined
                                 )
                             }
+                            UIStore.addNotification(conversation_id)
                             //TODO move chat to top
                             //TODO handle ping
                         }
