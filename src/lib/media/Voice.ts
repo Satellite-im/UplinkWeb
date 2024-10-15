@@ -507,6 +507,7 @@ export class VoiceRTC {
                     })
                     conn.once("data", d => {
                         if (d === CALL_ACK) {
+                            callTimeout.set(false)
                             accepted = true
                         }
                     })
