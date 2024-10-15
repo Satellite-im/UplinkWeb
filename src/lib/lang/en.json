@@ -342,6 +342,10 @@
             "voice": "Voice",
             "video": "Video",
             "decline": "Decline",
+            "hasCancelled": "Has cancelled the call.",
+            "disconnecting": "Disconnecting...",
+            "userInviteToAGroupCall": "is inviting you to join a group call",
+            "noAnswer": "No answer, leaving the call...",
             "connecting": "Connecting...",
             "noResponse": "No response"
         },

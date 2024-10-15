@@ -6,13 +6,14 @@ import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection } from "peerjs"
 import { _ } from "svelte-i18n"
-import { get } from "svelte/store"
+import { get, writable } from "svelte/store"
 import type { Room } from "trystero"
 import { joinRoom } from "trystero/ipfs"
 
 const CALL_ACK = "CALL_ACCEPT"
 
 const TIME_TO_WAIT_FOR_ANSWER = 35000
+const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
 export const TIME_TO_SHOW_CONNECTING = 30000
 
 let timeOuts: NodeJS.Timeout[] = []
@@ -21,6 +22,8 @@ export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
     None = "NONE",
 }
+
+export const connectionOpened = writable(false)
 
 export type RemoteStream = {
     user: VoiceRTCUser
@@ -271,6 +274,8 @@ export class CallRoom {
 const AUDIO_WINDOW_SIZE = 256
 const VOLUME_THRESHOLD = 20
 
+export const callTimeout = writable(false)
+
 export class VoiceRTC {
     channel?: string
     // Local peer that is used to handle incoming call requests
@@ -387,10 +392,21 @@ export class VoiceRTC {
             this.localPeer!.on("connection", conn => {
                 conn.on("open", () => {
                     /// It will appear to user that is receiving the call
+                    connectionOpened.set(true)
                     log.info(`Receiving connection on channel: ${conn.metadata.channel} from ${conn.metadata.id}, username: ${conn.metadata.username}`)
                     this.incomingConnections.push(conn)
                     this.incomingCallFrom = [conn.metadata.channel, conn]
                     Store.setPendingCall(Store.getCallingChat(this.channel!)!, CallDirection.Inbound)
+                })
+
+                conn.on("close", () => {
+                    log.info(`Connection closed by ${conn.metadata.username}`)
+                    if (this.incomingConnections.length === 1) {
+                        connectionOpened.set(false)
+                    }
+                    Store.state.pendingCall.set(null)
+                    this.incomingConnections = this.incomingConnections.filter(c => c !== conn)
+                    this.incomingCallFrom = null
                 })
             })
             this.localPeer!.on("error", this.handleError.bind(this))
@@ -437,7 +453,14 @@ export class VoiceRTC {
             }
             const timeoutWhenCallIsNull = setTimeout(() => {
                 if (this.call === null || this.call.empty) {
-                    this.leaveCall(true)
+                    log.debug("No one joined the call, leaving")
+                    callTimeout.set(true)
+                    timeOuts.push(
+                        setTimeout(() => {
+                            callTimeout.set(false)
+                            this.leaveCall(true)
+                        }, TIME_TO_SHOW_END_CALL_FEEDBACK)
+                    )
                 }
             }, TIME_TO_WAIT_FOR_ANSWER)
             timeOuts.push(timeoutWhenCallIsNull)
@@ -572,6 +595,7 @@ export class VoiceRTC {
     }
 
     async leaveCall(sendEndCallMessage = false) {
+        connectionOpened.set(false)
         timeOuts.forEach(t => clearTimeout(t))
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
         if (sendEndCallMessage && this.call?.start) {

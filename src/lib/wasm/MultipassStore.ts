@@ -108,8 +108,20 @@ class MultipassStore {
                         await this.listFriends()
                         break
                     }
-                    case wasm.MultiPassEventKindEnum.Blocked: {
+                    case wasm.MultiPassEventKindEnum.Blocked:
+                    case wasm.MultiPassEventKindEnum.BlockedBy:
+                    case wasm.MultiPassEventKindEnum.Unblocked:
+                    case wasm.MultiPassEventKindEnum.UnblockedBy: {
                         await this.listBlockedFriends()
+                        break
+                    }
+                    case wasm.MultiPassEventKindEnum.IdentityOnline:
+                    case wasm.MultiPassEventKindEnum.IdentityOffline:
+                    case wasm.MultiPassEventKindEnum.IdentityUpdate: {
+                        let user = await this.identity_from_did(event.did)
+                        if (user) {
+                            Store.updateUser(user)
+                        }
                         break
                     }
                     default: {
