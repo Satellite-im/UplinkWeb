@@ -549,6 +549,7 @@ export class VoiceRTC {
 
     private createAndSetRoom() {
         log.debug(`Creating/Joining room in channel ${this.channel}`)
+        Store.updateMuted(true)
         this.call = new CallRoom(
             joinRoom(
                 {
