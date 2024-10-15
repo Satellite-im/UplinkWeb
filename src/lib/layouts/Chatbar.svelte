@@ -175,66 +175,75 @@
         on:input={_ => replaceEmojis($message)}
         on:enter={_ => sendMessage($message)} />
 
-    <slot></slot>
-    {#if replyTo}
-        <div class="chatbar-reply">
-            <StoreResolver value={replyTo.details.origin} resolver={v => Store.getUser(v)} let:resolved>
-                <Label text={$_("chat.replyTo", { values: { user: resolved.name } })} />
-                <div class="reply-message">
-                    <Message id={replyTo.id} remote={false} position={MessagePosition.First} morePadding={replyTo.text.length > 1 || replyTo.attachments.length > 0}>
-                        {#each replyTo.text as line}
-                            {#if getValidPaymentRequest(line) != undefined}
-                                <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                            {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
-                                <Text hook="text-chat-message" markdown={line} />
-                            {:else if line.includes(tempCDN)}
-                                <div class="sticker">
-                                    <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+    <div class="controls-right">
+        <slot></slot>
+        {#if replyTo}
+            <div class="chatbar-reply">
+                <StoreResolver value={replyTo.details.origin} resolver={v => Store.getUser(v)} let:resolved>
+                    <Label text={$_("chat.replyTo", { values: { user: resolved.name } })} />
+                    <div class="reply-message">
+                        <Message id={replyTo.id} remote={false} position={MessagePosition.First} morePadding={replyTo.text.length > 1 || replyTo.attachments.length > 0}>
+                            {#each replyTo.text as line}
+                                {#if getValidPaymentRequest(line) != undefined}
+                                    <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
+                                {:else if !line.includes(VoiceRTCMessageType.Calling) && !line.includes(VoiceRTCMessageType.EndingCall) && !line.includes(tempCDN)}
+                                    <Text hook="text-chat-message" markdown={line} />
+                                {:else if line.includes(tempCDN)}
+                                    <div class="sticker">
+                                        <Text hook="text-chat-message" markdown={line} size={Size.Smallest} />
+                                    </div>
+                                {/if}
+                            {/each}
+
+                            {#if replyTo.attachments.length > 0}
+                                <div class="attachment-container">
+                                    <Icon icon={Shape.Document} size={Size.Large} />
+                                    {$_("chat.attachments-count", { values: { amount: replyTo.attachments.length } })}
                                 </div>
                             {/if}
-                        {/each}
+                        </Message>
+                        <ProfilePicture
+                            id={resolved.key}
+                            hook="message-group-remote-profile-picture"
+                            size={Size.Small}
+                            image={resolved.profile.photo.image}
+                            status={resolved.profile.status}
+                            highlight={Appearance.Default}
+                            notifications={0} />
+                        <Button appearance={Appearance.Default} icon={true} small={true} on:click={_ => (replyTo = undefined)}>
+                            <Icon icon={Shape.XMark} />
+                        </Button>
+                    </div>
+                </StoreResolver>
+            </div>
+        {/if}
+        <PopupButton hook="button-chatbar-emoji-picker" name={$_("chat.emojiPicker")} class="emoji-popup" bind:open={$emojiSelectorOpen}>
+            <CombinedSelector active={{ name: $_("chat.emoji"), icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
+            <div slot="icon" class="control">
+                <Icon icon={Shape.Smile} />
+            </div>
+        </PopupButton>
 
-                        {#if replyTo.attachments.length > 0}
-                            <div class="attachment-container">
-                                <Icon icon={Shape.Document} size={Size.Large} />
-                                {$_("chat.attachments-count", { values: { amount: replyTo.attachments.length } })}
-                            </div>
-                        {/if}
-                    </Message>
-                    <ProfilePicture id={resolved.key} hook="message-group-remote-profile-picture" size={Size.Small} image={resolved.profile.photo.image} status={resolved.profile.status} highlight={Appearance.Default} notifications={0} />
-                    <Button appearance={Appearance.Default} icon={true} small={true} on:click={_ => (replyTo = undefined)}>
-                        <Icon icon={Shape.XMark} />
-                    </Button>
+        {#if !checkMobile()}
+            <PopupButton hook="button-chatbar-gif-picker" name={$_("chat.gifSearch")} class="emoji-popup" bind:open={$gifSelectorOpen}>
+                <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
+                <div slot="icon" class="control">
+                    <Icon icon={Shape.Gif} />
                 </div>
-            </StoreResolver>
-        </div>
-    {/if}
-    <PopupButton hook="button-chatbar-emoji-picker" name={$_("chat.emojiPicker")} class="emoji-popup" bind:open={$emojiSelectorOpen}>
-        <CombinedSelector active={{ name: $_("chat.emoji"), icon: Shape.Smile }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
-        <div slot="icon" class="control">
-            <Icon icon={Shape.Smile} />
-        </div>
-    </PopupButton>
+            </PopupButton>
 
-    {#if !checkMobile()}
-        <PopupButton hook="button-chatbar-gif-picker" name={$_("chat.gifSearch")} class="emoji-popup" bind:open={$gifSelectorOpen}>
-            <CombinedSelector active={{ name: "GIFs", icon: Shape.Gif }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
-            <div slot="icon" class="control">
-                <Icon icon={Shape.Gif} />
-            </div>
-        </PopupButton>
+            <PopupButton hook="button-chatbar-sticker-picker" name={$_("chat.stickers")} class="emoji-popup" bind:open={$stickerSelectorOpen}>
+                <CombinedSelector active={{ name: $_("chat.stickers"), icon: Shape.Sticker }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
+                <div slot="icon" class="control">
+                    <Icon icon={Shape.Sticker} />
+                </div>
+            </PopupButton>
+        {/if}
 
-        <PopupButton hook="button-chatbar-sticker-picker" name={$_("chat.stickers")} class="emoji-popup" bind:open={$stickerSelectorOpen}>
-            <CombinedSelector active={{ name: $_("chat.stickers"), icon: Shape.Sticker }} on:emoji={e => handleEmojiClick(e.detail)} on:gif={e => handleGif(e.detail)} on:sticker={e => handleSticker(e.detail)} />
-            <div slot="icon" class="control">
-                <Icon icon={Shape.Sticker} />
-            </div>
-        </PopupButton>
-    {/if}
-
-    <Button hook="button-chatbar-send-message" icon appearance={Appearance.Primary} tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
-        <Icon icon={Shape.ChevronRight} alt />
-    </Button>
+        <Button hook="button-chatbar-send-message" icon appearance={Appearance.Primary} tooltip={$_("chat.send")} on:click={_ => sendMessage($message)}>
+            <Icon icon={Shape.ChevronRight} alt />
+        </Button>
+    </div>
 </div>
 
 <style lang="scss">
@@ -246,6 +255,7 @@
         width: 100%;
         border-top: var(--border-width) solid var(--border-color);
         position: relative;
+        max-height: 30%;
 
         :global(.emoji-popup) {
             position: absolute;
@@ -306,6 +316,11 @@
                 z-index: 1;
             }
         }
+
+        .controls-right {
+            display: flex;
+            gap: var(--gap);
+        }
     }
 
     @media only screen and (max-width: 600px) {
@@ -318,6 +333,15 @@
                 top: var(--padding-less);
                 width: 100%;
             }
+        }
+    }
+
+    @media only screen and (max-width: 900px) {
+        .controls-right {
+            min-width: 160px;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            gap: var(--gap-less) !important;
         }
     }
 </style>

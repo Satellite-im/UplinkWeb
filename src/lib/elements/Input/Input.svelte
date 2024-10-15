@@ -177,6 +177,7 @@
         flex-direction: row;
         transition: all var(--animation-speed);
         width: 100%;
+        height: 100%;
 
         .input-container {
             border: var(--border-width) solid var(--border-color);
@@ -189,6 +190,7 @@
             width: fit-content;
             min-height: var(--input-height);
             height: var(--input-height);
+            height: 100%;
             transition: all var(--animation-speed);
             padding: 0 var(--padding);
             flex: 1;
@@ -196,14 +198,6 @@
             &.rounded {
                 border-radius: var(--border-radius-more);
             }
-
-            &.multiline {
-                height: fit-content;
-            }
-        }
-
-        &.multiline {
-            height: fit-content;
         }
 
         .input {
