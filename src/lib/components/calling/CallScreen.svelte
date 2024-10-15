@@ -12,9 +12,10 @@
     import { _ } from "svelte-i18n"
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { onDestroy, onMount } from "svelte"
+    import { createEventDispatcher, onDestroy, onMount } from "svelte"
     import { callTimeout, TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
+    import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -29,6 +30,8 @@
 
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
+
+    let dispatch = createEventDispatcher()
 
     function toggleFullscreen() {
         const elem = document.getElementById("call-screen")
@@ -117,6 +120,7 @@
     let showAnimation = true
     let message = $_("settings.calling.connecting")
     let timeout: NodeJS.Timeout | undefined
+    let callSound: SoundHandler | undefined = undefined
 
     onMount(async () => {
         document.addEventListener("mousedown", handleClickOutside)
@@ -124,8 +128,11 @@
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
+                callSound = await playSound(Sounds.OutgoingCall)
                 await VoiceRTCInstance.makeCall()
                 timeout = setTimeout(() => {
+                    callSound?.stop()
+                    callSound = undefined
                     showAnimation = false
                     message = $_("settings.calling.noResponse")
                 }, TIME_TO_SHOW_CONNECTING)
@@ -146,6 +153,8 @@
         if (timeout) {
             clearTimeout(timeout)
         }
+        callSound?.stop()
+        callSound = undefined
     })
 </script>
 
@@ -322,6 +331,7 @@
                 on:click={_ => {
                     Store.endCall()
                     VoiceRTCInstance.leaveCall()
+                    dispatch("endCall")
                 }}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>

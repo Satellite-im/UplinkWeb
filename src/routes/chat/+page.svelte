@@ -616,7 +616,12 @@
             </Topbar>
         {/if}
         {#if activeCallInProgress && activeCallDid === $activeChat.id}
-            <CallScreen chat={$activeChat} />
+            <CallScreen
+                chat={$activeChat}
+                on:endCall={_ => {
+                    activeCallInProgress = false
+                    activeCallDid = ""
+                }} />
         {/if}
         <Conversation
             loading={loading}
