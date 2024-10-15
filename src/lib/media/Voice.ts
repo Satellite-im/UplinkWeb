@@ -23,6 +23,8 @@ export enum VoiceRTCMessageType {
     None = "NONE",
 }
 
+export const connectionOpened = writable(false)
+
 export type RemoteStream = {
     user: VoiceRTCUser
     stream: MediaStream | null
@@ -386,10 +388,21 @@ export class VoiceRTC {
             this.localPeer!.on("connection", conn => {
                 conn.on("open", () => {
                     /// It will appear to user that is receiving the call
+                    connectionOpened.set(true)
                     log.info(`Receiving connection on channel: ${conn.metadata.channel} from ${conn.metadata.id}, username: ${conn.metadata.username}`)
                     this.incomingConnections.push(conn)
                     this.incomingCallFrom = [conn.metadata.channel, conn]
                     Store.setPendingCall(Store.getCallingChat(this.channel!)!, CallDirection.Inbound)
+                })
+
+                conn.on("close", () => {
+                    log.info(`Connection closed by ${conn.metadata.username}`)
+                    if (this.incomingConnections.length === 1) {
+                        connectionOpened.set(false)
+                    }
+                    Store.state.pendingCall.set(null)
+                    this.incomingConnections = this.incomingConnections.filter(c => c !== conn)
+                    this.incomingCallFrom = null
                 })
             })
             this.localPeer!.on("error", this.handleError.bind(this))
@@ -536,6 +549,7 @@ export class VoiceRTC {
 
     private createAndSetRoom() {
         log.debug(`Creating/Joining room in channel ${this.channel}`)
+        Store.updateMuted(true)
         this.call = new CallRoom(
             joinRoom(
                 {
@@ -577,6 +591,7 @@ export class VoiceRTC {
     }
 
     async leaveCall(sendEndCallMessage = false) {
+        connectionOpened.set(false)
         timeOuts.forEach(t => clearTimeout(t))
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
         if (sendEndCallMessage && this.call?.start) {

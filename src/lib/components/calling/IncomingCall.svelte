@@ -6,21 +6,34 @@
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
-    import { _ } from "svelte-i18n"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { connectionOpened, VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
     import { writable } from "svelte/store"
+    import { onDestroy, onMount } from "svelte"
+    import { _ } from "svelte-i18n"
     import { UIStore } from "$lib/state/ui/index.js"
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
 
     let callSound: SoundHandler | undefined = undefined
     let pending = false
     let user = writable(defaultUser)
+    let timeOutToCancel: NodeJS.Timeout | undefined = undefined
+    $: cancelledCall = false
+
+    onMount(() => {
+        cancelledCall = false
+        clearTimeout(timeOutToCancel)
+    })
+
+    onDestroy(() => {
+        cancelledCall = false
+        clearTimeout(timeOutToCancel)
+    })
     const callChat = writable(defaultChat)
     $: users = Store.getUsers($callChat.users)
 
     Store.state.pendingCall.subscribe(async _ => {
-        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall) {
+        if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall && $connectionOpened) {
             if (callSound === null || callSound === undefined) {
                 callSound = playSound(Sounds.IncomingCall)
                 callSound.play()
@@ -33,6 +46,14 @@
             }
 
             user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.did)
+        } else if (!$connectionOpened) {
+            cancelledCall = true
+            timeOutToCancel = setTimeout(() => {
+                cancelledCall = false
+                pending = false
+                callSound?.stop()
+                callSound = undefined
+            }, 4000)
         } else {
             pending = false
             callSound?.stop()
@@ -60,30 +81,37 @@
 {#if pending}
     <div id="incoming-call">
         <div class="body">
-            <div class="content">
-                {#if $callChat.kind === ChatType.DirectMessage}
+            <div class="content" style={cancelledCall ? "border: var(--border-width) solid var(--warning-color);" : "border: var(--border-width) solid var(--success-color);"}>
+                {#if cancelledCall}
                     <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
                     <Text>{$user.name}</Text>
-                    {#if $user.profile.status_message !== ""}
-                        <Text muted>{$user.profile.status_message}</Text>
-                    {/if}
+                    <Text muted size={Size.Large}>{$_("settings.calling.hasCancelled")}</Text>
+                    <Text muted size={Size.Large}>{$_("settings.calling.disconnecting")}</Text>
+                    <Spacer less={true} />
                 {:else}
-                    <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
-                    <Text>{$user.name}</Text>
-                    <Text>{$_("settings.calling.userInviteToAGroupCall")}</Text>
-                    <ProfilePictureMany users={$users} />
-                    <Text>{$callChat.name}</Text>
+                    {#if $callChat.kind === ChatType.DirectMessage}
+                        <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                        <Text>{$user.name}</Text>
+                        {#if $user.profile.status_message !== ""}
+                            <Text muted>{$user.profile.status_message}</Text>
+                        {/if}
+                    {:else}
+                        <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
+                        <Text>{$user.name}</Text>
+                        <Text>{$_("settings.calling.userInviteToAGroupCall")}</Text>
+                        <ProfilePictureMany users={$users} />
+                        <Text>{$callChat.name}</Text>
+                    {/if}
+                    <Spacer less={true} />
+                    <Controls>
+                        <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
+                            <Icon icon={Shape.PhoneCall} />
+                        </Button>
+                        <Button appearance={Appearance.Error} text="End" on:click={endCall}>
+                            <Icon icon={Shape.PhoneXMark} />
+                        </Button>
+                    </Controls>
                 {/if}
-
-                <Spacer less={true} />
-                <Controls>
-                    <Button appearance={Appearance.Success} text="Answer" on:click={answerCall}>
-                        <Icon icon={Shape.PhoneCall} />
-                    </Button>
-                    <Button appearance={Appearance.Error} text="End" on:click={endCall}>
-                        <Icon icon={Shape.PhoneXMark} />
-                    </Button>
-                </Controls>
             </div>
         </div>
     </div>

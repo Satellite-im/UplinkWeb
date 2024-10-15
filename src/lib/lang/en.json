@@ -341,6 +341,8 @@
             "startCallMessage": "📞 A call started at {value}.",
             "endCallMessage": "📴 The call ended at {formattedEndTime}. Duration: {duration}.",
             "callMissed": "📞 Missed call",
+            "hasCancelled": "Has cancelled the call.",
+            "disconnecting": "Disconnecting...",
             "userInviteToAGroupCall": "is inviting you to join a group call",
             "noAnswer": "No answer, leaving the call...",
             "connecting": "Connecting...",
