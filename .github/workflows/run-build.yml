@@ -100,10 +100,10 @@ jobs:
 
       - name: Comment PR with build log differences
         if: env.diff_found == 'true'
-        uses: actions-ecosystem/action-create-comment@v1
+        uses: mshick/add-pr-comment@v2.8.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
+          message: |
             **Build Log Differences Found**:
 
             ```diff

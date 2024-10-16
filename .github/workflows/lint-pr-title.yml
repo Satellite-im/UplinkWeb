@@ -24,11 +24,11 @@ jobs:
                   text: ${{ github.event.pull_request.title }}
                   regex: '(?:add|update|task|chore|feat|fix|refactor)\([a-z-A-Z]+\):\s.+'
 
-            - uses: actions-ecosystem/action-create-comment@v1
+            - uses: mshick/add-pr-comment@v2.8.2
               if: ${{ steps.regex-match.outputs.match == '' }}
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
-                  body: |
+                  message: |
                       :warning: The title of this PR is invalid.
                       Please make the title match the regex `(?:add|update|task|chore|feat|fix|refactor)\([a-z-A-Z]+\):\s.+`.
                       e.g.) `add(cli): enable --verbose flag`, `fix(api): avoid unexpected error in handler`
