@@ -1,12 +1,11 @@
 import { CallDirection } from "$lib/enums"
-import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection } from "peerjs"
 import { _ } from "svelte-i18n"
-import { get, writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
 import type { Room } from "trystero"
 import { joinRoom } from "trystero/ipfs"
 
@@ -17,6 +16,7 @@ const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
 export const TIME_TO_SHOW_CONNECTING = 30000
 
 let timeOuts: NodeJS.Timeout[] = []
+export const usersAcceptedTheCall: Writable<string[]> = writable([])
 
 export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
@@ -508,6 +508,7 @@ export class VoiceRTC {
                     conn.once("data", d => {
                         if (d === CALL_ACK) {
                             callTimeout.set(false)
+                            usersAcceptedTheCall.set([...get(usersAcceptedTheCall), did])
                             accepted = true
                         }
                     })
@@ -594,6 +595,7 @@ export class VoiceRTC {
     async leaveCall(sendEndCallMessage = false) {
         callTimeout.set(false)
         connectionOpened.set(false)
+        usersAcceptedTheCall.set([])
         timeOuts.forEach(t => clearTimeout(t))
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
         if (sendEndCallMessage && this.call?.start) {
