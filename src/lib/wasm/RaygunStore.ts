@@ -323,6 +323,13 @@ class RaygunStore {
         }, `Error downloading attachment from ${conversation_id} for message ${message_id}`)
     }
 
+    async getAttachmentRaw(conversation_id: string, message_id: string, file: string, options?: { size?: number; type?: string }) {
+        return await this.get(async r => {
+            let result = await r.download_stream(conversation_id, message_id, file)
+            return this.createFileDownloadHandlerRaw(file, result, options)
+        }, `Error downloading attachment from ${conversation_id} for message ${message_id}`)
+    }
+
     async react(conversation_id: string, message_id: string, state: wasm.ReactionState, emoji: string) {
         let result = await this.get(r => r.react(conversation_id, message_id, state, emoji), "Error reacting to message")
         return result.map(_ => {
@@ -620,7 +627,7 @@ class RaygunStore {
         return messages
     }
 
-    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator, _size?: number) {
+    private async createFileDownloadHandlerRaw(name: string, it: wasm.AsyncIterator, options?: { size?: number; type?: string }): Promise<Blob> {
         let listener = {
             [Symbol.asyncIterator]() {
                 return it
@@ -632,7 +639,11 @@ class RaygunStore {
                 data = [...data, ...value]
             }
         } catch (_) {}
-        let blob = new Blob([new Uint8Array(data)])
+        return new File([new Uint8Array(data)], name, { type: options?.type })
+    }
+
+    private async createFileDownloadHandler(name: string, it: wasm.AsyncIterator, size?: number) {
+        let blob = await this.createFileDownloadHandlerRaw(name, it, { size })
         const elem = window.document.createElement("a")
         elem.href = window.URL.createObjectURL(blob)
         elem.download = name
@@ -780,6 +791,7 @@ class RaygunStore {
             name: attachment.name,
             size: attachment.size,
             location: location,
+            mime: mime,
         }
     }
 

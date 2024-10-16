@@ -1,3 +1,4 @@
+import { log } from "$lib/utils/Logger"
 import { Howl } from "howler"
 
 export enum Sounds {
@@ -23,15 +24,17 @@ export type SoundOption = {
 
 export class SoundHandler {
     private sound: Howl
+    public soundID: number = -1
     private muted: boolean = false
 
-    constructor(sound: Howl) {
+    constructor(sound: Howl, soundID: number) {
         this.sound = sound
+        this.soundID = soundID
     }
 
     mute() {
         this.muted = !this.muted
-        this.sound.mute(!this.muted)
+        this.sound.mute(!this.muted, this.soundID)
     }
 
     isMuted(): boolean {
@@ -39,30 +42,46 @@ export class SoundHandler {
     }
 
     pause() {
-        this.sound.pause()
+        this.sound.pause(this.soundID)
     }
 
     play() {
-        this.sound.play()
+        this.sound.play(undefined, true)
     }
 
     paused(): boolean {
-        return !this.sound.playing()
+        return !this.sound.playing(this.soundID)
     }
 
     stop() {
-        this.sound.stop()
+        this.sound.stop(0, true)
         this.sound.unload()
     }
 }
 
-export function playSound(src: string | Sounds, opt?: SoundOption): SoundHandler {
-    var sound = new Howl({
-        src: [src.toString()],
-        html5: opt?.large,
-        volume: opt?.volume ? opt?.volume : 1,
-        loop: opt?.loop,
-    })
-    sound.play()
-    return new SoundHandler(sound)
+export async function playSound(src: string | Sounds, opt?: SoundOption): Promise<SoundHandler | undefined> {
+    try {
+        // Ask for permission to play sound
+        if (Notification.permission !== "granted") {
+            const permission = await Notification.requestPermission()
+            if (permission !== "granted") {
+                log.warn("Permission to play sound not granted")
+                return undefined
+            }
+        }
+
+        const sound = new Howl({
+            src: [src.toString()],
+            html5: opt?.large || false,
+            volume: opt?.volume || 1,
+            loop: opt?.loop || false,
+        })
+
+        let soundID = sound.play(undefined, false)
+
+        return new SoundHandler(sound, soundID)
+    } catch (error) {
+        log.error("Error to play callsound:", error)
+        return undefined
+    }
 }

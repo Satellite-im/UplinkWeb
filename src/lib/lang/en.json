@@ -11,6 +11,7 @@
         "cancel": "Cancel",
         "undo": "Undo",
         "copy": "Copy",
+        "copy.image": "Copy Image",
         "delete": "Delete",
         "loading": "Loading",
         "username": "Username",
@@ -346,6 +347,7 @@
             "disconnecting": "Disconnecting...",
             "userInviteToAGroupCall": "is inviting you to join a group call",
             "noAnswer": "No answer, leaving the call...",
+            "acceptedCall": "Joined, loading...",
             "connecting": "Connecting...",
             "noResponse": "No response"
         },

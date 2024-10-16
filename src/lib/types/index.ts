@@ -342,6 +342,7 @@ export type Attachment = {
     name: string
     size: number
     location: string
+    mime?: string
 }
 
 export type FriendRequest = {
