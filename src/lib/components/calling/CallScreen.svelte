@@ -123,7 +123,6 @@
     let callSound: SoundHandler | undefined = undefined
 
     $: if ($usersAcceptedTheCall.length > 0) {
-        console.log("Users accepted the call: ", $usersAcceptedTheCall)
         callSound?.stop()
         callSound = undefined
     }
