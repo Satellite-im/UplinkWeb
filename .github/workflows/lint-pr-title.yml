@@ -28,7 +28,7 @@ jobs:
               if: ${{ steps.regex-match.outputs.match == '' }}
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
-                  message: |
+                  body: |
                       :warning: The title of this PR is invalid.
                       Please make the title match the regex `(?:add|update|task|chore|feat|fix|refactor)\([a-z-A-Z]+\):\s.+`.
                       e.g.) `add(cli): enable --verbose flag`, `fix(api): avoid unexpected error in handler`
