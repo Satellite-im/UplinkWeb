@@ -6,17 +6,18 @@ import { log } from "$lib/utils/Logger"
 import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
 import Peer, { DataConnection } from "peerjs"
 import { _ } from "svelte-i18n"
-import { get, writable } from "svelte/store"
+import { get, writable, type Writable } from "svelte/store"
 import type { Room } from "trystero"
 import { joinRoom } from "trystero/ipfs"
 
 const CALL_ACK = "CALL_ACCEPT"
 
 const TIME_TO_WAIT_FOR_ANSWER = 35000
-const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
+export const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
 export const TIME_TO_SHOW_CONNECTING = 30000
 
 let timeOuts: NodeJS.Timeout[] = []
+export const usersDeniedTheCall: Writable<string[]> = writable([])
 
 export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
@@ -515,6 +516,7 @@ export class VoiceRTC {
                         conn = undefined
                         if (!accepted) {
                             log.info(`Recipient ${did} didn't accept`)
+                            usersDeniedTheCall.set([...get(usersDeniedTheCall), did])
                             // Do something else?
                             handled = true
                         }
@@ -592,6 +594,7 @@ export class VoiceRTC {
     }
 
     async leaveCall(sendEndCallMessage = false) {
+        usersDeniedTheCall.set([])
         callTimeout.set(false)
         connectionOpened.set(false)
         timeOuts.forEach(t => clearTimeout(t))
@@ -618,7 +621,7 @@ export class VoiceRTC {
         }
 
         log.info("Call ended and resources cleaned up.")
-        this.setupLocalPeer()
+        this.setupLocalPeer(true)
     }
 
     async getLocalStream(replace = false) {
@@ -698,6 +701,7 @@ export class VoiceRTC {
         this.invitations.forEach(c => c.cancel())
         this.invitations = []
         this.localPeer?.destroy()
+        this.localPeer = null
         if (this.localVideoCurrentSrc) {
             this.localVideoCurrentSrc.pause()
             this.localVideoCurrentSrc.srcObject = null
@@ -705,6 +709,7 @@ export class VoiceRTC {
         }
         if (this.localStream) this.localStream.getTracks().forEach(track => track.stop())
         this.localStream = null
+
         this.call?.room.leave()
         this.call = null
         Store.state.activeCallMeta.set({})
