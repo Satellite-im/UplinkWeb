@@ -254,7 +254,7 @@
         {:else if $usersDeniedTheCall.length === chat.users.length - 1}
             <div class="loading-when-no-answer">
                 <div class="spinner"></div>
-                <p>{"Everybody Denied the call. Disconnecting..."}</p>
+                <p>{$_("settings.calling.everybodyDeniedTheCall")}</p>
             </div>
         {:else}
             <div class="loading-when-no-answer">
