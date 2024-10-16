@@ -646,8 +646,25 @@ export class VoiceRTC {
         let localStream
         localStream = await navigator.mediaDevices.getUserMedia({
             video: true,
-            audio: true,
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+                channelCount: 2,
+                sampleRate: 44100,
+                sampleSize: 16,
+            },
         })
+        const audioContext = new window.AudioContext()
+        const mediaStreamSource = audioContext.createMediaStreamSource(localStream)
+
+        const biquadFilter = audioContext.createBiquadFilter()
+        biquadFilter.type = "lowpass"
+        biquadFilter.frequency.setValueAtTime(1000, audioContext.currentTime)
+
+        mediaStreamSource.connect(biquadFilter)
+        biquadFilter.connect(audioContext.destination)
+
         localStream.getVideoTracks().forEach(track => {
             track.enabled = this.callOptions.video.enabled
         })
