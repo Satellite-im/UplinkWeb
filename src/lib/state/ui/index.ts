@@ -170,23 +170,23 @@ class Store {
         }, 0)
     }
 
-    updateTypingIndicators() {
-        let mocks = mchats.map(c => c.id)
-        let chats = get(this.state.chats)
-        let update = false
-        for (let chat of chats) {
-            if (chat.id in mocks) continue
-            if (chat.typing_indicator.update()) {
-                update = true
-            }
-        }
+    updateTypingIndicators(chat: Chat) {
+        let update = chat.typing_indicator.size !== 0
+        chat.typing_indicator.update()
         if (update) {
-            this.state.chats.update(c => c)
+            this.state.chats.update(chats => chats.map(c => (c.id === chat.id ? { ...c, typing_indicator: chat.typing_indicator } : c)))
+
+            MainStore.state.activeChat.update(c => {
+                if (c.id === chat.id) {
+                    return {
+                        ...c,
+                        typing_indicator: chat.typing_indicator,
+                    }
+                }
+                return c
+            })
+            chat.typing_indicator.update()
         }
-        MainStore.state.activeChat.update(c => {
-            c.typing_indicator.update()
-            return c
-        })
     }
 
     useEmoji(emoji: string) {
