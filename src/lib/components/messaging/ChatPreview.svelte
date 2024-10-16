@@ -23,13 +23,16 @@
     const timeAgo = new TimeAgo("en-US")
 
     $: users = Store.getUsers(chat.users)
-
+    $: lookupUsers = Store.getUsersLookup(chat.users)
     $: chatName = chat.kind === ChatType.Group ? chat.name : ($users[1]?.name ?? $users[0].name)
     $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
     $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
     $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
     $: simpleUnreads = derived(SettingsStore.state, s => s.messaging.simpleUnreads)
-
+    $: user = chat.typing_indicator.users().map(u => {
+        return $lookupUsers[u]
+    })
+    $: self = get(Store.state.user)
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
     let ownId = get(Store.state.user)
@@ -65,6 +68,7 @@
     }
 
     onMount(() => {
+        console.log(self, user)
         setInterval(() => {
             timeago = getTimeAgo(chat.last_message_at)
         }, 500)
