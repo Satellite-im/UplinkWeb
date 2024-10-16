@@ -22,7 +22,6 @@
             // Get the cursor's position relative to the viewport
             const x = event.clientX
             const y = event.clientY
-            console.log(x, y)
             WalletStore.openWallet([y, x])
         }
     }

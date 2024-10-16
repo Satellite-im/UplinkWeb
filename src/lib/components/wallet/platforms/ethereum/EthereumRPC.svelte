@@ -16,10 +16,8 @@
     async function initializeProvider() {
         if (typeof ethereum === "undefined") {
             console.log("MetaMask not installed; using read-only defaults")
-            provider = ethers.getDefaultProvider()
         } else {
             browserProvider = new BrowserProvider(ethereum)
-            provider = browserProvider
 
             try {
                 await ethereum.request({ method: "eth_requestAccounts" })

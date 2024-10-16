@@ -12,6 +12,7 @@
     import Label from "$lib/elements/Label.svelte"
     import { WalletStore } from "$lib/state/wallet"
     import EthereumRpc from "$lib/components/wallet/platforms/ethereum/EthereumRPC.svelte"
+    import Switch from "$lib/elements/Switch.svelte"
 
     export let position = { top: 50, left: 50 } // Initial position
 
@@ -32,6 +33,7 @@
         icon: Shape
         balance: number
         address: string
+        enabled: boolean
     }
 
     let currencies: Currency[] = [
@@ -40,18 +42,42 @@
             icon: Shape.Starlight,
             balance: 12345,
             address: "z6MkqMZNLYTzkkr5JYr8jEyzKuiQmrDvjK5MZ4boECc51Nf4",
+            enabled: true,
         },
         {
             name: "Ethereum",
             icon: Shape.Ethereum,
             balance: 10.5678,
             address: "eth-address-456",
+            enabled: true,
         },
         {
             name: "Bitcoin",
             icon: Shape.Bitcoin,
             balance: 10.5678,
             address: "btc-address-789",
+            enabled: false,
+        },
+        {
+            name: "Tether (USDT)",
+            icon: Shape.Tether,
+            balance: 10.5678,
+            address: "usdt-address-000",
+            enabled: false,
+        },
+        {
+            name: "Litecoin",
+            icon: Shape.Litecoin,
+            balance: 420.69,
+            address: "ltc-address-420",
+            enabled: false,
+        },
+        {
+            name: "Solana",
+            icon: Shape.Solana,
+            balance: 44312,
+            address: "sol-address-34f",
+            enabled: false,
         },
     ]
 
@@ -95,9 +121,46 @@
         }
     }
 
+    // Adjust position to keep the wallet within viewport bounds
+    function adjustPosition() {
+        if (!container) return
+
+        // Get the wallet's dimensions
+        const walletRect = container.getBoundingClientRect()
+
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth
+        const viewportHeight = window.innerHeight
+
+        // Calculate new position if necessary
+        let newTop = position.top
+        let newLeft = position.left
+
+        if (walletRect.right > viewportWidth) {
+            newLeft = viewportWidth - walletRect.width
+            if (newLeft < 0) newLeft = 0
+        }
+
+        if (walletRect.bottom > viewportHeight) {
+            newTop = viewportHeight - walletRect.height
+            if (newTop < 0) newTop = 0
+        }
+
+        // Update position if it has changed
+        if (newTop !== position.top || newLeft !== position.left) {
+            position.top = newTop
+            position.left = newLeft
+        }
+    }
+
     onMount(() => {
-        // Delay adding the event listener to the next event loop tick
+        // Adjust position after the component has been rendered
         setTimeout(() => {
+            adjustPosition()
+
+            // Add event listener for window resize to adjust position dynamically
+            window.addEventListener("resize", adjustPosition)
+
             if (!outsideClickListenerAdded) {
                 document.addEventListener("mousedown", handleClickOutside)
                 outsideClickListenerAdded = true
@@ -111,10 +174,12 @@
             document.removeEventListener("mousedown", handleClickOutside)
             outsideClickListenerAdded = false
         }
+
+        window.removeEventListener("resize", adjustPosition)
     })
 </script>
 
-<div bind:this={container} data-cy="wallet" class="wallet" style="top: {position.top}px; left: {position.left}px; position: absolute;">
+<div bind:this={container} data-cy="wallet" class="wallet" style="top: {position.top}px; left: {position.left}px;">
     <!-- Toolbar -->
     <Toolbar bind:walletPosition={position} />
 
@@ -125,9 +190,17 @@
             <Icon icon={Shape.History} />
         </Button>
     </div>
+
     <EthereumRpc />
 
     <BalanceDisplay selectedCurrency={selectedCurrency} />
+
+    <div class="show-on-profile">
+        <Label text={`Display ${selectedCurrency.name} on profile`} />
+
+        <Switch small />
+    </div>
+
     <ActionButtons on:send={handleSend} on:receive={handleReceive} activeButton={currentView} />
 
     {#if currentView === ViewMode.Receive}
@@ -178,6 +251,13 @@
             flex-direction: column;
             gap: var(--gap);
             align-items: center;
+        }
+
+        .show-on-profile {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--gap);
         }
     }
 

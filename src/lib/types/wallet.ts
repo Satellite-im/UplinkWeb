@@ -5,4 +5,5 @@ export interface Currency {
     icon: Shape
     balance: number
     address: string
+    enabled: boolean
 }

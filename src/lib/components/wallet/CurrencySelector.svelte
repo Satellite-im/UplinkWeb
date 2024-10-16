@@ -15,9 +15,11 @@
     }
 
     function selectCurrency(currency: Currency) {
-        selectedCurrency = currency
-        showCurrencyOptions = false
-        dispatch("currencySelected", currency)
+        if (currency.enabled) {
+            selectedCurrency = currency
+            showCurrencyOptions = false
+            dispatch("currencySelected", currency)
+        }
     }
 
     function handleClickOutside(event: MouseEvent) {
@@ -34,6 +36,13 @@
     onDestroy(() => {
         document.removeEventListener("click", handleClickOutside)
     })
+
+    // Sort currencies: enabled first, then disabled
+    $: sortedCurrencies = currencies.slice().sort((a, b) => {
+        if (a.enabled === b.enabled) return 0
+        if (a.enabled) return -1
+        return 1
+    })
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -47,9 +56,9 @@
     {#if showCurrencyOptions}
         <ul class="options-list">
             <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-            {#each currencies as currency}
+            {#each sortedCurrencies as currency}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <li class="option" on:click={() => selectCurrency(currency)}>
+                <li class="option {currency.enabled ? '' : 'disabled'}" on:click={() => selectCurrency(currency)}>
                     <Icon icon={currency.icon} filled />
                     <span>{currency.name}</span>
                 </li>
@@ -109,6 +118,11 @@
                 &:hover {
                     background-color: var(--primary-color);
                 }
+            }
+
+            .disabled {
+                opacity: 0.5;
+                pointer-events: none;
             }
         }
 
