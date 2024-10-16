@@ -89,7 +89,15 @@
         goto(Route.Chat)
     }}>
     {#if chat.kind === ChatType.DirectMessage}
-        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.typing_indicator.size > 0} image={directChatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
+        <ProfilePicture
+            hook="chat-preview-picture"
+            id={$users[1].key}
+            typing={chat.typing_indicator.size > 0 && chat.typing_indicator.users()[0] === $users[1].key}
+            image={directChatPhoto}
+            status={chatStatus}
+            size={Size.Medium}
+            loading={loading}
+            frame={$users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={$users} />
     {/if}
