@@ -592,6 +592,7 @@ export class VoiceRTC {
     }
 
     async leaveCall(sendEndCallMessage = false) {
+        callTimeout.set(false)
         connectionOpened.set(false)
         timeOuts.forEach(t => clearTimeout(t))
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null

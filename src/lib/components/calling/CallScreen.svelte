@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { createEventDispatcher, onDestroy, onMount } from "svelte"
-    import { callTimeout, TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
+    import { callTimeout, connectionOpened, TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
 
@@ -123,6 +123,7 @@
     let callSound: SoundHandler | undefined = undefined
 
     onMount(async () => {
+        callTimeout.set(false)
         document.addEventListener("mousedown", handleClickOutside)
         await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
         /// HACK: To make sure the video elements are loaded before we start the call
@@ -145,6 +146,7 @@
     })
 
     onDestroy(() => {
+        callTimeout.set(false)
         document.removeEventListener("mousedown", handleClickOutside)
         subscribeOne()
         subscribeTwo()
