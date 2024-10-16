@@ -35,8 +35,7 @@
     Store.state.pendingCall.subscribe(async _ => {
         if (VoiceRTCInstance.incomingCallFrom && !VoiceRTCInstance.toCall && $connectionOpened) {
             if (callSound === null || callSound === undefined) {
-                callSound = playSound(Sounds.IncomingCall)
-                callSound.play()
+                callSound = await playSound(Sounds.IncomingCall)
             }
             pending = true
             let chat = UIStore.getChat(VoiceRTCInstance.incomingCallFrom[1].metadata.channel)
@@ -48,11 +47,11 @@
             user = Store.getUser(VoiceRTCInstance.incomingCallFrom[1].metadata.did)
         } else if (!$connectionOpened) {
             cancelledCall = true
+            callSound?.stop()
+            callSound = undefined
             timeOutToCancel = setTimeout(() => {
                 cancelledCall = false
                 pending = false
-                callSound?.stop()
-                callSound = undefined
             }, 4000)
         } else {
             pending = false

@@ -23,13 +23,16 @@
     const timeAgo = new TimeAgo("en-US")
 
     $: users = Store.getUsers(chat.users)
-
+    $: lookupUsers = Store.getUsersLookup(chat.users)
     $: chatName = chat.kind === ChatType.Group ? chat.name : ($users[1]?.name ?? $users[0].name)
     $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
     $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
     $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
     $: simpleUnreads = derived(SettingsStore.state, s => s.messaging.simpleUnreads)
-
+    $: user = chat.typing_indicator.users().map(u => {
+        return $lookupUsers[u]
+    })
+    $: self = get(Store.state.user)
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
     let ownId = get(Store.state.user)
@@ -65,6 +68,7 @@
     }
 
     onMount(() => {
+        console.log(self, user)
         setInterval(() => {
             timeago = getTimeAgo(chat.last_message_at)
         }, 500)
@@ -85,7 +89,15 @@
         goto(Route.Chat)
     }}>
     {#if chat.kind === ChatType.DirectMessage}
-        <ProfilePicture hook="chat-preview-picture" id={$users[1].key} typing={chat.typing_indicator.size > 0} image={directChatPhoto} status={chatStatus} size={Size.Medium} loading={loading} frame={$users[1].profile.photo.frame} />
+        <ProfilePicture
+            hook="chat-preview-picture"
+            id={$users[1].key}
+            typing={chat.typing_indicator.size > 0 && chat.typing_indicator.users()[0] === $users[1].key}
+            image={directChatPhoto}
+            status={chatStatus}
+            size={Size.Medium}
+            loading={loading}
+            frame={$users[1].profile.photo.frame} />
     {:else}
         <ProfilePictureMany users={$users} />
     {/if}
