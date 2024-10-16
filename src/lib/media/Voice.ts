@@ -1,5 +1,4 @@
 import { CallDirection } from "$lib/enums"
-import { SettingsStore } from "$lib/state"
 import { Store } from "$lib/state/Store"
 import { create_cancellable_handler, type Cancellable } from "$lib/utils/CancellablePromise"
 import { log } from "$lib/utils/Logger"
@@ -18,6 +17,7 @@ export const TIME_TO_SHOW_CONNECTING = 30000
 
 let timeOuts: NodeJS.Timeout[] = []
 export const usersDeniedTheCall: Writable<string[]> = writable([])
+export const usersAcceptedTheCall: Writable<string[]> = writable([])
 
 export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
@@ -509,6 +509,7 @@ export class VoiceRTC {
                     conn.once("data", d => {
                         if (d === CALL_ACK) {
                             callTimeout.set(false)
+                            usersAcceptedTheCall.set([...get(usersAcceptedTheCall), did])
                             accepted = true
                         }
                     })
@@ -597,6 +598,7 @@ export class VoiceRTC {
         usersDeniedTheCall.set([])
         callTimeout.set(false)
         connectionOpened.set(false)
+        usersAcceptedTheCall.set([])
         timeOuts.forEach(t => clearTimeout(t))
         sendEndCallMessage = sendEndCallMessage && this.channel !== undefined && this.call != null
         if (sendEndCallMessage && this.call?.start) {
