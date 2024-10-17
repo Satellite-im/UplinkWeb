@@ -126,6 +126,22 @@ jobs:
         concurrency:
             group: ${{ github.workflow }}-${{ github.ref }}
         steps:
+            - name: Checkout gh-pages branch
+              uses: actions/checkout@v4.2.0
+              with:
+                  repository: Satellite-im/test-reports
+                  ref: gh-pages
+                  path: gh-pages
+                  # This ensures you pull the latest commit from the gh-pages branch
+                  fetch-depth: 0
+
+            - name: Pull the latest gh-pages
+              run: |
+                  cd gh-pages
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git pull --rebase origin gh-pages
+
             - name: Download Merged Report
               uses: actions/download-artifact@v4
               with:
