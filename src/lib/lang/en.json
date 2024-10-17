@@ -347,6 +347,7 @@
             "disconnecting": "Disconnecting...",
             "userInviteToAGroupCall": "is inviting you to join a group call",
             "noAnswer": "No answer, leaving the call...",
+            "everybodyDeniedTheCall": "Everybody Denied the call. Disconnecting...",
             "acceptedCall": "Joined, loading...",
             "connecting": "Connecting...",
             "noResponse": "No response"
