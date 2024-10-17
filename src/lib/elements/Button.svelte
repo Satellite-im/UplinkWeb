@@ -21,6 +21,7 @@
     export let hideTextOnMobile: boolean = false
     export let color: string = ""
     export let badge: number = 0
+    export let soundSource: Sounds | undefined = Sounds.Press
 
     // Allow parent to override / add classes
     let clazz = ""
@@ -62,8 +63,8 @@
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click={_ => {
-        if (sound) {
-            playSound(Sounds.Press)
+        if (sound && soundSource) {
+            playSound(soundSource)
         }
     }}
     on:click

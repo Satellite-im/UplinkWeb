@@ -322,6 +322,7 @@
                 icon
                 appearance={muted ? Appearance.Error : Appearance.Alt}
                 tooltip={muted ? $_("call.unmute") : $_("call.mute")}
+                soundSource={undefined}
                 on:click={_ => {
                     Store.updateMuted(!muted)
                 }}>
@@ -332,6 +333,7 @@
                 icon
                 appearance={deafened ? Appearance.Error : Appearance.Alt}
                 tooltip={$_("call.deafen")}
+                soundSource={undefined}
                 on:click={_ => {
                     Store.updateDeafened(!deafened)
                     // VoiceRTCInstance.turnOnOffDeafened()
@@ -346,6 +348,7 @@
                 appearance={cameraEnabled ? Appearance.Alt : Appearance.Error}
                 icon
                 tooltip={cameraEnabled ? $_("call.disable_video") : $_("call.enable_video")}
+                soundSource={undefined}
                 on:click={_ => {
                     Store.updateCameraEnabled(!cameraEnabled)
                 }}>
