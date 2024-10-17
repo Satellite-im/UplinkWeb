@@ -97,6 +97,7 @@
                     appearance={muted ? Appearance.Error : Appearance.Alt}
                     tooltip={$_("call.mute")}
                     loading={loading}
+                    soundSource={undefined}
                     on:click={_ => {
                         Store.updateMuted(!muted)
                     }}>
@@ -108,6 +109,7 @@
                     appearance={deafened ? Appearance.Error : Appearance.Alt}
                     tooltip={$_("call.deafen")}
                     loading={loading}
+                    soundSource={undefined}
                     on:click={_ => {
                         Store.updateDeafened(!deafened)
                     }}>
