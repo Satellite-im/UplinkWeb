@@ -123,6 +123,8 @@ jobs:
             pull-requests: write
             contents: write
             issues: read
+        concurrency:
+            group: ${{ github.workflow }}-${{ github.ref }}
         steps:
             - name: Download Merged Report
               uses: actions/download-artifact@v4
