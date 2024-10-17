@@ -215,6 +215,7 @@ class GlobalStore {
             startedAt: new Date(),
             inCall: true,
             direction,
+            volumeParticipantsLevel: {},
         })
     }
 
@@ -224,6 +225,7 @@ class GlobalStore {
             startedAt: new Date(),
             inCall: true,
             direction,
+            volumeParticipantsLevel: {},
         })
     }
 

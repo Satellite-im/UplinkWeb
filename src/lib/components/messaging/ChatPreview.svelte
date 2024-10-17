@@ -19,6 +19,7 @@
     export let chat: Chat
     export let cta: boolean = false
     export let loading: boolean
+    export let interactable: boolean = true
 
     const timeAgo = new TimeAgo("en-US")
 
@@ -72,13 +73,20 @@
             timeago = getTimeAgo(chat.last_message_at)
         }, 500)
     })
+
+    function getClass() {
+        if (!interactable) return ""
+        return `${cta ? "cta" : ""} ${get(Store.state.activeChat)?.id === chat.id ? "active-chat" : ""}`
+    }
 </script>
 
 <button
     data-cy="chat-preview"
-    class="chat-preview {cta ? 'cta' : ''} {get(Store.state.activeChat)?.id === chat.id ? 'active-chat' : ''}"
+    class="chat-preview {getClass()}"
+    disabled={!interactable}
     on:contextmenu
     on:click={_ => {
+        if (!interactable) return
         dispatch("click")
         Store.setActiveChat(chat)
         let isMobile = checkMobile()
@@ -168,6 +176,11 @@
 
         p {
             margin: 0;
+        }
+
+        &:disabled {
+            opacity: var(--disabled-opacity);
+            pointer-events: none;
         }
 
         &:hover {
