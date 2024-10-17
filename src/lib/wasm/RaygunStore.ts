@@ -280,35 +280,56 @@ class RaygunStore {
     }
 
     private async sendTo(raygun: wasm.RayGunBox, conversation_id: string, message: string[], attachments?: FileAttachment[]): Promise<SendMessageResult> {
-        if (attachments && attachments.length > 0) {
-            let result = await raygun
-                .attach(
-                    conversation_id,
-                    undefined,
-                    attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment ? new wasm.AttachmentStream(f.attachment[1], f.attachment[0]) : undefined)),
-                    message
-                )
-                .then(res => {
-                    // message_sent event gets fired AFTER this returns
-                    ConversationStore.addPendingMessages(conversation_id, res.get_message_id(), message)
-                    this.createFileAttachHandler(conversation_id, res)
-                    return res
-                })
-            return {
-                message: result.get_message_id(),
-                progress: result,
+        try {
+            log.debug("[RAYGUN_SEND_MESSAGE] - Starting message sending process:", { conversation_id, message, attachments })
+
+            if (attachments && attachments.length > 0) {
+                log.debug("[RAYGUN_SEND_MESSAGE] - Attachments detected, starting attachment process...", attachments)
+                let result = await raygun
+                    .attach(
+                        conversation_id,
+                        undefined,
+                        attachments.map(f => new wasm.AttachmentFile(f.file, f.attachment ? new wasm.AttachmentStream(f.attachment[1], f.attachment[0]) : undefined)),
+                        message
+                    )
+                    .then(res => {
+                        log.debug("Attachment successfully sent:", { conversation_id, message_id: res.get_message_id() })
+                        // message_sent event gets fired AFTER this returns
+                        ConversationStore.addPendingMessages(conversation_id, res.get_message_id(), message)
+                        this.createFileAttachHandler(conversation_id, res)
+                        return res
+                    })
+                    .catch(error => {
+                        log.error("Error while attaching files:", error)
+                        throw error // Re-throw the error to handle it in the outer try/catch
+                    })
+
+                return {
+                    message: result.get_message_id(),
+                    progress: result,
+                }
             }
-        }
-        return {
-            message: await raygun.send(conversation_id, message).then(messageId => {
-                // message_sent event gets fired BEFORE this returns
-                // So to
-                // 1. unify this system
-                // 2. keep it roughly the same as native (as on native due to some channel delays it handles message_sent after #send returns)
-                // We add the pending msg here and remove it in message_sent which has a short delay
-                ConversationStore.addPendingMessages(conversation_id, messageId, message)
-                return messageId
-            }),
+
+            console.log("[RAYGUN_SEND_MESSAGE] - No attachments detected, sending message only...")
+            const messageId = await raygun
+                .send(conversation_id, message)
+                .then(messageId => {
+                    log.debug("[RAYGUN_SEND_MESSAGE] - Message successfully sent:", { conversation_id, messageId })
+                    // message_sent event gets fired BEFORE this returns
+                    ConversationStore.addPendingMessages(conversation_id, messageId, message)
+                    return messageId
+                })
+                .catch(error => {
+                    log.error("[RAYGUN_SEND_MESSAGE] - Error while sending message:", error)
+                    throw error // Re-throw the error to handle it in the outer try/catch
+                })
+
+            return {
+                message: messageId,
+            }
+        } catch (error) {
+            log.error("[RAYGUN_SEND_MESSAGE] - Error during message sending process:", error)
+            throw error // Re-throw to ensure the caller can handle the error
         }
     }
 

@@ -326,31 +326,36 @@ class Conversations {
     }
 
     addPendingMessages(chat: string, messageId: string, message: string[]) {
-        const conversations = get(this.pendingMsgConversations)
-        const conversation = conversations[chat]
+        try {
+            const conversations = get(this.pendingMsgConversations)
+            const conversation = conversations[chat]
 
-        if (conversation) {
-            conversation[messageId] = {
-                message: {
-                    id: messageId,
-                    at: new Date(),
-                    text: message,
-                },
-                attachmentProgress: writable({}),
-            }
-            this.pendingMsgConversations.set(conversations)
-        } else {
-            conversations[chat] = {
-                [messageId]: {
+            if (conversation) {
+                conversation[messageId] = {
                     message: {
                         id: messageId,
                         at: new Date(),
                         text: message,
                     },
                     attachmentProgress: writable({}),
-                },
+                }
+                this.pendingMsgConversations.set(conversations)
+            } else {
+                conversations[chat] = {
+                    [messageId]: {
+                        message: {
+                            id: messageId,
+                            at: new Date(),
+                            text: message,
+                        },
+                        attachmentProgress: writable({}),
+                    },
+                }
+                this.pendingMsgConversations.set(conversations)
             }
-            this.pendingMsgConversations.set(conversations)
+        } catch (error) {
+            console.error("[RAYGUN_SEND_MESSAGE] - Error while adding pending message:", { chat, messageId, message, error })
+            throw error // Re-throw the error to handle it further up the call chain if necessary
         }
     }
 
