@@ -138,9 +138,7 @@ jobs:
             - name: Pull the latest gh-pages
               run: |
                   cd gh-pages
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
-                  git pull --rebase origin gh-pages
+                  git pull origin gh-pages
 
             - name: Download Merged Report
               uses: actions/download-artifact@v4
@@ -208,6 +206,11 @@ jobs:
             - name: Set a timestamp two
               id: timestampidtwo
               run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
+
+            - name: Pull the latest gh-pages
+              run: |
+                  cd gh-pages
+                  git pull origin gh-pages
 
             - name: Deploy report to Github Pages
               if: success()
