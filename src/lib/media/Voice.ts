@@ -35,6 +35,7 @@ type VoiceRTCOptions = {
     audio: {
         enabled: boolean
         deafened: boolean
+        volume?: number
     }
     video: {
         enabled: boolean
@@ -51,6 +52,7 @@ export type VoiceRTCUser = {
     videoEnabled: boolean
     audioEnabled: boolean
     isDeafened: boolean
+    volume?: number
 }
 
 export function voiceRTCUserToString(user: VoiceRTCUser): string {
@@ -259,6 +261,7 @@ export class CallRoom {
                 videoEnabled: VoiceRTCInstance.callOptions.video.enabled,
                 audioEnabled: VoiceRTCInstance.callOptions.audio.enabled,
                 isDeafened: VoiceRTCInstance.callOptions.audio.deafened,
+                volume: VoiceRTCInstance.callOptions.audio.volume,
             },
         }
         this.send(data, to)
@@ -320,6 +323,7 @@ export class VoiceRTC {
                         if (videoElement) {
                             log.debug(`Updating video element for user ${did}`)
                             videoElement.srcObject = s[did].stream
+                            videoElement.volume = data.user?.volume ?? 1
                             videoElement.play().catch(error => {
                                 log.error("Error playing the video, for user: ", data.user?.did, error)
                             })
