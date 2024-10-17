@@ -24,7 +24,7 @@
             inputDevices = devices.filter(device => device.kind === "audioinput")
             videoInputDevices = devices.filter(device => device.kind === "videoinput")
             outputDevices = devices.filter(device => device.kind === "audiooutput")
-            stream.getTracks().forEach(t => t.stop())
+            stream?.getTracks().forEach(t => t.stop())
         } catch (error) {
             console.error("Error accessing media devices:", error)
         }
@@ -137,7 +137,7 @@
     })
 
     onDestroy(() => {
-        stream.getTracks().forEach(t => t.stop())
+        stream?.getTracks().forEach(t => t.stop())
     })
 </script>
 
