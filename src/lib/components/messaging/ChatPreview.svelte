@@ -68,7 +68,6 @@
     }
 
     onMount(() => {
-        console.log(self, user)
         setInterval(() => {
             timeago = getTimeAgo(chat.last_message_at)
         }, 500)

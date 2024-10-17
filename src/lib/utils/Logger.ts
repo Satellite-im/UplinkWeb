@@ -43,15 +43,15 @@ export class Logger {
         if (settings.relay_to_js_console) {
             switch (level) {
                 case LogLevel.Error: {
-                    console.error(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message, ...other)
+                    console.error(`[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}`, ...other)
                     break
                 }
                 case LogLevel.Warning: {
-                    console.warn(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message, ...other)
+                    console.warn(`[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}`, ...other)
                     break
                 }
                 default: {
-                    console.log(`[${level.toString()}] (${new Date().toLocaleTimeString()}): `, message, ...other)
+                    console.log(`[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}`, ...other)
                     break
                 }
             }
