@@ -145,7 +145,7 @@ jobs:
                   keep_files: true
                   publish_branch: gh-pages
                   publish_dir: ./playwright-report
-                  destination_dir: /playwright/${{ steps.timestampidone.outputs.timestamp }}
+                  destination_dir: playwright/${{ steps.timestampidone.outputs.timestamp }}
 
             - name: Stop ssh-agent job from first deploy required for deploying a second time
               run: killall ssh-agent
@@ -181,7 +181,7 @@ jobs:
                   keep_files: true
                   publish_branch: gh-pages
                   publish_dir: ./allure-history
-                  destination_dir: /allure/${{ steps.timestampidtwo.outputs.timestamp }}
+                  destination_dir: allure/${{ steps.timestampidtwo.outputs.timestamp }}
 
             - name: Comment PR with Allure test results
               if: always() && github.event_name == 'pull_request'
