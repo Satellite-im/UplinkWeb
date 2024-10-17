@@ -199,15 +199,17 @@ jobs:
               with:
                   deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
                   external_repository: Satellite-im/test-reports
+                  keep_files: true
                   publish_branch: gh-pages
                   publish_dir: ./allure-history
+                  destination_dir: ${{ steps.timestampidtwo.outputs.timestamp }}
 
             - name: Comment PR with Allure test results
               if: always() && github.event_name == 'pull_request'
               uses: mshick/add-pr-comment@v2.8.2
               with:
                   message: |
-                      Automated tests execution is complete! You can find the Playwright test report [here](https://satellite-im.github.io/test-reports/${{ steps.timestampidone.outputs.timestamp }}/) and the Allure Test Report [here](https://satellite-im.github.io/test-reports/${{ github.run_number }})
+                      Automated tests execution is complete! You can find the Playwright test report [here](https://satellite-im.github.io/test-reports/${{ steps.timestampidone.outputs.timestamp }}/) and the Allure Test Report [here](https://satellite-im.github.io/test-reports/${{ steps.timestampidtwo.outputs.timestamp }}/)
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
