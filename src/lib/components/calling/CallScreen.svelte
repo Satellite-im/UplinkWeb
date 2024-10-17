@@ -12,9 +12,10 @@
     import { _ } from "svelte-i18n"
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
-    import { onDestroy, onMount } from "svelte"
-    import { callTimeout, TIME_TO_SHOW_CONNECTING, VoiceRTCInstance } from "$lib/media/Voice"
+    import { createEventDispatcher, onDestroy, onMount } from "svelte"
+    import { callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
+    import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
 
     export let expanded: boolean = false
     function toggleExanded() {
@@ -29,6 +30,8 @@
 
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
+
+    let dispatch = createEventDispatcher()
 
     function toggleFullscreen() {
         const elem = document.getElementById("call-screen")
@@ -114,18 +117,39 @@
             },
         }
     }
+
+    $: if ($usersDeniedTheCall.length === chat.users.length - 1) {
+        setTimeout(() => {
+            Store.endCall()
+            VoiceRTCInstance.leaveCall()
+            dispatch("endCall")
+        }, TIME_TO_SHOW_END_CALL_FEEDBACK)
+    }
+
     let showAnimation = true
     let message = $_("settings.calling.connecting")
     let timeout: NodeJS.Timeout | undefined
+    let callSound: SoundHandler | undefined = undefined
+
+    $: if ($usersAcceptedTheCall.length > 0) {
+        callSound?.stop()
+        callSound = undefined
+    }
 
     onMount(async () => {
+        usersDeniedTheCall.set([])
+        callTimeout.set(false)
+        usersAcceptedTheCall.set([])
         document.addEventListener("mousedown", handleClickOutside)
         await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
             if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
+                callSound = await playSound(Sounds.OutgoingCall)
                 await VoiceRTCInstance.makeCall()
                 timeout = setTimeout(() => {
+                    callSound?.stop()
+                    callSound = undefined
                     showAnimation = false
                     message = $_("settings.calling.noResponse")
                 }, TIME_TO_SHOW_CONNECTING)
@@ -138,6 +162,7 @@
     })
 
     onDestroy(() => {
+        callTimeout.set(false)
         document.removeEventListener("mousedown", handleClickOutside)
         subscribeOne()
         subscribeTwo()
@@ -146,6 +171,8 @@
         if (timeout) {
             clearTimeout(timeout)
         }
+        callSound?.stop()
+        callSound = undefined
     })
 </script>
 
@@ -159,7 +186,7 @@
             </svelte:fragment>
         </Topbar>
 
-        {#if !$callTimeout}
+        {#if !$callTimeout && ($usersDeniedTheCall.length === 0 || $usersDeniedTheCall.length !== chat.users.length - 1)}
             <div id="participants">
                 <div class="video-container">
                     <video
@@ -185,12 +212,17 @@
                     {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                         <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                     {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
-                        {#if showAnimation}
+                        {#if showAnimation && !$usersAcceptedTheCall.includes(user)}
                             <div class="calling-animation">
                                 <div class="shaking-participant">
                                     <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                     <p>{message}</p>
                                 </div>
+                            </div>
+                        {:else if $usersAcceptedTheCall.includes(user)}
+                            <div class="no-response">
+                                <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                <p>{$_("settings.calling.acceptedCall")}</p>
                             </div>
                         {:else}
                             <div class="no-response">
@@ -229,6 +261,11 @@
                         {/if}
                     {/if}
                 {/each}
+            </div>
+        {:else if $usersDeniedTheCall.length === chat.users.length - 1}
+            <div class="loading-when-no-answer">
+                <div class="spinner"></div>
+                <p>{$_("settings.calling.everybodyDeniedTheCall")}</p>
             </div>
         {:else}
             <div class="loading-when-no-answer">
@@ -322,6 +359,7 @@
                 on:click={_ => {
                     Store.endCall()
                     VoiceRTCInstance.leaveCall()
+                    dispatch("endCall")
                 }}>
                 <Icon icon={Shape.PhoneXMark} />
             </Button>

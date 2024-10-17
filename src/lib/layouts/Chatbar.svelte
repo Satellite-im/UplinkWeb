@@ -20,6 +20,7 @@
     import { tempCDN } from "$lib/utils/CommonVariables"
     import { getValidPaymentRequest } from "$lib/utils/Wallet"
     import { VoiceRTCMessageType } from "$lib/media/Voice"
+    import { MessageEvent } from "warp-wasm"
     import Text from "$lib/elements/Text.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
 
@@ -49,6 +50,10 @@
             return messages
         })
         Store.state.chatMessagesToSend = chatMessages
+    }
+
+    async function updateTypingIndecator() {
+        await RaygunStoreInstance.sendEvent(activeChat.id, MessageEvent.Typing)
     }
 
     async function sendMessage(text: string, isStickerOrGif: boolean = false) {
@@ -172,7 +177,10 @@
         bind:value={$message}
         rounded
         rich={markdown}
-        on:input={_ => replaceEmojis($message)}
+        on:input={_ => {
+            updateTypingIndecator()
+            replaceEmojis($message)
+        }}
         on:enter={_ => sendMessage($message)} />
 
     <slot></slot>

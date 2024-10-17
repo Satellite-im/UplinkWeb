@@ -231,6 +231,33 @@
 
     console.log("Arriving here on +layout")
 
+    window.addEventListener(
+        "click",
+        () => {
+            initializeAudioContext()
+            log.debug("Audio context unlocked after click.")
+        },
+        { once: true }
+    )
+
+    window.addEventListener(
+        "touchstart",
+        () => {
+            initializeAudioContext()
+            log.debug("Audio context unlocked after touch.")
+        },
+        { once: true }
+    )
+
+    function initializeAudioContext() {
+        const audioContext = new window.AudioContext()
+        if (audioContext.state === "suspended") {
+            audioContext.resume().then(() => {
+                log.info("Audio context unlocked.")
+            })
+        }
+    }
+
     let isLocaleSet = false
 
     $: if ($locale) {

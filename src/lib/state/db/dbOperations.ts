@@ -25,6 +25,10 @@ export async function initDB(): Promise<IDBDatabase> {
 
         request.onsuccess = () => {
             resolve(request.result)
+            const db = request.result
+            db.onversionchange = () => {
+                db.close()
+            }
         }
 
         request.onerror = event => {
@@ -39,9 +43,8 @@ export async function clearState(): Promise<string> {
         log.debug("Clearing state from DB")
         localStorage.clear()
         sessionStorage.clear()
-
+        self.close()
         const request = indexedDB.deleteDatabase(dbName)
-
         request.onerror = event => {
             log.error(`Error deleting database ${dbName}. Event: ${event}`)
             reject(event)
