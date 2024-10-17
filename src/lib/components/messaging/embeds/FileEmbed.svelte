@@ -28,6 +28,10 @@
     function download() {
         dispatch("download")
     }
+
+    function share() {
+        dispatch("share")
+    }
 </script>
 
 <div class="file-embed {altBackgroundColor ? 'alt-bg' : ''}" data-cy="file-embed">
@@ -43,14 +47,13 @@
             <Button hook="file-embed-download-button" icon tooltip={$_("files.download")} on:click={download}>
                 <Icon icon={Shape.Download} />
             </Button>
-            <!-- TODO: Needs implementation 
-            <Button hook="file-embed-share-button" icon appearance={Appearance.Alt} tooltip={$_("files.share")}>
+            <Button hook="file-embed-share-button" icon appearance={Appearance.Alt} tooltip={$_("files.share")} on:click={share}>
                 <Icon icon={Shape.Share} />
             </Button>
+            <!-- TODO: Needs implementation 
             <Button hook="file-embed-add-to-files-button" appearance={Appearance.Alt} text={$_("files.addFiles")}>
                 <Icon icon={Shape.Plus} />
-            </Button>
-            -->
+            </Button> -->
         </Controls>
     </div>
 </div>

@@ -1,37 +1,97 @@
 <script lang="ts">
-    import { Text, Label, RangeSelector } from "$lib/elements"
-    import { Size } from "$lib/enums"
+    import { Text, Label, RangeSelector, Button, Icon } from "$lib/elements"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import { Store } from "$lib/state/Store"
     import { UIStore } from "$lib/state/ui"
+    import { get } from "svelte/store"
     import ProfilePicture from "../profile/ProfilePicture.svelte"
+    import Spacer from "$lib/elements/Spacer.svelte"
+    import { VoiceRTCInstance, VoiceRTCMessageType } from "$lib/media/Voice"
+    import { createEventDispatcher, onDestroy } from "svelte"
+    import { _ } from "svelte-i18n"
+
+    const standardVolumeLevel = 100
+    let changeTimeOut: NodeJS.Timeout
 
     export let participants: string[]
+    let currentUser = get(Store.state.user)
+    $: activeCall = get(Store.state.activeCall)
+    let usersVolumeInCall: { [key: string]: number } = get(Store.state.activeCall)?.volumeParticipantsLevel ?? {}
+
+    const dispatch = createEventDispatcher()
+
+    $: if (participants) {
+        participants.forEach(user => {
+            if (activeCall) {
+                if (!activeCall.volumeParticipantsLevel[user]) {
+                    activeCall.volumeParticipantsLevel[user] = standardVolumeLevel
+                }
+            }
+        })
+    }
+
+    function updateUserVolume() {
+        if (!activeCall) return
+
+        activeCall.volumeParticipantsLevel = { ...usersVolumeInCall }
+
+        const updateVideoElementVolume = (element: HTMLVideoElement | null, volume: number) => {
+            if (element && element.volume !== volume) {
+                element.volume = volume
+            }
+        }
+
+        Object.entries(usersVolumeInCall).forEach(([user, volume]) => {
+            const videoElementId = user === currentUser.key ? "local-user-video" : `remote-user-video-${user}`
+
+            const videoElement = document.getElementById(videoElementId) as HTMLVideoElement | null
+            const participantVolume = (get(Store.state.activeCall)?.volumeParticipantsLevel[user] ?? 100) / 200
+
+            updateVideoElementVolume(videoElement, participantVolume)
+
+            if (user === currentUser.key) {
+                VoiceRTCInstance.callOptions.audio.volume = participantVolume
+                VoiceRTCInstance.call?.notify(VoiceRTCMessageType.UpdateUser)
+            }
+        })
+
+        dispatch("close")
+    }
+
+    onDestroy(() => {
+        clearTimeout(changeTimeOut)
+    })
 
     $: chats = UIStore.state.chats
     $: userCache = Store.getUsersLookup($chats.map(c => c.users).flat())
 </script>
 
 <div class="volume-mixer" data-cy="volume-mixer">
-    <div class="global">
-        <Label hook="label-master-volume" text="Master Volume" />
-        <div class="control">
-            <RangeSelector min={0} max={200} value={100} />
-            <Text hook="text-master-volume">100</Text>
-        </div>
-    </div>
-
-    {#each participants as user}
+    {#each participants as user ($userCache[user].key)}
         <div class="user-volume" data-cy="{$userCache[user].name}-volume">
-            <Label hook="label-mixer-username" text={$userCache[user].name} />
+            <Label hook="label-mixer-username" text={currentUser.key === $userCache[user].key ? $userCache[user].name + " (You)" : $userCache[user].name} />
             <div class="control">
                 <ProfilePicture hook="mixer-user-picture" id={$userCache[user].key} size={Size.Smallest} image={$userCache[user].profile.photo.image} status={$userCache[user].profile.status} />
                 <div class="range">
-                    <RangeSelector min={0} max={200} value={100} />
+                    <RangeSelector
+                        min={0}
+                        max={200}
+                        value={activeCall ? usersVolumeInCall[$userCache[user].key] : standardVolumeLevel}
+                        on:change={e => {
+                            usersVolumeInCall[$userCache[user].key] = e.detail
+                            usersVolumeInCall = { ...usersVolumeInCall }
+                        }} />
                 </div>
-                <Text hook="text-user-volume">100</Text>
+                <Text hook="text-user-volume">
+                    {activeCall ? usersVolumeInCall[$userCache[user].key] : standardVolumeLevel}
+                </Text>
             </div>
         </div>
     {/each}
+    <Button appearance={Appearance.Primary} text={"Update"} on:click={_ => updateUserVolume()}>
+        <Icon icon={Shape.Refresh} />
+    </Button>
+    <Spacer less={true} />
 </div>
 
 <style lang="scss">
@@ -53,7 +113,6 @@
         overflow-y: scroll;
         border: var(--border-width) solid var(--border-color);
 
-        .global,
         .user-volume {
             display: inline-flex;
             flex-direction: column;

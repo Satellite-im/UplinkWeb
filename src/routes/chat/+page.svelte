@@ -56,6 +56,7 @@
     import { checkMobile } from "$lib/utils/Mobile"
     import BrowseFiles from "../files/BrowseFiles.svelte"
     import AttachmentRenderer from "$lib/components/messaging/AttachmentRenderer.svelte"
+    import ShareFile from "$lib/components/files/ShareFile.svelte"
 
     let loading = false
     let contentAsideOpen = false
@@ -112,6 +113,8 @@
     let replyTo: MessageType | undefined = undefined
     let reactingTo: string | undefined
     let fileUpload: FileInput
+
+    let fileToShare: [Attachment, string] | undefined
 
     $: chats = UIStore.state.chats
     $: pendingMessages = derived(ConversationStore.getPendingMessages($activeChat), msg => Object.values(msg))
@@ -293,9 +296,6 @@
         })
     }
 
-    async function download_attachment(message: string, attachment: Attachment) {
-        await RaygunStoreInstance.downloadAttachment($conversation!.id, message, attachment.name, attachment.size)
-    }
     let activeCallInProgress = false
     let activeCallDid = ""
 
@@ -456,6 +456,23 @@
             on:close={_ => {
                 showMarket = false
             }} />
+    {/if}
+
+    {#if fileToShare}
+        <Modal
+            on:close={_ => {
+                fileToShare = undefined
+            }}>
+            <ShareFile
+                file={{
+                    type: "attachment",
+                    chat: fileToShare[1],
+                    attachment: fileToShare[0],
+                }}
+                on:close={_ => {
+                    fileToShare = undefined
+                }} />
+        </Modal>
     {/if}
 
     {#if dragging_files > 0}
@@ -731,7 +748,8 @@
                                                             }}
                                                             messageId={message.id}
                                                             chatID={$activeChat.id}
-                                                            contextBuilder={attachment => build_context_items(message, attachment)} />
+                                                            contextBuilder={attachment => build_context_items(message, attachment)}
+                                                            on:share={e => (fileToShare = [e.detail, $activeChat.id])} />
                                                     {/if}
                                                 {/if}
                                             </Message>
