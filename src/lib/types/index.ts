@@ -309,6 +309,7 @@ export type Call = {
     chat: Chat
     inCall: boolean
     direction: CallDirection
+    volumeParticipantsLevel: { [key: string]: number }
 }
 
 export type ContextItem = {

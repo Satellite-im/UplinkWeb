@@ -1,10 +1,15 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte"
+
     export let min: number = 0
     export let max: number = 100
     export let value: number = 0
 
+    const dispatch = createEventDispatcher()
+
     function handleChange(event: any) {
         value = event.target.value
+        dispatch("change", value)
     }
 </script>
 
