@@ -9,6 +9,7 @@
     import Checkbox from "$lib/elements/Checkbox.svelte"
     import { RaygunStoreInstance, type FileAttachment } from "$lib/wasm/RaygunStore"
     import { createEventDispatcher } from "svelte"
+    import { log } from "$lib/utils/Logger"
 
     const CHAT_DIRECTORY = "chat_media"
     type File =
@@ -48,6 +49,7 @@
                 },
             ]
         }
+        log.debug("Sharing file ", att, " with ", selectedChats)
         await RaygunStoreInstance.sendMultiple(selectedChats, [], att)
         onClose()
     }
