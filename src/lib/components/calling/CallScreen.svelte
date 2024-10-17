@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { createEventDispatcher, onDestroy, onMount } from "svelte"
-    import { callTimeout, connectionOpened, TIME_TO_SHOW_CONNECTING, usersAcceptedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
+    import { callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
 
@@ -117,6 +117,15 @@
             },
         }
     }
+
+    $: if ($usersDeniedTheCall.length === chat.users.length - 1) {
+        setTimeout(() => {
+            Store.endCall()
+            VoiceRTCInstance.leaveCall()
+            dispatch("endCall")
+        }, TIME_TO_SHOW_END_CALL_FEEDBACK)
+    }
+
     let showAnimation = true
     let message = $_("settings.calling.connecting")
     let timeout: NodeJS.Timeout | undefined
@@ -128,6 +137,7 @@
     }
 
     onMount(async () => {
+        usersDeniedTheCall.set([])
         callTimeout.set(false)
         usersAcceptedTheCall.set([])
         document.addEventListener("mousedown", handleClickOutside)
@@ -179,7 +189,7 @@
             </svelte:fragment>
         </Topbar>
 
-        {#if !$callTimeout}
+        {#if !$callTimeout && ($usersDeniedTheCall.length === 0 || $usersDeniedTheCall.length !== chat.users.length - 1)}
             <div id="participants">
                 <div class="video-container">
                     <video
@@ -254,6 +264,11 @@
                         {/if}
                     {/if}
                 {/each}
+            </div>
+        {:else if $usersDeniedTheCall.length === chat.users.length - 1}
+            <div class="loading-when-no-answer">
+                <div class="spinner"></div>
+                <p>{$_("settings.calling.everybodyDeniedTheCall")}</p>
             </div>
         {:else}
             <div class="loading-when-no-answer">
