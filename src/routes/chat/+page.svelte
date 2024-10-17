@@ -22,7 +22,6 @@
         ContextMenu,
         EmojiGroup,
     } from "$lib/components"
-    import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import { OperationState, type MessageGroup as MessageGroupType } from "$lib/types"
@@ -390,15 +389,6 @@
         dragDrop(e)
     }}>
     <!-- Modals -->
-    {#if transact}
-        <Modal
-            on:close={_ => {
-                transact = false
-            }}>
-            <CreateTransaction onClose={() => (transact = false)} on:create={_ => (transact = false)} />
-        </Modal>
-    {/if}
-
     {#if previewImage}
         <Modal
             on:close={_ => {

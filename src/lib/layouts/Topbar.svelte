@@ -1,8 +1,10 @@
 <script lang="ts">
+    import CoinBalance from "$lib/components/CoinBalance.svelte"
     import { Button, Icon } from "$lib/elements"
     import { Appearance, Shape } from "$lib/enums"
     import Controls from "$lib/layouts/Controls.svelte"
     import { UIStore } from "$lib/state/ui"
+    import { WalletStore } from "$lib/state/wallet"
     import { checkMobile } from "$lib/utils/Mobile"
     import { get } from "svelte/store"
 
@@ -12,6 +14,8 @@
     let sidebarOpen: boolean = get(UIStore.state.sidebarOpen)
 
     UIStore.state.sidebarOpen.subscribe(o => (sidebarOpen = o))
+
+    $: balance = WalletStore.state.balance
 </script>
 
 <div data-cy="topbar" class="topbar {simple ? 'simple' : ''}">
@@ -63,6 +67,7 @@
             {/if}
         {:else}
             <Controls>
+                <CoinBalance balance={$balance} />
                 <slot name="controls" />
             </Controls>
         {/if}

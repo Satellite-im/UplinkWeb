@@ -27,6 +27,8 @@
     import InstallBanner from "$lib/components/ui/InstallBanner.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { swipe } from "$lib/components/ui/Swipe"
+    import Wallet from "$lib/components/wallet/Wallet.svelte"
+    import { WalletStore } from "$lib/state/wallet"
 
     TimeAgo.addDefaultLocale(en)
     let keybinds: Keybind[]
@@ -264,6 +266,9 @@
         isLocaleSet = true
     }
 
+    $: showWallet = WalletStore.state.open
+    $: walletPosition = WalletStore.state.position
+
     onMount(async () => {
         await checkIfUserIsLogged($page.route.id)
         await initializeLocale()
@@ -287,11 +292,13 @@
         <Polling rate={5000} />
         <KeyboardListener keybinds={keybinds} on:match={handleKeybindMatch} on:matchRelease={handleKeybindMatchRelease} />
         <MouseListener on:clicked={() => {}} />
-
         <Toasts />
         <IncomingCall />
         <!-- <VideoPreview /> This needs a rework as atm it only supports one to one calling. Maybe add ability to select source? -->
         <GamepadListener />
+        {#if $showWallet}
+            <Wallet position={{ top: $walletPosition[0], left: $walletPosition[1] }} />
+        {/if}
         <Market on:close={() => UIStore.toggleMarket()} />
         <InstallBanner />
         <slot></slot>
