@@ -45,7 +45,10 @@
                         type: "unknown/unknown",
                         remotePath: "",
                     }}
-                    on:download={() => download_attachment(messageId, attachment)} />
+                    on:download={() => download_attachment(messageId, attachment)}
+                    on:share={() => {
+                        dispatch("share", attachment)
+                    }} />
             {:else if attachment.kind === MessageAttachmentKind.Image}
                 <ImageEmbed
                     source={attachment.location}
