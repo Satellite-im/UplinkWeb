@@ -1,7 +1,8 @@
 import { EmojiFont, Font, Identicon, KeybindAction, KeybindState, Locale } from "$lib/enums"
-import type { Keybind } from "$lib/types"
+import type { FontOption, Keybind } from "$lib/types"
+import type { ISettingsState } from "."
 
-export let defaultKeybinds = [
+export let defaultKeybinds: Keybind[] = [
     {
         action: KeybindAction.IncreaseFontSize,
         key: ".",
@@ -64,7 +65,7 @@ export let defaultKeybinds = [
     },
 ]
 
-export const availableFonts = [
+export const availableFonts: FontOption[] = [
     { text: Font.Poppins, value: Font.Poppins },
     { text: Font.SpaceMono, value: Font.SpaceMono },
     { text: Font.ChakraPetch, value: Font.ChakraPetch },
@@ -83,7 +84,7 @@ export const availableFonts = [
     { text: Font.OpenDyslexic, value: Font.OpenDyslexic },
 ]
 
-export const availableIdenticons = [
+export const availableIdenticons: FontOption[] = [
     { text: Identicon.Avataaars, value: Identicon.Avataaars },
     { text: Identicon.AvataaarsNeutral, value: Identicon.AvataaarsNeutral },
     { text: Identicon.Bots, value: Identicon.Bots },
@@ -98,20 +99,15 @@ export const availableIdenticons = [
     { text: Identicon.Shapes, value: Identicon.Shapes },
 ]
 
-export const availableEmoji = [
+export const availableEmoji: FontOption[] = [
     { text: EmojiFont.NotoEmoji.split(".")[0], value: EmojiFont.NotoEmoji },
     { text: EmojiFont.OpenMoji.split(".")[0], value: EmojiFont.OpenMoji },
     { text: EmojiFont.Blobmoji.split(".")[0], value: EmojiFont.Blobmoji },
     { text: EmojiFont.Twemoji.split(".")[0], value: EmojiFont.Twemoji },
     { text: EmojiFont.Fluent.split(".")[0], value: EmojiFont.Fluent },
 ]
-export let defaultSettings = {
+export let defaultSettings: ISettingsState = {
     lang: Locale.EN_US,
-    friends: [],
-    favorites: [],
-    activeRequests: [],
-    blocked: [],
-    files: [],
     widgets: {
         show: false,
     },
@@ -135,9 +131,7 @@ export let defaultSettings = {
     },
     audio: {
         inputDevice: "Default",
-        videoInputDevice: "Default",
         outputDevice: "Default",
-        echoCancellation: true,
         interfaceSounds: false,
         controlSounds: true,
         messageSounds: true,
