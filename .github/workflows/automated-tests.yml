@@ -145,7 +145,7 @@ jobs:
                   keep_files: true
                   publish_branch: gh-pages
                   publish_dir: ./playwright-report
-                  destination_dir: ${{ steps.timestampidone.outputs.timestamp }}
+                  destination_dir: /playwright/${{ steps.timestampidone.outputs.timestamp }}
 
             - name: Stop ssh-agent job from first deploy required for deploying a second time
               run: killall ssh-agent
@@ -168,27 +168,6 @@ jobs:
                   cp -r allure/desktop-chrome/* allure-results/
                   cp -r allure/mobile-chrome/* allure-results/
 
-            - name: Get Allure history
-              uses: actions/checkout@v4.2.0
-              if: always()
-              continue-on-error: true
-              with:
-                  repository: Satellite-im/test-reports
-                  ref: gh-pages
-                  path: gh-pages
-
-            - name: Generate Allure Report
-              if: always()
-              uses: simple-elf/allure-report-action@master
-              with:
-                  gh_pages: gh-pages
-                  allure_results: allure-results
-                  allure_report: allure-report
-                  allure_history: allure-history
-                  keep_reports: 100
-                  github_repo: Satellite-im/test-reports
-                  github_repo_owner: Satellite-im
-
             - name: Set a timestamp two
               id: timestampidtwo
               run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
@@ -202,14 +181,14 @@ jobs:
                   keep_files: true
                   publish_branch: gh-pages
                   publish_dir: ./allure-history
-                  destination_dir: ${{ steps.timestampidtwo.outputs.timestamp }}
+                  destination_dir: /allure/${{ steps.timestampidtwo.outputs.timestamp }}
 
             - name: Comment PR with Allure test results
               if: always() && github.event_name == 'pull_request'
               uses: mshick/add-pr-comment@v2.8.2
               with:
                   message: |
-                      Automated tests execution is complete! You can find the Playwright test report [here](https://satellite-im.github.io/test-reports/${{ steps.timestampidone.outputs.timestamp }}/) and the Allure Test Report [here](https://satellite-im.github.io/test-reports/${{ steps.timestampidtwo.outputs.timestamp }}/)
+                      Automated tests execution is complete! You can find the Playwright test report [here](https://satellite-im.github.io/test-reports/playwright/${{ steps.timestampidone.outputs.timestamp }}/) and the Allure Test Report [here](https://satellite-im.github.io/test-reports/allure/${{ steps.timestampidtwo.outputs.timestamp }}/)
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
