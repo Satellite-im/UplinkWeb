@@ -748,6 +748,7 @@
                                                             }}
                                                             messageId={message.id}
                                                             chatID={$activeChat.id}
+                                                            contextBuilder={attachment => build_context_items(message, attachment)}
                                                             on:share={e => (fileToShare = [e.detail, $activeChat.id])} />
                                                     {/if}
                                                 {/if}
