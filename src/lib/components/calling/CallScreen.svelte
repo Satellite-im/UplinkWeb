@@ -265,7 +265,7 @@
                     {/if}
                 {/each}
             </div>
-        {:else if $usersDeniedTheCall.length === chat.users.length - 1}
+        {:else if $usersDeniedTheCall.length === chat.users.length - 1 && chat.users.length > 1}
             <div class="loading-when-no-answer">
                 <div class="spinner"></div>
                 <p>{$_("settings.calling.everybodyDeniedTheCall")}</p>
