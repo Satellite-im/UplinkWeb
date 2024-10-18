@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { createEventDispatcher, onDestroy, onMount } from "svelte"
-    import { callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
+    import { callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, timeCallStarted, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
 
@@ -155,6 +155,17 @@
                 }, TIME_TO_SHOW_CONNECTING)
             }
         }
+        if ($timeCallStarted) {
+            let timeCallStartedInterval = setInterval(() => {
+                let now = new Date()
+                let timeDifference = now.getTime() - $timeCallStarted.getTime()
+                if (timeDifference > TIME_TO_SHOW_CONNECTING) {
+                    showAnimation = false
+                    message = $_("settings.calling.noResponse")
+                    clearInterval(timeCallStartedInterval)
+                }
+            }, 1000)
+        }
 
         if (VoiceRTCInstance.localVideoCurrentSrc) {
             await VoiceRTCInstance.getLocalStream(true)
@@ -214,7 +225,7 @@
                 {#each chat.users as user (user)}
                     {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                         <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
-                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && !$remoteStreams[user]}
                         {#if showAnimation && !$usersAcceptedTheCall.includes(user)}
                             <div class="calling-animation">
                                 <div class="shaking-participant">
