@@ -690,7 +690,7 @@
                             {#if group.messages[0].inReplyTo}
                                 <StoreResolver value={group.messages[0].inReplyTo.details.origin} resolver={v => Store.getUser(v)} let:resolved>
                                     <MessageReplyContainer first remote={group.messages[0].details.remote} image={resolved.profile.photo.image}>
-                                        <Message reply remote={group.messages[0].details.remote}>
+                                        <Message reply remote={group.messages[0].inReplyTo.details.remote}>
                                             {#each group.messages[0].inReplyTo.text as line}
                                                 <Text markdown={line} muted size={Size.Small} />
                                             {/each}
