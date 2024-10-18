@@ -63,7 +63,7 @@
     data-tooltip={tooltip}
     disabled={disabled || loading}
     on:click={_ => {
-        if (sound && soundSource) {
+        if ($sound && soundSource) {
             playSound(soundSource)
         }
     }}

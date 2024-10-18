@@ -15,7 +15,7 @@
 
     // Function to dispatch a 'click' event
     function onToggle(_: Event) {
-        if (sound) {
+        if ($sound) {
             playSound(on ? Sounds.On : Sounds.Off)
         }
         dispatch("toggle", on)
