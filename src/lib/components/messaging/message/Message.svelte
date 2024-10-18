@@ -81,6 +81,9 @@
             border-radius: var(--border-radius-more);
             border-bottom-left-radius: var(--border-radius-minimal);
             align-self: flex-start;
+            &.reply {
+                background-color: color-mix(in srgb, var(--alt-color) 50%, transparent);
+            }
         }
 
         &.highlight-success {
@@ -135,6 +138,7 @@
             font-size: var(--font-size-smaller);
             border-radius: var(--border-radius-more) !important;
             padding: var(--padding-less);
+            background-color: color-mix(in srgb, var(--primary-color) 50%, transparent);
 
             &.position-local {
                 align-self: flex-end;
