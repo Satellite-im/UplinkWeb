@@ -130,10 +130,11 @@
     let noResponseVisible = false
     let message = $_("settings.calling.connecting")
     let timeout: NodeJS.Timeout | undefined
+    let hideNoResponseUsersTimeout: NodeJS.Timeout | undefined
     let callSound: SoundHandler | undefined = undefined
 
     function hideNoResponseUsersAfterAPeriodOfTime() {
-        setTimeout(() => {
+        hideNoResponseUsersTimeout = setTimeout(() => {
             noResponseVisible = false
         }, 10000)
     }
@@ -195,6 +196,9 @@
         subscribeFour()
         if (timeout) {
             clearTimeout(timeout)
+        }
+        if (hideNoResponseUsersTimeout) {
+            clearTimeout(hideNoResponseUsersTimeout)
         }
         callSound?.stop()
         callSound = undefined
