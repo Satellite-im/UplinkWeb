@@ -1,16 +1,23 @@
 <script lang="ts">
+    import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
+    import { SettingsStore } from "$lib/state"
     import { createEventDispatcher } from "svelte"
+    import { derived } from "svelte/store"
 
     export let on: boolean = false
     export let small: boolean = false
     export let hook: string = ""
     export let disabled: boolean = false
+    $: sound = derived(SettingsStore.state, s => s.audio.interfaceSounds)
 
     // Create an event dispatcher
     const dispatch = createEventDispatcher()
 
     // Function to dispatch a 'click' event
     function onToggle(_: Event) {
+        if ($sound) {
+            playSound(on ? Sounds.On : Sounds.Off)
+        }
         dispatch("toggle", on)
     }
 </script>

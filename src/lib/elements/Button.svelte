@@ -1,7 +1,10 @@
 <script lang="ts">
+    import { SettingsStore } from "$lib/state"
+    import { derived } from "svelte/store"
     import { Appearance, TooltipPosition } from "../enums/index"
 
     import { Loader, Text } from "./"
+    import { playSound, Sounds } from "$lib/components/utils/SoundHandler"
 
     export let tooltip: string | null = ""
     export let tooltipPosition: TooltipPosition = TooltipPosition.MIDDLE
@@ -18,11 +21,13 @@
     export let hideTextOnMobile: boolean = false
     export let color: string = ""
     export let badge: number = 0
+    export let soundSource: Sounds | undefined = Sounds.Press
 
     // Allow parent to override / add classes
     let clazz = ""
     export { clazz as class }
     let buttonElement: HTMLElement
+    $: sound = derived(SettingsStore.state, s => s.audio.interfaceSounds)
 
     function tooltipPositionClass(button: HTMLElement) {
         const rect = button.getBoundingClientRect()
@@ -57,6 +62,11 @@
     data-cy={hook}
     data-tooltip={tooltip}
     disabled={disabled || loading}
+    on:click={_ => {
+        if ($sound && soundSource) {
+            playSound(soundSource)
+        }
+    }}
     on:click
     on:contextmenu>
     {#if badge > 0}
