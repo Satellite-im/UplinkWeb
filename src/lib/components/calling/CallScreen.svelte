@@ -127,9 +127,16 @@
     }
 
     let showAnimation = true
+    let noResponseVisible = false
     let message = $_("settings.calling.connecting")
     let timeout: NodeJS.Timeout | undefined
     let callSound: SoundHandler | undefined = undefined
+
+    function hideNoResponseUsersAfterAPeriodOfTime() {
+        setTimeout(() => {
+            noResponseVisible = false
+        }, 10000)
+    }
 
     $: if ($usersAcceptedTheCall.length > 0) {
         callSound?.stop()
@@ -152,6 +159,8 @@
                     callSound = undefined
                     showAnimation = false
                     message = $_("settings.calling.noResponse")
+                    noResponseVisible = true
+                    hideNoResponseUsersAfterAPeriodOfTime()
                 }, TIME_TO_SHOW_CONNECTING)
             }
         }
@@ -161,8 +170,10 @@
                 let timeDifference = now.getTime() - $timeCallStarted.getTime()
                 if (timeDifference > TIME_TO_SHOW_CONNECTING) {
                     showAnimation = false
+                    noResponseVisible = true
                     message = $_("settings.calling.noResponse")
                     clearInterval(timeCallStartedInterval)
+                    hideNoResponseUsersAfterAPeriodOfTime()
                 }
             }, 1000)
         }
@@ -238,7 +249,7 @@
                                 <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                 <p>{$_("settings.calling.acceptedCall")}</p>
                             </div>
-                        {:else}
+                        {:else if noResponseVisible}
                             <div class="no-response">
                                 <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                 <p>{message}</p>
