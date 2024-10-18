@@ -687,6 +687,17 @@
                 {#if conversation}
                     {#each $conversation.messages as group}
                         <StoreResolver value={group.details.origin} resolver={v => Store.getUser(v)} let:resolved>
+                            {#if group.messages[0].inReplyTo}
+                                <StoreResolver value={group.messages[0].inReplyTo.details.origin} resolver={v => Store.getUser(v)} let:resolved>
+                                    <MessageReplyContainer first remote={group.messages[0].details.remote} image={resolved.profile.photo.image}>
+                                        <Message reply remote={group.messages[0].inReplyTo.details.remote}>
+                                            {#each group.messages[0].inReplyTo.text as line}
+                                                <Text markdown={line} muted size={Size.Small} />
+                                            {/each}
+                                        </Message>
+                                    </MessageReplyContainer>
+                                </StoreResolver>
+                            {/if}
                             <MessageGroup
                                 profilePictureRequirements={{
                                     notifications: 0,
@@ -703,10 +714,10 @@
                                 username={resolved.name}
                                 subtext={getTimeAgo(group.messages[0].details.at)}>
                                 {#each group.messages as message, idx}
-                                    {#if message.inReplyTo}
+                                    {#if message.inReplyTo && idx !== 0}
                                         <StoreResolver value={message.inReplyTo.details.origin} resolver={v => Store.getUser(v)} let:resolved>
-                                            <MessageReplyContainer remote={message.inReplyTo.details.remote} image={resolved.profile.photo.image}>
-                                                <Message reply remote={message.inReplyTo.details.remote}>
+                                            <MessageReplyContainer remote={message.details.remote} image={resolved.profile.photo.image}>
+                                                <Message reply remote={message.details.remote}>
                                                     {#each message.inReplyTo.text as line}
                                                         <Text markdown={line} muted size={Size.Small} />
                                                     {/each}
