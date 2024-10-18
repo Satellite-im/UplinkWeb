@@ -25,10 +25,10 @@
 
     $: users = Store.getUsers(chat.users)
     $: lookupUsers = Store.getUsersLookup(chat.users)
-    $: chatName = chat.kind === ChatType.Group ? chat.name : ($users[1]?.name ?? $users[0].name)
+    $: chatName = chat.kind === ChatType.Group ? chat.name : $users[1]?.name ?? $users[0].name
     $: loading = chatName === "Unknown User" || ($users.length <= 2 && ($users[1]?.loading == true || $users[0].loading == true))
     $: directChatPhoto = $users[1]?.profile.photo.image ?? $users[0].profile.photo.image
-    $: chatStatus = $users.length > 2 ? Status.Offline : ($users[1]?.profile.status ?? $users[0].profile.status)
+    $: chatStatus = $users.length > 2 ? Status.Offline : $users[1]?.profile.status ?? $users[0].profile.status
     $: simpleUnreads = derived(SettingsStore.state, s => s.messaging.simpleUnreads)
     $: user = chat.typing_indicator.users().map(u => {
         return $lookupUsers[u]
@@ -74,15 +74,17 @@
         }, 500)
     })
 
+    $: isActiveChat = get(Store.state.activeChat)?.id === chat.id
+
     function getClass() {
         if (!interactable) return ""
-        return `${cta ? "cta" : ""} ${get(Store.state.activeChat)?.id === chat.id ? "active-chat" : ""}`
+        return `${cta ? "cta" : ""} `
     }
 </script>
 
 <button
     data-cy="chat-preview"
-    class="chat-preview {getClass()}"
+    class="chat-preview {getClass()} {isActiveChat ? 'active-chat' : ''}"
     disabled={!interactable}
     on:contextmenu
     on:click={_ => {
