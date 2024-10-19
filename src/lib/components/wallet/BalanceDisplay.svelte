@@ -16,7 +16,7 @@
 
 <div class="balance">
     <div class="num">
-        <Icon icon={selectedCurrency.icon} size={Size.Larger} muted />
+        <Icon icon={selectedCurrency.icon} size={Size.Larger} muted filled />
         {#each balanceChars as char, index}
             {#if char >= "0" && char <= "9"}
                 <Digit targetDigit={parseInt(char)} duration={1000 + index * 100} />

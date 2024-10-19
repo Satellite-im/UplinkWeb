@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Icon } from "$lib/elements"
-    import { Shape } from "$lib/enums"
+    import { Shape, Size } from "$lib/enums"
     import type { Currency } from "$lib/types/wallet"
     import { createEventDispatcher, onMount, onDestroy } from "svelte"
 
@@ -59,7 +59,7 @@
             {#each sortedCurrencies as currency}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <li class="option {currency.enabled ? '' : 'disabled'}" on:click={() => selectCurrency(currency)}>
-                    <Icon icon={currency.icon} filled />
+                    <Icon icon={currency.icon} filled size={Size.Large} />
                     <span>{currency.name}</span>
                 </li>
             {/each}

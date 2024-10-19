@@ -6,13 +6,15 @@
     import ActionButtons from "./ActionButtons.svelte"
     import QRCodeDisplay from "./QRCodeDisplay.svelte"
     import QRScanner from "./QRScanner.svelte"
-    import { Appearance, Shape } from "$lib/enums"
+    import { Appearance, Shape, Size } from "$lib/enums"
     import { Button, Icon } from "$lib/elements"
     import Input from "$lib/elements/Input/Input.svelte"
     import Label from "$lib/elements/Label.svelte"
     import { WalletStore } from "$lib/state/wallet"
     import EthereumRpc from "$lib/components/wallet/platforms/ethereum/EthereumRPC.svelte"
     import Switch from "$lib/elements/Switch.svelte"
+    import History from "./History.svelte"
+    import type { Currency } from "$lib/types"
 
     export let position = { top: 50, left: 50 } // Initial position
 
@@ -26,15 +28,6 @@
 
     let currentView: ViewMode = ViewMode.None
     let scannedQRCode = ""
-
-    // Currency data
-    interface Currency {
-        name: string
-        icon: Shape
-        balance: number
-        address: string
-        enabled: boolean
-    }
 
     let currencies: Currency[] = [
         {
@@ -59,10 +52,24 @@
             enabled: false,
         },
         {
-            name: "Tether (USDT)",
+            name: "Tether",
             icon: Shape.Tether,
             balance: 10.5678,
             address: "usdt-address-000",
+            enabled: false,
+        },
+        {
+            name: "USDC",
+            icon: Shape.USDC,
+            balance: 5672,
+            address: "usdc-address-000",
+            enabled: false,
+        },
+        {
+            name: "Filecoin",
+            icon: Shape.Filecoin,
+            balance: 459,
+            address: "fil-address-420",
             enabled: false,
         },
         {
@@ -82,6 +89,7 @@
     ]
 
     let selectedCurrency: Currency = currencies[0]
+    let showHistory: boolean = false
 
     // Reference to the root element of the component
     let container: HTMLElement
@@ -94,6 +102,10 @@
 
     function handleReceive() {
         currentView = ViewMode.Receive
+    }
+
+    function handleHistory() {
+        showHistory = !showHistory
     }
 
     function startQRScanner() {
@@ -183,10 +195,14 @@
     <!-- Toolbar -->
     <Toolbar bind:walletPosition={position} />
 
+    {#if showHistory}
+        <History on:close={handleHistory} />
+    {/if}
+
     <div class="header">
         <CurrencySelector currencies={currencies} bind:selectedCurrency={selectedCurrency} on:currencySelected={handleCurrencySelected} />
 
-        <Button appearance={Appearance.Alt} on:click={handleClose} icon tooltip="History">
+        <Button appearance={Appearance.Alt} icon tooltip="History" on:click={handleHistory}>
             <Icon icon={Shape.History} />
         </Button>
     </div>
@@ -228,7 +244,7 @@
     .wallet {
         position: absolute;
         z-index: 100000;
-        min-width: var(--min-component-width);
+        min-width: var(--wallet-width);
         margin: 0 auto;
         padding: var(--padding);
         background-color: var(--opaque-color);
