@@ -16,15 +16,16 @@ export const TIME_TO_SHOW_END_CALL_FEEDBACK = 3500
 export const TIME_TO_SHOW_CONNECTING = 30000
 
 let timeOuts: NodeJS.Timeout[] = []
+
 export const usersDeniedTheCall: Writable<string[]> = writable([])
 export const usersAcceptedTheCall: Writable<string[]> = writable([])
+export const connectionOpened = writable(false)
+export const timeCallStarted: Writable<Date | null> = writable(null)
 
 export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
     None = "NONE",
 }
-
-export const connectionOpened = writable(false)
 
 export type RemoteStream = {
     user: VoiceRTCUser
@@ -215,6 +216,7 @@ export class CallRoom {
                 participant[1].handleRemoteStream(stream)
             }
         })
+        room.onPeerTrack((stream, peer, _meta) => {})
         // room.onPeerTrack((stream, peer, meta) => {})
     }
 
@@ -397,6 +399,7 @@ export class VoiceRTC {
                     log.info(`Receiving connection on channel: ${conn.metadata.channel} from ${conn.metadata.id}, username: ${conn.metadata.username}`)
                     this.incomingConnections.push(conn)
                     this.incomingCallFrom = [conn.metadata.channel, conn]
+                    timeCallStarted.set(new Date(conn.metadata.timeCallStarted))
                     Store.setPendingCall(Store.getCallingChat(this.channel!)!, CallDirection.Inbound)
                 })
 
@@ -505,6 +508,7 @@ export class VoiceRTC {
                             did: get(Store.state.user).key,
                             username: get(Store.state.user).name,
                             channel: this.channel,
+                            timeCallStarted: new Date().toISOString(),
                         },
                     })
                     conn.on("open", () => {
