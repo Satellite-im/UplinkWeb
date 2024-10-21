@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { createEventDispatcher, onDestroy, onMount } from "svelte"
-    import { callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
+    import { callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, timeCallStarted, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -133,6 +133,15 @@
         }
     }
 
+    let noResponseVisible = false
+    let hideNoResponseUsersTimeout: NodeJS.Timeout | undefined
+
+    function hideNoResponseUsersAfterAPeriodOfTime() {
+        hideNoResponseUsersTimeout = setTimeout(() => {
+            noResponseVisible = false
+        }, 10000)
+    }
+
     onMount(async () => {
         await MultipassStoreInstance.listUsersForACall(chat.users)
         userCache = Store.getUsersLookup(chat.users)
@@ -151,8 +160,23 @@
                     callSound = undefined
                     showAnimation = false
                     message = $_("settings.calling.noResponse")
+                    noResponseVisible = true
+                    hideNoResponseUsersAfterAPeriodOfTime()
                 }, TIME_TO_SHOW_CONNECTING)
             }
+        }
+        if ($timeCallStarted) {
+            let timeCallStartedInterval = setInterval(() => {
+                let now = new Date()
+                let timeDifference = now.getTime() - $timeCallStarted.getTime()
+                if (timeDifference > TIME_TO_SHOW_CONNECTING) {
+                    showAnimation = false
+                    noResponseVisible = true
+                    message = $_("settings.calling.noResponse")
+                    clearInterval(timeCallStartedInterval)
+                    hideNoResponseUsersAfterAPeriodOfTime()
+                }
+            }, 1000)
         }
 
         if (VoiceRTCInstance.localVideoCurrentSrc) {
@@ -172,6 +196,9 @@
         subscribeFour()
         if (timeout) {
             clearTimeout(timeout)
+        }
+        if (hideNoResponseUsersTimeout) {
+            clearTimeout(hideNoResponseUsersTimeout)
         }
         callSound?.stop()
         callSound = undefined
@@ -213,7 +240,7 @@
                 {#each chat.users as user (user)}
                     {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                         <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
-                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && VoiceRTCInstance.toCall && !$remoteStreams[user]}
+                    {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && !$remoteStreams[user]}
                         {#if showAnimation && !$usersAcceptedTheCall.includes(user)}
                             <div class="calling-animation">
                                 <div class="shaking-participant">
@@ -226,7 +253,7 @@
                                 <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                 <p>{$_("settings.calling.acceptedCall")}</p>
                             </div>
-                        {:else}
+                        {:else if noResponseVisible}
                             <div class="no-response">
                                 <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                 <p>{message}</p>
