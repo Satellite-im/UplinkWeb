@@ -73,6 +73,7 @@
                 size={Size.Larger}
                 noIndicator
                 highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
+            <div class="user-name">{participant.name}</div>
         </div>
     {/if}
 </div>
@@ -82,6 +83,23 @@
         width: fit-content;
         height: fit-content;
         position: relative;
+
+        .simple {
+            display: flex; /* Alinha a imagem e o nome lado a lado */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        .user-name {
+            color: white;
+            padding-top: 8px;
+            font-size: 14px;
+            text-align: center; /* Alinha o texto no centro */
+        }
 
         video {
             width: 300px;
@@ -118,14 +136,6 @@
                 border-radius: var(--border-radius-less);
                 backdrop-filter: blur(var(--blur-radius));
                 -webkit-backdrop-filter: blur(var(--blur-radius));
-            }
-        }
-
-        .simple {
-            border-radius: 50%;
-            position: relative;
-            &:hover {
-                cursor: pointer;
             }
         }
 
