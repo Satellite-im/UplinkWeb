@@ -670,6 +670,8 @@
                     {/if}
                 </svelte:fragment>
             </Topbar>
+        {:else}
+            <Topbar />
         {/if}
         {#if activeCallInProgress && activeCallDid === $activeChat.id}
             <CallScreen
