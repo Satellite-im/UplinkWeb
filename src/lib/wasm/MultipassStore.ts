@@ -392,6 +392,31 @@ class MultipassStore {
     }
 
     /**
+     * Lists users for a call.
+     * Update users cache if they are not already in cache.
+     * It avoids problem if there is some user in call that is not current user's friend.
+     */
+    async listUsersForACall(callUsers: Array<string>) {
+        const multipass = get(this.multipassWritable)
+
+        if (multipass) {
+            try {
+                let usersInCall: Array<string> = []
+                for (let i = 0; i < callUsers.length; i++) {
+                    let userInCall = await this.identity_from_did(callUsers[i])
+                    if (userInCall) {
+                        usersInCall.push(userInCall.key)
+                        // Add users in cache
+                        Store.updateUser(userInCall)
+                    }
+                }
+            } catch (error) {
+                log.error("Error getting users in a call: " + error)
+            }
+        }
+    }
+
+    /**
      * Removes a friend.
      * @param did - The DID of the friend to be removed.
      * @returns A Result containing either success or failure with a WarpError.
@@ -611,7 +636,7 @@ class MultipassStore {
                                 overlay: "",
                             },
                             status: status,
-                            status_message: identity === undefined ? "" : (identity.status_message ?? ""),
+                            status_message: identity === undefined ? "" : identity.status_message ?? "",
                         },
                         integrations: identity === undefined ? new Map<string, string>() : identity.metadata,
                         media: {

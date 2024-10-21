@@ -85,7 +85,9 @@
     }
 
     onDestroy(() => {
-        if (scrollContainer.scrollHeight <= scrollContainer.clientHeight) markAsRead($chat.id)
+        if (scrollContainer && scrollContainer.scrollHeight) {
+            if (scrollContainer?.scrollHeight <= scrollContainer?.clientHeight) markAsRead($chat.id)
+        }
     })
 </script>
 
