@@ -85,7 +85,7 @@
         position: relative;
 
         .simple {
-            display: flex; /* Alinha a imagem e o nome lado a lado */
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -98,7 +98,7 @@
             color: white;
             padding-top: 8px;
             font-size: 14px;
-            text-align: center; /* Alinha o texto no centro */
+            text-align: center;
         }
 
         video {
