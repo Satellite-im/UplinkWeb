@@ -342,6 +342,7 @@
             "startCallMessage": "📞 A call started at {value}.",
             "endCallMessage": "📴 The call ended at {formattedEndTime}. Duration: {duration}.",
             "callMissed": "📞 Missed call",
+            "finishCurrentCallBeforeStartingAnother": "Finish current call before starting another",
             "voice": "Voice",
             "video": "Video",
             "decline": "Decline",
