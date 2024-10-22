@@ -228,13 +228,16 @@
         <div class="send">
             <Label text={$_("payments.enter_address")} />
             <Input />
-            <Label text="Add An Optional Note" />
-            <Input />
-            <Label text="Or" />
+            <Label text={$_("generic.or")} />
         </div>
 
         <!-- QR Code Scanner -->
         <QRScanner on:scanned={handleQRCodeScanned} />
+
+        <div class="send">
+            <Label text={$_("payments.add_note")} />
+            <Input />
+        </div>
     {/if}
 
     <!-- Display Scanned QR Code -->
