@@ -504,17 +504,19 @@ export class VoiceRTC {
         while (!handled && !accepted && attempts < maxRetries) {
             try {
                 if (!conn) {
+                    let callStartedDate = new Date()
                     log.debug(`Trying to send invitation send out to ${peer} ${conn}`)
                     conn = this.localPeer!.connect(peer, {
                         metadata: {
                             did: get(Store.state.user).key,
                             username: get(Store.state.user).name,
                             channel: this.channel,
-                            timeCallStarted: new Date().toISOString(),
+                            timeCallStarted: callStartedDate.toISOString(),
                         },
                     })
                     conn.on("open", () => {
                         connected = true
+                        timeCallStarted.set(callStartedDate)
                     })
                     conn.once("data", d => {
                         if (d === CALL_ACK) {
