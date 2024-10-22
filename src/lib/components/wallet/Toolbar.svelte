@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onDestroy } from "svelte"
+    import { createEventDispatcher, onDestroy } from "svelte"
     import { Icon, Text } from "$lib/elements"
     import { Appearance, Shape, Size } from "$lib/enums"
     import Button from "$lib/elements/Button.svelte"
@@ -9,7 +9,10 @@
     let dragging = false
     let startX = 0
     let startY = 0
-
+    const dispatch = createEventDispatcher()
+    function handleClose() {
+        dispatch("close")
+    }
     function onMouseDown(event: MouseEvent) {
         dragging = true
         startX = event.clientX - walletPosition.left
@@ -45,9 +48,8 @@
     <div class="title">
         <Text muted size={Size.Smaller}>Wallet</Text>
     </div>
-
     <Controls>
-        <Button appearance={Appearance.Alt} icon small>
+        <Button appearance={Appearance.Alt} icon small on:click={() => handleClose()}>
             <Icon icon={Shape.XMark} />
         </Button>
     </Controls>

@@ -193,7 +193,7 @@
 
 <div bind:this={container} data-cy="wallet" class="wallet" style="top: {position.top}px; left: {position.left}px;">
     <!-- Toolbar -->
-    <Toolbar bind:walletPosition={position} />
+    <Toolbar bind:walletPosition={position} on:close={handleClose} />
 
     {#if showHistory}
         <History on:close={handleHistory} />
