@@ -136,15 +136,13 @@
                 {chatName}
             </Text>
             <div class="right">
-                {#if $callInProgress === chat.id}
-                    <Button appearance={Appearance.Success} text={elapsedTime} small={true} on:click={_ => {}}>
-                        <Icon icon={Shape.PhoneCall} />
-                    </Button>
-                {:else}
-                    <Text hook="chat-preview-timestamp" class="timestamp min-text" loading={loading} size={Size.Smallest} muted>
+                <Text hook="chat-preview-timestamp" class="timestamp min-text" loading={loading} size={Size.Smallest} muted>
+                    {#if $callInProgress === chat.id}
+                        <Icon icon={Shape.PhoneCall} highlight={Appearance.Success} />
+                    {:else}
                         {timeago}
-                    </Text>
-                {/if}
+                    {/if}
+                </Text>
                 {#if !loading}
                     {#if chat.notifications > 0 && !$simpleUnreads}
                         <span class="unreads">
@@ -157,7 +155,6 @@
             </div>
         </div>
         <p class="last-message">
-            <Spacer less={true} />
             {#if loading}
                 <Loader text small />
                 <Loader text small />
