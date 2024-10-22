@@ -213,7 +213,7 @@
     <BalanceDisplay selectedCurrency={selectedCurrency} />
 
     <div class="show-on-profile">
-        <Label text={`Display ${selectedCurrency.name} on profile`} />
+        <Label text={$_("payments.display_currency", { values: { currency: selectedCurrency.name } })} />
 
         <Switch small />
     </div>

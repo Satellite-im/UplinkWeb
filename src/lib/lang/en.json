@@ -195,6 +195,7 @@
         "send_coin": "Send Coin",
         "amount": "Amount",
         "enter_address": "Enter Wallet Address",
+        "display_currency": "Display {currency} on profile",
         "from": "From",
         "to": "To",
         "note": "Note",
