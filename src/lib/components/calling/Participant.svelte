@@ -7,6 +7,7 @@
     import { mock_users } from "$lib/mock/users"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Icon, Button, Text } from "$lib/elements"
+    import Spacer from "$lib/elements/Spacer.svelte"
 
     export let participant: User = defaultUser
     export let hasVideo: boolean = false
@@ -73,7 +74,8 @@
                 size={Size.Larger}
                 noIndicator
                 highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
-            <div class="user-name">{participant.name}</div>
+            <Spacer less />
+            <Text singleLine size={Size.Smaller}>{participant.name}</Text>
         </div>
     {/if}
 </div>
@@ -92,13 +94,6 @@
             &:hover {
                 cursor: pointer;
             }
-        }
-
-        .user-name {
-            color: white;
-            padding-top: 8px;
-            font-size: 14px;
-            text-align: center;
         }
 
         video {
