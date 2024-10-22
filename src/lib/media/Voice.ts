@@ -609,6 +609,7 @@ export class VoiceRTC {
 
     async leaveCall(sendEndCallMessage = false) {
         callInProgress.set(null)
+        timeCallStarted.set(null)
         usersDeniedTheCall.set([])
         callTimeout.set(false)
         connectionOpened.set(false)
