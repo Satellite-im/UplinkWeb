@@ -15,6 +15,7 @@
     import Switch from "$lib/elements/Switch.svelte"
     import History from "./History.svelte"
     import type { Currency } from "$lib/types"
+    import { _ } from "svelte-i18n"
 
     export let position = { top: 50, left: 50 } // Initial position
 
@@ -225,7 +226,9 @@
 
     {#if currentView === ViewMode.QRScanner}
         <div class="send">
-            <Label text="Enter Address" />
+            <Label text={$_("payments.enter_address")} />
+            <Input />
+            <Label text="Add An Optional Note" />
             <Input />
             <Label text="Or" />
         </div>

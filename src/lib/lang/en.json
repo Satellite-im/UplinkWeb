@@ -193,6 +193,7 @@
         "receiving_to": "Receiving to",
         "send_coin": "Send Coin",
         "amount": "Amount",
+        "enter_address": "Enter Wallet Address",
         "from": "From",
         "to": "To",
         "note": "Note",
