@@ -95,11 +95,18 @@
                             <Text muted>{$user.profile.status_message}</Text>
                         {/if}
                     {:else}
-                        <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Large} image={$user.profile.photo.image} status={$user.profile.status} />
-                        <Text>{$user.name}</Text>
-                        <Text>{$_("settings.calling.userInviteToAGroupCall")}</Text>
+                        <ProfilePicture id={$user.key} hook="friend-profile-picture" size={Size.Medium} image={$user.profile.photo.image} status={$user.profile.status} />
+                        <div class="text-container">
+                            <Text>
+                                {@html $_("settings.calling.userInviteToAGroupCall", {
+                                    values: {
+                                        user: `<span class="bold-text" style="font-weight: bold">${$user.name}</span>`,
+                                        group: `<span class="bold-text" style="font-weight: bold">${$callChat.name}</span>`,
+                                    },
+                                })}
+                            </Text>
+                        </div>
                         <ProfilePictureMany users={$users} />
-                        <Text>{$callChat.name}</Text>
                     {/if}
                     <Spacer less={true} />
                     <Controls>
@@ -127,7 +134,6 @@
         gap: var(--gap);
         width: 100%;
         flex: 1;
-
         .body {
             position: absolute;
             z-index: 1000;
@@ -152,6 +158,11 @@
                 justify-content: center;
                 align-items: center;
                 border: var(--border-width) solid var(--success-color);
+
+                .text-container {
+                    max-width: 80%;
+                    padding-left: 25px;
+                }
             }
         }
     }

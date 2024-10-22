@@ -67,8 +67,7 @@
         setTimeout(() => {
             if (scrollContainer) {
                 if (unreads) {
-                    let element = document.getElementById(`message-${unreads.last_viewed}`)
-                    if (element) element.scrollIntoView({ behavior: "smooth" })
+                    scrollToUnread()
                 } else {
                     scrollContainer.scrollTop = scrollContainer.scrollHeight
                 }
@@ -82,6 +81,18 @@
             c.last_view_date = new Date()
             c.notifications = 0
         })
+    }
+
+    function scrollToUnread() {
+        if (!unreads) return
+        let element = document.getElementById(`message-${unreads.last_viewed}`)
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" })
+        } else {
+            // Assume that unread messages exceed currently loaded ones so we scroll all the way up
+            let messages = document.getElementsByClassName("message-bubble")
+            messages[0].scrollIntoView({ behavior: "smooth" })
+        }
     }
 
     onDestroy(() => {
@@ -100,7 +111,7 @@
         </div>
     {:else}
         {#if unreads && unreads.unread > 0}
-            <div class="unreads">
+            <div class="unreads" aria-label="unreads" role="presentation" on:click={scrollToUnread}>
                 <div class="bookmark"></div>
                 {$_("chat.newMessageSinceAmount", { values: { amount: unreads.unread, date: $date(unreads.since, { format: "medium" }), time: $time(unreads.since) } })}
             </div>
@@ -153,6 +164,8 @@
             background-color: var(--focus-color);
             border-radius: 0 0 var(--border-radius) var(--border-radius);
             z-index: 1;
+            cursor: pointer;
+
             .bookmark {
                 position: absolute;
                 top: 0;

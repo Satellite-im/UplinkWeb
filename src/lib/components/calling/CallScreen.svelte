@@ -237,7 +237,11 @@
                     {/if}
                 </div>
 
-                {#each chat.users as user (user)}
+                {#each chat.users.sort((a, b) => {
+                    const aVideoEnabled = $remoteStreams[a]?.user?.videoEnabled ? 1 : 0
+                    const bVideoEnabled = $remoteStreams[b]?.user?.videoEnabled ? 1 : 0
+                    return bVideoEnabled - aVideoEnabled
+                }) as user (user)}
                     {#if user === get(Store.state.user).key && !userCallOptions.video.enabled}
                         <Participant participant={$userCache[user]} hasVideo={$userCache[user].media.is_streaming_video} isMuted={muted} isDeafened={userCallOptions.audio.deafened} isTalking={$userCache[user].media.is_playing_audio} />
                     {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && !$remoteStreams[user]}
