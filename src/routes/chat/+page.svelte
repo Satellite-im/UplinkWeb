@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
+    import { callInProgress, VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
     import { _, date, time } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
@@ -57,6 +57,7 @@
     import BrowseFiles from "../files/BrowseFiles.svelte"
     import AttachmentRenderer from "$lib/components/messaging/AttachmentRenderer.svelte"
     import ShareFile from "$lib/components/files/ShareFile.svelte"
+    import { log } from "$lib/utils/Logger"
 
     let loading = false
     let contentAsideOpen = false
@@ -86,7 +87,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -582,9 +583,14 @@
                         appearance={Appearance.Alt}
                         disabled={$activeChat.users.length === 0}
                         on:click={async _ => {
-                            Store.setActiveCall($activeChat)
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id, true)
-                            activeCallInProgress = true
+                            if ($callInProgress !== null) {
+                                log.warn("You need to leave your current call first before starting a new one")
+                                return
+                            } else {
+                                Store.setActiveCall($activeChat)
+                                await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id, true)
+                                activeCallInProgress = true
+                            }
                         }}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
@@ -597,9 +603,14 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id)
-                            activeCallInProgress = true
-                            Store.setActiveCall($activeChat)
+                            if ($callInProgress !== null) {
+                                log.warn("You need to leave your current call first before starting a new one")
+                                return
+                            } else {
+                                await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id)
+                                activeCallInProgress = true
+                                Store.setActiveCall($activeChat)
+                            }
                         }}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>
