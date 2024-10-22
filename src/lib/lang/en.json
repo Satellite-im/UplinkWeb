@@ -347,7 +347,7 @@
             "decline": "Decline",
             "hasCancelled": "Has cancelled the call.",
             "disconnecting": "Disconnecting...",
-            "userInviteToAGroupCall": "is inviting you to join a group call",
+            "userInviteToAGroupCall": "{user} has started a group call in {group}",
             "noAnswer": "No answer, leaving the call...",
             "everybodyDeniedTheCall": "Everybody Denied the call. Disconnecting...",
             "acceptedCall": "Joined, loading...",
