@@ -70,7 +70,7 @@
                 hook="participant-profile-picture"
                 id={participant.key}
                 image={participant.profile.photo.image}
-                size={Size.Larger}
+                size={Size.Large}
                 noIndicator
                 highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
         </div>
@@ -82,6 +82,9 @@
         width: fit-content;
         height: fit-content;
         position: relative;
+        align-items: center;
+        justify-content: center;
+        display: flex;
 
         video {
             width: 300px;

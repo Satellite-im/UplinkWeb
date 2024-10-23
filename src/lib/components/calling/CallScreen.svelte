@@ -234,6 +234,7 @@
                 res[chunk].push(item)
                 return res
             }, [])
+            console.log("size ", sizeX, usersSplit, vidPerRow)
         }, 5)()
     }
 </script>
@@ -254,7 +255,7 @@
                     <div class="participants-list">
                         {#each users as user}
                             {#if user === get(Store.state.user).key}
-                                <div class="video-container {isFullScreen ? 'fullscreen' : ''}">
+                                <div class="video-container {isFullScreen ? 'fullscreen' : ''}" style={!userCallOptions.video.enabled ? "display: none" : ""}>
                                     <video data-cy="local-user-video" id="local-user-video" bind:this={localVideoCurrentSrc} style="display: {userCallOptions.video.enabled ? 'block' : 'none'}" muted autoplay>
                                         <track kind="captions" src="" />
                                     </video>
@@ -293,7 +294,7 @@
                                     </div>
                                 {/if}
                             {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
-                                <div class="video-container {isFullScreen ? 'fullscreen' : ''}">
+                                <div class="video-container {isFullScreen ? 'fullscreen' : ''}" style={!$remoteStreams[user].user.videoEnabled ? "display: none" : ""}>
                                     <video
                                         data-cy="remote-user-video"
                                         id="remote-user-video-{user}"
@@ -302,8 +303,7 @@
                                         height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
                                         autoplay
                                         muted={false}
-                                        use:attachStream={user}
-                                        style="display: {$remoteStreams[user].user.videoEnabled ? 'block' : 'none'}">
+                                        use:attachStream={user}>
                                         <track kind="captions" src="" />
                                     </video>
                                     <div class="user-name">{$userCache[user].name}</div>
@@ -497,6 +497,11 @@
                 flex-direction: row;
                 gap: var(--gap);
                 justify-content: center;
+            }
+
+            :global(.participant) {
+                width: 100%;
+                height: 100%;
             }
         }
 
