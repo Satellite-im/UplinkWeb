@@ -226,6 +226,9 @@
             let sizeX = $participantsElement.clientWidth
             let gap = parseFloat(getComputedStyle($participantsElement).gap)
             let vidPerRow = Math.floor((sizeX - gap) / (MIN_USER_SIZE + gap))
+            let self = get(Store.state.user).key
+            let users = chat.users.filter(s => s !== self)
+            users = [self, ...users]
             usersSplit = chat.users.reduce<string[][]>((res, item, index) => {
                 const chunk = Math.floor(index / vidPerRow)
                 if (!res[chunk]) {
