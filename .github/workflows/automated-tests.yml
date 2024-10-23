@@ -29,10 +29,10 @@ jobs:
             issues: read
         steps:
             - name: Checkout Uplink Web directory 🔖
-              uses: actions/checkout@v4.2.0
+              uses: actions/checkout@v4.2.2
 
             - name: Checkout Automated Tests directory 🔖
-              uses: actions/checkout@v4.2.0
+              uses: actions/checkout@v4.2.2
               with:
                   repository: Satellite-im/automated-tests-web
                   path: automated-tests
@@ -169,7 +169,7 @@ jobs:
                   cp -r allure/mobile-chrome/* allure-results/
 
             - name: Get Allure history
-              uses: actions/checkout@v4.2.0
+              uses: actions/checkout@v4.2.2
               if: always()
               continue-on-error: true
               with:
@@ -222,7 +222,7 @@ jobs:
 
         steps:
             - name: Checkout directory 🔖
-              uses: actions/checkout@v4.2.0
+              uses: actions/checkout@v4.2.2
 
             - name: Delete artifacts required on failed execution
               uses: geekyeggo/delete-artifact@v5.1.0
