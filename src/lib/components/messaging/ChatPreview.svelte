@@ -1,8 +1,8 @@
 <script lang="ts">
     import TimeAgo from "javascript-time-ago"
-    import { ChatType, Route, Size, Status } from "$lib/enums"
+    import { Appearance, ChatType, Route, Shape, Size, Status } from "$lib/enums"
     import type { Chat } from "$lib/types"
-    import { Text, Loader } from "$lib/elements"
+    import { Text, Loader, Button, Icon } from "$lib/elements"
     import { ProfilePicture } from "$lib/components"
     import { createEventDispatcher, onMount } from "svelte"
     import ProfilePictureMany from "../profile/ProfilePictureMany.svelte"
@@ -15,6 +15,8 @@
     import { checkMobile } from "$lib/utils/Mobile"
     import { ConversationStore } from "$lib/state/conversation"
     import { SettingsStore } from "$lib/state"
+    import { callInProgress, timeCallStarted } from "$lib/media/Voice"
+    import Spacer from "$lib/elements/Spacer.svelte"
 
     export let chat: Chat
     export let cta: boolean = false
@@ -80,6 +82,24 @@
         if (!interactable) return ""
         return `${cta ? "cta" : ""} `
     }
+
+    let elapsedTime: string = "00:00"
+
+    function updateElapsedTime() {
+        const now = new Date()
+        const diff = now.getTime() - ($timeCallStarted ?? now).getTime()
+
+        const minutes = Math.floor(diff / (1000 * 60))
+            .toString()
+            .padStart(2, "0")
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+            .toString()
+            .padStart(2, "0")
+
+        elapsedTime = `${minutes}:${seconds}`
+    }
+
+    const interval = setInterval(updateElapsedTime, 1000)
 </script>
 
 <button
@@ -117,7 +137,11 @@
             </Text>
             <div class="right">
                 <Text hook="chat-preview-timestamp" class="timestamp min-text" loading={loading} size={Size.Smallest} muted>
-                    {timeago}
+                    {#if $callInProgress === chat.id}
+                        <Icon icon={Shape.PhoneCall} highlight={Appearance.Success} />
+                    {:else}
+                        {timeago}
+                    {/if}
                 </Text>
                 {#if !loading}
                     {#if chat.notifications > 0 && !$simpleUnreads}

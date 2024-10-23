@@ -9,7 +9,6 @@
     import { Store } from "$lib/state/Store"
 
     export let loading: boolean = false
-    export let duration: Date = get(Store.state.activeCall)?.startedAt || new Date()
     export let muted: boolean = get(Store.state.devices.muted)
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let settings: ISettingsState = get(SettingsStore.state)
@@ -19,7 +18,7 @@
 
     function updateElapsedTime() {
         const now = new Date()
-        const diff = now.getTime() - new Date(duration).getTime()
+        const diff = now.getTime() - ($timeCallStarted ?? now).getTime()
 
         const hours = Math.floor(diff / (1000 * 60 * 60))
             .toString()
@@ -39,7 +38,7 @@
     // Cleanup interval on destroy
     import { onDestroy } from "svelte"
     import { goto } from "$app/navigation"
-    import { VoiceRTCInstance } from "$lib/media/Voice"
+    import { timeCallStarted, VoiceRTCInstance } from "$lib/media/Voice"
     onDestroy(() => {
         clearInterval(interval)
     })
