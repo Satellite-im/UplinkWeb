@@ -7,6 +7,7 @@
     import { mock_users } from "$lib/mock/users"
     import Controls from "$lib/layouts/Controls.svelte"
     import { Icon, Button, Text } from "$lib/elements"
+    import Spacer from "$lib/elements/Spacer.svelte"
 
     export let participant: User = defaultUser
     export let hasVideo: boolean = false
@@ -73,6 +74,8 @@
                 size={Size.Large}
                 noIndicator
                 highlight={isMuted || isDeafened ? Appearance.Error : isTalking ? Appearance.Success : Appearance.Alt} />
+            <Spacer less />
+            <Text singleLine size={Size.Smaller}>{participant.name}</Text>
         </div>
     {/if}
 </div>
@@ -85,6 +88,16 @@
         align-items: center;
         justify-content: center;
         display: flex;
+
+        .simple {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            &:hover {
+                cursor: pointer;
+            }
+        }
 
         video {
             width: 300px;
@@ -121,14 +134,6 @@
                 border-radius: var(--border-radius-less);
                 backdrop-filter: blur(var(--blur-radius));
                 -webkit-backdrop-filter: blur(var(--blur-radius));
-            }
-        }
-
-        .simple {
-            border-radius: 50%;
-            position: relative;
-            &:hover {
-                cursor: pointer;
             }
         }
 

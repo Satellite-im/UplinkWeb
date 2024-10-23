@@ -227,7 +227,13 @@
             let gap = parseFloat(getComputedStyle($participantsElement).gap)
             let vidPerRow = Math.floor((sizeX - gap) / (MIN_USER_SIZE + gap))
             let self = get(Store.state.user).key
-            let users = chat.users.filter(s => s !== self)
+            let users = chat.users
+                .filter(s => s !== self)
+                .sort((a, b) => {
+                    const aVideoEnabled = $remoteStreams[a]?.user?.videoEnabled ? 1 : 0
+                    const bVideoEnabled = $remoteStreams[b]?.user?.videoEnabled ? 1 : 0
+                    return bVideoEnabled - aVideoEnabled
+                })
             users = [self, ...users]
             usersSplit = chat.users.reduce<string[][]>((res, item, index) => {
                 const chunk = Math.floor(index / vidPerRow)
