@@ -101,6 +101,8 @@
         scannedQRCode = "" // Reset scanned QR code
     }
 
+    function sendTransaction() {}
+
     function handleReceive() {
         currentView = ViewMode.Receive
     }
@@ -235,8 +237,11 @@
         <QRScanner on:scanned={handleQRCodeScanned} />
 
         <div class="send">
+            <Label text={$_("payments.amount")} />
+            <Input />
             <Label text={$_("payments.add_note")} />
             <Input />
+            <Button appearance={Appearance.Primary} hook="button" on:click={sendTransaction} text="Create Transaction"></Button>
         </div>
     {/if}
 
