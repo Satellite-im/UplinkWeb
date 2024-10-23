@@ -70,7 +70,9 @@
         "settings": "Call Settings",
         "collapse": "Less Space",
         "expand": "More Space",
-        "fullscreen": "Fullscreen"
+        "fullscreen": "Fullscreen",
+        "page.next": "Next",
+        "page.previous": "Previous"
     },
     "chat": {
         "chat": "Chat",
