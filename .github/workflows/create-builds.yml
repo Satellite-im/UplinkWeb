@@ -20,7 +20,7 @@ jobs:
 
         runs-on: ${{ matrix.platform }}
         steps:
-            - uses: actions/checkout@v4.2.0
+            - uses: actions/checkout@v4.2.2
 
             - name: setup node
               uses: actions/setup-node@v4.0.4
@@ -39,7 +39,7 @@ jobs:
             - name: install frontend dependencies
               run: npm install
 
-            - uses: tauri-apps/tauri-action@v0
+            - uses: tauri-apps/tauri-action@v0.5.15
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
