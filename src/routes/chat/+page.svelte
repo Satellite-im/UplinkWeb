@@ -1,31 +1,15 @@
 <script lang="ts">
-    import { VoiceRTCInstance, VoiceRTCMessageType } from "../../lib/media/Voice"
+    import { callInProgress, VoiceRTCInstance } from "../../lib/media/Voice"
     import { Appearance, ChatType, MessageAttachmentKind, MessagePosition, Route, Shape, Size, TooltipPosition } from "$lib/enums"
-    import { _, date, time } from "svelte-i18n"
+    import { _ } from "svelte-i18n"
     import { animationDuration } from "$lib/globals/animations"
     import { slide } from "svelte/transition"
     import { Chatbar, Sidebar, Topbar, Profile } from "$lib/layouts"
-    import {
-        FileEmbed,
-        ImageEmbed,
-        ChatPreview,
-        Conversation,
-        Message,
-        MessageGroup,
-        MessageReactions,
-        MessageReplyContainer,
-        ProfilePicture,
-        Modal,
-        ProfilePictureMany,
-        STLViewer,
-        ChatFilter,
-        ContextMenu,
-        EmojiGroup,
-    } from "$lib/components"
+    import { ImageEmbed, ChatPreview, Conversation, Message, MessageGroup, MessageReactions, MessageReplyContainer, ProfilePicture, Modal, ProfilePictureMany, ChatFilter, ContextMenu, EmojiGroup } from "$lib/components"
     import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
-    import { OperationState, type MessageGroup as MessageGroupType } from "$lib/types"
+    import { type MessageGroup as MessageGroupType } from "$lib/types"
     import EncryptedNotice from "$lib/components/messaging/EncryptedNotice.svelte"
     import { Store } from "$lib/state/Store"
     import { derived, get } from "svelte/store"
@@ -35,8 +19,6 @@
     import { ConversationStore, type ConversationMessages } from "$lib/state/conversation"
     import GroupSettings from "$lib/components/group/GroupSettings.svelte"
     import ViewMembers from "$lib/components/group/ViewMembers.svelte"
-    import AudioEmbed from "$lib/components/messaging/embeds/AudioEmbed.svelte"
-    import VideoEmbed from "$lib/components/messaging/embeds/VideoEmbed.svelte"
     import Market from "$lib/components/market/Market.svelte"
     import { RaygunStoreInstance } from "$lib/wasm/RaygunStore"
     import type { Attachment, FileInfo, Message as MessageType, User } from "$lib/types"
@@ -44,7 +26,6 @@
     import PendingMessage from "$lib/components/messaging/message/PendingMessage.svelte"
     import PendingMessageGroup from "$lib/components/messaging/PendingMessageGroup.svelte"
     import FileUploadPreview from "$lib/elements/FileUploadPreview.svelte"
-    import TextDocument from "$lib/components/messaging/embeds/TextDocument.svelte"
     import StoreResolver from "$lib/components/utils/StoreResolver.svelte"
     import { getValidPaymentRequest } from "$lib/utils/Wallet"
     import { onMount } from "svelte"
@@ -57,6 +38,7 @@
     import BrowseFiles from "../files/BrowseFiles.svelte"
     import AttachmentRenderer from "$lib/components/messaging/AttachmentRenderer.svelte"
     import ShareFile from "$lib/components/files/ShareFile.svelte"
+    import { ToastMessage } from "$lib/state/ui/toast"
 
     let loading = false
     let contentAsideOpen = false
@@ -86,7 +68,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -375,6 +357,10 @@
         )
     }
 
+    function notificationThereIsACallInProgress() {
+        Store.addToastNotification(new ToastMessage("", $_("settings.calling.finishCurrentCallBeforeStartingAnother"), 4))
+    }
+
     document.addEventListener("click", handleClickOutsideEditInput)
 </script>
 
@@ -582,9 +568,14 @@
                         appearance={Appearance.Alt}
                         disabled={$activeChat.users.length === 0}
                         on:click={async _ => {
-                            Store.setActiveCall($activeChat)
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id, true)
-                            activeCallInProgress = true
+                            if ($callInProgress !== null) {
+                                notificationThereIsACallInProgress()
+                                return
+                            } else {
+                                Store.setActiveCall($activeChat)
+                                await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id, true)
+                                activeCallInProgress = true
+                            }
                         }}>
                         <Icon icon={Shape.PhoneCall} />
                     </Button>
@@ -597,9 +588,14 @@
                         disabled={$activeChat.users.length === 0}
                         loading={loading}
                         on:click={async _ => {
-                            await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id)
-                            activeCallInProgress = true
-                            Store.setActiveCall($activeChat)
+                            if ($callInProgress !== null) {
+                                notificationThereIsACallInProgress()
+                                return
+                            } else {
+                                await VoiceRTCInstance.startToMakeACall($activeChat.users, $activeChat.id)
+                                activeCallInProgress = true
+                                Store.setActiveCall($activeChat)
+                            }
                         }}>
                         <Icon icon={Shape.VideoCamera} />
                     </Button>

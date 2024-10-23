@@ -21,6 +21,7 @@ export const usersDeniedTheCall: Writable<string[]> = writable([])
 export const usersAcceptedTheCall: Writable<string[]> = writable([])
 export const connectionOpened = writable(false)
 export const timeCallStarted: Writable<Date | null> = writable(null)
+export const callInProgress: Writable<string | null> = writable(null)
 
 export enum VoiceRTCMessageType {
     UpdateUser = "UPDATE_USER",
@@ -468,6 +469,7 @@ export class VoiceRTC {
                 }
             }, TIME_TO_WAIT_FOR_ANSWER)
             timeOuts.push(timeoutWhenCallIsNull)
+            callInProgress.set(this.channel!)
             Store.setActiveCall(Store.getCallingChat(this.channel!)!, CallDirection.Outbound)
         } catch (error) {
             log.error(`Error making call: ${error}`)
@@ -502,17 +504,19 @@ export class VoiceRTC {
         while (!handled && !accepted && attempts < maxRetries) {
             try {
                 if (!conn) {
+                    let callStartedDate = new Date()
                     log.debug(`Trying to send invitation send out to ${peer} ${conn}`)
                     conn = this.localPeer!.connect(peer, {
                         metadata: {
                             did: get(Store.state.user).key,
                             username: get(Store.state.user).name,
                             channel: this.channel,
-                            timeCallStarted: new Date().toISOString(),
+                            timeCallStarted: callStartedDate.toISOString(),
                         },
                     })
                     conn.on("open", () => {
                         connected = true
+                        timeCallStarted.set(callStartedDate)
                     })
                     conn.once("data", d => {
                         if (d === CALL_ACK) {
@@ -588,6 +592,7 @@ export class VoiceRTC {
         this.call?.room.leave()
         this.call = null
         this.channel = this.incomingCallFrom[0]
+        callInProgress.set(this.channel!)
         // Tell the other end you accepted the call
         this.incomingCallFrom[1].send(CALL_ACK)
         this.createAndSetRoom()
@@ -603,6 +608,8 @@ export class VoiceRTC {
     }
 
     async leaveCall(sendEndCallMessage = false) {
+        callInProgress.set(null)
+        timeCallStarted.set(null)
         usersDeniedTheCall.set([])
         callTimeout.set(false)
         connectionOpened.set(false)

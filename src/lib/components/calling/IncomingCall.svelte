@@ -6,7 +6,7 @@
     import ProfilePicture from "../profile/ProfilePicture.svelte"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { Store } from "$lib/state/Store"
-    import { connectionOpened, VoiceRTCInstance } from "$lib/media/Voice"
+    import { callInProgress, connectionOpened, VoiceRTCInstance } from "$lib/media/Voice"
     import { goto } from "$app/navigation"
     import { writable } from "svelte/store"
     import { onDestroy, onMount } from "svelte"
@@ -77,7 +77,7 @@
     }
 </script>
 
-{#if pending}
+{#if pending && (VoiceRTCInstance.incomingCallFrom === null || (VoiceRTCInstance.incomingCallFrom && $callInProgress !== VoiceRTCInstance.incomingCallFrom[1]?.metadata.channel))}
     <div id="incoming-call">
         <div class="body">
             <div class="content" style={cancelledCall ? "border: var(--border-width) solid var(--warning-color);" : "border: var(--border-width) solid var(--success-color);"}>
