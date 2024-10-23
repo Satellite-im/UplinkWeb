@@ -17,8 +17,8 @@
     import { log } from "$lib/utils/Logger"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { debounce } from "$lib/utils/Functions"
-    import { UIStore } from "$lib/state/ui"
 
+    const MIN_USER_SIZE = 250
     export let expanded: boolean = false
     function toggleExanded() {
         expanded = !expanded
@@ -142,7 +142,7 @@
         }, 10000)
     }
 
-    let page = 0
+    $: page = writable(0)
     let usersSplit: string[][] = [chat.users]
     $: {
         let _ = $remoteStreams
@@ -225,7 +225,7 @@
             }
             let sizeX = $participantsElement.clientWidth
             let gap = parseFloat(getComputedStyle($participantsElement).gap)
-            let vidPerRow = Math.floor(sizeX / (250 + gap))
+            let vidPerRow = Math.floor((sizeX - gap) / (MIN_USER_SIZE + gap))
             usersSplit = chat.users.reduce<string[][]>((res, item, index) => {
                 const chunk = Math.floor(index / vidPerRow)
                 if (!res[chunk]) {
@@ -234,8 +234,7 @@
                 res[chunk].push(item)
                 return res
             }, [])
-            console.log("size ", sizeX, usersSplit, vidPerRow)
-        }, 5)()
+        }, 100)()
     }
 </script>
 
@@ -246,85 +245,116 @@
                 <Text hook="text-users-in-call" muted size={Size.Smaller}>
                     ({Object.keys($remoteStreams).length + 1}) users in the call
                 </Text>
+                <div class="top-control"></div>
+            </svelte:fragment>
+            <svelte:fragment slot="controls">
+                {#if usersSplit.length > 2}
+                    <Button
+                        hook="button-call-page-previous"
+                        icon
+                        appearance={Appearance.Alt}
+                        tooltip={$_("call.page.previous")}
+                        disabled={$page <= 0}
+                        soundSource={undefined}
+                        on:click={_ => {
+                            $page -= 1
+                        }}>
+                        <Icon icon={Shape.ArrowLeft} />
+                    </Button>
+                    <Button
+                        hook="button-call-page-next"
+                        icon
+                        appearance={Appearance.Alt}
+                        tooltip={$_("call.page.next")}
+                        soundSource={undefined}
+                        disabled={$page >= Math.floor(usersSplit.length / 2)}
+                        on:click={_ => {
+                            $page += 1
+                        }}>
+                        <Icon icon={Shape.ArrowRight} />
+                    </Button>
+                {/if}
             </svelte:fragment>
         </Topbar>
 
         {#if !$callTimeout && ($usersDeniedTheCall.length === 0 || $usersDeniedTheCall.length !== chat.users.length - 1)}
             <div id="participants" bind:this={$participantsElement}>
                 {#each usersSplit as users, i}
-                    <div class="participants-list">
-                        {#each users as user}
-                            {#if user === get(Store.state.user).key}
-                                <div class="video-container {isFullScreen ? 'fullscreen' : ''}" style={!userCallOptions.video.enabled ? "display: none" : ""}>
-                                    <video data-cy="local-user-video" id="local-user-video" bind:this={localVideoCurrentSrc} style="display: {userCallOptions.video.enabled ? 'block' : 'none'}" muted autoplay>
-                                        <track kind="captions" src="" />
-                                    </video>
-                                    <div class="user-name">{ownUserName}</div>
-                                    {#if !userCallOptions.audio.enabled}
-                                        <div class="mute-status">
-                                            <Icon icon={Shape.MicrophoneSlash}></Icon>
-                                        </div>
+                    {#if Math.floor(i / 2) === $page}
+                        <div class="participants-list">
+                            {#each users as user}
+                                {#if user === get(Store.state.user).key}
+                                    <div class="video-container {isFullScreen ? 'fullscreen' : ''}" style={!userCallOptions.video.enabled ? "display: none" : ""}>
+                                        <video data-cy="local-user-video" id="local-user-video" bind:this={localVideoCurrentSrc} style="display: {userCallOptions.video.enabled ? 'block' : 'none'}" muted autoplay>
+                                            <track kind="captions" src="" />
+                                        </video>
+                                        <div class="user-name">{ownUserName}</div>
+                                        {#if !userCallOptions.audio.enabled}
+                                            <div class="mute-status">
+                                                <Icon icon={Shape.MicrophoneSlash}></Icon>
+                                            </div>
+                                        {/if}
+                                    </div>
+                                    {#if !userCallOptions.video.enabled}
+                                        <Participant
+                                            participant={$userCache[user]}
+                                            hasVideo={$userCache[user].media.is_streaming_video}
+                                            isMuted={muted}
+                                            isDeafened={userCallOptions.audio.deafened}
+                                            isTalking={$userCache[user].media.is_playing_audio} />
                                     {/if}
-                                </div>
-                                {#if !userCallOptions.video.enabled}
-                                    <Participant
-                                        participant={$userCache[user]}
-                                        hasVideo={$userCache[user].media.is_streaming_video}
-                                        isMuted={muted}
-                                        isDeafened={userCallOptions.audio.deafened}
-                                        isTalking={$userCache[user].media.is_playing_audio} />
-                                {/if}
-                            {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && !$remoteStreams[user]}
-                                {#if showAnimation && !$usersAcceptedTheCall.includes(user)}
-                                    <div class="calling-animation">
-                                        <div class="shaking-participant">
+                                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && !$remoteStreams[user]}
+                                    {#if showAnimation && !$usersAcceptedTheCall.includes(user)}
+                                        <div class="calling-animation">
+                                            <div class="shaking-participant">
+                                                <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                                <p>{message}</p>
+                                            </div>
+                                        </div>
+                                    {:else if $usersAcceptedTheCall.includes(user)}
+                                        <div class="no-response">
+                                            <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
+                                            <p>{$_("settings.calling.acceptedCall")}</p>
+                                        </div>
+                                    {:else if noResponseVisible}
+                                        <div class="no-response">
                                             <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
                                             <p>{message}</p>
                                         </div>
-                                    </div>
-                                {:else if $usersAcceptedTheCall.includes(user)}
-                                    <div class="no-response">
-                                        <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
-                                        <p>{$_("settings.calling.acceptedCall")}</p>
-                                    </div>
-                                {:else if noResponseVisible}
-                                    <div class="no-response">
-                                        <Participant participant={$userCache[user]} hasVideo={false} isMuted={true} isDeafened={true} isTalking={false} />
-                                        <p>{message}</p>
-                                    </div>
-                                {/if}
-                            {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
-                                <div class="video-container {isFullScreen ? 'fullscreen' : ''}" style={!$remoteStreams[user].user.videoEnabled ? "display: none" : ""}>
-                                    <video
-                                        data-cy="remote-user-video"
-                                        id="remote-user-video-{user}"
-                                        class={$remoteStreams[user].user.videoEnabled ? "" : "disabled"}
-                                        width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
-                                        height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
-                                        autoplay
-                                        muted={false}
-                                        use:attachStream={user}>
-                                        <track kind="captions" src="" />
-                                    </video>
-                                    <div class="user-name">{$userCache[user].name}</div>
-                                    {#if !$remoteStreams[user].user.audioEnabled}
-                                        <div class="mute-status">
-                                            <Icon icon={Shape.MicrophoneSlash}></Icon>
-                                        </div>
                                     {/if}
-                                </div>
+                                {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
+                                    <div class="video-container {isFullScreen ? 'fullscreen' : ''}" style={!$remoteStreams[user].user.videoEnabled ? "display: none" : ""}>
+                                        <video
+                                            data-cy="remote-user-video"
+                                            id="remote-user-video-{user}"
+                                            class={$remoteStreams[user].user.videoEnabled ? "" : "disabled"}
+                                            width={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "calc(50% - var(--gap) * 2)" : 400) : 0}
+                                            height={$remoteStreams[user].user.videoEnabled ? (isFullScreen ? "50%" : 400) : 0}
+                                            autoplay
+                                            muted={false}
+                                            use:attachStream={user}>
+                                            <track kind="captions" src="" />
+                                        </video>
+                                        <div class="user-name">{$userCache[user].name}</div>
+                                        {#if !$remoteStreams[user].user.audioEnabled}
+                                            <div class="mute-status">
+                                                <Icon icon={Shape.MicrophoneSlash}></Icon>
+                                            </div>
+                                        {/if}
+                                    </div>
 
-                                {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
-                                    <Participant
-                                        participant={$userCache[user]}
-                                        hasVideo={$userCache[user].media.is_streaming_video}
-                                        isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
-                                        isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
-                                        isTalking={$userCache[user].media.is_playing_audio} />
+                                    {#if !$remoteStreams[user].stream || !$remoteStreams[user].user.videoEnabled}
+                                        <Participant
+                                            participant={$userCache[user]}
+                                            hasVideo={$userCache[user].media.is_streaming_video}
+                                            isMuted={$remoteStreams[user] && !$remoteStreams[user].user.audioEnabled}
+                                            isDeafened={$remoteStreams[user] && $remoteStreams[user].user.isDeafened}
+                                            isTalking={$userCache[user].media.is_playing_audio} />
+                                    {/if}
                                 {/if}
-                            {/if}
-                        {/each}
-                    </div>
+                            {/each}
+                        </div>
+                    {/if}
                 {/each}
             </div>
         {:else if $usersDeniedTheCall.length === chat.users.length - 1 && chat.users.length > 1}
@@ -529,6 +559,8 @@
 
         .shaking-participant {
             animation: shake 0.4s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
         }
 
         @keyframes shake {
