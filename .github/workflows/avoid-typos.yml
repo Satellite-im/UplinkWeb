@@ -13,8 +13,8 @@ jobs:
             contents: write
             issues: read
         steps:
-            - name: Check out code.
-              uses: actions/checkout@v4.2.0
+            - name: Check out code
+              uses: actions/checkout@v4.2.2
             - name: misspell
               uses: reviewdog/action-misspell@v1.23.0
               with:
