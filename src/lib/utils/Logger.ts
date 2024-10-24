@@ -55,7 +55,7 @@ export class Logger {
                     break
                 }
                 default: {
-                    console.log(`[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}`, ...other)
+                    console.log(`\x1b[36m[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}\x1b[0m`, ...other)
                     break
                 }
             }
