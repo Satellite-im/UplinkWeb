@@ -13,7 +13,7 @@
     import type { Chat } from "$lib/types"
     import VolumeMixer from "./VolumeMixer.svelte"
     import { createEventDispatcher, onDestroy, onMount } from "svelte"
-    import { callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, timeCallStarted, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
+    import { callInProgress, callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, timeCallStarted, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
     import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
@@ -152,7 +152,7 @@
         await VoiceRTCInstance.setVideoElements(localVideoCurrentSrc)
         /// HACK: To make sure the video elements are loaded before we start the call
         if (VoiceRTCInstance.localVideoCurrentSrc && VoiceRTCInstance.remoteVideoCreator) {
-            if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined) {
+            if (VoiceRTCInstance.toCall && VoiceRTCInstance.toCall.find(did => did !== "") !== undefined && $callInProgress === null) {
                 callSound = await playSound(Sounds.OutgoingCall)
                 await VoiceRTCInstance.makeCall()
                 timeout = setTimeout(() => {
