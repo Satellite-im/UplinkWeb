@@ -16,22 +16,46 @@
     import { callInProgress, callTimeout, TIME_TO_SHOW_CONNECTING, TIME_TO_SHOW_END_CALL_FEEDBACK, timeCallStarted, usersAcceptedTheCall, usersDeniedTheCall, VoiceRTCInstance } from "$lib/media/Voice"
     import { log } from "$lib/utils/Logger"
     import { playSound, SoundHandler, Sounds } from "../utils/SoundHandler"
+    import { MultipassStoreInstance } from "$lib/wasm/MultipassStore"
 
     export let expanded: boolean = false
-    function toggleExanded() {
-        expanded = !expanded
-    }
-
-    let showVolumeMixer = false
-    let showCallSettings = false
-
-    let muted: boolean = !VoiceRTCInstance.callOptions.audio.enabled
-    let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
-
     export let deafened: boolean = get(Store.state.devices.deafened)
     export let chat: Chat
 
+    let showVolumeMixer = false
+    let showCallSettings = false
+    let muted: boolean = !VoiceRTCInstance.callOptions.audio.enabled
+    let cameraEnabled: boolean = get(Store.state.devices.cameraEnabled)
+    let isFullScreen = false
+    let localVideoCurrentSrc: HTMLVideoElement
+
+    let showAnimation = true
+    let message = $_("settings.calling.connecting")
+    let timeout: NodeJS.Timeout | undefined
+    let callSound: SoundHandler | undefined = undefined
+
+    $: if ($usersAcceptedTheCall.length > 0) {
+        callSound?.stop()
+        callSound = undefined
+    }
+    $: userCache = Store.getUsersLookup(chat.users)
+    $: userCallOptions = VoiceRTCInstance.callOptions
+    $: remoteStreams = Store.state.activeCallMeta
+    $: ownUserName = get(Store.state.user).name
+
+    $: if ($usersDeniedTheCall.length === chat.users.length - 1) {
+        setTimeout(() => {
+            Store.endCall()
+            VoiceRTCInstance.leaveCall()
+            dispatch("endCall")
+        }, TIME_TO_SHOW_END_CALL_FEEDBACK)
+    }
+
     let dispatch = createEventDispatcher()
+
+    function toggleExanded() {
+        expanded = !expanded
+    }
 
     function toggleFullscreen() {
         const elem = document.getElementById("call-screen")
@@ -49,13 +73,6 @@
         }
         userCallOptions = userCallOptions
     }
-
-    let isFullScreen = false
-
-    $: userCache = Store.getUsersLookup(chat.users)
-    $: userCallOptions = VoiceRTCInstance.callOptions
-    $: remoteStreams = Store.state.activeCallMeta
-    $: ownUserName = get(Store.state.user).name
 
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
@@ -77,8 +94,6 @@
     let subscribeFour = Store.state.activeCall.subscribe(state => {
         userCallOptions = VoiceRTCInstance.callOptions
     })
-
-    let localVideoCurrentSrc: HTMLVideoElement
 
     function handleClickOutside(event: MouseEvent) {
         const callSettingsElement = document.getElementById("call-settings")
@@ -118,20 +133,8 @@
         }
     }
 
-    $: if ($usersDeniedTheCall.length === chat.users.length - 1) {
-        setTimeout(() => {
-            Store.endCall()
-            VoiceRTCInstance.leaveCall()
-            dispatch("endCall")
-        }, TIME_TO_SHOW_END_CALL_FEEDBACK)
-    }
-
-    let showAnimation = true
     let noResponseVisible = false
-    let message = $_("settings.calling.connecting")
-    let timeout: NodeJS.Timeout | undefined
     let hideNoResponseUsersTimeout: NodeJS.Timeout | undefined
-    let callSound: SoundHandler | undefined = undefined
 
     function hideNoResponseUsersAfterAPeriodOfTime() {
         hideNoResponseUsersTimeout = setTimeout(() => {
@@ -139,12 +142,9 @@
         }, 10000)
     }
 
-    $: if ($usersAcceptedTheCall.length > 0) {
-        callSound?.stop()
-        callSound = undefined
-    }
-
     onMount(async () => {
+        await MultipassStoreInstance.listUsersForACall(chat.users)
+        userCache = Store.getUsersLookup(chat.users)
         usersDeniedTheCall.set([])
         callTimeout.set(false)
         usersAcceptedTheCall.set([])
