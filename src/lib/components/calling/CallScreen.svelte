@@ -217,7 +217,7 @@
 
         {#if !$callTimeout && ($usersDeniedTheCall.length === 0 || $usersDeniedTheCall.length !== chat.users.length - 1)}
             <div id="participants">
-                <div class="video-container">
+                <div class="video-container {$userCache[get(Store.state.user).key].media.is_playing_audio ? 'talking' : ''}">
                     <video
                         data-cy="local-user-video"
                         id="local-user-video"
@@ -264,7 +264,7 @@
                             </div>
                         {/if}
                     {:else if $userCache[user] && $userCache[user].key !== get(Store.state.user).key && $remoteStreams[user]}
-                        <div class="video-container">
+                        <div class="video-container {$userCache[user].media.is_playing_audio ? 'talking' : ''}">
                             <video
                                 data-cy="remote-user-video"
                                 id="remote-user-video-{user}"
@@ -520,6 +520,9 @@
             border-radius: 12px;
             overflow: hidden;
             border: 2px solid var(--color-muted);
+            &.talking {
+                border: 2px solid var(--success-color);
+            }
         }
 
         video {
