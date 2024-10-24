@@ -51,11 +51,11 @@ export class Logger {
                     break
                 }
                 case LogLevel.Info: {
-                    console.info(`\x1b[32m[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}\x1b[0m`, ...other)
+                    console.info(`\x1b[32mℹ️ [${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}\x1b[0m`, ...other)
                     break
                 }
                 default: {
-                    console.log(`\x1b[36m[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}\x1b[0m`, ...other)
+                    console.log(`\x1b[36m🔍 [${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}\x1b[0m`, ...other)
                     break
                 }
             }
