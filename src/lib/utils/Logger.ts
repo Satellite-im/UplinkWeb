@@ -50,8 +50,12 @@ export class Logger {
                     console.warn(`[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}`, ...other)
                     break
                 }
+                case LogLevel.Info: {
+                    console.info(`\x1b[32mℹ️ [${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}\x1b[0m`, ...other)
+                    break
+                }
                 default: {
-                    console.log(`[${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}`, ...other)
+                    console.log(`\x1b[36m🔍 [${level.toString()}] (${new Date().toLocaleTimeString()}): ${message}\x1b[0m`, ...other)
                     break
                 }
             }
