@@ -57,6 +57,11 @@
     $: remoteStreams = Store.state.activeCallMeta
     $: ownUserName = get(Store.state.user).name
 
+    $: if ($usersDeniedTheCall.length === chat.users.length - 1 && chat.users.length > 1) {
+        callSound?.stop()
+        callSound = undefined
+    }
+
     let subscribeOne = Store.state.devices.muted.subscribe(state => {
         muted = state
         userCallOptions = VoiceRTCInstance.callOptions
