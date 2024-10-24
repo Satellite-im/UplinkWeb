@@ -296,6 +296,13 @@
         })
     }
 
+    let rejectedPayments = [""]
+
+    function rejectPaymentRequest(messageId: string) {
+        rejectedPayments.push(messageId)
+        console.log(rejectedPayments)
+    }
+
     let activeCallInProgress = false
     let activeCallDid = ""
 
@@ -745,7 +752,7 @@
                                                         {#if getValidPaymentRequest(line) != undefined}
                                                             <div class="payment_buttons">
                                                                 <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
-                                                                <Button text={"Decline"} appearance={Appearance.Error} on:click={async () => rejectPaymentRequest(line)}>
+                                                                <Button text={"Decline"} appearance={Appearance.Error} on:click={async () => rejectPaymentRequest(message.id)}>
                                                                     <Icon icon={Shape.XMark}></Icon>
                                                                 </Button>
                                                             </div>
