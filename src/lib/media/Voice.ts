@@ -462,8 +462,10 @@ export class VoiceRTC {
                     callTimeout.set(true)
                     timeOuts.push(
                         setTimeout(() => {
-                            callTimeout.set(false)
-                            this.leaveCall(true)
+                            if (get(usersAcceptedTheCall).length === 0) {
+                                callTimeout.set(false)
+                                this.leaveCall(true)
+                            }
                         }, TIME_TO_SHOW_END_CALL_FEEDBACK)
                     )
                 }
