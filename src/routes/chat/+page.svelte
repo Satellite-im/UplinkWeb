@@ -743,7 +743,12 @@
                                                 {:else}
                                                     {#each message.text as line}
                                                         {#if getValidPaymentRequest(line) != undefined}
-                                                            <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
+                                                            <div class="payment_buttons">
+                                                                <Button text={getValidPaymentRequest(line)?.toDisplayString()} on:click={async () => getValidPaymentRequest(line)?.execute()}></Button>
+                                                                <Button text={"Decline"} appearance={Appearance.Error} on:click={async () => rejectPaymentRequest(line)}>
+                                                                    <Icon icon={Shape.XMark}></Icon>
+                                                                </Button>
+                                                            </div>
                                                         {:else if !line.includes(tempCDN)}
                                                             <Text hook="text-chat-message" markdown={line} appearance={group.details.remote ? Appearance.Default : Appearance.Alt} />
                                                         {:else if line.includes(tempCDN)}
@@ -966,6 +971,10 @@
                 align-items: center;
                 border: var(--border-width) solid var(--primary-color);
                 margin-top: var(--gap);
+            }
+            .payment_buttons {
+                display: inline-flex;
+                gap: var(--gap-more);
             }
         }
 
