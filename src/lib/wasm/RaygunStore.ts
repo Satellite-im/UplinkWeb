@@ -5,7 +5,7 @@ import { Store } from "../state/Store"
 import { UIStore } from "../state/ui"
 import { ConversationStore } from "../state/conversation"
 import { MessageOptions } from "warp-wasm"
-import { Appearance, ChatType, MessageAttachmentKind, Route } from "$lib/enums"
+import { Appearance, ChatType, MessageAttachmentKind, NotificationType, Route } from "$lib/enums"
 import { type User, type Chat, defaultChat, type Message, mentions_user, type Attachment, messageTypeFromTexts, type Reaction, type FileProgress } from "$lib/types"
 import { WarpError, handleErrors } from "./HandleWarpErrors"
 import { failure, success, type Result } from "$lib/utils/Result"
@@ -577,7 +577,7 @@ class RaygunStore {
                                     messageToSend = `${sender.name} sent you ${chat.unread} new messages`
                                 }
                             }
-                            let notify = (settings.notifications.messages && get(page).route.id !== Route.Chat) || (settings.notifications.messages && get(page).route.id === Route.Chat && activeChat.id !== conversation_id)
+                            let notify = get(page).route.id !== Route.Chat || (get(page).route.id === Route.Chat && activeChat.id !== conversation_id)
                             if (ping || notify) {
                                 Store.addToastNotification(
                                     new ToastMessage("New Message", messageToSend, 2, undefined, undefined, () => {
@@ -587,7 +587,7 @@ class RaygunStore {
                                             goto(Route.Chat)
                                         }
                                     }),
-                                    settings.audio.messageSounds ? Sounds.Notification : undefined
+                                    { sound: settings.audio.messageSounds ? Sounds.Notification : undefined, context: NotificationType.Messages }
                                 )
                             }
                             UIStore.addNotification(conversation_id)

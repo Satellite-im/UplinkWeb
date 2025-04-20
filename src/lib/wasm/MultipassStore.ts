@@ -7,7 +7,7 @@ import { MAX_STATUS_MESSAGE_LENGTH } from "$lib/globals/constLimits"
 import { log } from "$lib/utils/Logger"
 import { defaultProfileData, defaultUser, type FriendRequest, type User } from "$lib/types"
 import { Store } from "$lib/state/Store"
-import { MessageDirection, Route, Status } from "$lib/enums"
+import { MessageDirection, NotificationType, Route, Status } from "$lib/enums"
 import { ToastMessage } from "$lib/state/ui/toast"
 import { SettingsStore } from "$lib/state"
 import { Sounds } from "$lib/components/utils/SoundHandler"
@@ -63,32 +63,30 @@ class MultipassStore {
                         break
                     }
                     case wasm.MultiPassEventKindEnum.FriendRequestReceived: {
-                        if (get(SettingsStore.state).notifications.friends) {
-                            let incoming = await this.identity_from_did(event.did)
-                            let count = 0
-                            while (incoming === undefined && count < MAX_RETRY_COUNT) {
-                                incoming = await this.identity_from_did(event.did)
-                                count++
-                                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
-                            }
-                            if (incoming) {
-                                Store.addToastNotification(
-                                    new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2, undefined, undefined, () => {
-                                        goto(Route.Friends)
-                                        Store.state.pageState.set("active")
-                                    }),
-                                    Sounds.Notification
-                                )
-                                Store.updateUser(incoming)
-                            } else {
-                                Store.addToastNotification(
-                                    new ToastMessage("New friend request.", `You received a new friend request.`, 2, undefined, undefined, () => {
-                                        goto(Route.Friends)
-                                        Store.state.pageState.set("active")
-                                    }),
-                                    Sounds.Notification
-                                )
-                            }
+                        let incoming = await this.identity_from_did(event.did)
+                        let count = 0
+                        while (incoming === undefined && count < MAX_RETRY_COUNT) {
+                            incoming = await this.identity_from_did(event.did)
+                            count++
+                            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
+                        }
+                        if (incoming) {
+                            Store.addToastNotification(
+                                new ToastMessage("New friend request.", `${incoming?.name} sent a request.`, 2, undefined, undefined, () => {
+                                    goto(Route.Friends)
+                                    Store.state.pageState.set("active")
+                                }),
+                                { sound: Sounds.Notification, context: NotificationType.Friends }
+                            )
+                            Store.updateUser(incoming)
+                        } else {
+                            Store.addToastNotification(
+                                new ToastMessage("New friend request.", `You received a new friend request.`, 2, undefined, undefined, () => {
+                                    goto(Route.Friends)
+                                    Store.state.pageState.set("active")
+                                }),
+                                { sound: Sounds.Notification, context: NotificationType.Friends }
+                            )
                         }
                         await this.listIncomingFriendRequests()
                         break
