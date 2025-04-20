@@ -420,7 +420,8 @@
             "messages": "Messages",
             "friendsDescription": "Enable notifications for friend requests.",
             "messagesDescription": "Enable notifications for incoming messages.",
-            "settingsDescription": "Enable notifications for updates and important alerts."
+            "settingsDescription": "Enable notifications for updates and important alerts.",
+            "test": "Test"
         },
         "accessibility": {
             "name": "Accessibility",

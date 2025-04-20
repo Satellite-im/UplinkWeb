@@ -1,8 +1,12 @@
 <script lang="ts">
-    import { Switch } from "$lib/elements"
+    import { Icon, Switch } from "$lib/elements"
+    import Button from "$lib/elements/Button.svelte"
+    import { Shape } from "$lib/enums"
 
     import { SettingSection } from "$lib/layouts"
     import { SettingsStore, type ISettingsState } from "$lib/state"
+    import { Store } from "$lib/state/Store"
+    import { ToastMessage } from "$lib/state/ui/toast"
     import { _ } from "svelte-i18n"
     import { get } from "svelte/store"
 
@@ -44,6 +48,16 @@
             on:toggle={on => {
                 SettingsStore.update({ ...settings, notifications: { ...settings.notifications, settings: on.detail } })
             }} />
+    </SettingSection>
+    <SettingSection hook="section-notifications-test" name={$_("settings.notifications.test")} description={""}>
+        <Button
+            hook="button-notifications-test"
+            icon
+            on:click={_ => {
+                Store.addToastNotification(new ToastMessage("Test", "", 4))
+            }}>
+            <Icon icon={Shape.Popout} />
+        </Button>
     </SettingSection>
 </div>
 
