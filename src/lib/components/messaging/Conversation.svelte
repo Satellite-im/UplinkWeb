@@ -183,7 +183,7 @@
             mask-image: linear-gradient(to top, var(--background) calc(100% - 1rem), transparent 100%);
             padding-top: 2rem;
             height: 100%;
-            overflow-y: scroll;
+            overflow-y: auto;
             overflow-x: hidden;
             padding-right: var(--padding-less);
 

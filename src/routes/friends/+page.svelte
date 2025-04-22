@@ -516,7 +516,7 @@
                     padding-top: 15px;
                     min-height: 0;
                     width: 100%;
-                    overflow-y: scroll;
+                    overflow-y: auto;
                     flex-grow: 1;
                     display: flex;
                     flex-direction: column;

@@ -103,7 +103,6 @@
         flex-direction: row;
         border-right: var(--border-width) solid var(--border-color);
         max-height: 100vh;
-        overflow-y: hidden;
 
         .sidebar {
             display: inline-flex;
@@ -120,7 +119,8 @@
             padding-right: var(--gap);
             flex: 1;
             width: 100%;
-            overflow-y: scroll;
+            height: fit-content;
+            overflow-y: auto;
             overflow-x: hidden;
             gap: var(--gap);
         }
