@@ -101,6 +101,13 @@ export enum Route {
     Pre = "/pre",
 }
 
+export enum NotificationType {
+    Generic,
+    Friends,
+    Messages,
+    Settings,
+}
+
 export function getRoute(value: string): Route {
     return value.startsWith("/settings") ? Route.Settings : Object.values(Route).find(route => route === value) || Route.Home
 }

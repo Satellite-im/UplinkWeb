@@ -1,4 +1,4 @@
-import { CallDirection, ChatType, MessageDirection, Status } from "$lib/enums"
+import { CallDirection, ChatType, MessageDirection, NotificationType, Status } from "$lib/enums"
 import { mock_files } from "$lib/mock/files"
 import { blocked_users, mchats, mock_users } from "$lib/mock/users"
 import { defaultUser, type Chat, type User, defaultChat, type FriendRequest, hashChat, type Message, type MessageGroup, type FileInfo, type Frame, type Integration, TypingIndicator } from "$lib/types"
@@ -424,15 +424,51 @@ class GlobalStore {
         }
     }
 
-    addToastNotification(toast: ToastMessage, sound?: Sounds) {
-        let toasts = get(this.state.toasts)
-        let id = uuidv4()
-        let timeout = setTimeout(() => {
-            this.removeToast(id)
-        }, toast.remaining_time * 1000)
-        this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
-        if (sound) {
-            playSound(sound)
+    async addToastNotification(toast: ToastMessage, options?: { sound?: Sounds; context?: NotificationType }) {
+        let allowed = get(SettingsStore.state).notifications.enabled
+        if (options?.context) {
+            switch (options?.context) {
+                case NotificationType.Friends: {
+                    allowed = get(SettingsStore.state).notifications.friends
+                    break
+                }
+                case NotificationType.Messages: {
+                    allowed = get(SettingsStore.state).notifications.messages
+                    break
+                }
+                case NotificationType.Settings: {
+                    allowed = get(SettingsStore.state).notifications.settings
+                    break
+                }
+            }
+        }
+        if (!allowed) return
+        allowed = Notification.permission == "granted"
+
+        if (Notification.permission == "default") {
+            allowed = (await Notification.requestPermission()) == "granted"
+        }
+        console.log("perm ", Notification.permission)
+        // Send in app notification
+        if (!allowed) {
+            let toasts = get(this.state.toasts)
+            let id = uuidv4()
+            let timeout = setTimeout(() => {
+                this.removeToast(id)
+            }, toast.remaining_time * 1000)
+            this.state.toasts.set({ ...toasts, [id]: [toast, timeout] })
+        } else {
+            const notification = new Notification(toast.title, {
+                body: toast.content,
+            })
+            if (notification != null) {
+                notification.onclick = _ => {
+                    if (toast.onclick) toast.onclick()
+                }
+            }
+        }
+        if (options?.sound) {
+            playSound(options?.sound)
         }
     }
 
