@@ -335,40 +335,12 @@
 
 <div id="call-screen" data-cy="call-screen" class={expanded ? "expanded" : ""}>
     {#if chat}
-        <Topbar simple>
+        <Topbar simple hideSidebarToggle>
             <svelte:fragment slot="content">
                 <Text hook="text-users-in-call" muted size={Size.Smaller}>
                     ({Object.keys($remoteStreams).length + 1}) users in the call
                 </Text>
                 <div class="top-control"></div>
-            </svelte:fragment>
-            <svelte:fragment slot="controls">
-                {#if usersSplit.length > 2}
-                    <Button
-                        hook="button-call-page-previous"
-                        icon
-                        appearance={Appearance.Alt}
-                        tooltip={$_("call.page.previous")}
-                        disabled={$page <= 0}
-                        soundSource={undefined}
-                        on:click={_ => {
-                            $page -= 1
-                        }}>
-                        <Icon icon={Shape.ArrowLeft} />
-                    </Button>
-                    <Button
-                        hook="button-call-page-next"
-                        icon
-                        appearance={Appearance.Alt}
-                        tooltip={$_("call.page.next")}
-                        soundSource={undefined}
-                        disabled={$page >= Math.floor(usersSplit.length / 2)}
-                        on:click={_ => {
-                            $page += 1
-                        }}>
-                        <Icon icon={Shape.ArrowRight} />
-                    </Button>
-                {/if}
             </svelte:fragment>
         </Topbar>
 
