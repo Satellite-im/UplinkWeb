@@ -23,6 +23,7 @@ export enum Color {
 export enum PaymentRequestsEnum {
     Reject = "/reject",
     Request = "/request",
+    Send = "/send",
 }
 
 export enum Format {

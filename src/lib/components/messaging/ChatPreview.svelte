@@ -34,7 +34,6 @@
     $: user = chat.typing_indicator.users().map(u => {
         return $lookupUsers[u]
     })
-    $: self = get(Store.state.user)
     let timeago = getTimeAgo(chat.last_message_at)
     const dispatch = createEventDispatcher()
     let ownId = get(Store.state.user)
@@ -57,9 +56,11 @@
                     ? $_("message_previews.coin_requested", { values: { username: sendingUserDetails.name, amount: amountPreview } })
                     : $_("message_previews.request_sent", { values: { amount: amountPreview } })
             } catch (error) {
+                console.log(chat.last_message_preview)
                 return "Invalid message format"
             }
-        } else if (chat.last_message_preview.startsWith(PaymentRequestsEnum.Reject)) {
+        }
+        if (chat.last_message_preview.startsWith(PaymentRequestsEnum.Reject)) {
             try {
                 const sendingUserId = ConversationStore.getMessage(chat.id, chat.last_message_id)?.details.origin
                 const sendingUserDetails = get(Store.getUser(sendingUserId!))
@@ -69,6 +70,35 @@
                     return $_("message_previews.coin_canceled")
                 }
             } catch (error) {
+                console.log(chat.last_message_preview)
+                return "Invalid message format"
+            }
+        }
+        if (chat.last_message_preview.startsWith(PaymentRequestsEnum.Send)) {
+            try {
+                const sendingUserId = ConversationStore.getMessage(chat.id, chat.last_message_id)?.details.origin
+                const sendingUserDetails = get(Store.getUser(sendingUserId!))
+                const jsonStartIndex = chat.last_message_preview.indexOf("{")
+                if (jsonStartIndex === -1) {
+                    console.error("No JSON found in last_message_preview:", chat.last_message_preview)
+                    return "Invalid message format"
+                }
+                const jsonPart = chat.last_message_preview.slice(jsonStartIndex)
+                let parsedMessage
+                try {
+                    parsedMessage = JSON.parse(jsonPart)
+                } catch (error) {
+                    console.error("Error parsing JSON:", error, chat.last_message_preview)
+                    return "Invalid message format"
+                }
+                const amountWei = parsedMessage.details.amount
+                if (sendingUserDetails.key !== ownId.key) {
+                    return `${sendingUserDetails.name} sent you ${amountWei}`
+                } else {
+                    return `You sent ${amountWei} to ${sendingUserDetails.name}`
+                }
+            } catch (error) {
+                console.error("Error in PaymentRequestsEnum.Send condition:", error)
                 return "Invalid message format"
             }
         }
