@@ -33,6 +33,12 @@
         Missing,
     }
 
+    enum DIDCopy {
+        DEFAULT,
+        SHORT,
+        LINK,
+    }
+
     let loading = true
     let isValidUsernameToUpdate = false
     let isValidStatusMessageToUpdate = true
@@ -252,12 +258,22 @@
     let unsavedChanges: boolean
     let profile_update_txt = $_("settings.profile.update")
 
-    async function copy_did(short: boolean) {
-        if (short) {
-            await navigator.clipboard.writeText(`${userReference.name}#${userReference.id.short}`)
-        } else {
-            const updatedKey = userReference.key.replace("did:key:", "")
-            await navigator.clipboard.writeText(updatedKey)
+    async function copy_did(conf: DIDCopy) {
+        let user = get(Store.state.user)
+        switch (conf) {
+            case DIDCopy.DEFAULT: {
+                const updatedKey = userReference.key.replace("did:key:", "")
+                await navigator.clipboard.writeText(updatedKey)
+                break
+            }
+            case DIDCopy.SHORT: {
+                await navigator.clipboard.writeText(`${userReference.name}#${userReference.id.short}`)
+                break
+            }
+            case DIDCopy.LINK: {
+                const updatedKey = user.key.replace("did:key:", "")
+                await navigator.clipboard.writeText(`${window.location.origin}/friends/add/${updatedKey}`)
+            }
         }
     }
 
@@ -476,17 +492,24 @@
                                 icon: Shape.Users,
                                 text: $_("settings.profile.copy_id"),
                                 appearance: Appearance.Default,
-                                onClick: async () => await copy_did(true),
+                                onClick: async () => await copy_did(DIDCopy.SHORT),
                             },
                             {
                                 id: "copy-did",
                                 icon: Shape.Clipboard,
                                 text: $_("settings.profile.copy_did"),
                                 appearance: Appearance.Default,
-                                onClick: async () => await copy_did(false),
+                                onClick: async () => await copy_did(DIDCopy.DEFAULT),
+                            },
+                            {
+                                id: "copy-link",
+                                icon: Shape.Clipboard,
+                                text: $_("settings.profile.copy_did_link"),
+                                appearance: Appearance.Default,
+                                onClick: async () => await copy_did(DIDCopy.LINK),
                             },
                         ]}>
-                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(false)}>
+                        <div slot="content" class="short-id" role="presentation" let:open on:contextmenu={open} on:click={async _ => await copy_did(DIDCopy.DEFAULT)}>
                             <Input hook="input-settings-profile-short-id" alt value={$user.id.short} disabled copyOnInteract>
                                 <Icon icon={Shape.Hashtag} alt muted />
                             </Input>
