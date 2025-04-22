@@ -426,12 +426,22 @@ export type MessageGroup = {
     messages: Message[]
 }
 
+// Currency data
+export interface Currency {
+    name: string
+    icon: Shape
+    balance: number
+    address: string
+    enabled: boolean
+}
+
 export type Transaction = {
     at: Date
-    to: string
-    from: string
+    to: User
+    from: User
     amount: number
-    note: string
+    currency: Currency
+    note: string | null
 }
 
 export type PaymentTracker = {

@@ -6,7 +6,6 @@
     import { slide } from "svelte/transition"
     import { Chatbar, Sidebar, Topbar, Profile } from "$lib/layouts"
     import { ImageEmbed, ChatPreview, Conversation, Message as MessageComponent, MessageGroup, MessageReactions, MessageReplyContainer, Modal, ChatFilter, ContextMenu, EmojiGroup, ChatIcon } from "$lib/components"
-    import CreateTransaction from "$lib/components/wallet/CreateTransaction.svelte"
     import { Button, FileInput, Icon, Label, Text } from "$lib/elements"
     import CallScreen from "$lib/components/calling/CallScreen.svelte"
     import { type MessageGroup as MessageGroupType } from "$lib/types"
@@ -65,7 +64,7 @@
     // TODO(Lucas): Need to improve that for chats when not necessary all users are friends
     $: loading = get(UIStore.state.chats).length > 0 && !$activeChat.users.slice(1).some(userId => $users[userId]?.name !== undefined)
 
-    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : ($activeChat.name ?? $users[$activeChat.users[1]]?.name)
+    $: chatName = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.name : $activeChat.name ?? $users[$activeChat.users[1]]?.name
     $: statusMessage = $activeChat.kind === ChatType.DirectMessage ? $users[$activeChat.users[1]]?.profile?.status_message : $activeChat.motd
     $: pinned = getPinned($conversation)
 
@@ -465,15 +464,6 @@
         dragDrop(e)
     }}>
     <!-- Modals -->
-    {#if transact}
-        <Modal
-            on:close={_ => {
-                transact = false
-            }}>
-            <CreateTransaction onClose={() => (transact = false)} on:create={_ => (transact = false)} />
-        </Modal>
-    {/if}
-
     {#if previewImage}
         <Modal
             on:close={_ => {

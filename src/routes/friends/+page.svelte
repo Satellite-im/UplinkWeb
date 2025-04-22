@@ -357,7 +357,7 @@
                         {/if}
                     </div>
                 {/if}
-                <div class="test">
+                <div class="friends-list">
                     <div class="friends-section section column">
                         {#each Object.keys(groupUsersAlphabetically($friends)).sort() as letter}
                             {#if groupUsersAlphabetically($friends)[letter].length > 0}
@@ -501,13 +501,12 @@
                     border-radius: var(--border-radius);
                 }
 
-                .test {
+                .friends-list {
                     min-height: 0;
                     width: 100%;
                     height: 35px;
                     display: flex;
                     flex-direction: column;
-                    padding-right: var(--gap);
                     flex-grow: 1;
                     overflow: hidden;
                 }
